@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/database"

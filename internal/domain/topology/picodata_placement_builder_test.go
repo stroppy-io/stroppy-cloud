@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"encoding/json"
@@ -18,7 +18,7 @@ func picodataSettings() *database.Picodata_Settings {
 
 func TestBuildForPicodataInstance_SingleNode(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{
@@ -61,7 +61,7 @@ func TestBuildForPicodataInstance_SingleNode(t *testing.T) {
 
 func TestBuildForPicodataInstance_NilTemplate(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	_, err := b.BuildForPicodataInstance(nil)
 	if err == nil {
@@ -71,7 +71,7 @@ func TestBuildForPicodataInstance_NilTemplate(t *testing.T) {
 
 func TestBuildForPicodataInstance_WithSidecars(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{
@@ -110,7 +110,7 @@ func TestBuildForPicodataInstance_WithSidecars(t *testing.T) {
 
 func TestBuildForPicodataInstance_WithBackupSidecar(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{
@@ -148,7 +148,7 @@ func TestBuildForPicodataInstance_WithBackupSidecar(t *testing.T) {
 
 func TestBuildForPicodataCluster_ThreeNodes(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -189,7 +189,7 @@ func TestBuildForPicodataCluster_ThreeNodes(t *testing.T) {
 
 func TestBuildForPicodataCluster_NodeOverride(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	overrideHw := hw(16, 32, 500)
 	overrideSettings := &database.Picodata_Settings{
@@ -234,7 +234,7 @@ func TestBuildForPicodataCluster_NodeOverride(t *testing.T) {
 
 func TestBuildForPicodataCluster_WithMonitoring(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -260,7 +260,7 @@ func TestBuildForPicodataCluster_WithMonitoring(t *testing.T) {
 
 func TestBuildForPicodataCluster_BackupOnAllNodes(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Template: &database.Picodata_Cluster_Template{
@@ -304,7 +304,7 @@ func TestBuildForPicodataCluster_BackupOnAllNodes(t *testing.T) {
 func TestBuildForPicodataCluster_BackupOnSingleNode(t *testing.T) {
 	nodeIdx := uint32(0)
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Template: &database.Picodata_Cluster_Template{
@@ -356,7 +356,7 @@ func TestBuildForPicodataCluster_BackupOnSingleNode(t *testing.T) {
 
 func TestBuildForPicodataCluster_NilTopology(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	_, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{},
@@ -368,7 +368,7 @@ func TestBuildForPicodataCluster_NilTopology(t *testing.T) {
 
 func TestBuildForPicodataCluster_NotEnoughIPs(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	_, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -384,7 +384,7 @@ func TestBuildForPicodataCluster_NotEnoughIPs(t *testing.T) {
 
 func TestPicodataCluster_ItemOrderMatchesCreation(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -407,7 +407,7 @@ func TestPicodataCluster_ItemOrderMatchesCreation(t *testing.T) {
 
 func TestPicodataCluster_IPAssignment(t *testing.T) {
 	network := networkWithIPs("10.0.0.10", "10.0.0.20", "10.0.0.30")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -430,7 +430,7 @@ func TestPicodataCluster_IPAssignment(t *testing.T) {
 
 func TestPicodataCluster_ConnectionString(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -456,7 +456,7 @@ func TestPicodataCluster_ConnectionString(t *testing.T) {
 
 func TestPicodataCluster_PicodataConfToEnvAndArgs(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	settings := picodataSettings()
 	settings.PicodataConf = map[string]string{
@@ -501,7 +501,7 @@ func TestPicodataCluster_PicodataConfToEnvAndArgs(t *testing.T) {
 
 func TestPicodataCluster_BuiltInMetricsConfig(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -523,7 +523,7 @@ func TestPicodataCluster_BuiltInMetricsConfig(t *testing.T) {
 }
 
 func TestPicodataExpandScope(t *testing.T) {
-	b := newPicodataPlacementBuilder(networkWithIPs())
+	b := NewPicodataPlacementBuilder(networkWithIPs())
 	nodes := []string{"n0", "n1", "n2"}
 
 	tests := []struct {
@@ -556,7 +556,7 @@ func TestPicodataExpandScope(t *testing.T) {
 
 func TestPicodataCluster_MetadataSet(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{
@@ -589,7 +589,7 @@ func TestPicodataCluster_MetadataSet(t *testing.T) {
 
 func TestPicodataContainerImages(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Nodes: []*database.Picodata_Instance{
@@ -617,7 +617,7 @@ func TestPicodataContainerImages(t *testing.T) {
 
 func TestPicodataInstance_ConnectionString(t *testing.T) {
 	network := networkWithIPs("10.0.0.42")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{
@@ -636,7 +636,7 @@ func TestPicodataInstance_ConnectionString(t *testing.T) {
 
 func TestPicodataCluster_NilClusterTemplate(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	_, err := b.BuildForPicodataCluster(nil)
 	if err == nil {
@@ -646,7 +646,7 @@ func TestPicodataCluster_NilClusterTemplate(t *testing.T) {
 
 func TestPicodataCluster_RuntimeTypes(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataCluster(&database.Picodata_Cluster{
 		Template: &database.Picodata_Cluster_Template{
@@ -704,7 +704,7 @@ func TestPicodataCluster_RuntimeTypes(t *testing.T) {
 
 func TestPicodataCluster_NoConfNoEnvNoArgs(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPicodataPlacementBuilder(network)
+	b := NewPicodataPlacementBuilder(network)
 
 	intent, err := b.BuildForPicodataInstance(&database.Picodata_Instance{
 		Template: &database.Picodata_Instance_Template{

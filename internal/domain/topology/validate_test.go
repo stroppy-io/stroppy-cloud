@@ -1,4 +1,4 @@
-package database
+package topology
 
 import (
 	"context"
@@ -8,18 +8,18 @@ import (
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/deployment"
 )
 
-func pgSettings(version database.Postgres_Settings_Version, storageEngine database.Postgres_Settings_StorageEngine) *database.Postgres_Settings {
+func valPgSettings(version database.Postgres_Settings_Version, storageEngine database.Postgres_Settings_StorageEngine) *database.Postgres_Settings {
 	return &database.Postgres_Settings{
 		Version:       version,
 		StorageEngine: storageEngine,
 	}
 }
 
-func hw(cores, mem, disk uint32) *deployment.Hardware {
+func valHw(cores, mem, disk uint32) *deployment.Hardware {
 	return &deployment.Hardware{Cores: cores, Memory: mem, Disk: disk}
 }
 
-func pgNode(name string, role database.Postgres_PostgresService_Role, hardware *deployment.Hardware) *database.Postgres_Node {
+func valPgNode(name string, role database.Postgres_PostgresService_Role, hardware *deployment.Hardware) *database.Postgres_Node {
 	return &database.Postgres_Node{
 		Name:     name,
 		Hardware: hardware,
@@ -52,8 +52,8 @@ func TestValidatePostgresInstance_Valid(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresInstance{
 			PostgresInstance: &database.Postgres_Instance{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
-				Node:     pgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Node:     valPgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 			},
 		},
 	}
@@ -84,7 +84,7 @@ func TestValidatePostgresInstance_PatroniEnabled(t *testing.T) {
 					StorageEngine: database.Postgres_Settings_STORAGE_ENGINE_HEAP,
 					Patroni:       &database.Postgres_Settings_Patroni{Enabled: true},
 				},
-				Node: pgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+				Node: valPgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 			},
 		},
 	}
@@ -99,11 +99,11 @@ func TestValidatePostgresCluster_Valid(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresCluster{
 			PostgresCluster: &database.Postgres_Cluster{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
 				Nodes: []*database.Postgres_Node{
-					pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
-					pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
-					pgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
+					valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
+					valPgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
+					valPgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
 				},
 			},
 		},
@@ -130,9 +130,9 @@ func TestValidatePostgresCluster_TooFewNodes(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresCluster{
 			PostgresCluster: &database.Postgres_Cluster{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
 				Nodes: []*database.Postgres_Node{
-					pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+					valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 				},
 			},
 		},
@@ -148,10 +148,10 @@ func TestValidatePostgresCluster_NoMaster(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresCluster{
 			PostgresCluster: &database.Postgres_Cluster{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
 				Nodes: []*database.Postgres_Node{
-					pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
-					pgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
+					valPgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
+					valPgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
 				},
 			},
 		},
@@ -167,10 +167,10 @@ func TestValidatePostgresCluster_DuplicateNodeName(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresCluster{
 			PostgresCluster: &database.Postgres_Cluster{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
 				Nodes: []*database.Postgres_Node{
-					pgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
-					pgNode("pg-0", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
+					valPgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
+					valPgNode("pg-0", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
 				},
 			},
 		},
@@ -186,12 +186,12 @@ func TestValidatePostgresCluster_EtcdQuorum(t *testing.T) {
 	tmpl := &database.Database_Template{
 		Template: &database.Database_Template_PostgresCluster{
 			PostgresCluster: &database.Postgres_Cluster{
-				Defaults: pgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
+				Defaults: valPgSettings(database.Postgres_Settings_VERSION_17, database.Postgres_Settings_STORAGE_ENGINE_HEAP),
 				Nodes: []*database.Postgres_Node{
-					pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
-					pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
-					{Name: "etcd-1", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
-					{Name: "etcd-2", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+					valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
+					valPgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
+					{Name: "etcd-1", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+					{Name: "etcd-2", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
 				},
 			},
 		},
@@ -213,11 +213,11 @@ func TestValidatePostgresCluster_PatroniWithEtcd(t *testing.T) {
 					Patroni:       &database.Postgres_Settings_Patroni{Enabled: true},
 				},
 				Nodes: []*database.Postgres_Node{
-					pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
-					pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
-					{Name: "etcd-1", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
-					{Name: "etcd-2", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
-					{Name: "etcd-3", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+					valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
+					valPgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
+					{Name: "etcd-1", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+					{Name: "etcd-2", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+					{Name: "etcd-3", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
 				},
 			},
 		},
@@ -239,8 +239,8 @@ func TestValidatePostgresCluster_PatroniWithoutEtcd(t *testing.T) {
 					Patroni:       &database.Postgres_Settings_Patroni{Enabled: true},
 				},
 				Nodes: []*database.Postgres_Node{
-					pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
-					pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)),
+					valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
+					valPgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)),
 				},
 			},
 		},
@@ -268,15 +268,15 @@ func TestValidatePostgresCluster_PatroniSynchronousMode(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			nodes := []*database.Postgres_Node{
-				pgNode("master", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+				valPgNode("master", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 			}
 			for i := 0; i < tt.replicas; i++ {
-				nodes = append(nodes, pgNode("replica-"+string(rune('1'+i)), database.Postgres_PostgresService_ROLE_REPLICA, hw(2, 4, 50)))
+				nodes = append(nodes, valPgNode("replica-"+string(rune('1'+i)), database.Postgres_PostgresService_ROLE_REPLICA, valHw(2, 4, 50)))
 			}
 			nodes = append(nodes,
-				&database.Postgres_Node{Name: "etcd-1", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
-				&database.Postgres_Node{Name: "etcd-2", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
-				&database.Postgres_Node{Name: "etcd-3", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+				&database.Postgres_Node{Name: "etcd-1", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+				&database.Postgres_Node{Name: "etcd-2", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+				&database.Postgres_Node{Name: "etcd-3", Hardware: valHw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
 			)
 			tmpl := &database.Database_Template{
 				Template: &database.Database_Template_PostgresCluster{
@@ -324,7 +324,7 @@ func TestValidateSettings_OrioledbValidVersion(t *testing.T) {
 							Version:       tt.version,
 							StorageEngine: database.Postgres_Settings_STORAGE_ENGINE_ORIOLEDB,
 						},
-						Node: pgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+						Node: valPgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 					},
 				},
 			}
@@ -345,7 +345,7 @@ func TestValidateSettings_OrioledbInvalidVersion(t *testing.T) {
 					Version:       database.Postgres_Settings_VERSION_18,
 					StorageEngine: database.Postgres_Settings_STORAGE_ENGINE_ORIOLEDB,
 				},
-				Node: pgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, hw(4, 8, 100)),
+				Node: valPgNode("pg-0", database.Postgres_PostgresService_ROLE_MASTER, valHw(4, 8, 100)),
 			},
 		},
 	}
@@ -362,7 +362,7 @@ func TestValidatePicodataInstance_Valid(t *testing.T) {
 			PicodataInstance: &database.Picodata_Instance{
 				Template: &database.Picodata_Instance_Template{
 					Settings: &database.Picodata_Settings{Version: "24.11"},
-					Hardware: hw(4, 8, 100),
+					Hardware: valHw(4, 8, 100),
 				},
 			},
 		},
@@ -381,13 +381,13 @@ func TestValidatePicodataCluster_Valid(t *testing.T) {
 				Template: &database.Picodata_Cluster_Template{
 					Topology: &database.Picodata_Cluster_Template_Topology{
 						Settings:     &database.Picodata_Settings{Version: "24.11"},
-						NodeHardware: hw(4, 8, 100),
+						NodeHardware: valHw(4, 8, 100),
 						NodesCount:   2,
 					},
 				},
 				Nodes: []*database.Picodata_Instance{
-					{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: hw(4, 8, 100)}},
-					{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: hw(4, 8, 100)}},
+					{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: valHw(4, 8, 100)}},
+					{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: valHw(4, 8, 100)}},
 				},
 			},
 		},

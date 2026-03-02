@@ -14,6 +14,7 @@ import (
 	"github.com/stroppy-io/hatchet-workflow/internal/core/logger"
 	"github.com/stroppy-io/hatchet-workflow/internal/domain/deployment/scripting"
 	edgeDomain "github.com/stroppy-io/hatchet-workflow/internal/domain/edge"
+	"github.com/stroppy-io/hatchet-workflow/internal/domain/topology"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/database"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/deployment"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/edge"
@@ -139,7 +140,7 @@ func (p ProvisionerService) AcquireNetwork(
 	var count int
 	switch test.GetDatabaseRef().(type) {
 	case *stroppy.Test_DatabaseTemplate:
-		count = RequiredIPCount(test.GetDatabaseTemplate())
+		count = topology.RequiredIPCount(test.GetDatabaseTemplate())
 	case *stroppy.Test_ConnectionString:
 		count = 1
 	}
@@ -199,16 +200,16 @@ func (p ProvisionerService) PlanPlacementIntent(
 	if err != nil {
 		return nil, err
 	}
-	builder := newPostgresPlacementBuilder(network)
+	builder := topology.NewPostgresPlacementBuilder(network)
 	switch t := template.GetTemplate().(type) {
 	case *database.Database_Template_PostgresInstance:
 		return builder.BuildForPostgresInstance(t)
 	case *database.Database_Template_PostgresCluster:
 		return builder.BuildForPostgresCluster(t)
 	case *database.Database_Template_PicodataInstance:
-		return newPicodataPlacementBuilder(network).BuildForPicodataInstance(t.PicodataInstance)
+		return topology.NewPicodataPlacementBuilder(network).BuildForPicodataInstance(t.PicodataInstance)
 	case *database.Database_Template_PicodataCluster:
-		return newPicodataPlacementBuilder(network).BuildForPicodataCluster(t.PicodataCluster)
+		return topology.NewPicodataPlacementBuilder(network).BuildForPicodataCluster(t.PicodataCluster)
 	default:
 		return nil, fmt.Errorf("unknown database template type")
 	}
@@ -357,7 +358,7 @@ func (p ProvisionerService) BuildPlacement(
 	stroppyPlacementItem := &provision.Placement_Item{
 		Name: metadataRoleStroppyValue,
 		Containers: []*provision.Container{
-			NewNodeExporterContainer(metadataRoleStroppyValue, true),
+			topology.NewNodeExporterContainer(metadataRoleStroppyValue, true),
 		},
 		VmTemplate: &deployment.Vm_Template{
 			Identifier: &deployment.Identifier{

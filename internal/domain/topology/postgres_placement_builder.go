@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"encoding/json"
@@ -47,7 +47,7 @@ type postgresPlacementBuilder struct {
 	network *deployment.Network
 }
 
-func newPostgresPlacementBuilder(network *deployment.Network) *postgresPlacementBuilder {
+func NewPostgresPlacementBuilder(network *deployment.Network) *postgresPlacementBuilder {
 	return &postgresPlacementBuilder{
 		items:   make([]*provision.PlacementIntent_Item, 0),
 		network: network,

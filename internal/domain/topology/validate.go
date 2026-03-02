@@ -1,4 +1,4 @@
-package database
+package topology
 
 import (
 	"context"

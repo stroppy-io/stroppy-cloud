@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ type picodataPlacementBuilder struct {
 	network     *deployment.Network
 }
 
-func newPicodataPlacementBuilder(network *deployment.Network) *picodataPlacementBuilder {
+func NewPicodataPlacementBuilder(network *deployment.Network) *picodataPlacementBuilder {
 	return &picodataPlacementBuilder{
 		itemsByName: map[string]*provision.PlacementIntent_Item{},
 		nodeOrder:   make([]string, 0),

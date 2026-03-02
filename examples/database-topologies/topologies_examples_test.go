@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/stroppy-io/hatchet-workflow/internal/core/protoyaml"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/database"
+	"github.com/stroppy-io/hatchet-workflow/internal/domain/topology"
 	databasepb "github.com/stroppy-io/hatchet-workflow/internal/proto/database"
 )
 
@@ -47,7 +47,7 @@ func TestExampleTopologies_ParseAndValidate(t *testing.T) {
 				t.Fatalf("unmarshal yaml %s: %v", file, err)
 			}
 
-			if err := database.ValidateDatabaseTemplate(context.Background(), &tmpl); err != nil {
+			if err := topology.ValidateDatabaseTemplate(context.Background(), &tmpl); err != nil {
 				t.Fatalf("validate template %s: %v", file, err)
 			}
 		})

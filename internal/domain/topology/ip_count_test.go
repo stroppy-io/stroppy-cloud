@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"testing"

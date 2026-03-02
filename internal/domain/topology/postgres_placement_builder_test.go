@@ -1,4 +1,4 @@
-package provision
+package topology
 
 import (
 	"encoding/json"
@@ -80,7 +80,7 @@ func countContainersWithRuntime[T any](items []*provision.PlacementIntent_Item, 
 
 func TestBuildForPostgresInstance_SingleNode(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresInstance(&database.Database_Template_PostgresInstance{
 		PostgresInstance: &database.Postgres_Instance{
@@ -130,7 +130,7 @@ func TestBuildForPostgresInstance_SingleNode(t *testing.T) {
 
 func TestBuildForPostgresInstance_NilTemplate(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresInstance(nil)
 	if err == nil {
@@ -140,7 +140,7 @@ func TestBuildForPostgresInstance_NilTemplate(t *testing.T) {
 
 func TestBuildForPostgresInstance_WithSidecars(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresInstance(&database.Database_Template_PostgresInstance{
 		PostgresInstance: &database.Postgres_Instance{
@@ -174,7 +174,7 @@ func TestBuildForPostgresInstance_WithSidecars(t *testing.T) {
 
 func TestBuildForPostgresCluster_MasterAndReplicas(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -236,7 +236,7 @@ func TestBuildForPostgresCluster_MasterAndReplicas(t *testing.T) {
 
 func TestBuildForPostgresCluster_ReplicaOverride(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	overrideHw := hw(16, 32, 500)
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
@@ -284,7 +284,7 @@ func TestBuildForPostgresCluster_ReplicaOverride(t *testing.T) {
 
 func TestBuildForPostgresCluster_WithMonitoring(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	monitoring := &database.Postgres_MonitoringService{
 		NodeExporter:     &database.Postgres_NodeExporterConfig{},
@@ -328,7 +328,7 @@ func TestBuildForPostgresCluster_WithMonitoring(t *testing.T) {
 
 func TestBuildForPostgresCluster_ColocatedEtcd(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	etcdSvc := &database.Postgres_EtcdService{}
 
@@ -382,7 +382,7 @@ func TestBuildForPostgresCluster_ColocatedEtcd(t *testing.T) {
 
 func TestBuildForPostgresCluster_DedicatedEtcd(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	etcdSvc := &database.Postgres_EtcdService{}
 
@@ -452,7 +452,7 @@ func TestBuildForPostgresCluster_DedicatedEtcd(t *testing.T) {
 
 func TestBuildForPostgresCluster_Pgbouncer(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -498,7 +498,7 @@ func TestBuildForPostgresCluster_Pgbouncer(t *testing.T) {
 
 func TestBuildForPostgresCluster_BackupOnMaster(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	backupSvc := &database.Postgres_BackupService{
 		Config: &database.Postgres_BackupConfig{
@@ -554,7 +554,7 @@ func TestBuildForPostgresCluster_BackupOnMaster(t *testing.T) {
 
 func TestBuildForPostgresCluster_NilNodes(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{},
@@ -566,7 +566,7 @@ func TestBuildForPostgresCluster_NilNodes(t *testing.T) {
 
 func TestBuild_NotEnoughIPs(t *testing.T) {
 	network := networkWithIPs("10.0.0.1") // only 1 IP
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -597,7 +597,7 @@ func TestBuild_NotEnoughIPs(t *testing.T) {
 
 func TestResolveRuntimeConfig_EtcdEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	etcdSvc := &database.Postgres_EtcdService{}
 
@@ -655,7 +655,7 @@ func TestResolveRuntimeConfig_EtcdEnv(t *testing.T) {
 
 func TestResolveRuntimeConfig_PatroniEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	etcdSvc := &database.Postgres_EtcdService{}
 
@@ -710,7 +710,7 @@ func TestResolveRuntimeConfig_PatroniEnv(t *testing.T) {
 
 func TestBuildForPostgresInstance_PostgresqlConfToArgs(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	settings := pgSettings()
 	settings.PostgresqlConf = map[string]string{
@@ -750,7 +750,7 @@ func TestBuildForPostgresInstance_PostgresqlConfToArgs(t *testing.T) {
 
 func TestResolveRuntimeConfig_PatroniPostgresqlConfToEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	settings := patroniSettings()
 	settings.PostgresqlConf = map[string]string{
@@ -813,7 +813,7 @@ func TestResolveRuntimeConfig_PatroniPostgresqlConfToEnv(t *testing.T) {
 
 func TestResolveRuntimeConfig_PatroniWithoutEtcd(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -839,7 +839,7 @@ func TestResolveRuntimeConfig_PatroniWithoutEtcd(t *testing.T) {
 
 func TestResolveRuntimeConfig_PgbouncerEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -884,7 +884,7 @@ func TestResolveRuntimeConfig_PgbouncerEnv(t *testing.T) {
 
 func TestItemOrder_MatchesCreation(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
@@ -923,7 +923,7 @@ func TestItemOrder_MatchesCreation(t *testing.T) {
 
 func TestIPAssignment_MatchesOrder(t *testing.T) {
 	network := networkWithIPs("10.0.0.10", "10.0.0.20", "10.0.0.30")
-	b := newPostgresPlacementBuilder(network)
+	b := NewPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
 		PostgresCluster: &database.Postgres_Cluster{
