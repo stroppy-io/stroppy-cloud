@@ -35,10 +35,10 @@ make down-dev             # Stop dev containers
 ### Web Frontend
 
 ```bash
-cd web && npm install
-npm run dev               # Vite dev server
-npm run build             # TypeScript check + production build
-npm run lint              # ESLint
+cd web && yarn install
+yarn dev                  # Vite dev server
+yarn build                # TypeScript check + production build
+yarn lint                 # ESLint
 ```
 
 ### Protobuf Generation
@@ -62,7 +62,8 @@ internal/
 │   ├── workflows/  # Hatchet workflow DAG definitions
 │   │   ├── test/   # Master-side: TestSuiteWorkflow, TestRunWorkflow (11-task DAG)
 │   │   └── edge/   # Edge-side: stroppy install/run, container setup
-│   ├── provision/  # Placement orchestration (ProvisionerService, PostgresPlacementBuilder)
+│   ├── provision/  # Placement orchestration (ProvisionerService, lifecycle management)
+│   ├── topology/   # Placement builders (Postgres, Picodata), validation, IP counting
 │   ├── deployment/ # Cloud target backends via Registry (strategy pattern)
 │   │   ├── yandex/ # Terraform + Yandex Cloud (embedded .tf files)
 │   │   └── docker/ # Local Docker backend
@@ -99,3 +100,142 @@ internal/
 - Task/workflow names use kebab-case string constants (e.g., `"stroppy-test-run"`, `"validate-input"`)
 - Table-driven tests with `testify` assertions; integration tests use `//go:build integration` tag
 - Frontend uses React 19 + TypeScript + Vite + Tailwind CSS + @xyflow/react for topology visualization
+
+
+
+## Development Cycle
+
+Every feature/task follows this cycle. Steps are sequential — each step's output feeds the next.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                   COORDINATOR (opus)                     │
+│  Owns the cycle. Delegates all work to sub-agents.       │
+│  Asks user for EVERY architectural/behavioral decision.  │
+└──┬───────┬───────┬───────┬───────┬───────┬───────┬──────┘
+   │       │       │       │       │       │       │
+   ▼       ▼       ▼       ▼       ▼       ▼       ▼
+  1.RES  2.DOC  3.PLAN  4.ASK   5.IMPL  6.TEST  7.DOC
+                  ▲        │
+                  └────────┘ (loop until user approves plan)
+```
+
+### Step 1: Research (sonnet)
+
+**Goal**: Gather all context needed for the task.
+
+Coordinator spawns **parallel** research agents:
+
+| Agent | Task |
+|-------|------|
+| **Codebase researcher** (sonnet) | Explore stroppy-cloud code relevant to the task. Read existing domain logic, proto, infrastructure. |
+| **Doc searcher** (sonnet + context7) | Fetch documentation for libraries/tools involved. |
+
+**Output**: Each agent returns a structured summary. Coordinator synthesizes into a task brief.
+
+### Step 2: Documentation Search (sonnet + context7)
+
+**Goal**: Find specific API docs, examples, and best practices.
+
+Runs **in parallel with Step 1** when libraries are known upfront.
+
+**Output**: API references, code examples, configuration patterns.
+
+### Step 3: Plan (opus writes to docs/plan.md)
+
+**Goal**: Design the solution and write a detailed plan.
+
+Based on research results, Coordinator:
+
+1. Identifies open questions that affect architecture/behavior
+2. **Asks user ALL open questions** (Step 4 — may loop)
+3. Designs the approach: files to create/modify, order of operations
+4. **Writes the detailed plan into `docs/plan.md`** under the relevant phase
+5. Each plan step includes: goal, files, dependencies, verification criteria
+
+> This is the ONE step where opus does intellectual work directly.
+> Plan is written to `docs/plan.md` BEFORE any code is written.
+
+### Step 4: User Approval (interactive)
+
+**Goal**: Resolve all ambiguity before writing code.
+
+Coordinator MUST ask the user about:
+
+| Category | Example questions |
+|----------|-----------------|
+| **Architecture** | "Should this be a new workflow task or extend an existing one?", "Should this live in provision/ or topology/?" |
+| **API design** | "What fields should the new proto message contain?", "Should we add a new RPC or extend the existing one?" |
+| **Behavior** | "Should failed edge tasks retry 3 or 5 times?", "What's the default timeout for Terraform apply?" |
+| **Technology** | "Use Docker SDK directly or add testcontainers-go?", "Should we add a new Valkey key or extend the existing structure?" |
+| **Scope** | "Should we implement this for all deployment targets or just Yandex?", "Is this needed for V1?" |
+| **Data model** | "Should this be a new proto message or a field on an existing one?", "Node-centric or template-based?" |
+
+**Rules**:
+- Ask ALL questions at once (batch), not one by one
+- Present options with trade-offs when possible
+- Record all answers in `docs/plan.md` under "Questions resolved"
+- If user's answer changes the plan — update plan before proceeding
+
+**Loop**: Steps 3-4 repeat until the user approves the plan and all questions are resolved.
+
+### Step 5: Implementation (sonnet)
+
+**Goal**: Write code according to the plan from `docs/plan.md`.
+
+Coordinator spawns **sequential** implementation agents (order matters):
+
+```
+Agent 1 (sonnet): "Write proto definition tools/proto/database/..."
+Agent 2 (sonnet): "Run easyp to regenerate Go + TypeScript code"
+Agent 3 (sonnet): "Implement domain logic internal/domain/..."
+Agent 4 (sonnet): "Wire into workflow tasks internal/domain/workflows/..."
+```
+
+Each agent receives:
+- The specific plan step from `docs/plan.md`
+- Relevant research context (from Step 1)
+- Relevant API docs (from Step 2)
+- Reference code snippets (from Step 1)
+- User decisions (from Step 4)
+
+**Rules for implementers**:
+- Follow existing patterns in `internal/domain/` (placement builders, workflow tasks, deployment services)
+- Protobuf types are the canonical domain model — define data in proto first, then implement logic
+- Use `hatchet_ext.WTask`/`PTask` wrappers for new workflow tasks
+- Run `go build ./...` after each file change
+- **If an implementer encounters an unexpected decision** → report back to Coordinator → Coordinator asks user
+
+### Step 6: Testing & Verification (sonnet)
+
+**Goal**: Verify the implementation compiles, works, and follows standards.
+
+Coordinator spawns agents:
+
+| Agent | Task |
+|-------|------|
+| **Compilation checker** (sonnet) | `go build ./...` — verify entire project compiles |
+| **Test writer** (sonnet) | Write table-driven tests with `testify`; integration tests with `//go:build integration` tag |
+| **Test runner** (sonnet) | Run `go test ./internal/domain/<package>/...` |
+| **Verification reader** (sonnet) | Read modified files, check against existing patterns in the codebase, report issues |
+
+**On failure**: Coordinator loops back to Step 5 with error context. Does NOT ask user unless the failure reveals an architectural problem.
+
+**On success**: Coordinator proceeds to Step 7.
+
+### Step 7: Documentation (haiku)
+
+**Goal**: Update documentation to reflect changes.
+
+Coordinator spawns documenter (haiku):
+
+- Update `docs/plan.md`: mark `[x]` on completed tasks, add discovered subtasks
+- Update `README.md` if architecture or services changed
+- Add inline comments only where logic is non-obvious
+
+**Rules for documenter**:
+- Keep docs concise
+- Do NOT add excessive comments to code
+- Do NOT create new .md files unless explicitly requested
+
+---
