@@ -4,6 +4,8 @@
 
 import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Picodata_Cluster, Picodata_ClusterJson, Picodata_Instance, Picodata_InstanceJson } from "./picodata_pb.ts";
+import { file_database_picodata } from "./picodata_pb.ts";
 import type { Postgres_Cluster, Postgres_ClusterJson, Postgres_Instance, Postgres_InstanceJson } from "./postgres_pb.ts";
 import { file_database_postgres } from "./postgres_pb.ts";
 import { file_validate_validate } from "../validate/validate_pb.ts";
@@ -13,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file database/database.proto.
  */
 export const file_database_database: GenFile = /*@__PURE__*/
-  fileDesc("ChdkYXRhYmFzZS9kYXRhYmFzZS5wcm90bxIIZGF0YWJhc2Ui0wEKCERhdGFiYXNlEjcKCHRlbXBsYXRlGAEgASgLMhsuZGF0YWJhc2UuRGF0YWJhc2UuVGVtcGxhdGVCCPpCBYoBAhABGo0BCghUZW1wbGF0ZRI4ChFwb3N0Z3Jlc19pbnN0YW5jZRgBIAEoCzIbLmRhdGFiYXNlLlBvc3RncmVzLkluc3RhbmNlSAASNgoQcG9zdGdyZXNfY2x1c3RlchgCIAEoCzIaLmRhdGFiYXNlLlBvc3RncmVzLkNsdXN0ZXJIAEIPCgh0ZW1wbGF0ZRID+EIBQkBaPmdpdGh1Yi5jb20vc3Ryb3BweS1pby9oYXRjaGV0LXdvcmtmbG93L2ludGVybmFsL3Byb3RvL2RhdGFiYXNlYgZwcm90bzM", [file_database_postgres, file_validate_validate]);
+  fileDesc("ChdkYXRhYmFzZS9kYXRhYmFzZS5wcm90bxIIZGF0YWJhc2UixQIKCERhdGFiYXNlEjcKCHRlbXBsYXRlGAEgASgLMhsuZGF0YWJhc2UuRGF0YWJhc2UuVGVtcGxhdGVCCPpCBYoBAhABGv8BCghUZW1wbGF0ZRI4ChFwb3N0Z3Jlc19pbnN0YW5jZRgBIAEoCzIbLmRhdGFiYXNlLlBvc3RncmVzLkluc3RhbmNlSAASNgoQcG9zdGdyZXNfY2x1c3RlchgCIAEoCzIaLmRhdGFiYXNlLlBvc3RncmVzLkNsdXN0ZXJIABI4ChFwaWNvZGF0YV9pbnN0YW5jZRgDIAEoCzIbLmRhdGFiYXNlLlBpY29kYXRhLkluc3RhbmNlSAASNgoQcGljb2RhdGFfY2x1c3RlchgEIAEoCzIaLmRhdGFiYXNlLlBpY29kYXRhLkNsdXN0ZXJIAEIPCgh0ZW1wbGF0ZRID+EIBQkBaPmdpdGh1Yi5jb20vc3Ryb3BweS1pby9oYXRjaGV0LXdvcmtmbG93L2ludGVybmFsL3Byb3RvL2RhdGFiYXNlYgZwcm90bzM", [file_database_picodata, file_database_postgres, file_validate_validate]);
 
 /**
  * @generated from message database.Database
@@ -63,6 +65,18 @@ export type Database_Template = Message<"database.Database.Template"> & {
      */
     value: Postgres_Cluster;
     case: "postgresCluster";
+  } | {
+    /**
+     * @generated from field: database.Picodata.Instance picodata_instance = 3;
+     */
+    value: Picodata_Instance;
+    case: "picodataInstance";
+  } | {
+    /**
+     * @generated from field: database.Picodata.Cluster picodata_cluster = 4;
+     */
+    value: Picodata_Cluster;
+    case: "picodataCluster";
   } | { case: undefined; value?: undefined };
 };
 
@@ -79,6 +93,16 @@ export type Database_TemplateJson = {
    * @generated from field: database.Postgres.Cluster postgres_cluster = 2;
    */
   postgresCluster?: Postgres_ClusterJson;
+
+  /**
+   * @generated from field: database.Picodata.Instance picodata_instance = 3;
+   */
+  picodataInstance?: Picodata_InstanceJson;
+
+  /**
+   * @generated from field: database.Picodata.Cluster picodata_cluster = 4;
+   */
+  picodataCluster?: Picodata_ClusterJson;
 };
 
 export type Database_TemplateValid = Database_Template;

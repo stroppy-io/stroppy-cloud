@@ -1,0 +1,139 @@
+syntax = "proto3";
+
+package database;
+
+import "database/common.proto";
+import "deployment/deployment.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/stroppy-io/hatchet-workflow/internal/proto/database";
+
+message Picodata {
+    // Reused sidecar definitions for colocated containers near Picodata nodes.
+    message Sidecar {
+        // Picodata exposes Prometheus metrics natively via its built-in HTTP
+        // server (--http-listen).  This sidecar configures the listen port.
+        message HttpMetrics {
+            bool enabled = 1;
+            uint32 port = 2;  // default 8081
+        }
+
+        message Backup {
+            enum Tool {
+                TOOL_UNSPECIFIED = 0;
+                PICODATA_BACKUP = 1;
+            }
+
+            message S3Storage {
+                string bucket = 1 [(validate.rules).string.min_len = 1];
+                string region = 2 [(validate.rules).string.min_len = 1];
+                string endpoint = 3 [(validate.rules).string.min_len = 1];
+                string access_key_id = 4 [(validate.rules).string.min_len = 1];
+                string secret_access_key = 5 [(validate.rules).string.min_len = 1];
+            }
+
+            message LocalStorage {
+                string path = 1 [(validate.rules).string.min_len = 1];
+            }
+
+            string schedule = 1 [(validate.rules).string.min_len = 1];
+            string retention = 2;
+            Tool tool = 3 [(validate.rules).enum.defined_only = true];
+            oneof storage {
+                option (validate.required) = true;
+                S3Storage s3 = 10;
+                LocalStorage local = 12;
+            }
+        }
+
+        oneof sidecar {
+            option (validate.required) = true;
+            CommonSidecar.NodeExporter node_exporter = 10;
+            HttpMetrics http_metrics = 50;
+            Backup backup = 55;
+        }
+    }
+
+    // Placement intent. No network targets are provided by user.
+    message Placement {
+        enum Scope {
+            SCOPE_UNSPECIFIED = 0;
+            SCOPE_ALL_NODES = 1;
+            SCOPE_NODE = 2;
+        }
+
+        message Colocate {
+            Scope scope = 1 [(validate.rules).enum.defined_only = true];
+            optional uint32 node_index = 2;  // used only when scope == SCOPE_NODE
+        }
+
+        message Dedicated {
+            uint32 instances_count = 1 [(validate.rules).uint32 = {gte: 1, lte: 5}];
+            deployment.Hardware hardware = 2 [(validate.rules).message.required = true];
+        }
+
+        oneof mode {
+            option (validate.required) = true;
+            Colocate colocate = 1;
+            Dedicated dedicated = 2;
+        }
+    }
+
+    message Settings {
+        enum StorageEngine {
+            STORAGE_ENGINE_UNSPECIFIED = 0;
+            STORAGE_ENGINE_MEMTX = 1;
+            STORAGE_ENGINE_VINYL = 2;
+        }
+
+        string version = 1 [(validate.rules).string.min_len = 1];
+        StorageEngine storage_engine = 2 [(validate.rules).enum.defined_only = true];
+        map<string, string> picodata_conf = 3;
+    }
+
+    // User-facing DSL for addons. Internal ids/dependencies are generated later.
+    message Addons {
+        message Backup {
+            bool enabled = 1;
+            Placement.Scope scope = 2 [(validate.rules).enum.defined_only = true];
+            Sidecar.Backup config = 3;
+        }
+
+        Backup backup = 1;
+    }
+
+    message Instance {
+        message Template {
+            Settings settings = 1 [(validate.rules).message.required = true];
+            deployment.Hardware hardware = 2 [(validate.rules).message.required = true];
+            repeated Sidecar sidecars = 3;
+        }
+
+        Template template = 1 [(validate.rules).message.required = true];
+        repeated Sidecar sidecars = 3;
+    }
+
+    message Cluster {
+        message Template {
+            message Topology {
+                Settings settings = 1 [(validate.rules).message.required = true];
+                deployment.Hardware node_hardware = 2 [(validate.rules).message.required = true];
+                uint32 nodes_count = 3 [(validate.rules).uint32 = {gte: 1}];
+                bool monitor = 4;
+            }
+
+            message NodeOverride {
+                uint32 node_index = 1;
+                Settings settings = 2;
+                deployment.Hardware hardware = 3;
+            }
+
+            Topology topology = 1 [(validate.rules).message.required = true];
+            Addons addons = 2;
+            repeated NodeOverride node_overrides = 3;
+        }
+
+        Template template = 1 [(validate.rules).message.required = true];
+        repeated Instance nodes = 2 [(validate.rules).repeated.min_items = 1];
+    }
+}

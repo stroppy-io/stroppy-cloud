@@ -72,6 +72,8 @@ type Database_Template struct {
 	//
 	//	*Database_Template_PostgresInstance
 	//	*Database_Template_PostgresCluster
+	//	*Database_Template_PicodataInstance
+	//	*Database_Template_PicodataCluster
 	Template      isDatabase_Template_Template `protobuf_oneof:"template"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -132,6 +134,24 @@ func (x *Database_Template) GetPostgresCluster() *Postgres_Cluster {
 	return nil
 }
 
+func (x *Database_Template) GetPicodataInstance() *Picodata_Instance {
+	if x != nil {
+		if x, ok := x.Template.(*Database_Template_PicodataInstance); ok {
+			return x.PicodataInstance
+		}
+	}
+	return nil
+}
+
+func (x *Database_Template) GetPicodataCluster() *Picodata_Cluster {
+	if x != nil {
+		if x, ok := x.Template.(*Database_Template_PicodataCluster); ok {
+			return x.PicodataCluster
+		}
+	}
+	return nil
+}
+
 type isDatabase_Template_Template interface {
 	isDatabase_Template_Template()
 }
@@ -144,20 +164,34 @@ type Database_Template_PostgresCluster struct {
 	PostgresCluster *Postgres_Cluster `protobuf:"bytes,2,opt,name=postgres_cluster,json=postgresCluster,proto3,oneof"`
 }
 
+type Database_Template_PicodataInstance struct {
+	PicodataInstance *Picodata_Instance `protobuf:"bytes,3,opt,name=picodata_instance,json=picodataInstance,proto3,oneof"`
+}
+
+type Database_Template_PicodataCluster struct {
+	PicodataCluster *Picodata_Cluster `protobuf:"bytes,4,opt,name=picodata_cluster,json=picodataCluster,proto3,oneof"`
+}
+
 func (*Database_Template_PostgresInstance) isDatabase_Template_Template() {}
 
 func (*Database_Template_PostgresCluster) isDatabase_Template_Template() {}
+
+func (*Database_Template_PicodataInstance) isDatabase_Template_Template() {}
+
+func (*Database_Template_PicodataCluster) isDatabase_Template_Template() {}
 
 var File_database_database_proto protoreflect.FileDescriptor
 
 const file_database_database_proto_rawDesc = "" +
 	"\n" +
-	"\x17database/database.proto\x12\bdatabase\x1a\x17database/postgres.proto\x1a\x17validate/validate.proto\"\x80\x02\n" +
+	"\x17database/database.proto\x12\bdatabase\x1a\x17database/picodata.proto\x1a\x17database/postgres.proto\x1a\x17validate/validate.proto\"\x95\x03\n" +
 	"\bDatabase\x12A\n" +
-	"\btemplate\x18\x01 \x01(\v2\x1b.database.Database.TemplateB\b\xfaB\x05\x8a\x01\x02\x10\x01R\btemplate\x1a\xb0\x01\n" +
+	"\btemplate\x18\x01 \x01(\v2\x1b.database.Database.TemplateB\b\xfaB\x05\x8a\x01\x02\x10\x01R\btemplate\x1a\xc5\x02\n" +
 	"\bTemplate\x12J\n" +
 	"\x11postgres_instance\x18\x01 \x01(\v2\x1b.database.Postgres.InstanceH\x00R\x10postgresInstance\x12G\n" +
-	"\x10postgres_cluster\x18\x02 \x01(\v2\x1a.database.Postgres.ClusterH\x00R\x0fpostgresClusterB\x0f\n" +
+	"\x10postgres_cluster\x18\x02 \x01(\v2\x1a.database.Postgres.ClusterH\x00R\x0fpostgresCluster\x12J\n" +
+	"\x11picodata_instance\x18\x03 \x01(\v2\x1b.database.Picodata.InstanceH\x00R\x10picodataInstance\x12G\n" +
+	"\x10picodata_cluster\x18\x04 \x01(\v2\x1a.database.Picodata.ClusterH\x00R\x0fpicodataClusterB\x0f\n" +
 	"\btemplate\x12\x03\xf8B\x01B@Z>github.com/stroppy-io/hatchet-workflow/internal/proto/databaseb\x06proto3"
 
 var (
@@ -178,16 +212,20 @@ var file_database_database_proto_goTypes = []any{
 	(*Database_Template)(nil), // 1: database.Database.Template
 	(*Postgres_Instance)(nil), // 2: database.Postgres.Instance
 	(*Postgres_Cluster)(nil),  // 3: database.Postgres.Cluster
+	(*Picodata_Instance)(nil), // 4: database.Picodata.Instance
+	(*Picodata_Cluster)(nil),  // 5: database.Picodata.Cluster
 }
 var file_database_database_proto_depIdxs = []int32{
 	1, // 0: database.Database.template:type_name -> database.Database.Template
 	2, // 1: database.Database.Template.postgres_instance:type_name -> database.Postgres.Instance
 	3, // 2: database.Database.Template.postgres_cluster:type_name -> database.Postgres.Cluster
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4, // 3: database.Database.Template.picodata_instance:type_name -> database.Picodata.Instance
+	5, // 4: database.Database.Template.picodata_cluster:type_name -> database.Picodata.Cluster
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_database_database_proto_init() }
@@ -195,10 +233,13 @@ func file_database_database_proto_init() {
 	if File_database_database_proto != nil {
 		return
 	}
+	file_database_picodata_proto_init()
 	file_database_postgres_proto_init()
 	file_database_database_proto_msgTypes[1].OneofWrappers = []any{
 		(*Database_Template_PostgresInstance)(nil),
 		(*Database_Template_PostgresCluster)(nil),
+		(*Database_Template_PicodataInstance)(nil),
+		(*Database_Template_PicodataCluster)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

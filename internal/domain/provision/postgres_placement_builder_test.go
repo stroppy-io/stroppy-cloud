@@ -83,9 +83,15 @@ func TestBuildForPostgresInstance_SingleNode(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresInstance(&database.Database_Template_PostgresInstance{
-		PostgresInstance: &database.Postgres_Instance_Template{
-			Settings: pgSettings(),
-			Hardware: hw(4, 8, 100),
+		PostgresInstance: &database.Postgres_Instance{
+			Defaults: pgSettings(),
+			Node: &database.Postgres_Node{
+				Name:     "postgres-master",
+				Hardware: hw(4, 8, 100),
+				Postgres: &database.Postgres_PostgresService{
+					Role: database.Postgres_PostgresService_ROLE_MASTER,
+				},
+			},
 		},
 	})
 	if err != nil {
@@ -137,16 +143,18 @@ func TestBuildForPostgresInstance_WithSidecars(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresInstance(&database.Database_Template_PostgresInstance{
-		PostgresInstance: &database.Postgres_Instance_Template{
-			Settings: pgSettings(),
-			Hardware: hw(4, 8, 100),
-			Sidecars: []*database.Postgres_Sidecar{
-				{Sidecar: &database.Postgres_Sidecar_NodeExporter{
-					NodeExporter: &database.CommonSidecar_NodeExporter{Port: 9100},
-				}},
-				{Sidecar: &database.Postgres_Sidecar_PostgresExporter_{
-					PostgresExporter: &database.Postgres_Sidecar_PostgresExporter{Enabled: true, Port: 9187},
-				}},
+		PostgresInstance: &database.Postgres_Instance{
+			Defaults: pgSettings(),
+			Node: &database.Postgres_Node{
+				Name:     "postgres-master",
+				Hardware: hw(4, 8, 100),
+				Postgres: &database.Postgres_PostgresService{
+					Role: database.Postgres_PostgresService_ROLE_MASTER,
+				},
+				Monitoring: &database.Postgres_MonitoringService{
+					NodeExporter:     &database.Postgres_NodeExporterConfig{Port: uint32Ptr(9100)},
+					PostgresExporter: &database.Postgres_PostgresExporterConfig{},
+				},
 			},
 		},
 	})
@@ -169,12 +177,30 @@ func TestBuildForPostgresCluster_MasterAndReplicas(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(8, 16, 200),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(8, 16, 200),
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_MASTER,
+					},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_REPLICA,
+					},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_REPLICA,
+					},
+				},
 			},
 		},
 	})
@@ -214,15 +240,30 @@ func TestBuildForPostgresCluster_ReplicaOverride(t *testing.T) {
 
 	overrideHw := hw(16, 32, 500)
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(8, 16, 200),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			ReplicaOverrides: []*database.Postgres_Cluster_Template_ReplicaOverride{
-				{ReplicaIndex: 1, Hardware: overrideHw},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(8, 16, 200),
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_MASTER,
+					},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_REPLICA,
+					},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: overrideHw,
+					Postgres: &database.Postgres_PostgresService{
+						Role: database.Postgres_PostgresService_ROLE_REPLICA,
+					},
+				},
 			},
 		},
 	})
@@ -245,14 +286,27 @@ func TestBuildForPostgresCluster_WithMonitoring(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
 	b := newPostgresPlacementBuilder(network)
 
+	monitoring := &database.Postgres_MonitoringService{
+		NodeExporter:     &database.Postgres_NodeExporterConfig{},
+		PostgresExporter: &database.Postgres_PostgresExporterConfig{},
+	}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   1,
-				Monitor:         true,
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:       "postgres-master",
+					Hardware:   hw(4, 8, 100),
+					Postgres:   &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Monitoring: monitoring,
+				},
+				{
+					Name:       "postgres-replica-0",
+					Hardware:   hw(4, 8, 100),
+					Postgres:   &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Monitoring: monitoring,
+				},
 			},
 		},
 	})
@@ -276,26 +330,29 @@ func TestBuildForPostgresCluster_ColocatedEtcd(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
 	b := newPostgresPlacementBuilder(network)
 
+	etcdSvc := &database.Postgres_EtcdService{}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			Addons: &database.Postgres_Addons{
-				Dcs: &database.Postgres_Addons_Dcs{
-					Etcd: &database.Postgres_Addons_Dcs_Etcd{
-						Size: 3,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_ALL_NODES,
-								},
-							},
-						},
-					},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
 				},
 			},
 		},
@@ -327,27 +384,41 @@ func TestBuildForPostgresCluster_DedicatedEtcd(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3", "10.0.0.4", "10.0.0.5", "10.0.0.6")
 	b := newPostgresPlacementBuilder(network)
 
+	etcdSvc := &database.Postgres_EtcdService{}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			Addons: &database.Postgres_Addons{
-				Dcs: &database.Postgres_Addons_Dcs{
-					Etcd: &database.Postgres_Addons_Dcs_Etcd{
-						Size: 3,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Dedicated_{
-								Dedicated: &database.Postgres_Placement_Dedicated{
-									InstancesCount: 3,
-									Hardware:       hw(2, 4, 50),
-								},
-							},
-						},
-					},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
+				{
+					Name:     "etcd-0",
+					Hardware: hw(2, 4, 50),
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "etcd-1",
+					Hardware: hw(2, 4, 50),
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "etcd-2",
+					Hardware: hw(2, 4, 50),
+					Etcd:     etcdSvc,
 				},
 			},
 		},
@@ -384,27 +455,24 @@ func TestBuildForPostgresCluster_Pgbouncer(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   1,
-			},
-			Addons: &database.Postgres_Addons{
-				Pooling: &database.Postgres_Addons_Pooling{
-					Pgbouncer: &database.Postgres_Addons_Pooling_Pgbouncer{
-						Enabled:  true,
-						PoolSize: 20,
-						PoolMode: database.Postgres_Addons_Pooling_Pgbouncer_TRANSACTION,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_MASTER,
-								},
-							},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Pgbouncer: &database.Postgres_PgbouncerService{
+						Config: &database.Postgres_PgbouncerConfig{
+							PoolSize: 20,
+							PoolMode: database.Postgres_PgbouncerConfig_TRANSACTION,
 						},
 					},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
 				},
 			},
 		},
@@ -418,7 +486,7 @@ func TestBuildForPostgresCluster_Pgbouncer(t *testing.T) {
 	for _, c := range master.GetContainers() {
 		if c.GetPgbouncer() != nil {
 			hasPgbouncer = true
-			if c.GetPgbouncer().GetConfig().GetPoolMode() != database.Postgres_Addons_Pooling_Pgbouncer_TRANSACTION {
+			if c.GetPgbouncer().GetConfig().GetPoolMode() != database.Postgres_PgbouncerConfig_TRANSACTION {
 				t.Errorf("expected TRANSACTION pool mode")
 			}
 		}
@@ -432,26 +500,31 @@ func TestBuildForPostgresCluster_BackupOnMaster(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2")
 	b := newPostgresPlacementBuilder(network)
 
-	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   1,
+	backupSvc := &database.Postgres_BackupService{
+		Config: &database.Postgres_BackupConfig{
+			Schedule:  "0 3 * * *",
+			Retention: "7d",
+			Tool:      database.Postgres_BackupConfig_WAL_G,
+			Storage: &database.Postgres_BackupConfig_Local{
+				Local: &database.Postgres_BackupConfig_LocalStorage{Path: "/backups"},
 			},
-			Addons: &database.Postgres_Addons{
-				Backup: &database.Postgres_Addons_Backup{
-					Enabled: true,
-					Scope:   database.Postgres_Placement_SCOPE_MASTER,
-					Config: &database.Postgres_Sidecar_Backup{
-						Schedule:  "0 3 * * *",
-						Retention: "7d",
-						Tool:      database.Postgres_Sidecar_Backup_WAL_G,
-						Storage: &database.Postgres_Sidecar_Backup_Local{
-							Local: &database.Postgres_Sidecar_Backup_LocalStorage{Path: "/backups"},
-						},
-					},
+		},
+	}
+
+	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Backup:   backupSvc,
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
 				},
 			},
 		},
@@ -479,15 +552,15 @@ func TestBuildForPostgresCluster_BackupOnMaster(t *testing.T) {
 	}
 }
 
-func TestBuildForPostgresCluster_NilTopology(t *testing.T) {
+func TestBuildForPostgresCluster_NilNodes(t *testing.T) {
 	network := networkWithIPs("10.0.0.1")
 	b := newPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{},
+		PostgresCluster: &database.Postgres_Cluster{},
 	})
 	if err == nil {
-		t.Fatal("expected error for nil topology")
+		t.Fatal("expected error for empty cluster nodes")
 	}
 }
 
@@ -496,12 +569,24 @@ func TestBuild_NotEnoughIPs(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2, // needs 3 IPs
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
 			},
 		},
 	})
@@ -514,26 +599,29 @@ func TestResolveRuntimeConfig_EtcdEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
 	b := newPostgresPlacementBuilder(network)
 
+	etcdSvc := &database.Postgres_EtcdService{}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			Addons: &database.Postgres_Addons{
-				Dcs: &database.Postgres_Addons_Dcs{
-					Etcd: &database.Postgres_Addons_Dcs_Etcd{
-						Size: 3,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_ALL_NODES,
-								},
-							},
-						},
-					},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
 				},
 			},
 		},
@@ -569,26 +657,29 @@ func TestResolveRuntimeConfig_PatroniEnv(t *testing.T) {
 	network := networkWithIPs("10.0.0.1", "10.0.0.2", "10.0.0.3")
 	b := newPostgresPlacementBuilder(network)
 
+	etcdSvc := &database.Postgres_EtcdService{}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        patroniSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			Addons: &database.Postgres_Addons{
-				Dcs: &database.Postgres_Addons_Dcs{
-					Etcd: &database.Postgres_Addons_Dcs_Etcd{
-						Size: 3,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_ALL_NODES,
-								},
-							},
-						},
-					},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: patroniSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
 				},
 			},
 		},
@@ -628,9 +719,15 @@ func TestBuildForPostgresInstance_PostgresqlConfToArgs(t *testing.T) {
 	}
 
 	intent, err := b.BuildForPostgresInstance(&database.Database_Template_PostgresInstance{
-		PostgresInstance: &database.Postgres_Instance_Template{
-			Settings: settings,
-			Hardware: hw(4, 8, 100),
+		PostgresInstance: &database.Postgres_Instance{
+			Defaults: settings,
+			Node: &database.Postgres_Node{
+				Name:     "postgres-master",
+				Hardware: hw(4, 8, 100),
+				Postgres: &database.Postgres_PostgresService{
+					Role: database.Postgres_PostgresService_ROLE_MASTER,
+				},
+			},
 		},
 	})
 	if err != nil {
@@ -661,26 +758,29 @@ func TestResolveRuntimeConfig_PatroniPostgresqlConfToEnv(t *testing.T) {
 		"wal_level":       "logical",
 	}
 
+	etcdSvc := &database.Postgres_EtcdService{}
+
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        settings,
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
-			},
-			Addons: &database.Postgres_Addons{
-				Dcs: &database.Postgres_Addons_Dcs{
-					Etcd: &database.Postgres_Addons_Dcs_Etcd{
-						Size: 3,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_ALL_NODES,
-								},
-							},
-						},
-					},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: settings,
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+					Etcd:     etcdSvc,
 				},
 			},
 		},
@@ -716,14 +816,20 @@ func TestResolveRuntimeConfig_PatroniWithoutEtcd(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	_, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        patroniSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   1,
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: patroniSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
 			},
-			// No etcd addon -> patroni should fail
 		},
 	})
 	if err == nil {
@@ -736,25 +842,21 @@ func TestResolveRuntimeConfig_PgbouncerEnv(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   1,
-			},
-			Addons: &database.Postgres_Addons{
-				Pooling: &database.Postgres_Addons_Pooling{
-					Pgbouncer: &database.Postgres_Addons_Pooling_Pgbouncer{
-						Enabled: true,
-						Placement: &database.Postgres_Placement{
-							Mode: &database.Postgres_Placement_Colocate_{
-								Colocate: &database.Postgres_Placement_Colocate{
-									Scope: database.Postgres_Placement_SCOPE_MASTER,
-								},
-							},
-						},
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+					Pgbouncer: &database.Postgres_PgbouncerService{
+						Config: &database.Postgres_PgbouncerConfig{},
 					},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
 				},
 			},
 		},
@@ -785,12 +887,24 @@ func TestItemOrder_MatchesCreation(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
 			},
 		},
 	})
@@ -812,12 +926,24 @@ func TestIPAssignment_MatchesOrder(t *testing.T) {
 	b := newPostgresPlacementBuilder(network)
 
 	intent, err := b.BuildForPostgresCluster(&database.Database_Template_PostgresCluster{
-		PostgresCluster: &database.Postgres_Cluster_Template{
-			Topology: &database.Postgres_Cluster_Template_Topology{
-				Settings:        pgSettings(),
-				MasterHardware:  hw(4, 8, 100),
-				ReplicaHardware: hw(4, 8, 100),
-				ReplicasCount:   2,
+		PostgresCluster: &database.Postgres_Cluster{
+			Defaults: pgSettings(),
+			Nodes: []*database.Postgres_Node{
+				{
+					Name:     "postgres-master",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_MASTER},
+				},
+				{
+					Name:     "postgres-replica-0",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
+				{
+					Name:     "postgres-replica-1",
+					Hardware: hw(4, 8, 100),
+					Postgres: &database.Postgres_PostgresService{Role: database.Postgres_PostgresService_ROLE_REPLICA},
+				},
 			},
 		},
 	})
@@ -830,41 +956,6 @@ func TestIPAssignment_MatchesOrder(t *testing.T) {
 		if item.GetInternalIp().GetValue() != expectedIPs[i] {
 			t.Errorf("item[%d] expected IP %s, got %s", i, expectedIPs[i], item.GetInternalIp().GetValue())
 		}
-	}
-}
-
-func TestExpandScope(t *testing.T) {
-	b := newPostgresPlacementBuilder(networkWithIPs())
-	master := "m"
-	replicas := []string{"r0", "r1", "r2"}
-
-	tests := []struct {
-		name     string
-		scope    database.Postgres_Placement_Scope
-		repIdx   *uint32
-		expected []string
-	}{
-		{"master", database.Postgres_Placement_SCOPE_MASTER, nil, []string{"m"}},
-		{"replicas", database.Postgres_Placement_SCOPE_REPLICAS, nil, []string{"r0", "r1", "r2"}},
-		{"all", database.Postgres_Placement_SCOPE_ALL_NODES, nil, []string{"m", "r0", "r1", "r2"}},
-		{"replica_1", database.Postgres_Placement_SCOPE_REPLICA, uint32Ptr(1), []string{"r1"}},
-		{"replica_nil_idx", database.Postgres_Placement_SCOPE_REPLICA, nil, nil},
-		{"replica_oob", database.Postgres_Placement_SCOPE_REPLICA, uint32Ptr(10), nil},
-		{"unspecified", database.Postgres_Placement_SCOPE_UNSPECIFIED, nil, nil},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := b.expandScope(tt.scope, tt.repIdx, master, replicas)
-			if len(got) != len(tt.expected) {
-				t.Fatalf("expected %v, got %v", tt.expected, got)
-			}
-			for i := range got {
-				if got[i] != tt.expected[i] {
-					t.Errorf("index %d: expected %s, got %s", i, tt.expected[i], got[i])
-				}
-			}
-		})
 	}
 }
 

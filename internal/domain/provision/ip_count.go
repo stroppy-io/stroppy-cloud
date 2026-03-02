@@ -26,6 +26,18 @@ func RequiredIPCount(tmpl *database.Database_Template) int {
 		}
 		return len(cluster.GetNodes())
 
+	case *database.Database_Template_PicodataInstance:
+		if t.PicodataInstance == nil {
+			return 0
+		}
+		return 1
+
+	case *database.Database_Template_PicodataCluster:
+		cluster := t.PicodataCluster
+		if cluster == nil {
+			return 0
+		}
+		return len(cluster.GetNodes())
 	default:
 		return 0
 	}

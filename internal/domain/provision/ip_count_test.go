@@ -8,6 +8,21 @@ import (
 )
 
 func TestRequiredIPCount(t *testing.T) {
+	hw := func(cores, mem, disk uint32) *deployment.Hardware {
+		return &deployment.Hardware{Cores: cores, Memory: mem, Disk: disk}
+	}
+	pgSettings := &database.Postgres_Settings{
+		Version:       database.Postgres_Settings_VERSION_17,
+		StorageEngine: database.Postgres_Settings_STORAGE_ENGINE_HEAP,
+	}
+	pgNode := func(name string, role database.Postgres_PostgresService_Role) *database.Postgres_Node {
+		return &database.Postgres_Node{
+			Name:     name,
+			Hardware: hw(2, 4, 50),
+			Postgres: &database.Postgres_PostgresService{Role: role},
+		}
+	}
+
 	tests := []struct {
 		name string
 		tmpl *database.Database_Template
@@ -22,18 +37,30 @@ func TestRequiredIPCount(t *testing.T) {
 			name: "postgres instance",
 			tmpl: &database.Database_Template{
 				Template: &database.Database_Template_PostgresInstance{
-					PostgresInstance: &database.Postgres_Instance_Template{},
+					PostgresInstance: &database.Postgres_Instance{
+						Defaults: pgSettings,
+						Node: &database.Postgres_Node{
+							Name:     "pg-standalone",
+							Hardware: hw(4, 8, 100),
+							Postgres: &database.Postgres_PostgresService{
+								Role: database.Postgres_PostgresService_ROLE_MASTER,
+							},
+						},
+					},
 				},
 			},
 			want: 1,
 		},
 		{
-			name: "cluster with 2 replicas",
+			name: "postgres cluster with 3 nodes",
 			tmpl: &database.Database_Template{
 				Template: &database.Database_Template_PostgresCluster{
-					PostgresCluster: &database.Postgres_Cluster_Template{
-						Topology: &database.Postgres_Cluster_Template_Topology{
-							ReplicasCount: 2,
+					PostgresCluster: &database.Postgres_Cluster{
+						Defaults: pgSettings,
+						Nodes: []*database.Postgres_Node{
+							pgNode("master", database.Postgres_PostgresService_ROLE_MASTER),
+							pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA),
+							pgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA),
 						},
 					},
 				},
@@ -41,72 +68,60 @@ func TestRequiredIPCount(t *testing.T) {
 			want: 3,
 		},
 		{
-			name: "cluster with 1 replica",
+			name: "postgres cluster with 5 nodes (master + replicas + etcd)",
 			tmpl: &database.Database_Template{
 				Template: &database.Database_Template_PostgresCluster{
-					PostgresCluster: &database.Postgres_Cluster_Template{
-						Topology: &database.Postgres_Cluster_Template_Topology{
-							ReplicasCount: 1,
+					PostgresCluster: &database.Postgres_Cluster{
+						Defaults: pgSettings,
+						Nodes: []*database.Postgres_Node{
+							pgNode("master", database.Postgres_PostgresService_ROLE_MASTER),
+							pgNode("replica-1", database.Postgres_PostgresService_ROLE_REPLICA),
+							pgNode("replica-2", database.Postgres_PostgresService_ROLE_REPLICA),
+							{Name: "etcd-1", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
+							{Name: "etcd-2", Hardware: hw(2, 4, 10), Etcd: &database.Postgres_EtcdService{}},
 						},
 					},
 				},
 			},
-			want: 2,
+			want: 5,
 		},
 		{
-			name: "cluster with dedicated etcd",
+			name: "picodata instance",
 			tmpl: &database.Database_Template{
-				Template: &database.Database_Template_PostgresCluster{
-					PostgresCluster: &database.Postgres_Cluster_Template{
-						Topology: &database.Postgres_Cluster_Template_Topology{
-							ReplicasCount: 2,
-						},
-						Addons: &database.Postgres_Addons{
-							Dcs: &database.Postgres_Addons_Dcs{
-								Etcd: &database.Postgres_Addons_Dcs_Etcd{
-									Size: 3,
-									Placement: &database.Postgres_Placement{
-										Mode: &database.Postgres_Placement_Dedicated_{
-											Dedicated: &database.Postgres_Placement_Dedicated{
-												InstancesCount: 3,
-												Hardware:       &deployment.Hardware{Cores: 2, Memory: 4, Disk: 10},
-											},
-										},
-									},
-								},
-							},
+				Template: &database.Database_Template_PicodataInstance{
+					PicodataInstance: &database.Picodata_Instance{
+						Template: &database.Picodata_Instance_Template{
+							Settings: &database.Picodata_Settings{Version: "24.11"},
+							Hardware: hw(4, 8, 100),
 						},
 					},
 				},
 			},
-			want: 6, // 1 master + 2 replicas + 3 dedicated etcd
+			want: 1,
 		},
 		{
-			name: "cluster with colocated etcd (no extra VMs)",
+			name: "picodata cluster with 3 nodes",
 			tmpl: &database.Database_Template{
-				Template: &database.Database_Template_PostgresCluster{
-					PostgresCluster: &database.Postgres_Cluster_Template{
-						Topology: &database.Postgres_Cluster_Template_Topology{
-							ReplicasCount: 2,
-						},
-						Addons: &database.Postgres_Addons{
-							Dcs: &database.Postgres_Addons_Dcs{
-								Etcd: &database.Postgres_Addons_Dcs_Etcd{
-									Size: 3,
-									Placement: &database.Postgres_Placement{
-										Mode: &database.Postgres_Placement_Colocate_{
-											Colocate: &database.Postgres_Placement_Colocate{
-												Scope: database.Postgres_Placement_SCOPE_ALL_NODES,
-											},
-										},
-									},
-								},
-							},
+				Template: &database.Database_Template_PicodataCluster{
+					PicodataCluster: &database.Picodata_Cluster{
+						Nodes: []*database.Picodata_Instance{
+							{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: hw(4, 8, 100)}},
+							{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: hw(4, 8, 100)}},
+							{Template: &database.Picodata_Instance_Template{Settings: &database.Picodata_Settings{Version: "24.11"}, Hardware: hw(4, 8, 100)}},
 						},
 					},
 				},
 			},
-			want: 3, // 1 master + 2 replicas, etcd colocated
+			want: 3,
+		},
+		{
+			name: "picodata cluster nil nodes",
+			tmpl: &database.Database_Template{
+				Template: &database.Database_Template_PicodataCluster{
+					PicodataCluster: &database.Picodata_Cluster{},
+				},
+			},
+			want: 0,
 		},
 	}
 	for _, tt := range tests {

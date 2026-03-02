@@ -282,6 +282,90 @@ func (m *Database_Template) validate(all bool) error {
 			}
 		}
 
+	case *Database_Template_PicodataInstance:
+		if v == nil {
+			err := Database_TemplateValidationError{
+				field:  "Template",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofTemplatePresent = true
+
+		if all {
+			switch v := interface{}(m.GetPicodataInstance()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, Database_TemplateValidationError{
+						field:  "PicodataInstance",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, Database_TemplateValidationError{
+						field:  "PicodataInstance",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPicodataInstance()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return Database_TemplateValidationError{
+					field:  "PicodataInstance",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *Database_Template_PicodataCluster:
+		if v == nil {
+			err := Database_TemplateValidationError{
+				field:  "Template",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofTemplatePresent = true
+
+		if all {
+			switch v := interface{}(m.GetPicodataCluster()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, Database_TemplateValidationError{
+						field:  "PicodataCluster",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, Database_TemplateValidationError{
+						field:  "PicodataCluster",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPicodataCluster()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return Database_TemplateValidationError{
+					field:  "PicodataCluster",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	default:
 		_ = v // ensures v is used
 	}

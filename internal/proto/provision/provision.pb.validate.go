@@ -563,6 +563,90 @@ func (m *Container) validate(all bool) error {
 			}
 		}
 
+	case *Container_Picodata:
+		if v == nil {
+			err := ContainerValidationError{
+				field:  "Runtime",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofRuntimePresent = true
+
+		if all {
+			switch v := interface{}(m.GetPicodata()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ContainerValidationError{
+						field:  "Picodata",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ContainerValidationError{
+						field:  "Picodata",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPicodata()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ContainerValidationError{
+					field:  "Picodata",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *Container_PicodataBackup:
+		if v == nil {
+			err := ContainerValidationError{
+				field:  "Runtime",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		oneofRuntimePresent = true
+
+		if all {
+			switch v := interface{}(m.GetPicodataBackup()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ContainerValidationError{
+						field:  "PicodataBackup",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ContainerValidationError{
+						field:  "PicodataBackup",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPicodataBackup()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ContainerValidationError{
+					field:  "PicodataBackup",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
 	default:
 		_ = v // ensures v is used
 	}
@@ -1478,6 +1562,150 @@ var _ interface {
 	ErrorName() string
 } = Container_PostgresRuntimeValidationError{}
 
+// Validate checks the field values on Container_PicodataRuntime with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *Container_PicodataRuntime) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Container_PicodataRuntime with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// Container_PicodataRuntimeMultiError, or nil if none found.
+func (m *Container_PicodataRuntime) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Container_PicodataRuntime) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for NodeIndex
+
+	if m.GetSettings() == nil {
+		err := Container_PicodataRuntimeValidationError{
+			field:  "Settings",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetSettings()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, Container_PicodataRuntimeValidationError{
+					field:  "Settings",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, Container_PicodataRuntimeValidationError{
+					field:  "Settings",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSettings()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return Container_PicodataRuntimeValidationError{
+				field:  "Settings",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return Container_PicodataRuntimeMultiError(errors)
+	}
+
+	return nil
+}
+
+// Container_PicodataRuntimeMultiError is an error wrapping multiple validation
+// errors returned by Container_PicodataRuntime.ValidateAll() if the
+// designated constraints aren't met.
+type Container_PicodataRuntimeMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m Container_PicodataRuntimeMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m Container_PicodataRuntimeMultiError) AllErrors() []error { return m }
+
+// Container_PicodataRuntimeValidationError is the validation error returned by
+// Container_PicodataRuntime.Validate if the designated constraints aren't met.
+type Container_PicodataRuntimeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e Container_PicodataRuntimeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e Container_PicodataRuntimeValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e Container_PicodataRuntimeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e Container_PicodataRuntimeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e Container_PicodataRuntimeValidationError) ErrorName() string {
+	return "Container_PicodataRuntimeValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e Container_PicodataRuntimeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContainer_PicodataRuntime.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = Container_PicodataRuntimeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = Container_PicodataRuntimeValidationError{}
+
 // Validate checks the field values on Container_EtcdRuntime with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -2246,6 +2474,149 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = Container_BackupRuntimeValidationError{}
+
+// Validate checks the field values on Container_PicodataBackupRuntime with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *Container_PicodataBackupRuntime) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Container_PicodataBackupRuntime with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// Container_PicodataBackupRuntimeMultiError, or nil if none found.
+func (m *Container_PicodataBackupRuntime) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Container_PicodataBackupRuntime) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetConfig() == nil {
+		err := Container_PicodataBackupRuntimeValidationError{
+			field:  "Config",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetConfig()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, Container_PicodataBackupRuntimeValidationError{
+					field:  "Config",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, Container_PicodataBackupRuntimeValidationError{
+					field:  "Config",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetConfig()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return Container_PicodataBackupRuntimeValidationError{
+				field:  "Config",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return Container_PicodataBackupRuntimeMultiError(errors)
+	}
+
+	return nil
+}
+
+// Container_PicodataBackupRuntimeMultiError is an error wrapping multiple
+// validation errors returned by Container_PicodataBackupRuntime.ValidateAll()
+// if the designated constraints aren't met.
+type Container_PicodataBackupRuntimeMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m Container_PicodataBackupRuntimeMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m Container_PicodataBackupRuntimeMultiError) AllErrors() []error { return m }
+
+// Container_PicodataBackupRuntimeValidationError is the validation error
+// returned by Container_PicodataBackupRuntime.Validate if the designated
+// constraints aren't met.
+type Container_PicodataBackupRuntimeValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e Container_PicodataBackupRuntimeValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e Container_PicodataBackupRuntimeValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e Container_PicodataBackupRuntimeValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e Container_PicodataBackupRuntimeValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e Container_PicodataBackupRuntimeValidationError) ErrorName() string {
+	return "Container_PicodataBackupRuntimeValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e Container_PicodataBackupRuntimeValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sContainer_PicodataBackupRuntime.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = Container_PicodataBackupRuntimeValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = Container_PicodataBackupRuntimeValidationError{}
 
 // Validate checks the field values on PlacementIntent_Item with the rules
 // defined in the proto definition for this message. If any rules are

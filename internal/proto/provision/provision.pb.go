@@ -156,6 +156,8 @@ type Container struct {
 	//	*Container_PostgresExporter
 	//	*Container_PgbouncerExporter
 	//	*Container_Backup
+	//	*Container_Picodata
+	//	*Container_PicodataBackup
 	Runtime       isContainer_Runtime `protobuf_oneof:"runtime"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -331,6 +333,24 @@ func (x *Container) GetBackup() *Container_BackupRuntime {
 	return nil
 }
 
+func (x *Container) GetPicodata() *Container_PicodataRuntime {
+	if x != nil {
+		if x, ok := x.Runtime.(*Container_Picodata); ok {
+			return x.Picodata
+		}
+	}
+	return nil
+}
+
+func (x *Container) GetPicodataBackup() *Container_PicodataBackupRuntime {
+	if x != nil {
+		if x, ok := x.Runtime.(*Container_PicodataBackup); ok {
+			return x.PicodataBackup
+		}
+	}
+	return nil
+}
+
 type isContainer_Runtime interface {
 	isContainer_Runtime()
 }
@@ -363,6 +383,14 @@ type Container_Backup struct {
 	Backup *Container_BackupRuntime `protobuf:"bytes,107,opt,name=backup,proto3,oneof"`
 }
 
+type Container_Picodata struct {
+	Picodata *Container_PicodataRuntime `protobuf:"bytes,108,opt,name=picodata,proto3,oneof"`
+}
+
+type Container_PicodataBackup struct {
+	PicodataBackup *Container_PicodataBackupRuntime `protobuf:"bytes,110,opt,name=picodata_backup,json=picodataBackup,proto3,oneof"`
+}
+
 func (*Container_Postgres) isContainer_Runtime() {}
 
 func (*Container_Etcd) isContainer_Runtime() {}
@@ -376,6 +404,10 @@ func (*Container_PostgresExporter) isContainer_Runtime() {}
 func (*Container_PgbouncerExporter) isContainer_Runtime() {}
 
 func (*Container_Backup) isContainer_Runtime() {}
+
+func (*Container_Picodata) isContainer_Runtime() {}
+
+func (*Container_PicodataBackup) isContainer_Runtime() {}
 
 type PlacementIntent struct {
 	state            protoimpl.MessageState  `protogen:"open.v1"`
@@ -633,6 +665,58 @@ func (x *Container_PostgresRuntime) GetReplicaIndex() uint32 {
 	return 0
 }
 
+type Container_PicodataRuntime struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	NodeIndex     uint32                      `protobuf:"varint,1,opt,name=node_index,json=nodeIndex,proto3" json:"node_index,omitempty"` // 0-based Picodata node index
+	Settings      *database.Picodata_Settings `protobuf:"bytes,2,opt,name=settings,proto3" json:"settings,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Container_PicodataRuntime) Reset() {
+	*x = Container_PicodataRuntime{}
+	mi := &file_provision_provision_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Container_PicodataRuntime) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Container_PicodataRuntime) ProtoMessage() {}
+
+func (x *Container_PicodataRuntime) ProtoReflect() protoreflect.Message {
+	mi := &file_provision_provision_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Container_PicodataRuntime.ProtoReflect.Descriptor instead.
+func (*Container_PicodataRuntime) Descriptor() ([]byte, []int) {
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 1}
+}
+
+func (x *Container_PicodataRuntime) GetNodeIndex() uint32 {
+	if x != nil {
+		return x.NodeIndex
+	}
+	return 0
+}
+
+func (x *Container_PicodataRuntime) GetSettings() *database.Picodata_Settings {
+	if x != nil {
+		return x.Settings
+	}
+	return nil
+}
+
 type Container_EtcdRuntime struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	ClusterSize    uint32                 `protobuf:"varint,1,opt,name=cluster_size,json=clusterSize,proto3" json:"cluster_size,omitempty"`
@@ -645,7 +729,7 @@ type Container_EtcdRuntime struct {
 
 func (x *Container_EtcdRuntime) Reset() {
 	*x = Container_EtcdRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[6]
+	mi := &file_provision_provision_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -657,7 +741,7 @@ func (x *Container_EtcdRuntime) String() string {
 func (*Container_EtcdRuntime) ProtoMessage() {}
 
 func (x *Container_EtcdRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[6]
+	mi := &file_provision_provision_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -670,7 +754,7 @@ func (x *Container_EtcdRuntime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Container_EtcdRuntime.ProtoReflect.Descriptor instead.
 func (*Container_EtcdRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 1}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 2}
 }
 
 func (x *Container_EtcdRuntime) GetClusterSize() uint32 {
@@ -710,7 +794,7 @@ type Container_PgbouncerRuntime struct {
 
 func (x *Container_PgbouncerRuntime) Reset() {
 	*x = Container_PgbouncerRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[7]
+	mi := &file_provision_provision_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -722,7 +806,7 @@ func (x *Container_PgbouncerRuntime) String() string {
 func (*Container_PgbouncerRuntime) ProtoMessage() {}
 
 func (x *Container_PgbouncerRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[7]
+	mi := &file_provision_provision_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -735,7 +819,7 @@ func (x *Container_PgbouncerRuntime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Container_PgbouncerRuntime.ProtoReflect.Descriptor instead.
 func (*Container_PgbouncerRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 2}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 3}
 }
 
 func (x *Container_PgbouncerRuntime) GetConfig() *database.Postgres_PgbouncerConfig {
@@ -755,7 +839,7 @@ type Container_NodeExporterRuntime struct {
 
 func (x *Container_NodeExporterRuntime) Reset() {
 	*x = Container_NodeExporterRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[8]
+	mi := &file_provision_provision_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -767,7 +851,7 @@ func (x *Container_NodeExporterRuntime) String() string {
 func (*Container_NodeExporterRuntime) ProtoMessage() {}
 
 func (x *Container_NodeExporterRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[8]
+	mi := &file_provision_provision_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -780,7 +864,7 @@ func (x *Container_NodeExporterRuntime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Container_NodeExporterRuntime.ProtoReflect.Descriptor instead.
 func (*Container_NodeExporterRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 3}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 4}
 }
 
 func (x *Container_NodeExporterRuntime) GetEnabled() bool {
@@ -808,7 +892,7 @@ type Container_PostgresExporterRuntime struct {
 
 func (x *Container_PostgresExporterRuntime) Reset() {
 	*x = Container_PostgresExporterRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[9]
+	mi := &file_provision_provision_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -820,7 +904,7 @@ func (x *Container_PostgresExporterRuntime) String() string {
 func (*Container_PostgresExporterRuntime) ProtoMessage() {}
 
 func (x *Container_PostgresExporterRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[9]
+	mi := &file_provision_provision_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -833,7 +917,7 @@ func (x *Container_PostgresExporterRuntime) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use Container_PostgresExporterRuntime.ProtoReflect.Descriptor instead.
 func (*Container_PostgresExporterRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 4}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 5}
 }
 
 func (x *Container_PostgresExporterRuntime) GetEnabled() bool {
@@ -867,7 +951,7 @@ type Container_PgbouncerExporterRuntime struct {
 
 func (x *Container_PgbouncerExporterRuntime) Reset() {
 	*x = Container_PgbouncerExporterRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[10]
+	mi := &file_provision_provision_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -879,7 +963,7 @@ func (x *Container_PgbouncerExporterRuntime) String() string {
 func (*Container_PgbouncerExporterRuntime) ProtoMessage() {}
 
 func (x *Container_PgbouncerExporterRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[10]
+	mi := &file_provision_provision_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -892,7 +976,7 @@ func (x *Container_PgbouncerExporterRuntime) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use Container_PgbouncerExporterRuntime.ProtoReflect.Descriptor instead.
 func (*Container_PgbouncerExporterRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 5}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 6}
 }
 
 func (x *Container_PgbouncerExporterRuntime) GetEnabled() bool {
@@ -918,7 +1002,7 @@ type Container_BackupRuntime struct {
 
 func (x *Container_BackupRuntime) Reset() {
 	*x = Container_BackupRuntime{}
-	mi := &file_provision_provision_proto_msgTypes[11]
+	mi := &file_provision_provision_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -930,7 +1014,7 @@ func (x *Container_BackupRuntime) String() string {
 func (*Container_BackupRuntime) ProtoMessage() {}
 
 func (x *Container_BackupRuntime) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[11]
+	mi := &file_provision_provision_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -943,10 +1027,54 @@ func (x *Container_BackupRuntime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Container_BackupRuntime.ProtoReflect.Descriptor instead.
 func (*Container_BackupRuntime) Descriptor() ([]byte, []int) {
-	return file_provision_provision_proto_rawDescGZIP(), []int{1, 6}
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 7}
 }
 
 func (x *Container_BackupRuntime) GetConfig() *database.Postgres_BackupConfig {
+	if x != nil {
+		return x.Config
+	}
+	return nil
+}
+
+type Container_PicodataBackupRuntime struct {
+	state         protoimpl.MessageState            `protogen:"open.v1"`
+	Config        *database.Picodata_Sidecar_Backup `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Container_PicodataBackupRuntime) Reset() {
+	*x = Container_PicodataBackupRuntime{}
+	mi := &file_provision_provision_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Container_PicodataBackupRuntime) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Container_PicodataBackupRuntime) ProtoMessage() {}
+
+func (x *Container_PicodataBackupRuntime) ProtoReflect() protoreflect.Message {
+	mi := &file_provision_provision_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Container_PicodataBackupRuntime.ProtoReflect.Descriptor instead.
+func (*Container_PicodataBackupRuntime) Descriptor() ([]byte, []int) {
+	return file_provision_provision_proto_rawDescGZIP(), []int{1, 8}
+}
+
+func (x *Container_PicodataBackupRuntime) GetConfig() *database.Picodata_Sidecar_Backup {
 	if x != nil {
 		return x.Config
 	}
@@ -966,7 +1094,7 @@ type PlacementIntent_Item struct {
 
 func (x *PlacementIntent_Item) Reset() {
 	*x = PlacementIntent_Item{}
-	mi := &file_provision_provision_proto_msgTypes[14]
+	mi := &file_provision_provision_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -978,7 +1106,7 @@ func (x *PlacementIntent_Item) String() string {
 func (*PlacementIntent_Item) ProtoMessage() {}
 
 func (x *PlacementIntent_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[14]
+	mi := &file_provision_provision_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1042,7 +1170,7 @@ type Placement_Item struct {
 
 func (x *Placement_Item) Reset() {
 	*x = Placement_Item{}
-	mi := &file_provision_provision_proto_msgTypes[16]
+	mi := &file_provision_provision_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1054,7 +1182,7 @@ func (x *Placement_Item) String() string {
 func (*Placement_Item) ProtoMessage() {}
 
 func (x *Placement_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[16]
+	mi := &file_provision_provision_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1115,7 +1243,7 @@ type DeployedPlacement_Item struct {
 
 func (x *DeployedPlacement_Item) Reset() {
 	*x = DeployedPlacement_Item{}
-	mi := &file_provision_provision_proto_msgTypes[18]
+	mi := &file_provision_provision_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1127,7 +1255,7 @@ func (x *DeployedPlacement_Item) String() string {
 func (*DeployedPlacement_Item) ProtoMessage() {}
 
 func (x *DeployedPlacement_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_provision_provision_proto_msgTypes[18]
+	mi := &file_provision_provision_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1161,13 +1289,13 @@ var File_provision_provision_proto protoreflect.FileDescriptor
 
 const file_provision_provision_proto_rawDesc = "" +
 	"\n" +
-	"\x19provision/provision.proto\x12\tprovision\x1a\x17database/postgres.proto\x1a\x1bdeployment/deployment.proto\x1a\x0fedge/edge.proto\x1a\x17validate/validate.proto\"\x9d\x01\n" +
+	"\x19provision/provision.proto\x12\tprovision\x1a\x17database/postgres.proto\x1a\x17database/picodata.proto\x1a\x1bdeployment/deployment.proto\x1a\x0fedge/edge.proto\x1a\x17validate/validate.proto\"\x9d\x01\n" +
 	"\rContainerPort\x12\x1b\n" +
 	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x122\n" +
 	"\x0econtainer_port\x18\x02 \x01(\rB\v\xfaB\b*\x06\x18\xff\xff\x03(\x01R\rcontainerPort\x12-\n" +
 	"\thost_port\x18\x03 \x01(\rB\v\xfaB\b*\x06\x18\xff\xff\x03(\x01H\x00R\bhostPort\x88\x01\x01B\f\n" +
 	"\n" +
-	"_host_port\"\xad\x0f\n" +
+	"_host_port\"\x9b\x12\n" +
 	"\tContainer\x12\x17\n" +
 	"\x02id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x02id\x12\x1b\n" +
 	"\x04name\x18\x02 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12\x1d\n" +
@@ -1186,7 +1314,9 @@ const file_provision_provision_proto_rawDesc = "" +
 	"\rnode_exporter\x18h \x01(\v2(.provision.Container.NodeExporterRuntimeH\x00R\fnodeExporter\x12[\n" +
 	"\x11postgres_exporter\x18i \x01(\v2,.provision.Container.PostgresExporterRuntimeH\x00R\x10postgresExporter\x12^\n" +
 	"\x12pgbouncer_exporter\x18j \x01(\v2-.provision.Container.PgbouncerExporterRuntimeH\x00R\x11pgbouncerExporter\x12<\n" +
-	"\x06backup\x18k \x01(\v2\".provision.Container.BackupRuntimeH\x00R\x06backup\x1a\x83\x02\n" +
+	"\x06backup\x18k \x01(\v2\".provision.Container.BackupRuntimeH\x00R\x06backup\x12B\n" +
+	"\bpicodata\x18l \x01(\v2$.provision.Container.PicodataRuntimeH\x00R\bpicodata\x12U\n" +
+	"\x0fpicodata_backup\x18n \x01(\v2*.provision.Container.PicodataBackupRuntimeH\x00R\x0epicodataBackup\x1a\x83\x02\n" +
 	"\x0fPostgresRuntime\x12G\n" +
 	"\x04role\x18\x01 \x01(\x0e2).provision.Container.PostgresRuntime.RoleB\b\xfaB\x05\x82\x01\x02\x10\x01R\x04role\x12A\n" +
 	"\bsettings\x18\x02 \x01(\v2\x1b.database.Postgres.SettingsB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsettings\x12#\n" +
@@ -1194,7 +1324,11 @@ const file_provision_provision_proto_rawDesc = "" +
 	"\x04Role\x12\x14\n" +
 	"\x10ROLE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vROLE_MASTER\x10\x01\x12\x10\n" +
-	"\fROLE_REPLICA\x10\x02\x1a\xf5\x01\n" +
+	"\fROLE_REPLICA\x10\x02\x1as\n" +
+	"\x0fPicodataRuntime\x12\x1d\n" +
+	"\n" +
+	"node_index\x18\x01 \x01(\rR\tnodeIndex\x12A\n" +
+	"\bsettings\x18\x02 \x01(\v2\x1b.database.Picodata.SettingsB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsettings\x1a\xf5\x01\n" +
 	"\vEtcdRuntime\x12.\n" +
 	"\fcluster_size\x18\x01 \x01(\rB\v\xfaB\b*\x060\x010\x030\x05R\vclusterSize\x12(\n" +
 	"\n" +
@@ -1217,7 +1351,9 @@ const file_provision_provision_proto_rawDesc = "" +
 	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x12\n" +
 	"\x04port\x18\x02 \x01(\rR\x04port\x1aR\n" +
 	"\rBackupRuntime\x12A\n" +
-	"\x06config\x18\x01 \x01(\v2\x1f.database.Postgres.BackupConfigB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x06config\x1a6\n" +
+	"\x06config\x18\x01 \x01(\v2\x1f.database.Postgres.BackupConfigB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x06config\x1a\\\n" +
+	"\x15PicodataBackupRuntime\x12C\n" +
+	"\x06config\x18\x01 \x01(\v2!.database.Picodata.Sidecar.BackupB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x06config\x1a6\n" +
 	"\bEnvEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a;\n" +
@@ -1282,7 +1418,7 @@ func file_provision_provision_proto_rawDescGZIP() []byte {
 }
 
 var file_provision_provision_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_provision_provision_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_provision_provision_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_provision_provision_proto_goTypes = []any{
 	(Container_PostgresRuntime_Role)(0),        // 0: provision.Container.PostgresRuntime.Role
 	(*ContainerPort)(nil),                      // 1: provision.ContainerPort
@@ -1291,69 +1427,77 @@ var file_provision_provision_proto_goTypes = []any{
 	(*Placement)(nil),                          // 4: provision.Placement
 	(*DeployedPlacement)(nil),                  // 5: provision.DeployedPlacement
 	(*Container_PostgresRuntime)(nil),          // 6: provision.Container.PostgresRuntime
-	(*Container_EtcdRuntime)(nil),              // 7: provision.Container.EtcdRuntime
-	(*Container_PgbouncerRuntime)(nil),         // 8: provision.Container.PgbouncerRuntime
-	(*Container_NodeExporterRuntime)(nil),      // 9: provision.Container.NodeExporterRuntime
-	(*Container_PostgresExporterRuntime)(nil),  // 10: provision.Container.PostgresExporterRuntime
-	(*Container_PgbouncerExporterRuntime)(nil), // 11: provision.Container.PgbouncerExporterRuntime
-	(*Container_BackupRuntime)(nil),            // 12: provision.Container.BackupRuntime
-	nil,                                        // 13: provision.Container.EnvEntry
-	nil,                                        // 14: provision.Container.MetadataEntry
-	(*PlacementIntent_Item)(nil),               // 15: provision.PlacementIntent.Item
-	nil,                                        // 16: provision.PlacementIntent.Item.MetadataEntry
-	(*Placement_Item)(nil),                     // 17: provision.Placement.Item
-	nil,                                        // 18: provision.Placement.Item.MetadataEntry
-	(*DeployedPlacement_Item)(nil),             // 19: provision.DeployedPlacement.Item
-	(*deployment.Network)(nil),                 // 20: deployment.Network
-	(*deployment.Deployment_Template)(nil),     // 21: deployment.Deployment.Template
-	(*deployment.Deployment)(nil),              // 22: deployment.Deployment
-	(*database.Postgres_Settings)(nil),         // 23: database.Postgres.Settings
-	(*database.Postgres_PgbouncerConfig)(nil),  // 24: database.Postgres.PgbouncerConfig
-	(*database.Postgres_BackupConfig)(nil),     // 25: database.Postgres.BackupConfig
-	(*deployment.Hardware)(nil),                // 26: deployment.Hardware
-	(*deployment.Ip)(nil),                      // 27: deployment.Ip
-	(*deployment.Vm_Template)(nil),             // 28: deployment.Vm.Template
-	(*edge.Worker)(nil),                        // 29: edge.Worker
-	(*deployment.Vm)(nil),                      // 30: deployment.Vm
+	(*Container_PicodataRuntime)(nil),          // 7: provision.Container.PicodataRuntime
+	(*Container_EtcdRuntime)(nil),              // 8: provision.Container.EtcdRuntime
+	(*Container_PgbouncerRuntime)(nil),         // 9: provision.Container.PgbouncerRuntime
+	(*Container_NodeExporterRuntime)(nil),      // 10: provision.Container.NodeExporterRuntime
+	(*Container_PostgresExporterRuntime)(nil),  // 11: provision.Container.PostgresExporterRuntime
+	(*Container_PgbouncerExporterRuntime)(nil), // 12: provision.Container.PgbouncerExporterRuntime
+	(*Container_BackupRuntime)(nil),            // 13: provision.Container.BackupRuntime
+	(*Container_PicodataBackupRuntime)(nil),    // 14: provision.Container.PicodataBackupRuntime
+	nil,                                        // 15: provision.Container.EnvEntry
+	nil,                                        // 16: provision.Container.MetadataEntry
+	(*PlacementIntent_Item)(nil),               // 17: provision.PlacementIntent.Item
+	nil,                                        // 18: provision.PlacementIntent.Item.MetadataEntry
+	(*Placement_Item)(nil),                     // 19: provision.Placement.Item
+	nil,                                        // 20: provision.Placement.Item.MetadataEntry
+	(*DeployedPlacement_Item)(nil),             // 21: provision.DeployedPlacement.Item
+	(*deployment.Network)(nil),                 // 22: deployment.Network
+	(*deployment.Deployment_Template)(nil),     // 23: deployment.Deployment.Template
+	(*deployment.Deployment)(nil),              // 24: deployment.Deployment
+	(*database.Postgres_Settings)(nil),         // 25: database.Postgres.Settings
+	(*database.Picodata_Settings)(nil),         // 26: database.Picodata.Settings
+	(*database.Postgres_PgbouncerConfig)(nil),  // 27: database.Postgres.PgbouncerConfig
+	(*database.Postgres_BackupConfig)(nil),     // 28: database.Postgres.BackupConfig
+	(*database.Picodata_Sidecar_Backup)(nil),   // 29: database.Picodata.Sidecar.Backup
+	(*deployment.Hardware)(nil),                // 30: deployment.Hardware
+	(*deployment.Ip)(nil),                      // 31: deployment.Ip
+	(*deployment.Vm_Template)(nil),             // 32: deployment.Vm.Template
+	(*edge.Worker)(nil),                        // 33: edge.Worker
+	(*deployment.Vm)(nil),                      // 34: deployment.Vm
 }
 var file_provision_provision_proto_depIdxs = []int32{
-	13, // 0: provision.Container.env:type_name -> provision.Container.EnvEntry
+	15, // 0: provision.Container.env:type_name -> provision.Container.EnvEntry
 	1,  // 1: provision.Container.ports:type_name -> provision.ContainerPort
-	14, // 2: provision.Container.metadata:type_name -> provision.Container.MetadataEntry
+	16, // 2: provision.Container.metadata:type_name -> provision.Container.MetadataEntry
 	6,  // 3: provision.Container.postgres:type_name -> provision.Container.PostgresRuntime
-	7,  // 4: provision.Container.etcd:type_name -> provision.Container.EtcdRuntime
-	8,  // 5: provision.Container.pgbouncer:type_name -> provision.Container.PgbouncerRuntime
-	9,  // 6: provision.Container.node_exporter:type_name -> provision.Container.NodeExporterRuntime
-	10, // 7: provision.Container.postgres_exporter:type_name -> provision.Container.PostgresExporterRuntime
-	11, // 8: provision.Container.pgbouncer_exporter:type_name -> provision.Container.PgbouncerExporterRuntime
-	12, // 9: provision.Container.backup:type_name -> provision.Container.BackupRuntime
-	15, // 10: provision.PlacementIntent.items:type_name -> provision.PlacementIntent.Item
-	20, // 11: provision.PlacementIntent.network:type_name -> deployment.Network
-	21, // 12: provision.Placement.deployment_template:type_name -> deployment.Deployment.Template
-	17, // 13: provision.Placement.items:type_name -> provision.Placement.Item
-	20, // 14: provision.Placement.network:type_name -> deployment.Network
-	19, // 15: provision.DeployedPlacement.items:type_name -> provision.DeployedPlacement.Item
-	22, // 16: provision.DeployedPlacement.deployment:type_name -> deployment.Deployment
-	20, // 17: provision.DeployedPlacement.network:type_name -> deployment.Network
-	0,  // 18: provision.Container.PostgresRuntime.role:type_name -> provision.Container.PostgresRuntime.Role
-	23, // 19: provision.Container.PostgresRuntime.settings:type_name -> database.Postgres.Settings
-	24, // 20: provision.Container.PgbouncerRuntime.config:type_name -> database.Postgres.PgbouncerConfig
-	25, // 21: provision.Container.BackupRuntime.config:type_name -> database.Postgres.BackupConfig
-	26, // 22: provision.PlacementIntent.Item.hardware:type_name -> deployment.Hardware
-	2,  // 23: provision.PlacementIntent.Item.containers:type_name -> provision.Container
-	16, // 24: provision.PlacementIntent.Item.metadata:type_name -> provision.PlacementIntent.Item.MetadataEntry
-	27, // 25: provision.PlacementIntent.Item.internal_ip:type_name -> deployment.Ip
-	2,  // 26: provision.Placement.Item.containers:type_name -> provision.Container
-	28, // 27: provision.Placement.Item.vm_template:type_name -> deployment.Vm.Template
-	29, // 28: provision.Placement.Item.worker:type_name -> edge.Worker
-	18, // 29: provision.Placement.Item.metadata:type_name -> provision.Placement.Item.MetadataEntry
-	17, // 30: provision.DeployedPlacement.Item.placement_item:type_name -> provision.Placement.Item
-	30, // 31: provision.DeployedPlacement.Item.vm:type_name -> deployment.Vm
-	32, // [32:32] is the sub-list for method output_type
-	32, // [32:32] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	8,  // 4: provision.Container.etcd:type_name -> provision.Container.EtcdRuntime
+	9,  // 5: provision.Container.pgbouncer:type_name -> provision.Container.PgbouncerRuntime
+	10, // 6: provision.Container.node_exporter:type_name -> provision.Container.NodeExporterRuntime
+	11, // 7: provision.Container.postgres_exporter:type_name -> provision.Container.PostgresExporterRuntime
+	12, // 8: provision.Container.pgbouncer_exporter:type_name -> provision.Container.PgbouncerExporterRuntime
+	13, // 9: provision.Container.backup:type_name -> provision.Container.BackupRuntime
+	7,  // 10: provision.Container.picodata:type_name -> provision.Container.PicodataRuntime
+	14, // 11: provision.Container.picodata_backup:type_name -> provision.Container.PicodataBackupRuntime
+	17, // 12: provision.PlacementIntent.items:type_name -> provision.PlacementIntent.Item
+	22, // 13: provision.PlacementIntent.network:type_name -> deployment.Network
+	23, // 14: provision.Placement.deployment_template:type_name -> deployment.Deployment.Template
+	19, // 15: provision.Placement.items:type_name -> provision.Placement.Item
+	22, // 16: provision.Placement.network:type_name -> deployment.Network
+	21, // 17: provision.DeployedPlacement.items:type_name -> provision.DeployedPlacement.Item
+	24, // 18: provision.DeployedPlacement.deployment:type_name -> deployment.Deployment
+	22, // 19: provision.DeployedPlacement.network:type_name -> deployment.Network
+	0,  // 20: provision.Container.PostgresRuntime.role:type_name -> provision.Container.PostgresRuntime.Role
+	25, // 21: provision.Container.PostgresRuntime.settings:type_name -> database.Postgres.Settings
+	26, // 22: provision.Container.PicodataRuntime.settings:type_name -> database.Picodata.Settings
+	27, // 23: provision.Container.PgbouncerRuntime.config:type_name -> database.Postgres.PgbouncerConfig
+	28, // 24: provision.Container.BackupRuntime.config:type_name -> database.Postgres.BackupConfig
+	29, // 25: provision.Container.PicodataBackupRuntime.config:type_name -> database.Picodata.Sidecar.Backup
+	30, // 26: provision.PlacementIntent.Item.hardware:type_name -> deployment.Hardware
+	2,  // 27: provision.PlacementIntent.Item.containers:type_name -> provision.Container
+	18, // 28: provision.PlacementIntent.Item.metadata:type_name -> provision.PlacementIntent.Item.MetadataEntry
+	31, // 29: provision.PlacementIntent.Item.internal_ip:type_name -> deployment.Ip
+	2,  // 30: provision.Placement.Item.containers:type_name -> provision.Container
+	32, // 31: provision.Placement.Item.vm_template:type_name -> deployment.Vm.Template
+	33, // 32: provision.Placement.Item.worker:type_name -> edge.Worker
+	20, // 33: provision.Placement.Item.metadata:type_name -> provision.Placement.Item.MetadataEntry
+	19, // 34: provision.DeployedPlacement.Item.placement_item:type_name -> provision.Placement.Item
+	34, // 35: provision.DeployedPlacement.Item.vm:type_name -> deployment.Vm
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_provision_provision_proto_init() }
@@ -1370,15 +1514,17 @@ func file_provision_provision_proto_init() {
 		(*Container_PostgresExporter)(nil),
 		(*Container_PgbouncerExporter)(nil),
 		(*Container_Backup)(nil),
+		(*Container_Picodata)(nil),
+		(*Container_PicodataBackup)(nil),
 	}
-	file_provision_provision_proto_msgTypes[6].OneofWrappers = []any{}
+	file_provision_provision_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_provision_provision_proto_rawDesc), len(file_provision_provision_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   19,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

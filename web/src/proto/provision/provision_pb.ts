@@ -6,6 +6,8 @@ import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2"
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
 import type { Postgres_BackupConfig, Postgres_BackupConfigJson, Postgres_PgbouncerConfig, Postgres_PgbouncerConfigJson, Postgres_Settings, Postgres_SettingsJson } from "../database/postgres_pb.ts";
 import { file_database_postgres } from "../database/postgres_pb.ts";
+import type { Picodata_Settings, Picodata_SettingsJson, Picodata_Sidecar_Backup, Picodata_Sidecar_BackupJson } from "../database/picodata_pb.ts";
+import { file_database_picodata } from "../database/picodata_pb.ts";
 import type { Deployment, Deployment_Template, Deployment_TemplateJson, DeploymentJson, Hardware, HardwareJson, Ip, IpJson, Network, NetworkJson, Vm, Vm_Template, Vm_TemplateJson, VmJson } from "../deployment/deployment_pb.ts";
 import { file_deployment_deployment } from "../deployment/deployment_pb.ts";
 import type { Worker, WorkerJson } from "../edge/edge_pb.ts";
@@ -17,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file provision/provision.proto.
  */
 export const file_provision_provision: GenFile = /*@__PURE__*/
-  fileDesc("Chlwcm92aXNpb24vcHJvdmlzaW9uLnByb3RvEglwcm92aXNpb24ifgoNQ29udGFpbmVyUG9ydBIVCgRuYW1lGAEgASgJQgf6QgRyAhABEiMKDmNvbnRhaW5lcl9wb3J0GAIgASgNQgv6QggqBigBGP//AxIjCglob3N0X3BvcnQYAyABKA1CC/pCCCoGGP//AygBSACIAQFCDAoKX2hvc3RfcG9ydCLWDAoJQ29udGFpbmVyEhMKAmlkGAEgASgJQgf6QgRyAhABEhUKBG5hbWUYAiABKAlCB/pCBHICEAESFgoFaW1hZ2UYAyABKAlCB/pCBHICEAESDwoHY29tbWFuZBgEIAMoCRIMCgRhcmdzGAUgAygJEioKA2VudhgGIAMoCzIdLnByb3Zpc2lvbi5Db250YWluZXIuRW52RW50cnkSJwoFcG9ydHMYByADKAsyGC5wcm92aXNpb24uQ29udGFpbmVyUG9ydBIPCgd2b2x1bWVzGAggAygJEg8KB21vbml0b3IYCSABKAgSNAoIbWV0YWRhdGEYCiADKAsyIi5wcm92aXNpb24uQ29udGFpbmVyLk1ldGFkYXRhRW50cnkSOAoIcG9zdGdyZXMYZSABKAsyJC5wcm92aXNpb24uQ29udGFpbmVyLlBvc3RncmVzUnVudGltZUgAEjAKBGV0Y2QYZiABKAsyIC5wcm92aXNpb24uQ29udGFpbmVyLkV0Y2RSdW50aW1lSAASOgoJcGdib3VuY2VyGGcgASgLMiUucHJvdmlzaW9uLkNvbnRhaW5lci5QZ2JvdW5jZXJSdW50aW1lSAASQQoNbm9kZV9leHBvcnRlchhoIAEoCzIoLnByb3Zpc2lvbi5Db250YWluZXIuTm9kZUV4cG9ydGVyUnVudGltZUgAEkkKEXBvc3RncmVzX2V4cG9ydGVyGGkgASgLMiwucHJvdmlzaW9uLkNvbnRhaW5lci5Qb3N0Z3Jlc0V4cG9ydGVyUnVudGltZUgAEksKEnBnYm91bmNlcl9leHBvcnRlchhqIAEoCzItLnByb3Zpc2lvbi5Db250YWluZXIuUGdib3VuY2VyRXhwb3J0ZXJSdW50aW1lSAASNAoGYmFja3VwGGsgASgLMiIucHJvdmlzaW9uLkNvbnRhaW5lci5CYWNrdXBSdW50aW1lSAAa5QEKD1Bvc3RncmVzUnVudGltZRJBCgRyb2xlGAEgASgOMikucHJvdmlzaW9uLkNvbnRhaW5lci5Qb3N0Z3Jlc1J1bnRpbWUuUm9sZUII+kIFggECEAESNwoIc2V0dGluZ3MYAiABKAsyGy5kYXRhYmFzZS5Qb3N0Z3Jlcy5TZXR0aW5nc0II+kIFigECEAESFQoNcmVwbGljYV9pbmRleBgDIAEoDSI/CgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABIPCgtST0xFX01BU1RFUhABEhAKDFJPTEVfUkVQTElDQRACGsMBCgtFdGNkUnVudGltZRIhCgxjbHVzdGVyX3NpemUYASABKA1CC/pCCCoGMAEwAzAFEh0KCm5vZGVfaW5kZXgYAiABKA1CCfpCBioEKAEYBRIqChBiYXNlX2NsaWVudF9wb3J0GAMgASgNQgv6QggqBigBGP//A0gAiAEBEiMKCXBlZXJfcG9ydBgEIAEoDUIL+kIIKgYoARj//wNIAYgBAUITChFfYmFzZV9jbGllbnRfcG9ydEIMCgpfcGVlcl9wb3J0GlAKEFBnYm91bmNlclJ1bnRpbWUSPAoGY29uZmlnGAEgASgLMiIuZGF0YWJhc2UuUG9zdGdyZXMuUGdib3VuY2VyQ29uZmlnQgj6QgWKAQIQARo0ChNOb2RlRXhwb3J0ZXJSdW50aW1lEg8KB2VuYWJsZWQYASABKAgSDAoEcG9ydBgCIAEoDRpWChdQb3N0Z3Jlc0V4cG9ydGVyUnVudGltZRIPCgdlbmFibGVkGAEgASgIEgwKBHBvcnQYAiABKA0SHAoUY3VzdG9tX3F1ZXJpZXNfcGF0aHMYAyADKAkaOQoYUGdib3VuY2VyRXhwb3J0ZXJSdW50aW1lEg8KB2VuYWJsZWQYASABKAgSDAoEcG9ydBgCIAEoDRpKCg1CYWNrdXBSdW50aW1lEjkKBmNvbmZpZxgBIAEoCzIfLmRhdGFiYXNlLlBvc3RncmVzLkJhY2t1cENvbmZpZ0II+kIFigECEAEaKgoIRW52RW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4ARovCg1NZXRhZGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFCDgoHcnVudGltZRID+EIBIrwDCg9QbGFjZW1lbnRJbnRlbnQSOAoFaXRlbXMYASADKAsyHy5wcm92aXNpb24uUGxhY2VtZW50SW50ZW50Lkl0ZW1CCPpCBZIBAggBEi4KB25ldHdvcmsYAiABKAsyEy5kZXBsb3ltZW50Lk5ldHdvcmtCCPpCBYoBAhABEiIKEWNvbm5lY3Rpb25fc3RyaW5nGAMgASgJQgf6QgRyAhABGpoCCgRJdGVtEhUKBG5hbWUYAiABKAlCB/pCBHICEAESMAoIaGFyZHdhcmUYAyABKAsyFC5kZXBsb3ltZW50LkhhcmR3YXJlQgj6QgWKAQIQARIyCgpjb250YWluZXJzGAQgAygLMhQucHJvdmlzaW9uLkNvbnRhaW5lckII+kIFkgECCAESPwoIbWV0YWRhdGEYBSADKAsyLS5wcm92aXNpb24uUGxhY2VtZW50SW50ZW50Lkl0ZW0uTWV0YWRhdGFFbnRyeRIjCgtpbnRlcm5hbF9pcBgGIAEoCzIOLmRlcGxveW1lbnQuSXAaLwoNTWV0YWRhdGFFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIvsDCglQbGFjZW1lbnQSRgoTZGVwbG95bWVudF90ZW1wbGF0ZRgBIAEoCzIfLmRlcGxveW1lbnQuRGVwbG95bWVudC5UZW1wbGF0ZUII+kIFigECEAESMgoFaXRlbXMYAiADKAsyGS5wcm92aXNpb24uUGxhY2VtZW50Lkl0ZW1CCPpCBZIBAggBEi4KB25ldHdvcmsYAyABKAsyEy5kZXBsb3ltZW50Lk5ldHdvcmtCCPpCBYoBAhABEiIKEWNvbm5lY3Rpb25fc3RyaW5nGAQgASgJQgf6QgRyAhABGp0CCgRJdGVtEhUKBG5hbWUYAiABKAlCB/pCBHICEAESMgoKY29udGFpbmVycxgDIAMoCzIULnByb3Zpc2lvbi5Db250YWluZXJCCPpCBZIBAggBEjYKC3ZtX3RlbXBsYXRlGAQgASgLMhcuZGVwbG95bWVudC5WbS5UZW1wbGF0ZUII+kIFigECEAESJgoGd29ya2VyGAUgASgLMgwuZWRnZS5Xb3JrZXJCCPpCBYoBAhABEjkKCG1ldGFkYXRhGAYgAygLMicucHJvdmlzaW9uLlBsYWNlbWVudC5JdGVtLk1ldGFkYXRhRW50cnkaLwoNTWV0YWRhdGFFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIsQCChFEZXBsb3llZFBsYWNlbWVudBI6CgVpdGVtcxgBIAMoCzIhLnByb3Zpc2lvbi5EZXBsb3llZFBsYWNlbWVudC5JdGVtQgj6QgWSAQIIARI0CgpkZXBsb3ltZW50GAIgASgLMhYuZGVwbG95bWVudC5EZXBsb3ltZW50Qgj6QgWKAQIQARIuCgduZXR3b3JrGAMgASgLMhMuZGVwbG95bWVudC5OZXR3b3JrQgj6QgWKAQIQARIiChFjb25uZWN0aW9uX3N0cmluZxgEIAEoCUIH+kIEcgIQARppCgRJdGVtEjsKDnBsYWNlbWVudF9pdGVtGAEgASgLMhkucHJvdmlzaW9uLlBsYWNlbWVudC5JdGVtQgj6QgWKAQIQARIkCgJ2bRgCIAEoCzIOLmRlcGxveW1lbnQuVm1CCPpCBYoBAhABQkFaP2dpdGh1Yi5jb20vc3Ryb3BweS1pby9oYXRjaGV0LXdvcmtmbG93L2ludGVybmFsL3Byb3RvL3Byb3Zpc2lvbmIGcHJvdG8z", [file_database_postgres, file_deployment_deployment, file_edge_edge, file_validate_validate]);
+  fileDesc("Chlwcm92aXNpb24vcHJvdmlzaW9uLnByb3RvEglwcm92aXNpb24ifgoNQ29udGFpbmVyUG9ydBIVCgRuYW1lGAEgASgJQgf6QgRyAhABEiMKDmNvbnRhaW5lcl9wb3J0GAIgASgNQgv6QggqBigBGP//AxIjCglob3N0X3BvcnQYAyABKA1CC/pCCCoGKAEY//8DSACIAQFCDAoKX2hvc3RfcG9ydCKNDwoJQ29udGFpbmVyEhMKAmlkGAEgASgJQgf6QgRyAhABEhUKBG5hbWUYAiABKAlCB/pCBHICEAESFgoFaW1hZ2UYAyABKAlCB/pCBHICEAESDwoHY29tbWFuZBgEIAMoCRIMCgRhcmdzGAUgAygJEioKA2VudhgGIAMoCzIdLnByb3Zpc2lvbi5Db250YWluZXIuRW52RW50cnkSJwoFcG9ydHMYByADKAsyGC5wcm92aXNpb24uQ29udGFpbmVyUG9ydBIPCgd2b2x1bWVzGAggAygJEg8KB21vbml0b3IYCSABKAgSNAoIbWV0YWRhdGEYCiADKAsyIi5wcm92aXNpb24uQ29udGFpbmVyLk1ldGFkYXRhRW50cnkSOAoIcG9zdGdyZXMYZSABKAsyJC5wcm92aXNpb24uQ29udGFpbmVyLlBvc3RncmVzUnVudGltZUgAEjAKBGV0Y2QYZiABKAsyIC5wcm92aXNpb24uQ29udGFpbmVyLkV0Y2RSdW50aW1lSAASOgoJcGdib3VuY2VyGGcgASgLMiUucHJvdmlzaW9uLkNvbnRhaW5lci5QZ2JvdW5jZXJSdW50aW1lSAASQQoNbm9kZV9leHBvcnRlchhoIAEoCzIoLnByb3Zpc2lvbi5Db250YWluZXIuTm9kZUV4cG9ydGVyUnVudGltZUgAEkkKEXBvc3RncmVzX2V4cG9ydGVyGGkgASgLMiwucHJvdmlzaW9uLkNvbnRhaW5lci5Qb3N0Z3Jlc0V4cG9ydGVyUnVudGltZUgAEksKEnBnYm91bmNlcl9leHBvcnRlchhqIAEoCzItLnByb3Zpc2lvbi5Db250YWluZXIuUGdib3VuY2VyRXhwb3J0ZXJSdW50aW1lSAASNAoGYmFja3VwGGsgASgLMiIucHJvdmlzaW9uLkNvbnRhaW5lci5CYWNrdXBSdW50aW1lSAASOAoIcGljb2RhdGEYbCABKAsyJC5wcm92aXNpb24uQ29udGFpbmVyLlBpY29kYXRhUnVudGltZUgAEkUKD3BpY29kYXRhX2JhY2t1cBhuIAEoCzIqLnByb3Zpc2lvbi5Db250YWluZXIuUGljb2RhdGFCYWNrdXBSdW50aW1lSAAa5QEKD1Bvc3RncmVzUnVudGltZRJBCgRyb2xlGAEgASgOMikucHJvdmlzaW9uLkNvbnRhaW5lci5Qb3N0Z3Jlc1J1bnRpbWUuUm9sZUII+kIFggECEAESNwoIc2V0dGluZ3MYAiABKAsyGy5kYXRhYmFzZS5Qb3N0Z3Jlcy5TZXR0aW5nc0II+kIFigECEAESFQoNcmVwbGljYV9pbmRleBgDIAEoDSI/CgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABIPCgtST0xFX01BU1RFUhABEhAKDFJPTEVfUkVQTElDQRACGl4KD1BpY29kYXRhUnVudGltZRISCgpub2RlX2luZGV4GAEgASgNEjcKCHNldHRpbmdzGAIgASgLMhsuZGF0YWJhc2UuUGljb2RhdGEuU2V0dGluZ3NCCPpCBYoBAhABGsMBCgtFdGNkUnVudGltZRIhCgxjbHVzdGVyX3NpemUYASABKA1CC/pCCCoGMAEwAzAFEh0KCm5vZGVfaW5kZXgYAiABKA1CCfpCBioEGAUoARIqChBiYXNlX2NsaWVudF9wb3J0GAMgASgNQgv6QggqBigBGP//A0gAiAEBEiMKCXBlZXJfcG9ydBgEIAEoDUIL+kIIKgYY//8DKAFIAYgBAUITChFfYmFzZV9jbGllbnRfcG9ydEIMCgpfcGVlcl9wb3J0GlAKEFBnYm91bmNlclJ1bnRpbWUSPAoGY29uZmlnGAEgASgLMiIuZGF0YWJhc2UuUG9zdGdyZXMuUGdib3VuY2VyQ29uZmlnQgj6QgWKAQIQARo0ChNOb2RlRXhwb3J0ZXJSdW50aW1lEg8KB2VuYWJsZWQYASABKAgSDAoEcG9ydBgCIAEoDRpWChdQb3N0Z3Jlc0V4cG9ydGVyUnVudGltZRIPCgdlbmFibGVkGAEgASgIEgwKBHBvcnQYAiABKA0SHAoUY3VzdG9tX3F1ZXJpZXNfcGF0aHMYAyADKAkaOQoYUGdib3VuY2VyRXhwb3J0ZXJSdW50aW1lEg8KB2VuYWJsZWQYASABKAgSDAoEcG9ydBgCIAEoDRpKCg1CYWNrdXBSdW50aW1lEjkKBmNvbmZpZxgBIAEoCzIfLmRhdGFiYXNlLlBvc3RncmVzLkJhY2t1cENvbmZpZ0II+kIFigECEAEaVAoVUGljb2RhdGFCYWNrdXBSdW50aW1lEjsKBmNvbmZpZxgBIAEoCzIhLmRhdGFiYXNlLlBpY29kYXRhLlNpZGVjYXIuQmFja3VwQgj6QgWKAQIQARoqCghFbnZFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBGi8KDU1ldGFkYXRhRW50cnkSCwoDa2V5GAEgASgJEg0KBXZhbHVlGAIgASgJOgI4AUIOCgdydW50aW1lEgP4QgEivAMKD1BsYWNlbWVudEludGVudBI4CgVpdGVtcxgBIAMoCzIfLnByb3Zpc2lvbi5QbGFjZW1lbnRJbnRlbnQuSXRlbUII+kIFkgECCAESLgoHbmV0d29yaxgCIAEoCzITLmRlcGxveW1lbnQuTmV0d29ya0II+kIFigECEAESIgoRY29ubmVjdGlvbl9zdHJpbmcYAyABKAlCB/pCBHICEAEamgIKBEl0ZW0SFQoEbmFtZRgCIAEoCUIH+kIEcgIQARIwCghoYXJkd2FyZRgDIAEoCzIULmRlcGxveW1lbnQuSGFyZHdhcmVCCPpCBYoBAhABEjIKCmNvbnRhaW5lcnMYBCADKAsyFC5wcm92aXNpb24uQ29udGFpbmVyQgj6QgWSAQIIARI/CghtZXRhZGF0YRgFIAMoCzItLnByb3Zpc2lvbi5QbGFjZW1lbnRJbnRlbnQuSXRlbS5NZXRhZGF0YUVudHJ5EiMKC2ludGVybmFsX2lwGAYgASgLMg4uZGVwbG95bWVudC5JcBovCg1NZXRhZGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEi+wMKCVBsYWNlbWVudBJGChNkZXBsb3ltZW50X3RlbXBsYXRlGAEgASgLMh8uZGVwbG95bWVudC5EZXBsb3ltZW50LlRlbXBsYXRlQgj6QgWKAQIQARIyCgVpdGVtcxgCIAMoCzIZLnByb3Zpc2lvbi5QbGFjZW1lbnQuSXRlbUII+kIFkgECCAESLgoHbmV0d29yaxgDIAEoCzITLmRlcGxveW1lbnQuTmV0d29ya0II+kIFigECEAESIgoRY29ubmVjdGlvbl9zdHJpbmcYBCABKAlCB/pCBHICEAEanQIKBEl0ZW0SFQoEbmFtZRgCIAEoCUIH+kIEcgIQARIyCgpjb250YWluZXJzGAMgAygLMhQucHJvdmlzaW9uLkNvbnRhaW5lckII+kIFkgECCAESNgoLdm1fdGVtcGxhdGUYBCABKAsyFy5kZXBsb3ltZW50LlZtLlRlbXBsYXRlQgj6QgWKAQIQARImCgZ3b3JrZXIYBSABKAsyDC5lZGdlLldvcmtlckII+kIFigECEAESOQoIbWV0YWRhdGEYBiADKAsyJy5wcm92aXNpb24uUGxhY2VtZW50Lkl0ZW0uTWV0YWRhdGFFbnRyeRovCg1NZXRhZGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEixAIKEURlcGxveWVkUGxhY2VtZW50EjoKBWl0ZW1zGAEgAygLMiEucHJvdmlzaW9uLkRlcGxveWVkUGxhY2VtZW50Lkl0ZW1CCPpCBZIBAggBEjQKCmRlcGxveW1lbnQYAiABKAsyFi5kZXBsb3ltZW50LkRlcGxveW1lbnRCCPpCBYoBAhABEi4KB25ldHdvcmsYAyABKAsyEy5kZXBsb3ltZW50Lk5ldHdvcmtCCPpCBYoBAhABEiIKEWNvbm5lY3Rpb25fc3RyaW5nGAQgASgJQgf6QgRyAhABGmkKBEl0ZW0SOwoOcGxhY2VtZW50X2l0ZW0YASABKAsyGS5wcm92aXNpb24uUGxhY2VtZW50Lkl0ZW1CCPpCBYoBAhABEiQKAnZtGAIgASgLMg4uZGVwbG95bWVudC5WbUII+kIFigECEAFCQVo/Z2l0aHViLmNvbS9zdHJvcHB5LWlvL2hhdGNoZXQtd29ya2Zsb3cvaW50ZXJuYWwvcHJvdG8vcHJvdmlzaW9uYgZwcm90bzM", [file_database_postgres, file_database_picodata, file_deployment_deployment, file_edge_edge, file_validate_validate]);
 
 /**
  * @generated from message provision.ContainerPort
@@ -169,6 +171,18 @@ export type Container = Message<"provision.Container"> & {
      */
     value: Container_BackupRuntime;
     case: "backup";
+  } | {
+    /**
+     * @generated from field: provision.Container.PicodataRuntime picodata = 108;
+     */
+    value: Container_PicodataRuntime;
+    case: "picodata";
+  } | {
+    /**
+     * @generated from field: provision.Container.PicodataBackupRuntime picodata_backup = 110;
+     */
+    value: Container_PicodataBackupRuntime;
+    case: "picodataBackup";
   } | { case: undefined; value?: undefined };
 };
 
@@ -262,6 +276,16 @@ export type ContainerJson = {
    * @generated from field: provision.Container.BackupRuntime backup = 107;
    */
   backup?: Container_BackupRuntimeJson;
+
+  /**
+   * @generated from field: provision.Container.PicodataRuntime picodata = 108;
+   */
+  picodata?: Container_PicodataRuntimeJson;
+
+  /**
+   * @generated from field: provision.Container.PicodataBackupRuntime picodata_backup = 110;
+   */
+  picodataBackup?: Container_PicodataBackupRuntimeJson;
 };
 
 export type ContainerValid = Container;
@@ -358,6 +382,49 @@ export const Container_PostgresRuntime_RoleSchema: GenEnum<Container_PostgresRun
   enumDesc(file_provision_provision, 1, 0, 0);
 
 /**
+ * @generated from message provision.Container.PicodataRuntime
+ */
+export type Container_PicodataRuntime = Message<"provision.Container.PicodataRuntime"> & {
+  /**
+   * 0-based Picodata node index
+   *
+   * @generated from field: uint32 node_index = 1;
+   */
+  nodeIndex: number;
+
+  /**
+   * @generated from field: database.Picodata.Settings settings = 2;
+   */
+  settings?: Picodata_Settings;
+};
+
+/**
+ * @generated from message provision.Container.PicodataRuntime
+ */
+export type Container_PicodataRuntimeJson = {
+  /**
+   * 0-based Picodata node index
+   *
+   * @generated from field: uint32 node_index = 1;
+   */
+  nodeIndex?: number;
+
+  /**
+   * @generated from field: database.Picodata.Settings settings = 2;
+   */
+  settings?: Picodata_SettingsJson;
+};
+
+export type Container_PicodataRuntimeValid = Container_PicodataRuntime;
+
+/**
+ * Describes the message provision.Container.PicodataRuntime.
+ * Use `create(Container_PicodataRuntimeSchema)` to create a new message.
+ */
+export const Container_PicodataRuntimeSchema: GenMessage<Container_PicodataRuntime, {jsonType: Container_PicodataRuntimeJson, validType: Container_PicodataRuntimeValid}> = /*@__PURE__*/
+  messageDesc(file_provision_provision, 1, 1);
+
+/**
  * @generated from message provision.Container.EtcdRuntime
  */
 export type Container_EtcdRuntime = Message<"provision.Container.EtcdRuntime"> & {
@@ -418,7 +485,7 @@ export type Container_EtcdRuntimeValid = Container_EtcdRuntime;
  * Use `create(Container_EtcdRuntimeSchema)` to create a new message.
  */
 export const Container_EtcdRuntimeSchema: GenMessage<Container_EtcdRuntime, {jsonType: Container_EtcdRuntimeJson, validType: Container_EtcdRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 1);
+  messageDesc(file_provision_provision, 1, 2);
 
 /**
  * @generated from message provision.Container.PgbouncerRuntime
@@ -447,7 +514,7 @@ export type Container_PgbouncerRuntimeValid = Container_PgbouncerRuntime;
  * Use `create(Container_PgbouncerRuntimeSchema)` to create a new message.
  */
 export const Container_PgbouncerRuntimeSchema: GenMessage<Container_PgbouncerRuntime, {jsonType: Container_PgbouncerRuntimeJson, validType: Container_PgbouncerRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 2);
+  messageDesc(file_provision_provision, 1, 3);
 
 /**
  * @generated from message provision.Container.NodeExporterRuntime
@@ -486,7 +553,7 @@ export type Container_NodeExporterRuntimeValid = Container_NodeExporterRuntime;
  * Use `create(Container_NodeExporterRuntimeSchema)` to create a new message.
  */
 export const Container_NodeExporterRuntimeSchema: GenMessage<Container_NodeExporterRuntime, {jsonType: Container_NodeExporterRuntimeJson, validType: Container_NodeExporterRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 3);
+  messageDesc(file_provision_provision, 1, 4);
 
 /**
  * @generated from message provision.Container.PostgresExporterRuntime
@@ -535,7 +602,7 @@ export type Container_PostgresExporterRuntimeValid = Container_PostgresExporterR
  * Use `create(Container_PostgresExporterRuntimeSchema)` to create a new message.
  */
 export const Container_PostgresExporterRuntimeSchema: GenMessage<Container_PostgresExporterRuntime, {jsonType: Container_PostgresExporterRuntimeJson, validType: Container_PostgresExporterRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 4);
+  messageDesc(file_provision_provision, 1, 5);
 
 /**
  * @generated from message provision.Container.PgbouncerExporterRuntime
@@ -574,7 +641,7 @@ export type Container_PgbouncerExporterRuntimeValid = Container_PgbouncerExporte
  * Use `create(Container_PgbouncerExporterRuntimeSchema)` to create a new message.
  */
 export const Container_PgbouncerExporterRuntimeSchema: GenMessage<Container_PgbouncerExporterRuntime, {jsonType: Container_PgbouncerExporterRuntimeJson, validType: Container_PgbouncerExporterRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 5);
+  messageDesc(file_provision_provision, 1, 6);
 
 /**
  * @generated from message provision.Container.BackupRuntime
@@ -603,7 +670,36 @@ export type Container_BackupRuntimeValid = Container_BackupRuntime;
  * Use `create(Container_BackupRuntimeSchema)` to create a new message.
  */
 export const Container_BackupRuntimeSchema: GenMessage<Container_BackupRuntime, {jsonType: Container_BackupRuntimeJson, validType: Container_BackupRuntimeValid}> = /*@__PURE__*/
-  messageDesc(file_provision_provision, 1, 6);
+  messageDesc(file_provision_provision, 1, 7);
+
+/**
+ * @generated from message provision.Container.PicodataBackupRuntime
+ */
+export type Container_PicodataBackupRuntime = Message<"provision.Container.PicodataBackupRuntime"> & {
+  /**
+   * @generated from field: database.Picodata.Sidecar.Backup config = 1;
+   */
+  config?: Picodata_Sidecar_Backup;
+};
+
+/**
+ * @generated from message provision.Container.PicodataBackupRuntime
+ */
+export type Container_PicodataBackupRuntimeJson = {
+  /**
+   * @generated from field: database.Picodata.Sidecar.Backup config = 1;
+   */
+  config?: Picodata_Sidecar_BackupJson;
+};
+
+export type Container_PicodataBackupRuntimeValid = Container_PicodataBackupRuntime;
+
+/**
+ * Describes the message provision.Container.PicodataBackupRuntime.
+ * Use `create(Container_PicodataBackupRuntimeSchema)` to create a new message.
+ */
+export const Container_PicodataBackupRuntimeSchema: GenMessage<Container_PicodataBackupRuntime, {jsonType: Container_PicodataBackupRuntimeJson, validType: Container_PicodataBackupRuntimeValid}> = /*@__PURE__*/
+  messageDesc(file_provision_provision, 1, 8);
 
 /**
  * @generated from message provision.PlacementIntent

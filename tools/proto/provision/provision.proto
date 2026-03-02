@@ -3,6 +3,7 @@ syntax = "proto3";
 package provision;
 
 import "database/postgres.proto";
+import "database/picodata.proto";
 import "deployment/deployment.proto";
 import "edge/edge.proto";
 import "validate/validate.proto";
@@ -28,6 +29,11 @@ message Container {
         Role role = 1 [(validate.rules).enum.defined_only = true];
         database.Postgres.Settings settings = 2 [(validate.rules).message.required = true];
         uint32 replica_index = 3; // 0-based for replicas; ignored for master
+    }
+
+    message PicodataRuntime {
+        uint32 node_index = 1; // 0-based Picodata node index
+        database.Picodata.Settings settings = 2 [(validate.rules).message.required = true];
     }
 
     message EtcdRuntime {
@@ -61,6 +67,10 @@ message Container {
         database.Postgres.BackupConfig config = 1 [(validate.rules).message.required = true];
     }
 
+    message PicodataBackupRuntime {
+        database.Picodata.Sidecar.Backup config = 1 [(validate.rules).message.required = true];
+    }
+
     string id = 1 [(validate.rules).string.min_len = 1];
     string name = 2 [(validate.rules).string.min_len = 1];
     string image = 3 [(validate.rules).string.min_len = 1];
@@ -81,6 +91,8 @@ message Container {
         PostgresExporterRuntime postgres_exporter = 105;
         PgbouncerExporterRuntime pgbouncer_exporter = 106;
         BackupRuntime backup = 107;
+        PicodataRuntime picodata = 108;
+        PicodataBackupRuntime picodata_backup = 110;
     }
 }
 

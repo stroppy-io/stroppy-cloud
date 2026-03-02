@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package database;
 
+import "database/picodata.proto";
 import "database/postgres.proto";
 import "validate/validate.proto";
 
@@ -13,6 +14,8 @@ message Database {
             option (validate.required) = true;
             Postgres.Instance postgres_instance = 1;
             Postgres.Cluster postgres_cluster = 2;
+            Picodata.Instance picodata_instance = 3;
+            Picodata.Cluster picodata_cluster = 4;
         }
     }
     Template template = 1 [(validate.rules).message.required = true];

@@ -205,6 +205,10 @@ func (p ProvisionerService) PlanPlacementIntent(
 		return builder.BuildForPostgresInstance(t)
 	case *database.Database_Template_PostgresCluster:
 		return builder.BuildForPostgresCluster(t)
+	case *database.Database_Template_PicodataInstance:
+		return newPicodataPlacementBuilder(network).BuildForPicodataInstance(t.PicodataInstance)
+	case *database.Database_Template_PicodataCluster:
+		return newPicodataPlacementBuilder(network).BuildForPicodataCluster(t.PicodataCluster)
 	default:
 		return nil, fmt.Errorf("unknown database template type")
 	}
