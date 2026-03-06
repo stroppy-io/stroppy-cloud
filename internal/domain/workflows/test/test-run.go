@@ -372,6 +372,8 @@ func TestRunWorkflow(
 			if err != nil {
 				return nil, err
 			}
+			// Remove the per-run Docker bridge network created by edge workers.
+			_ = cleanupDockerRunNetwork(ctx.GetContext(), input.GetRunSettings().GetRunId(), input.GetRunSettings())
 			return &workflows.Workflows_StroppyTest_Output{
 				Result: parentOutput.GetResult(),
 			}, nil
@@ -403,11 +405,15 @@ func TestRunWorkflow(
 			if err := deps.ProvisionerService.DestroyPlan(ctx.GetContext(), &placement); err != nil {
 				errs = append(errs, err)
 			}
-			var network deployment.Network
-			if err := ctx.ParentOutput(acquireNetworkTask, &network); err != nil {
+			var net deployment.Network
+			if err := ctx.ParentOutput(acquireNetworkTask, &net); err != nil {
 				return emptypb.Empty{}, err
 			}
-			if err := deps.ProvisionerService.DestroyNetwork(ctx.GetContext(), &network); err != nil {
+			if err := deps.ProvisionerService.DestroyNetwork(ctx.GetContext(), &net); err != nil {
+				errs = append(errs, err)
+			}
+			// Remove the per-run Docker bridge network created by edge workers.
+			if err := cleanupDockerRunNetwork(ctx.GetContext(), input.GetRunSettings().GetRunId(), input.GetRunSettings()); err != nil {
 				errs = append(errs, err)
 			}
 			return emptypb.Empty{}, errors.Join(errs...)

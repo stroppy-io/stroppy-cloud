@@ -5,7 +5,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -106,8 +108,6 @@ const (
 
 	StroppyWorkdirFlag = "--workdir"
 	StroppyPresetFlag  = "--preset"
-	TagFlag            = "--tag"
-	OutputFlag         = "--out"
 
 	K6RunIdTagName    = "run_id"
 	K6WorkloadTagName = "workload"
@@ -115,10 +115,11 @@ const (
 	DriverUrlEnvVar   consts.EnvKey = "DRIVER_URL"
 	ScaleFactorEnvVar consts.EnvKey = "SCALE_FACTOR"
 	DurationEnvVar    consts.EnvKey = "DURATION"
+	K6OutEnvVar       consts.EnvKey = "K6_OUT"
+	K6TagsEnvVar      consts.EnvKey = "K6_TAGS"
 
-	defaultScaleFactor uint32 = 1
-	doubleDashFlag     string = "--"
-	opentelemetryOut   string = "opentelemetry"
+	defaultScaleFactor   uint32 = 1
+	opentelemetryOutName string = "opentelemetry"
 )
 
 func RunStroppyTask(
@@ -131,6 +132,9 @@ func RunStroppyTask(
 			ctx hatchetLib.Context,
 			input *workflows.Tasks_RunStroppy_Input,
 		) (*stroppy.TestResult, error) {
+			if err := waitForPostgres(ctx.GetContext(), input.GetConnectionString(), ctx.Log); err != nil {
+				return nil, fmt.Errorf("postgres not ready: %w", err)
+			}
 			runcmd := func(cmd *exec.Cmd) error {
 				stdout, _ := cmd.StdoutPipe()
 				stderr, _ := cmd.StderrPipe()
@@ -151,9 +155,8 @@ func RunStroppyTask(
 				os.Environ(),
 				envs.ToSlice(
 					lo.Assign(
-						input.GetStroppyCliCall().GetStroppyEnv(),
+						// Defaults: overridable by user's stroppy_env.
 						map[string]string{
-							DriverUrlEnvVar: input.GetConnectionString(),
 							ScaleFactorEnvVar: strconv.Itoa(int(defaults.Uint32PtrOrDefault(
 								input.GetStroppyCliCall().ScaleFactor,
 								defaultScaleFactor,
@@ -162,6 +165,15 @@ func RunStroppyTask(
 								input.GetStroppyCliCall().GetDuration().AsDuration(),
 								time.Hour,
 							).String(),
+						},
+						// User-supplied env vars take precedence over defaults above.
+						input.GetStroppyCliCall().GetStroppyEnv(),
+						// Forced values always win — connection string and OTel config.
+						// K6_TAGS uses "key:value,key:value" format (envconfig map syntax).
+						map[string]string{
+							DriverUrlEnvVar: input.GetConnectionString(),
+							K6OutEnvVar:     opentelemetryOutName,
+							K6TagsEnvVar:    fmt.Sprintf("%s:%s,%s:%s", K6RunIdTagName, input.GetRunSettings().GetRunId(), K6WorkloadTagName, workloadName),
 						},
 					),
 				)...,
@@ -189,14 +201,6 @@ func RunStroppyTask(
 				StroppyCommandRun,
 				fmt.Sprintf("%s.ts", workloadName),
 				fmt.Sprintf("%s.sql", workloadName),
-				// TODO: Add tags after stroppy release
-				doubleDashFlag,
-				TagFlag,
-				fmt.Sprintf("%s=%s", K6RunIdTagName, input.GetRunSettings().GetRunId()),
-				TagFlag,
-				fmt.Sprintf("%s=%s", K6WorkloadTagName, workloadName),
-				OutputFlag,
-				opentelemetryOut,
 			)
 			runCmd.Env = envsCmd
 			runCmd.Dir = input.GetStroppyCliCall().GetWorkdir()
@@ -213,4 +217,40 @@ func RunStroppyTask(
 		}),
 		hatchetLib.WithExecutionTimeout(24*time.Hour),
 	)
+}
+
+// waitForPostgres polls the postgres TCP port from the connection string until it accepts
+// connections or the context is cancelled. Max wait: 2 minutes.
+func waitForPostgres(ctx context.Context, connString string, log func(string)) error {
+	u, err := url.Parse(connString)
+	if err != nil {
+		return fmt.Errorf("parse connection string: %w", err)
+	}
+	host := u.Hostname()
+	port := u.Port()
+	if port == "" {
+		port = "5432"
+	}
+	addr := net.JoinHostPort(host, port)
+	deadline := time.Now().Add(2 * time.Minute)
+	for {
+		if time.Now().After(deadline) {
+			return fmt.Errorf("postgres at %s not ready after 2 minutes", addr)
+		}
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		conn, err := net.DialTimeout("tcp", addr, 2*time.Second)
+		if err == nil {
+			conn.Close()
+			log(fmt.Sprintf("postgres at %s is ready", addr))
+			return nil
+		}
+		log(fmt.Sprintf("waiting for postgres at %s: %v", addr, err))
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-time.After(3 * time.Second):
+		}
+	}
 }

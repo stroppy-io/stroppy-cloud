@@ -173,9 +173,6 @@ func runOptionsFromSettings(
 		workerInternal: workerInternalIP,
 	}
 	if runSettings.GetTarget() == deployment.Target_TARGET_DOCKER {
-		if err := setNetworkName(run, runSettings.GetSettings().GetDocker().GetNetworkName()); err != nil {
-			return runContainerOptions{}, err
-		}
 		run.subnet = workerInternalCidr
 		opts = runContainerOptions{
 			dockerTarget:   true,
@@ -625,6 +622,27 @@ func logf(run *containerRun, format string, args ...any) {
 		run.logger.Log(msg)
 	}
 	logger.StdLog().Printf(format, args...)
+}
+
+// RemoveNetwork removes a Docker network by name, disconnecting any containers first.
+// Best-effort: if the network doesn't exist, returns nil.
+func RemoveNetwork(ctx context.Context, networkName string) error {
+	cli, err := getDockerClient()
+	if err != nil {
+		return err
+	}
+
+	inspect, err := cli.NetworkInspect(ctx, networkName, network.InspectOptions{})
+	if err != nil {
+		// Network doesn't exist — nothing to do.
+		return nil
+	}
+
+	for id := range inspect.Containers {
+		_ = cli.NetworkDisconnect(ctx, inspect.ID, id, true)
+	}
+
+	return cli.NetworkRemove(ctx, inspect.ID)
 }
 
 const otelLgtmContainerName = "otel-lgtm"

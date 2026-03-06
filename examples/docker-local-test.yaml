@@ -1,0 +1,49 @@
+target: TARGET_DOCKER
+settings:
+  hatchet_connection:
+    token: "eyJhbGciOiJFUzI1NiIsImtpZCI6ImZ3MDNwUSJ9.eyJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJleHAiOjE3ODA1ODExMDMsImdycGNfYnJvYWRjYXN0X2FkZHJlc3MiOiJsb2NhbGhvc3Q6NzA3NyIsImlhdCI6MTc3MjgwNTEwMywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwIiwic2VydmVyX3VybCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MCIsInN1YiI6IjcwN2QwODU1LTgwYWItNGUxZi1hMTU2LWYxYzQ1NDZjYmY1MiIsInRva2VuX2lkIjoiMWMxZGY1NjItMWVlNC00Y2ExLTkxNTMtOTAwNzFhMjdmMGRmIn0.FQ0ssIiDQ6053bGw_dUCd_hZLrqUDc8S79NAPFxFrI9m5dgQNNVJ_Ruk-jQ15uikS5BujcHF0PUUjBHIeHm87g"
+    host: "localhost"
+    port: 7077
+  docker:
+    network_name: "stroppy-net"
+    edge_worker_image: "stroppy-edge-worker:latest"
+suite:
+  tests:
+    - name: "docker-pg-standalone"
+      description: "Local Docker smoke test — single Postgres instance"
+      stroppy_cli:
+        version: "v2.0.0"
+        binary_path: "/usr/bin/stroppy"
+        workdir: "/tmp/stroppy-workdir"
+        workload: TPCC
+        stroppy_env:
+          DURATION: "30s"
+          SCALE_FACTOR: "1"
+          K6_OTEL_EXPORTER_TYPE: "http"
+          K6_OTEL_SERVICE_NAME: "stroppy"
+          K6_OTEL_SERVICE_VERSION: "v2.0.0"
+          K6_OTEL_HTTP_EXPORTER_INSECURE: "true"
+          K6_OTEL_HTTP_EXPORTER_ENDPOINT: "localhost:4318"
+          K6_OTEL_HTTP_EXPORTER_URL_PATH: "/v1/metrics"
+      stroppy_hardware:
+        cores: 2
+        memory: 2
+        disk: 10
+      database_template:
+        postgres_instance:
+          defaults:
+            version: VERSION_17
+            storage_engine: STORAGE_ENGINE_HEAP
+            postgresql_conf:
+              max_connections: "200"
+          node:
+            name: pg-standalone
+            hardware:
+              cores: 2
+              memory: 2
+              disk: 10
+            postgres:
+              role: ROLE_MASTER
+            monitoring:
+              node_exporter: {}
+              postgres_exporter: {}

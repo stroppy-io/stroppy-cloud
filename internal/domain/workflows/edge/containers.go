@@ -64,13 +64,17 @@ func resolveContainerNetworkName(
 	settings *settings.Settings,
 	input *workflows.Tasks_StartDockerContainers_Input,
 ) (string, error) {
-	if target == deployment.Target_TARGET_DOCKER {
-		return settings.GetDocker().GetNetworkName(), nil
-	}
 	cidr := input.GetWorkerInternalCidr().GetValue()
 	if cidr == "" {
 		return "", fmt.Errorf("worker internal cidr is empty")
 	}
 	runID := containers.SanitizeDockerNamePart(runId)
+	if target == deployment.Target_TARGET_DOCKER {
+		base := containers.SanitizeDockerNamePart(settings.GetDocker().GetNetworkName())
+		if base == "" {
+			base = "stroppy"
+		}
+		return fmt.Sprintf("%s-%s", base, runID), nil
+	}
 	return fmt.Sprintf("edge-%s-%s", runID, containers.SanitizeDockerNamePart(cidr)), nil
 }
