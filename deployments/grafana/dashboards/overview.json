@@ -176,6 +176,12 @@
         "includeAll": true,
         "multi": true,
         "current": { "selected": true, "text": "All", "value": "$__all" }
+      },
+      {
+        "name": "run_id",
+        "type": "textbox",
+        "current": { "selected": false, "text": "", "value": "" },
+        "description": "Stroppy test run ID for filtering"
       }
     ]
   },

@@ -43,7 +43,7 @@ export function RunDetailPage() {
   const totalCount = graph?.nodes.length ?? 0
   const progressPct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
 
-  const grafanaUrl = `${GRAFANA_BASE_URL}/d/stroppy-overview?orgId=1&kiosk&theme=dark&var-node=All`
+  const grafanaUrl = `${GRAFANA_BASE_URL}/d/stroppy-overview?orgId=1&kiosk&theme=dark&var-node=All&var-run_id=${runId ?? ""}`
 
   return (
     <div className="flex flex-col h-full">

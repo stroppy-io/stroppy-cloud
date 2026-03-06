@@ -90,6 +90,16 @@ func streamLogsWithPrefix(ctx context.Context, r io.Reader, prefix string, log f
 	}
 }
 
+const grafanaBaseURLEnv consts.EnvKey = "GRAFANA_BASE_URL"
+
+func grafanaURL(runID string) string {
+	base := os.Getenv(string(grafanaBaseURLEnv))
+	if base == "" {
+		base = "http://localhost:3000"
+	}
+	return fmt.Sprintf("%s/d/stroppy-overview?orgId=1&var-node=All&var-run_id=%s", base, runID)
+}
+
 const (
 	StroppyCommandGen = "gen"
 	StroppyCommandRun = "run"
@@ -198,10 +208,7 @@ func RunStroppyTask(
 			return &stroppy.TestResult{
 				RunId: input.GetRunSettings().GetRunId(),
 				Test:  input.GetRunSettings().GetTest(),
-				GrafanaUrl: lo.ToPtr(fmt.Sprintf(
-					"http://some-grafana-url?runId=%s",
-					input.GetRunSettings().GetRunId(),
-				)),
+				GrafanaUrl: lo.ToPtr(grafanaURL(input.GetRunSettings().GetRunId())),
 			}, nil
 		}),
 		hatchetLib.WithExecutionTimeout(24*time.Hour),

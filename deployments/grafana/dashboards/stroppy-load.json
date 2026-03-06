@@ -1,0 +1,160 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "title": "Iterations / sec (TPS)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "rate(k6_iterations_total{run_id=~\"$run_id\"}[30s])",
+          "legendFormat": "{{workload}} TPS"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Virtual Users",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "k6_vus{run_id=~\"$run_id\"}",
+          "legendFormat": "active VUs"
+        },
+        {
+          "expr": "k6_vus_max{run_id=~\"$run_id\"}",
+          "legendFormat": "max VUs"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Request Duration (p50 / p95 / p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(k6_http_req_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(k6_http_req_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(k6_http_req_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Data Sent / Received",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "rate(k6_data_sent_total{run_id=~\"$run_id\"}[30s])",
+          "legendFormat": "sent"
+        },
+        {
+          "expr": "rate(k6_data_received_total{run_id=~\"$run_id\"}[30s])",
+          "legendFormat": "received"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Errors / sec",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "rate(k6_http_req_failed_total{run_id=~\"$run_id\"}[30s])",
+          "legendFormat": "HTTP failures/s"
+        },
+        {
+          "expr": "rate(k6_checks_total{run_id=~\"$run_id\"} - k6_checks_succeeded_total{run_id=~\"$run_id\"}[30s])",
+          "legendFormat": "check failures/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "fillOpacity": 10, "lineWidth": 2, "drawStyle": "bars" }
+        }
+      }
+    },
+    {
+      "title": "SQL Query Duration (p50 / p95 / p99)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(k6_sql_query_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(k6_sql_query_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(k6_sql_query_duration_bucket{run_id=~\"$run_id\"}[30s]))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["stroppy", "load-test"],
+  "templating": {
+    "list": [
+      {
+        "name": "run_id",
+        "type": "textbox",
+        "current": { "selected": false, "text": "", "value": "" },
+        "description": "Stroppy test run ID"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Stroppy Load Test",
+  "uid": "stroppy-load"
+}
