@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=hatchet
     ports:
-      - "127.0.0.1:5435:5432"
+      - "${BIND_ADDR:-127.0.0.1}:5435:5432"
     volumes:
       - hatchet_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -26,8 +26,8 @@ services:
     hostname: "rabbitmq"
     restart: always
     ports:
-      - "127.0.0.1:5673:5672" # RabbitMQ
-      - "127.0.0.1:15673:15672" # Management UI
+      - "${BIND_ADDR:-127.0.0.1}:5673:5672" # RabbitMQ
+      - "${BIND_ADDR:-127.0.0.1}:15673:15672" # Management UI
     environment:
       RABBITMQ_DEFAULT_USER: "user"
       RABBITMQ_DEFAULT_PASS: "password"
@@ -86,7 +86,7 @@ services:
       migration:
         condition: service_completed_successfully
     ports:
-      - "7077:7070"
+      - "${BIND_ADDR:-127.0.0.1}:7077:7070"
     environment:
       DATABASE_URL: "postgres://hatchet:${POSTGRES_PASSWORD}@postgres:5432/hatchet"
       SERVER_GRPC_BIND_ADDRESS: "0.0.0.0"
@@ -103,7 +103,7 @@ services:
     image: ghcr.io/hatchet-dev/hatchet/hatchet-dashboard:latest
     command: sh ./entrypoint.sh --config /hatchet/config
     ports:
-      - 8080:80
+      - "8080:80"
     restart: always
     depends_on:
       setup-config:
@@ -128,7 +128,7 @@ services:
       VALKEY_EXTRA_FLAGS: --requirepass ${VALKEY_PASSWORD} --save 60 1 --loglevel warning
     restart: always
     ports:
-      - "127.0.0.1:6379:6379"
+      - "${BIND_ADDR:-127.0.0.1}:6379:6379"
     volumes:
       - valkey_data:/data
 

@@ -12,7 +12,7 @@ services:
     restart: always
     network_mode: "host"
     environment:
-      STROPPY_API_PORT: "${STROPPY_API_PORT:-8080}"
+      STROPPY_API_PORT: "${STROPPY_API_PORT:-8888}"
       STROPPY_ADMIN_USER: "${STROPPY_ADMIN_USER}"
       STROPPY_ADMIN_PASSWORD: "${STROPPY_ADMIN_PASSWORD}"
       STROPPY_JWT_SECRET: "${STROPPY_JWT_SECRET}"
