@@ -80,6 +80,228 @@ internal/
 - **`ProvisionerService`** (`internal/domain/provision/provision.go`) — Orchestrates full placement lifecycle: plan intent → build placement → deploy → destroy
 - **`NetworkManager`** (`internal/domain/managers/network.go`) — Valkey-backed distributed CIDR reservation with locking
 
+---
+
+## bd (Beads) — Single Source of Truth
+
+This project uses **bd (beads)** as the **sole issue tracker and task management system**. There is no plan.md. All work — tasks, decisions, architecture, progress — lives in bd issues.
+
+Run `bd prime` for full workflow context. Run `bd hooks install` for auto-injection.
+Do not sync bd in git (use `bd sync` separately).
+
+### Quick Reference
+
+```bash
+bd ready                    # Find unblocked work (your "what's next")
+bd show <id>                # Full issue details
+bd create "Title" --type task --priority 2 --labels "domain,layer"
+bd close <id>               # Complete work
+bd update <id> --status in_progress
+bd dep add <child> <parent> # Set dependency (child blocked by parent)
+bd epic status              # Phase/epic completion overview
+bd search "keyword"         # Find issues by text
+bd sync                     # Sync with git (run at session end)
+```
+
+### Issue Hierarchy (mandatory structure)
+
+All work is organized in a strict hierarchy via `--parent` and `bd dep add`:
+
+```
+Epic (phase/milestone)
+  └── Feature (any new capability or meaningful change)
+        └── Task (concrete step within a feature)
+              └── Subtask (optional, small decomposition of a task)
+```
+
+**Rules:**
+- Dependencies between issues use `bd dep add <blocked> <blocker>` — an issue cannot start until its blockers are closed
+- `bd ready` shows only issues with ALL dependencies resolved
+
+### Issue Types (mandatory `--type` flag)
+
+| Type | When to use | Required fields |
+|------|-------------|-----------------|
+| `epic` | Phase or milestone grouping. Use `bd epic status` to track. | `--description` (expanded), `--set-labels`, `--notes` |
+| `feature` | Any new capability or meaningful change. The primary work unit. | `--description` (expanded), `--acceptance`, `--set-labels`, `--notes` |
+| `task` | A concrete step within a feature. Always `--parent <feature-id>`. | `--description`, `--design`, `--set-labels`, `--assignee` |
+| `subtask` | Optional small step within a task. Always `--parent <task-id>`. | `--description`, `--design`, `--set-labels`, `--assignee` |
+| `bug` | Broken or spec-deviating behavior. Always a blocker. | `--description` (expected vs actual), `--set-labels` |
+| `chore` | Maintenance/cleanup: refactors, dead-code, linting, docs. | `--description`, `--set-labels` |
+
+**Hierarchy:** `epic` → `feature` → `task` → `subtask` (optional)
+
+### Required Fields by Type
+
+| Field                     | epic | feature | task | subtask | bug | chore |
+|---------------------------|------|---------|------|---------|-----|-------|
+| `--description` (expanded) | **YES** | **YES** | short | short | expected vs actual | short |
+| `--acceptance`            | — | **YES** | — | — | — | — |
+| `--design`                | decisions | — | **YES** | **YES** | — | — |
+| `--notes`                 | **YES** | **YES** | optional | optional | optional | optional |
+| `--set-labels`            | **YES** | **YES** | **YES** | **YES** | **YES** | **YES** |
+| `--assignee`              | — | — | **YES** | **YES** | optional | optional |
+| `--parent`                | — | epic-id | feature-id | task-id | feature/task-id | epic-id |
+
+### Field Descriptions
+
+- **`--description`**: For `epic` and `feature` — expanded description explaining goals, scope, context, and motivation. For `task`/`subtask` — concise description of what to do.
+- **`--acceptance`**: Required for `feature` only. Checklist of verifiable criteria that define "done".
+- **`--design`**: Required for `task` and `subtask`. Technical approach: files to modify, libraries, algorithms, patterns. For `epic` — architectural decisions made by user.
+- **`--notes`**: Free-form notes on any issue. Use for context, links, observations, progress updates.
+- **`--set-labels`**: Semantic + scope tags on every issue (see Labels section below).
+- **`--assignee`**: Agent role name. Required for `task` and `subtask`. Values: `researcher`, `implementer`, `tester`, `documenter`, `architect`.
+
+### Agent Comments
+
+Agents leave comments on `feature`, `task`, and `subtask` issues to record progress, blockers, and discoveries:
+
+```bash
+bd comment <id> "Discovered that library X requires explicit context" --author implementer
+bd comment <id> "Tests pass. Coverage: 87%. No regressions." --author tester
+bd comment <id> "Blocked: need user decision on retry policy" --author implementer
+```
+
+### Labels (mandatory on every issue)
+
+Every issue MUST have labels describing **what it touches**. Use multiple labels. Labels show the semantic domain and scope of the item.
+
+Determine available label categories from the project documentation. Typical categories:
+
+| Category | Purpose |
+|----------|---------|
+| **Component** | Which part of the system this touches |
+| **Domain** | Business or technical domain |
+| **Layer** | `service-logic`, `infra`, `api`, `test`, `docs` |
+| **Scope** | `breaking-change`, `refactor`, `bugfix`, `new-feature`, `optimization` |
+
+### Hierarchy Rules
+
+- Every `feature` MUST be a child of an `epic` (`--parent <epic-id>`).
+- Every `task` MUST be a child of a `feature` (`--parent <feature-id>`).
+- Every `subtask` MUST be a child of a `task` (`--parent <task-id>`).
+- `bug` MUST reference the expected vs actual behavior in `--description`.
+- `bug` is **always a blocker**: when created, immediately `bd dep add <blocked-feature-or-task> <bug-id>`.
+- `bug` can be linked to a `feature` (`--parent <feature-id>`) or a `task` (`--parent <task-id>`) — wherever discovered.
+- `chore` should never block a `feature` — if it does, promote it to `feature`.
+- When in doubt between `feature` and `chore`, prefer `feature`.
+
+### Issue Templates
+
+**Epic** (expanded description + notes):
+
+```bash
+bd create "Phase N: <Component>" \
+  --type epic \
+  --priority 1 \
+  --labels "<component>,<domain>,new-feature" \
+  --description "$(cat <<'EOF'
+**Scope**: <What this phase covers>.
+
+**Context**: <Why this is needed, what depends on it>.
+
+**Contains**: <High-level list of deliverables>.
+EOF
+)" \
+  --notes "<References, links, prior decisions>."
+```
+
+**Feature** (expanded description + acceptance criteria):
+
+```bash
+bd create "<Feature title>" \
+  --type feature \
+  --priority 2 \
+  --parent <epic-id> \
+  --labels "<component>,<domain>,new-feature" \
+  --description "$(cat <<'EOF'
+**Goal**: <What this feature achieves>.
+
+**Context**: <Current state and why change is needed>.
+
+**Scope**: <Boundaries — what's in, what's out>.
+EOF
+)" \
+  --acceptance "$(cat <<'EOF'
+- [ ] <Verifiable criterion 1>
+- [ ] <Verifiable criterion 2>
+- [ ] Project compiles successfully
+EOF
+)" \
+  --notes "<User decisions relevant to this feature>."
+```
+
+**Task** (design + assignee):
+
+```bash
+bd create "<Task title>" \
+  --type task \
+  --priority 2 \
+  --parent <feature-id> \
+  --assignee implementer \
+  --labels "<component>,<domain>" \
+  --description "<What to do>." \
+  --design "$(cat <<'EOF'
+**Files**:
+- `<path/to/file>` (new|modify)
+
+**Approach**:
+1. <Step 1>
+2. <Step 2>
+
+**Verification**: <How to verify this works>
+EOF
+)"
+```
+
+**Bug** (always blocker, expected vs actual):
+
+```bash
+bd create "<Bug title>" \
+  --type bug \
+  --priority 1 \
+  --parent <feature-id> \
+  --labels "<domain>,bugfix" \
+  --description "$(cat <<'EOF'
+**Expected**: <What should happen>.
+**Actual**: <What actually happens>.
+**Cause** (suspected): <Root cause hypothesis>.
+EOF
+)"
+# Bug is always a blocker:
+bd dep add <feature-id> <bug-id>
+```
+
+**Architectural decisions** in epic's `--design` field:
+
+```bash
+bd update <epic-id> --design "$(cat <<'EOF'
+**Decisions:**
+- <Option A vs Option B> → user chose <decision>
+- <Parameter> → <chosen value>
+EOF
+)"
+```
+
+### Every Action = Issue
+
+Every repository action MUST be tracked in a bd issue:
+- Implementation work → task under the relevant epic
+- Bug discovered → `bd create --type bug` linked to the epic
+- Refactor needed → `bd create --type chore` with dependency on the triggering task
+- A task may contain multiple related actions (don't over-decompose into 1-line subtasks)
+
+### Agents Assign Work via bd
+
+Agents communicate work assignments through bd:
+- Coordinator creates tasks and assigns them: `bd update <id> --assignee <role>`
+- Agent claims work: `bd update <id> --claim`
+- Agent marks progress: `bd update <id> --status in_progress`
+- Agent completes: `bd close <id> --reason "done" --suggest-next`
+- Agent discovers new work: `bd create "..." --parent <epic-id> --deps <current-task-id>`
+
+---
+
 ### Workflow Execution Flow
 
 1. CLI (`bin/run --file examples/test.yaml`) parses YAML into protobuf input
