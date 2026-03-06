@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetTestResultRequest, GetTestResultResponse, GetTestStatusRequest, GetTestStatusResponse, ListTestRunsRequest, ListTestRunsResponse, RunTestSuiteRequest, RunTestSuiteResponse } from "./test_pbts";
+import { GetTestResultRequest, GetTestResultResponse, GetTestStatusRequest, GetTestStatusResponse, ListTestRunsRequest, ListTestRunsResponse, RunTestSuiteRequest, RunTestSuiteResponse } from "./test_pb.ts";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**

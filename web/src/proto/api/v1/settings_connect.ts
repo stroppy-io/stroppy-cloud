@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { GetSettingsRequest, GetSettingsResponse, UpdateSettingsRequest, UpdateSettingsResponse } from "./settings_pbts";
+import { GetSettingsRequest, GetSettingsResponse, UpdateSettingsRequest, UpdateSettingsResponse } from "./settings_pb.ts";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**

@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { StreamWorkflowGraphRequest, StreamWorkflowGraphResponse } from "./execution_pbts";
+import { StreamWorkflowGraphRequest, StreamWorkflowGraphResponse } from "./execution_pb.ts";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
