@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+package models;
+
+option go_package = "github.com/stroppy-io/hatchet-workflow/internal/proto/models";
+
+import "ratelproto/ratelproto.proto";
+import "goplain/goplain.proto";
+import "google/protobuf/timestamp.proto";
+
+// ============================================================================
+// Settings (singleton)
+// ============================================================================
+
+message SettingsRecord {
+  option (ratel.table) = {
+    generate: true
+    table_name: "settings"
+  };
+  option (goplain.message).generate = true;
+
+  string id = 1 [(ratel.column) = {
+    constraints: {
+      primary_key: true
+      default_value: "'default'"
+    }
+  }];
+
+  // Serialized settings.Settings proto as JSON bytes.
+  bytes data = 2 [(ratel.column).constraints = {
+    default_value: "'{}'"
+  }];
+
+  google.protobuf.Timestamp updated_at = 3 [(ratel.column).constraints = {
+    default_value: "now()"
+  }];
+}
+
+// ============================================================================
+// Suites
+// ============================================================================
+
+message SuiteRecord {
+  option (ratel.table) = {
+    generate: true
+    table_name: "suites"
+    indexes: [
+      {
+        name: "idx_suites_status"
+        columns: ["status"]
+      },
+      {
+        name: "idx_suites_created_at"
+        columns: ["created_at"]
+      }
+    ]
+  };
+  option (goplain.message).generate = true;
+
+  string id = 1 [(ratel.column) = {
+    constraints: {
+      primary_key: true
+      check: "id <> ''"
+    }
+  }];
+
+  optional string hatchet_run_id = 2;
+
+  int32 status = 3 [(ratel.column).constraints = {
+    default_value: "0"
+  }];
+
+  // Serialized stroppy.TestSuite as JSON bytes.
+  optional bytes test_suite = 4;
+
+  int32 target = 5 [(ratel.column).constraints = {
+    default_value: "0"
+  }];
+
+  google.protobuf.Timestamp created_at = 6 [(ratel.column).constraints = {
+    default_value: "now()"
+  }];
+
+  optional google.protobuf.Timestamp started_at = 7;
+  optional google.protobuf.Timestamp finished_at = 8;
+  optional int64 duration_ms = 9;
+  optional string error_message = 10;
+
+  // Serialized stroppy.TestSuiteResult as JSON bytes.
+  optional bytes results = 11;
+}
+
+// ============================================================================
+// Runs
+// ============================================================================
+
+message RunRecord {
+  option (ratel.table) = {
+    generate: true
+    table_name: "runs"
+    indexes: [
+      {
+        name: "idx_runs_suite_id"
+        columns: ["suite_id"]
+      },
+      {
+        name: "idx_runs_status"
+        columns: ["status"]
+      },
+      {
+        name: "idx_runs_created_at"
+        columns: ["created_at"]
+      },
+      {
+        name: "idx_runs_hatchet_run_id"
+        columns: ["hatchet_run_id"]
+      }
+    ]
+  };
+  option (goplain.message).generate = true;
+
+  string id = 1 [(ratel.column) = {
+    constraints: {
+      primary_key: true
+      check: "id <> ''"
+    }
+  }];
+
+  string suite_id = 2 [(ratel.column).constraints = {
+    references_table: "suites"
+    references_column: "id"
+    on_delete: CASCADE
+  }];
+
+  optional string hatchet_run_id = 3;
+
+  int32 status = 4 [(ratel.column).constraints = {
+    default_value: "0"
+  }];
+
+  // Serialized stroppy.Test as JSON bytes.
+  optional bytes test = 5;
+
+  int32 target = 6 [(ratel.column).constraints = {
+    default_value: "0"
+  }];
+
+  google.protobuf.Timestamp created_at = 7 [(ratel.column).constraints = {
+    default_value: "now()"
+  }];
+
+  optional google.protobuf.Timestamp started_at = 8;
+  optional google.protobuf.Timestamp finished_at = 9;
+  optional int64 duration_ms = 10;
+  optional string error_message = 11;
+
+  // Serialized DAG ([]TaskNode) as JSON bytes.
+  optional bytes dag = 12;
+
+  // Serialized []stroppy.TestResult as JSON bytes.
+  optional bytes results = 13;
+}
+
+// ============================================================================
+// Workloads
+// ============================================================================
+
+message WorkloadRecord {
+  option (ratel.table) = {
+    generate: true
+    table_name: "workloads"
+    indexes: [
+      {
+        name: "idx_workloads_name"
+        columns: ["name"]
+        unique: true
+      }
+    ]
+  };
+  option (goplain.message).generate = true;
+
+  string id = 1 [(ratel.column) = {
+    constraints: {
+      primary_key: true
+      check: "id <> ''"
+    }
+  }];
+
+  string name = 2;
+
+  optional string description = 3;
+
+  bool builtin = 4 [(ratel.column).constraints = {
+    default_value: "false"
+  }];
+
+  bytes script = 5;
+
+  optional bytes sql_data = 6;
+
+  // Serialized api.ProbeResult as JSON bytes.
+  optional bytes probe = 7;
+
+  google.protobuf.Timestamp created_at = 8 [(ratel.column).constraints = {
+    default_value: "now()"
+  }];
+}

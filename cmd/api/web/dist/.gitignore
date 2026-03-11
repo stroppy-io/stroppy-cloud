@@ -1,0 +1,5 @@
+# Built by Dockerfile or `make build-web`.
+# Keep only placeholder index.html for local `go build`.
+*
+!.gitignore
+!index.html

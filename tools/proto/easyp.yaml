@@ -10,6 +10,8 @@ lint:
 deps:
   - github.com/bufbuild/protoc-gen-validate@v1.2.1
   - github.com/stroppy-io/stroppy@v3.0.0
+  - github.com/yaroher/protoc-gen-go-plain@v0.7.13
+  - github.com/yaroher/ratel@v0.4.1
 generate:
   inputs:
     - directory: edge
@@ -20,15 +22,16 @@ generate:
     - directory: workflows
     - directory: provision
     - directory: api
+    - directory: models
     - git_repo:
         url: github.com/bufbuild/protoc-gen-validate
         sub_directory: validate
-#    - git_repo:
-#        url: github.com/stroppy-io/stroppy
-#        sub_directory: proto
-#    - git_repo:
-#        url: github.com/stroppy-io/stroppy
-#        sub_directory: proto
+    - git_repo:
+        url: github.com/yaroher/protoc-gen-go-plain
+        sub_directory: goplain
+    - git_repo:
+        url: github.com/yaroher/ratel
+        sub_directory: ratelproto
   plugins:
     - name: go
       out: ../../internal/proto
@@ -48,6 +51,14 @@ generate:
         lang: go
         paths: source_relative
     - name: go-json
+      out: ../../internal/proto
+      opts:
+        paths: source_relative
+    - name: go-plain
+      out: ../../internal/proto
+      opts:
+        paths: source_relative
+    - name: ratel
       out: ../../internal/proto
       opts:
         paths: source_relative

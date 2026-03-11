@@ -1,2 +1,4 @@
-github.com/bufbuild/protoc-gen-validate v1.2.1 h1:futtvtATGXDsMGWcAc6sWhAOoFQvmWZLmyHrvupXPig=
+github.com/bufbuild/protoc-gen-validate v1.3.3 h1:ZZ5JyUkmrj9OBHM+gOCzeL5L/pAKVbsUl051yhhJTjU=
 github.com/stroppy-io/stroppy v3.0.0 h1:evp4JHCeym/QxQBwrL95jKQHvDpvwRRVFQAf8fsHhS4=
+github.com/yaroher/protoc-gen-go-plain v0.0.0-20260303165240-5b650f8e2a904a4475dd7747d3e6835a62467a09 h1:IZAW2/z/1ReU2a0BbbzqbpHjLLangyeOYOolayxlwe0=
+github.com/yaroher/ratel v0.4.3 h1:EADNBC2ps9kUal/yrvKZGThB8MHdjjZ2D0iImNsT1+M=

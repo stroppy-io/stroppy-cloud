@@ -51,9 +51,23 @@ build-all:
 run-master-worker: build-all
 	./bin/master-worker 2>&1 | zap-pretty
 
+.PHONY: run-api
+run-api: build-all
+	./bin/api 2>&1 | zap-pretty
+
 .PHONY: run-test
 run-test: build-all
 	./bin/run --file ./examples/test.yaml
+
+.PHONY: build-web
+build-web:
+	cd web && yarn install && yarn build
+	rm -rf cmd/api/web/dist
+	cp -r web/dist cmd/api/web/dist
+
+.PHONY: build-api-image
+build-api-image:
+	docker build -f deployments/docker/api.Dockerfile -t stroppy-api:latest .
 
 .PHONY: build-edge-worker-image
 build-edge-worker-image:
