@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CancelRunRequest, CancelRunResponse, CompareRunsRequest, CompareRunsResponse, DeleteWorkloadRequest, DeleteWorkloadResponse, DryRunCheck, DryRunRequest, GetCurrentUserRequest, GetCurrentUserResponse, GetRunRequest, GetRunResponse, GetSettingsRequest, GetSettingsResponse, GetSuiteRequest, GetSuiteResponse, GetWorkloadRequest, GetWorkloadResponse, ListRunsRequest, ListRunsResponse, ListSuitesRequest, ListSuitesResponse, ListWorkloadsRequest, ListWorkloadsResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, ProbeScriptRequest, ProbeScriptResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterWorkloadRequest, RegisterWorkloadResponse, RunTestSuiteRequest, RunTestSuiteResponse, StreamRunRequest, StreamRunUpdate, UpdateSettingsRequest, UpdateSettingsResponse, ValidateTopologyRequest, ValidateTopologyResponse } from "./api_pbts";
+import { CancelRunRequest, CancelRunResponse, CompareRunsRequest, CompareRunsResponse, CreateTopologyTemplateRequest, CreateTopologyTemplateResponse, DeleteTopologyTemplateRequest, DeleteTopologyTemplateResponse, DeleteWorkloadRequest, DeleteWorkloadResponse, DryRunCheck, DryRunRequest, GetCurrentUserRequest, GetCurrentUserResponse, GetRunRequest, GetRunResponse, GetSettingsRequest, GetSettingsResponse, GetSuiteRequest, GetSuiteResponse, GetTopologyTemplateRequest, GetTopologyTemplateResponse, GetWorkloadRequest, GetWorkloadResponse, ListRunsRequest, ListRunsResponse, ListSuitesRequest, ListSuitesResponse, ListTopologyTemplatesRequest, ListTopologyTemplatesResponse, ListWorkloadsRequest, ListWorkloadsResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, ProbeScriptRequest, ProbeScriptResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterWorkloadRequest, RegisterWorkloadResponse, RunTestSuiteRequest, RunTestSuiteResponse, StreamRunRequest, StreamRunUpdate, UpdateSettingsRequest, UpdateSettingsResponse, UpdateTopologyTemplateRequest, UpdateTopologyTemplateResponse, ValidateTopologyRequest, ValidateTopologyResponse } from "./api_pbts";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -243,6 +243,61 @@ export const StroppyAPI = {
       name: "ProbeScript",
       I: ProbeScriptRequest,
       O: ProbeScriptResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Create a reusable topology template.
+     *
+     * @generated from rpc api.StroppyAPI.CreateTopologyTemplate
+     */
+    createTopologyTemplate: {
+      name: "CreateTopologyTemplate",
+      I: CreateTopologyTemplateRequest,
+      O: CreateTopologyTemplateResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * List topology templates with optional database type filter.
+     *
+     * @generated from rpc api.StroppyAPI.ListTopologyTemplates
+     */
+    listTopologyTemplates: {
+      name: "ListTopologyTemplates",
+      I: ListTopologyTemplatesRequest,
+      O: ListTopologyTemplatesResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Get a topology template by ID.
+     *
+     * @generated from rpc api.StroppyAPI.GetTopologyTemplate
+     */
+    getTopologyTemplate: {
+      name: "GetTopologyTemplate",
+      I: GetTopologyTemplateRequest,
+      O: GetTopologyTemplateResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Update an existing topology template.
+     *
+     * @generated from rpc api.StroppyAPI.UpdateTopologyTemplate
+     */
+    updateTopologyTemplate: {
+      name: "UpdateTopologyTemplate",
+      I: UpdateTopologyTemplateRequest,
+      O: UpdateTopologyTemplateResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Delete a topology template.
+     *
+     * @generated from rpc api.StroppyAPI.DeleteTopologyTemplate
+     */
+    deleteTopologyTemplate: {
+      name: "DeleteTopologyTemplate",
+      I: DeleteTopologyTemplateRequest,
+      O: DeleteTopologyTemplateResponse,
       kind: MethodKind.Unary,
     },
   }

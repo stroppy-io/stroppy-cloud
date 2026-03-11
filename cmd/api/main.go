@@ -49,6 +49,21 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	// Seed default user from config (skip if not configured).
+	if defUser := os.Getenv("DEFAULT_USER"); defUser != "" {
+		defPass := envOrDefault("DEFAULT_PASSWORD", "admin")
+		defRole := envOrDefault("DEFAULT_ROLE", "admin")
+		if err := store.EnsureDefaultUser(ctx, pool, defUser, defPass, defRole); err != nil {
+			log.Fatalf("Failed to ensure default user: %v", err)
+		}
+		log.Printf("Default user ensured: %s (role=%s)", defUser, defRole)
+	}
+
+	// Seed built-in workloads and topology templates.
+	if err := store.SeedBuiltins(ctx, pool); err != nil {
+		log.Fatalf("Failed to seed builtins: %v", err)
+	}
+
 	// JWT
 	jwtSvc := auth.NewJWTService(&auth.JWTConfig{
 		Secret: envOrDefault("JWT_SECRET", "stroppy-dev-secret-change-me"),

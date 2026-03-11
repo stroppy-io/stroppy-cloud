@@ -540,6 +540,170 @@ var RunRecordConverter = repository.Converter[*RunRecordScanner, *RunRecord]{
 	ToProto:   (*RunRecordScanner).IntoPb,
 }
 
+// TopologyTemplateRecordAlias is the table alias type for the topology_templates table
+type TopologyTemplateRecordAlias string
+
+func (a TopologyTemplateRecordAlias) String() string { return string(a) }
+
+const TopologyTemplateRecordAliasName TopologyTemplateRecordAlias = "topology_templates"
+
+// TopologyTemplateRecordColumnAlias represents column names for the topology_templates table
+type TopologyTemplateRecordColumnAlias string
+
+func (c TopologyTemplateRecordColumnAlias) String() string { return string(c) }
+
+const (
+	TopologyTemplateRecordColumnId           TopologyTemplateRecordColumnAlias = "id"
+	TopologyTemplateRecordColumnName         TopologyTemplateRecordColumnAlias = "name"
+	TopologyTemplateRecordColumnDescription  TopologyTemplateRecordColumnAlias = "description"
+	TopologyTemplateRecordColumnDatabaseType TopologyTemplateRecordColumnAlias = "database_type"
+	TopologyTemplateRecordColumnBuiltin      TopologyTemplateRecordColumnAlias = "builtin"
+	TopologyTemplateRecordColumnTemplateData TopologyTemplateRecordColumnAlias = "template_data"
+	TopologyTemplateRecordColumnCreatedAt    TopologyTemplateRecordColumnAlias = "created_at"
+	TopologyTemplateRecordColumnUpdatedAt    TopologyTemplateRecordColumnAlias = "updated_at"
+)
+
+func (s *TopologyTemplateRecordScanner) GetTarget(col string) func() any {
+	switch TopologyTemplateRecordColumnAlias(col) {
+	case TopologyTemplateRecordColumnId:
+		return func() any { return &s.Id }
+	case TopologyTemplateRecordColumnName:
+		return func() any { return &s.Name }
+	case TopologyTemplateRecordColumnDescription:
+		return func() any { return &s.Description }
+	case TopologyTemplateRecordColumnDatabaseType:
+		return func() any { return &s.DatabaseType }
+	case TopologyTemplateRecordColumnBuiltin:
+		return func() any { return &s.Builtin }
+	case TopologyTemplateRecordColumnTemplateData:
+		return func() any { return &s.TemplateData }
+	case TopologyTemplateRecordColumnCreatedAt:
+		return func() any { return &s.CreatedAt }
+	case TopologyTemplateRecordColumnUpdatedAt:
+		return func() any { return &s.UpdatedAt }
+	default:
+		panic("unknown field: " + col)
+	}
+}
+
+func (s *TopologyTemplateRecordScanner) GetSetter(f TopologyTemplateRecordColumnAlias) func() set.ValueSetter[TopologyTemplateRecordColumnAlias] {
+	switch f {
+	case TopologyTemplateRecordColumnId:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.Id) }
+	case TopologyTemplateRecordColumnName:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.Name) }
+	case TopologyTemplateRecordColumnDescription:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.Description) }
+	case TopologyTemplateRecordColumnDatabaseType:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.DatabaseType) }
+	case TopologyTemplateRecordColumnBuiltin:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.Builtin) }
+	case TopologyTemplateRecordColumnTemplateData:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.TemplateData) }
+	case TopologyTemplateRecordColumnCreatedAt:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.CreatedAt) }
+	case TopologyTemplateRecordColumnUpdatedAt:
+		return func() set.ValueSetter[TopologyTemplateRecordColumnAlias] { return set.NewSetter(f, &s.UpdatedAt) }
+	default:
+		panic("unknown field: " + string(f))
+	}
+}
+
+func (s *TopologyTemplateRecordScanner) GetValue(f TopologyTemplateRecordColumnAlias) func() any {
+	switch f {
+	case TopologyTemplateRecordColumnId:
+		return func() any { return s.Id }
+	case TopologyTemplateRecordColumnName:
+		return func() any { return s.Name }
+	case TopologyTemplateRecordColumnDescription:
+		return func() any { return s.Description }
+	case TopologyTemplateRecordColumnDatabaseType:
+		return func() any { return s.DatabaseType }
+	case TopologyTemplateRecordColumnBuiltin:
+		return func() any { return s.Builtin }
+	case TopologyTemplateRecordColumnTemplateData:
+		return func() any { return s.TemplateData }
+	case TopologyTemplateRecordColumnCreatedAt:
+		return func() any { return s.CreatedAt }
+	case TopologyTemplateRecordColumnUpdatedAt:
+		return func() any { return s.UpdatedAt }
+	default:
+		panic("unknown field: " + string(f))
+	}
+}
+
+// Relations returns the relation loaders for the topology_templates table
+func (s *TopologyTemplateRecordScanner) Relations() []exec.RelationLoader[*TopologyTemplateRecordScanner] {
+	return nil
+}
+
+// TopologyTemplateRecordsTable represents the topology_templates table with its columns
+type TopologyTemplateRecordsTable struct {
+	*schema.Table[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias, *TopologyTemplateRecordScanner]
+	Id           schema.TextColumnI[TopologyTemplateRecordColumnAlias]
+	Name         schema.TextColumnI[TopologyTemplateRecordColumnAlias]
+	Description  schema.TextColumnI[TopologyTemplateRecordColumnAlias]
+	DatabaseType schema.IntegerColumnI[TopologyTemplateRecordColumnAlias]
+	Builtin      schema.BooleanColumnI[TopologyTemplateRecordColumnAlias]
+	TemplateData schema.ByteaColumnI[TopologyTemplateRecordColumnAlias]
+	CreatedAt    schema.TimestamptzColumnI[TopologyTemplateRecordColumnAlias]
+	UpdatedAt    schema.TimestamptzColumnI[TopologyTemplateRecordColumnAlias]
+}
+
+// TopologyTemplateRecords is the global topology_templates table instance
+var TopologyTemplateRecords = func() TopologyTemplateRecordsTable {
+	idCol := schema.TextColumn(TopologyTemplateRecordColumnId, ddl.WithPrimaryKey[TopologyTemplateRecordColumnAlias]())
+	nameCol := schema.TextColumn(TopologyTemplateRecordColumnName)
+	descriptionCol := schema.TextColumn(TopologyTemplateRecordColumnDescription)
+	databaseTypeCol := schema.IntegerColumn(TopologyTemplateRecordColumnDatabaseType, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("0"))
+	builtinCol := schema.BooleanColumn(TopologyTemplateRecordColumnBuiltin, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("false"))
+	templateDataCol := schema.ByteaColumn(TopologyTemplateRecordColumnTemplateData)
+	createdAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnCreatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"))
+	updatedAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnUpdatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"))
+
+	idx0 := ddl.NewIndex[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias]("idx_topology_templates_name", TopologyTemplateRecordAliasName).OnColumns(TopologyTemplateRecordColumnName)
+	idx0 = idx0.Unique()
+	idx1 := ddl.NewIndex[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias]("idx_topology_templates_database_type", TopologyTemplateRecordAliasName).OnColumns(TopologyTemplateRecordColumnDatabaseType)
+
+	return TopologyTemplateRecordsTable{
+		Table: schema.NewTable[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias, *TopologyTemplateRecordScanner](
+			TopologyTemplateRecordAliasName,
+			func() *TopologyTemplateRecordScanner { return &TopologyTemplateRecordScanner{} },
+			[]*ddl.ColumnDDL[TopologyTemplateRecordColumnAlias]{
+				idCol.DDL(),
+				nameCol.DDL(),
+				descriptionCol.DDL(),
+				databaseTypeCol.DDL(),
+				builtinCol.DDL(),
+				templateDataCol.DDL(),
+				createdAtCol.DDL(),
+				updatedAtCol.DDL(),
+			},
+			ddl.WithIndexes[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias](
+				idx0,
+				idx1,
+			),
+		),
+		Id:           idCol,
+		Name:         nameCol,
+		Description:  descriptionCol,
+		DatabaseType: databaseTypeCol,
+		Builtin:      builtinCol,
+		TemplateData: templateDataCol,
+		CreatedAt:    createdAtCol,
+		UpdatedAt:    updatedAtCol,
+	}
+}()
+
+// TopologyTemplateRecordsRef is a reference to the topology_templates table for relations
+var TopologyTemplateRecordsRef schema.RelationTableAlias[TopologyTemplateRecordAlias] = TopologyTemplateRecords.Table
+
+// TopologyTemplateRecordConverter provides conversion between TopologyTemplateRecord and TopologyTemplateRecordScanner
+var TopologyTemplateRecordConverter = repository.Converter[*TopologyTemplateRecordScanner, *TopologyTemplateRecord]{
+	ToScanner: (*TopologyTemplateRecord).IntoPlain,
+	ToProto:   (*TopologyTemplateRecordScanner).IntoPb,
+}
+
 // WorkloadRecordAlias is the table alias type for the workloads table
 type WorkloadRecordAlias string
 
@@ -707,11 +871,13 @@ var WorkloadRecordConverter = repository.Converter[*WorkloadRecordScanner, *Work
 // ============================================================================
 
 const (
-	SettingsRecordConstraintPkey    = "settings_pkey"
-	SuiteRecordConstraintPkey       = "suites_pkey"
-	RunRecordConstraintPkey         = "runs_pkey"
-	WorkloadRecordConstraintPkey    = "workloads_pkey"
-	WorkloadRecordConstraintNameIdx = "idx_workloads_name"
+	SettingsRecordConstraintPkey            = "settings_pkey"
+	SuiteRecordConstraintPkey               = "suites_pkey"
+	RunRecordConstraintPkey                 = "runs_pkey"
+	TopologyTemplateRecordConstraintPkey    = "topology_templates_pkey"
+	TopologyTemplateRecordConstraintNameIdx = "idx_topology_templates_name"
+	WorkloadRecordConstraintPkey            = "workloads_pkey"
+	WorkloadRecordConstraintNameIdx         = "idx_workloads_name"
 )
 
 // ============================================================================
@@ -719,11 +885,13 @@ const (
 // ============================================================================
 
 var (
-	ErrSettingsRecordPrimaryKey    = errors.New("primary key constraint violated: settings_pkey")
-	ErrSuiteRecordPrimaryKey       = errors.New("primary key constraint violated: suites_pkey")
-	ErrRunRecordPrimaryKey         = errors.New("primary key constraint violated: runs_pkey")
-	ErrWorkloadRecordPrimaryKey    = errors.New("primary key constraint violated: workloads_pkey")
-	ErrWorkloadRecordNameUniqueIdx = errors.New("unique constraint violated: idx_workloads_name")
+	ErrSettingsRecordPrimaryKey            = errors.New("primary key constraint violated: settings_pkey")
+	ErrSuiteRecordPrimaryKey               = errors.New("primary key constraint violated: suites_pkey")
+	ErrRunRecordPrimaryKey                 = errors.New("primary key constraint violated: runs_pkey")
+	ErrTopologyTemplateRecordPrimaryKey    = errors.New("primary key constraint violated: topology_templates_pkey")
+	ErrTopologyTemplateRecordNameUniqueIdx = errors.New("unique constraint violated: idx_topology_templates_name")
+	ErrWorkloadRecordPrimaryKey            = errors.New("primary key constraint violated: workloads_pkey")
+	ErrWorkloadRecordNameUniqueIdx         = errors.New("unique constraint violated: idx_workloads_name")
 )
 
 // ============================================================================
@@ -743,6 +911,16 @@ func IsSuiteRecordPrimaryKeyError(err error) bool {
 // IsRunRecordPrimaryKeyError checks if the error is a primary_key constraint violation on runs
 func IsRunRecordPrimaryKeyError(err error) bool {
 	return sqlerr.IsConstraintNamed(err, RunRecordConstraintPkey)
+}
+
+// IsTopologyTemplateRecordPrimaryKeyError checks if the error is a primary_key constraint violation on topology_templates
+func IsTopologyTemplateRecordPrimaryKeyError(err error) bool {
+	return sqlerr.IsConstraintNamed(err, TopologyTemplateRecordConstraintPkey)
+}
+
+// IsTopologyTemplateRecordNameUniqueIdxError checks if the error is a unique constraint violation on topology_templates
+func IsTopologyTemplateRecordNameUniqueIdxError(err error) bool {
+	return sqlerr.IsConstraintNamed(err, TopologyTemplateRecordConstraintNameIdx)
 }
 
 // IsWorkloadRecordPrimaryKeyError checks if the error is a primary_key constraint violation on workloads

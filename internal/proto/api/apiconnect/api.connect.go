@@ -81,6 +81,21 @@ const (
 	StroppyAPIDeleteWorkloadProcedure = "/api.StroppyAPI/DeleteWorkload"
 	// StroppyAPIProbeScriptProcedure is the fully-qualified name of the StroppyAPI's ProbeScript RPC.
 	StroppyAPIProbeScriptProcedure = "/api.StroppyAPI/ProbeScript"
+	// StroppyAPICreateTopologyTemplateProcedure is the fully-qualified name of the StroppyAPI's
+	// CreateTopologyTemplate RPC.
+	StroppyAPICreateTopologyTemplateProcedure = "/api.StroppyAPI/CreateTopologyTemplate"
+	// StroppyAPIListTopologyTemplatesProcedure is the fully-qualified name of the StroppyAPI's
+	// ListTopologyTemplates RPC.
+	StroppyAPIListTopologyTemplatesProcedure = "/api.StroppyAPI/ListTopologyTemplates"
+	// StroppyAPIGetTopologyTemplateProcedure is the fully-qualified name of the StroppyAPI's
+	// GetTopologyTemplate RPC.
+	StroppyAPIGetTopologyTemplateProcedure = "/api.StroppyAPI/GetTopologyTemplate"
+	// StroppyAPIUpdateTopologyTemplateProcedure is the fully-qualified name of the StroppyAPI's
+	// UpdateTopologyTemplate RPC.
+	StroppyAPIUpdateTopologyTemplateProcedure = "/api.StroppyAPI/UpdateTopologyTemplate"
+	// StroppyAPIDeleteTopologyTemplateProcedure is the fully-qualified name of the StroppyAPI's
+	// DeleteTopologyTemplate RPC.
+	StroppyAPIDeleteTopologyTemplateProcedure = "/api.StroppyAPI/DeleteTopologyTemplate"
 )
 
 // StroppyAPIClient is a client for the api.StroppyAPI service.
@@ -127,6 +142,16 @@ type StroppyAPIClient interface {
 	DeleteWorkload(context.Context, *connect.Request[api.DeleteWorkloadRequest]) (*connect.Response[api.DeleteWorkloadResponse], error)
 	// Probe a script without saving — returns extracted metadata.
 	ProbeScript(context.Context, *connect.Request[api.ProbeScriptRequest]) (*connect.Response[api.ProbeScriptResponse], error)
+	// Create a reusable topology template.
+	CreateTopologyTemplate(context.Context, *connect.Request[api.CreateTopologyTemplateRequest]) (*connect.Response[api.CreateTopologyTemplateResponse], error)
+	// List topology templates with optional database type filter.
+	ListTopologyTemplates(context.Context, *connect.Request[api.ListTopologyTemplatesRequest]) (*connect.Response[api.ListTopologyTemplatesResponse], error)
+	// Get a topology template by ID.
+	GetTopologyTemplate(context.Context, *connect.Request[api.GetTopologyTemplateRequest]) (*connect.Response[api.GetTopologyTemplateResponse], error)
+	// Update an existing topology template.
+	UpdateTopologyTemplate(context.Context, *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error)
+	// Delete a topology template.
+	DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error)
 }
 
 // NewStroppyAPIClient constructs a client for the api.StroppyAPI service. By default, it uses the
@@ -266,32 +291,67 @@ func NewStroppyAPIClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(stroppyAPIMethods.ByName("ProbeScript")),
 			connect.WithClientOptions(opts...),
 		),
+		createTopologyTemplate: connect.NewClient[api.CreateTopologyTemplateRequest, api.CreateTopologyTemplateResponse](
+			httpClient,
+			baseURL+StroppyAPICreateTopologyTemplateProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("CreateTopologyTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		listTopologyTemplates: connect.NewClient[api.ListTopologyTemplatesRequest, api.ListTopologyTemplatesResponse](
+			httpClient,
+			baseURL+StroppyAPIListTopologyTemplatesProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("ListTopologyTemplates")),
+			connect.WithClientOptions(opts...),
+		),
+		getTopologyTemplate: connect.NewClient[api.GetTopologyTemplateRequest, api.GetTopologyTemplateResponse](
+			httpClient,
+			baseURL+StroppyAPIGetTopologyTemplateProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("GetTopologyTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		updateTopologyTemplate: connect.NewClient[api.UpdateTopologyTemplateRequest, api.UpdateTopologyTemplateResponse](
+			httpClient,
+			baseURL+StroppyAPIUpdateTopologyTemplateProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("UpdateTopologyTemplate")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteTopologyTemplate: connect.NewClient[api.DeleteTopologyTemplateRequest, api.DeleteTopologyTemplateResponse](
+			httpClient,
+			baseURL+StroppyAPIDeleteTopologyTemplateProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("DeleteTopologyTemplate")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // stroppyAPIClient implements StroppyAPIClient.
 type stroppyAPIClient struct {
-	runTestSuite     *connect.Client[api.RunTestSuiteRequest, api.RunTestSuiteResponse]
-	cancelRun        *connect.Client[api.CancelRunRequest, api.CancelRunResponse]
-	getRun           *connect.Client[api.GetRunRequest, api.GetRunResponse]
-	listRuns         *connect.Client[api.ListRunsRequest, api.ListRunsResponse]
-	listSuites       *connect.Client[api.ListSuitesRequest, api.ListSuitesResponse]
-	getSuite         *connect.Client[api.GetSuiteRequest, api.GetSuiteResponse]
-	streamRun        *connect.Client[api.StreamRunRequest, api.StreamRunUpdate]
-	getSettings      *connect.Client[api.GetSettingsRequest, api.GetSettingsResponse]
-	updateSettings   *connect.Client[api.UpdateSettingsRequest, api.UpdateSettingsResponse]
-	compareRuns      *connect.Client[api.CompareRunsRequest, api.CompareRunsResponse]
-	validateTopology *connect.Client[api.ValidateTopologyRequest, api.ValidateTopologyResponse]
-	dryRun           *connect.Client[api.DryRunRequest, api.DryRunCheck]
-	login            *connect.Client[api.LoginRequest, api.LoginResponse]
-	refreshToken     *connect.Client[api.RefreshTokenRequest, api.RefreshTokenResponse]
-	logout           *connect.Client[api.LogoutRequest, api.LogoutResponse]
-	getCurrentUser   *connect.Client[api.GetCurrentUserRequest, api.GetCurrentUserResponse]
-	registerWorkload *connect.Client[api.RegisterWorkloadRequest, api.RegisterWorkloadResponse]
-	listWorkloads    *connect.Client[api.ListWorkloadsRequest, api.ListWorkloadsResponse]
-	getWorkload      *connect.Client[api.GetWorkloadRequest, api.GetWorkloadResponse]
-	deleteWorkload   *connect.Client[api.DeleteWorkloadRequest, api.DeleteWorkloadResponse]
-	probeScript      *connect.Client[api.ProbeScriptRequest, api.ProbeScriptResponse]
+	runTestSuite           *connect.Client[api.RunTestSuiteRequest, api.RunTestSuiteResponse]
+	cancelRun              *connect.Client[api.CancelRunRequest, api.CancelRunResponse]
+	getRun                 *connect.Client[api.GetRunRequest, api.GetRunResponse]
+	listRuns               *connect.Client[api.ListRunsRequest, api.ListRunsResponse]
+	listSuites             *connect.Client[api.ListSuitesRequest, api.ListSuitesResponse]
+	getSuite               *connect.Client[api.GetSuiteRequest, api.GetSuiteResponse]
+	streamRun              *connect.Client[api.StreamRunRequest, api.StreamRunUpdate]
+	getSettings            *connect.Client[api.GetSettingsRequest, api.GetSettingsResponse]
+	updateSettings         *connect.Client[api.UpdateSettingsRequest, api.UpdateSettingsResponse]
+	compareRuns            *connect.Client[api.CompareRunsRequest, api.CompareRunsResponse]
+	validateTopology       *connect.Client[api.ValidateTopologyRequest, api.ValidateTopologyResponse]
+	dryRun                 *connect.Client[api.DryRunRequest, api.DryRunCheck]
+	login                  *connect.Client[api.LoginRequest, api.LoginResponse]
+	refreshToken           *connect.Client[api.RefreshTokenRequest, api.RefreshTokenResponse]
+	logout                 *connect.Client[api.LogoutRequest, api.LogoutResponse]
+	getCurrentUser         *connect.Client[api.GetCurrentUserRequest, api.GetCurrentUserResponse]
+	registerWorkload       *connect.Client[api.RegisterWorkloadRequest, api.RegisterWorkloadResponse]
+	listWorkloads          *connect.Client[api.ListWorkloadsRequest, api.ListWorkloadsResponse]
+	getWorkload            *connect.Client[api.GetWorkloadRequest, api.GetWorkloadResponse]
+	deleteWorkload         *connect.Client[api.DeleteWorkloadRequest, api.DeleteWorkloadResponse]
+	probeScript            *connect.Client[api.ProbeScriptRequest, api.ProbeScriptResponse]
+	createTopologyTemplate *connect.Client[api.CreateTopologyTemplateRequest, api.CreateTopologyTemplateResponse]
+	listTopologyTemplates  *connect.Client[api.ListTopologyTemplatesRequest, api.ListTopologyTemplatesResponse]
+	getTopologyTemplate    *connect.Client[api.GetTopologyTemplateRequest, api.GetTopologyTemplateResponse]
+	updateTopologyTemplate *connect.Client[api.UpdateTopologyTemplateRequest, api.UpdateTopologyTemplateResponse]
+	deleteTopologyTemplate *connect.Client[api.DeleteTopologyTemplateRequest, api.DeleteTopologyTemplateResponse]
 }
 
 // RunTestSuite calls api.StroppyAPI.RunTestSuite.
@@ -399,6 +459,31 @@ func (c *stroppyAPIClient) ProbeScript(ctx context.Context, req *connect.Request
 	return c.probeScript.CallUnary(ctx, req)
 }
 
+// CreateTopologyTemplate calls api.StroppyAPI.CreateTopologyTemplate.
+func (c *stroppyAPIClient) CreateTopologyTemplate(ctx context.Context, req *connect.Request[api.CreateTopologyTemplateRequest]) (*connect.Response[api.CreateTopologyTemplateResponse], error) {
+	return c.createTopologyTemplate.CallUnary(ctx, req)
+}
+
+// ListTopologyTemplates calls api.StroppyAPI.ListTopologyTemplates.
+func (c *stroppyAPIClient) ListTopologyTemplates(ctx context.Context, req *connect.Request[api.ListTopologyTemplatesRequest]) (*connect.Response[api.ListTopologyTemplatesResponse], error) {
+	return c.listTopologyTemplates.CallUnary(ctx, req)
+}
+
+// GetTopologyTemplate calls api.StroppyAPI.GetTopologyTemplate.
+func (c *stroppyAPIClient) GetTopologyTemplate(ctx context.Context, req *connect.Request[api.GetTopologyTemplateRequest]) (*connect.Response[api.GetTopologyTemplateResponse], error) {
+	return c.getTopologyTemplate.CallUnary(ctx, req)
+}
+
+// UpdateTopologyTemplate calls api.StroppyAPI.UpdateTopologyTemplate.
+func (c *stroppyAPIClient) UpdateTopologyTemplate(ctx context.Context, req *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error) {
+	return c.updateTopologyTemplate.CallUnary(ctx, req)
+}
+
+// DeleteTopologyTemplate calls api.StroppyAPI.DeleteTopologyTemplate.
+func (c *stroppyAPIClient) DeleteTopologyTemplate(ctx context.Context, req *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error) {
+	return c.deleteTopologyTemplate.CallUnary(ctx, req)
+}
+
 // StroppyAPIHandler is an implementation of the api.StroppyAPI service.
 type StroppyAPIHandler interface {
 	// Submit a test suite for execution. Returns immediately with a run ID.
@@ -443,6 +528,16 @@ type StroppyAPIHandler interface {
 	DeleteWorkload(context.Context, *connect.Request[api.DeleteWorkloadRequest]) (*connect.Response[api.DeleteWorkloadResponse], error)
 	// Probe a script without saving — returns extracted metadata.
 	ProbeScript(context.Context, *connect.Request[api.ProbeScriptRequest]) (*connect.Response[api.ProbeScriptResponse], error)
+	// Create a reusable topology template.
+	CreateTopologyTemplate(context.Context, *connect.Request[api.CreateTopologyTemplateRequest]) (*connect.Response[api.CreateTopologyTemplateResponse], error)
+	// List topology templates with optional database type filter.
+	ListTopologyTemplates(context.Context, *connect.Request[api.ListTopologyTemplatesRequest]) (*connect.Response[api.ListTopologyTemplatesResponse], error)
+	// Get a topology template by ID.
+	GetTopologyTemplate(context.Context, *connect.Request[api.GetTopologyTemplateRequest]) (*connect.Response[api.GetTopologyTemplateResponse], error)
+	// Update an existing topology template.
+	UpdateTopologyTemplate(context.Context, *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error)
+	// Delete a topology template.
+	DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error)
 }
 
 // NewStroppyAPIHandler builds an HTTP handler from the service implementation. It returns the path
@@ -578,6 +673,36 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(stroppyAPIMethods.ByName("ProbeScript")),
 		connect.WithHandlerOptions(opts...),
 	)
+	stroppyAPICreateTopologyTemplateHandler := connect.NewUnaryHandler(
+		StroppyAPICreateTopologyTemplateProcedure,
+		svc.CreateTopologyTemplate,
+		connect.WithSchema(stroppyAPIMethods.ByName("CreateTopologyTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	stroppyAPIListTopologyTemplatesHandler := connect.NewUnaryHandler(
+		StroppyAPIListTopologyTemplatesProcedure,
+		svc.ListTopologyTemplates,
+		connect.WithSchema(stroppyAPIMethods.ByName("ListTopologyTemplates")),
+		connect.WithHandlerOptions(opts...),
+	)
+	stroppyAPIGetTopologyTemplateHandler := connect.NewUnaryHandler(
+		StroppyAPIGetTopologyTemplateProcedure,
+		svc.GetTopologyTemplate,
+		connect.WithSchema(stroppyAPIMethods.ByName("GetTopologyTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	stroppyAPIUpdateTopologyTemplateHandler := connect.NewUnaryHandler(
+		StroppyAPIUpdateTopologyTemplateProcedure,
+		svc.UpdateTopologyTemplate,
+		connect.WithSchema(stroppyAPIMethods.ByName("UpdateTopologyTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
+	stroppyAPIDeleteTopologyTemplateHandler := connect.NewUnaryHandler(
+		StroppyAPIDeleteTopologyTemplateProcedure,
+		svc.DeleteTopologyTemplate,
+		connect.WithSchema(stroppyAPIMethods.ByName("DeleteTopologyTemplate")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/api.StroppyAPI/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StroppyAPIRunTestSuiteProcedure:
@@ -622,6 +747,16 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 			stroppyAPIDeleteWorkloadHandler.ServeHTTP(w, r)
 		case StroppyAPIProbeScriptProcedure:
 			stroppyAPIProbeScriptHandler.ServeHTTP(w, r)
+		case StroppyAPICreateTopologyTemplateProcedure:
+			stroppyAPICreateTopologyTemplateHandler.ServeHTTP(w, r)
+		case StroppyAPIListTopologyTemplatesProcedure:
+			stroppyAPIListTopologyTemplatesHandler.ServeHTTP(w, r)
+		case StroppyAPIGetTopologyTemplateProcedure:
+			stroppyAPIGetTopologyTemplateHandler.ServeHTTP(w, r)
+		case StroppyAPIUpdateTopologyTemplateProcedure:
+			stroppyAPIUpdateTopologyTemplateHandler.ServeHTTP(w, r)
+		case StroppyAPIDeleteTopologyTemplateProcedure:
+			stroppyAPIDeleteTopologyTemplateHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -713,4 +848,24 @@ func (UnimplementedStroppyAPIHandler) DeleteWorkload(context.Context, *connect.R
 
 func (UnimplementedStroppyAPIHandler) ProbeScript(context.Context, *connect.Request[api.ProbeScriptRequest]) (*connect.Response[api.ProbeScriptResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.ProbeScript is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) CreateTopologyTemplate(context.Context, *connect.Request[api.CreateTopologyTemplateRequest]) (*connect.Response[api.CreateTopologyTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.CreateTopologyTemplate is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) ListTopologyTemplates(context.Context, *connect.Request[api.ListTopologyTemplatesRequest]) (*connect.Response[api.ListTopologyTemplatesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.ListTopologyTemplates is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) GetTopologyTemplate(context.Context, *connect.Request[api.GetTopologyTemplateRequest]) (*connect.Response[api.GetTopologyTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.GetTopologyTemplate is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) UpdateTopologyTemplate(context.Context, *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.UpdateTopologyTemplate is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.DeleteTopologyTemplate is not implemented"))
 }

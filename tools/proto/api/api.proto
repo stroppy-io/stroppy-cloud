@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package api;
 
+import "database/database.proto";
 import "deployment/deployment.proto";
 import "settings/settings.proto";
 import "stroppy/test.proto";
@@ -79,6 +80,22 @@ service StroppyAPI {
     // Probe a script without saving — returns extracted metadata.
     rpc ProbeScript(ProbeScriptRequest) returns (ProbeScriptResponse);
 
+    // --- Topology Templates ---
+
+    // Create a reusable topology template.
+    rpc CreateTopologyTemplate(CreateTopologyTemplateRequest) returns (CreateTopologyTemplateResponse);
+
+    // List topology templates with optional database type filter.
+    rpc ListTopologyTemplates(ListTopologyTemplatesRequest) returns (ListTopologyTemplatesResponse);
+
+    // Get a topology template by ID.
+    rpc GetTopologyTemplate(GetTopologyTemplateRequest) returns (GetTopologyTemplateResponse);
+
+    // Update an existing topology template.
+    rpc UpdateTopologyTemplate(UpdateTopologyTemplateRequest) returns (UpdateTopologyTemplateResponse);
+
+    // Delete a topology template.
+    rpc DeleteTopologyTemplate(DeleteTopologyTemplateRequest) returns (DeleteTopologyTemplateResponse);
 }
 
 // --- Test execution ---
@@ -411,6 +428,71 @@ message EnvParam {
     string default_value = 2;
     string description = 3;
 }
+
+// --- Topology Templates ---
+
+enum DatabaseType {
+    DATABASE_TYPE_UNSPECIFIED = 0;
+    DATABASE_TYPE_POSTGRES = 1;
+    DATABASE_TYPE_PICODATA = 2;
+}
+
+message TopologyTemplate {
+    string id = 1;
+    string name = 2;
+    optional string description = 3;
+    DatabaseType database_type = 4;
+    bool builtin = 5;
+    database.Database.Template template = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message CreateTopologyTemplateRequest {
+    string name = 1 [(validate.rules).string.min_len = 1];
+    optional string description = 2;
+    database.Database.Template template = 3 [(validate.rules).message.required = true];
+}
+
+message CreateTopologyTemplateResponse {
+    TopologyTemplate topology_template = 1;
+}
+
+message ListTopologyTemplatesRequest {
+    int64 offset = 1;
+    int64 limit = 2;
+    optional DatabaseType database_type = 3;
+}
+
+message ListTopologyTemplatesResponse {
+    repeated TopologyTemplate topology_templates = 1;
+    int64 total = 2;
+}
+
+message GetTopologyTemplateRequest {
+    string template_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message GetTopologyTemplateResponse {
+    TopologyTemplate topology_template = 1;
+}
+
+message UpdateTopologyTemplateRequest {
+    string template_id = 1 [(validate.rules).string.min_len = 1];
+    optional string name = 2;
+    optional string description = 3;
+    optional database.Database.Template template = 4;
+}
+
+message UpdateTopologyTemplateResponse {
+    TopologyTemplate topology_template = 1;
+}
+
+message DeleteTopologyTemplateRequest {
+    string template_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message DeleteTopologyTemplateResponse {}
 
 // --- Domain types ---
 

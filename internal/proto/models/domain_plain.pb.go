@@ -194,6 +194,57 @@ func (p *RunRecordScanner) IntoPb() *RunRecord {
 	return pb
 }
 
+type TopologyTemplateRecordScanner struct {
+	Id           string    `json:"id"`
+	Name         string    `json:"name"`
+	Description  *string   `json:"description,omitempty"`
+	DatabaseType int32     `json:"databaseType"`
+	Builtin      bool      `json:"builtin"`
+	TemplateData []byte    `json:"templateData"`
+	CreatedAt    time.Time `json:"createdAt"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
+// IntoPlain converts protobuf message to plain struct
+func (pb *TopologyTemplateRecord) IntoPlain() *TopologyTemplateRecordScanner {
+	if pb == nil {
+		return nil
+	}
+	p := &TopologyTemplateRecordScanner{}
+
+	p.Id = pb.Id
+	p.Name = pb.Name
+	p.Description = pb.Description
+	p.DatabaseType = pb.DatabaseType
+	p.Builtin = pb.Builtin
+	p.TemplateData = pb.TemplateData
+	if pb.CreatedAt != nil {
+		p.CreatedAt = ratelcast.TimestampToTime(pb.CreatedAt)
+	}
+	if pb.UpdatedAt != nil {
+		p.UpdatedAt = ratelcast.TimestampToTime(pb.UpdatedAt)
+	}
+	return p
+}
+
+// IntoPb converts plain struct to protobuf message
+func (p *TopologyTemplateRecordScanner) IntoPb() *TopologyTemplateRecord {
+	if p == nil {
+		return nil
+	}
+	pb := &TopologyTemplateRecord{}
+
+	pb.Id = p.Id
+	pb.Name = p.Name
+	pb.Description = p.Description
+	pb.DatabaseType = p.DatabaseType
+	pb.Builtin = p.Builtin
+	pb.TemplateData = p.TemplateData
+	pb.CreatedAt = ratelcast.TimeToTimestamp(p.CreatedAt)
+	pb.UpdatedAt = ratelcast.TimeToTimestamp(p.UpdatedAt)
+	return pb
+}
+
 type WorkloadRecordScanner struct {
 	Id          string    `json:"id"`
 	Name        string    `json:"name"`

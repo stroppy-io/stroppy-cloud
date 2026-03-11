@@ -354,6 +354,108 @@ func (x *RunRecord) GetResults() []byte {
 	return nil
 }
 
+type TopologyTemplateRecord struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	Id          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name        string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description *string                `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// 0=unspecified, 1=postgres, 2=picodata
+	DatabaseType int32 `protobuf:"varint,4,opt,name=database_type,json=databaseType,proto3" json:"database_type,omitempty"`
+	Builtin      bool  `protobuf:"varint,5,opt,name=builtin,proto3" json:"builtin,omitempty"`
+	// Serialized database.Database.Template as JSON bytes.
+	TemplateData  []byte                 `protobuf:"bytes,6,opt,name=template_data,json=templateData,proto3" json:"template_data,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TopologyTemplateRecord) Reset() {
+	*x = TopologyTemplateRecord{}
+	mi := &file_models_domain_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TopologyTemplateRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TopologyTemplateRecord) ProtoMessage() {}
+
+func (x *TopologyTemplateRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_models_domain_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TopologyTemplateRecord.ProtoReflect.Descriptor instead.
+func (*TopologyTemplateRecord) Descriptor() ([]byte, []int) {
+	return file_models_domain_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *TopologyTemplateRecord) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *TopologyTemplateRecord) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TopologyTemplateRecord) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *TopologyTemplateRecord) GetDatabaseType() int32 {
+	if x != nil {
+		return x.DatabaseType
+	}
+	return 0
+}
+
+func (x *TopologyTemplateRecord) GetBuiltin() bool {
+	if x != nil {
+		return x.Builtin
+	}
+	return false
+}
+
+func (x *TopologyTemplateRecord) GetTemplateData() []byte {
+	if x != nil {
+		return x.TemplateData
+	}
+	return nil
+}
+
+func (x *TopologyTemplateRecord) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *TopologyTemplateRecord) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
 type WorkloadRecord struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Id          string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -371,7 +473,7 @@ type WorkloadRecord struct {
 
 func (x *WorkloadRecord) Reset() {
 	*x = WorkloadRecord{}
-	mi := &file_models_domain_proto_msgTypes[3]
+	mi := &file_models_domain_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -383,7 +485,7 @@ func (x *WorkloadRecord) String() string {
 func (*WorkloadRecord) ProtoMessage() {}
 
 func (x *WorkloadRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_models_domain_proto_msgTypes[3]
+	mi := &file_models_domain_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +498,7 @@ func (x *WorkloadRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkloadRecord.ProtoReflect.Descriptor instead.
 func (*WorkloadRecord) Descriptor() ([]byte, []int) {
-	return file_models_domain_proto_rawDescGZIP(), []int{3}
+	return file_models_domain_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *WorkloadRecord) GetId() string {
@@ -526,7 +628,21 @@ const file_models_domain_proto_rawDesc = "" +
 	"\x0e_error_messageB\x06\n" +
 	"\x04_dagB\n" +
 	"\n" +
-	"\b_results\"\x93\x03\n" +
+	"\b_results\"\x99\x04\n" +
+	"\x16TopologyTemplateRecord\x12\"\n" +
+	"\x02id\x18\x01 \x01(\tB\x12\x9a\xb5\x18\x0e\x12\f\x10\x01*\bid <> ''R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x12.\n" +
+	"\rdatabase_type\x18\x04 \x01(\x05B\t\x9a\xb5\x18\x05\x12\x03\x1a\x010R\fdatabaseType\x12'\n" +
+	"\abuiltin\x18\x05 \x01(\bB\r\x9a\xb5\x18\t\x12\a\x1a\x05falseR\abuiltin\x12#\n" +
+	"\rtemplate_data\x18\x06 \x01(\fR\ftemplateData\x12H\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\r\x9a\xb5\x18\t\x12\a\x1a\x05now()R\tcreatedAt\x12H\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\r\x9a\xb5\x18\t\x12\a\x1a\x05now()R\tupdatedAt:~\x92\xb5\x18t\b\x01\x12\x12topology_templates*%\n" +
+	"\x1bidx_topology_templates_name\x12\x04name\x18\x01*5\n" +
+	"$idx_topology_templates_database_type\x12\rdatabase_type\x82\xa6\x1d\x02\b\x01B\x0e\n" +
+	"\f_description\"\x93\x03\n" +
 	"\x0eWorkloadRecord\x12\"\n" +
 	"\x02id\x18\x01 \x01(\tB\x12\x9a\xb5\x18\x0e\x12\f\x10\x01*\bid <> ''R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
@@ -554,28 +670,31 @@ func file_models_domain_proto_rawDescGZIP() []byte {
 	return file_models_domain_proto_rawDescData
 }
 
-var file_models_domain_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_models_domain_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_models_domain_proto_goTypes = []any{
-	(*SettingsRecord)(nil),        // 0: models.SettingsRecord
-	(*SuiteRecord)(nil),           // 1: models.SuiteRecord
-	(*RunRecord)(nil),             // 2: models.RunRecord
-	(*WorkloadRecord)(nil),        // 3: models.WorkloadRecord
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
+	(*SettingsRecord)(nil),         // 0: models.SettingsRecord
+	(*SuiteRecord)(nil),            // 1: models.SuiteRecord
+	(*RunRecord)(nil),              // 2: models.RunRecord
+	(*TopologyTemplateRecord)(nil), // 3: models.TopologyTemplateRecord
+	(*WorkloadRecord)(nil),         // 4: models.WorkloadRecord
+	(*timestamppb.Timestamp)(nil),  // 5: google.protobuf.Timestamp
 }
 var file_models_domain_proto_depIdxs = []int32{
-	4, // 0: models.SettingsRecord.updated_at:type_name -> google.protobuf.Timestamp
-	4, // 1: models.SuiteRecord.created_at:type_name -> google.protobuf.Timestamp
-	4, // 2: models.SuiteRecord.started_at:type_name -> google.protobuf.Timestamp
-	4, // 3: models.SuiteRecord.finished_at:type_name -> google.protobuf.Timestamp
-	4, // 4: models.RunRecord.created_at:type_name -> google.protobuf.Timestamp
-	4, // 5: models.RunRecord.started_at:type_name -> google.protobuf.Timestamp
-	4, // 6: models.RunRecord.finished_at:type_name -> google.protobuf.Timestamp
-	4, // 7: models.WorkloadRecord.created_at:type_name -> google.protobuf.Timestamp
-	8, // [8:8] is the sub-list for method output_type
-	8, // [8:8] is the sub-list for method input_type
-	8, // [8:8] is the sub-list for extension type_name
-	8, // [8:8] is the sub-list for extension extendee
-	0, // [0:8] is the sub-list for field type_name
+	5,  // 0: models.SettingsRecord.updated_at:type_name -> google.protobuf.Timestamp
+	5,  // 1: models.SuiteRecord.created_at:type_name -> google.protobuf.Timestamp
+	5,  // 2: models.SuiteRecord.started_at:type_name -> google.protobuf.Timestamp
+	5,  // 3: models.SuiteRecord.finished_at:type_name -> google.protobuf.Timestamp
+	5,  // 4: models.RunRecord.created_at:type_name -> google.protobuf.Timestamp
+	5,  // 5: models.RunRecord.started_at:type_name -> google.protobuf.Timestamp
+	5,  // 6: models.RunRecord.finished_at:type_name -> google.protobuf.Timestamp
+	5,  // 7: models.TopologyTemplateRecord.created_at:type_name -> google.protobuf.Timestamp
+	5,  // 8: models.TopologyTemplateRecord.updated_at:type_name -> google.protobuf.Timestamp
+	5,  // 9: models.WorkloadRecord.created_at:type_name -> google.protobuf.Timestamp
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_models_domain_proto_init() }
@@ -586,13 +705,14 @@ func file_models_domain_proto_init() {
 	file_models_domain_proto_msgTypes[1].OneofWrappers = []any{}
 	file_models_domain_proto_msgTypes[2].OneofWrappers = []any{}
 	file_models_domain_proto_msgTypes[3].OneofWrappers = []any{}
+	file_models_domain_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_models_domain_proto_rawDesc), len(file_models_domain_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -8,6 +8,7 @@ package api
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
+	database "github.com/stroppy-io/hatchet-workflow/internal/proto/database"
 	deployment "github.com/stroppy-io/hatchet-workflow/internal/proto/deployment"
 	settings "github.com/stroppy-io/hatchet-workflow/internal/proto/settings"
 	stroppy "github.com/stroppy-io/hatchet-workflow/internal/proto/stroppy"
@@ -245,6 +246,55 @@ func (DryRunCheckStatus) EnumDescriptor() ([]byte, []int) {
 	return file_api_api_proto_rawDescGZIP(), []int{3}
 }
 
+type DatabaseType int32
+
+const (
+	DatabaseType_DATABASE_TYPE_UNSPECIFIED DatabaseType = 0
+	DatabaseType_DATABASE_TYPE_POSTGRES    DatabaseType = 1
+	DatabaseType_DATABASE_TYPE_PICODATA    DatabaseType = 2
+)
+
+// Enum value maps for DatabaseType.
+var (
+	DatabaseType_name = map[int32]string{
+		0: "DATABASE_TYPE_UNSPECIFIED",
+		1: "DATABASE_TYPE_POSTGRES",
+		2: "DATABASE_TYPE_PICODATA",
+	}
+	DatabaseType_value = map[string]int32{
+		"DATABASE_TYPE_UNSPECIFIED": 0,
+		"DATABASE_TYPE_POSTGRES":    1,
+		"DATABASE_TYPE_PICODATA":    2,
+	}
+)
+
+func (x DatabaseType) Enum() *DatabaseType {
+	p := new(DatabaseType)
+	*p = x
+	return p
+}
+
+func (x DatabaseType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DatabaseType) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_api_proto_enumTypes[4].Descriptor()
+}
+
+func (DatabaseType) Type() protoreflect.EnumType {
+	return &file_api_api_proto_enumTypes[4]
+}
+
+func (x DatabaseType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DatabaseType.Descriptor instead.
+func (DatabaseType) EnumDescriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{4}
+}
+
 type RunStatus int32
 
 const (
@@ -287,11 +337,11 @@ func (x RunStatus) String() string {
 }
 
 func (RunStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_api_api_proto_enumTypes[4].Descriptor()
+	return file_api_api_proto_enumTypes[5].Descriptor()
 }
 
 func (RunStatus) Type() protoreflect.EnumType {
-	return &file_api_api_proto_enumTypes[4]
+	return &file_api_api_proto_enumTypes[5]
 }
 
 func (x RunStatus) Number() protoreflect.EnumNumber {
@@ -300,7 +350,7 @@ func (x RunStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RunStatus.Descriptor instead.
 func (RunStatus) EnumDescriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{4}
+	return file_api_api_proto_rawDescGZIP(), []int{5}
 }
 
 type RunTestSuiteRequest struct {
@@ -3210,6 +3260,602 @@ func (x *EnvParam) GetDescription() string {
 	return ""
 }
 
+type TopologyTemplate struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Id            string                      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                      `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description   *string                     `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	DatabaseType  DatabaseType                `protobuf:"varint,4,opt,name=database_type,json=databaseType,proto3,enum=api.DatabaseType" json:"database_type,omitempty"`
+	Builtin       bool                        `protobuf:"varint,5,opt,name=builtin,proto3" json:"builtin,omitempty"`
+	Template      *database.Database_Template `protobuf:"bytes,6,opt,name=template,proto3" json:"template,omitempty"`
+	CreatedAt     *timestamppb.Timestamp      `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp      `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TopologyTemplate) Reset() {
+	*x = TopologyTemplate{}
+	mi := &file_api_api_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TopologyTemplate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TopologyTemplate) ProtoMessage() {}
+
+func (x *TopologyTemplate) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TopologyTemplate.ProtoReflect.Descriptor instead.
+func (*TopologyTemplate) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{52}
+}
+
+func (x *TopologyTemplate) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *TopologyTemplate) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TopologyTemplate) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *TopologyTemplate) GetDatabaseType() DatabaseType {
+	if x != nil {
+		return x.DatabaseType
+	}
+	return DatabaseType_DATABASE_TYPE_UNSPECIFIED
+}
+
+func (x *TopologyTemplate) GetBuiltin() bool {
+	if x != nil {
+		return x.Builtin
+	}
+	return false
+}
+
+func (x *TopologyTemplate) GetTemplate() *database.Database_Template {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+func (x *TopologyTemplate) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *TopologyTemplate) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type CreateTopologyTemplateRequest struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	Name          string                      `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   *string                     `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Template      *database.Database_Template `protobuf:"bytes,3,opt,name=template,proto3" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTopologyTemplateRequest) Reset() {
+	*x = CreateTopologyTemplateRequest{}
+	mi := &file_api_api_proto_msgTypes[53]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTopologyTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTopologyTemplateRequest) ProtoMessage() {}
+
+func (x *CreateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[53]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTopologyTemplateRequest.ProtoReflect.Descriptor instead.
+func (*CreateTopologyTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{53}
+}
+
+func (x *CreateTopologyTemplateRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateTopologyTemplateRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *CreateTopologyTemplateRequest) GetTemplate() *database.Database_Template {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type CreateTopologyTemplateResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TopologyTemplate *TopologyTemplate      `protobuf:"bytes,1,opt,name=topology_template,json=topologyTemplate,proto3" json:"topology_template,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *CreateTopologyTemplateResponse) Reset() {
+	*x = CreateTopologyTemplateResponse{}
+	mi := &file_api_api_proto_msgTypes[54]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTopologyTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTopologyTemplateResponse) ProtoMessage() {}
+
+func (x *CreateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[54]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTopologyTemplateResponse.ProtoReflect.Descriptor instead.
+func (*CreateTopologyTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{54}
+}
+
+func (x *CreateTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
+	if x != nil {
+		return x.TopologyTemplate
+	}
+	return nil
+}
+
+type ListTopologyTemplatesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offset        int64                  `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         int64                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
+	DatabaseType  *DatabaseType          `protobuf:"varint,3,opt,name=database_type,json=databaseType,proto3,enum=api.DatabaseType,oneof" json:"database_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTopologyTemplatesRequest) Reset() {
+	*x = ListTopologyTemplatesRequest{}
+	mi := &file_api_api_proto_msgTypes[55]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTopologyTemplatesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTopologyTemplatesRequest) ProtoMessage() {}
+
+func (x *ListTopologyTemplatesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[55]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTopologyTemplatesRequest.ProtoReflect.Descriptor instead.
+func (*ListTopologyTemplatesRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{55}
+}
+
+func (x *ListTopologyTemplatesRequest) GetOffset() int64 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *ListTopologyTemplatesRequest) GetLimit() int64 {
+	if x != nil {
+		return x.Limit
+	}
+	return 0
+}
+
+func (x *ListTopologyTemplatesRequest) GetDatabaseType() DatabaseType {
+	if x != nil && x.DatabaseType != nil {
+		return *x.DatabaseType
+	}
+	return DatabaseType_DATABASE_TYPE_UNSPECIFIED
+}
+
+type ListTopologyTemplatesResponse struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	TopologyTemplates []*TopologyTemplate    `protobuf:"bytes,1,rep,name=topology_templates,json=topologyTemplates,proto3" json:"topology_templates,omitempty"`
+	Total             int64                  `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ListTopologyTemplatesResponse) Reset() {
+	*x = ListTopologyTemplatesResponse{}
+	mi := &file_api_api_proto_msgTypes[56]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTopologyTemplatesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTopologyTemplatesResponse) ProtoMessage() {}
+
+func (x *ListTopologyTemplatesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[56]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTopologyTemplatesResponse.ProtoReflect.Descriptor instead.
+func (*ListTopologyTemplatesResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{56}
+}
+
+func (x *ListTopologyTemplatesResponse) GetTopologyTemplates() []*TopologyTemplate {
+	if x != nil {
+		return x.TopologyTemplates
+	}
+	return nil
+}
+
+func (x *ListTopologyTemplatesResponse) GetTotal() int64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+type GetTopologyTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId    string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTopologyTemplateRequest) Reset() {
+	*x = GetTopologyTemplateRequest{}
+	mi := &file_api_api_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTopologyTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTopologyTemplateRequest) ProtoMessage() {}
+
+func (x *GetTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTopologyTemplateRequest.ProtoReflect.Descriptor instead.
+func (*GetTopologyTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{57}
+}
+
+func (x *GetTopologyTemplateRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+type GetTopologyTemplateResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TopologyTemplate *TopologyTemplate      `protobuf:"bytes,1,opt,name=topology_template,json=topologyTemplate,proto3" json:"topology_template,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *GetTopologyTemplateResponse) Reset() {
+	*x = GetTopologyTemplateResponse{}
+	mi := &file_api_api_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTopologyTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTopologyTemplateResponse) ProtoMessage() {}
+
+func (x *GetTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTopologyTemplateResponse.ProtoReflect.Descriptor instead.
+func (*GetTopologyTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *GetTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
+	if x != nil {
+		return x.TopologyTemplate
+	}
+	return nil
+}
+
+type UpdateTopologyTemplateRequest struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	TemplateId    string                      `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	Name          *string                     `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`
+	Description   *string                     `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Template      *database.Database_Template `protobuf:"bytes,4,opt,name=template,proto3,oneof" json:"template,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateTopologyTemplateRequest) Reset() {
+	*x = UpdateTopologyTemplateRequest{}
+	mi := &file_api_api_proto_msgTypes[59]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTopologyTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTopologyTemplateRequest) ProtoMessage() {}
+
+func (x *UpdateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[59]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTopologyTemplateRequest.ProtoReflect.Descriptor instead.
+func (*UpdateTopologyTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *UpdateTopologyTemplateRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+func (x *UpdateTopologyTemplateRequest) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *UpdateTopologyTemplateRequest) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *UpdateTopologyTemplateRequest) GetTemplate() *database.Database_Template {
+	if x != nil {
+		return x.Template
+	}
+	return nil
+}
+
+type UpdateTopologyTemplateResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TopologyTemplate *TopologyTemplate      `protobuf:"bytes,1,opt,name=topology_template,json=topologyTemplate,proto3" json:"topology_template,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *UpdateTopologyTemplateResponse) Reset() {
+	*x = UpdateTopologyTemplateResponse{}
+	mi := &file_api_api_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateTopologyTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateTopologyTemplateResponse) ProtoMessage() {}
+
+func (x *UpdateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateTopologyTemplateResponse.ProtoReflect.Descriptor instead.
+func (*UpdateTopologyTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *UpdateTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
+	if x != nil {
+		return x.TopologyTemplate
+	}
+	return nil
+}
+
+type DeleteTopologyTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TemplateId    string                 `protobuf:"bytes,1,opt,name=template_id,json=templateId,proto3" json:"template_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTopologyTemplateRequest) Reset() {
+	*x = DeleteTopologyTemplateRequest{}
+	mi := &file_api_api_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTopologyTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTopologyTemplateRequest) ProtoMessage() {}
+
+func (x *DeleteTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTopologyTemplateRequest.ProtoReflect.Descriptor instead.
+func (*DeleteTopologyTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *DeleteTopologyTemplateRequest) GetTemplateId() string {
+	if x != nil {
+		return x.TemplateId
+	}
+	return ""
+}
+
+type DeleteTopologyTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTopologyTemplateResponse) Reset() {
+	*x = DeleteTopologyTemplateResponse{}
+	mi := &file_api_api_proto_msgTypes[62]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTopologyTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTopologyTemplateResponse) ProtoMessage() {}
+
+func (x *DeleteTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[62]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTopologyTemplateResponse.ProtoReflect.Descriptor instead.
+func (*DeleteTopologyTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{62}
+}
+
 type Run struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RunId         string                 `protobuf:"bytes,1,opt,name=run_id,json=runId,proto3" json:"run_id,omitempty"`
@@ -3229,7 +3875,7 @@ type Run struct {
 
 func (x *Run) Reset() {
 	*x = Run{}
-	mi := &file_api_api_proto_msgTypes[52]
+	mi := &file_api_api_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3241,7 +3887,7 @@ func (x *Run) String() string {
 func (*Run) ProtoMessage() {}
 
 func (x *Run) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[52]
+	mi := &file_api_api_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3254,7 +3900,7 @@ func (x *Run) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Run.ProtoReflect.Descriptor instead.
 func (*Run) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{52}
+	return file_api_api_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *Run) GetRunId() string {
@@ -3351,7 +3997,7 @@ type TaskNode struct {
 
 func (x *TaskNode) Reset() {
 	*x = TaskNode{}
-	mi := &file_api_api_proto_msgTypes[53]
+	mi := &file_api_api_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3363,7 +4009,7 @@ func (x *TaskNode) String() string {
 func (*TaskNode) ProtoMessage() {}
 
 func (x *TaskNode) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[53]
+	mi := &file_api_api_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3376,7 +4022,7 @@ func (x *TaskNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskNode.ProtoReflect.Descriptor instead.
 func (*TaskNode) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{53}
+	return file_api_api_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *TaskNode) GetTaskId() string {
@@ -3446,7 +4092,7 @@ var File_api_api_proto protoreflect.FileDescriptor
 
 const file_api_api_proto_rawDesc = "" +
 	"\n" +
-	"\rapi/api.proto\x12\x03api\x1a\x1bdeployment/deployment.proto\x1a\x17settings/settings.proto\x1a\x12stroppy/test.proto\x1a\x1aproto/stroppy/config.proto\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xb9\x01\n" +
+	"\rapi/api.proto\x12\x03api\x1a\x17database/database.proto\x1a\x1bdeployment/deployment.proto\x1a\x17settings/settings.proto\x1a\x12stroppy/test.proto\x1a\x1aproto/stroppy/config.proto\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xb9\x01\n" +
 	"\x13RunTestSuiteRequest\x122\n" +
 	"\x05suite\x18\x01 \x01(\v2\x12.stroppy.TestSuiteB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x05suite\x128\n" +
 	"\bsettings\x18\x02 \x01(\v2\x12.settings.SettingsB\b\xfaB\x05\x8a\x01\x02\x10\x01R\bsettings\x124\n" +
@@ -3661,7 +4307,54 @@ const file_api_api_proto_rawDesc = "" +
 	"\bEnvParam\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12#\n" +
 	"\rdefault_value\x18\x02 \x01(\tR\fdefaultValue\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\"\xb8\x04\n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\"\xee\x02\n" +
+	"\x10TopologyTemplate\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x00R\vdescription\x88\x01\x01\x126\n" +
+	"\rdatabase_type\x18\x04 \x01(\x0e2\x11.api.DatabaseTypeR\fdatabaseType\x12\x18\n" +
+	"\abuiltin\x18\x05 \x01(\bR\abuiltin\x127\n" +
+	"\btemplate\x18\x06 \x01(\v2\x1b.database.Database.TemplateR\btemplate\x129\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\x0e\n" +
+	"\f_description\"\xb6\x01\n" +
+	"\x1dCreateTopologyTemplateRequest\x12\x1b\n" +
+	"\x04name\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\x04name\x12%\n" +
+	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12A\n" +
+	"\btemplate\x18\x03 \x01(\v2\x1b.database.Database.TemplateB\b\xfaB\x05\x8a\x01\x02\x10\x01R\btemplateB\x0e\n" +
+	"\f_description\"d\n" +
+	"\x1eCreateTopologyTemplateResponse\x12B\n" +
+	"\x11topology_template\x18\x01 \x01(\v2\x15.api.TopologyTemplateR\x10topologyTemplate\"\x9b\x01\n" +
+	"\x1cListTopologyTemplatesRequest\x12\x16\n" +
+	"\x06offset\x18\x01 \x01(\x03R\x06offset\x12\x14\n" +
+	"\x05limit\x18\x02 \x01(\x03R\x05limit\x12;\n" +
+	"\rdatabase_type\x18\x03 \x01(\x0e2\x11.api.DatabaseTypeH\x00R\fdatabaseType\x88\x01\x01B\x10\n" +
+	"\x0e_database_type\"{\n" +
+	"\x1dListTopologyTemplatesResponse\x12D\n" +
+	"\x12topology_templates\x18\x01 \x03(\v2\x15.api.TopologyTemplateR\x11topologyTemplates\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"F\n" +
+	"\x1aGetTopologyTemplateRequest\x12(\n" +
+	"\vtemplate_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\n" +
+	"templateId\"a\n" +
+	"\x1bGetTopologyTemplateResponse\x12B\n" +
+	"\x11topology_template\x18\x01 \x01(\v2\x15.api.TopologyTemplateR\x10topologyTemplate\"\xed\x01\n" +
+	"\x1dUpdateTopologyTemplateRequest\x12(\n" +
+	"\vtemplate_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\n" +
+	"templateId\x12\x17\n" +
+	"\x04name\x18\x02 \x01(\tH\x00R\x04name\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12<\n" +
+	"\btemplate\x18\x04 \x01(\v2\x1b.database.Database.TemplateH\x02R\btemplate\x88\x01\x01B\a\n" +
+	"\x05_nameB\x0e\n" +
+	"\f_descriptionB\v\n" +
+	"\t_template\"d\n" +
+	"\x1eUpdateTopologyTemplateResponse\x12B\n" +
+	"\x11topology_template\x18\x01 \x01(\v2\x15.api.TopologyTemplateR\x10topologyTemplate\"I\n" +
+	"\x1dDeleteTopologyTemplateRequest\x12(\n" +
+	"\vtemplate_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\n" +
+	"templateId\" \n" +
+	"\x1eDeleteTopologyTemplateResponse\"\xb8\x04\n" +
 	"\x03Run\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\x12&\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x0e.api.RunStatusR\x06status\x12(\n" +
@@ -3724,15 +4417,18 @@ const file_api_api_proto_rawDesc = "" +
 	"\x1cDRY_RUN_CHECK_STATUS_RUNNING\x10\x01\x12\x1f\n" +
 	"\x1bDRY_RUN_CHECK_STATUS_PASSED\x10\x02\x12\x1f\n" +
 	"\x1bDRY_RUN_CHECK_STATUS_FAILED\x10\x03\x12 \n" +
-	"\x1cDRY_RUN_CHECK_STATUS_SKIPPED\x10\x04*\x9a\x01\n" +
+	"\x1cDRY_RUN_CHECK_STATUS_SKIPPED\x10\x04*e\n" +
+	"\fDatabaseType\x12\x1d\n" +
+	"\x19DATABASE_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16DATABASE_TYPE_POSTGRES\x10\x01\x12\x1a\n" +
+	"\x16DATABASE_TYPE_PICODATA\x10\x02*\x9a\x01\n" +
 	"\tRunStatus\x12\x13\n" +
 	"\x0fRUN_STATUS_NONE\x10\x00\x12\x15\n" +
 	"\x11RUN_STATUS_QUEUED\x10\x01\x12\x16\n" +
 	"\x12RUN_STATUS_RUNNING\x10\x02\x12\x18\n" +
 	"\x14RUN_STATUS_COMPLETED\x10\x03\x12\x15\n" +
 	"\x11RUN_STATUS_FAILED\x10\x04\x12\x18\n" +
-	"\x14RUN_STATUS_CANCELLED\x10\x052\xda\n" +
-	"\n" +
+	"\x14RUN_STATUS_CANCELLED\x10\x052\xbd\x0e\n" +
 	"\n" +
 	"StroppyAPI\x12C\n" +
 	"\fRunTestSuite\x12\x18.api.RunTestSuiteRequest\x1a\x19.api.RunTestSuiteResponse\x12:\n" +
@@ -3756,7 +4452,12 @@ const file_api_api_proto_rawDesc = "" +
 	"\rListWorkloads\x12\x19.api.ListWorkloadsRequest\x1a\x1a.api.ListWorkloadsResponse\x12@\n" +
 	"\vGetWorkload\x12\x17.api.GetWorkloadRequest\x1a\x18.api.GetWorkloadResponse\x12I\n" +
 	"\x0eDeleteWorkload\x12\x1a.api.DeleteWorkloadRequest\x1a\x1b.api.DeleteWorkloadResponse\x12@\n" +
-	"\vProbeScript\x12\x17.api.ProbeScriptRequest\x1a\x18.api.ProbeScriptResponseB;Z9github.com/stroppy-io/hatchet-workflow/internal/proto/apib\x06proto3"
+	"\vProbeScript\x12\x17.api.ProbeScriptRequest\x1a\x18.api.ProbeScriptResponse\x12a\n" +
+	"\x16CreateTopologyTemplate\x12\".api.CreateTopologyTemplateRequest\x1a#.api.CreateTopologyTemplateResponse\x12^\n" +
+	"\x15ListTopologyTemplates\x12!.api.ListTopologyTemplatesRequest\x1a\".api.ListTopologyTemplatesResponse\x12X\n" +
+	"\x13GetTopologyTemplate\x12\x1f.api.GetTopologyTemplateRequest\x1a .api.GetTopologyTemplateResponse\x12a\n" +
+	"\x16UpdateTopologyTemplate\x12\".api.UpdateTopologyTemplateRequest\x1a#.api.UpdateTopologyTemplateResponse\x12a\n" +
+	"\x16DeleteTopologyTemplate\x12\".api.DeleteTopologyTemplateRequest\x1a#.api.DeleteTopologyTemplateResponseB;Z9github.com/stroppy-io/hatchet-workflow/internal/proto/apib\x06proto3"
 
 var (
 	file_api_api_proto_rawDescOnce sync.Once
@@ -3770,192 +4471,226 @@ func file_api_api_proto_rawDescGZIP() []byte {
 	return file_api_api_proto_rawDescData
 }
 
-var file_api_api_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
-var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 54)
+var file_api_api_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 65)
 var file_api_api_proto_goTypes = []any{
-	(TaskEventType)(0),               // 0: api.TaskEventType
-	(MetricVerdict)(0),               // 1: api.MetricVerdict
-	(ValidationSeverity)(0),          // 2: api.ValidationSeverity
-	(DryRunCheckStatus)(0),           // 3: api.DryRunCheckStatus
-	(RunStatus)(0),                   // 4: api.RunStatus
-	(*RunTestSuiteRequest)(nil),      // 5: api.RunTestSuiteRequest
-	(*RunTestSuiteResponse)(nil),     // 6: api.RunTestSuiteResponse
-	(*CancelRunRequest)(nil),         // 7: api.CancelRunRequest
-	(*CancelRunResponse)(nil),        // 8: api.CancelRunResponse
-	(*GetRunRequest)(nil),            // 9: api.GetRunRequest
-	(*GetRunResponse)(nil),           // 10: api.GetRunResponse
-	(*ListRunsRequest)(nil),          // 11: api.ListRunsRequest
-	(*ListRunsResponse)(nil),         // 12: api.ListRunsResponse
-	(*ListSuitesRequest)(nil),        // 13: api.ListSuitesRequest
-	(*ListSuitesResponse)(nil),       // 14: api.ListSuitesResponse
-	(*GetSuiteRequest)(nil),          // 15: api.GetSuiteRequest
-	(*GetSuiteResponse)(nil),         // 16: api.GetSuiteResponse
-	(*Suite)(nil),                    // 17: api.Suite
-	(*StreamRunRequest)(nil),         // 18: api.StreamRunRequest
-	(*StreamRunUpdate)(nil),          // 19: api.StreamRunUpdate
-	(*TaskEvent)(nil),                // 20: api.TaskEvent
-	(*LogEntry)(nil),                 // 21: api.LogEntry
-	(*GetSettingsRequest)(nil),       // 22: api.GetSettingsRequest
-	(*GetSettingsResponse)(nil),      // 23: api.GetSettingsResponse
-	(*UpdateSettingsRequest)(nil),    // 24: api.UpdateSettingsRequest
-	(*UpdateSettingsResponse)(nil),   // 25: api.UpdateSettingsResponse
-	(*CompareRunsRequest)(nil),       // 26: api.CompareRunsRequest
-	(*CompareRunsResponse)(nil),      // 27: api.CompareRunsResponse
-	(*RunSummary)(nil),               // 28: api.RunSummary
-	(*MetricComparison)(nil),         // 29: api.MetricComparison
-	(*ValidateTopologyRequest)(nil),  // 30: api.ValidateTopologyRequest
-	(*ValidateTopologyResponse)(nil), // 31: api.ValidateTopologyResponse
-	(*ValidationIssue)(nil),          // 32: api.ValidationIssue
-	(*DryRunRequest)(nil),            // 33: api.DryRunRequest
-	(*DryRunCheck)(nil),              // 34: api.DryRunCheck
-	(*LoginRequest)(nil),             // 35: api.LoginRequest
-	(*LoginResponse)(nil),            // 36: api.LoginResponse
-	(*RefreshTokenRequest)(nil),      // 37: api.RefreshTokenRequest
-	(*RefreshTokenResponse)(nil),     // 38: api.RefreshTokenResponse
-	(*LogoutRequest)(nil),            // 39: api.LogoutRequest
-	(*LogoutResponse)(nil),           // 40: api.LogoutResponse
-	(*GetCurrentUserRequest)(nil),    // 41: api.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),   // 42: api.GetCurrentUserResponse
-	(*User)(nil),                     // 43: api.User
-	(*RegisterWorkloadRequest)(nil),  // 44: api.RegisterWorkloadRequest
-	(*RegisterWorkloadResponse)(nil), // 45: api.RegisterWorkloadResponse
-	(*ListWorkloadsRequest)(nil),     // 46: api.ListWorkloadsRequest
-	(*ListWorkloadsResponse)(nil),    // 47: api.ListWorkloadsResponse
-	(*GetWorkloadRequest)(nil),       // 48: api.GetWorkloadRequest
-	(*GetWorkloadResponse)(nil),      // 49: api.GetWorkloadResponse
-	(*DeleteWorkloadRequest)(nil),    // 50: api.DeleteWorkloadRequest
-	(*DeleteWorkloadResponse)(nil),   // 51: api.DeleteWorkloadResponse
-	(*ProbeScriptRequest)(nil),       // 52: api.ProbeScriptRequest
-	(*ProbeScriptResponse)(nil),      // 53: api.ProbeScriptResponse
-	(*Workload)(nil),                 // 54: api.Workload
-	(*ProbeResult)(nil),              // 55: api.ProbeResult
-	(*EnvParam)(nil),                 // 56: api.EnvParam
-	(*Run)(nil),                      // 57: api.Run
-	(*TaskNode)(nil),                 // 58: api.TaskNode
-	(*stroppy.TestSuite)(nil),        // 59: stroppy.TestSuite
-	(*settings.Settings)(nil),        // 60: settings.Settings
-	(deployment.Target)(0),           // 61: deployment.Target
-	(*timestamppb.Timestamp)(nil),    // 62: google.protobuf.Timestamp
-	(*stroppy.TestSuiteResult)(nil),  // 63: stroppy.TestSuiteResult
-	(*stroppy.Test)(nil),             // 64: stroppy.Test
-	(*stroppy1.DriverConfig)(nil),    // 65: stroppy.DriverConfig
-	(*stroppy1.GlobalConfig)(nil),    // 66: stroppy.GlobalConfig
-	(*structpb.Struct)(nil),          // 67: google.protobuf.Struct
-	(*stroppy.TestResult)(nil),       // 68: stroppy.TestResult
+	(TaskEventType)(0),                     // 0: api.TaskEventType
+	(MetricVerdict)(0),                     // 1: api.MetricVerdict
+	(ValidationSeverity)(0),                // 2: api.ValidationSeverity
+	(DryRunCheckStatus)(0),                 // 3: api.DryRunCheckStatus
+	(DatabaseType)(0),                      // 4: api.DatabaseType
+	(RunStatus)(0),                         // 5: api.RunStatus
+	(*RunTestSuiteRequest)(nil),            // 6: api.RunTestSuiteRequest
+	(*RunTestSuiteResponse)(nil),           // 7: api.RunTestSuiteResponse
+	(*CancelRunRequest)(nil),               // 8: api.CancelRunRequest
+	(*CancelRunResponse)(nil),              // 9: api.CancelRunResponse
+	(*GetRunRequest)(nil),                  // 10: api.GetRunRequest
+	(*GetRunResponse)(nil),                 // 11: api.GetRunResponse
+	(*ListRunsRequest)(nil),                // 12: api.ListRunsRequest
+	(*ListRunsResponse)(nil),               // 13: api.ListRunsResponse
+	(*ListSuitesRequest)(nil),              // 14: api.ListSuitesRequest
+	(*ListSuitesResponse)(nil),             // 15: api.ListSuitesResponse
+	(*GetSuiteRequest)(nil),                // 16: api.GetSuiteRequest
+	(*GetSuiteResponse)(nil),               // 17: api.GetSuiteResponse
+	(*Suite)(nil),                          // 18: api.Suite
+	(*StreamRunRequest)(nil),               // 19: api.StreamRunRequest
+	(*StreamRunUpdate)(nil),                // 20: api.StreamRunUpdate
+	(*TaskEvent)(nil),                      // 21: api.TaskEvent
+	(*LogEntry)(nil),                       // 22: api.LogEntry
+	(*GetSettingsRequest)(nil),             // 23: api.GetSettingsRequest
+	(*GetSettingsResponse)(nil),            // 24: api.GetSettingsResponse
+	(*UpdateSettingsRequest)(nil),          // 25: api.UpdateSettingsRequest
+	(*UpdateSettingsResponse)(nil),         // 26: api.UpdateSettingsResponse
+	(*CompareRunsRequest)(nil),             // 27: api.CompareRunsRequest
+	(*CompareRunsResponse)(nil),            // 28: api.CompareRunsResponse
+	(*RunSummary)(nil),                     // 29: api.RunSummary
+	(*MetricComparison)(nil),               // 30: api.MetricComparison
+	(*ValidateTopologyRequest)(nil),        // 31: api.ValidateTopologyRequest
+	(*ValidateTopologyResponse)(nil),       // 32: api.ValidateTopologyResponse
+	(*ValidationIssue)(nil),                // 33: api.ValidationIssue
+	(*DryRunRequest)(nil),                  // 34: api.DryRunRequest
+	(*DryRunCheck)(nil),                    // 35: api.DryRunCheck
+	(*LoginRequest)(nil),                   // 36: api.LoginRequest
+	(*LoginResponse)(nil),                  // 37: api.LoginResponse
+	(*RefreshTokenRequest)(nil),            // 38: api.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),           // 39: api.RefreshTokenResponse
+	(*LogoutRequest)(nil),                  // 40: api.LogoutRequest
+	(*LogoutResponse)(nil),                 // 41: api.LogoutResponse
+	(*GetCurrentUserRequest)(nil),          // 42: api.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),         // 43: api.GetCurrentUserResponse
+	(*User)(nil),                           // 44: api.User
+	(*RegisterWorkloadRequest)(nil),        // 45: api.RegisterWorkloadRequest
+	(*RegisterWorkloadResponse)(nil),       // 46: api.RegisterWorkloadResponse
+	(*ListWorkloadsRequest)(nil),           // 47: api.ListWorkloadsRequest
+	(*ListWorkloadsResponse)(nil),          // 48: api.ListWorkloadsResponse
+	(*GetWorkloadRequest)(nil),             // 49: api.GetWorkloadRequest
+	(*GetWorkloadResponse)(nil),            // 50: api.GetWorkloadResponse
+	(*DeleteWorkloadRequest)(nil),          // 51: api.DeleteWorkloadRequest
+	(*DeleteWorkloadResponse)(nil),         // 52: api.DeleteWorkloadResponse
+	(*ProbeScriptRequest)(nil),             // 53: api.ProbeScriptRequest
+	(*ProbeScriptResponse)(nil),            // 54: api.ProbeScriptResponse
+	(*Workload)(nil),                       // 55: api.Workload
+	(*ProbeResult)(nil),                    // 56: api.ProbeResult
+	(*EnvParam)(nil),                       // 57: api.EnvParam
+	(*TopologyTemplate)(nil),               // 58: api.TopologyTemplate
+	(*CreateTopologyTemplateRequest)(nil),  // 59: api.CreateTopologyTemplateRequest
+	(*CreateTopologyTemplateResponse)(nil), // 60: api.CreateTopologyTemplateResponse
+	(*ListTopologyTemplatesRequest)(nil),   // 61: api.ListTopologyTemplatesRequest
+	(*ListTopologyTemplatesResponse)(nil),  // 62: api.ListTopologyTemplatesResponse
+	(*GetTopologyTemplateRequest)(nil),     // 63: api.GetTopologyTemplateRequest
+	(*GetTopologyTemplateResponse)(nil),    // 64: api.GetTopologyTemplateResponse
+	(*UpdateTopologyTemplateRequest)(nil),  // 65: api.UpdateTopologyTemplateRequest
+	(*UpdateTopologyTemplateResponse)(nil), // 66: api.UpdateTopologyTemplateResponse
+	(*DeleteTopologyTemplateRequest)(nil),  // 67: api.DeleteTopologyTemplateRequest
+	(*DeleteTopologyTemplateResponse)(nil), // 68: api.DeleteTopologyTemplateResponse
+	(*Run)(nil),                            // 69: api.Run
+	(*TaskNode)(nil),                       // 70: api.TaskNode
+	(*stroppy.TestSuite)(nil),              // 71: stroppy.TestSuite
+	(*settings.Settings)(nil),              // 72: settings.Settings
+	(deployment.Target)(0),                 // 73: deployment.Target
+	(*timestamppb.Timestamp)(nil),          // 74: google.protobuf.Timestamp
+	(*stroppy.TestSuiteResult)(nil),        // 75: stroppy.TestSuiteResult
+	(*stroppy.Test)(nil),                   // 76: stroppy.Test
+	(*stroppy1.DriverConfig)(nil),          // 77: stroppy.DriverConfig
+	(*stroppy1.GlobalConfig)(nil),          // 78: stroppy.GlobalConfig
+	(*structpb.Struct)(nil),                // 79: google.protobuf.Struct
+	(*database.Database_Template)(nil),     // 80: database.Database.Template
+	(*stroppy.TestResult)(nil),             // 81: stroppy.TestResult
 }
 var file_api_api_proto_depIdxs = []int32{
-	59, // 0: api.RunTestSuiteRequest.suite:type_name -> stroppy.TestSuite
-	60, // 1: api.RunTestSuiteRequest.settings:type_name -> settings.Settings
-	61, // 2: api.RunTestSuiteRequest.target:type_name -> deployment.Target
-	57, // 3: api.GetRunResponse.run:type_name -> api.Run
-	4,  // 4: api.ListRunsRequest.statuses:type_name -> api.RunStatus
-	62, // 5: api.ListRunsRequest.since:type_name -> google.protobuf.Timestamp
-	62, // 6: api.ListRunsRequest.until:type_name -> google.protobuf.Timestamp
-	57, // 7: api.ListRunsResponse.runs:type_name -> api.Run
-	4,  // 8: api.ListSuitesRequest.statuses:type_name -> api.RunStatus
-	62, // 9: api.ListSuitesRequest.since:type_name -> google.protobuf.Timestamp
-	62, // 10: api.ListSuitesRequest.until:type_name -> google.protobuf.Timestamp
-	17, // 11: api.ListSuitesResponse.suites:type_name -> api.Suite
-	17, // 12: api.GetSuiteResponse.suite:type_name -> api.Suite
-	4,  // 13: api.Suite.status:type_name -> api.RunStatus
-	59, // 14: api.Suite.test_suite:type_name -> stroppy.TestSuite
-	61, // 15: api.Suite.target:type_name -> deployment.Target
-	62, // 16: api.Suite.created_at:type_name -> google.protobuf.Timestamp
-	62, // 17: api.Suite.started_at:type_name -> google.protobuf.Timestamp
-	62, // 18: api.Suite.finished_at:type_name -> google.protobuf.Timestamp
-	57, // 19: api.Suite.runs:type_name -> api.Run
-	63, // 20: api.Suite.results:type_name -> stroppy.TestSuiteResult
-	62, // 21: api.StreamRunUpdate.timestamp:type_name -> google.protobuf.Timestamp
-	20, // 22: api.StreamRunUpdate.task_event:type_name -> api.TaskEvent
-	21, // 23: api.StreamRunUpdate.log_entry:type_name -> api.LogEntry
-	0,  // 24: api.TaskEvent.event_type:type_name -> api.TaskEventType
-	60, // 25: api.GetSettingsResponse.settings:type_name -> settings.Settings
-	60, // 26: api.UpdateSettingsRequest.settings:type_name -> settings.Settings
-	60, // 27: api.UpdateSettingsResponse.settings:type_name -> settings.Settings
-	28, // 28: api.CompareRunsResponse.baseline:type_name -> api.RunSummary
-	28, // 29: api.CompareRunsResponse.candidate:type_name -> api.RunSummary
-	29, // 30: api.CompareRunsResponse.comparisons:type_name -> api.MetricComparison
-	62, // 31: api.RunSummary.started_at:type_name -> google.protobuf.Timestamp
-	62, // 32: api.RunSummary.finished_at:type_name -> google.protobuf.Timestamp
-	1,  // 33: api.MetricComparison.verdict:type_name -> api.MetricVerdict
-	64, // 34: api.ValidateTopologyRequest.test:type_name -> stroppy.Test
-	61, // 35: api.ValidateTopologyRequest.target:type_name -> deployment.Target
-	32, // 36: api.ValidateTopologyResponse.issues:type_name -> api.ValidationIssue
-	2,  // 37: api.ValidationIssue.severity:type_name -> api.ValidationSeverity
-	59, // 38: api.DryRunRequest.suite:type_name -> stroppy.TestSuite
-	60, // 39: api.DryRunRequest.settings:type_name -> settings.Settings
-	61, // 40: api.DryRunRequest.target:type_name -> deployment.Target
-	3,  // 41: api.DryRunCheck.status:type_name -> api.DryRunCheckStatus
-	43, // 42: api.LoginResponse.user:type_name -> api.User
-	43, // 43: api.GetCurrentUserResponse.user:type_name -> api.User
-	54, // 44: api.RegisterWorkloadResponse.workload:type_name -> api.Workload
-	54, // 45: api.ListWorkloadsResponse.workloads:type_name -> api.Workload
-	54, // 46: api.GetWorkloadResponse.workload:type_name -> api.Workload
-	55, // 47: api.ProbeScriptResponse.probe:type_name -> api.ProbeResult
-	55, // 48: api.Workload.probe:type_name -> api.ProbeResult
-	62, // 49: api.Workload.created_at:type_name -> google.protobuf.Timestamp
-	65, // 50: api.ProbeResult.driver_config:type_name -> stroppy.DriverConfig
-	66, // 51: api.ProbeResult.global_config:type_name -> stroppy.GlobalConfig
-	67, // 52: api.ProbeResult.k6_options:type_name -> google.protobuf.Struct
-	56, // 53: api.ProbeResult.env_params:type_name -> api.EnvParam
-	4,  // 54: api.Run.status:type_name -> api.RunStatus
-	59, // 55: api.Run.suite:type_name -> stroppy.TestSuite
-	61, // 56: api.Run.target:type_name -> deployment.Target
-	62, // 57: api.Run.created_at:type_name -> google.protobuf.Timestamp
-	62, // 58: api.Run.started_at:type_name -> google.protobuf.Timestamp
-	62, // 59: api.Run.finished_at:type_name -> google.protobuf.Timestamp
-	58, // 60: api.Run.dag:type_name -> api.TaskNode
-	68, // 61: api.Run.results:type_name -> stroppy.TestResult
-	4,  // 62: api.TaskNode.status:type_name -> api.RunStatus
-	62, // 63: api.TaskNode.started_at:type_name -> google.protobuf.Timestamp
-	62, // 64: api.TaskNode.finished_at:type_name -> google.protobuf.Timestamp
-	5,  // 65: api.StroppyAPI.RunTestSuite:input_type -> api.RunTestSuiteRequest
-	7,  // 66: api.StroppyAPI.CancelRun:input_type -> api.CancelRunRequest
-	9,  // 67: api.StroppyAPI.GetRun:input_type -> api.GetRunRequest
-	11, // 68: api.StroppyAPI.ListRuns:input_type -> api.ListRunsRequest
-	13, // 69: api.StroppyAPI.ListSuites:input_type -> api.ListSuitesRequest
-	15, // 70: api.StroppyAPI.GetSuite:input_type -> api.GetSuiteRequest
-	18, // 71: api.StroppyAPI.StreamRun:input_type -> api.StreamRunRequest
-	22, // 72: api.StroppyAPI.GetSettings:input_type -> api.GetSettingsRequest
-	24, // 73: api.StroppyAPI.UpdateSettings:input_type -> api.UpdateSettingsRequest
-	26, // 74: api.StroppyAPI.CompareRuns:input_type -> api.CompareRunsRequest
-	30, // 75: api.StroppyAPI.ValidateTopology:input_type -> api.ValidateTopologyRequest
-	33, // 76: api.StroppyAPI.DryRun:input_type -> api.DryRunRequest
-	35, // 77: api.StroppyAPI.Login:input_type -> api.LoginRequest
-	37, // 78: api.StroppyAPI.RefreshToken:input_type -> api.RefreshTokenRequest
-	39, // 79: api.StroppyAPI.Logout:input_type -> api.LogoutRequest
-	41, // 80: api.StroppyAPI.GetCurrentUser:input_type -> api.GetCurrentUserRequest
-	44, // 81: api.StroppyAPI.RegisterWorkload:input_type -> api.RegisterWorkloadRequest
-	46, // 82: api.StroppyAPI.ListWorkloads:input_type -> api.ListWorkloadsRequest
-	48, // 83: api.StroppyAPI.GetWorkload:input_type -> api.GetWorkloadRequest
-	50, // 84: api.StroppyAPI.DeleteWorkload:input_type -> api.DeleteWorkloadRequest
-	52, // 85: api.StroppyAPI.ProbeScript:input_type -> api.ProbeScriptRequest
-	6,  // 86: api.StroppyAPI.RunTestSuite:output_type -> api.RunTestSuiteResponse
-	8,  // 87: api.StroppyAPI.CancelRun:output_type -> api.CancelRunResponse
-	10, // 88: api.StroppyAPI.GetRun:output_type -> api.GetRunResponse
-	12, // 89: api.StroppyAPI.ListRuns:output_type -> api.ListRunsResponse
-	14, // 90: api.StroppyAPI.ListSuites:output_type -> api.ListSuitesResponse
-	16, // 91: api.StroppyAPI.GetSuite:output_type -> api.GetSuiteResponse
-	19, // 92: api.StroppyAPI.StreamRun:output_type -> api.StreamRunUpdate
-	23, // 93: api.StroppyAPI.GetSettings:output_type -> api.GetSettingsResponse
-	25, // 94: api.StroppyAPI.UpdateSettings:output_type -> api.UpdateSettingsResponse
-	27, // 95: api.StroppyAPI.CompareRuns:output_type -> api.CompareRunsResponse
-	31, // 96: api.StroppyAPI.ValidateTopology:output_type -> api.ValidateTopologyResponse
-	34, // 97: api.StroppyAPI.DryRun:output_type -> api.DryRunCheck
-	36, // 98: api.StroppyAPI.Login:output_type -> api.LoginResponse
-	38, // 99: api.StroppyAPI.RefreshToken:output_type -> api.RefreshTokenResponse
-	40, // 100: api.StroppyAPI.Logout:output_type -> api.LogoutResponse
-	42, // 101: api.StroppyAPI.GetCurrentUser:output_type -> api.GetCurrentUserResponse
-	45, // 102: api.StroppyAPI.RegisterWorkload:output_type -> api.RegisterWorkloadResponse
-	47, // 103: api.StroppyAPI.ListWorkloads:output_type -> api.ListWorkloadsResponse
-	49, // 104: api.StroppyAPI.GetWorkload:output_type -> api.GetWorkloadResponse
-	51, // 105: api.StroppyAPI.DeleteWorkload:output_type -> api.DeleteWorkloadResponse
-	53, // 106: api.StroppyAPI.ProbeScript:output_type -> api.ProbeScriptResponse
-	86, // [86:107] is the sub-list for method output_type
-	65, // [65:86] is the sub-list for method input_type
-	65, // [65:65] is the sub-list for extension type_name
-	65, // [65:65] is the sub-list for extension extendee
-	0,  // [0:65] is the sub-list for field type_name
+	71,  // 0: api.RunTestSuiteRequest.suite:type_name -> stroppy.TestSuite
+	72,  // 1: api.RunTestSuiteRequest.settings:type_name -> settings.Settings
+	73,  // 2: api.RunTestSuiteRequest.target:type_name -> deployment.Target
+	69,  // 3: api.GetRunResponse.run:type_name -> api.Run
+	5,   // 4: api.ListRunsRequest.statuses:type_name -> api.RunStatus
+	74,  // 5: api.ListRunsRequest.since:type_name -> google.protobuf.Timestamp
+	74,  // 6: api.ListRunsRequest.until:type_name -> google.protobuf.Timestamp
+	69,  // 7: api.ListRunsResponse.runs:type_name -> api.Run
+	5,   // 8: api.ListSuitesRequest.statuses:type_name -> api.RunStatus
+	74,  // 9: api.ListSuitesRequest.since:type_name -> google.protobuf.Timestamp
+	74,  // 10: api.ListSuitesRequest.until:type_name -> google.protobuf.Timestamp
+	18,  // 11: api.ListSuitesResponse.suites:type_name -> api.Suite
+	18,  // 12: api.GetSuiteResponse.suite:type_name -> api.Suite
+	5,   // 13: api.Suite.status:type_name -> api.RunStatus
+	71,  // 14: api.Suite.test_suite:type_name -> stroppy.TestSuite
+	73,  // 15: api.Suite.target:type_name -> deployment.Target
+	74,  // 16: api.Suite.created_at:type_name -> google.protobuf.Timestamp
+	74,  // 17: api.Suite.started_at:type_name -> google.protobuf.Timestamp
+	74,  // 18: api.Suite.finished_at:type_name -> google.protobuf.Timestamp
+	69,  // 19: api.Suite.runs:type_name -> api.Run
+	75,  // 20: api.Suite.results:type_name -> stroppy.TestSuiteResult
+	74,  // 21: api.StreamRunUpdate.timestamp:type_name -> google.protobuf.Timestamp
+	21,  // 22: api.StreamRunUpdate.task_event:type_name -> api.TaskEvent
+	22,  // 23: api.StreamRunUpdate.log_entry:type_name -> api.LogEntry
+	0,   // 24: api.TaskEvent.event_type:type_name -> api.TaskEventType
+	72,  // 25: api.GetSettingsResponse.settings:type_name -> settings.Settings
+	72,  // 26: api.UpdateSettingsRequest.settings:type_name -> settings.Settings
+	72,  // 27: api.UpdateSettingsResponse.settings:type_name -> settings.Settings
+	29,  // 28: api.CompareRunsResponse.baseline:type_name -> api.RunSummary
+	29,  // 29: api.CompareRunsResponse.candidate:type_name -> api.RunSummary
+	30,  // 30: api.CompareRunsResponse.comparisons:type_name -> api.MetricComparison
+	74,  // 31: api.RunSummary.started_at:type_name -> google.protobuf.Timestamp
+	74,  // 32: api.RunSummary.finished_at:type_name -> google.protobuf.Timestamp
+	1,   // 33: api.MetricComparison.verdict:type_name -> api.MetricVerdict
+	76,  // 34: api.ValidateTopologyRequest.test:type_name -> stroppy.Test
+	73,  // 35: api.ValidateTopologyRequest.target:type_name -> deployment.Target
+	33,  // 36: api.ValidateTopologyResponse.issues:type_name -> api.ValidationIssue
+	2,   // 37: api.ValidationIssue.severity:type_name -> api.ValidationSeverity
+	71,  // 38: api.DryRunRequest.suite:type_name -> stroppy.TestSuite
+	72,  // 39: api.DryRunRequest.settings:type_name -> settings.Settings
+	73,  // 40: api.DryRunRequest.target:type_name -> deployment.Target
+	3,   // 41: api.DryRunCheck.status:type_name -> api.DryRunCheckStatus
+	44,  // 42: api.LoginResponse.user:type_name -> api.User
+	44,  // 43: api.GetCurrentUserResponse.user:type_name -> api.User
+	55,  // 44: api.RegisterWorkloadResponse.workload:type_name -> api.Workload
+	55,  // 45: api.ListWorkloadsResponse.workloads:type_name -> api.Workload
+	55,  // 46: api.GetWorkloadResponse.workload:type_name -> api.Workload
+	56,  // 47: api.ProbeScriptResponse.probe:type_name -> api.ProbeResult
+	56,  // 48: api.Workload.probe:type_name -> api.ProbeResult
+	74,  // 49: api.Workload.created_at:type_name -> google.protobuf.Timestamp
+	77,  // 50: api.ProbeResult.driver_config:type_name -> stroppy.DriverConfig
+	78,  // 51: api.ProbeResult.global_config:type_name -> stroppy.GlobalConfig
+	79,  // 52: api.ProbeResult.k6_options:type_name -> google.protobuf.Struct
+	57,  // 53: api.ProbeResult.env_params:type_name -> api.EnvParam
+	4,   // 54: api.TopologyTemplate.database_type:type_name -> api.DatabaseType
+	80,  // 55: api.TopologyTemplate.template:type_name -> database.Database.Template
+	74,  // 56: api.TopologyTemplate.created_at:type_name -> google.protobuf.Timestamp
+	74,  // 57: api.TopologyTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	80,  // 58: api.CreateTopologyTemplateRequest.template:type_name -> database.Database.Template
+	58,  // 59: api.CreateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	4,   // 60: api.ListTopologyTemplatesRequest.database_type:type_name -> api.DatabaseType
+	58,  // 61: api.ListTopologyTemplatesResponse.topology_templates:type_name -> api.TopologyTemplate
+	58,  // 62: api.GetTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	80,  // 63: api.UpdateTopologyTemplateRequest.template:type_name -> database.Database.Template
+	58,  // 64: api.UpdateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	5,   // 65: api.Run.status:type_name -> api.RunStatus
+	71,  // 66: api.Run.suite:type_name -> stroppy.TestSuite
+	73,  // 67: api.Run.target:type_name -> deployment.Target
+	74,  // 68: api.Run.created_at:type_name -> google.protobuf.Timestamp
+	74,  // 69: api.Run.started_at:type_name -> google.protobuf.Timestamp
+	74,  // 70: api.Run.finished_at:type_name -> google.protobuf.Timestamp
+	70,  // 71: api.Run.dag:type_name -> api.TaskNode
+	81,  // 72: api.Run.results:type_name -> stroppy.TestResult
+	5,   // 73: api.TaskNode.status:type_name -> api.RunStatus
+	74,  // 74: api.TaskNode.started_at:type_name -> google.protobuf.Timestamp
+	74,  // 75: api.TaskNode.finished_at:type_name -> google.protobuf.Timestamp
+	6,   // 76: api.StroppyAPI.RunTestSuite:input_type -> api.RunTestSuiteRequest
+	8,   // 77: api.StroppyAPI.CancelRun:input_type -> api.CancelRunRequest
+	10,  // 78: api.StroppyAPI.GetRun:input_type -> api.GetRunRequest
+	12,  // 79: api.StroppyAPI.ListRuns:input_type -> api.ListRunsRequest
+	14,  // 80: api.StroppyAPI.ListSuites:input_type -> api.ListSuitesRequest
+	16,  // 81: api.StroppyAPI.GetSuite:input_type -> api.GetSuiteRequest
+	19,  // 82: api.StroppyAPI.StreamRun:input_type -> api.StreamRunRequest
+	23,  // 83: api.StroppyAPI.GetSettings:input_type -> api.GetSettingsRequest
+	25,  // 84: api.StroppyAPI.UpdateSettings:input_type -> api.UpdateSettingsRequest
+	27,  // 85: api.StroppyAPI.CompareRuns:input_type -> api.CompareRunsRequest
+	31,  // 86: api.StroppyAPI.ValidateTopology:input_type -> api.ValidateTopologyRequest
+	34,  // 87: api.StroppyAPI.DryRun:input_type -> api.DryRunRequest
+	36,  // 88: api.StroppyAPI.Login:input_type -> api.LoginRequest
+	38,  // 89: api.StroppyAPI.RefreshToken:input_type -> api.RefreshTokenRequest
+	40,  // 90: api.StroppyAPI.Logout:input_type -> api.LogoutRequest
+	42,  // 91: api.StroppyAPI.GetCurrentUser:input_type -> api.GetCurrentUserRequest
+	45,  // 92: api.StroppyAPI.RegisterWorkload:input_type -> api.RegisterWorkloadRequest
+	47,  // 93: api.StroppyAPI.ListWorkloads:input_type -> api.ListWorkloadsRequest
+	49,  // 94: api.StroppyAPI.GetWorkload:input_type -> api.GetWorkloadRequest
+	51,  // 95: api.StroppyAPI.DeleteWorkload:input_type -> api.DeleteWorkloadRequest
+	53,  // 96: api.StroppyAPI.ProbeScript:input_type -> api.ProbeScriptRequest
+	59,  // 97: api.StroppyAPI.CreateTopologyTemplate:input_type -> api.CreateTopologyTemplateRequest
+	61,  // 98: api.StroppyAPI.ListTopologyTemplates:input_type -> api.ListTopologyTemplatesRequest
+	63,  // 99: api.StroppyAPI.GetTopologyTemplate:input_type -> api.GetTopologyTemplateRequest
+	65,  // 100: api.StroppyAPI.UpdateTopologyTemplate:input_type -> api.UpdateTopologyTemplateRequest
+	67,  // 101: api.StroppyAPI.DeleteTopologyTemplate:input_type -> api.DeleteTopologyTemplateRequest
+	7,   // 102: api.StroppyAPI.RunTestSuite:output_type -> api.RunTestSuiteResponse
+	9,   // 103: api.StroppyAPI.CancelRun:output_type -> api.CancelRunResponse
+	11,  // 104: api.StroppyAPI.GetRun:output_type -> api.GetRunResponse
+	13,  // 105: api.StroppyAPI.ListRuns:output_type -> api.ListRunsResponse
+	15,  // 106: api.StroppyAPI.ListSuites:output_type -> api.ListSuitesResponse
+	17,  // 107: api.StroppyAPI.GetSuite:output_type -> api.GetSuiteResponse
+	20,  // 108: api.StroppyAPI.StreamRun:output_type -> api.StreamRunUpdate
+	24,  // 109: api.StroppyAPI.GetSettings:output_type -> api.GetSettingsResponse
+	26,  // 110: api.StroppyAPI.UpdateSettings:output_type -> api.UpdateSettingsResponse
+	28,  // 111: api.StroppyAPI.CompareRuns:output_type -> api.CompareRunsResponse
+	32,  // 112: api.StroppyAPI.ValidateTopology:output_type -> api.ValidateTopologyResponse
+	35,  // 113: api.StroppyAPI.DryRun:output_type -> api.DryRunCheck
+	37,  // 114: api.StroppyAPI.Login:output_type -> api.LoginResponse
+	39,  // 115: api.StroppyAPI.RefreshToken:output_type -> api.RefreshTokenResponse
+	41,  // 116: api.StroppyAPI.Logout:output_type -> api.LogoutResponse
+	43,  // 117: api.StroppyAPI.GetCurrentUser:output_type -> api.GetCurrentUserResponse
+	46,  // 118: api.StroppyAPI.RegisterWorkload:output_type -> api.RegisterWorkloadResponse
+	48,  // 119: api.StroppyAPI.ListWorkloads:output_type -> api.ListWorkloadsResponse
+	50,  // 120: api.StroppyAPI.GetWorkload:output_type -> api.GetWorkloadResponse
+	52,  // 121: api.StroppyAPI.DeleteWorkload:output_type -> api.DeleteWorkloadResponse
+	54,  // 122: api.StroppyAPI.ProbeScript:output_type -> api.ProbeScriptResponse
+	60,  // 123: api.StroppyAPI.CreateTopologyTemplate:output_type -> api.CreateTopologyTemplateResponse
+	62,  // 124: api.StroppyAPI.ListTopologyTemplates:output_type -> api.ListTopologyTemplatesResponse
+	64,  // 125: api.StroppyAPI.GetTopologyTemplate:output_type -> api.GetTopologyTemplateResponse
+	66,  // 126: api.StroppyAPI.UpdateTopologyTemplate:output_type -> api.UpdateTopologyTemplateResponse
+	68,  // 127: api.StroppyAPI.DeleteTopologyTemplate:output_type -> api.DeleteTopologyTemplateResponse
+	102, // [102:128] is the sub-list for method output_type
+	76,  // [76:102] is the sub-list for method input_type
+	76,  // [76:76] is the sub-list for extension type_name
+	76,  // [76:76] is the sub-list for extension extendee
+	0,   // [0:76] is the sub-list for field type_name
 }
 
 func init() { file_api_api_proto_init() }
@@ -3977,13 +4712,17 @@ func file_api_api_proto_init() {
 	file_api_api_proto_msgTypes[49].OneofWrappers = []any{}
 	file_api_api_proto_msgTypes[52].OneofWrappers = []any{}
 	file_api_api_proto_msgTypes[53].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[55].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[59].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[63].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[64].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_api_proto_rawDesc), len(file_api_api_proto_rawDesc)),
-			NumEnums:      5,
-			NumMessages:   54,
+			NumEnums:      6,
+			NumMessages:   65,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

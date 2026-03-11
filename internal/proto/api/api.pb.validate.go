@@ -7011,6 +7011,1494 @@ var _ interface {
 	ErrorName() string
 } = EnvParamValidationError{}
 
+// Validate checks the field values on TopologyTemplate with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *TopologyTemplate) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on TopologyTemplate with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// TopologyTemplateMultiError, or nil if none found.
+func (m *TopologyTemplate) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *TopologyTemplate) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for Name
+
+	// no validation rules for DatabaseType
+
+	// no validation rules for Builtin
+
+	if all {
+		switch v := interface{}(m.GetTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TopologyTemplateValidationError{
+				field:  "Template",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TopologyTemplateValidationError{
+				field:  "CreatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetUpdatedAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, TopologyTemplateValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return TopologyTemplateValidationError{
+				field:  "UpdatedAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
+	if len(errors) > 0 {
+		return TopologyTemplateMultiError(errors)
+	}
+
+	return nil
+}
+
+// TopologyTemplateMultiError is an error wrapping multiple validation errors
+// returned by TopologyTemplate.ValidateAll() if the designated constraints
+// aren't met.
+type TopologyTemplateMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m TopologyTemplateMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m TopologyTemplateMultiError) AllErrors() []error { return m }
+
+// TopologyTemplateValidationError is the validation error returned by
+// TopologyTemplate.Validate if the designated constraints aren't met.
+type TopologyTemplateValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e TopologyTemplateValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e TopologyTemplateValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e TopologyTemplateValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e TopologyTemplateValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e TopologyTemplateValidationError) ErrorName() string { return "TopologyTemplateValidationError" }
+
+// Error satisfies the builtin error interface
+func (e TopologyTemplateValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sTopologyTemplate.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = TopologyTemplateValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = TopologyTemplateValidationError{}
+
+// Validate checks the field values on CreateTopologyTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateTopologyTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateTopologyTemplateRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CreateTopologyTemplateRequestMultiError, or nil if none found.
+func (m *CreateTopologyTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateTopologyTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetName()) < 1 {
+		err := CreateTopologyTemplateRequestValidationError{
+			field:  "Name",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.GetTemplate() == nil {
+		err := CreateTopologyTemplateRequestValidationError{
+			field:  "Template",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateTopologyTemplateRequestValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateTopologyTemplateRequestValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateTopologyTemplateRequestValidationError{
+				field:  "Template",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
+	if len(errors) > 0 {
+		return CreateTopologyTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateTopologyTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by CreateTopologyTemplateRequest.ValidateAll()
+// if the designated constraints aren't met.
+type CreateTopologyTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateTopologyTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateTopologyTemplateRequestMultiError) AllErrors() []error { return m }
+
+// CreateTopologyTemplateRequestValidationError is the validation error
+// returned by CreateTopologyTemplateRequest.Validate if the designated
+// constraints aren't met.
+type CreateTopologyTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateTopologyTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateTopologyTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateTopologyTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateTopologyTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateTopologyTemplateRequestValidationError) ErrorName() string {
+	return "CreateTopologyTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateTopologyTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateTopologyTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateTopologyTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateTopologyTemplateRequestValidationError{}
+
+// Validate checks the field values on CreateTopologyTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateTopologyTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateTopologyTemplateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// CreateTopologyTemplateResponseMultiError, or nil if none found.
+func (m *CreateTopologyTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateTopologyTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetTopologyTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, CreateTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, CreateTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTopologyTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return CreateTopologyTemplateResponseValidationError{
+				field:  "TopologyTemplate",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return CreateTopologyTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateTopologyTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by CreateTopologyTemplateResponse.ValidateAll()
+// if the designated constraints aren't met.
+type CreateTopologyTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateTopologyTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateTopologyTemplateResponseMultiError) AllErrors() []error { return m }
+
+// CreateTopologyTemplateResponseValidationError is the validation error
+// returned by CreateTopologyTemplateResponse.Validate if the designated
+// constraints aren't met.
+type CreateTopologyTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateTopologyTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateTopologyTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateTopologyTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateTopologyTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateTopologyTemplateResponseValidationError) ErrorName() string {
+	return "CreateTopologyTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateTopologyTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateTopologyTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateTopologyTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateTopologyTemplateResponseValidationError{}
+
+// Validate checks the field values on ListTopologyTemplatesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListTopologyTemplatesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTopologyTemplatesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListTopologyTemplatesRequestMultiError, or nil if none found.
+func (m *ListTopologyTemplatesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTopologyTemplatesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Offset
+
+	// no validation rules for Limit
+
+	if m.DatabaseType != nil {
+		// no validation rules for DatabaseType
+	}
+
+	if len(errors) > 0 {
+		return ListTopologyTemplatesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListTopologyTemplatesRequestMultiError is an error wrapping multiple
+// validation errors returned by ListTopologyTemplatesRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListTopologyTemplatesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTopologyTemplatesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTopologyTemplatesRequestMultiError) AllErrors() []error { return m }
+
+// ListTopologyTemplatesRequestValidationError is the validation error returned
+// by ListTopologyTemplatesRequest.Validate if the designated constraints
+// aren't met.
+type ListTopologyTemplatesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListTopologyTemplatesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListTopologyTemplatesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListTopologyTemplatesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListTopologyTemplatesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListTopologyTemplatesRequestValidationError) ErrorName() string {
+	return "ListTopologyTemplatesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListTopologyTemplatesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListTopologyTemplatesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListTopologyTemplatesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListTopologyTemplatesRequestValidationError{}
+
+// Validate checks the field values on ListTopologyTemplatesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListTopologyTemplatesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListTopologyTemplatesResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListTopologyTemplatesResponseMultiError, or nil if none found.
+func (m *ListTopologyTemplatesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListTopologyTemplatesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetTopologyTemplates() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListTopologyTemplatesResponseValidationError{
+						field:  fmt.Sprintf("TopologyTemplates[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListTopologyTemplatesResponseValidationError{
+						field:  fmt.Sprintf("TopologyTemplates[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListTopologyTemplatesResponseValidationError{
+					field:  fmt.Sprintf("TopologyTemplates[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListTopologyTemplatesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListTopologyTemplatesResponseMultiError is an error wrapping multiple
+// validation errors returned by ListTopologyTemplatesResponse.ValidateAll()
+// if the designated constraints aren't met.
+type ListTopologyTemplatesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListTopologyTemplatesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListTopologyTemplatesResponseMultiError) AllErrors() []error { return m }
+
+// ListTopologyTemplatesResponseValidationError is the validation error
+// returned by ListTopologyTemplatesResponse.Validate if the designated
+// constraints aren't met.
+type ListTopologyTemplatesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListTopologyTemplatesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListTopologyTemplatesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListTopologyTemplatesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListTopologyTemplatesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListTopologyTemplatesResponseValidationError) ErrorName() string {
+	return "ListTopologyTemplatesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListTopologyTemplatesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListTopologyTemplatesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListTopologyTemplatesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListTopologyTemplatesResponseValidationError{}
+
+// Validate checks the field values on GetTopologyTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetTopologyTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetTopologyTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetTopologyTemplateRequestMultiError, or nil if none found.
+func (m *GetTopologyTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetTopologyTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetTemplateId()) < 1 {
+		err := GetTopologyTemplateRequestValidationError{
+			field:  "TemplateId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return GetTopologyTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetTopologyTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by GetTopologyTemplateRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetTopologyTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetTopologyTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetTopologyTemplateRequestMultiError) AllErrors() []error { return m }
+
+// GetTopologyTemplateRequestValidationError is the validation error returned
+// by GetTopologyTemplateRequest.Validate if the designated constraints aren't met.
+type GetTopologyTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetTopologyTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetTopologyTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetTopologyTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetTopologyTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetTopologyTemplateRequestValidationError) ErrorName() string {
+	return "GetTopologyTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetTopologyTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetTopologyTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetTopologyTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetTopologyTemplateRequestValidationError{}
+
+// Validate checks the field values on GetTopologyTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetTopologyTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetTopologyTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetTopologyTemplateResponseMultiError, or nil if none found.
+func (m *GetTopologyTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetTopologyTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetTopologyTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTopologyTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetTopologyTemplateResponseValidationError{
+				field:  "TopologyTemplate",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetTopologyTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetTopologyTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by GetTopologyTemplateResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetTopologyTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetTopologyTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetTopologyTemplateResponseMultiError) AllErrors() []error { return m }
+
+// GetTopologyTemplateResponseValidationError is the validation error returned
+// by GetTopologyTemplateResponse.Validate if the designated constraints
+// aren't met.
+type GetTopologyTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetTopologyTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetTopologyTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetTopologyTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetTopologyTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetTopologyTemplateResponseValidationError) ErrorName() string {
+	return "GetTopologyTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetTopologyTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetTopologyTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetTopologyTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetTopologyTemplateResponseValidationError{}
+
+// Validate checks the field values on UpdateTopologyTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateTopologyTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateTopologyTemplateRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// UpdateTopologyTemplateRequestMultiError, or nil if none found.
+func (m *UpdateTopologyTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateTopologyTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetTemplateId()) < 1 {
+		err := UpdateTopologyTemplateRequestValidationError{
+			field:  "TemplateId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
+	if m.Template != nil {
+
+		if all {
+			switch v := interface{}(m.GetTemplate()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, UpdateTopologyTemplateRequestValidationError{
+						field:  "Template",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, UpdateTopologyTemplateRequestValidationError{
+						field:  "Template",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetTemplate()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return UpdateTopologyTemplateRequestValidationError{
+					field:  "Template",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return UpdateTopologyTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateTopologyTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by UpdateTopologyTemplateRequest.ValidateAll()
+// if the designated constraints aren't met.
+type UpdateTopologyTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateTopologyTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateTopologyTemplateRequestMultiError) AllErrors() []error { return m }
+
+// UpdateTopologyTemplateRequestValidationError is the validation error
+// returned by UpdateTopologyTemplateRequest.Validate if the designated
+// constraints aren't met.
+type UpdateTopologyTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateTopologyTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateTopologyTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateTopologyTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateTopologyTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateTopologyTemplateRequestValidationError) ErrorName() string {
+	return "UpdateTopologyTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateTopologyTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateTopologyTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateTopologyTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateTopologyTemplateRequestValidationError{}
+
+// Validate checks the field values on UpdateTopologyTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateTopologyTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateTopologyTemplateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// UpdateTopologyTemplateResponseMultiError, or nil if none found.
+func (m *UpdateTopologyTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateTopologyTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetTopologyTemplate()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UpdateTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UpdateTopologyTemplateResponseValidationError{
+					field:  "TopologyTemplate",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTopologyTemplate()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UpdateTopologyTemplateResponseValidationError{
+				field:  "TopologyTemplate",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return UpdateTopologyTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateTopologyTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by UpdateTopologyTemplateResponse.ValidateAll()
+// if the designated constraints aren't met.
+type UpdateTopologyTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateTopologyTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateTopologyTemplateResponseMultiError) AllErrors() []error { return m }
+
+// UpdateTopologyTemplateResponseValidationError is the validation error
+// returned by UpdateTopologyTemplateResponse.Validate if the designated
+// constraints aren't met.
+type UpdateTopologyTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateTopologyTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateTopologyTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateTopologyTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateTopologyTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateTopologyTemplateResponseValidationError) ErrorName() string {
+	return "UpdateTopologyTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateTopologyTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateTopologyTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateTopologyTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateTopologyTemplateResponseValidationError{}
+
+// Validate checks the field values on DeleteTopologyTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteTopologyTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteTopologyTemplateRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// DeleteTopologyTemplateRequestMultiError, or nil if none found.
+func (m *DeleteTopologyTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteTopologyTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetTemplateId()) < 1 {
+		err := DeleteTopologyTemplateRequestValidationError{
+			field:  "TemplateId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return DeleteTopologyTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteTopologyTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by DeleteTopologyTemplateRequest.ValidateAll()
+// if the designated constraints aren't met.
+type DeleteTopologyTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteTopologyTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteTopologyTemplateRequestMultiError) AllErrors() []error { return m }
+
+// DeleteTopologyTemplateRequestValidationError is the validation error
+// returned by DeleteTopologyTemplateRequest.Validate if the designated
+// constraints aren't met.
+type DeleteTopologyTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteTopologyTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteTopologyTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteTopologyTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteTopologyTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteTopologyTemplateRequestValidationError) ErrorName() string {
+	return "DeleteTopologyTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteTopologyTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteTopologyTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteTopologyTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteTopologyTemplateRequestValidationError{}
+
+// Validate checks the field values on DeleteTopologyTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteTopologyTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteTopologyTemplateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// DeleteTopologyTemplateResponseMultiError, or nil if none found.
+func (m *DeleteTopologyTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteTopologyTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return DeleteTopologyTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteTopologyTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by DeleteTopologyTemplateResponse.ValidateAll()
+// if the designated constraints aren't met.
+type DeleteTopologyTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteTopologyTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteTopologyTemplateResponseMultiError) AllErrors() []error { return m }
+
+// DeleteTopologyTemplateResponseValidationError is the validation error
+// returned by DeleteTopologyTemplateResponse.Validate if the designated
+// constraints aren't met.
+type DeleteTopologyTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteTopologyTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteTopologyTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteTopologyTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteTopologyTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteTopologyTemplateResponseValidationError) ErrorName() string {
+	return "DeleteTopologyTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteTopologyTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteTopologyTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteTopologyTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteTopologyTemplateResponseValidationError{}
+
 // Validate checks the field values on Run with the rules defined in the proto
 // definition for this message. If any rules are violated, the first error
 // encountered is returned, or nil if there are no violations.

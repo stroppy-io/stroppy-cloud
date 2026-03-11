@@ -19,27 +19,32 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	StroppyAPI_RunTestSuite_FullMethodName     = "/api.StroppyAPI/RunTestSuite"
-	StroppyAPI_CancelRun_FullMethodName        = "/api.StroppyAPI/CancelRun"
-	StroppyAPI_GetRun_FullMethodName           = "/api.StroppyAPI/GetRun"
-	StroppyAPI_ListRuns_FullMethodName         = "/api.StroppyAPI/ListRuns"
-	StroppyAPI_ListSuites_FullMethodName       = "/api.StroppyAPI/ListSuites"
-	StroppyAPI_GetSuite_FullMethodName         = "/api.StroppyAPI/GetSuite"
-	StroppyAPI_StreamRun_FullMethodName        = "/api.StroppyAPI/StreamRun"
-	StroppyAPI_GetSettings_FullMethodName      = "/api.StroppyAPI/GetSettings"
-	StroppyAPI_UpdateSettings_FullMethodName   = "/api.StroppyAPI/UpdateSettings"
-	StroppyAPI_CompareRuns_FullMethodName      = "/api.StroppyAPI/CompareRuns"
-	StroppyAPI_ValidateTopology_FullMethodName = "/api.StroppyAPI/ValidateTopology"
-	StroppyAPI_DryRun_FullMethodName           = "/api.StroppyAPI/DryRun"
-	StroppyAPI_Login_FullMethodName            = "/api.StroppyAPI/Login"
-	StroppyAPI_RefreshToken_FullMethodName     = "/api.StroppyAPI/RefreshToken"
-	StroppyAPI_Logout_FullMethodName           = "/api.StroppyAPI/Logout"
-	StroppyAPI_GetCurrentUser_FullMethodName   = "/api.StroppyAPI/GetCurrentUser"
-	StroppyAPI_RegisterWorkload_FullMethodName = "/api.StroppyAPI/RegisterWorkload"
-	StroppyAPI_ListWorkloads_FullMethodName    = "/api.StroppyAPI/ListWorkloads"
-	StroppyAPI_GetWorkload_FullMethodName      = "/api.StroppyAPI/GetWorkload"
-	StroppyAPI_DeleteWorkload_FullMethodName   = "/api.StroppyAPI/DeleteWorkload"
-	StroppyAPI_ProbeScript_FullMethodName      = "/api.StroppyAPI/ProbeScript"
+	StroppyAPI_RunTestSuite_FullMethodName           = "/api.StroppyAPI/RunTestSuite"
+	StroppyAPI_CancelRun_FullMethodName              = "/api.StroppyAPI/CancelRun"
+	StroppyAPI_GetRun_FullMethodName                 = "/api.StroppyAPI/GetRun"
+	StroppyAPI_ListRuns_FullMethodName               = "/api.StroppyAPI/ListRuns"
+	StroppyAPI_ListSuites_FullMethodName             = "/api.StroppyAPI/ListSuites"
+	StroppyAPI_GetSuite_FullMethodName               = "/api.StroppyAPI/GetSuite"
+	StroppyAPI_StreamRun_FullMethodName              = "/api.StroppyAPI/StreamRun"
+	StroppyAPI_GetSettings_FullMethodName            = "/api.StroppyAPI/GetSettings"
+	StroppyAPI_UpdateSettings_FullMethodName         = "/api.StroppyAPI/UpdateSettings"
+	StroppyAPI_CompareRuns_FullMethodName            = "/api.StroppyAPI/CompareRuns"
+	StroppyAPI_ValidateTopology_FullMethodName       = "/api.StroppyAPI/ValidateTopology"
+	StroppyAPI_DryRun_FullMethodName                 = "/api.StroppyAPI/DryRun"
+	StroppyAPI_Login_FullMethodName                  = "/api.StroppyAPI/Login"
+	StroppyAPI_RefreshToken_FullMethodName           = "/api.StroppyAPI/RefreshToken"
+	StroppyAPI_Logout_FullMethodName                 = "/api.StroppyAPI/Logout"
+	StroppyAPI_GetCurrentUser_FullMethodName         = "/api.StroppyAPI/GetCurrentUser"
+	StroppyAPI_RegisterWorkload_FullMethodName       = "/api.StroppyAPI/RegisterWorkload"
+	StroppyAPI_ListWorkloads_FullMethodName          = "/api.StroppyAPI/ListWorkloads"
+	StroppyAPI_GetWorkload_FullMethodName            = "/api.StroppyAPI/GetWorkload"
+	StroppyAPI_DeleteWorkload_FullMethodName         = "/api.StroppyAPI/DeleteWorkload"
+	StroppyAPI_ProbeScript_FullMethodName            = "/api.StroppyAPI/ProbeScript"
+	StroppyAPI_CreateTopologyTemplate_FullMethodName = "/api.StroppyAPI/CreateTopologyTemplate"
+	StroppyAPI_ListTopologyTemplates_FullMethodName  = "/api.StroppyAPI/ListTopologyTemplates"
+	StroppyAPI_GetTopologyTemplate_FullMethodName    = "/api.StroppyAPI/GetTopologyTemplate"
+	StroppyAPI_UpdateTopologyTemplate_FullMethodName = "/api.StroppyAPI/UpdateTopologyTemplate"
+	StroppyAPI_DeleteTopologyTemplate_FullMethodName = "/api.StroppyAPI/DeleteTopologyTemplate"
 )
 
 // StroppyAPIClient is the client API for StroppyAPI service.
@@ -90,6 +95,16 @@ type StroppyAPIClient interface {
 	DeleteWorkload(ctx context.Context, in *DeleteWorkloadRequest, opts ...grpc.CallOption) (*DeleteWorkloadResponse, error)
 	// Probe a script without saving — returns extracted metadata.
 	ProbeScript(ctx context.Context, in *ProbeScriptRequest, opts ...grpc.CallOption) (*ProbeScriptResponse, error)
+	// Create a reusable topology template.
+	CreateTopologyTemplate(ctx context.Context, in *CreateTopologyTemplateRequest, opts ...grpc.CallOption) (*CreateTopologyTemplateResponse, error)
+	// List topology templates with optional database type filter.
+	ListTopologyTemplates(ctx context.Context, in *ListTopologyTemplatesRequest, opts ...grpc.CallOption) (*ListTopologyTemplatesResponse, error)
+	// Get a topology template by ID.
+	GetTopologyTemplate(ctx context.Context, in *GetTopologyTemplateRequest, opts ...grpc.CallOption) (*GetTopologyTemplateResponse, error)
+	// Update an existing topology template.
+	UpdateTopologyTemplate(ctx context.Context, in *UpdateTopologyTemplateRequest, opts ...grpc.CallOption) (*UpdateTopologyTemplateResponse, error)
+	// Delete a topology template.
+	DeleteTopologyTemplate(ctx context.Context, in *DeleteTopologyTemplateRequest, opts ...grpc.CallOption) (*DeleteTopologyTemplateResponse, error)
 }
 
 type stroppyAPIClient struct {
@@ -328,6 +343,56 @@ func (c *stroppyAPIClient) ProbeScript(ctx context.Context, in *ProbeScriptReque
 	return out, nil
 }
 
+func (c *stroppyAPIClient) CreateTopologyTemplate(ctx context.Context, in *CreateTopologyTemplateRequest, opts ...grpc.CallOption) (*CreateTopologyTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateTopologyTemplateResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_CreateTopologyTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *stroppyAPIClient) ListTopologyTemplates(ctx context.Context, in *ListTopologyTemplatesRequest, opts ...grpc.CallOption) (*ListTopologyTemplatesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListTopologyTemplatesResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_ListTopologyTemplates_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *stroppyAPIClient) GetTopologyTemplate(ctx context.Context, in *GetTopologyTemplateRequest, opts ...grpc.CallOption) (*GetTopologyTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetTopologyTemplateResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_GetTopologyTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *stroppyAPIClient) UpdateTopologyTemplate(ctx context.Context, in *UpdateTopologyTemplateRequest, opts ...grpc.CallOption) (*UpdateTopologyTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateTopologyTemplateResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_UpdateTopologyTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *stroppyAPIClient) DeleteTopologyTemplate(ctx context.Context, in *DeleteTopologyTemplateRequest, opts ...grpc.CallOption) (*DeleteTopologyTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteTopologyTemplateResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_DeleteTopologyTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StroppyAPIServer is the server API for StroppyAPI service.
 // All implementations must embed UnimplementedStroppyAPIServer
 // for forward compatibility.
@@ -376,6 +441,16 @@ type StroppyAPIServer interface {
 	DeleteWorkload(context.Context, *DeleteWorkloadRequest) (*DeleteWorkloadResponse, error)
 	// Probe a script without saving — returns extracted metadata.
 	ProbeScript(context.Context, *ProbeScriptRequest) (*ProbeScriptResponse, error)
+	// Create a reusable topology template.
+	CreateTopologyTemplate(context.Context, *CreateTopologyTemplateRequest) (*CreateTopologyTemplateResponse, error)
+	// List topology templates with optional database type filter.
+	ListTopologyTemplates(context.Context, *ListTopologyTemplatesRequest) (*ListTopologyTemplatesResponse, error)
+	// Get a topology template by ID.
+	GetTopologyTemplate(context.Context, *GetTopologyTemplateRequest) (*GetTopologyTemplateResponse, error)
+	// Update an existing topology template.
+	UpdateTopologyTemplate(context.Context, *UpdateTopologyTemplateRequest) (*UpdateTopologyTemplateResponse, error)
+	// Delete a topology template.
+	DeleteTopologyTemplate(context.Context, *DeleteTopologyTemplateRequest) (*DeleteTopologyTemplateResponse, error)
 	mustEmbedUnimplementedStroppyAPIServer()
 }
 
@@ -448,6 +523,21 @@ func (UnimplementedStroppyAPIServer) DeleteWorkload(context.Context, *DeleteWork
 }
 func (UnimplementedStroppyAPIServer) ProbeScript(context.Context, *ProbeScriptRequest) (*ProbeScriptResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ProbeScript not implemented")
+}
+func (UnimplementedStroppyAPIServer) CreateTopologyTemplate(context.Context, *CreateTopologyTemplateRequest) (*CreateTopologyTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateTopologyTemplate not implemented")
+}
+func (UnimplementedStroppyAPIServer) ListTopologyTemplates(context.Context, *ListTopologyTemplatesRequest) (*ListTopologyTemplatesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListTopologyTemplates not implemented")
+}
+func (UnimplementedStroppyAPIServer) GetTopologyTemplate(context.Context, *GetTopologyTemplateRequest) (*GetTopologyTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetTopologyTemplate not implemented")
+}
+func (UnimplementedStroppyAPIServer) UpdateTopologyTemplate(context.Context, *UpdateTopologyTemplateRequest) (*UpdateTopologyTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateTopologyTemplate not implemented")
+}
+func (UnimplementedStroppyAPIServer) DeleteTopologyTemplate(context.Context, *DeleteTopologyTemplateRequest) (*DeleteTopologyTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteTopologyTemplate not implemented")
 }
 func (UnimplementedStroppyAPIServer) mustEmbedUnimplementedStroppyAPIServer() {}
 func (UnimplementedStroppyAPIServer) testEmbeddedByValue()                    {}
@@ -834,6 +924,96 @@ func _StroppyAPI_ProbeScript_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StroppyAPI_CreateTopologyTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTopologyTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).CreateTopologyTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_CreateTopologyTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).CreateTopologyTemplate(ctx, req.(*CreateTopologyTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StroppyAPI_ListTopologyTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTopologyTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).ListTopologyTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_ListTopologyTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).ListTopologyTemplates(ctx, req.(*ListTopologyTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StroppyAPI_GetTopologyTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopologyTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).GetTopologyTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_GetTopologyTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).GetTopologyTemplate(ctx, req.(*GetTopologyTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StroppyAPI_UpdateTopologyTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTopologyTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).UpdateTopologyTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_UpdateTopologyTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).UpdateTopologyTemplate(ctx, req.(*UpdateTopologyTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _StroppyAPI_DeleteTopologyTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTopologyTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).DeleteTopologyTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_DeleteTopologyTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).DeleteTopologyTemplate(ctx, req.(*DeleteTopologyTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StroppyAPI_ServiceDesc is the grpc.ServiceDesc for StroppyAPI service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -916,6 +1096,26 @@ var StroppyAPI_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProbeScript",
 			Handler:    _StroppyAPI_ProbeScript_Handler,
+		},
+		{
+			MethodName: "CreateTopologyTemplate",
+			Handler:    _StroppyAPI_CreateTopologyTemplate_Handler,
+		},
+		{
+			MethodName: "ListTopologyTemplates",
+			Handler:    _StroppyAPI_ListTopologyTemplates_Handler,
+		},
+		{
+			MethodName: "GetTopologyTemplate",
+			Handler:    _StroppyAPI_GetTopologyTemplate_Handler,
+		},
+		{
+			MethodName: "UpdateTopologyTemplate",
+			Handler:    _StroppyAPI_UpdateTopologyTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteTopologyTemplate",
+			Handler:    _StroppyAPI_DeleteTopologyTemplate_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

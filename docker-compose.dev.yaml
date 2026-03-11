@@ -34,6 +34,8 @@ services:
     depends_on:
       api-postgres:
         condition: service_healthy
+    ports:
+      - "8090:8090"
     environment:
       PG_HOST: "localhost"
       PG_PORT: "5436"
@@ -44,6 +46,9 @@ services:
       HATCHET_CLIENT_TOKEN: "${HATCHET_CLIENT_TOKEN}"
       HATCHET_CLIENT_HOST_PORT: "${HATCHET_CLIENT_HOST_PORT:-localhost:7077}"
       HATCHET_CLIENT_TLS_STRATEGY: "none"
+      DEFAULT_USER: "${DEFAULT_USER:-admin}"
+      DEFAULT_PASSWORD: "${DEFAULT_PASSWORD:-admin}"
+      DEFAULT_ROLE: "${DEFAULT_ROLE:-admin}"
       API_ADDR: ":8090"
       LOG_MOD: "${LOG_MOD}"
       LOG_LEVEL: "${LOG_LEVEL}"
