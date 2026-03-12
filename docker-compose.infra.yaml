@@ -90,7 +90,10 @@ services:
     environment:
       DATABASE_URL: "postgres://hatchet:${POSTGRES_PASSWORD}@postgres:5432/hatchet"
       SERVER_GRPC_BIND_ADDRESS: "0.0.0.0"
-      SERVER_GRPC_INSECURE: "t"
+      SERVER_GRPC_INSECURE: "true"
+      SERVER_ENABLE_DATA_RETENTION: "true"
+      SERVER_ENABLE_WORKER_RETENTION: "false"
+      SERVER_LIMITS_DEFAULT_TENANT_RETENTION_PERIOD: "48h"
     volumes:
       - hatchet_certs:/hatchet/certs
       - hatchet_config:/hatchet/config
@@ -132,35 +135,32 @@ services:
     volumes:
       - valkey_data:/data
 
-#  minio:
-#    container_name: minio
-#    image: minio/minio
-#    command: server /data --console-address ":9001"
-#    healthcheck:
-#      test: [ "CMD", "mc", "ready", "local" ]
-#      interval: 5s
-#      timeout: 5s
-#      retries: 5
-#    environment:
-#      MINIO_ROOT_USER: developer
-#      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
-#      MINIO_PROMETHEUS_AUTH_TYPE: public
-#      MINIO_CACHE: "on"
-#      MINIO_CACHE_QUOTA: 60 # 80% of the drive will be used for caching
-#      MINIO_CACHE_AFTER: 100 # Object will be cached after the first request to it
-#      MINIO_CACHE_WATERMARK_LOW: 70  # Least accessed objects will be erased after the cache disk reaches the 70% watermark
-#      MINIO_CACHE_WATERMARK_HIGH: 90
-#    restart: always
-#    ports:
-#      - "9000:9000"
-#      - "127.0.0.1:9001:9001"
-#    volumes:
-#      - minio:/data
+  api-postgres:
+    container_name: api-postgres
+    image: postgres:15.6
+    restart: always
+    environment:
+      POSTGRES_USER: stroppy
+      POSTGRES_PASSWORD: "${API_PG_PASSWORD:-stroppy}"
+      POSTGRES_DB: stroppy_api
+    ports:
+      - "127.0.0.1:5436:5432"
+    volumes:
+      - api-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d stroppy_api -U stroppy" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
 networks:
   stroppy-net:
     name: stroppy-net
     driver: bridge
+    ipam:
+      config:
+        - subnet: "${DOCKER_NETWORK_CIDR:-172.28.0.0/16}"
 
 volumes:
   hatchet_postgres_data:
@@ -170,5 +170,6 @@ volumes:
   hatchet_certs:
   valkey_data:
   minio:
+  api-postgres-data:
 
 

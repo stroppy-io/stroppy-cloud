@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 
@@ -19,6 +20,8 @@ import (
 	apiDomain "github.com/stroppy-io/hatchet-workflow/internal/domain/api"
 	"github.com/stroppy-io/hatchet-workflow/internal/infrastructure/postgres"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/api/apiconnect"
+	"github.com/stroppy-io/hatchet-workflow/internal/proto/deployment"
+	"github.com/stroppy-io/hatchet-workflow/internal/proto/settings"
 	"github.com/stroppy-io/hatchet-workflow/internal/store"
 )
 
@@ -64,6 +67,27 @@ func main() {
 		log.Fatalf("Failed to seed builtins: %v", err)
 	}
 
+	// Seed default settings from environment variables.
+	hatchetPort, _ := strconv.Atoi(envOrDefault("HATCHET_PORT", "7077"))
+	defaultSettings := &settings.Settings{
+		HatchetConnection: &settings.HatchetConnection{
+			Host:  envOrDefault("HATCHET_HOST", "localhost"),
+			Port:  uint32(hatchetPort),
+			Token: os.Getenv("HATCHET_CLIENT_TOKEN"),
+		},
+		Docker: &settings.DockerSettings{
+			NetworkName:     envOrDefault("DOCKER_NETWORK_NAME", "stroppy-net"),
+			EdgeWorkerImage: envOrDefault("EDGE_WORKER_IMAGE", "stroppy/edge-worker:latest"),
+			NetworkCidr:     strPtr(envOrDefault("DOCKER_NETWORK_CIDR", "172.28.0.0/16")),
+			NetworkPrefix:   uint32Ptr(24),
+		},
+		PreferredTarget: deployment.Target_TARGET_DOCKER,
+	}
+	if err := store.SeedDefaultSettings(ctx, pool, defaultSettings); err != nil {
+		log.Fatalf("Failed to seed default settings: %v", err)
+	}
+	log.Println("Default settings ensured")
+
 	// JWT
 	jwtSvc := auth.NewJWTService(&auth.JWTConfig{
 		Secret: envOrDefault("JWT_SECRET", "stroppy-dev-secret-change-me"),
@@ -71,16 +95,33 @@ func main() {
 
 	// Hatchet client
 	hatchetToken := os.Getenv("HATCHET_CLIENT_TOKEN")
-	hatchetClient, err := hatchetLib.NewClient(
+	hatchetOpts := []v0Client.ClientOpt{
 		v0Client.WithLogger(logger.Zerolog()),
 		v0Client.WithToken(hatchetToken),
-	)
+	}
+	if hostPort := strings.TrimSpace(os.Getenv("HATCHET_CLIENT_HOST_PORT")); hostPort != "" {
+		parts := strings.Split(hostPort, ":")
+		if len(parts) == 2 {
+			if port, err := strconv.Atoi(parts[1]); err == nil {
+				hatchetOpts = append(hatchetOpts, v0Client.WithHostPort(parts[0], port))
+			}
+		}
+	} else if hatchetHost := strings.TrimSpace(envOrDefault("HATCHET_HOST", "")); hatchetHost != "" {
+		hatchetOpts = append(hatchetOpts, v0Client.WithHostPort(hatchetHost, hatchetPort))
+	}
+
+	hatchetV0, err := v0Client.New(hatchetOpts...)
+	if err != nil {
+		log.Fatalf("Failed to create hatchet v0 client: %v", err)
+	}
+
+	hatchetClient, err := hatchetLib.NewClient(hatchetOpts...)
 	if err != nil {
 		log.Fatalf("Failed to create hatchet client: %v", err)
 	}
 
 	// API handler
-	handler := apiDomain.NewHandler(pool, jwtSvc, hatchetClient)
+	handler := apiDomain.NewHandler(pool, jwtSvc, hatchetClient, hatchetV0)
 	path, svcHandler := apiconnect.NewStroppyAPIHandler(handler)
 
 	mux := http.NewServeMux()
@@ -156,3 +197,6 @@ func envOrDefault(key, def string) string {
 	}
 	return def
 }
+
+func strPtr(s string) *string    { return &s }
+func uint32Ptr(v uint32) *uint32 { return &v }

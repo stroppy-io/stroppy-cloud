@@ -45,6 +45,8 @@ const (
 	StroppyAPIListSuitesProcedure = "/api.StroppyAPI/ListSuites"
 	// StroppyAPIGetSuiteProcedure is the fully-qualified name of the StroppyAPI's GetSuite RPC.
 	StroppyAPIGetSuiteProcedure = "/api.StroppyAPI/GetSuite"
+	// StroppyAPIStreamSuiteProcedure is the fully-qualified name of the StroppyAPI's StreamSuite RPC.
+	StroppyAPIStreamSuiteProcedure = "/api.StroppyAPI/StreamSuite"
 	// StroppyAPIStreamRunProcedure is the fully-qualified name of the StroppyAPI's StreamRun RPC.
 	StroppyAPIStreamRunProcedure = "/api.StroppyAPI/StreamRun"
 	// StroppyAPIGetSettingsProcedure is the fully-qualified name of the StroppyAPI's GetSettings RPC.
@@ -96,6 +98,9 @@ const (
 	// StroppyAPIDeleteTopologyTemplateProcedure is the fully-qualified name of the StroppyAPI's
 	// DeleteTopologyTemplate RPC.
 	StroppyAPIDeleteTopologyTemplateProcedure = "/api.StroppyAPI/DeleteTopologyTemplate"
+	// StroppyAPIListStroppyVersionsProcedure is the fully-qualified name of the StroppyAPI's
+	// ListStroppyVersions RPC.
+	StroppyAPIListStroppyVersionsProcedure = "/api.StroppyAPI/ListStroppyVersions"
 )
 
 // StroppyAPIClient is a client for the api.StroppyAPI service.
@@ -112,6 +117,8 @@ type StroppyAPIClient interface {
 	ListSuites(context.Context, *connect.Request[api.ListSuitesRequest]) (*connect.Response[api.ListSuitesResponse], error)
 	// Get suite details including its child runs.
 	GetSuite(context.Context, *connect.Request[api.GetSuiteRequest]) (*connect.Response[api.GetSuiteResponse], error)
+	// Stream live suite updates including child run list and terminal state.
+	StreamSuite(context.Context, *connect.Request[api.StreamSuiteRequest]) (*connect.ServerStreamForClient[api.StreamSuiteUpdate], error)
 	// Stream live run updates — task status changes and logs (server streaming).
 	StreamRun(context.Context, *connect.Request[api.StreamRunRequest]) (*connect.ServerStreamForClient[api.StreamRunUpdate], error)
 	// Get current settings.
@@ -152,6 +159,8 @@ type StroppyAPIClient interface {
 	UpdateTopologyTemplate(context.Context, *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error)
 	// Delete a topology template.
 	DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error)
+	// List available stroppy CLI versions from GitHub releases.
+	ListStroppyVersions(context.Context, *connect.Request[api.ListStroppyVersionsRequest]) (*connect.Response[api.ListStroppyVersionsResponse], error)
 }
 
 // NewStroppyAPIClient constructs a client for the api.StroppyAPI service. By default, it uses the
@@ -199,6 +208,12 @@ func NewStroppyAPIClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			httpClient,
 			baseURL+StroppyAPIGetSuiteProcedure,
 			connect.WithSchema(stroppyAPIMethods.ByName("GetSuite")),
+			connect.WithClientOptions(opts...),
+		),
+		streamSuite: connect.NewClient[api.StreamSuiteRequest, api.StreamSuiteUpdate](
+			httpClient,
+			baseURL+StroppyAPIStreamSuiteProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("StreamSuite")),
 			connect.WithClientOptions(opts...),
 		),
 		streamRun: connect.NewClient[api.StreamRunRequest, api.StreamRunUpdate](
@@ -321,6 +336,12 @@ func NewStroppyAPIClient(httpClient connect.HTTPClient, baseURL string, opts ...
 			connect.WithSchema(stroppyAPIMethods.ByName("DeleteTopologyTemplate")),
 			connect.WithClientOptions(opts...),
 		),
+		listStroppyVersions: connect.NewClient[api.ListStroppyVersionsRequest, api.ListStroppyVersionsResponse](
+			httpClient,
+			baseURL+StroppyAPIListStroppyVersionsProcedure,
+			connect.WithSchema(stroppyAPIMethods.ByName("ListStroppyVersions")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -332,6 +353,7 @@ type stroppyAPIClient struct {
 	listRuns               *connect.Client[api.ListRunsRequest, api.ListRunsResponse]
 	listSuites             *connect.Client[api.ListSuitesRequest, api.ListSuitesResponse]
 	getSuite               *connect.Client[api.GetSuiteRequest, api.GetSuiteResponse]
+	streamSuite            *connect.Client[api.StreamSuiteRequest, api.StreamSuiteUpdate]
 	streamRun              *connect.Client[api.StreamRunRequest, api.StreamRunUpdate]
 	getSettings            *connect.Client[api.GetSettingsRequest, api.GetSettingsResponse]
 	updateSettings         *connect.Client[api.UpdateSettingsRequest, api.UpdateSettingsResponse]
@@ -352,6 +374,7 @@ type stroppyAPIClient struct {
 	getTopologyTemplate    *connect.Client[api.GetTopologyTemplateRequest, api.GetTopologyTemplateResponse]
 	updateTopologyTemplate *connect.Client[api.UpdateTopologyTemplateRequest, api.UpdateTopologyTemplateResponse]
 	deleteTopologyTemplate *connect.Client[api.DeleteTopologyTemplateRequest, api.DeleteTopologyTemplateResponse]
+	listStroppyVersions    *connect.Client[api.ListStroppyVersionsRequest, api.ListStroppyVersionsResponse]
 }
 
 // RunTestSuite calls api.StroppyAPI.RunTestSuite.
@@ -382,6 +405,11 @@ func (c *stroppyAPIClient) ListSuites(ctx context.Context, req *connect.Request[
 // GetSuite calls api.StroppyAPI.GetSuite.
 func (c *stroppyAPIClient) GetSuite(ctx context.Context, req *connect.Request[api.GetSuiteRequest]) (*connect.Response[api.GetSuiteResponse], error) {
 	return c.getSuite.CallUnary(ctx, req)
+}
+
+// StreamSuite calls api.StroppyAPI.StreamSuite.
+func (c *stroppyAPIClient) StreamSuite(ctx context.Context, req *connect.Request[api.StreamSuiteRequest]) (*connect.ServerStreamForClient[api.StreamSuiteUpdate], error) {
+	return c.streamSuite.CallServerStream(ctx, req)
 }
 
 // StreamRun calls api.StroppyAPI.StreamRun.
@@ -484,6 +512,11 @@ func (c *stroppyAPIClient) DeleteTopologyTemplate(ctx context.Context, req *conn
 	return c.deleteTopologyTemplate.CallUnary(ctx, req)
 }
 
+// ListStroppyVersions calls api.StroppyAPI.ListStroppyVersions.
+func (c *stroppyAPIClient) ListStroppyVersions(ctx context.Context, req *connect.Request[api.ListStroppyVersionsRequest]) (*connect.Response[api.ListStroppyVersionsResponse], error) {
+	return c.listStroppyVersions.CallUnary(ctx, req)
+}
+
 // StroppyAPIHandler is an implementation of the api.StroppyAPI service.
 type StroppyAPIHandler interface {
 	// Submit a test suite for execution. Returns immediately with a run ID.
@@ -498,6 +531,8 @@ type StroppyAPIHandler interface {
 	ListSuites(context.Context, *connect.Request[api.ListSuitesRequest]) (*connect.Response[api.ListSuitesResponse], error)
 	// Get suite details including its child runs.
 	GetSuite(context.Context, *connect.Request[api.GetSuiteRequest]) (*connect.Response[api.GetSuiteResponse], error)
+	// Stream live suite updates including child run list and terminal state.
+	StreamSuite(context.Context, *connect.Request[api.StreamSuiteRequest], *connect.ServerStream[api.StreamSuiteUpdate]) error
 	// Stream live run updates — task status changes and logs (server streaming).
 	StreamRun(context.Context, *connect.Request[api.StreamRunRequest], *connect.ServerStream[api.StreamRunUpdate]) error
 	// Get current settings.
@@ -538,6 +573,8 @@ type StroppyAPIHandler interface {
 	UpdateTopologyTemplate(context.Context, *connect.Request[api.UpdateTopologyTemplateRequest]) (*connect.Response[api.UpdateTopologyTemplateResponse], error)
 	// Delete a topology template.
 	DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error)
+	// List available stroppy CLI versions from GitHub releases.
+	ListStroppyVersions(context.Context, *connect.Request[api.ListStroppyVersionsRequest]) (*connect.Response[api.ListStroppyVersionsResponse], error)
 }
 
 // NewStroppyAPIHandler builds an HTTP handler from the service implementation. It returns the path
@@ -581,6 +618,12 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 		StroppyAPIGetSuiteProcedure,
 		svc.GetSuite,
 		connect.WithSchema(stroppyAPIMethods.ByName("GetSuite")),
+		connect.WithHandlerOptions(opts...),
+	)
+	stroppyAPIStreamSuiteHandler := connect.NewServerStreamHandler(
+		StroppyAPIStreamSuiteProcedure,
+		svc.StreamSuite,
+		connect.WithSchema(stroppyAPIMethods.ByName("StreamSuite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	stroppyAPIStreamRunHandler := connect.NewServerStreamHandler(
@@ -703,6 +746,12 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 		connect.WithSchema(stroppyAPIMethods.ByName("DeleteTopologyTemplate")),
 		connect.WithHandlerOptions(opts...),
 	)
+	stroppyAPIListStroppyVersionsHandler := connect.NewUnaryHandler(
+		StroppyAPIListStroppyVersionsProcedure,
+		svc.ListStroppyVersions,
+		connect.WithSchema(stroppyAPIMethods.ByName("ListStroppyVersions")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/api.StroppyAPI/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case StroppyAPIRunTestSuiteProcedure:
@@ -717,6 +766,8 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 			stroppyAPIListSuitesHandler.ServeHTTP(w, r)
 		case StroppyAPIGetSuiteProcedure:
 			stroppyAPIGetSuiteHandler.ServeHTTP(w, r)
+		case StroppyAPIStreamSuiteProcedure:
+			stroppyAPIStreamSuiteHandler.ServeHTTP(w, r)
 		case StroppyAPIStreamRunProcedure:
 			stroppyAPIStreamRunHandler.ServeHTTP(w, r)
 		case StroppyAPIGetSettingsProcedure:
@@ -757,6 +808,8 @@ func NewStroppyAPIHandler(svc StroppyAPIHandler, opts ...connect.HandlerOption) 
 			stroppyAPIUpdateTopologyTemplateHandler.ServeHTTP(w, r)
 		case StroppyAPIDeleteTopologyTemplateProcedure:
 			stroppyAPIDeleteTopologyTemplateHandler.ServeHTTP(w, r)
+		case StroppyAPIListStroppyVersionsProcedure:
+			stroppyAPIListStroppyVersionsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -788,6 +841,10 @@ func (UnimplementedStroppyAPIHandler) ListSuites(context.Context, *connect.Reque
 
 func (UnimplementedStroppyAPIHandler) GetSuite(context.Context, *connect.Request[api.GetSuiteRequest]) (*connect.Response[api.GetSuiteResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.GetSuite is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) StreamSuite(context.Context, *connect.Request[api.StreamSuiteRequest], *connect.ServerStream[api.StreamSuiteUpdate]) error {
+	return connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.StreamSuite is not implemented"))
 }
 
 func (UnimplementedStroppyAPIHandler) StreamRun(context.Context, *connect.Request[api.StreamRunRequest], *connect.ServerStream[api.StreamRunUpdate]) error {
@@ -868,4 +925,8 @@ func (UnimplementedStroppyAPIHandler) UpdateTopologyTemplate(context.Context, *c
 
 func (UnimplementedStroppyAPIHandler) DeleteTopologyTemplate(context.Context, *connect.Request[api.DeleteTopologyTemplateRequest]) (*connect.Response[api.DeleteTopologyTemplateResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.DeleteTopologyTemplate is not implemented"))
+}
+
+func (UnimplementedStroppyAPIHandler) ListStroppyVersions(context.Context, *connect.Request[api.ListStroppyVersionsRequest]) (*connect.Response[api.ListStroppyVersionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("api.StroppyAPI.ListStroppyVersions is not implemented"))
 }

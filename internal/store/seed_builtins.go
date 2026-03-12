@@ -88,11 +88,13 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 	templates := []struct {
 		name        string
 		description string
+		dbType      pb.DatabaseType
 		template    *database.Database_Template
 	}{
 		{
 			name:        "PostgreSQL Standalone",
 			description: "Single PostgreSQL 17 instance — for dev/test, no replication",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_POSTGRES,
 			template: &database.Database_Template{
 				Template: &database.Database_Template_PostgresInstance{
 					PostgresInstance: &database.Postgres_Instance{
@@ -112,6 +114,7 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 		{
 			name:        "PostgreSQL HA Cluster (3 nodes)",
 			description: "1 master + 2 replicas with Patroni, etcd, PgBouncer and monitoring",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_POSTGRES,
 			template: &database.Database_Template{
 				Template: &database.Database_Template_PostgresCluster{
 					PostgresCluster: &database.Postgres_Cluster{
@@ -155,6 +158,7 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 		{
 			name:        "PostgreSQL Large Cluster (7 nodes)",
 			description: "1 master + 4 replicas + 2 dedicated etcd — production-grade HA with sync replication, Patroni, PgBouncer, monitoring",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_POSTGRES,
 			template: &database.Database_Template{
 				Template: &database.Database_Template_PostgresCluster{
 					PostgresCluster: &database.Postgres_Cluster{
@@ -188,6 +192,63 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 				},
 			},
 		},
+		// --- Picodata ---
+		{
+			name:        "Picodata Standalone",
+			description: "Single Picodata instance with memtx engine — for dev/test",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_PICODATA,
+			template: &database.Database_Template{
+				Template: &database.Database_Template_PicodataInstance{
+					PicodataInstance: &database.Picodata_Instance{
+						Template: &database.Picodata_Instance_Template{
+							Settings: picodataDefaults(),
+							Hardware: hw(2, 4, 50),
+						},
+					},
+				},
+			},
+		},
+		{
+			name:        "Picodata Cluster (3 nodes)",
+			description: "3-node Picodata cluster with memtx engine and monitoring",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_PICODATA,
+			template: &database.Database_Template{
+				Template: &database.Database_Template_PicodataCluster{
+					PicodataCluster: &database.Picodata_Cluster{
+						Template: &database.Picodata_Cluster_Template{
+							Topology: &database.Picodata_Cluster_Template_Topology{
+								Settings:     picodataDefaults(),
+								NodeHardware: hw(4, 8, 100),
+								NodesCount:   3,
+								Monitor:      true,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:        "Picodata Cluster (5 nodes)",
+			description: "5-node Picodata cluster with vinyl engine — production-grade distributed SQL",
+			dbType:      pb.DatabaseType_DATABASE_TYPE_PICODATA,
+			template: &database.Database_Template{
+				Template: &database.Database_Template_PicodataCluster{
+					PicodataCluster: &database.Picodata_Cluster{
+						Template: &database.Picodata_Cluster_Template{
+							Topology: &database.Picodata_Cluster_Template_Topology{
+								Settings: &database.Picodata_Settings{
+									Version:       "latest",
+									StorageEngine: database.Picodata_Settings_STORAGE_ENGINE_VINYL,
+								},
+								NodeHardware: hw(8, 16, 200),
+								NodesCount:   5,
+								Monitor:      true,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, t := range templates {
@@ -206,7 +267,7 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 			return fmt.Errorf("marshal template %q: %w", t.name, err)
 		}
 
-		dbType := int32(pb.DatabaseType_DATABASE_TYPE_POSTGRES)
+		dbType := int32(t.dbType)
 
 		if _, err := pool.Exec(ctx,
 			`INSERT INTO topology_templates (id, name, description, database_type, builtin, template_data, created_at, updated_at)
@@ -225,6 +286,13 @@ func seedTopologyTemplates(ctx context.Context, pool *pgxpool.Pool) error {
 
 func hw(cores, memory, disk uint32) *deployment.Hardware {
 	return &deployment.Hardware{Cores: cores, Memory: memory, Disk: disk}
+}
+
+func picodataDefaults() *database.Picodata_Settings {
+	return &database.Picodata_Settings{
+		Version:       "latest",
+		StorageEngine: database.Picodata_Settings_STORAGE_ENGINE_MEMTX,
+	}
 }
 
 func pgDefaults() *database.Postgres_Settings {

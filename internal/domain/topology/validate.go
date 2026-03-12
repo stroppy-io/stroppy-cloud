@@ -15,18 +15,27 @@ func ValidateDatabaseTemplate(ctx context.Context, template *database.Database_T
 	if template == nil {
 		return fmt.Errorf("database template is nil")
 	}
-	if err := template.Validate(); err != nil {
-		return err
-	}
 
 	switch t := template.Template.(type) {
 	case *database.Database_Template_PostgresInstance:
+		if err := template.Validate(); err != nil {
+			return err
+		}
 		return validatePostgresInstance(t.PostgresInstance)
 	case *database.Database_Template_PostgresCluster:
+		if err := template.Validate(); err != nil {
+			return err
+		}
 		return validatePostgresCluster(t.PostgresCluster)
 	case *database.Database_Template_PicodataInstance:
+		if err := template.Validate(); err != nil {
+			return err
+		}
 		return validatePicodataInstance(t.PicodataInstance)
 	case *database.Database_Template_PicodataCluster:
+		// Skip generic proto Validate() for Picodata clusters: the proto requires
+		// nodes (min_items=1), but nodes are materialized from the template at
+		// deployment time and are empty during template editing/validation.
 		return validatePicodataCluster(t.PicodataCluster)
 	case nil:
 		return fmt.Errorf("database template content is nil")
@@ -39,6 +48,20 @@ func validatePicodataInstance(inst *database.Picodata_Instance) error {
 	if inst == nil {
 		return fmt.Errorf("picodata instance is nil")
 	}
+	tmpl := inst.GetTemplate()
+	if tmpl == nil {
+		return fmt.Errorf("picodata instance template is nil")
+	}
+	s := tmpl.GetSettings()
+	if s == nil {
+		return fmt.Errorf("picodata instance settings is nil")
+	}
+	if s.GetVersion() == "" {
+		return fmt.Errorf("picodata version is required")
+	}
+	if tmpl.GetHardware() == nil {
+		return fmt.Errorf("picodata instance hardware is required")
+	}
 	return nil
 }
 
@@ -46,8 +69,26 @@ func validatePicodataCluster(cluster *database.Picodata_Cluster) error {
 	if cluster == nil {
 		return fmt.Errorf("picodata cluster is nil")
 	}
-	if len(cluster.GetNodes()) == 0 {
+	tmpl := cluster.GetTemplate()
+	if tmpl == nil {
+		return fmt.Errorf("picodata cluster template is nil")
+	}
+	topo := tmpl.GetTopology()
+	if topo == nil {
+		return fmt.Errorf("picodata cluster topology is nil")
+	}
+	if topo.GetNodesCount() < 1 {
 		return fmt.Errorf("picodata cluster must have at least 1 node")
+	}
+	s := topo.GetSettings()
+	if s == nil {
+		return fmt.Errorf("picodata cluster settings is nil")
+	}
+	if s.GetVersion() == "" {
+		return fmt.Errorf("picodata version is required")
+	}
+	if topo.GetNodeHardware() == nil {
+		return fmt.Errorf("picodata cluster node hardware is required")
 	}
 	return nil
 }

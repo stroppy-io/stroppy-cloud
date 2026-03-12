@@ -33,6 +33,9 @@ service StroppyAPI {
     // Get suite details including its child runs.
     rpc GetSuite(GetSuiteRequest) returns (GetSuiteResponse);
 
+    // Stream live suite updates including child run list and terminal state.
+    rpc StreamSuite(StreamSuiteRequest) returns (stream StreamSuiteUpdate);
+
     // Stream live run updates — task status changes and logs (server streaming).
     rpc StreamRun(StreamRunRequest) returns (stream StreamRunUpdate);
 
@@ -96,6 +99,9 @@ service StroppyAPI {
 
     // Delete a topology template.
     rpc DeleteTopologyTemplate(DeleteTopologyTemplateRequest) returns (DeleteTopologyTemplateResponse);
+
+    // List available stroppy CLI versions from GitHub releases.
+    rpc ListStroppyVersions(ListStroppyVersionsRequest) returns (ListStroppyVersionsResponse);
 }
 
 // --- Test execution ---
@@ -160,6 +166,15 @@ message GetSuiteRequest {
 
 message GetSuiteResponse {
     Suite suite = 1;
+}
+
+message StreamSuiteRequest {
+    string suite_id = 1 [(validate.rules).string.min_len = 1];
+}
+
+message StreamSuiteUpdate {
+    google.protobuf.Timestamp timestamp = 1;
+    Suite suite = 2;
 }
 
 message Suite {
@@ -493,6 +508,14 @@ message DeleteTopologyTemplateRequest {
 }
 
 message DeleteTopologyTemplateResponse {}
+
+// --- Stroppy Versions ---
+
+message ListStroppyVersionsRequest {}
+
+message ListStroppyVersionsResponse {
+    repeated string versions = 1;
+}
 
 // --- Domain types ---
 

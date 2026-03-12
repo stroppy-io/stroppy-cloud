@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { CancelRunRequest, CancelRunResponse, CompareRunsRequest, CompareRunsResponse, CreateTopologyTemplateRequest, CreateTopologyTemplateResponse, DeleteTopologyTemplateRequest, DeleteTopologyTemplateResponse, DeleteWorkloadRequest, DeleteWorkloadResponse, DryRunCheck, DryRunRequest, GetCurrentUserRequest, GetCurrentUserResponse, GetRunRequest, GetRunResponse, GetSettingsRequest, GetSettingsResponse, GetSuiteRequest, GetSuiteResponse, GetTopologyTemplateRequest, GetTopologyTemplateResponse, GetWorkloadRequest, GetWorkloadResponse, ListRunsRequest, ListRunsResponse, ListSuitesRequest, ListSuitesResponse, ListTopologyTemplatesRequest, ListTopologyTemplatesResponse, ListWorkloadsRequest, ListWorkloadsResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, ProbeScriptRequest, ProbeScriptResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterWorkloadRequest, RegisterWorkloadResponse, RunTestSuiteRequest, RunTestSuiteResponse, StreamRunRequest, StreamRunUpdate, UpdateSettingsRequest, UpdateSettingsResponse, UpdateTopologyTemplateRequest, UpdateTopologyTemplateResponse, ValidateTopologyRequest, ValidateTopologyResponse } from "./api_pbts";
+import { CancelRunRequest, CancelRunResponse, CompareRunsRequest, CompareRunsResponse, CreateTopologyTemplateRequest, CreateTopologyTemplateResponse, DeleteTopologyTemplateRequest, DeleteTopologyTemplateResponse, DeleteWorkloadRequest, DeleteWorkloadResponse, DryRunCheck, DryRunRequest, GetCurrentUserRequest, GetCurrentUserResponse, GetRunRequest, GetRunResponse, GetSettingsRequest, GetSettingsResponse, GetSuiteRequest, GetSuiteResponse, GetTopologyTemplateRequest, GetTopologyTemplateResponse, GetWorkloadRequest, GetWorkloadResponse, ListRunsRequest, ListRunsResponse, ListStroppyVersionsRequest, ListStroppyVersionsResponse, ListSuitesRequest, ListSuitesResponse, ListTopologyTemplatesRequest, ListTopologyTemplatesResponse, ListWorkloadsRequest, ListWorkloadsResponse, LoginRequest, LoginResponse, LogoutRequest, LogoutResponse, ProbeScriptRequest, ProbeScriptResponse, RefreshTokenRequest, RefreshTokenResponse, RegisterWorkloadRequest, RegisterWorkloadResponse, RunTestSuiteRequest, RunTestSuiteResponse, StreamRunRequest, StreamRunUpdate, StreamSuiteRequest, StreamSuiteUpdate, UpdateSettingsRequest, UpdateSettingsResponse, UpdateTopologyTemplateRequest, UpdateTopologyTemplateResponse, ValidateTopologyRequest, ValidateTopologyResponse } from "./api_pbts";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -79,6 +79,17 @@ export const StroppyAPI = {
       I: GetSuiteRequest,
       O: GetSuiteResponse,
       kind: MethodKind.Unary,
+    },
+    /**
+     * Stream live suite updates including child run list and terminal state.
+     *
+     * @generated from rpc api.StroppyAPI.StreamSuite
+     */
+    streamSuite: {
+      name: "StreamSuite",
+      I: StreamSuiteRequest,
+      O: StreamSuiteUpdate,
+      kind: MethodKind.ServerStreaming,
     },
     /**
      * Stream live run updates — task status changes and logs (server streaming).
@@ -298,6 +309,17 @@ export const StroppyAPI = {
       name: "DeleteTopologyTemplate",
       I: DeleteTopologyTemplateRequest,
       O: DeleteTopologyTemplateResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * List available stroppy CLI versions from GitHub releases.
+     *
+     * @generated from rpc api.StroppyAPI.ListStroppyVersions
+     */
+    listStroppyVersions: {
+      name: "ListStroppyVersions",
+      I: ListStroppyVersionsRequest,
+      O: ListStroppyVersionsResponse,
       kind: MethodKind.Unary,
     },
   }

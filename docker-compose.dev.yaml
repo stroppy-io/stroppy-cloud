@@ -1,27 +1,7 @@
 volumes:
   valkey-data:
-  api-postgres-data:
 
 services:
-  api-postgres:
-    container_name: api-postgres
-    image: postgres:15.6
-    restart: always
-    environment:
-      POSTGRES_USER: stroppy
-      POSTGRES_PASSWORD: "${API_PG_PASSWORD:-stroppy}"
-      POSTGRES_DB: stroppy_api
-    ports:
-      - "127.0.0.1:5436:5432"
-    volumes:
-      - api-postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d stroppy_api -U stroppy"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-
   api:
     container_name: api
     build:
@@ -31,9 +11,6 @@ services:
         VERSION: "${VERSION}"
     restart: always
     network_mode: "host"
-    depends_on:
-      api-postgres:
-        condition: service_healthy
     ports:
       - "8090:8090"
     environment:
@@ -44,7 +21,7 @@ services:
       PG_DATABASE: "stroppy_api"
       JWT_SECRET: "${JWT_SECRET:-stroppy-dev-secret-change-me}"
       HATCHET_CLIENT_TOKEN: "${HATCHET_CLIENT_TOKEN}"
-      HATCHET_CLIENT_HOST_PORT: "${HATCHET_CLIENT_HOST_PORT:-localhost:7077}"
+      HATCHET_CLIENT_HOST_PORT: "${HATCHET_CLIENT_HOST_PORT:-hatchet-engine:7077}"
       HATCHET_CLIENT_TLS_STRATEGY: "none"
       DEFAULT_USER: "${DEFAULT_USER:-admin}"
       DEFAULT_PASSWORD: "${DEFAULT_PASSWORD:-admin}"

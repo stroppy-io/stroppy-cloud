@@ -50,10 +50,23 @@ export function SuiteDetailPage() {
   useEffect(() => { load() }, [load])
 
   useEffect(() => {
-    if (!suite || (suite.status !== 1 && suite.status !== 2)) return
-    const interval = setInterval(load, 3000)
-    return () => clearInterval(interval)
-  }, [suite, load])
+    if (!id || !suite || suite.status >= 3) return
+
+    const ac = new AbortController()
+    ;(async () => {
+      try {
+        for await (const update of api.streamSuite({ suiteId: id }, { signal: ac.signal })) {
+          if (update.suite) {
+            setSuite(update.suite as Suite)
+          }
+        }
+      } catch {
+        // Keep current suite snapshot on stream disconnect.
+      }
+    })()
+
+    return () => ac.abort()
+  }, [id, suite?.status])
 
   const handleCancel = async (runId: string) => {
     try {

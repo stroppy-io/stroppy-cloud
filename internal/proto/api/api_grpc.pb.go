@@ -25,6 +25,7 @@ const (
 	StroppyAPI_ListRuns_FullMethodName               = "/api.StroppyAPI/ListRuns"
 	StroppyAPI_ListSuites_FullMethodName             = "/api.StroppyAPI/ListSuites"
 	StroppyAPI_GetSuite_FullMethodName               = "/api.StroppyAPI/GetSuite"
+	StroppyAPI_StreamSuite_FullMethodName            = "/api.StroppyAPI/StreamSuite"
 	StroppyAPI_StreamRun_FullMethodName              = "/api.StroppyAPI/StreamRun"
 	StroppyAPI_GetSettings_FullMethodName            = "/api.StroppyAPI/GetSettings"
 	StroppyAPI_UpdateSettings_FullMethodName         = "/api.StroppyAPI/UpdateSettings"
@@ -45,6 +46,7 @@ const (
 	StroppyAPI_GetTopologyTemplate_FullMethodName    = "/api.StroppyAPI/GetTopologyTemplate"
 	StroppyAPI_UpdateTopologyTemplate_FullMethodName = "/api.StroppyAPI/UpdateTopologyTemplate"
 	StroppyAPI_DeleteTopologyTemplate_FullMethodName = "/api.StroppyAPI/DeleteTopologyTemplate"
+	StroppyAPI_ListStroppyVersions_FullMethodName    = "/api.StroppyAPI/ListStroppyVersions"
 )
 
 // StroppyAPIClient is the client API for StroppyAPI service.
@@ -65,6 +67,8 @@ type StroppyAPIClient interface {
 	ListSuites(ctx context.Context, in *ListSuitesRequest, opts ...grpc.CallOption) (*ListSuitesResponse, error)
 	// Get suite details including its child runs.
 	GetSuite(ctx context.Context, in *GetSuiteRequest, opts ...grpc.CallOption) (*GetSuiteResponse, error)
+	// Stream live suite updates including child run list and terminal state.
+	StreamSuite(ctx context.Context, in *StreamSuiteRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamSuiteUpdate], error)
 	// Stream live run updates — task status changes and logs (server streaming).
 	StreamRun(ctx context.Context, in *StreamRunRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamRunUpdate], error)
 	// Get current settings.
@@ -105,6 +109,8 @@ type StroppyAPIClient interface {
 	UpdateTopologyTemplate(ctx context.Context, in *UpdateTopologyTemplateRequest, opts ...grpc.CallOption) (*UpdateTopologyTemplateResponse, error)
 	// Delete a topology template.
 	DeleteTopologyTemplate(ctx context.Context, in *DeleteTopologyTemplateRequest, opts ...grpc.CallOption) (*DeleteTopologyTemplateResponse, error)
+	// List available stroppy CLI versions from GitHub releases.
+	ListStroppyVersions(ctx context.Context, in *ListStroppyVersionsRequest, opts ...grpc.CallOption) (*ListStroppyVersionsResponse, error)
 }
 
 type stroppyAPIClient struct {
@@ -175,9 +181,28 @@ func (c *stroppyAPIClient) GetSuite(ctx context.Context, in *GetSuiteRequest, op
 	return out, nil
 }
 
+func (c *stroppyAPIClient) StreamSuite(ctx context.Context, in *StreamSuiteRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamSuiteUpdate], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &StroppyAPI_ServiceDesc.Streams[0], StroppyAPI_StreamSuite_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[StreamSuiteRequest, StreamSuiteUpdate]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StroppyAPI_StreamSuiteClient = grpc.ServerStreamingClient[StreamSuiteUpdate]
+
 func (c *stroppyAPIClient) StreamRun(ctx context.Context, in *StreamRunRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[StreamRunUpdate], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &StroppyAPI_ServiceDesc.Streams[0], StroppyAPI_StreamRun_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &StroppyAPI_ServiceDesc.Streams[1], StroppyAPI_StreamRun_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -236,7 +261,7 @@ func (c *stroppyAPIClient) ValidateTopology(ctx context.Context, in *ValidateTop
 
 func (c *stroppyAPIClient) DryRun(ctx context.Context, in *DryRunRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[DryRunCheck], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &StroppyAPI_ServiceDesc.Streams[1], StroppyAPI_DryRun_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &StroppyAPI_ServiceDesc.Streams[2], StroppyAPI_DryRun_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -393,6 +418,16 @@ func (c *stroppyAPIClient) DeleteTopologyTemplate(ctx context.Context, in *Delet
 	return out, nil
 }
 
+func (c *stroppyAPIClient) ListStroppyVersions(ctx context.Context, in *ListStroppyVersionsRequest, opts ...grpc.CallOption) (*ListStroppyVersionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListStroppyVersionsResponse)
+	err := c.cc.Invoke(ctx, StroppyAPI_ListStroppyVersions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StroppyAPIServer is the server API for StroppyAPI service.
 // All implementations must embed UnimplementedStroppyAPIServer
 // for forward compatibility.
@@ -411,6 +446,8 @@ type StroppyAPIServer interface {
 	ListSuites(context.Context, *ListSuitesRequest) (*ListSuitesResponse, error)
 	// Get suite details including its child runs.
 	GetSuite(context.Context, *GetSuiteRequest) (*GetSuiteResponse, error)
+	// Stream live suite updates including child run list and terminal state.
+	StreamSuite(*StreamSuiteRequest, grpc.ServerStreamingServer[StreamSuiteUpdate]) error
 	// Stream live run updates — task status changes and logs (server streaming).
 	StreamRun(*StreamRunRequest, grpc.ServerStreamingServer[StreamRunUpdate]) error
 	// Get current settings.
@@ -451,6 +488,8 @@ type StroppyAPIServer interface {
 	UpdateTopologyTemplate(context.Context, *UpdateTopologyTemplateRequest) (*UpdateTopologyTemplateResponse, error)
 	// Delete a topology template.
 	DeleteTopologyTemplate(context.Context, *DeleteTopologyTemplateRequest) (*DeleteTopologyTemplateResponse, error)
+	// List available stroppy CLI versions from GitHub releases.
+	ListStroppyVersions(context.Context, *ListStroppyVersionsRequest) (*ListStroppyVersionsResponse, error)
 	mustEmbedUnimplementedStroppyAPIServer()
 }
 
@@ -478,6 +517,9 @@ func (UnimplementedStroppyAPIServer) ListSuites(context.Context, *ListSuitesRequ
 }
 func (UnimplementedStroppyAPIServer) GetSuite(context.Context, *GetSuiteRequest) (*GetSuiteResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSuite not implemented")
+}
+func (UnimplementedStroppyAPIServer) StreamSuite(*StreamSuiteRequest, grpc.ServerStreamingServer[StreamSuiteUpdate]) error {
+	return status.Error(codes.Unimplemented, "method StreamSuite not implemented")
 }
 func (UnimplementedStroppyAPIServer) StreamRun(*StreamRunRequest, grpc.ServerStreamingServer[StreamRunUpdate]) error {
 	return status.Error(codes.Unimplemented, "method StreamRun not implemented")
@@ -538,6 +580,9 @@ func (UnimplementedStroppyAPIServer) UpdateTopologyTemplate(context.Context, *Up
 }
 func (UnimplementedStroppyAPIServer) DeleteTopologyTemplate(context.Context, *DeleteTopologyTemplateRequest) (*DeleteTopologyTemplateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteTopologyTemplate not implemented")
+}
+func (UnimplementedStroppyAPIServer) ListStroppyVersions(context.Context, *ListStroppyVersionsRequest) (*ListStroppyVersionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListStroppyVersions not implemented")
 }
 func (UnimplementedStroppyAPIServer) mustEmbedUnimplementedStroppyAPIServer() {}
 func (UnimplementedStroppyAPIServer) testEmbeddedByValue()                    {}
@@ -667,6 +712,17 @@ func _StroppyAPI_GetSuite_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	return interceptor(ctx, in, info, handler)
 }
+
+func _StroppyAPI_StreamSuite_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamSuiteRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(StroppyAPIServer).StreamSuite(m, &grpc.GenericServerStream[StreamSuiteRequest, StreamSuiteUpdate]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type StroppyAPI_StreamSuiteServer = grpc.ServerStreamingServer[StreamSuiteUpdate]
 
 func _StroppyAPI_StreamRun_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(StreamRunRequest)
@@ -1014,6 +1070,24 @@ func _StroppyAPI_DeleteTopologyTemplate_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StroppyAPI_ListStroppyVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListStroppyVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StroppyAPIServer).ListStroppyVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StroppyAPI_ListStroppyVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StroppyAPIServer).ListStroppyVersions(ctx, req.(*ListStroppyVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StroppyAPI_ServiceDesc is the grpc.ServiceDesc for StroppyAPI service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1117,8 +1191,17 @@ var StroppyAPI_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "DeleteTopologyTemplate",
 			Handler:    _StroppyAPI_DeleteTopologyTemplate_Handler,
 		},
+		{
+			MethodName: "ListStroppyVersions",
+			Handler:    _StroppyAPI_ListStroppyVersions_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamSuite",
+			Handler:       _StroppyAPI_StreamSuite_Handler,
+			ServerStreams: true,
+		},
 		{
 			StreamName:    "StreamRun",
 			Handler:       _StroppyAPI_StreamRun_Handler,

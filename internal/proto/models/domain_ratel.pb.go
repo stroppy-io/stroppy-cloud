@@ -94,8 +94,8 @@ type SettingsRecordsTable struct {
 // SettingsRecords is the global settings table instance
 var SettingsRecords = func() SettingsRecordsTable {
 	idCol := schema.TextColumn(SettingsRecordColumnId, ddl.WithPrimaryKey[SettingsRecordColumnAlias](), ddl.WithDefault[SettingsRecordColumnAlias]("'default'"))
-	dataCol := schema.ByteaColumn(SettingsRecordColumnData, ddl.WithDefault[SettingsRecordColumnAlias]("'{}'"))
-	updatedAtCol := schema.TimestamptzColumn(SettingsRecordColumnUpdatedAt, ddl.WithDefault[SettingsRecordColumnAlias]("now()"))
+	dataCol := schema.ByteaColumn(SettingsRecordColumnData, ddl.WithDefault[SettingsRecordColumnAlias]("'{}'"), ddl.WithNotNull[SettingsRecordColumnAlias]())
+	updatedAtCol := schema.TimestamptzColumn(SettingsRecordColumnUpdatedAt, ddl.WithDefault[SettingsRecordColumnAlias]("now()"), ddl.WithNotNull[SettingsRecordColumnAlias]())
 
 	return SettingsRecordsTable{
 		Table: schema.NewTable[SettingsRecordAlias, SettingsRecordColumnAlias, *SettingsRecordScanner](
@@ -244,31 +244,31 @@ func (s *SuiteRecordScanner) Relations() []exec.RelationLoader[*SuiteRecordScann
 type SuiteRecordsTable struct {
 	*schema.Table[SuiteRecordAlias, SuiteRecordColumnAlias, *SuiteRecordScanner]
 	Id           schema.TextColumnI[SuiteRecordColumnAlias]
-	HatchetRunId schema.TextColumnI[SuiteRecordColumnAlias]
+	HatchetRunId schema.NullTextColumnI[SuiteRecordColumnAlias]
 	Status       schema.IntegerColumnI[SuiteRecordColumnAlias]
-	TestSuite    schema.ByteaColumnI[SuiteRecordColumnAlias]
+	TestSuite    schema.NullByteaColumnI[SuiteRecordColumnAlias]
 	Target       schema.IntegerColumnI[SuiteRecordColumnAlias]
 	CreatedAt    schema.TimestamptzColumnI[SuiteRecordColumnAlias]
-	StartedAt    schema.TimestamptzColumnI[SuiteRecordColumnAlias]
-	FinishedAt   schema.TimestamptzColumnI[SuiteRecordColumnAlias]
-	DurationMs   schema.BigIntColumnI[SuiteRecordColumnAlias]
-	ErrorMessage schema.TextColumnI[SuiteRecordColumnAlias]
-	Results      schema.ByteaColumnI[SuiteRecordColumnAlias]
+	StartedAt    schema.NullTimestamptzColumnI[SuiteRecordColumnAlias]
+	FinishedAt   schema.NullTimestamptzColumnI[SuiteRecordColumnAlias]
+	DurationMs   schema.NullBigIntColumnI[SuiteRecordColumnAlias]
+	ErrorMessage schema.NullTextColumnI[SuiteRecordColumnAlias]
+	Results      schema.NullByteaColumnI[SuiteRecordColumnAlias]
 }
 
 // SuiteRecords is the global suites table instance
 var SuiteRecords = func() SuiteRecordsTable {
-	idCol := schema.TextColumn(SuiteRecordColumnId, ddl.WithPrimaryKey[SuiteRecordColumnAlias]())
-	hatchetRunIdCol := schema.TextColumn(SuiteRecordColumnHatchetRunId)
-	statusCol := schema.IntegerColumn(SuiteRecordColumnStatus, ddl.WithDefault[SuiteRecordColumnAlias]("0"))
-	testSuiteCol := schema.ByteaColumn(SuiteRecordColumnTestSuite)
-	targetCol := schema.IntegerColumn(SuiteRecordColumnTarget, ddl.WithDefault[SuiteRecordColumnAlias]("0"))
-	createdAtCol := schema.TimestamptzColumn(SuiteRecordColumnCreatedAt, ddl.WithDefault[SuiteRecordColumnAlias]("now()"))
-	startedAtCol := schema.TimestamptzColumn(SuiteRecordColumnStartedAt)
-	finishedAtCol := schema.TimestamptzColumn(SuiteRecordColumnFinishedAt)
-	durationMsCol := schema.BigIntColumn(SuiteRecordColumnDurationMs)
-	errorMessageCol := schema.TextColumn(SuiteRecordColumnErrorMessage)
-	resultsCol := schema.ByteaColumn(SuiteRecordColumnResults)
+	idCol := schema.TextColumn(SuiteRecordColumnId, ddl.WithPrimaryKey[SuiteRecordColumnAlias](), ddl.WithCheck[SuiteRecordColumnAlias]("id <> ''"))
+	hatchetRunIdCol := schema.NullTextColumn(SuiteRecordColumnHatchetRunId)
+	statusCol := schema.IntegerColumn(SuiteRecordColumnStatus, ddl.WithDefault[SuiteRecordColumnAlias]("0"), ddl.WithNotNull[SuiteRecordColumnAlias]())
+	testSuiteCol := schema.NullByteaColumn(SuiteRecordColumnTestSuite)
+	targetCol := schema.IntegerColumn(SuiteRecordColumnTarget, ddl.WithDefault[SuiteRecordColumnAlias]("0"), ddl.WithNotNull[SuiteRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(SuiteRecordColumnCreatedAt, ddl.WithDefault[SuiteRecordColumnAlias]("now()"), ddl.WithNotNull[SuiteRecordColumnAlias]())
+	startedAtCol := schema.NullTimestamptzColumn(SuiteRecordColumnStartedAt)
+	finishedAtCol := schema.NullTimestamptzColumn(SuiteRecordColumnFinishedAt)
+	durationMsCol := schema.NullBigIntColumn(SuiteRecordColumnDurationMs)
+	errorMessageCol := schema.NullTextColumn(SuiteRecordColumnErrorMessage)
+	resultsCol := schema.NullByteaColumn(SuiteRecordColumnResults)
 
 	idx0 := ddl.NewIndex[SuiteRecordAlias, SuiteRecordColumnAlias]("idx_suites_status", SuiteRecordAliasName).OnColumns(SuiteRecordColumnStatus)
 	idx1 := ddl.NewIndex[SuiteRecordAlias, SuiteRecordColumnAlias]("idx_suites_created_at", SuiteRecordAliasName).OnColumns(SuiteRecordColumnCreatedAt)
@@ -455,34 +455,34 @@ type RunRecordsTable struct {
 	*schema.Table[RunRecordAlias, RunRecordColumnAlias, *RunRecordScanner]
 	Id           schema.TextColumnI[RunRecordColumnAlias]
 	SuiteId      schema.TextColumnI[RunRecordColumnAlias]
-	HatchetRunId schema.TextColumnI[RunRecordColumnAlias]
+	HatchetRunId schema.NullTextColumnI[RunRecordColumnAlias]
 	Status       schema.IntegerColumnI[RunRecordColumnAlias]
-	Test         schema.ByteaColumnI[RunRecordColumnAlias]
+	Test         schema.NullByteaColumnI[RunRecordColumnAlias]
 	Target       schema.IntegerColumnI[RunRecordColumnAlias]
 	CreatedAt    schema.TimestamptzColumnI[RunRecordColumnAlias]
-	StartedAt    schema.TimestamptzColumnI[RunRecordColumnAlias]
-	FinishedAt   schema.TimestamptzColumnI[RunRecordColumnAlias]
-	DurationMs   schema.BigIntColumnI[RunRecordColumnAlias]
-	ErrorMessage schema.TextColumnI[RunRecordColumnAlias]
-	Dag          schema.ByteaColumnI[RunRecordColumnAlias]
-	Results      schema.ByteaColumnI[RunRecordColumnAlias]
+	StartedAt    schema.NullTimestamptzColumnI[RunRecordColumnAlias]
+	FinishedAt   schema.NullTimestamptzColumnI[RunRecordColumnAlias]
+	DurationMs   schema.NullBigIntColumnI[RunRecordColumnAlias]
+	ErrorMessage schema.NullTextColumnI[RunRecordColumnAlias]
+	Dag          schema.NullByteaColumnI[RunRecordColumnAlias]
+	Results      schema.NullByteaColumnI[RunRecordColumnAlias]
 }
 
 // RunRecords is the global runs table instance
 var RunRecords = func() RunRecordsTable {
-	idCol := schema.TextColumn(RunRecordColumnId, ddl.WithPrimaryKey[RunRecordColumnAlias]())
-	suiteIdCol := schema.TextColumn(RunRecordColumnSuiteId)
-	hatchetRunIdCol := schema.TextColumn(RunRecordColumnHatchetRunId)
-	statusCol := schema.IntegerColumn(RunRecordColumnStatus, ddl.WithDefault[RunRecordColumnAlias]("0"))
-	testCol := schema.ByteaColumn(RunRecordColumnTest)
-	targetCol := schema.IntegerColumn(RunRecordColumnTarget, ddl.WithDefault[RunRecordColumnAlias]("0"))
-	createdAtCol := schema.TimestamptzColumn(RunRecordColumnCreatedAt, ddl.WithDefault[RunRecordColumnAlias]("now()"))
-	startedAtCol := schema.TimestamptzColumn(RunRecordColumnStartedAt)
-	finishedAtCol := schema.TimestamptzColumn(RunRecordColumnFinishedAt)
-	durationMsCol := schema.BigIntColumn(RunRecordColumnDurationMs)
-	errorMessageCol := schema.TextColumn(RunRecordColumnErrorMessage)
-	dagCol := schema.ByteaColumn(RunRecordColumnDag)
-	resultsCol := schema.ByteaColumn(RunRecordColumnResults)
+	idCol := schema.TextColumn(RunRecordColumnId, ddl.WithPrimaryKey[RunRecordColumnAlias](), ddl.WithCheck[RunRecordColumnAlias]("id <> ''"))
+	suiteIdCol := schema.TextColumn(RunRecordColumnSuiteId, ddl.WithReferences[RunRecordColumnAlias]("suites", "id"), ddl.WithOnDelete[RunRecordColumnAlias]("CASCADE"), ddl.WithNotNull[RunRecordColumnAlias]())
+	hatchetRunIdCol := schema.NullTextColumn(RunRecordColumnHatchetRunId)
+	statusCol := schema.IntegerColumn(RunRecordColumnStatus, ddl.WithDefault[RunRecordColumnAlias]("0"), ddl.WithNotNull[RunRecordColumnAlias]())
+	testCol := schema.NullByteaColumn(RunRecordColumnTest)
+	targetCol := schema.IntegerColumn(RunRecordColumnTarget, ddl.WithDefault[RunRecordColumnAlias]("0"), ddl.WithNotNull[RunRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(RunRecordColumnCreatedAt, ddl.WithDefault[RunRecordColumnAlias]("now()"), ddl.WithNotNull[RunRecordColumnAlias]())
+	startedAtCol := schema.NullTimestamptzColumn(RunRecordColumnStartedAt)
+	finishedAtCol := schema.NullTimestamptzColumn(RunRecordColumnFinishedAt)
+	durationMsCol := schema.NullBigIntColumn(RunRecordColumnDurationMs)
+	errorMessageCol := schema.NullTextColumn(RunRecordColumnErrorMessage)
+	dagCol := schema.NullByteaColumn(RunRecordColumnDag)
+	resultsCol := schema.NullByteaColumn(RunRecordColumnResults)
 
 	idx0 := ddl.NewIndex[RunRecordAlias, RunRecordColumnAlias]("idx_runs_suite_id", RunRecordAliasName).OnColumns(RunRecordColumnSuiteId)
 	idx1 := ddl.NewIndex[RunRecordAlias, RunRecordColumnAlias]("idx_runs_status", RunRecordAliasName).OnColumns(RunRecordColumnStatus)
@@ -642,7 +642,7 @@ type TopologyTemplateRecordsTable struct {
 	*schema.Table[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias, *TopologyTemplateRecordScanner]
 	Id           schema.TextColumnI[TopologyTemplateRecordColumnAlias]
 	Name         schema.TextColumnI[TopologyTemplateRecordColumnAlias]
-	Description  schema.TextColumnI[TopologyTemplateRecordColumnAlias]
+	Description  schema.NullTextColumnI[TopologyTemplateRecordColumnAlias]
 	DatabaseType schema.IntegerColumnI[TopologyTemplateRecordColumnAlias]
 	Builtin      schema.BooleanColumnI[TopologyTemplateRecordColumnAlias]
 	TemplateData schema.ByteaColumnI[TopologyTemplateRecordColumnAlias]
@@ -652,14 +652,14 @@ type TopologyTemplateRecordsTable struct {
 
 // TopologyTemplateRecords is the global topology_templates table instance
 var TopologyTemplateRecords = func() TopologyTemplateRecordsTable {
-	idCol := schema.TextColumn(TopologyTemplateRecordColumnId, ddl.WithPrimaryKey[TopologyTemplateRecordColumnAlias]())
-	nameCol := schema.TextColumn(TopologyTemplateRecordColumnName)
-	descriptionCol := schema.TextColumn(TopologyTemplateRecordColumnDescription)
-	databaseTypeCol := schema.IntegerColumn(TopologyTemplateRecordColumnDatabaseType, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("0"))
-	builtinCol := schema.BooleanColumn(TopologyTemplateRecordColumnBuiltin, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("false"))
-	templateDataCol := schema.ByteaColumn(TopologyTemplateRecordColumnTemplateData)
-	createdAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnCreatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"))
-	updatedAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnUpdatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"))
+	idCol := schema.TextColumn(TopologyTemplateRecordColumnId, ddl.WithPrimaryKey[TopologyTemplateRecordColumnAlias](), ddl.WithCheck[TopologyTemplateRecordColumnAlias]("id <> ''"))
+	nameCol := schema.TextColumn(TopologyTemplateRecordColumnName, ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
+	descriptionCol := schema.NullTextColumn(TopologyTemplateRecordColumnDescription)
+	databaseTypeCol := schema.IntegerColumn(TopologyTemplateRecordColumnDatabaseType, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("0"), ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
+	builtinCol := schema.BooleanColumn(TopologyTemplateRecordColumnBuiltin, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("false"), ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
+	templateDataCol := schema.ByteaColumn(TopologyTemplateRecordColumnTemplateData, ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnCreatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"), ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
+	updatedAtCol := schema.TimestamptzColumn(TopologyTemplateRecordColumnUpdatedAt, ddl.WithDefault[TopologyTemplateRecordColumnAlias]("now()"), ddl.WithNotNull[TopologyTemplateRecordColumnAlias]())
 
 	idx0 := ddl.NewIndex[TopologyTemplateRecordAlias, TopologyTemplateRecordColumnAlias]("idx_topology_templates_name", TopologyTemplateRecordAliasName).OnColumns(TopologyTemplateRecordColumnName)
 	idx0 = idx0.Unique()
@@ -806,24 +806,24 @@ type WorkloadRecordsTable struct {
 	*schema.Table[WorkloadRecordAlias, WorkloadRecordColumnAlias, *WorkloadRecordScanner]
 	Id          schema.TextColumnI[WorkloadRecordColumnAlias]
 	Name        schema.TextColumnI[WorkloadRecordColumnAlias]
-	Description schema.TextColumnI[WorkloadRecordColumnAlias]
+	Description schema.NullTextColumnI[WorkloadRecordColumnAlias]
 	Builtin     schema.BooleanColumnI[WorkloadRecordColumnAlias]
 	Script      schema.ByteaColumnI[WorkloadRecordColumnAlias]
-	SqlData     schema.ByteaColumnI[WorkloadRecordColumnAlias]
-	Probe       schema.ByteaColumnI[WorkloadRecordColumnAlias]
+	SqlData     schema.NullByteaColumnI[WorkloadRecordColumnAlias]
+	Probe       schema.NullByteaColumnI[WorkloadRecordColumnAlias]
 	CreatedAt   schema.TimestamptzColumnI[WorkloadRecordColumnAlias]
 }
 
 // WorkloadRecords is the global workloads table instance
 var WorkloadRecords = func() WorkloadRecordsTable {
-	idCol := schema.TextColumn(WorkloadRecordColumnId, ddl.WithPrimaryKey[WorkloadRecordColumnAlias]())
-	nameCol := schema.TextColumn(WorkloadRecordColumnName)
-	descriptionCol := schema.TextColumn(WorkloadRecordColumnDescription)
-	builtinCol := schema.BooleanColumn(WorkloadRecordColumnBuiltin, ddl.WithDefault[WorkloadRecordColumnAlias]("false"))
-	scriptCol := schema.ByteaColumn(WorkloadRecordColumnScript)
-	sqlDataCol := schema.ByteaColumn(WorkloadRecordColumnSqlData)
-	probeCol := schema.ByteaColumn(WorkloadRecordColumnProbe)
-	createdAtCol := schema.TimestamptzColumn(WorkloadRecordColumnCreatedAt, ddl.WithDefault[WorkloadRecordColumnAlias]("now()"))
+	idCol := schema.TextColumn(WorkloadRecordColumnId, ddl.WithPrimaryKey[WorkloadRecordColumnAlias](), ddl.WithCheck[WorkloadRecordColumnAlias]("id <> ''"))
+	nameCol := schema.TextColumn(WorkloadRecordColumnName, ddl.WithNotNull[WorkloadRecordColumnAlias]())
+	descriptionCol := schema.NullTextColumn(WorkloadRecordColumnDescription)
+	builtinCol := schema.BooleanColumn(WorkloadRecordColumnBuiltin, ddl.WithDefault[WorkloadRecordColumnAlias]("false"), ddl.WithNotNull[WorkloadRecordColumnAlias]())
+	scriptCol := schema.ByteaColumn(WorkloadRecordColumnScript, ddl.WithNotNull[WorkloadRecordColumnAlias]())
+	sqlDataCol := schema.NullByteaColumn(WorkloadRecordColumnSqlData)
+	probeCol := schema.NullByteaColumn(WorkloadRecordColumnProbe)
+	createdAtCol := schema.TimestamptzColumn(WorkloadRecordColumnCreatedAt, ddl.WithDefault[WorkloadRecordColumnAlias]("now()"), ddl.WithNotNull[WorkloadRecordColumnAlias]())
 
 	idx0 := ddl.NewIndex[WorkloadRecordAlias, WorkloadRecordColumnAlias]("idx_workloads_name", WorkloadRecordAliasName).OnColumns(WorkloadRecordColumnName)
 	idx0 = idx0.Unique()

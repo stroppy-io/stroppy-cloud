@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -80,25 +81,24 @@ func (h *Handler) CancelRun(
 ) (*connect.Response[pb.CancelRunResponse], error) {
 	runID := req.Msg.GetRunId()
 
-	var hatchetRunID *string
-	err := h.pool.QueryRow(ctx,
-		`SELECT hatchet_run_id FROM runs WHERE id = $1`, runID,
-	).Scan(&hatchetRunID)
+	hatchetRunID, err := h.resolveHatchetRunID(ctx, runID)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("run not found"))
 	}
 
-	if hatchetRunID != nil && *hatchetRunID != "" {
-		uid, _ := uuid.Parse(*hatchetRunID)
+	if hatchetRunID != "" {
+		uid, _ := uuid.Parse(hatchetRunID)
 		h.hatchet.Runs().Cancel(ctx, rest.V1CancelTaskRequest{
 			ExternalIds: &[]uuid.UUID{uid},
 		})
 	}
 
-	h.pool.Exec(ctx,
+	if _, err := h.pool.Exec(ctx,
 		`UPDATE runs SET status = $1 WHERE id = $2`,
 		int32(pb.RunStatus_RUN_STATUS_CANCELLED), runID,
-	)
+	); err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		// Dynamic Hatchet runs won't have a local row to update.
+	}
 
 	return connect.NewResponse(&pb.CancelRunResponse{}), nil
 }

@@ -1645,6 +1645,279 @@ var _ interface {
 	ErrorName() string
 } = GetSuiteResponseValidationError{}
 
+// Validate checks the field values on StreamSuiteRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *StreamSuiteRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on StreamSuiteRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// StreamSuiteRequestMultiError, or nil if none found.
+func (m *StreamSuiteRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *StreamSuiteRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetSuiteId()) < 1 {
+		err := StreamSuiteRequestValidationError{
+			field:  "SuiteId",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return StreamSuiteRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// StreamSuiteRequestMultiError is an error wrapping multiple validation errors
+// returned by StreamSuiteRequest.ValidateAll() if the designated constraints
+// aren't met.
+type StreamSuiteRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StreamSuiteRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StreamSuiteRequestMultiError) AllErrors() []error { return m }
+
+// StreamSuiteRequestValidationError is the validation error returned by
+// StreamSuiteRequest.Validate if the designated constraints aren't met.
+type StreamSuiteRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StreamSuiteRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StreamSuiteRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StreamSuiteRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StreamSuiteRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StreamSuiteRequestValidationError) ErrorName() string {
+	return "StreamSuiteRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e StreamSuiteRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStreamSuiteRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StreamSuiteRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StreamSuiteRequestValidationError{}
+
+// Validate checks the field values on StreamSuiteUpdate with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *StreamSuiteUpdate) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on StreamSuiteUpdate with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// StreamSuiteUpdateMultiError, or nil if none found.
+func (m *StreamSuiteUpdate) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *StreamSuiteUpdate) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetTimestamp()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, StreamSuiteUpdateValidationError{
+					field:  "Timestamp",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, StreamSuiteUpdateValidationError{
+					field:  "Timestamp",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetTimestamp()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return StreamSuiteUpdateValidationError{
+				field:  "Timestamp",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetSuite()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, StreamSuiteUpdateValidationError{
+					field:  "Suite",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, StreamSuiteUpdateValidationError{
+					field:  "Suite",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSuite()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return StreamSuiteUpdateValidationError{
+				field:  "Suite",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return StreamSuiteUpdateMultiError(errors)
+	}
+
+	return nil
+}
+
+// StreamSuiteUpdateMultiError is an error wrapping multiple validation errors
+// returned by StreamSuiteUpdate.ValidateAll() if the designated constraints
+// aren't met.
+type StreamSuiteUpdateMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StreamSuiteUpdateMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StreamSuiteUpdateMultiError) AllErrors() []error { return m }
+
+// StreamSuiteUpdateValidationError is the validation error returned by
+// StreamSuiteUpdate.Validate if the designated constraints aren't met.
+type StreamSuiteUpdateValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StreamSuiteUpdateValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StreamSuiteUpdateValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StreamSuiteUpdateValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StreamSuiteUpdateValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StreamSuiteUpdateValidationError) ErrorName() string {
+	return "StreamSuiteUpdateValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e StreamSuiteUpdateValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStreamSuiteUpdate.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StreamSuiteUpdateValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StreamSuiteUpdateValidationError{}
+
 // Validate checks the field values on Suite with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -8498,6 +8771,211 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteTopologyTemplateResponseValidationError{}
+
+// Validate checks the field values on ListStroppyVersionsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListStroppyVersionsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListStroppyVersionsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListStroppyVersionsRequestMultiError, or nil if none found.
+func (m *ListStroppyVersionsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListStroppyVersionsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListStroppyVersionsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListStroppyVersionsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListStroppyVersionsRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListStroppyVersionsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListStroppyVersionsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListStroppyVersionsRequestMultiError) AllErrors() []error { return m }
+
+// ListStroppyVersionsRequestValidationError is the validation error returned
+// by ListStroppyVersionsRequest.Validate if the designated constraints aren't met.
+type ListStroppyVersionsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListStroppyVersionsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListStroppyVersionsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListStroppyVersionsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListStroppyVersionsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListStroppyVersionsRequestValidationError) ErrorName() string {
+	return "ListStroppyVersionsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListStroppyVersionsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListStroppyVersionsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListStroppyVersionsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListStroppyVersionsRequestValidationError{}
+
+// Validate checks the field values on ListStroppyVersionsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListStroppyVersionsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListStroppyVersionsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListStroppyVersionsResponseMultiError, or nil if none found.
+func (m *ListStroppyVersionsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListStroppyVersionsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListStroppyVersionsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListStroppyVersionsResponseMultiError is an error wrapping multiple
+// validation errors returned by ListStroppyVersionsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ListStroppyVersionsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListStroppyVersionsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListStroppyVersionsResponseMultiError) AllErrors() []error { return m }
+
+// ListStroppyVersionsResponseValidationError is the validation error returned
+// by ListStroppyVersionsResponse.Validate if the designated constraints
+// aren't met.
+type ListStroppyVersionsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListStroppyVersionsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListStroppyVersionsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListStroppyVersionsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListStroppyVersionsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListStroppyVersionsResponseValidationError) ErrorName() string {
+	return "ListStroppyVersionsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListStroppyVersionsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListStroppyVersionsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListStroppyVersionsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListStroppyVersionsResponseValidationError{}
 
 // Validate checks the field values on Run with the rules defined in the proto
 // definition for this message. If any rules are violated, the first error

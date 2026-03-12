@@ -14,6 +14,7 @@ import (
 	workflowTest "github.com/stroppy-io/hatchet-workflow/internal/domain/workflows/test"
 	pb "github.com/stroppy-io/hatchet-workflow/internal/proto/api"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/deployment"
+	"github.com/stroppy-io/hatchet-workflow/internal/proto/stroppy"
 	"github.com/stroppy-io/hatchet-workflow/internal/proto/workflows"
 )
 
@@ -23,6 +24,19 @@ func (h *Handler) RunTestSuite(
 ) (*connect.Response[pb.RunTestSuiteResponse], error) {
 	msg := req.Msg
 	suiteID := ulid.Make().String()
+
+	// Fill in deployment-time defaults for StroppyCli fields that the UI doesn't set.
+	for _, test := range msg.GetSuite().GetTests() {
+		cli := test.GetStroppyCli()
+		if cli != nil {
+			if cli.BinaryPath == "" {
+				cli.BinaryPath = "/usr/bin/stroppy"
+			}
+			if cli.Workdir == "" {
+				cli.Workdir = "/tmp/stroppy"
+			}
+		}
+	}
 
 	suiteJSON, _ := protojson.Marshal(msg.GetSuite())
 	if _, err := h.pool.Exec(ctx,
@@ -43,7 +57,7 @@ func (h *Handler) RunTestSuite(
 		Target:   msg.GetTarget(),
 	}
 
-	ref, err := h.hatchet.Run(ctx, workflowTest.SuiteWorkflowName, input)
+	ref, err := h.hatchet.RunNoWait(ctx, workflowTest.SuiteWorkflowName, input)
 	if err != nil {
 		h.pool.Exec(ctx,
 			`UPDATE suites SET status = $1, error_message = $2 WHERE id = $3`,
@@ -107,16 +121,25 @@ func (h *Handler) GetSuite(
 	ctx context.Context,
 	req *connect.Request[pb.GetSuiteRequest],
 ) (*connect.Response[pb.GetSuiteResponse], error) {
+	s, _, err := h.getSuiteSnapshot(ctx, req.Msg.GetSuiteId())
+	if err != nil {
+		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("suite not found"))
+	}
+
+	return connect.NewResponse(&pb.GetSuiteResponse{Suite: s}), nil
+}
+
+func (h *Handler) getSuiteSnapshot(ctx context.Context, suiteID string) (*pb.Suite, *string, error) {
 	row := h.pool.QueryRow(ctx,
 		`SELECT id, status, test_suite, target, created_at, started_at, finished_at,
 		        duration_ms, error_message, results
 		 FROM suites WHERE id = $1`,
-		req.Msg.GetSuiteId(),
+		suiteID,
 	)
 
 	s, err := scanSuiteRow(row)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeNotFound, fmt.Errorf("suite not found"))
+		return nil, nil, fmt.Errorf("suite not found")
 	}
 
 	// Load child runs.
@@ -125,7 +148,12 @@ func (h *Handler) GetSuite(
 		s.Runs = runs
 	}
 
-	return connect.NewResponse(&pb.GetSuiteResponse{Suite: s}), nil
+	var hatchetRunID *string
+	if err := h.pool.QueryRow(ctx, `SELECT hatchet_run_id FROM suites WHERE id = $1`, suiteID).Scan(&hatchetRunID); err == nil {
+		h.syncSuiteFromHatchet(ctx, s, hatchetRunID)
+	}
+
+	return s, hatchetRunID, nil
 }
 
 func (h *Handler) loadRunsForSuite(ctx context.Context, suiteID string) ([]*pb.Run, error) {
@@ -217,6 +245,13 @@ func buildSuite(
 	}
 	if errorMessage != nil {
 		s.ErrorMessage = errorMessage
+	}
+
+	if len(testSuiteJSON) > 0 {
+		var ts stroppy.TestSuite
+		if err := protojson.Unmarshal(testSuiteJSON, &ts); err == nil {
+			s.TestSuite = &ts
+		}
 	}
 
 	return s

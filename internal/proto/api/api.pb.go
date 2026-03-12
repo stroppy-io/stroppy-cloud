@@ -969,6 +969,102 @@ func (x *GetSuiteResponse) GetSuite() *Suite {
 	return nil
 }
 
+type StreamSuiteRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SuiteId       string                 `protobuf:"bytes,1,opt,name=suite_id,json=suiteId,proto3" json:"suite_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamSuiteRequest) Reset() {
+	*x = StreamSuiteRequest{}
+	mi := &file_api_api_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamSuiteRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamSuiteRequest) ProtoMessage() {}
+
+func (x *StreamSuiteRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamSuiteRequest.ProtoReflect.Descriptor instead.
+func (*StreamSuiteRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *StreamSuiteRequest) GetSuiteId() string {
+	if x != nil {
+		return x.SuiteId
+	}
+	return ""
+}
+
+type StreamSuiteUpdate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Suite         *Suite                 `protobuf:"bytes,2,opt,name=suite,proto3" json:"suite,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamSuiteUpdate) Reset() {
+	*x = StreamSuiteUpdate{}
+	mi := &file_api_api_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamSuiteUpdate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamSuiteUpdate) ProtoMessage() {}
+
+func (x *StreamSuiteUpdate) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamSuiteUpdate.ProtoReflect.Descriptor instead.
+func (*StreamSuiteUpdate) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *StreamSuiteUpdate) GetTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.Timestamp
+	}
+	return nil
+}
+
+func (x *StreamSuiteUpdate) GetSuite() *Suite {
+	if x != nil {
+		return x.Suite
+	}
+	return nil
+}
+
 type Suite struct {
 	state         protoimpl.MessageState   `protogen:"open.v1"`
 	SuiteId       string                   `protobuf:"bytes,1,opt,name=suite_id,json=suiteId,proto3" json:"suite_id,omitempty"`
@@ -988,7 +1084,7 @@ type Suite struct {
 
 func (x *Suite) Reset() {
 	*x = Suite{}
-	mi := &file_api_api_proto_msgTypes[12]
+	mi := &file_api_api_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1000,7 +1096,7 @@ func (x *Suite) String() string {
 func (*Suite) ProtoMessage() {}
 
 func (x *Suite) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[12]
+	mi := &file_api_api_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1013,7 +1109,7 @@ func (x *Suite) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Suite.ProtoReflect.Descriptor instead.
 func (*Suite) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{12}
+	return file_api_api_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Suite) GetSuiteId() string {
@@ -1102,7 +1198,7 @@ type StreamRunRequest struct {
 
 func (x *StreamRunRequest) Reset() {
 	*x = StreamRunRequest{}
-	mi := &file_api_api_proto_msgTypes[13]
+	mi := &file_api_api_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1114,7 +1210,7 @@ func (x *StreamRunRequest) String() string {
 func (*StreamRunRequest) ProtoMessage() {}
 
 func (x *StreamRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[13]
+	mi := &file_api_api_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1127,7 +1223,7 @@ func (x *StreamRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamRunRequest.ProtoReflect.Descriptor instead.
 func (*StreamRunRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{13}
+	return file_api_api_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *StreamRunRequest) GetRunId() string {
@@ -1151,7 +1247,7 @@ type StreamRunUpdate struct {
 
 func (x *StreamRunUpdate) Reset() {
 	*x = StreamRunUpdate{}
-	mi := &file_api_api_proto_msgTypes[14]
+	mi := &file_api_api_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1163,7 +1259,7 @@ func (x *StreamRunUpdate) String() string {
 func (*StreamRunUpdate) ProtoMessage() {}
 
 func (x *StreamRunUpdate) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[14]
+	mi := &file_api_api_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1176,7 +1272,7 @@ func (x *StreamRunUpdate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamRunUpdate.ProtoReflect.Descriptor instead.
 func (*StreamRunUpdate) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{14}
+	return file_api_api_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *StreamRunUpdate) GetTimestamp() *timestamppb.Timestamp {
@@ -1239,7 +1335,7 @@ type TaskEvent struct {
 
 func (x *TaskEvent) Reset() {
 	*x = TaskEvent{}
-	mi := &file_api_api_proto_msgTypes[15]
+	mi := &file_api_api_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1251,7 +1347,7 @@ func (x *TaskEvent) String() string {
 func (*TaskEvent) ProtoMessage() {}
 
 func (x *TaskEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[15]
+	mi := &file_api_api_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1264,7 +1360,7 @@ func (x *TaskEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent.ProtoReflect.Descriptor instead.
 func (*TaskEvent) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{15}
+	return file_api_api_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TaskEvent) GetTaskId() string {
@@ -1306,7 +1402,7 @@ type LogEntry struct {
 
 func (x *LogEntry) Reset() {
 	*x = LogEntry{}
-	mi := &file_api_api_proto_msgTypes[16]
+	mi := &file_api_api_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1318,7 +1414,7 @@ func (x *LogEntry) String() string {
 func (*LogEntry) ProtoMessage() {}
 
 func (x *LogEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[16]
+	mi := &file_api_api_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1331,7 +1427,7 @@ func (x *LogEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogEntry.ProtoReflect.Descriptor instead.
 func (*LogEntry) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{16}
+	return file_api_api_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *LogEntry) GetTaskId() string {
@@ -1363,7 +1459,7 @@ type GetSettingsRequest struct {
 
 func (x *GetSettingsRequest) Reset() {
 	*x = GetSettingsRequest{}
-	mi := &file_api_api_proto_msgTypes[17]
+	mi := &file_api_api_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1375,7 +1471,7 @@ func (x *GetSettingsRequest) String() string {
 func (*GetSettingsRequest) ProtoMessage() {}
 
 func (x *GetSettingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[17]
+	mi := &file_api_api_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1388,7 +1484,7 @@ func (x *GetSettingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSettingsRequest.ProtoReflect.Descriptor instead.
 func (*GetSettingsRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{17}
+	return file_api_api_proto_rawDescGZIP(), []int{19}
 }
 
 type GetSettingsResponse struct {
@@ -1400,7 +1496,7 @@ type GetSettingsResponse struct {
 
 func (x *GetSettingsResponse) Reset() {
 	*x = GetSettingsResponse{}
-	mi := &file_api_api_proto_msgTypes[18]
+	mi := &file_api_api_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1412,7 +1508,7 @@ func (x *GetSettingsResponse) String() string {
 func (*GetSettingsResponse) ProtoMessage() {}
 
 func (x *GetSettingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[18]
+	mi := &file_api_api_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1425,7 +1521,7 @@ func (x *GetSettingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSettingsResponse.ProtoReflect.Descriptor instead.
 func (*GetSettingsResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{18}
+	return file_api_api_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *GetSettingsResponse) GetSettings() *settings.Settings {
@@ -1444,7 +1540,7 @@ type UpdateSettingsRequest struct {
 
 func (x *UpdateSettingsRequest) Reset() {
 	*x = UpdateSettingsRequest{}
-	mi := &file_api_api_proto_msgTypes[19]
+	mi := &file_api_api_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1456,7 +1552,7 @@ func (x *UpdateSettingsRequest) String() string {
 func (*UpdateSettingsRequest) ProtoMessage() {}
 
 func (x *UpdateSettingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[19]
+	mi := &file_api_api_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1469,7 +1565,7 @@ func (x *UpdateSettingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSettingsRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSettingsRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{19}
+	return file_api_api_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *UpdateSettingsRequest) GetSettings() *settings.Settings {
@@ -1488,7 +1584,7 @@ type UpdateSettingsResponse struct {
 
 func (x *UpdateSettingsResponse) Reset() {
 	*x = UpdateSettingsResponse{}
-	mi := &file_api_api_proto_msgTypes[20]
+	mi := &file_api_api_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1500,7 +1596,7 @@ func (x *UpdateSettingsResponse) String() string {
 func (*UpdateSettingsResponse) ProtoMessage() {}
 
 func (x *UpdateSettingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[20]
+	mi := &file_api_api_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1513,7 +1609,7 @@ func (x *UpdateSettingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSettingsResponse.ProtoReflect.Descriptor instead.
 func (*UpdateSettingsResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{20}
+	return file_api_api_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *UpdateSettingsResponse) GetSettings() *settings.Settings {
@@ -1536,7 +1632,7 @@ type CompareRunsRequest struct {
 
 func (x *CompareRunsRequest) Reset() {
 	*x = CompareRunsRequest{}
-	mi := &file_api_api_proto_msgTypes[21]
+	mi := &file_api_api_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1548,7 +1644,7 @@ func (x *CompareRunsRequest) String() string {
 func (*CompareRunsRequest) ProtoMessage() {}
 
 func (x *CompareRunsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[21]
+	mi := &file_api_api_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1561,7 +1657,7 @@ func (x *CompareRunsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompareRunsRequest.ProtoReflect.Descriptor instead.
 func (*CompareRunsRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{21}
+	return file_api_api_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *CompareRunsRequest) GetBaselineRunId() string {
@@ -1596,7 +1692,7 @@ type CompareRunsResponse struct {
 
 func (x *CompareRunsResponse) Reset() {
 	*x = CompareRunsResponse{}
-	mi := &file_api_api_proto_msgTypes[22]
+	mi := &file_api_api_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1608,7 +1704,7 @@ func (x *CompareRunsResponse) String() string {
 func (*CompareRunsResponse) ProtoMessage() {}
 
 func (x *CompareRunsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[22]
+	mi := &file_api_api_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1621,7 +1717,7 @@ func (x *CompareRunsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompareRunsResponse.ProtoReflect.Descriptor instead.
 func (*CompareRunsResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{22}
+	return file_api_api_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *CompareRunsResponse) GetBaseline() *RunSummary {
@@ -1658,7 +1754,7 @@ type RunSummary struct {
 
 func (x *RunSummary) Reset() {
 	*x = RunSummary{}
-	mi := &file_api_api_proto_msgTypes[23]
+	mi := &file_api_api_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1670,7 +1766,7 @@ func (x *RunSummary) String() string {
 func (*RunSummary) ProtoMessage() {}
 
 func (x *RunSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[23]
+	mi := &file_api_api_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1683,7 +1779,7 @@ func (x *RunSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunSummary.ProtoReflect.Descriptor instead.
 func (*RunSummary) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{23}
+	return file_api_api_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *RunSummary) GetRunId() string {
@@ -1737,7 +1833,7 @@ type MetricComparison struct {
 
 func (x *MetricComparison) Reset() {
 	*x = MetricComparison{}
-	mi := &file_api_api_proto_msgTypes[24]
+	mi := &file_api_api_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1749,7 +1845,7 @@ func (x *MetricComparison) String() string {
 func (*MetricComparison) ProtoMessage() {}
 
 func (x *MetricComparison) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[24]
+	mi := &file_api_api_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1762,7 +1858,7 @@ func (x *MetricComparison) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricComparison.ProtoReflect.Descriptor instead.
 func (*MetricComparison) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{24}
+	return file_api_api_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *MetricComparison) GetMetric() string {
@@ -1831,7 +1927,7 @@ type ValidateTopologyRequest struct {
 
 func (x *ValidateTopologyRequest) Reset() {
 	*x = ValidateTopologyRequest{}
-	mi := &file_api_api_proto_msgTypes[25]
+	mi := &file_api_api_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1843,7 +1939,7 @@ func (x *ValidateTopologyRequest) String() string {
 func (*ValidateTopologyRequest) ProtoMessage() {}
 
 func (x *ValidateTopologyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[25]
+	mi := &file_api_api_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1856,7 +1952,7 @@ func (x *ValidateTopologyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateTopologyRequest.ProtoReflect.Descriptor instead.
 func (*ValidateTopologyRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{25}
+	return file_api_api_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ValidateTopologyRequest) GetTest() *stroppy.Test {
@@ -1883,7 +1979,7 @@ type ValidateTopologyResponse struct {
 
 func (x *ValidateTopologyResponse) Reset() {
 	*x = ValidateTopologyResponse{}
-	mi := &file_api_api_proto_msgTypes[26]
+	mi := &file_api_api_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1895,7 +1991,7 @@ func (x *ValidateTopologyResponse) String() string {
 func (*ValidateTopologyResponse) ProtoMessage() {}
 
 func (x *ValidateTopologyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[26]
+	mi := &file_api_api_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1908,7 +2004,7 @@ func (x *ValidateTopologyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidateTopologyResponse.ProtoReflect.Descriptor instead.
 func (*ValidateTopologyResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{26}
+	return file_api_api_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ValidateTopologyResponse) GetValid() bool {
@@ -1936,7 +2032,7 @@ type ValidationIssue struct {
 
 func (x *ValidationIssue) Reset() {
 	*x = ValidationIssue{}
-	mi := &file_api_api_proto_msgTypes[27]
+	mi := &file_api_api_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1948,7 +2044,7 @@ func (x *ValidationIssue) String() string {
 func (*ValidationIssue) ProtoMessage() {}
 
 func (x *ValidationIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[27]
+	mi := &file_api_api_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1961,7 +2057,7 @@ func (x *ValidationIssue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ValidationIssue.ProtoReflect.Descriptor instead.
 func (*ValidationIssue) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{27}
+	return file_api_api_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ValidationIssue) GetSeverity() ValidationSeverity {
@@ -1996,7 +2092,7 @@ type DryRunRequest struct {
 
 func (x *DryRunRequest) Reset() {
 	*x = DryRunRequest{}
-	mi := &file_api_api_proto_msgTypes[28]
+	mi := &file_api_api_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2008,7 +2104,7 @@ func (x *DryRunRequest) String() string {
 func (*DryRunRequest) ProtoMessage() {}
 
 func (x *DryRunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[28]
+	mi := &file_api_api_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2021,7 +2117,7 @@ func (x *DryRunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DryRunRequest.ProtoReflect.Descriptor instead.
 func (*DryRunRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{28}
+	return file_api_api_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *DryRunRequest) GetSuite() *stroppy.TestSuite {
@@ -2057,7 +2153,7 @@ type DryRunCheck struct {
 
 func (x *DryRunCheck) Reset() {
 	*x = DryRunCheck{}
-	mi := &file_api_api_proto_msgTypes[29]
+	mi := &file_api_api_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2069,7 +2165,7 @@ func (x *DryRunCheck) String() string {
 func (*DryRunCheck) ProtoMessage() {}
 
 func (x *DryRunCheck) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[29]
+	mi := &file_api_api_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2082,7 +2178,7 @@ func (x *DryRunCheck) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DryRunCheck.ProtoReflect.Descriptor instead.
 func (*DryRunCheck) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{29}
+	return file_api_api_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DryRunCheck) GetCheckName() string {
@@ -2123,7 +2219,7 @@ type LoginRequest struct {
 
 func (x *LoginRequest) Reset() {
 	*x = LoginRequest{}
-	mi := &file_api_api_proto_msgTypes[30]
+	mi := &file_api_api_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2135,7 +2231,7 @@ func (x *LoginRequest) String() string {
 func (*LoginRequest) ProtoMessage() {}
 
 func (x *LoginRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[30]
+	mi := &file_api_api_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2148,7 +2244,7 @@ func (x *LoginRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginRequest.ProtoReflect.Descriptor instead.
 func (*LoginRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{30}
+	return file_api_api_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *LoginRequest) GetUsername() string {
@@ -2176,7 +2272,7 @@ type LoginResponse struct {
 
 func (x *LoginResponse) Reset() {
 	*x = LoginResponse{}
-	mi := &file_api_api_proto_msgTypes[31]
+	mi := &file_api_api_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2188,7 +2284,7 @@ func (x *LoginResponse) String() string {
 func (*LoginResponse) ProtoMessage() {}
 
 func (x *LoginResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[31]
+	mi := &file_api_api_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2201,7 +2297,7 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{31}
+	return file_api_api_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *LoginResponse) GetAccessToken() string {
@@ -2234,7 +2330,7 @@ type RefreshTokenRequest struct {
 
 func (x *RefreshTokenRequest) Reset() {
 	*x = RefreshTokenRequest{}
-	mi := &file_api_api_proto_msgTypes[32]
+	mi := &file_api_api_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2246,7 +2342,7 @@ func (x *RefreshTokenRequest) String() string {
 func (*RefreshTokenRequest) ProtoMessage() {}
 
 func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[32]
+	mi := &file_api_api_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2259,7 +2355,7 @@ func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshTokenRequest.ProtoReflect.Descriptor instead.
 func (*RefreshTokenRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{32}
+	return file_api_api_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *RefreshTokenRequest) GetRefreshToken() string {
@@ -2279,7 +2375,7 @@ type RefreshTokenResponse struct {
 
 func (x *RefreshTokenResponse) Reset() {
 	*x = RefreshTokenResponse{}
-	mi := &file_api_api_proto_msgTypes[33]
+	mi := &file_api_api_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2291,7 +2387,7 @@ func (x *RefreshTokenResponse) String() string {
 func (*RefreshTokenResponse) ProtoMessage() {}
 
 func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[33]
+	mi := &file_api_api_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2304,7 +2400,7 @@ func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
 func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{33}
+	return file_api_api_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *RefreshTokenResponse) GetAccessToken() string {
@@ -2329,7 +2425,7 @@ type LogoutRequest struct {
 
 func (x *LogoutRequest) Reset() {
 	*x = LogoutRequest{}
-	mi := &file_api_api_proto_msgTypes[34]
+	mi := &file_api_api_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2341,7 +2437,7 @@ func (x *LogoutRequest) String() string {
 func (*LogoutRequest) ProtoMessage() {}
 
 func (x *LogoutRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[34]
+	mi := &file_api_api_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2354,7 +2450,7 @@ func (x *LogoutRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogoutRequest.ProtoReflect.Descriptor instead.
 func (*LogoutRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{34}
+	return file_api_api_proto_rawDescGZIP(), []int{36}
 }
 
 type LogoutResponse struct {
@@ -2365,7 +2461,7 @@ type LogoutResponse struct {
 
 func (x *LogoutResponse) Reset() {
 	*x = LogoutResponse{}
-	mi := &file_api_api_proto_msgTypes[35]
+	mi := &file_api_api_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2377,7 +2473,7 @@ func (x *LogoutResponse) String() string {
 func (*LogoutResponse) ProtoMessage() {}
 
 func (x *LogoutResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[35]
+	mi := &file_api_api_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2390,7 +2486,7 @@ func (x *LogoutResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogoutResponse.ProtoReflect.Descriptor instead.
 func (*LogoutResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{35}
+	return file_api_api_proto_rawDescGZIP(), []int{37}
 }
 
 type GetCurrentUserRequest struct {
@@ -2401,7 +2497,7 @@ type GetCurrentUserRequest struct {
 
 func (x *GetCurrentUserRequest) Reset() {
 	*x = GetCurrentUserRequest{}
-	mi := &file_api_api_proto_msgTypes[36]
+	mi := &file_api_api_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2413,7 +2509,7 @@ func (x *GetCurrentUserRequest) String() string {
 func (*GetCurrentUserRequest) ProtoMessage() {}
 
 func (x *GetCurrentUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[36]
+	mi := &file_api_api_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2426,7 +2522,7 @@ func (x *GetCurrentUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCurrentUserRequest.ProtoReflect.Descriptor instead.
 func (*GetCurrentUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{36}
+	return file_api_api_proto_rawDescGZIP(), []int{38}
 }
 
 type GetCurrentUserResponse struct {
@@ -2438,7 +2534,7 @@ type GetCurrentUserResponse struct {
 
 func (x *GetCurrentUserResponse) Reset() {
 	*x = GetCurrentUserResponse{}
-	mi := &file_api_api_proto_msgTypes[37]
+	mi := &file_api_api_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2450,7 +2546,7 @@ func (x *GetCurrentUserResponse) String() string {
 func (*GetCurrentUserResponse) ProtoMessage() {}
 
 func (x *GetCurrentUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[37]
+	mi := &file_api_api_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2463,7 +2559,7 @@ func (x *GetCurrentUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCurrentUserResponse.ProtoReflect.Descriptor instead.
 func (*GetCurrentUserResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{37}
+	return file_api_api_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *GetCurrentUserResponse) GetUser() *User {
@@ -2484,7 +2580,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_api_api_proto_msgTypes[38]
+	mi := &file_api_api_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2496,7 +2592,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[38]
+	mi := &file_api_api_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2509,7 +2605,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{38}
+	return file_api_api_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *User) GetId() string {
@@ -2545,7 +2641,7 @@ type RegisterWorkloadRequest struct {
 
 func (x *RegisterWorkloadRequest) Reset() {
 	*x = RegisterWorkloadRequest{}
-	mi := &file_api_api_proto_msgTypes[39]
+	mi := &file_api_api_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2557,7 +2653,7 @@ func (x *RegisterWorkloadRequest) String() string {
 func (*RegisterWorkloadRequest) ProtoMessage() {}
 
 func (x *RegisterWorkloadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[39]
+	mi := &file_api_api_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2570,7 +2666,7 @@ func (x *RegisterWorkloadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterWorkloadRequest.ProtoReflect.Descriptor instead.
 func (*RegisterWorkloadRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{39}
+	return file_api_api_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *RegisterWorkloadRequest) GetName() string {
@@ -2610,7 +2706,7 @@ type RegisterWorkloadResponse struct {
 
 func (x *RegisterWorkloadResponse) Reset() {
 	*x = RegisterWorkloadResponse{}
-	mi := &file_api_api_proto_msgTypes[40]
+	mi := &file_api_api_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2622,7 +2718,7 @@ func (x *RegisterWorkloadResponse) String() string {
 func (*RegisterWorkloadResponse) ProtoMessage() {}
 
 func (x *RegisterWorkloadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[40]
+	mi := &file_api_api_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2635,7 +2731,7 @@ func (x *RegisterWorkloadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RegisterWorkloadResponse.ProtoReflect.Descriptor instead.
 func (*RegisterWorkloadResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{40}
+	return file_api_api_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *RegisterWorkloadResponse) GetWorkload() *Workload {
@@ -2655,7 +2751,7 @@ type ListWorkloadsRequest struct {
 
 func (x *ListWorkloadsRequest) Reset() {
 	*x = ListWorkloadsRequest{}
-	mi := &file_api_api_proto_msgTypes[41]
+	mi := &file_api_api_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2667,7 +2763,7 @@ func (x *ListWorkloadsRequest) String() string {
 func (*ListWorkloadsRequest) ProtoMessage() {}
 
 func (x *ListWorkloadsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[41]
+	mi := &file_api_api_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2680,7 +2776,7 @@ func (x *ListWorkloadsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkloadsRequest.ProtoReflect.Descriptor instead.
 func (*ListWorkloadsRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{41}
+	return file_api_api_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ListWorkloadsRequest) GetOffset() int64 {
@@ -2707,7 +2803,7 @@ type ListWorkloadsResponse struct {
 
 func (x *ListWorkloadsResponse) Reset() {
 	*x = ListWorkloadsResponse{}
-	mi := &file_api_api_proto_msgTypes[42]
+	mi := &file_api_api_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2719,7 +2815,7 @@ func (x *ListWorkloadsResponse) String() string {
 func (*ListWorkloadsResponse) ProtoMessage() {}
 
 func (x *ListWorkloadsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[42]
+	mi := &file_api_api_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2732,7 +2828,7 @@ func (x *ListWorkloadsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListWorkloadsResponse.ProtoReflect.Descriptor instead.
 func (*ListWorkloadsResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{42}
+	return file_api_api_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *ListWorkloadsResponse) GetWorkloads() []*Workload {
@@ -2758,7 +2854,7 @@ type GetWorkloadRequest struct {
 
 func (x *GetWorkloadRequest) Reset() {
 	*x = GetWorkloadRequest{}
-	mi := &file_api_api_proto_msgTypes[43]
+	mi := &file_api_api_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2770,7 +2866,7 @@ func (x *GetWorkloadRequest) String() string {
 func (*GetWorkloadRequest) ProtoMessage() {}
 
 func (x *GetWorkloadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[43]
+	mi := &file_api_api_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2783,7 +2879,7 @@ func (x *GetWorkloadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkloadRequest.ProtoReflect.Descriptor instead.
 func (*GetWorkloadRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{43}
+	return file_api_api_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *GetWorkloadRequest) GetWorkloadId() string {
@@ -2802,7 +2898,7 @@ type GetWorkloadResponse struct {
 
 func (x *GetWorkloadResponse) Reset() {
 	*x = GetWorkloadResponse{}
-	mi := &file_api_api_proto_msgTypes[44]
+	mi := &file_api_api_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2814,7 +2910,7 @@ func (x *GetWorkloadResponse) String() string {
 func (*GetWorkloadResponse) ProtoMessage() {}
 
 func (x *GetWorkloadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[44]
+	mi := &file_api_api_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2827,7 +2923,7 @@ func (x *GetWorkloadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWorkloadResponse.ProtoReflect.Descriptor instead.
 func (*GetWorkloadResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{44}
+	return file_api_api_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *GetWorkloadResponse) GetWorkload() *Workload {
@@ -2846,7 +2942,7 @@ type DeleteWorkloadRequest struct {
 
 func (x *DeleteWorkloadRequest) Reset() {
 	*x = DeleteWorkloadRequest{}
-	mi := &file_api_api_proto_msgTypes[45]
+	mi := &file_api_api_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2858,7 +2954,7 @@ func (x *DeleteWorkloadRequest) String() string {
 func (*DeleteWorkloadRequest) ProtoMessage() {}
 
 func (x *DeleteWorkloadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[45]
+	mi := &file_api_api_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2871,7 +2967,7 @@ func (x *DeleteWorkloadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkloadRequest.ProtoReflect.Descriptor instead.
 func (*DeleteWorkloadRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{45}
+	return file_api_api_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *DeleteWorkloadRequest) GetWorkloadId() string {
@@ -2889,7 +2985,7 @@ type DeleteWorkloadResponse struct {
 
 func (x *DeleteWorkloadResponse) Reset() {
 	*x = DeleteWorkloadResponse{}
-	mi := &file_api_api_proto_msgTypes[46]
+	mi := &file_api_api_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2901,7 +2997,7 @@ func (x *DeleteWorkloadResponse) String() string {
 func (*DeleteWorkloadResponse) ProtoMessage() {}
 
 func (x *DeleteWorkloadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[46]
+	mi := &file_api_api_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2914,7 +3010,7 @@ func (x *DeleteWorkloadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteWorkloadResponse.ProtoReflect.Descriptor instead.
 func (*DeleteWorkloadResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{46}
+	return file_api_api_proto_rawDescGZIP(), []int{48}
 }
 
 type ProbeScriptRequest struct {
@@ -2927,7 +3023,7 @@ type ProbeScriptRequest struct {
 
 func (x *ProbeScriptRequest) Reset() {
 	*x = ProbeScriptRequest{}
-	mi := &file_api_api_proto_msgTypes[47]
+	mi := &file_api_api_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2939,7 +3035,7 @@ func (x *ProbeScriptRequest) String() string {
 func (*ProbeScriptRequest) ProtoMessage() {}
 
 func (x *ProbeScriptRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[47]
+	mi := &file_api_api_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2952,7 +3048,7 @@ func (x *ProbeScriptRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProbeScriptRequest.ProtoReflect.Descriptor instead.
 func (*ProbeScriptRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{47}
+	return file_api_api_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *ProbeScriptRequest) GetScript() []byte {
@@ -2978,7 +3074,7 @@ type ProbeScriptResponse struct {
 
 func (x *ProbeScriptResponse) Reset() {
 	*x = ProbeScriptResponse{}
-	mi := &file_api_api_proto_msgTypes[48]
+	mi := &file_api_api_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2990,7 +3086,7 @@ func (x *ProbeScriptResponse) String() string {
 func (*ProbeScriptResponse) ProtoMessage() {}
 
 func (x *ProbeScriptResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[48]
+	mi := &file_api_api_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3003,7 +3099,7 @@ func (x *ProbeScriptResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProbeScriptResponse.ProtoReflect.Descriptor instead.
 func (*ProbeScriptResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{48}
+	return file_api_api_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ProbeScriptResponse) GetProbe() *ProbeResult {
@@ -3029,7 +3125,7 @@ type Workload struct {
 
 func (x *Workload) Reset() {
 	*x = Workload{}
-	mi := &file_api_api_proto_msgTypes[49]
+	mi := &file_api_api_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3041,7 +3137,7 @@ func (x *Workload) String() string {
 func (*Workload) ProtoMessage() {}
 
 func (x *Workload) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[49]
+	mi := &file_api_api_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3054,7 +3150,7 @@ func (x *Workload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Workload.ProtoReflect.Descriptor instead.
 func (*Workload) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{49}
+	return file_api_api_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *Workload) GetId() string {
@@ -3130,7 +3226,7 @@ type ProbeResult struct {
 
 func (x *ProbeResult) Reset() {
 	*x = ProbeResult{}
-	mi := &file_api_api_proto_msgTypes[50]
+	mi := &file_api_api_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3142,7 +3238,7 @@ func (x *ProbeResult) String() string {
 func (*ProbeResult) ProtoMessage() {}
 
 func (x *ProbeResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[50]
+	mi := &file_api_api_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3155,7 +3251,7 @@ func (x *ProbeResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProbeResult.ProtoReflect.Descriptor instead.
 func (*ProbeResult) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{50}
+	return file_api_api_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ProbeResult) GetDriverConfig() *stroppy1.DriverConfig {
@@ -3211,7 +3307,7 @@ type EnvParam struct {
 
 func (x *EnvParam) Reset() {
 	*x = EnvParam{}
-	mi := &file_api_api_proto_msgTypes[51]
+	mi := &file_api_api_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3223,7 +3319,7 @@ func (x *EnvParam) String() string {
 func (*EnvParam) ProtoMessage() {}
 
 func (x *EnvParam) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[51]
+	mi := &file_api_api_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3236,7 +3332,7 @@ func (x *EnvParam) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnvParam.ProtoReflect.Descriptor instead.
 func (*EnvParam) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{51}
+	return file_api_api_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *EnvParam) GetName() string {
@@ -3276,7 +3372,7 @@ type TopologyTemplate struct {
 
 func (x *TopologyTemplate) Reset() {
 	*x = TopologyTemplate{}
-	mi := &file_api_api_proto_msgTypes[52]
+	mi := &file_api_api_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3288,7 +3384,7 @@ func (x *TopologyTemplate) String() string {
 func (*TopologyTemplate) ProtoMessage() {}
 
 func (x *TopologyTemplate) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[52]
+	mi := &file_api_api_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3301,7 +3397,7 @@ func (x *TopologyTemplate) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyTemplate.ProtoReflect.Descriptor instead.
 func (*TopologyTemplate) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{52}
+	return file_api_api_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *TopologyTemplate) GetId() string {
@@ -3371,7 +3467,7 @@ type CreateTopologyTemplateRequest struct {
 
 func (x *CreateTopologyTemplateRequest) Reset() {
 	*x = CreateTopologyTemplateRequest{}
-	mi := &file_api_api_proto_msgTypes[53]
+	mi := &file_api_api_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3383,7 +3479,7 @@ func (x *CreateTopologyTemplateRequest) String() string {
 func (*CreateTopologyTemplateRequest) ProtoMessage() {}
 
 func (x *CreateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[53]
+	mi := &file_api_api_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3396,7 +3492,7 @@ func (x *CreateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTopologyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*CreateTopologyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{53}
+	return file_api_api_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *CreateTopologyTemplateRequest) GetName() string {
@@ -3429,7 +3525,7 @@ type CreateTopologyTemplateResponse struct {
 
 func (x *CreateTopologyTemplateResponse) Reset() {
 	*x = CreateTopologyTemplateResponse{}
-	mi := &file_api_api_proto_msgTypes[54]
+	mi := &file_api_api_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3441,7 +3537,7 @@ func (x *CreateTopologyTemplateResponse) String() string {
 func (*CreateTopologyTemplateResponse) ProtoMessage() {}
 
 func (x *CreateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[54]
+	mi := &file_api_api_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3454,7 +3550,7 @@ func (x *CreateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTopologyTemplateResponse.ProtoReflect.Descriptor instead.
 func (*CreateTopologyTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{54}
+	return file_api_api_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *CreateTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
@@ -3475,7 +3571,7 @@ type ListTopologyTemplatesRequest struct {
 
 func (x *ListTopologyTemplatesRequest) Reset() {
 	*x = ListTopologyTemplatesRequest{}
-	mi := &file_api_api_proto_msgTypes[55]
+	mi := &file_api_api_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3487,7 +3583,7 @@ func (x *ListTopologyTemplatesRequest) String() string {
 func (*ListTopologyTemplatesRequest) ProtoMessage() {}
 
 func (x *ListTopologyTemplatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[55]
+	mi := &file_api_api_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3500,7 +3596,7 @@ func (x *ListTopologyTemplatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTopologyTemplatesRequest.ProtoReflect.Descriptor instead.
 func (*ListTopologyTemplatesRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{55}
+	return file_api_api_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListTopologyTemplatesRequest) GetOffset() int64 {
@@ -3534,7 +3630,7 @@ type ListTopologyTemplatesResponse struct {
 
 func (x *ListTopologyTemplatesResponse) Reset() {
 	*x = ListTopologyTemplatesResponse{}
-	mi := &file_api_api_proto_msgTypes[56]
+	mi := &file_api_api_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3546,7 +3642,7 @@ func (x *ListTopologyTemplatesResponse) String() string {
 func (*ListTopologyTemplatesResponse) ProtoMessage() {}
 
 func (x *ListTopologyTemplatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[56]
+	mi := &file_api_api_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3559,7 +3655,7 @@ func (x *ListTopologyTemplatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTopologyTemplatesResponse.ProtoReflect.Descriptor instead.
 func (*ListTopologyTemplatesResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{56}
+	return file_api_api_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ListTopologyTemplatesResponse) GetTopologyTemplates() []*TopologyTemplate {
@@ -3585,7 +3681,7 @@ type GetTopologyTemplateRequest struct {
 
 func (x *GetTopologyTemplateRequest) Reset() {
 	*x = GetTopologyTemplateRequest{}
-	mi := &file_api_api_proto_msgTypes[57]
+	mi := &file_api_api_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3597,7 +3693,7 @@ func (x *GetTopologyTemplateRequest) String() string {
 func (*GetTopologyTemplateRequest) ProtoMessage() {}
 
 func (x *GetTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[57]
+	mi := &file_api_api_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3610,7 +3706,7 @@ func (x *GetTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopologyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*GetTopologyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{57}
+	return file_api_api_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetTopologyTemplateRequest) GetTemplateId() string {
@@ -3629,7 +3725,7 @@ type GetTopologyTemplateResponse struct {
 
 func (x *GetTopologyTemplateResponse) Reset() {
 	*x = GetTopologyTemplateResponse{}
-	mi := &file_api_api_proto_msgTypes[58]
+	mi := &file_api_api_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3641,7 +3737,7 @@ func (x *GetTopologyTemplateResponse) String() string {
 func (*GetTopologyTemplateResponse) ProtoMessage() {}
 
 func (x *GetTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[58]
+	mi := &file_api_api_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3654,7 +3750,7 @@ func (x *GetTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopologyTemplateResponse.ProtoReflect.Descriptor instead.
 func (*GetTopologyTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{58}
+	return file_api_api_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *GetTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
@@ -3676,7 +3772,7 @@ type UpdateTopologyTemplateRequest struct {
 
 func (x *UpdateTopologyTemplateRequest) Reset() {
 	*x = UpdateTopologyTemplateRequest{}
-	mi := &file_api_api_proto_msgTypes[59]
+	mi := &file_api_api_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3688,7 +3784,7 @@ func (x *UpdateTopologyTemplateRequest) String() string {
 func (*UpdateTopologyTemplateRequest) ProtoMessage() {}
 
 func (x *UpdateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[59]
+	mi := &file_api_api_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3701,7 +3797,7 @@ func (x *UpdateTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTopologyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTopologyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{59}
+	return file_api_api_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *UpdateTopologyTemplateRequest) GetTemplateId() string {
@@ -3741,7 +3837,7 @@ type UpdateTopologyTemplateResponse struct {
 
 func (x *UpdateTopologyTemplateResponse) Reset() {
 	*x = UpdateTopologyTemplateResponse{}
-	mi := &file_api_api_proto_msgTypes[60]
+	mi := &file_api_api_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3753,7 +3849,7 @@ func (x *UpdateTopologyTemplateResponse) String() string {
 func (*UpdateTopologyTemplateResponse) ProtoMessage() {}
 
 func (x *UpdateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[60]
+	mi := &file_api_api_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3766,7 +3862,7 @@ func (x *UpdateTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTopologyTemplateResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTopologyTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{60}
+	return file_api_api_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *UpdateTopologyTemplateResponse) GetTopologyTemplate() *TopologyTemplate {
@@ -3785,7 +3881,7 @@ type DeleteTopologyTemplateRequest struct {
 
 func (x *DeleteTopologyTemplateRequest) Reset() {
 	*x = DeleteTopologyTemplateRequest{}
-	mi := &file_api_api_proto_msgTypes[61]
+	mi := &file_api_api_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3797,7 +3893,7 @@ func (x *DeleteTopologyTemplateRequest) String() string {
 func (*DeleteTopologyTemplateRequest) ProtoMessage() {}
 
 func (x *DeleteTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[61]
+	mi := &file_api_api_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3810,7 +3906,7 @@ func (x *DeleteTopologyTemplateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTopologyTemplateRequest.ProtoReflect.Descriptor instead.
 func (*DeleteTopologyTemplateRequest) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{61}
+	return file_api_api_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *DeleteTopologyTemplateRequest) GetTemplateId() string {
@@ -3828,7 +3924,7 @@ type DeleteTopologyTemplateResponse struct {
 
 func (x *DeleteTopologyTemplateResponse) Reset() {
 	*x = DeleteTopologyTemplateResponse{}
-	mi := &file_api_api_proto_msgTypes[62]
+	mi := &file_api_api_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3840,7 +3936,7 @@ func (x *DeleteTopologyTemplateResponse) String() string {
 func (*DeleteTopologyTemplateResponse) ProtoMessage() {}
 
 func (x *DeleteTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[62]
+	mi := &file_api_api_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3853,7 +3949,87 @@ func (x *DeleteTopologyTemplateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteTopologyTemplateResponse.ProtoReflect.Descriptor instead.
 func (*DeleteTopologyTemplateResponse) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{62}
+	return file_api_api_proto_rawDescGZIP(), []int{64}
+}
+
+type ListStroppyVersionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStroppyVersionsRequest) Reset() {
+	*x = ListStroppyVersionsRequest{}
+	mi := &file_api_api_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStroppyVersionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStroppyVersionsRequest) ProtoMessage() {}
+
+func (x *ListStroppyVersionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStroppyVersionsRequest.ProtoReflect.Descriptor instead.
+func (*ListStroppyVersionsRequest) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{65}
+}
+
+type ListStroppyVersionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Versions      []string               `protobuf:"bytes,1,rep,name=versions,proto3" json:"versions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListStroppyVersionsResponse) Reset() {
+	*x = ListStroppyVersionsResponse{}
+	mi := &file_api_api_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListStroppyVersionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListStroppyVersionsResponse) ProtoMessage() {}
+
+func (x *ListStroppyVersionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_api_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListStroppyVersionsResponse.ProtoReflect.Descriptor instead.
+func (*ListStroppyVersionsResponse) Descriptor() ([]byte, []int) {
+	return file_api_api_proto_rawDescGZIP(), []int{66}
+}
+
+func (x *ListStroppyVersionsResponse) GetVersions() []string {
+	if x != nil {
+		return x.Versions
+	}
+	return nil
 }
 
 type Run struct {
@@ -3875,7 +4051,7 @@ type Run struct {
 
 func (x *Run) Reset() {
 	*x = Run{}
-	mi := &file_api_api_proto_msgTypes[63]
+	mi := &file_api_api_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3887,7 +4063,7 @@ func (x *Run) String() string {
 func (*Run) ProtoMessage() {}
 
 func (x *Run) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[63]
+	mi := &file_api_api_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3900,7 +4076,7 @@ func (x *Run) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Run.ProtoReflect.Descriptor instead.
 func (*Run) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{63}
+	return file_api_api_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *Run) GetRunId() string {
@@ -3997,7 +4173,7 @@ type TaskNode struct {
 
 func (x *TaskNode) Reset() {
 	*x = TaskNode{}
-	mi := &file_api_api_proto_msgTypes[64]
+	mi := &file_api_api_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4009,7 +4185,7 @@ func (x *TaskNode) String() string {
 func (*TaskNode) ProtoMessage() {}
 
 func (x *TaskNode) ProtoReflect() protoreflect.Message {
-	mi := &file_api_api_proto_msgTypes[64]
+	mi := &file_api_api_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4022,7 +4198,7 @@ func (x *TaskNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskNode.ProtoReflect.Descriptor instead.
 func (*TaskNode) Descriptor() ([]byte, []int) {
-	return file_api_api_proto_rawDescGZIP(), []int{64}
+	return file_api_api_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *TaskNode) GetTaskId() string {
@@ -4133,6 +4309,12 @@ const file_api_api_proto_rawDesc = "" +
 	"\bsuite_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\asuiteId\"4\n" +
 	"\x10GetSuiteResponse\x12 \n" +
 	"\x05suite\x18\x01 \x01(\v2\n" +
+	".api.SuiteR\x05suite\"8\n" +
+	"\x12StreamSuiteRequest\x12\"\n" +
+	"\bsuite_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\asuiteId\"o\n" +
+	"\x11StreamSuiteUpdate\x128\n" +
+	"\ttimestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12 \n" +
+	"\x05suite\x18\x02 \x01(\v2\n" +
 	".api.SuiteR\x05suite\"\xda\x04\n" +
 	"\x05Suite\x12\x19\n" +
 	"\bsuite_id\x18\x01 \x01(\tR\asuiteId\x12&\n" +
@@ -4354,7 +4536,10 @@ const file_api_api_proto_rawDesc = "" +
 	"\x1dDeleteTopologyTemplateRequest\x12(\n" +
 	"\vtemplate_id\x18\x01 \x01(\tB\a\xfaB\x04r\x02\x10\x01R\n" +
 	"templateId\" \n" +
-	"\x1eDeleteTopologyTemplateResponse\"\xb8\x04\n" +
+	"\x1eDeleteTopologyTemplateResponse\"\x1c\n" +
+	"\x1aListStroppyVersionsRequest\"9\n" +
+	"\x1bListStroppyVersionsResponse\x12\x1a\n" +
+	"\bversions\x18\x01 \x03(\tR\bversions\"\xb8\x04\n" +
 	"\x03Run\x12\x15\n" +
 	"\x06run_id\x18\x01 \x01(\tR\x05runId\x12&\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x0e.api.RunStatusR\x06status\x12(\n" +
@@ -4428,7 +4613,7 @@ const file_api_api_proto_rawDesc = "" +
 	"\x12RUN_STATUS_RUNNING\x10\x02\x12\x18\n" +
 	"\x14RUN_STATUS_COMPLETED\x10\x03\x12\x15\n" +
 	"\x11RUN_STATUS_FAILED\x10\x04\x12\x18\n" +
-	"\x14RUN_STATUS_CANCELLED\x10\x052\xbd\x0e\n" +
+	"\x14RUN_STATUS_CANCELLED\x10\x052\xd9\x0f\n" +
 	"\n" +
 	"StroppyAPI\x12C\n" +
 	"\fRunTestSuite\x12\x18.api.RunTestSuiteRequest\x1a\x19.api.RunTestSuiteResponse\x12:\n" +
@@ -4437,7 +4622,8 @@ const file_api_api_proto_rawDesc = "" +
 	"\bListRuns\x12\x14.api.ListRunsRequest\x1a\x15.api.ListRunsResponse\x12=\n" +
 	"\n" +
 	"ListSuites\x12\x16.api.ListSuitesRequest\x1a\x17.api.ListSuitesResponse\x127\n" +
-	"\bGetSuite\x12\x14.api.GetSuiteRequest\x1a\x15.api.GetSuiteResponse\x12:\n" +
+	"\bGetSuite\x12\x14.api.GetSuiteRequest\x1a\x15.api.GetSuiteResponse\x12@\n" +
+	"\vStreamSuite\x12\x17.api.StreamSuiteRequest\x1a\x16.api.StreamSuiteUpdate0\x01\x12:\n" +
 	"\tStreamRun\x12\x15.api.StreamRunRequest\x1a\x14.api.StreamRunUpdate0\x01\x12@\n" +
 	"\vGetSettings\x12\x17.api.GetSettingsRequest\x1a\x18.api.GetSettingsResponse\x12I\n" +
 	"\x0eUpdateSettings\x12\x1a.api.UpdateSettingsRequest\x1a\x1b.api.UpdateSettingsResponse\x12@\n" +
@@ -4457,7 +4643,8 @@ const file_api_api_proto_rawDesc = "" +
 	"\x15ListTopologyTemplates\x12!.api.ListTopologyTemplatesRequest\x1a\".api.ListTopologyTemplatesResponse\x12X\n" +
 	"\x13GetTopologyTemplate\x12\x1f.api.GetTopologyTemplateRequest\x1a .api.GetTopologyTemplateResponse\x12a\n" +
 	"\x16UpdateTopologyTemplate\x12\".api.UpdateTopologyTemplateRequest\x1a#.api.UpdateTopologyTemplateResponse\x12a\n" +
-	"\x16DeleteTopologyTemplate\x12\".api.DeleteTopologyTemplateRequest\x1a#.api.DeleteTopologyTemplateResponseB;Z9github.com/stroppy-io/hatchet-workflow/internal/proto/apib\x06proto3"
+	"\x16DeleteTopologyTemplate\x12\".api.DeleteTopologyTemplateRequest\x1a#.api.DeleteTopologyTemplateResponse\x12X\n" +
+	"\x13ListStroppyVersions\x12\x1f.api.ListStroppyVersionsRequest\x1a .api.ListStroppyVersionsResponseB;Z9github.com/stroppy-io/hatchet-workflow/internal/proto/apib\x06proto3"
 
 var (
 	file_api_api_proto_rawDescOnce sync.Once
@@ -4472,7 +4659,7 @@ func file_api_api_proto_rawDescGZIP() []byte {
 }
 
 var file_api_api_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 65)
+var file_api_api_proto_msgTypes = make([]protoimpl.MessageInfo, 69)
 var file_api_api_proto_goTypes = []any{
 	(TaskEventType)(0),                     // 0: api.TaskEventType
 	(MetricVerdict)(0),                     // 1: api.MetricVerdict
@@ -4492,205 +4679,215 @@ var file_api_api_proto_goTypes = []any{
 	(*ListSuitesResponse)(nil),             // 15: api.ListSuitesResponse
 	(*GetSuiteRequest)(nil),                // 16: api.GetSuiteRequest
 	(*GetSuiteResponse)(nil),               // 17: api.GetSuiteResponse
-	(*Suite)(nil),                          // 18: api.Suite
-	(*StreamRunRequest)(nil),               // 19: api.StreamRunRequest
-	(*StreamRunUpdate)(nil),                // 20: api.StreamRunUpdate
-	(*TaskEvent)(nil),                      // 21: api.TaskEvent
-	(*LogEntry)(nil),                       // 22: api.LogEntry
-	(*GetSettingsRequest)(nil),             // 23: api.GetSettingsRequest
-	(*GetSettingsResponse)(nil),            // 24: api.GetSettingsResponse
-	(*UpdateSettingsRequest)(nil),          // 25: api.UpdateSettingsRequest
-	(*UpdateSettingsResponse)(nil),         // 26: api.UpdateSettingsResponse
-	(*CompareRunsRequest)(nil),             // 27: api.CompareRunsRequest
-	(*CompareRunsResponse)(nil),            // 28: api.CompareRunsResponse
-	(*RunSummary)(nil),                     // 29: api.RunSummary
-	(*MetricComparison)(nil),               // 30: api.MetricComparison
-	(*ValidateTopologyRequest)(nil),        // 31: api.ValidateTopologyRequest
-	(*ValidateTopologyResponse)(nil),       // 32: api.ValidateTopologyResponse
-	(*ValidationIssue)(nil),                // 33: api.ValidationIssue
-	(*DryRunRequest)(nil),                  // 34: api.DryRunRequest
-	(*DryRunCheck)(nil),                    // 35: api.DryRunCheck
-	(*LoginRequest)(nil),                   // 36: api.LoginRequest
-	(*LoginResponse)(nil),                  // 37: api.LoginResponse
-	(*RefreshTokenRequest)(nil),            // 38: api.RefreshTokenRequest
-	(*RefreshTokenResponse)(nil),           // 39: api.RefreshTokenResponse
-	(*LogoutRequest)(nil),                  // 40: api.LogoutRequest
-	(*LogoutResponse)(nil),                 // 41: api.LogoutResponse
-	(*GetCurrentUserRequest)(nil),          // 42: api.GetCurrentUserRequest
-	(*GetCurrentUserResponse)(nil),         // 43: api.GetCurrentUserResponse
-	(*User)(nil),                           // 44: api.User
-	(*RegisterWorkloadRequest)(nil),        // 45: api.RegisterWorkloadRequest
-	(*RegisterWorkloadResponse)(nil),       // 46: api.RegisterWorkloadResponse
-	(*ListWorkloadsRequest)(nil),           // 47: api.ListWorkloadsRequest
-	(*ListWorkloadsResponse)(nil),          // 48: api.ListWorkloadsResponse
-	(*GetWorkloadRequest)(nil),             // 49: api.GetWorkloadRequest
-	(*GetWorkloadResponse)(nil),            // 50: api.GetWorkloadResponse
-	(*DeleteWorkloadRequest)(nil),          // 51: api.DeleteWorkloadRequest
-	(*DeleteWorkloadResponse)(nil),         // 52: api.DeleteWorkloadResponse
-	(*ProbeScriptRequest)(nil),             // 53: api.ProbeScriptRequest
-	(*ProbeScriptResponse)(nil),            // 54: api.ProbeScriptResponse
-	(*Workload)(nil),                       // 55: api.Workload
-	(*ProbeResult)(nil),                    // 56: api.ProbeResult
-	(*EnvParam)(nil),                       // 57: api.EnvParam
-	(*TopologyTemplate)(nil),               // 58: api.TopologyTemplate
-	(*CreateTopologyTemplateRequest)(nil),  // 59: api.CreateTopologyTemplateRequest
-	(*CreateTopologyTemplateResponse)(nil), // 60: api.CreateTopologyTemplateResponse
-	(*ListTopologyTemplatesRequest)(nil),   // 61: api.ListTopologyTemplatesRequest
-	(*ListTopologyTemplatesResponse)(nil),  // 62: api.ListTopologyTemplatesResponse
-	(*GetTopologyTemplateRequest)(nil),     // 63: api.GetTopologyTemplateRequest
-	(*GetTopologyTemplateResponse)(nil),    // 64: api.GetTopologyTemplateResponse
-	(*UpdateTopologyTemplateRequest)(nil),  // 65: api.UpdateTopologyTemplateRequest
-	(*UpdateTopologyTemplateResponse)(nil), // 66: api.UpdateTopologyTemplateResponse
-	(*DeleteTopologyTemplateRequest)(nil),  // 67: api.DeleteTopologyTemplateRequest
-	(*DeleteTopologyTemplateResponse)(nil), // 68: api.DeleteTopologyTemplateResponse
-	(*Run)(nil),                            // 69: api.Run
-	(*TaskNode)(nil),                       // 70: api.TaskNode
-	(*stroppy.TestSuite)(nil),              // 71: stroppy.TestSuite
-	(*settings.Settings)(nil),              // 72: settings.Settings
-	(deployment.Target)(0),                 // 73: deployment.Target
-	(*timestamppb.Timestamp)(nil),          // 74: google.protobuf.Timestamp
-	(*stroppy.TestSuiteResult)(nil),        // 75: stroppy.TestSuiteResult
-	(*stroppy.Test)(nil),                   // 76: stroppy.Test
-	(*stroppy1.DriverConfig)(nil),          // 77: stroppy.DriverConfig
-	(*stroppy1.GlobalConfig)(nil),          // 78: stroppy.GlobalConfig
-	(*structpb.Struct)(nil),                // 79: google.protobuf.Struct
-	(*database.Database_Template)(nil),     // 80: database.Database.Template
-	(*stroppy.TestResult)(nil),             // 81: stroppy.TestResult
+	(*StreamSuiteRequest)(nil),             // 18: api.StreamSuiteRequest
+	(*StreamSuiteUpdate)(nil),              // 19: api.StreamSuiteUpdate
+	(*Suite)(nil),                          // 20: api.Suite
+	(*StreamRunRequest)(nil),               // 21: api.StreamRunRequest
+	(*StreamRunUpdate)(nil),                // 22: api.StreamRunUpdate
+	(*TaskEvent)(nil),                      // 23: api.TaskEvent
+	(*LogEntry)(nil),                       // 24: api.LogEntry
+	(*GetSettingsRequest)(nil),             // 25: api.GetSettingsRequest
+	(*GetSettingsResponse)(nil),            // 26: api.GetSettingsResponse
+	(*UpdateSettingsRequest)(nil),          // 27: api.UpdateSettingsRequest
+	(*UpdateSettingsResponse)(nil),         // 28: api.UpdateSettingsResponse
+	(*CompareRunsRequest)(nil),             // 29: api.CompareRunsRequest
+	(*CompareRunsResponse)(nil),            // 30: api.CompareRunsResponse
+	(*RunSummary)(nil),                     // 31: api.RunSummary
+	(*MetricComparison)(nil),               // 32: api.MetricComparison
+	(*ValidateTopologyRequest)(nil),        // 33: api.ValidateTopologyRequest
+	(*ValidateTopologyResponse)(nil),       // 34: api.ValidateTopologyResponse
+	(*ValidationIssue)(nil),                // 35: api.ValidationIssue
+	(*DryRunRequest)(nil),                  // 36: api.DryRunRequest
+	(*DryRunCheck)(nil),                    // 37: api.DryRunCheck
+	(*LoginRequest)(nil),                   // 38: api.LoginRequest
+	(*LoginResponse)(nil),                  // 39: api.LoginResponse
+	(*RefreshTokenRequest)(nil),            // 40: api.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),           // 41: api.RefreshTokenResponse
+	(*LogoutRequest)(nil),                  // 42: api.LogoutRequest
+	(*LogoutResponse)(nil),                 // 43: api.LogoutResponse
+	(*GetCurrentUserRequest)(nil),          // 44: api.GetCurrentUserRequest
+	(*GetCurrentUserResponse)(nil),         // 45: api.GetCurrentUserResponse
+	(*User)(nil),                           // 46: api.User
+	(*RegisterWorkloadRequest)(nil),        // 47: api.RegisterWorkloadRequest
+	(*RegisterWorkloadResponse)(nil),       // 48: api.RegisterWorkloadResponse
+	(*ListWorkloadsRequest)(nil),           // 49: api.ListWorkloadsRequest
+	(*ListWorkloadsResponse)(nil),          // 50: api.ListWorkloadsResponse
+	(*GetWorkloadRequest)(nil),             // 51: api.GetWorkloadRequest
+	(*GetWorkloadResponse)(nil),            // 52: api.GetWorkloadResponse
+	(*DeleteWorkloadRequest)(nil),          // 53: api.DeleteWorkloadRequest
+	(*DeleteWorkloadResponse)(nil),         // 54: api.DeleteWorkloadResponse
+	(*ProbeScriptRequest)(nil),             // 55: api.ProbeScriptRequest
+	(*ProbeScriptResponse)(nil),            // 56: api.ProbeScriptResponse
+	(*Workload)(nil),                       // 57: api.Workload
+	(*ProbeResult)(nil),                    // 58: api.ProbeResult
+	(*EnvParam)(nil),                       // 59: api.EnvParam
+	(*TopologyTemplate)(nil),               // 60: api.TopologyTemplate
+	(*CreateTopologyTemplateRequest)(nil),  // 61: api.CreateTopologyTemplateRequest
+	(*CreateTopologyTemplateResponse)(nil), // 62: api.CreateTopologyTemplateResponse
+	(*ListTopologyTemplatesRequest)(nil),   // 63: api.ListTopologyTemplatesRequest
+	(*ListTopologyTemplatesResponse)(nil),  // 64: api.ListTopologyTemplatesResponse
+	(*GetTopologyTemplateRequest)(nil),     // 65: api.GetTopologyTemplateRequest
+	(*GetTopologyTemplateResponse)(nil),    // 66: api.GetTopologyTemplateResponse
+	(*UpdateTopologyTemplateRequest)(nil),  // 67: api.UpdateTopologyTemplateRequest
+	(*UpdateTopologyTemplateResponse)(nil), // 68: api.UpdateTopologyTemplateResponse
+	(*DeleteTopologyTemplateRequest)(nil),  // 69: api.DeleteTopologyTemplateRequest
+	(*DeleteTopologyTemplateResponse)(nil), // 70: api.DeleteTopologyTemplateResponse
+	(*ListStroppyVersionsRequest)(nil),     // 71: api.ListStroppyVersionsRequest
+	(*ListStroppyVersionsResponse)(nil),    // 72: api.ListStroppyVersionsResponse
+	(*Run)(nil),                            // 73: api.Run
+	(*TaskNode)(nil),                       // 74: api.TaskNode
+	(*stroppy.TestSuite)(nil),              // 75: stroppy.TestSuite
+	(*settings.Settings)(nil),              // 76: settings.Settings
+	(deployment.Target)(0),                 // 77: deployment.Target
+	(*timestamppb.Timestamp)(nil),          // 78: google.protobuf.Timestamp
+	(*stroppy.TestSuiteResult)(nil),        // 79: stroppy.TestSuiteResult
+	(*stroppy.Test)(nil),                   // 80: stroppy.Test
+	(*stroppy1.DriverConfig)(nil),          // 81: stroppy.DriverConfig
+	(*stroppy1.GlobalConfig)(nil),          // 82: stroppy.GlobalConfig
+	(*structpb.Struct)(nil),                // 83: google.protobuf.Struct
+	(*database.Database_Template)(nil),     // 84: database.Database.Template
+	(*stroppy.TestResult)(nil),             // 85: stroppy.TestResult
 }
 var file_api_api_proto_depIdxs = []int32{
-	71,  // 0: api.RunTestSuiteRequest.suite:type_name -> stroppy.TestSuite
-	72,  // 1: api.RunTestSuiteRequest.settings:type_name -> settings.Settings
-	73,  // 2: api.RunTestSuiteRequest.target:type_name -> deployment.Target
-	69,  // 3: api.GetRunResponse.run:type_name -> api.Run
+	75,  // 0: api.RunTestSuiteRequest.suite:type_name -> stroppy.TestSuite
+	76,  // 1: api.RunTestSuiteRequest.settings:type_name -> settings.Settings
+	77,  // 2: api.RunTestSuiteRequest.target:type_name -> deployment.Target
+	73,  // 3: api.GetRunResponse.run:type_name -> api.Run
 	5,   // 4: api.ListRunsRequest.statuses:type_name -> api.RunStatus
-	74,  // 5: api.ListRunsRequest.since:type_name -> google.protobuf.Timestamp
-	74,  // 6: api.ListRunsRequest.until:type_name -> google.protobuf.Timestamp
-	69,  // 7: api.ListRunsResponse.runs:type_name -> api.Run
+	78,  // 5: api.ListRunsRequest.since:type_name -> google.protobuf.Timestamp
+	78,  // 6: api.ListRunsRequest.until:type_name -> google.protobuf.Timestamp
+	73,  // 7: api.ListRunsResponse.runs:type_name -> api.Run
 	5,   // 8: api.ListSuitesRequest.statuses:type_name -> api.RunStatus
-	74,  // 9: api.ListSuitesRequest.since:type_name -> google.protobuf.Timestamp
-	74,  // 10: api.ListSuitesRequest.until:type_name -> google.protobuf.Timestamp
-	18,  // 11: api.ListSuitesResponse.suites:type_name -> api.Suite
-	18,  // 12: api.GetSuiteResponse.suite:type_name -> api.Suite
-	5,   // 13: api.Suite.status:type_name -> api.RunStatus
-	71,  // 14: api.Suite.test_suite:type_name -> stroppy.TestSuite
-	73,  // 15: api.Suite.target:type_name -> deployment.Target
-	74,  // 16: api.Suite.created_at:type_name -> google.protobuf.Timestamp
-	74,  // 17: api.Suite.started_at:type_name -> google.protobuf.Timestamp
-	74,  // 18: api.Suite.finished_at:type_name -> google.protobuf.Timestamp
-	69,  // 19: api.Suite.runs:type_name -> api.Run
-	75,  // 20: api.Suite.results:type_name -> stroppy.TestSuiteResult
-	74,  // 21: api.StreamRunUpdate.timestamp:type_name -> google.protobuf.Timestamp
-	21,  // 22: api.StreamRunUpdate.task_event:type_name -> api.TaskEvent
-	22,  // 23: api.StreamRunUpdate.log_entry:type_name -> api.LogEntry
-	0,   // 24: api.TaskEvent.event_type:type_name -> api.TaskEventType
-	72,  // 25: api.GetSettingsResponse.settings:type_name -> settings.Settings
-	72,  // 26: api.UpdateSettingsRequest.settings:type_name -> settings.Settings
-	72,  // 27: api.UpdateSettingsResponse.settings:type_name -> settings.Settings
-	29,  // 28: api.CompareRunsResponse.baseline:type_name -> api.RunSummary
-	29,  // 29: api.CompareRunsResponse.candidate:type_name -> api.RunSummary
-	30,  // 30: api.CompareRunsResponse.comparisons:type_name -> api.MetricComparison
-	74,  // 31: api.RunSummary.started_at:type_name -> google.protobuf.Timestamp
-	74,  // 32: api.RunSummary.finished_at:type_name -> google.protobuf.Timestamp
-	1,   // 33: api.MetricComparison.verdict:type_name -> api.MetricVerdict
-	76,  // 34: api.ValidateTopologyRequest.test:type_name -> stroppy.Test
-	73,  // 35: api.ValidateTopologyRequest.target:type_name -> deployment.Target
-	33,  // 36: api.ValidateTopologyResponse.issues:type_name -> api.ValidationIssue
-	2,   // 37: api.ValidationIssue.severity:type_name -> api.ValidationSeverity
-	71,  // 38: api.DryRunRequest.suite:type_name -> stroppy.TestSuite
-	72,  // 39: api.DryRunRequest.settings:type_name -> settings.Settings
-	73,  // 40: api.DryRunRequest.target:type_name -> deployment.Target
-	3,   // 41: api.DryRunCheck.status:type_name -> api.DryRunCheckStatus
-	44,  // 42: api.LoginResponse.user:type_name -> api.User
-	44,  // 43: api.GetCurrentUserResponse.user:type_name -> api.User
-	55,  // 44: api.RegisterWorkloadResponse.workload:type_name -> api.Workload
-	55,  // 45: api.ListWorkloadsResponse.workloads:type_name -> api.Workload
-	55,  // 46: api.GetWorkloadResponse.workload:type_name -> api.Workload
-	56,  // 47: api.ProbeScriptResponse.probe:type_name -> api.ProbeResult
-	56,  // 48: api.Workload.probe:type_name -> api.ProbeResult
-	74,  // 49: api.Workload.created_at:type_name -> google.protobuf.Timestamp
-	77,  // 50: api.ProbeResult.driver_config:type_name -> stroppy.DriverConfig
-	78,  // 51: api.ProbeResult.global_config:type_name -> stroppy.GlobalConfig
-	79,  // 52: api.ProbeResult.k6_options:type_name -> google.protobuf.Struct
-	57,  // 53: api.ProbeResult.env_params:type_name -> api.EnvParam
-	4,   // 54: api.TopologyTemplate.database_type:type_name -> api.DatabaseType
-	80,  // 55: api.TopologyTemplate.template:type_name -> database.Database.Template
-	74,  // 56: api.TopologyTemplate.created_at:type_name -> google.protobuf.Timestamp
-	74,  // 57: api.TopologyTemplate.updated_at:type_name -> google.protobuf.Timestamp
-	80,  // 58: api.CreateTopologyTemplateRequest.template:type_name -> database.Database.Template
-	58,  // 59: api.CreateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
-	4,   // 60: api.ListTopologyTemplatesRequest.database_type:type_name -> api.DatabaseType
-	58,  // 61: api.ListTopologyTemplatesResponse.topology_templates:type_name -> api.TopologyTemplate
-	58,  // 62: api.GetTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
-	80,  // 63: api.UpdateTopologyTemplateRequest.template:type_name -> database.Database.Template
-	58,  // 64: api.UpdateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
-	5,   // 65: api.Run.status:type_name -> api.RunStatus
-	71,  // 66: api.Run.suite:type_name -> stroppy.TestSuite
-	73,  // 67: api.Run.target:type_name -> deployment.Target
-	74,  // 68: api.Run.created_at:type_name -> google.protobuf.Timestamp
-	74,  // 69: api.Run.started_at:type_name -> google.protobuf.Timestamp
-	74,  // 70: api.Run.finished_at:type_name -> google.protobuf.Timestamp
-	70,  // 71: api.Run.dag:type_name -> api.TaskNode
-	81,  // 72: api.Run.results:type_name -> stroppy.TestResult
-	5,   // 73: api.TaskNode.status:type_name -> api.RunStatus
-	74,  // 74: api.TaskNode.started_at:type_name -> google.protobuf.Timestamp
-	74,  // 75: api.TaskNode.finished_at:type_name -> google.protobuf.Timestamp
-	6,   // 76: api.StroppyAPI.RunTestSuite:input_type -> api.RunTestSuiteRequest
-	8,   // 77: api.StroppyAPI.CancelRun:input_type -> api.CancelRunRequest
-	10,  // 78: api.StroppyAPI.GetRun:input_type -> api.GetRunRequest
-	12,  // 79: api.StroppyAPI.ListRuns:input_type -> api.ListRunsRequest
-	14,  // 80: api.StroppyAPI.ListSuites:input_type -> api.ListSuitesRequest
-	16,  // 81: api.StroppyAPI.GetSuite:input_type -> api.GetSuiteRequest
-	19,  // 82: api.StroppyAPI.StreamRun:input_type -> api.StreamRunRequest
-	23,  // 83: api.StroppyAPI.GetSettings:input_type -> api.GetSettingsRequest
-	25,  // 84: api.StroppyAPI.UpdateSettings:input_type -> api.UpdateSettingsRequest
-	27,  // 85: api.StroppyAPI.CompareRuns:input_type -> api.CompareRunsRequest
-	31,  // 86: api.StroppyAPI.ValidateTopology:input_type -> api.ValidateTopologyRequest
-	34,  // 87: api.StroppyAPI.DryRun:input_type -> api.DryRunRequest
-	36,  // 88: api.StroppyAPI.Login:input_type -> api.LoginRequest
-	38,  // 89: api.StroppyAPI.RefreshToken:input_type -> api.RefreshTokenRequest
-	40,  // 90: api.StroppyAPI.Logout:input_type -> api.LogoutRequest
-	42,  // 91: api.StroppyAPI.GetCurrentUser:input_type -> api.GetCurrentUserRequest
-	45,  // 92: api.StroppyAPI.RegisterWorkload:input_type -> api.RegisterWorkloadRequest
-	47,  // 93: api.StroppyAPI.ListWorkloads:input_type -> api.ListWorkloadsRequest
-	49,  // 94: api.StroppyAPI.GetWorkload:input_type -> api.GetWorkloadRequest
-	51,  // 95: api.StroppyAPI.DeleteWorkload:input_type -> api.DeleteWorkloadRequest
-	53,  // 96: api.StroppyAPI.ProbeScript:input_type -> api.ProbeScriptRequest
-	59,  // 97: api.StroppyAPI.CreateTopologyTemplate:input_type -> api.CreateTopologyTemplateRequest
-	61,  // 98: api.StroppyAPI.ListTopologyTemplates:input_type -> api.ListTopologyTemplatesRequest
-	63,  // 99: api.StroppyAPI.GetTopologyTemplate:input_type -> api.GetTopologyTemplateRequest
-	65,  // 100: api.StroppyAPI.UpdateTopologyTemplate:input_type -> api.UpdateTopologyTemplateRequest
-	67,  // 101: api.StroppyAPI.DeleteTopologyTemplate:input_type -> api.DeleteTopologyTemplateRequest
-	7,   // 102: api.StroppyAPI.RunTestSuite:output_type -> api.RunTestSuiteResponse
-	9,   // 103: api.StroppyAPI.CancelRun:output_type -> api.CancelRunResponse
-	11,  // 104: api.StroppyAPI.GetRun:output_type -> api.GetRunResponse
-	13,  // 105: api.StroppyAPI.ListRuns:output_type -> api.ListRunsResponse
-	15,  // 106: api.StroppyAPI.ListSuites:output_type -> api.ListSuitesResponse
-	17,  // 107: api.StroppyAPI.GetSuite:output_type -> api.GetSuiteResponse
-	20,  // 108: api.StroppyAPI.StreamRun:output_type -> api.StreamRunUpdate
-	24,  // 109: api.StroppyAPI.GetSettings:output_type -> api.GetSettingsResponse
-	26,  // 110: api.StroppyAPI.UpdateSettings:output_type -> api.UpdateSettingsResponse
-	28,  // 111: api.StroppyAPI.CompareRuns:output_type -> api.CompareRunsResponse
-	32,  // 112: api.StroppyAPI.ValidateTopology:output_type -> api.ValidateTopologyResponse
-	35,  // 113: api.StroppyAPI.DryRun:output_type -> api.DryRunCheck
-	37,  // 114: api.StroppyAPI.Login:output_type -> api.LoginResponse
-	39,  // 115: api.StroppyAPI.RefreshToken:output_type -> api.RefreshTokenResponse
-	41,  // 116: api.StroppyAPI.Logout:output_type -> api.LogoutResponse
-	43,  // 117: api.StroppyAPI.GetCurrentUser:output_type -> api.GetCurrentUserResponse
-	46,  // 118: api.StroppyAPI.RegisterWorkload:output_type -> api.RegisterWorkloadResponse
-	48,  // 119: api.StroppyAPI.ListWorkloads:output_type -> api.ListWorkloadsResponse
-	50,  // 120: api.StroppyAPI.GetWorkload:output_type -> api.GetWorkloadResponse
-	52,  // 121: api.StroppyAPI.DeleteWorkload:output_type -> api.DeleteWorkloadResponse
-	54,  // 122: api.StroppyAPI.ProbeScript:output_type -> api.ProbeScriptResponse
-	60,  // 123: api.StroppyAPI.CreateTopologyTemplate:output_type -> api.CreateTopologyTemplateResponse
-	62,  // 124: api.StroppyAPI.ListTopologyTemplates:output_type -> api.ListTopologyTemplatesResponse
-	64,  // 125: api.StroppyAPI.GetTopologyTemplate:output_type -> api.GetTopologyTemplateResponse
-	66,  // 126: api.StroppyAPI.UpdateTopologyTemplate:output_type -> api.UpdateTopologyTemplateResponse
-	68,  // 127: api.StroppyAPI.DeleteTopologyTemplate:output_type -> api.DeleteTopologyTemplateResponse
-	102, // [102:128] is the sub-list for method output_type
-	76,  // [76:102] is the sub-list for method input_type
-	76,  // [76:76] is the sub-list for extension type_name
-	76,  // [76:76] is the sub-list for extension extendee
-	0,   // [0:76] is the sub-list for field type_name
+	78,  // 9: api.ListSuitesRequest.since:type_name -> google.protobuf.Timestamp
+	78,  // 10: api.ListSuitesRequest.until:type_name -> google.protobuf.Timestamp
+	20,  // 11: api.ListSuitesResponse.suites:type_name -> api.Suite
+	20,  // 12: api.GetSuiteResponse.suite:type_name -> api.Suite
+	78,  // 13: api.StreamSuiteUpdate.timestamp:type_name -> google.protobuf.Timestamp
+	20,  // 14: api.StreamSuiteUpdate.suite:type_name -> api.Suite
+	5,   // 15: api.Suite.status:type_name -> api.RunStatus
+	75,  // 16: api.Suite.test_suite:type_name -> stroppy.TestSuite
+	77,  // 17: api.Suite.target:type_name -> deployment.Target
+	78,  // 18: api.Suite.created_at:type_name -> google.protobuf.Timestamp
+	78,  // 19: api.Suite.started_at:type_name -> google.protobuf.Timestamp
+	78,  // 20: api.Suite.finished_at:type_name -> google.protobuf.Timestamp
+	73,  // 21: api.Suite.runs:type_name -> api.Run
+	79,  // 22: api.Suite.results:type_name -> stroppy.TestSuiteResult
+	78,  // 23: api.StreamRunUpdate.timestamp:type_name -> google.protobuf.Timestamp
+	23,  // 24: api.StreamRunUpdate.task_event:type_name -> api.TaskEvent
+	24,  // 25: api.StreamRunUpdate.log_entry:type_name -> api.LogEntry
+	0,   // 26: api.TaskEvent.event_type:type_name -> api.TaskEventType
+	76,  // 27: api.GetSettingsResponse.settings:type_name -> settings.Settings
+	76,  // 28: api.UpdateSettingsRequest.settings:type_name -> settings.Settings
+	76,  // 29: api.UpdateSettingsResponse.settings:type_name -> settings.Settings
+	31,  // 30: api.CompareRunsResponse.baseline:type_name -> api.RunSummary
+	31,  // 31: api.CompareRunsResponse.candidate:type_name -> api.RunSummary
+	32,  // 32: api.CompareRunsResponse.comparisons:type_name -> api.MetricComparison
+	78,  // 33: api.RunSummary.started_at:type_name -> google.protobuf.Timestamp
+	78,  // 34: api.RunSummary.finished_at:type_name -> google.protobuf.Timestamp
+	1,   // 35: api.MetricComparison.verdict:type_name -> api.MetricVerdict
+	80,  // 36: api.ValidateTopologyRequest.test:type_name -> stroppy.Test
+	77,  // 37: api.ValidateTopologyRequest.target:type_name -> deployment.Target
+	35,  // 38: api.ValidateTopologyResponse.issues:type_name -> api.ValidationIssue
+	2,   // 39: api.ValidationIssue.severity:type_name -> api.ValidationSeverity
+	75,  // 40: api.DryRunRequest.suite:type_name -> stroppy.TestSuite
+	76,  // 41: api.DryRunRequest.settings:type_name -> settings.Settings
+	77,  // 42: api.DryRunRequest.target:type_name -> deployment.Target
+	3,   // 43: api.DryRunCheck.status:type_name -> api.DryRunCheckStatus
+	46,  // 44: api.LoginResponse.user:type_name -> api.User
+	46,  // 45: api.GetCurrentUserResponse.user:type_name -> api.User
+	57,  // 46: api.RegisterWorkloadResponse.workload:type_name -> api.Workload
+	57,  // 47: api.ListWorkloadsResponse.workloads:type_name -> api.Workload
+	57,  // 48: api.GetWorkloadResponse.workload:type_name -> api.Workload
+	58,  // 49: api.ProbeScriptResponse.probe:type_name -> api.ProbeResult
+	58,  // 50: api.Workload.probe:type_name -> api.ProbeResult
+	78,  // 51: api.Workload.created_at:type_name -> google.protobuf.Timestamp
+	81,  // 52: api.ProbeResult.driver_config:type_name -> stroppy.DriverConfig
+	82,  // 53: api.ProbeResult.global_config:type_name -> stroppy.GlobalConfig
+	83,  // 54: api.ProbeResult.k6_options:type_name -> google.protobuf.Struct
+	59,  // 55: api.ProbeResult.env_params:type_name -> api.EnvParam
+	4,   // 56: api.TopologyTemplate.database_type:type_name -> api.DatabaseType
+	84,  // 57: api.TopologyTemplate.template:type_name -> database.Database.Template
+	78,  // 58: api.TopologyTemplate.created_at:type_name -> google.protobuf.Timestamp
+	78,  // 59: api.TopologyTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	84,  // 60: api.CreateTopologyTemplateRequest.template:type_name -> database.Database.Template
+	60,  // 61: api.CreateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	4,   // 62: api.ListTopologyTemplatesRequest.database_type:type_name -> api.DatabaseType
+	60,  // 63: api.ListTopologyTemplatesResponse.topology_templates:type_name -> api.TopologyTemplate
+	60,  // 64: api.GetTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	84,  // 65: api.UpdateTopologyTemplateRequest.template:type_name -> database.Database.Template
+	60,  // 66: api.UpdateTopologyTemplateResponse.topology_template:type_name -> api.TopologyTemplate
+	5,   // 67: api.Run.status:type_name -> api.RunStatus
+	75,  // 68: api.Run.suite:type_name -> stroppy.TestSuite
+	77,  // 69: api.Run.target:type_name -> deployment.Target
+	78,  // 70: api.Run.created_at:type_name -> google.protobuf.Timestamp
+	78,  // 71: api.Run.started_at:type_name -> google.protobuf.Timestamp
+	78,  // 72: api.Run.finished_at:type_name -> google.protobuf.Timestamp
+	74,  // 73: api.Run.dag:type_name -> api.TaskNode
+	85,  // 74: api.Run.results:type_name -> stroppy.TestResult
+	5,   // 75: api.TaskNode.status:type_name -> api.RunStatus
+	78,  // 76: api.TaskNode.started_at:type_name -> google.protobuf.Timestamp
+	78,  // 77: api.TaskNode.finished_at:type_name -> google.protobuf.Timestamp
+	6,   // 78: api.StroppyAPI.RunTestSuite:input_type -> api.RunTestSuiteRequest
+	8,   // 79: api.StroppyAPI.CancelRun:input_type -> api.CancelRunRequest
+	10,  // 80: api.StroppyAPI.GetRun:input_type -> api.GetRunRequest
+	12,  // 81: api.StroppyAPI.ListRuns:input_type -> api.ListRunsRequest
+	14,  // 82: api.StroppyAPI.ListSuites:input_type -> api.ListSuitesRequest
+	16,  // 83: api.StroppyAPI.GetSuite:input_type -> api.GetSuiteRequest
+	18,  // 84: api.StroppyAPI.StreamSuite:input_type -> api.StreamSuiteRequest
+	21,  // 85: api.StroppyAPI.StreamRun:input_type -> api.StreamRunRequest
+	25,  // 86: api.StroppyAPI.GetSettings:input_type -> api.GetSettingsRequest
+	27,  // 87: api.StroppyAPI.UpdateSettings:input_type -> api.UpdateSettingsRequest
+	29,  // 88: api.StroppyAPI.CompareRuns:input_type -> api.CompareRunsRequest
+	33,  // 89: api.StroppyAPI.ValidateTopology:input_type -> api.ValidateTopologyRequest
+	36,  // 90: api.StroppyAPI.DryRun:input_type -> api.DryRunRequest
+	38,  // 91: api.StroppyAPI.Login:input_type -> api.LoginRequest
+	40,  // 92: api.StroppyAPI.RefreshToken:input_type -> api.RefreshTokenRequest
+	42,  // 93: api.StroppyAPI.Logout:input_type -> api.LogoutRequest
+	44,  // 94: api.StroppyAPI.GetCurrentUser:input_type -> api.GetCurrentUserRequest
+	47,  // 95: api.StroppyAPI.RegisterWorkload:input_type -> api.RegisterWorkloadRequest
+	49,  // 96: api.StroppyAPI.ListWorkloads:input_type -> api.ListWorkloadsRequest
+	51,  // 97: api.StroppyAPI.GetWorkload:input_type -> api.GetWorkloadRequest
+	53,  // 98: api.StroppyAPI.DeleteWorkload:input_type -> api.DeleteWorkloadRequest
+	55,  // 99: api.StroppyAPI.ProbeScript:input_type -> api.ProbeScriptRequest
+	61,  // 100: api.StroppyAPI.CreateTopologyTemplate:input_type -> api.CreateTopologyTemplateRequest
+	63,  // 101: api.StroppyAPI.ListTopologyTemplates:input_type -> api.ListTopologyTemplatesRequest
+	65,  // 102: api.StroppyAPI.GetTopologyTemplate:input_type -> api.GetTopologyTemplateRequest
+	67,  // 103: api.StroppyAPI.UpdateTopologyTemplate:input_type -> api.UpdateTopologyTemplateRequest
+	69,  // 104: api.StroppyAPI.DeleteTopologyTemplate:input_type -> api.DeleteTopologyTemplateRequest
+	71,  // 105: api.StroppyAPI.ListStroppyVersions:input_type -> api.ListStroppyVersionsRequest
+	7,   // 106: api.StroppyAPI.RunTestSuite:output_type -> api.RunTestSuiteResponse
+	9,   // 107: api.StroppyAPI.CancelRun:output_type -> api.CancelRunResponse
+	11,  // 108: api.StroppyAPI.GetRun:output_type -> api.GetRunResponse
+	13,  // 109: api.StroppyAPI.ListRuns:output_type -> api.ListRunsResponse
+	15,  // 110: api.StroppyAPI.ListSuites:output_type -> api.ListSuitesResponse
+	17,  // 111: api.StroppyAPI.GetSuite:output_type -> api.GetSuiteResponse
+	19,  // 112: api.StroppyAPI.StreamSuite:output_type -> api.StreamSuiteUpdate
+	22,  // 113: api.StroppyAPI.StreamRun:output_type -> api.StreamRunUpdate
+	26,  // 114: api.StroppyAPI.GetSettings:output_type -> api.GetSettingsResponse
+	28,  // 115: api.StroppyAPI.UpdateSettings:output_type -> api.UpdateSettingsResponse
+	30,  // 116: api.StroppyAPI.CompareRuns:output_type -> api.CompareRunsResponse
+	34,  // 117: api.StroppyAPI.ValidateTopology:output_type -> api.ValidateTopologyResponse
+	37,  // 118: api.StroppyAPI.DryRun:output_type -> api.DryRunCheck
+	39,  // 119: api.StroppyAPI.Login:output_type -> api.LoginResponse
+	41,  // 120: api.StroppyAPI.RefreshToken:output_type -> api.RefreshTokenResponse
+	43,  // 121: api.StroppyAPI.Logout:output_type -> api.LogoutResponse
+	45,  // 122: api.StroppyAPI.GetCurrentUser:output_type -> api.GetCurrentUserResponse
+	48,  // 123: api.StroppyAPI.RegisterWorkload:output_type -> api.RegisterWorkloadResponse
+	50,  // 124: api.StroppyAPI.ListWorkloads:output_type -> api.ListWorkloadsResponse
+	52,  // 125: api.StroppyAPI.GetWorkload:output_type -> api.GetWorkloadResponse
+	54,  // 126: api.StroppyAPI.DeleteWorkload:output_type -> api.DeleteWorkloadResponse
+	56,  // 127: api.StroppyAPI.ProbeScript:output_type -> api.ProbeScriptResponse
+	62,  // 128: api.StroppyAPI.CreateTopologyTemplate:output_type -> api.CreateTopologyTemplateResponse
+	64,  // 129: api.StroppyAPI.ListTopologyTemplates:output_type -> api.ListTopologyTemplatesResponse
+	66,  // 130: api.StroppyAPI.GetTopologyTemplate:output_type -> api.GetTopologyTemplateResponse
+	68,  // 131: api.StroppyAPI.UpdateTopologyTemplate:output_type -> api.UpdateTopologyTemplateResponse
+	70,  // 132: api.StroppyAPI.DeleteTopologyTemplate:output_type -> api.DeleteTopologyTemplateResponse
+	72,  // 133: api.StroppyAPI.ListStroppyVersions:output_type -> api.ListStroppyVersionsResponse
+	106, // [106:134] is the sub-list for method output_type
+	78,  // [78:106] is the sub-list for method input_type
+	78,  // [78:78] is the sub-list for extension type_name
+	78,  // [78:78] is the sub-list for extension extendee
+	0,   // [0:78] is the sub-list for field type_name
 }
 
 func init() { file_api_api_proto_init() }
@@ -4700,29 +4897,29 @@ func file_api_api_proto_init() {
 	}
 	file_api_api_proto_msgTypes[6].OneofWrappers = []any{}
 	file_api_api_proto_msgTypes[8].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[12].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[14].OneofWrappers = []any{
+	file_api_api_proto_msgTypes[14].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[16].OneofWrappers = []any{
 		(*StreamRunUpdate_TaskEvent)(nil),
 		(*StreamRunUpdate_LogEntry)(nil),
 	}
-	file_api_api_proto_msgTypes[15].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[29].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[39].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[47].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[17].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[31].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[41].OneofWrappers = []any{}
 	file_api_api_proto_msgTypes[49].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[52].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[53].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[51].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[54].OneofWrappers = []any{}
 	file_api_api_proto_msgTypes[55].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[59].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[63].OneofWrappers = []any{}
-	file_api_api_proto_msgTypes[64].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[57].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[61].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[67].OneofWrappers = []any{}
+	file_api_api_proto_msgTypes[68].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_api_proto_rawDesc), len(file_api_api_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   65,
+			NumMessages:   69,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

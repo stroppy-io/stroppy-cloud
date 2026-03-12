@@ -117,12 +117,12 @@ type UserRecordsTable struct {
 
 // UserRecords is the global users table instance
 var UserRecords = func() UserRecordsTable {
-	idCol := schema.TextColumn(UserRecordColumnId, ddl.WithPrimaryKey[UserRecordColumnAlias]())
-	usernameCol := schema.TextColumn(UserRecordColumnUsername)
-	encryptedPasswordCol := schema.TextColumn(UserRecordColumnEncryptedPassword, ddl.WithDefault[UserRecordColumnAlias]("''"))
-	roleCol := schema.TextColumn(UserRecordColumnRole, ddl.WithDefault[UserRecordColumnAlias]("'user'"))
-	createdAtCol := schema.TimestamptzColumn(UserRecordColumnCreatedAt, ddl.WithDefault[UserRecordColumnAlias]("now()"))
-	updatedAtCol := schema.TimestamptzColumn(UserRecordColumnUpdatedAt, ddl.WithDefault[UserRecordColumnAlias]("now()"))
+	idCol := schema.TextColumn(UserRecordColumnId, ddl.WithPrimaryKey[UserRecordColumnAlias](), ddl.WithCheck[UserRecordColumnAlias]("id <> ''"))
+	usernameCol := schema.TextColumn(UserRecordColumnUsername, ddl.WithNotNull[UserRecordColumnAlias]())
+	encryptedPasswordCol := schema.TextColumn(UserRecordColumnEncryptedPassword, ddl.WithDefault[UserRecordColumnAlias]("''"), ddl.WithNotNull[UserRecordColumnAlias]())
+	roleCol := schema.TextColumn(UserRecordColumnRole, ddl.WithDefault[UserRecordColumnAlias]("'user'"), ddl.WithNotNull[UserRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(UserRecordColumnCreatedAt, ddl.WithDefault[UserRecordColumnAlias]("now()"), ddl.WithNotNull[UserRecordColumnAlias]())
+	updatedAtCol := schema.TimestamptzColumn(UserRecordColumnUpdatedAt, ddl.WithDefault[UserRecordColumnAlias]("now()"), ddl.WithNotNull[UserRecordColumnAlias]())
 
 	idx0 := ddl.NewIndex[UserRecordAlias, UserRecordColumnAlias]("auth_users_username_idx", UserRecordAliasName).OnColumns(UserRecordColumnUsername)
 	idx0 = idx0.Unique()
@@ -142,6 +142,7 @@ var UserRecords = func() UserRecordsTable {
 			ddl.WithIndexes[UserRecordAlias, UserRecordColumnAlias](
 				idx0,
 			),
+			ddl.WithSchema[UserRecordAlias, UserRecordColumnAlias]("auth"),
 		),
 		Id:                idCol,
 		Username:          usernameCol,
@@ -241,10 +242,10 @@ type SessionRecordsTable struct {
 
 // SessionRecords is the global sessions table instance
 var SessionRecords = func() SessionRecordsTable {
-	idCol := schema.TextColumn(SessionRecordColumnId, ddl.WithPrimaryKey[SessionRecordColumnAlias]())
-	userIdCol := schema.TextColumn(SessionRecordColumnUserId)
-	createdAtCol := schema.TimestamptzColumn(SessionRecordColumnCreatedAt, ddl.WithDefault[SessionRecordColumnAlias]("now()"))
-	expiresAtCol := schema.TimestamptzColumn(SessionRecordColumnExpiresAt)
+	idCol := schema.TextColumn(SessionRecordColumnId, ddl.WithPrimaryKey[SessionRecordColumnAlias](), ddl.WithCheck[SessionRecordColumnAlias]("id <> ''"))
+	userIdCol := schema.TextColumn(SessionRecordColumnUserId, ddl.WithReferences[SessionRecordColumnAlias]("\"auth\".\"users\"", "id"), ddl.WithOnDelete[SessionRecordColumnAlias]("CASCADE"), ddl.WithNotNull[SessionRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(SessionRecordColumnCreatedAt, ddl.WithDefault[SessionRecordColumnAlias]("now()"), ddl.WithNotNull[SessionRecordColumnAlias]())
+	expiresAtCol := schema.TimestamptzColumn(SessionRecordColumnExpiresAt, ddl.WithNotNull[SessionRecordColumnAlias]())
 
 	idx0 := ddl.NewIndex[SessionRecordAlias, SessionRecordColumnAlias]("auth_sessions_user_id_idx", SessionRecordAliasName).OnColumns(SessionRecordColumnUserId)
 
@@ -261,6 +262,7 @@ var SessionRecords = func() SessionRecordsTable {
 			ddl.WithIndexes[SessionRecordAlias, SessionRecordColumnAlias](
 				idx0,
 			),
+			ddl.WithSchema[SessionRecordAlias, SessionRecordColumnAlias]("auth"),
 		),
 		Id:        idCol,
 		UserId:    userIdCol,
@@ -366,11 +368,11 @@ type RefreshTokenRecordsTable struct {
 
 // RefreshTokenRecords is the global refresh_tokens table instance
 var RefreshTokenRecords = func() RefreshTokenRecordsTable {
-	idCol := schema.TextColumn(RefreshTokenRecordColumnId, ddl.WithPrimaryKey[RefreshTokenRecordColumnAlias]())
-	sessionIdCol := schema.TextColumn(RefreshTokenRecordColumnSessionId)
-	tokenHashCol := schema.TextColumn(RefreshTokenRecordColumnTokenHash)
-	revokedCol := schema.BooleanColumn(RefreshTokenRecordColumnRevoked, ddl.WithDefault[RefreshTokenRecordColumnAlias]("false"))
-	createdAtCol := schema.TimestamptzColumn(RefreshTokenRecordColumnCreatedAt, ddl.WithDefault[RefreshTokenRecordColumnAlias]("now()"))
+	idCol := schema.TextColumn(RefreshTokenRecordColumnId, ddl.WithPrimaryKey[RefreshTokenRecordColumnAlias](), ddl.WithCheck[RefreshTokenRecordColumnAlias]("id <> ''"))
+	sessionIdCol := schema.TextColumn(RefreshTokenRecordColumnSessionId, ddl.WithReferences[RefreshTokenRecordColumnAlias]("\"auth\".\"sessions\"", "id"), ddl.WithOnDelete[RefreshTokenRecordColumnAlias]("CASCADE"), ddl.WithNotNull[RefreshTokenRecordColumnAlias]())
+	tokenHashCol := schema.TextColumn(RefreshTokenRecordColumnTokenHash, ddl.WithNotNull[RefreshTokenRecordColumnAlias]())
+	revokedCol := schema.BooleanColumn(RefreshTokenRecordColumnRevoked, ddl.WithDefault[RefreshTokenRecordColumnAlias]("false"), ddl.WithNotNull[RefreshTokenRecordColumnAlias]())
+	createdAtCol := schema.TimestamptzColumn(RefreshTokenRecordColumnCreatedAt, ddl.WithDefault[RefreshTokenRecordColumnAlias]("now()"), ddl.WithNotNull[RefreshTokenRecordColumnAlias]())
 
 	idx0 := ddl.NewIndex[RefreshTokenRecordAlias, RefreshTokenRecordColumnAlias]("auth_refresh_tokens_token_hash_idx", RefreshTokenRecordAliasName).OnColumns(RefreshTokenRecordColumnTokenHash)
 	idx0 = idx0.Unique()
@@ -391,6 +393,7 @@ var RefreshTokenRecords = func() RefreshTokenRecordsTable {
 				idx0,
 				idx1,
 			),
+			ddl.WithSchema[RefreshTokenRecordAlias, RefreshTokenRecordColumnAlias]("auth"),
 		),
 		Id:        idCol,
 		SessionId: sessionIdCol,
