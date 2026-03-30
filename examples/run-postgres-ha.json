@@ -1,0 +1,31 @@
+{
+  "id": "test-pg-ha-001",
+  "provider": "docker",
+  "network": {"cidr": "10.10.0.0/24"},
+  "machines": [
+    {"role": "database", "count": 3, "cpus": 4, "memory_mb": 8192, "disk_gb": 100},
+    {"role": "proxy",    "count": 1, "cpus": 2, "memory_mb": 2048, "disk_gb": 20},
+    {"role": "monitor",  "count": 1, "cpus": 1, "memory_mb": 2048, "disk_gb": 20},
+    {"role": "stroppy",  "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 20}
+  ],
+  "database": {
+    "kind": "postgres",
+    "version": "16",
+    "postgres": {
+      "master": {"role": "database", "count": 1, "cpus": 4, "memory_mb": 8192, "disk_gb": 100},
+      "replicas": [{"role": "database", "count": 2, "cpus": 4, "memory_mb": 8192, "disk_gb": 100}],
+      "haproxy": {"role": "proxy", "count": 1, "cpus": 2, "memory_mb": 2048, "disk_gb": 20},
+      "pgbouncer": true,
+      "patroni": true,
+      "etcd": true,
+      "sync_replicas": 1
+    }
+  },
+  "monitor": {},
+  "stroppy": {
+    "version": "3.1.0",
+    "workload": "tpcb",
+    "duration": "30s",
+    "workers": 4
+  }
+}

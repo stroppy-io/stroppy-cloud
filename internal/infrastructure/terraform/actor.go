@@ -12,21 +12,20 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/samber/lo"
-	"github.com/stroppy-io/hatchet-workflow/internal/core/consts"
 	"github.com/stroppy-io/hatchet-workflow/internal/core/defaults"
 	"github.com/stroppy-io/hatchet-workflow/internal/core/logger"
 	"github.com/stroppy-io/hatchet-workflow/internal/core/uow"
 )
 
 const (
-	Version        consts.ConstValue = "1.14.5"
-	WorkingDir     consts.ConstValue = "/tmp/stroppy-terraform"
-	VarFileName    consts.ConstValue = "terraform.tfvars.json"
-	ConfigFileName consts.ConstValue = "custom.tfrc"
+	Version        = "1.14.5"
+	WorkingDir     = "/tmp/stroppy-terraform"
+	VarFileName    = "terraform.tfvars.json"
+	ConfigFileName = "custom.tfrc"
 )
 
 const (
-	TfCliConfigFileEnvKey consts.EnvKey = "TF_CLI_CONFIG_FILE"
+	TfCliConfigFileEnvKey = "TF_CLI_CONFIG_FILE"
 )
 
 type TfFile interface {

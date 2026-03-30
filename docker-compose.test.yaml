@@ -1,0 +1,50 @@
+services:
+  # --- VictoriaMetrics (single-node, receives metrics from agents) ---
+  victoria:
+    image: victoriametrics/victoria-metrics:v1.115.0
+    ports:
+      - "8428:8428"
+    volumes:
+      - victoria-data:/victoria-metrics-data
+    command:
+      - "-retentionPeriod=30d"
+      - "-httpListenAddr=:8428"
+    networks:
+      - stroppy
+
+  # --- Stroppy Cloud server ---
+  server:
+    build:
+      context: .
+      dockerfile: deployments/docker/stroppy-cloud.Dockerfile
+    command:
+      - serve
+      - --addr=:8080
+      - --victoria-url=http://victoria:8428
+      - --data-dir=/data/badger
+    ports:
+      - "8080:8080"
+    volumes:
+      - server-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp/stroppy-cloud:/opt/stroppy-cloud:ro
+    environment:
+      LOG_MOD: development
+      LOG_LEVEL: debug
+      STROPPY_BINARY_HOST_PATH: /tmp/stroppy-cloud
+    depends_on:
+      - victoria
+    networks:
+      - stroppy
+      - agents
+
+volumes:
+  victoria-data:
+  server-data:
+
+networks:
+  stroppy:
+    driver: bridge
+  agents:
+    name: stroppy-run-net
+    driver: bridge

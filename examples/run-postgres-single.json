@@ -1,0 +1,31 @@
+{
+  "id": "test-pg-single-001",
+  "provider": "docker",
+  "network": {
+    "cidr": "10.10.0.0/24"
+  },
+  "machines": [
+    {"role": "database", "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 50},
+    {"role": "monitor",  "count": 1, "cpus": 1, "memory_mb": 2048, "disk_gb": 20},
+    {"role": "stroppy",  "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 20}
+  ],
+  "database": {
+    "kind": "postgres",
+    "version": "16",
+    "postgres": {
+      "master": {"role": "database", "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 50},
+      "patroni": false,
+      "sync_replicas": 0
+    }
+  },
+  "monitor": {
+    "metrics_endpoint": "http://victoria:8428/api/v1/write",
+    "logs_endpoint": ""
+  },
+  "stroppy": {
+    "version": "3.1.0",
+    "workload": "tpcb",
+    "duration": "30s",
+    "workers": 4
+  }
+}
