@@ -51,6 +51,7 @@ const sidebars = {
         'configuration/cloud-init',
       ],
     },
+    'ci-integration',
     {
       type: 'category',
       label: 'Development',

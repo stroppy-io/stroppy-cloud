@@ -8,44 +8,50 @@ The external API is the primary interface for users and CI systems. All endpoint
 
 ## Authentication
 
-When the server is started with `--api-key`, all external API requests must include an `Authorization` header:
+The server uses token-based authentication. Obtain a token via the login endpoint, then pass it in subsequent requests.
 
-```
-Authorization: Bearer <api-key>
-```
+### POST /api/v1/auth/login
 
-Raw key format is also accepted:
-
-```
-Authorization: <api-key>
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin","password":"admin"}'
 ```
 
-The following paths are exempt from authentication:
-- `/health`
-- `/agent/binary`
-- `/api/agent/*` (agent-to-server communication uses machine-to-machine trust)
+**Response:**
 
-## Endpoints
+```json
+{"token": "eyJhbG...", "username": "admin"}
+```
+
+### GET /api/v1/auth/me
+
+Returns the authenticated user's info.
+
+```bash
+curl http://localhost:8080/api/v1/auth/me \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+All subsequent endpoints require `Authorization: Bearer <token>`.
+
+Exempt paths (no auth required): `/health`, `/agent/binary`, `/api/agent/*`.
+
+## Run Management
 
 ### POST /api/v1/run
 
-Start a new test run. The request body is a full `RunConfig` JSON document. The server builds a DAG, starts execution asynchronously, and returns immediately.
-
-**Request:**
+Start a new test run. The request body is a full `RunConfig` JSON document. The `machines` array can be empty -- the server auto-generates it from the topology.
 
 ```bash
 curl -X POST http://localhost:8080/api/v1/run \
+  -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer my-secret-key" \
   -d '{
     "id": "run-001",
     "provider": "docker",
     "network": {"cidr": "10.10.0.0/24"},
-    "machines": [
-      {"role": "database", "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 50},
-      {"role": "monitor",  "count": 1, "cpus": 1, "memory_mb": 2048, "disk_gb": 20},
-      {"role": "stroppy",  "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 20}
-    ],
+    "machines": [],
     "database": {
       "kind": "postgres",
       "version": "16",
@@ -57,103 +63,28 @@ curl -X POST http://localhost:8080/api/v1/run \
     "stroppy": {
       "version": "3.1.0",
       "workload": "tpcb",
-      "duration": "30s",
+      "duration": "5m",
       "workers": 4
     }
   }'
 ```
 
-**Response (202 Accepted):**
+**Response (202):**
 
 ```json
 {"run_id": "run-001", "status": "started"}
 ```
 
-### POST /api/v1/run/{runID}/resume
-
-Resume a previously failed or interrupted run. The server loads the saved DAG state from storage, marks completed nodes as done, and continues execution from where it stopped. Failed nodes are retried.
-
-**Request:**
-
-```bash
-curl -X POST http://localhost:8080/api/v1/run/run-001/resume \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer my-secret-key" \
-  -d @examples/run-postgres-single.json
-```
-
-**Response (202 Accepted):**
-
-```json
-{"run_id": "run-001", "status": "resumed"}
-```
-
-### POST /api/v1/validate
-
-Validate a `RunConfig` without executing it. Checks that the config produces a valid DAG (no unknown database kinds, no missing fields, no dependency cycles).
-
-**Request:**
-
-```bash
-curl -X POST http://localhost:8080/api/v1/validate \
-  -H "Content-Type: application/json" \
-  -d @examples/run-postgres-ha.json
-```
-
-**Response (200 OK):**
-
-```json
-{"status": "valid"}
-```
-
-**Response (422 Unprocessable Entity):**
-
-```json
-{"error": "unsupported database kind \"cassandra\""}
-```
-
-### POST /api/v1/dry-run
-
-Build the DAG and return its structure as JSON without executing it. Useful for visualizing the execution plan.
-
-**Request:**
-
-```bash
-curl -X POST http://localhost:8080/api/v1/dry-run \
-  -H "Content-Type: application/json" \
-  -d @examples/run-postgres-ha.json
-```
-
-**Response (200 OK):**
-
-```json
-{
-  "nodes": [
-    {"id": "network", "type": "network"},
-    {"id": "machines", "type": "machines", "deps": ["network"]},
-    {"id": "install_db", "type": "install_db", "deps": ["machines"]},
-    {"id": "configure_db", "type": "configure_db", "deps": ["install_db"]},
-    {"id": "install_monitor", "type": "install_monitor", "deps": ["machines"]},
-    {"id": "configure_monitor", "type": "configure_monitor", "deps": ["install_monitor"]},
-    {"id": "install_stroppy", "type": "install_stroppy", "deps": ["machines"]},
-    {"id": "run_stroppy", "type": "run_stroppy", "deps": ["configure_db", "configure_monitor", "install_stroppy"]},
-    {"id": "teardown", "type": "teardown", "deps": ["run_stroppy"]}
-  ]
-}
-```
-
 ### GET /api/v1/run/{runID}/status
 
-Get the current execution state of a run. Returns the full DAG snapshot with per-node status.
-
-**Request:**
+Get the current execution state including DAG snapshot, timestamps, and run state.
 
 ```bash
 curl http://localhost:8080/api/v1/run/run-001/status \
-  -H "Authorization: Bearer my-secret-key"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-**Response (200 OK):**
+**Response:**
 
 ```json
 {
@@ -161,68 +92,185 @@ curl http://localhost:8080/api/v1/run/run-001/status \
   "nodes": [
     {"id": "network", "status": "done"},
     {"id": "machines", "status": "done"},
-    {"id": "install_db", "status": "done"},
-    {"id": "configure_db", "status": "failed", "error": "pg_ctl init failed: exit 1"},
-    {"id": "install_monitor", "status": "done"},
-    {"id": "configure_monitor", "status": "pending"},
-    {"id": "install_stroppy", "status": "done"},
-    {"id": "run_stroppy", "status": "pending"},
-    {"id": "teardown", "status": "pending"}
-  ]
-}
-```
-
-**Response (404 Not Found):**
-
-```
-not found
-```
-
-### GET /api/v1/presets
-
-List all built-in topology presets for all database kinds.
-
-**Request:**
-
-```bash
-curl http://localhost:8080/api/v1/presets \
-  -H "Authorization: Bearer my-secret-key"
-```
-
-**Response (200 OK):**
-
-```json
-{
-  "postgres": {
-    "single": {"master": {"role": "database", "count": 1, "cpus": 2, "memory_mb": 4096, "disk_gb": 50}},
-    "ha": {"master": {...}, "replicas": [...], "haproxy": {...}, "pgbouncer": true, "patroni": true, "etcd": true, "sync_replicas": 1},
-    "scale": {...}
-  },
-  "mysql": {
-    "single": {...},
-    "replica": {...},
-    "group": {...}
-  },
-  "picodata": {
-    "single": {...},
-    "cluster": {...},
-    "scale": {...}
+    {"id": "install_db", "status": "pending"}
+  ],
+  "started_at": "2026-03-31T14:00:00Z",
+  "finished_at": "2026-03-31T14:05:00Z",
+  "state": {
+    "provider": "docker",
+    "run_config": {...}
   }
 }
 ```
 
-### GET /health
+### DELETE /api/v1/run/{runID}
 
-Health check endpoint (no authentication required).
-
-**Request:**
+Delete a run and clean up its Docker resources (containers, networks).
 
 ```bash
-curl http://localhost:8080/health
+curl -X DELETE http://localhost:8080/api/v1/run/run-001 \
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-**Response (200 OK):**
+### GET /api/v1/runs
+
+List all runs with summary info (status counts, timestamps, db_kind, provider).
+
+```bash
+curl http://localhost:8080/api/v1/runs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### POST /api/v1/validate
+
+Validate a RunConfig without executing it.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/validate \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @examples/run-postgres-ha.json
+```
+
+### POST /api/v1/dry-run
+
+Build the DAG and return its structure as JSON without executing it.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/dry-run \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d @examples/run-postgres-ha.json
+```
+
+## Metrics & Comparison
+
+### GET /api/v1/run/{runID}/metrics
+
+Fetch aggregated metrics for a run. Time range is optional -- defaults to run timestamps.
+
+```bash
+curl 'http://localhost:8080/api/v1/run/run-001/metrics?start=2026-03-31T14:00:00Z&end=2026-03-31T14:10:00Z' \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+Returns `MetricSummary[]` with avg/min/max/last for each metric (db_tps, cpu_usage, memory_usage, stroppy_ops, etc).
+
+### GET /api/v1/compare
+
+Compare metrics between two runs. Time range is optional -- auto-resolved from run timestamps if omitted.
+
+```bash
+# Auto time range (recommended)
+curl 'http://localhost:8080/api/v1/compare?a=run-001&b=run-002' \
+  -H "Authorization: Bearer $TOKEN"
+
+# Explicit time range
+curl 'http://localhost:8080/api/v1/compare?a=run-001&b=run-002&start=2026-03-31T14:00:00Z&end=2026-03-31T15:00:00Z' \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+**Response:**
 
 ```json
-{"status": "ok"}
+{
+  "run_a": "run-001",
+  "run_b": "run-002",
+  "start": "2026-03-31T13:59:30Z",
+  "end": "2026-03-31T14:10:30Z",
+  "metrics": [
+    {
+      "key": "db_tps",
+      "name": "DB Transactions Per Second",
+      "unit": "txn/s",
+      "avg_a": 1250.5,
+      "avg_b": 1340.2,
+      "diff_avg_pct": 7.2,
+      "verdict": "better"
+    }
+  ],
+  "summary": {"better": 3, "worse": 1, "same": 12}
+}
 ```
+
+## Logs
+
+### GET /api/v1/run/{runID}/logs
+
+Fetch historical logs from VictoriaLogs (NDJSON format). Returns 503 if VictoriaLogs is not configured.
+
+```bash
+curl http://localhost:8080/api/v1/run/run-001/logs \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Presets
+
+### GET /api/v1/presets
+
+List all topology presets for all database kinds.
+
+```bash
+curl http://localhost:8080/api/v1/presets \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+## Packages & Upload
+
+### POST /api/v1/upload/deb
+
+Upload a custom .deb package. The server stores it and returns a URL that agents can download.
+
+```bash
+curl -X POST http://localhost:8080/api/v1/upload/deb \
+  -H "Authorization: Bearer $TOKEN" \
+  -F file=@postgresql-custom-16_1.0_amd64.deb
+```
+
+**Response:**
+
+```json
+{
+  "filename": "postgresql-custom-16_1.0_amd64.deb",
+  "url": "http://server:8080/packages/postgresql-custom-16_1.0_amd64.deb",
+  "size": "52428800"
+}
+```
+
+Use the returned URL in the RunConfig `packages.deb_files` array.
+
+## Admin
+
+### GET/PUT /api/v1/admin/settings
+
+Read or update server settings (cloud config, monitoring stack, stroppy defaults, Grafana).
+
+### GET/PUT /api/v1/admin/packages
+
+Read or update default package sets per database kind and version.
+
+### GET /api/v1/admin/db-defaults/{kind}
+
+Get default database configuration parameters for a database kind.
+
+### GET /api/v1/admin/grafana
+
+Get Grafana integration settings (URL, embed flag, dashboard UIDs).
+
+## WebSocket
+
+### GET /ws/logs
+
+Stream all run logs in real time (all runs).
+
+### GET /ws/logs/{runID}
+
+Stream logs for a specific run.
+
+Messages are JSON with `type` field: `"log"`, `"agent_log"`, `"report"`.
+
+## Health
+
+### GET /health
+
+Health check (no auth required). Returns `{"status": "ok"}`.
