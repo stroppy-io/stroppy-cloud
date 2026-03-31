@@ -142,6 +142,7 @@ func (d *DockerDeployer) Stop(ctx context.Context, containerID string) error {
 
 // StopGraceful stops the container with a timeout before removing it.
 func (d *DockerDeployer) StopGraceful(ctx context.Context, containerID string, timeoutSec int) error {
+	// Best-effort stop: container may already be stopped or removed; ignore error.
 	_ = d.cli.ContainerStop(ctx, containerID, container.StopOptions{Timeout: &timeoutSec})
 	return d.cli.ContainerRemove(ctx, containerID, container.RemoveOptions{})
 }

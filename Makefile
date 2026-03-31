@@ -1,68 +1,146 @@
-VERSION := $(shell v=$$(git describe --tags 2>/dev/null | sed -e 's/^v//g' | awk -F "-" '{print $$1}'); [ -n "$$v" ] && echo "$$v" || echo "v0.0.0")
-LAST_DEV_NUM := $(shell git tag -l "$(VERSION)-dev*" | sed 's/.*-dev//' | grep -E '^[0-9]+$$' | sort -rn | head -n1)
-INCREMENT := $(shell echo $$(($(if $(LAST_DEV_NUM),$(LAST_DEV_NUM),0) + 1)))
-DEV_VERSION := $(VERSION)-dev$(INCREMENT)
+# stroppy-cloud Makefile
+.PHONY: help configure build build-all test test-integration test-e2e test-coverage \
+        lint fmt docker-build docker-push docker-up docker-down docker-logs \
+        serve docs-install docs-dev docs-build web-install web-dev web-build \
+        clean release
 
-ifneq (,$(wildcard ./.env))
-    include .env
-    export
-endif
+# ============================================================
+# Variables
+# ============================================================
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+MODULE  := github.com/stroppy-io/stroppy-cloud
+BINARY  := stroppy-cloud
+LDFLAGS := -w -s -X $(MODULE)/internal/core/build.Version=$(VERSION) -X $(MODULE)/internal/core/build.ServiceName=$(BINARY)
+GOFLAGS := -trimpath -ldflags="$(LDFLAGS)"
 
-.PHONY: up-infra
-up-infra:
-	docker compose -f docker-compose.infra.yaml up -d
+# Docker
+DOCKER_IMAGE := ghcr.io/stroppy-io/stroppy-cloud
+DOCKER_TAG   := $(VERSION)
 
-.PHONY: down-infra
-down-infra:
-	docker compose -f docker-compose.infra.yaml down
+# ============================================================
+# Help
+# ============================================================
+help: ## Show this help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: clean-infra
-clean-infra:
-	docker compose -f docker-compose.infra.yaml down -v
+# ============================================================
+# Configure — check all dependencies
+# ============================================================
+configure: ## Check that all required tools are installed
+	@echo "Checking dependencies..."
+	@command -v go >/dev/null 2>&1 || { echo "ERROR: go is not installed"; exit 1; }
+	@echo "  go $$(go version | awk '{print $$3}')"
+	@command -v docker >/dev/null 2>&1 || { echo "WARNING: docker not found (needed for integration tests)"; }
+	@docker info >/dev/null 2>&1 && echo "  docker $$(docker --version | awk '{print $$3}' | tr -d ',')" || echo "  docker: not running"
+	@command -v node >/dev/null 2>&1 && echo "  node $$(node --version)" || echo "  WARNING: node not found (needed for docs/web)"
+	@command -v npm >/dev/null 2>&1 && echo "  npm $$(npm --version)" || echo "  WARNING: npm not found (needed for docs/web)"
+	@command -v golangci-lint >/dev/null 2>&1 && echo "  golangci-lint $$(golangci-lint --version 2>/dev/null | awk '{print $$4}')" || echo "  WARNING: golangci-lint not found (install: go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest)"
+	@echo "All required dependencies OK"
 
+# ============================================================
+# Build
+# ============================================================
+build: web-build ## Build the stroppy-cloud binary (with embedded SPA)
+	@mkdir -p bin
+	CGO_ENABLED=0 go build $(GOFLAGS) -o bin/$(BINARY) ./cmd/cli/
 
-.PHONY: up-dev
-up-dev:
-	VERSION=$(DEV_VERSION) docker compose -f docker-compose.dev.yaml up -d --build --force-recreate
+build-all: ## Build for all platforms
+	@mkdir -p bin
+	GOOS=linux   GOARCH=amd64 CGO_ENABLED=0 go build $(GOFLAGS) -o bin/$(BINARY)-linux-amd64   ./cmd/cli/
+	GOOS=linux   GOARCH=arm64 CGO_ENABLED=0 go build $(GOFLAGS) -o bin/$(BINARY)-linux-arm64   ./cmd/cli/
+	GOOS=darwin  GOARCH=amd64 CGO_ENABLED=0 go build $(GOFLAGS) -o bin/$(BINARY)-darwin-amd64  ./cmd/cli/
+	GOOS=darwin  GOARCH=arm64 CGO_ENABLED=0 go build $(GOFLAGS) -o bin/$(BINARY)-darwin-arm64  ./cmd/cli/
 
-.PHONY: up-dev-no-build
-up-dev-no-build:
-	docker compose -f docker-compose.dev.yaml up -d
+# ============================================================
+# Test
+# ============================================================
+test: ## Run unit tests
+	go test ./... -count=1 -race
 
-.PHONY: down-dev
-down-dev:
-	docker compose -f docker-compose.dev.yaml down
+test-integration: build ## Run integration tests (requires Docker)
+	STROPPY_BINARY_HOST_PATH=$(PWD)/bin/$(BINARY) go test -tags=integration -timeout 30m -v ./tests/
 
-.PHONY: clean-dev
-clean-dev:
-	docker compose -f docker-compose.dev.yaml down -v
+test-e2e: build ## Run E2E tests for all databases
+	STROPPY_BINARY_HOST_PATH=$(PWD)/bin/$(BINARY) go test -tags=integration -timeout 60m -v ./tests/ -run TestE2E
 
-.PHONY: build
-build:
-	mkdir -p bin
-	go build -o ./bin/ ./cmd/...
+test-coverage: ## Run tests with coverage report
+	go test ./... -coverprofile=coverage.out -count=1
+	go tool cover -html=coverage.out -o coverage.html
+	@echo "Coverage report: coverage.html"
 
-.PHONY: build-all
-build-all:
-	mkdir -p bin
-	go build -o ./bin/ ./cmd/...
+# ============================================================
+# Lint
+# ============================================================
+lint: ## Run linters
+	go vet ./...
+	@command -v golangci-lint >/dev/null 2>&1 && golangci-lint run ./... || echo "golangci-lint not installed, skipping"
 
-.PHONY: run-master-worker
-run-master-worker: build-all
-	./bin/master-worker 2>&1 | zap-pretty
+fmt: ## Format Go code
+	gofmt -w -s .
 
-.PHONY: run-test
-run-test: build-all
-	./bin/run --file ./examples/test.yaml
+# ============================================================
+# Docker
+# ============================================================
+docker-build: ## Build Docker image
+	docker build -f deployments/docker/stroppy-cloud.Dockerfile -t $(DOCKER_IMAGE):$(DOCKER_TAG) --build-arg VERSION=$(VERSION) .
 
-.PHONY: build-edge-worker-image
-build-edge-worker-image:
-	docker build -f deployments/docker/edge-worker.Dockerfile -t stroppy-edge-worker:latest .
+docker-push: docker-build ## Push Docker image to GHCR
+	docker push $(DOCKER_IMAGE):$(DOCKER_TAG)
+	docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_IMAGE):latest
+	docker push $(DOCKER_IMAGE):latest
 
-.PHONY: release-dev-edge
-release-dev-edge:
-	mkdir -p bin
-	go build -ldflags "-X github.com/stroppy-io/hatchet-workflow/internal/core/build.Version=$(DEV_VERSION) -X github.com/stroppy-io/hatchet-workflow/internal/core/build.ServiceName=edge-worker" -o ./bin/ ./cmd/edge-worker
-	@echo "Built version: $(DEV_VERSION)"
-	gh release create "$(DEV_VERSION)" ./bin/edge-worker#edge-worker --title "$(DEV_VERSION)" --notes "dev release" --prerelease
-	git fetch --tags
+docker-up: ## Start test stack (server + VictoriaMetrics)
+	docker compose -f docker-compose.test.yaml up -d
+
+docker-down: ## Stop test stack
+	docker compose -f docker-compose.test.yaml down
+
+docker-logs: ## Show server logs
+	docker compose -f docker-compose.test.yaml logs -f server
+
+# ============================================================
+# Serve (development)
+# ============================================================
+serve: build ## Run server locally
+	./bin/$(BINARY) serve --addr :8080 --data-dir ./data
+
+# ============================================================
+# Docs (Docusaurus)
+# ============================================================
+docs-install: ## Install docs dependencies
+	cd docs && npm install
+
+docs-dev: ## Start docs dev server
+	cd docs && npm start
+
+docs-build: ## Build docs static site
+	cd docs && npm run build
+
+# ============================================================
+# Web (Vite + React frontend)
+# ============================================================
+web-install: ## Install web dependencies
+	cd web && npm install
+
+web-dev: ## Start web dev server (proxies to localhost:8080)
+	cd web && npm run dev
+
+web-build: ## Build web for production
+	cd web && npm run build
+
+# ============================================================
+# Clean
+# ============================================================
+clean: ## Clean build artifacts
+	rm -rf bin/ coverage.out coverage.html data/
+	docker compose -f docker-compose.test.yaml down -v 2>/dev/null || true
+	docker ps -a --filter "name=stroppy-agent" -q | xargs -r docker rm -f 2>/dev/null || true
+	docker network rm stroppy-run-net 2>/dev/null || true
+
+# ============================================================
+# Release
+# ============================================================
+release: build-all docker-build ## Build all artifacts for release
+	@echo "Release $(VERSION) built. Push with: make docker-push"
+
+.DEFAULT_GOAL := help

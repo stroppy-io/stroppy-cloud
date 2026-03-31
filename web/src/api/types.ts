@@ -1,0 +1,261 @@
+// --- Enums / constants ---
+
+export type Provider = "yandex" | "docker";
+export type DatabaseKind = "postgres" | "mysql" | "picodata";
+
+export type Phase =
+  | "network"
+  | "machines"
+  | "install_db"
+  | "configure_db"
+  | "install_monitor"
+  | "configure_monitor"
+  | "install_stroppy"
+  | "run_stroppy"
+  | "install_etcd"
+  | "configure_etcd"
+  | "install_proxy"
+  | "configure_proxy"
+  | "install_pgbouncer"
+  | "configure_pgbouncer"
+  | "teardown";
+
+export type MachineRole =
+  | "database"
+  | "monitor"
+  | "stroppy"
+  | "etcd"
+  | "proxy"
+  | "pgbouncer";
+
+export type NodeStatusValue = "pending" | "done" | "failed";
+
+// --- Machine / Topology ---
+
+export interface MachineSpec {
+  role: MachineRole;
+  count: number;
+  cpus: number;
+  memory_mb: number;
+  disk_gb: number;
+}
+
+export interface PostgresTopology {
+  master: MachineSpec;
+  replicas?: MachineSpec[];
+  haproxy?: MachineSpec;
+  pgbouncer: boolean;
+  patroni: boolean;
+  etcd: boolean;
+  sync_replicas: number;
+  options?: Record<string, string>;
+}
+
+export interface MySQLTopology {
+  primary: MachineSpec;
+  replicas?: MachineSpec[];
+  proxysql?: MachineSpec;
+  group_replication: boolean;
+  semi_sync: boolean;
+  options?: Record<string, string>;
+}
+
+export interface PicodataTier {
+  name: string;
+  replication_factor: number;
+  can_vote: boolean;
+  count: number;
+}
+
+export interface PicodataTopology {
+  instances: MachineSpec[];
+  haproxy?: MachineSpec;
+  replication_factor: number;
+  shards: number;
+  tiers?: PicodataTier[];
+  options?: Record<string, string>;
+}
+
+export interface DatabaseConfig {
+  kind: DatabaseKind;
+  version: string;
+  postgres?: PostgresTopology;
+  mysql?: MySQLTopology;
+  picodata?: PicodataTopology;
+}
+
+export interface MonitorConfig {
+  metrics_endpoint?: string;
+  logs_endpoint?: string;
+}
+
+export interface StroppyConfig {
+  version: string;
+  workload: string;
+  duration: string;
+  workers: number;
+  options?: Record<string, string>;
+}
+
+export interface NetworkConfig {
+  cidr: string;
+  zone?: string;
+}
+
+export interface PackageSet {
+  apt?: string[];
+  rpm?: string[];
+  pre_install_apt?: string[];
+  pre_install_rpm?: string[];
+  custom_repo_apt?: string;
+  custom_repo_key?: string;
+  custom_repo_rpm?: string;
+  deb_files?: string[];
+  rpm_files?: string[];
+}
+
+export interface RunConfig {
+  id: string;
+  provider: Provider;
+  network: NetworkConfig;
+  machines: MachineSpec[];
+  database: DatabaseConfig;
+  monitor: MonitorConfig;
+  stroppy: StroppyConfig;
+  packages?: PackageSet;
+}
+
+// --- DAG / Snapshot ---
+
+export interface NodeStatus {
+  id: string;
+  status: NodeStatusValue;
+  error?: string;
+}
+
+export interface Snapshot {
+  graph: string; // JSON-encoded graph
+  nodes: NodeStatus[];
+  started_at?: string;
+  finished_at?: string;
+  state?: {
+    provider?: string;
+    run_config?: Record<string, unknown> | string; // object or JSON string
+  };
+}
+
+// --- Run Summary ---
+
+export interface RunSummary {
+  id: string;
+  nodes: NodeStatus[];
+  total: number;
+  done: number;
+  failed: number;
+  pending: number;
+  started_at?: string;
+  finished_at?: string;
+  db_kind?: string;
+  provider?: string;
+}
+
+// --- Presets ---
+
+export interface PresetsResponse {
+  postgres: Record<string, PostgresTopology>;
+  mysql: Record<string, MySQLTopology>;
+  picodata: Record<string, PicodataTopology>;
+}
+
+// --- Settings ---
+
+export interface YandexCloudSettings {
+  folder_id: string;
+  zone: string;
+  subnet_id: string;
+  service_account_id: string;
+  ssh_public_key: string;
+  image_id: string;
+}
+
+export interface CloudSettings {
+  yandex: YandexCloudSettings;
+  server_addr: string;
+  binary_url: string;
+}
+
+export interface MonitoringStack {
+  node_exporter_version: string;
+  postgres_exporter_version: string;
+  otel_col_version: string;
+  vmagent_version: string;
+  victoria_metrics_url: string;
+  victoria_metrics_user: string;
+  victoria_metrics_password: string;
+}
+
+export interface StroppySettings {
+  version: string;
+  otlp_exporter_type: string;
+  otlp_endpoint: string;
+  otlp_url_path: string;
+  otlp_insecure: boolean;
+  otlp_headers: string;
+  otlp_metric_prefix: string;
+  otlp_service_name: string;
+}
+
+export interface PackageDefaults {
+  postgres: Record<string, PackageSet>;
+  mysql: Record<string, PackageSet>;
+  picodata: Record<string, PackageSet>;
+  monitoring: PackageSet;
+  stroppy: PackageSet;
+}
+
+export interface GrafanaSettings {
+  url: string;
+  embed_enabled: boolean;
+  dashboards: Record<string, string>;
+}
+
+export interface ServerSettings {
+  cloud: CloudSettings;
+  monitoring: MonitoringStack;
+  packages: PackageDefaults;
+  stroppy_defaults: StroppySettings;
+  grafana: GrafanaSettings;
+}
+
+// --- Metrics / Compare ---
+
+export interface MetricValue {
+  name: string;
+  value: number;
+  unit: string;
+}
+
+export interface ComparisonRow {
+  metric: string;
+  a: number;
+  b: number;
+  diff_pct: number;
+  verdict: "better" | "worse" | "same";
+}
+
+// --- WebSocket messages ---
+
+export interface WSMessage {
+  type: "log" | "report" | "agent_log";
+  run_id?: string;
+  node_id?: string;
+  payload: unknown;
+}
+
+export interface LogLine {
+  run_id: string;
+  phase: string;
+  machine_id: string;
+  line: string;
+  ts: string;
+}

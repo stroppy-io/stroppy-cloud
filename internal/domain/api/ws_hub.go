@@ -19,11 +19,17 @@ type wsMessage struct {
 
 type wsClient struct {
 	conn        *websocket.Conn
-	filterRunID string // empty = receive all
+	writeMu     sync.Mutex // gorilla/websocket is not safe for concurrent writes
+	filterRunID string
+}
+
+func (c *wsClient) send(data []byte) {
+	c.writeMu.Lock()
+	defer c.writeMu.Unlock()
+	c.conn.WriteMessage(websocket.TextMessage, data)
 }
 
 // wsHub manages WebSocket clients and broadcasts messages to them.
-// It also implements dag.LogSink so executor logs stream directly to UI.
 type wsHub struct {
 	mu      sync.RWMutex
 	clients []*wsClient
@@ -40,7 +46,7 @@ func (h *wsHub) addClient(conn *websocket.Conn, filterRunID string) {
 	h.clients = append(h.clients, client)
 	h.mu.Unlock()
 
-	// Read pump: just drain client messages and detect disconnect.
+	// Read pump: drain client messages and detect disconnect.
 	go func() {
 		defer h.removeClient(client)
 		for {
@@ -70,17 +76,19 @@ func (h *wsHub) broadcast(msg wsMessage) {
 	}
 
 	h.mu.RLock()
-	defer h.mu.RUnlock()
+	snapshot := make([]*wsClient, len(h.clients))
+	copy(snapshot, h.clients)
+	h.mu.RUnlock()
 
-	for _, c := range h.clients {
+	for _, c := range snapshot {
 		if c.filterRunID != "" && msg.RunID != "" && c.filterRunID != msg.RunID {
 			continue
 		}
-		c.conn.WriteMessage(websocket.TextMessage, data)
+		c.send(data)
 	}
 }
 
-// WriteLog implements dag.LogSink — streams executor node logs to WebSocket clients.
+// WriteLog implements dag.LogSink.
 func (h *wsHub) WriteLog(_ context.Context, executionID string, nodeID string, entry zapcore.Entry, fields []zapcore.Field) {
 	h.broadcast(wsMessage{
 		Type:   "log",

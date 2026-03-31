@@ -21,12 +21,44 @@ type AgentServer struct {
 
 // NewAgentServer creates a new agent HTTP server.
 func NewAgentServer(serverAddr string, machineID string, port int) *AgentServer {
-	return &AgentServer{
+	s := &AgentServer{
 		executor:   NewExecutor(),
 		serverAddr: serverAddr,
 		machineID:  machineID,
 		port:       port,
 	}
+
+	// Wire real-time log streaming: every shell output line is POSTed to the
+	// orchestration server which forwards it to WebSocket clients and VictoriaLogs.
+	s.executor.SetLogCallback(func(commandID, line, stream string) {
+		s.sendLogLine(commandID, line, stream)
+	})
+
+	return s
+}
+
+// sendLogLine posts a single log line to the orchestration server.
+// It is fire-and-forget so shell execution is never blocked.
+func (s *AgentServer) sendLogLine(commandID, line, stream string) {
+	if s.serverAddr == "" {
+		return
+	}
+	ll := LogLine{
+		CommandID: commandID,
+		MachineID: s.machineID,
+		Line:      line,
+		Stream:    stream,
+	}
+	data, err := json.Marshal(ll)
+	if err != nil {
+		return
+	}
+	go func() {
+		resp, err := http.Post(s.serverAddr+"/api/agent/log", "application/json", bytes.NewReader(data))
+		if err == nil {
+			resp.Body.Close()
+		}
+	}()
 }
 
 // Router returns the chi router with agent endpoints.
@@ -63,6 +95,9 @@ func (s *AgentServer) execute(w http.ResponseWriter, r *http.Request) {
 
 // Register calls back to the orchestration server to announce this agent.
 // It posts a registration request with the machine ID, host, and port.
+// Executor returns the underlying executor for shutdown management.
+func (s *AgentServer) Executor() *Executor { return s.executor }
+
 func (s *AgentServer) Register() error {
 	if s.serverAddr == "" {
 		return nil // no server to register with

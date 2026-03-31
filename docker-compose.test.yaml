@@ -9,21 +9,48 @@ services:
     command:
       - "-retentionPeriod=30d"
       - "-httpListenAddr=:8428"
-    networks:
-      - stroppy
+      - "-opentelemetry.usePrometheusNaming"
+
+  # --- VictoriaLogs (log persistence for agent shell output) ---
+  victorialogs:
+    image: victoriametrics/victoria-logs:v1.22.0-victorialogs
+    ports:
+      - "9428:9428"
+    volumes:
+      - victorialogs-data:/vlogs
+    command:
+      - "-storageDataPath=/vlogs"
+      - "-retentionPeriod=30d"
+
+  # --- Grafana (dashboards & visualization) ---
+  grafana:
+    image: grafana/grafana:11.4.0
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deployments/grafana/provisioning:/etc/grafana/provisioning
+      - ./deployments/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
 
   # --- Stroppy Cloud server ---
+  # Runs with host networking so it can reach Docker agent containers directly.
   server:
     build:
       context: .
       dockerfile: deployments/docker/stroppy-cloud.Dockerfile
+    network_mode: host
     command:
       - serve
       - --addr=:8080
-      - --victoria-url=http://victoria:8428
+      - --victoria-url=http://127.0.0.1:8428
+      - --victoria-logs-url=http://127.0.0.1:9428
       - --data-dir=/data/badger
-    ports:
-      - "8080:8080"
     volumes:
       - server-data:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -32,19 +59,10 @@ services:
       LOG_MOD: development
       LOG_LEVEL: debug
       STROPPY_BINARY_HOST_PATH: /tmp/stroppy-cloud
-    depends_on:
-      - victoria
-    networks:
-      - stroppy
-      - agents
+      STROPPY_HOST_MODE: "true"
 
 volumes:
   victoria-data:
+  victorialogs-data:
+  grafana-data:
   server-data:
-
-networks:
-  stroppy:
-    driver: bridge
-  agents:
-    name: stroppy-run-net
-    driver: bridge

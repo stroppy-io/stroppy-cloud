@@ -39,7 +39,7 @@ func startTestServer(t *testing.T) *testServer {
 	if err != nil {
 		t.Fatalf("create app: %v", err)
 	}
-	s := api.NewServer(app, logger, "", "", "")
+	s := api.NewServer(app, logger, "", "", "", "")
 	ts := httptest.NewServer(s.Router())
 	t.Cleanup(func() { ts.Close(); app.Close() })
 	return &testServer{app: app, srv: ts, url: ts.URL}

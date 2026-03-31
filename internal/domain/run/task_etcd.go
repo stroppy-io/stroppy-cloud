@@ -9,11 +9,13 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 type etcdInstallTask struct {
-	client agent.Client
-	state  *State
+	client   agent.Client
+	state    *State
+	settings *types.ServerSettings
 }
 
 func (t *etcdInstallTask) Execute(nc *dag.NodeContext) error {
@@ -22,10 +24,15 @@ func (t *etcdInstallTask) Execute(nc *dag.NodeContext) error {
 	if len(targets) > 3 {
 		targets = targets[:3]
 	}
+	// Pass etcd version from settings; agent executor falls back to built-in default.
+	var etcdVersion string
+	if t.settings != nil {
+		etcdVersion = t.settings.Monitoring.EtcdVersion
+	}
 	nc.Log().Info("installing etcd on DB nodes")
 	return t.client.SendAll(nc, targets, agent.Command{
 		Action: agent.ActionInstallEtcd,
-		Config: agent.EtcdInstallConfig{Version: "3.5.17"},
+		Config: agent.EtcdInstallConfig{Version: etcdVersion},
 	})
 }
 

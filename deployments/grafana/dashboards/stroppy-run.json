@@ -1,0 +1,204 @@
+{
+  "uid": "stroppy-run",
+  "title": "Stroppy Run — Overview",
+  "tags": ["stroppy"],
+  "timezone": "browser",
+  "editable": true,
+  "schemaVersion": 39,
+  "style": "dark",
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "5s",
+  "templating": {
+    "list": [
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "custom",
+        "query": "",
+        "current": { "text": "", "value": "" },
+        "options": []
+      },
+      {
+        "name": "instance",
+        "label": "Instance",
+        "type": "query",
+        "datasource": "VictoriaMetrics",
+        "query": "label_values(up{stroppy_run_id=\"$run_id\"}, instance)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "title": "TPS",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(pg_stat_database_xact_commit{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])) + sum(rate(pg_stat_database_xact_rollback{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m]))",
+          "legendFormat": "TPS",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green" }] }
+        }
+      }
+    },
+    {
+      "title": "CPU %",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 4, "y": 0 },
+      "targets": [
+        {
+          "expr": "avg(100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\",stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])) * 100))",
+          "legendFormat": "CPU",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green" },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Memory %",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "avg(100 * (1 - node_memory_MemAvailable_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"} / node_memory_MemTotal_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}))",
+          "legendFormat": "Memory",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green" },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "VUs",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(stroppy_vus{stroppy_run_id=\"$run_id\",instance=~\"$instance\"})",
+          "legendFormat": "VUs",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue" }] }
+        }
+      }
+    },
+    {
+      "title": "Iterations/s",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(stroppy_iterations{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m]))",
+          "legendFormat": "Iterations/s",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green" }] }
+        }
+      }
+    },
+    {
+      "title": "Error Rate",
+      "type": "stat",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 6, "w": 4, "x": 20, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(stroppy_errors_total{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m]))",
+          "legendFormat": "Errors/s",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green" },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

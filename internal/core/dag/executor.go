@@ -5,27 +5,58 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"go.uber.org/zap"
 )
 
+const (
+	// DefaultMaxRetries is the default number of retry attempts per node.
+	DefaultMaxRetries = 3
+	// DefaultRetryBaseDelay is the initial backoff delay between retries.
+	DefaultRetryBaseDelay = 5 * time.Second
+	// DefaultRetryMaxDelay caps the exponential backoff.
+	DefaultRetryMaxDelay = 60 * time.Second
+)
+
+// RetryPolicy controls how failed nodes are retried.
+type RetryPolicy struct {
+	MaxRetries int
+	BaseDelay  time.Duration
+	MaxDelay   time.Duration
+}
+
+// DefaultRetryPolicy returns the default retry policy.
+func DefaultRetryPolicy() RetryPolicy {
+	return RetryPolicy{
+		MaxRetries: DefaultMaxRetries,
+		BaseDelay:  DefaultRetryBaseDelay,
+		MaxDelay:   DefaultRetryMaxDelay,
+	}
+}
+
 // Executor walks a Graph and runs nodes as their dependencies complete.
-// Independent branches run in parallel.
+// Failed nodes are automatically retried with exponential backoff.
 type Executor struct {
 	id      string
 	graph   *Graph
 	storage Storage
 	log     *zap.Logger
 	sink    LogSink
+	retry   RetryPolicy
 	done    map[string]bool
 	failed  map[string]string // id → error message for snapshots
 	errs    []error           // original errors for return
 	mu      sync.Mutex
+
+	startedAt time.Time
+
+	// stateExporter is called before each snapshot save to capture
+	// the current run state (targets, container IDs, etc.) for recovery.
+	stateExporter func() *RunState
 }
 
 // NewExecutor creates an executor for the given graph.
-// id identifies this execution for storage. storage may be nil.
-// log is the base zap logger; sink (optional) receives per-node log entries for streaming.
 func NewExecutor(id string, g *Graph, storage Storage, log *zap.Logger, sink LogSink) *Executor {
 	if log == nil {
 		log = zap.NewNop()
@@ -36,46 +67,38 @@ func NewExecutor(id string, g *Graph, storage Storage, log *zap.Logger, sink Log
 		storage: storage,
 		log:     log,
 		sink:    sink,
+		retry:   DefaultRetryPolicy(),
 		done:    make(map[string]bool, len(g.Nodes)),
 		failed:  make(map[string]string),
 	}
 }
 
-// Resume restores state from storage and continues execution.
-// If no saved state exists, starts from the beginning.
-func (e *Executor) Resume(ctx context.Context, reg *Registry) error {
-	if e.storage == nil {
-		return e.Run(ctx)
-	}
+// SetRetryPolicy overrides the default retry policy.
+func (e *Executor) SetRetryPolicy(p RetryPolicy) {
+	e.retry = p
+}
 
-	snap, err := e.storage.Load(ctx, e.id)
-	if err != nil {
-		return fmt.Errorf("dag: load state: %w", err)
-	}
+// SetStateExporter registers a callback that exports the current run state
+// for inclusion in every snapshot. This enables run recovery after restart.
+func (e *Executor) SetStateExporter(fn func() *RunState) {
+	e.stateExporter = fn
+}
 
-	if snap != nil {
-		restored, err := reg.Unmarshal(snap.GraphJSON)
-		if err != nil {
-			return fmt.Errorf("dag: restore graph: %w", err)
-		}
-		e.graph = restored
-
-		for _, ns := range snap.Nodes {
-			switch ns.Status {
-			case StatusDone:
-				e.done[ns.ID] = true
-			case StatusFailed:
-				// failed nodes are retried on resume
-			}
-		}
-	}
-
-	return e.Run(ctx)
+// MarkNodeDone marks a node as completed without executing it.
+// Used during recovery to restore previously completed nodes.
+func (e *Executor) MarkNodeDone(id string) {
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	e.done[id] = true
 }
 
 // Run executes the graph to completion.
-// It fails fast: on first error, pending nodes finish but no new ones start.
+// Failed nodes are retried with exponential backoff up to MaxRetries times.
+// After all retries are exhausted, the run fails.
 func (e *Executor) Run(ctx context.Context) error {
+	if e.startedAt.IsZero() {
+		e.startedAt = time.Now()
+	}
 	for {
 		ready := e.getReady()
 		if len(ready) == 0 {
@@ -88,15 +111,7 @@ func (e *Executor) Run(ctx context.Context) error {
 		for _, n := range ready {
 			go func(n *Node) {
 				defer wg.Done()
-				nc := &NodeContext{
-					Context: ctx,
-					log:     newNodeLogger(e.log, e.sink, e.id, n.ID),
-				}
-				if err := n.Task.Execute(nc); err != nil {
-					e.markFailed(n.ID, err)
-					return
-				}
-				e.markDone(ctx, n.ID)
+				e.executeWithRetry(ctx, n)
 			}(n)
 		}
 
@@ -120,6 +135,55 @@ func (e *Executor) Run(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// executeWithRetry runs a node's task with automatic retries and exponential backoff.
+func (e *Executor) executeWithRetry(ctx context.Context, n *Node) {
+	nc := &NodeContext{
+		Context: ctx,
+		log:     newNodeLogger(e.log, e.sink, e.id, n.ID),
+	}
+
+	var lastErr error
+	delay := e.retry.BaseDelay
+
+	for attempt := 0; attempt <= e.retry.MaxRetries; attempt++ {
+		if attempt > 0 {
+			nc.Log().Warn("retrying node",
+				zap.Int("attempt", attempt),
+				zap.Int("max_retries", e.retry.MaxRetries),
+				zap.Duration("backoff", delay),
+				zap.Error(lastErr),
+			)
+			select {
+			case <-ctx.Done():
+				e.markFailed(n.ID, ctx.Err())
+				return
+			case <-time.After(delay):
+			}
+			// Exponential backoff with cap.
+			delay *= 2
+			if delay > e.retry.MaxDelay {
+				delay = e.retry.MaxDelay
+			}
+		}
+
+		err := n.Task.Execute(nc)
+		if err == nil {
+			e.markDone(ctx, n.ID)
+			return
+		}
+
+		lastErr = err
+		nc.Log().Error("node execution failed",
+			zap.Int("attempt", attempt+1),
+			zap.Int("max_attempts", e.retry.MaxRetries+1),
+			zap.Error(err),
+		)
+	}
+
+	// All retries exhausted.
+	e.markFailed(n.ID, fmt.Errorf("after %d attempts: %w", e.retry.MaxRetries+1, lastErr))
 }
 
 func (e *Executor) getReady() []*Node {
@@ -164,7 +228,6 @@ func (e *Executor) save(ctx context.Context) error {
 	return e.storage.Save(ctx, e.id, snap)
 }
 
-// snapshot builds the current state for persistence. Caller must hold e.mu.
 func (e *Executor) snapshot() *Snapshot {
 	graphJSON, _ := json.Marshal(e.graph)
 
@@ -180,8 +243,29 @@ func (e *Executor) snapshot() *Snapshot {
 		nodes = append(nodes, ns)
 	}
 
+	var state *RunState
+	if e.stateExporter != nil {
+		state = e.stateExporter()
+	}
+
+	// Compute finishedAt if all nodes are done or failed.
+	finishedAt := time.Time{}
+	allDone := true
+	for _, ns := range nodes {
+		if ns.Status == StatusPending {
+			allDone = false
+			break
+		}
+	}
+	if allDone {
+		finishedAt = time.Now()
+	}
+
 	return &Snapshot{
-		GraphJSON: graphJSON,
-		Nodes:     nodes,
+		GraphJSON:  graphJSON,
+		Nodes:      nodes,
+		State:      state,
+		StartedAt:  e.startedAt,
+		FinishedAt: finishedAt,
 	}
 }

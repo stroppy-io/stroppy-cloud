@@ -56,6 +56,64 @@ func (s *DAGStorage) Load(_ context.Context, id string) (*dag.Snapshot, error) {
 	return &snap, nil
 }
 
+func (s *DAGStorage) List(_ context.Context) ([]dag.RunSummary, error) {
+	var results []dag.RunSummary
+	err := s.db.View(func(txn *badgerdb.Txn) error {
+		prefix := []byte(dagPrefix)
+		it := txn.NewIterator(badgerdb.DefaultIteratorOptions)
+		defer it.Close()
+		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			item := it.Item()
+			id := string(item.Key()[len(prefix):])
+			err := item.Value(func(val []byte) error {
+				var snap dag.Snapshot
+				if err := json.Unmarshal(val, &snap); err != nil {
+					return nil // skip corrupt entries
+				}
+				summary := dag.RunSummary{ID: id, Total: len(snap.Nodes), StartedAt: snap.StartedAt, FinishedAt: snap.FinishedAt}
+				// Extract db_kind and provider from saved RunConfig if available.
+				if snap.State != nil {
+					summary.Provider = snap.State.Provider
+					if len(snap.State.RunConfig) > 0 {
+						var rc struct {
+							Database struct {
+								Kind string `json:"kind"`
+							} `json:"database"`
+						}
+						if json.Unmarshal(snap.State.RunConfig, &rc) == nil {
+							summary.DBKind = rc.Database.Kind
+						}
+					}
+				}
+				for _, n := range snap.Nodes {
+					switch n.Status {
+					case dag.StatusDone:
+						summary.Done++
+					case dag.StatusFailed:
+						summary.Failed++
+					default:
+						summary.Pending++
+					}
+				}
+				summary.Nodes = snap.Nodes
+				results = append(results, summary)
+				return nil
+			})
+			if err != nil {
+				continue
+			}
+		}
+		return nil
+	})
+	return results, err
+}
+
+func (s *DAGStorage) Delete(_ context.Context, id string) error {
+	return s.db.Update(func(txn *badgerdb.Txn) error {
+		return txn.Delete(key(id))
+	})
+}
+
 func key(id string) []byte {
 	return []byte(dagPrefix + id)
 }

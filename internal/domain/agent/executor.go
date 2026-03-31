@@ -1,33 +1,143 @@
 package agent
 
 import (
-	"bytes"
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"os/exec"
 	"strings"
 	"sync"
+	"syscall"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
+// LogCallback is invoked for every output line produced by shell commands.
+// commandID identifies the originating command; line is the raw text;
+// stream is "stdout" (combined stdout+stderr).
+type LogCallback func(commandID, line, stream string)
+
 // Executor runs agent commands on the local machine.
+// Long-running processes (DB servers, exporters, vmagent) are tracked in a
+// pool and killed on Shutdown(). Their stdout/stderr are streamed via logCallback.
 type Executor struct {
-	aptMu        sync.Mutex // only for apt-get operations
+	aptMu        sync.Mutex
 	bootstrapMu  sync.Once
 	bootstrapErr error
+
+	logMu       sync.RWMutex
+	logCallback LogCallback
+	currentCmd  string
+
+	// Process pool — tracked background processes killed on shutdown.
+	procMu sync.Mutex
+	procs  []*managedProc
+}
+
+type managedProc struct {
+	name string
+	cmd  *exec.Cmd
+	stop func()
 }
 
 // NewExecutor returns a new Executor.
 func NewExecutor() *Executor { return &Executor{} }
 
+// Shutdown kills all tracked background processes.
+func (e *Executor) Shutdown() {
+	e.procMu.Lock()
+	defer e.procMu.Unlock()
+	for _, p := range e.procs {
+		if p.cmd.Process != nil {
+			p.cmd.Process.Kill()
+		}
+		if p.stop != nil {
+			p.stop()
+		}
+	}
+	e.procs = nil
+}
+
+// startDaemon launches a long-running process, tracks it in the pool,
+// and streams its output through logCallback. Returns immediately.
+func (e *Executor) startDaemon(name string, binPath string, args ...string) error {
+	cmd := exec.Command(binPath, args...)
+
+	pr, pw := io.Pipe()
+	cmd.Stdout = pw
+	cmd.Stderr = pw
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+
+	if err := cmd.Start(); err != nil {
+		pw.Close()
+		return fmt.Errorf("start %s: %w", name, err)
+	}
+
+	// Stream output in background.
+	go func() {
+		scanner := bufio.NewScanner(pr)
+		scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+		for scanner.Scan() {
+			e.emitLine(scanner.Text())
+		}
+	}()
+
+	// Wait for process in background — when it dies, close pipe.
+	stopCh := make(chan struct{})
+	go func() {
+		cmd.Wait()
+		pw.Close()
+		close(stopCh)
+	}()
+
+	e.procMu.Lock()
+	e.procs = append(e.procs, &managedProc{
+		name: name,
+		cmd:  cmd,
+		stop: func() { <-stopCh },
+	})
+	e.procMu.Unlock()
+
+	return nil
+}
+
+// SetLogCallback registers a callback that receives every shell output line in real-time.
+func (e *Executor) SetLogCallback(cb LogCallback) {
+	e.logMu.Lock()
+	defer e.logMu.Unlock()
+	e.logCallback = cb
+}
+
+// setCurrentCommand stores the currently executing command ID for log correlation.
+func (e *Executor) setCurrentCommand(id string) {
+	e.logMu.Lock()
+	defer e.logMu.Unlock()
+	e.currentCmd = id
+}
+
+// emitLine sends a single output line to the registered callback (if any).
+func (e *Executor) emitLine(line string) {
+	e.logMu.RLock()
+	cb := e.logCallback
+	cmdID := e.currentCmd
+	e.logMu.RUnlock()
+	if cb != nil {
+		cb(cmdID, line, "stdout")
+	}
+}
+
 // bootstrap installs base utilities required by all actions. Runs once, thread-safe.
 func (e *Executor) bootstrap(ctx context.Context) error {
 	e.bootstrapMu.Do(func() {
 		// Prevent services from auto-starting during apt install (Docker has no systemd).
-		_, _ = shell(ctx, `printf '#!/bin/sh\nexit 101\n' > /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d`)
+		// Best-effort: failure here is non-fatal (e.g. read-only filesystem), but worth logging.
+		if _, err := e.shell(ctx, `printf '#!/bin/sh\nexit 101\n' > /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d`); err != nil {
+			log.Printf("bootstrap: policy-rc.d setup failed (non-fatal): %v", err)
+		}
 		_, err := e.shellWithAptLock(ctx, "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "+
 			"curl wget ca-certificates gnupg lsb-release sudo tar gzip python3-pip")
 		if err != nil {
@@ -41,12 +151,12 @@ func (e *Executor) bootstrap(ctx context.Context) error {
 func (e *Executor) shellWithAptLock(ctx context.Context, script string) (string, error) {
 	e.aptMu.Lock()
 	defer e.aptMu.Unlock()
-	return shell(ctx, script)
+	return e.shell(ctx, script)
 }
 
 // aptInstall runs apt-get install with the apt lock held to prevent concurrent apt operations.
 func (e *Executor) aptInstall(ctx context.Context, packages string) error {
-	_, err := e.shellWithAptLock(ctx, "DEBIAN_FRONTEND=noninteractive apt-get install -y "+packages)
+	_, err := e.shellWithAptLock(ctx, "DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "+packages)
 	return err
 }
 
@@ -111,6 +221,10 @@ func (e *Executor) installFromPackageSet(ctx context.Context, ps types.PackageSe
 func (e *Executor) Run(ctx context.Context, cmd Command) Report {
 	report := Report{CommandID: cmd.ID, Status: ReportCompleted}
 
+	// Store command ID so streamed log lines are correlated.
+	e.setCurrentCommand(cmd.ID)
+	defer e.setCurrentCommand("")
+
 	if err := e.bootstrap(ctx); err != nil {
 		report.Status = ReportFailed
 		report.Error = err.Error()
@@ -170,16 +284,42 @@ func (e *Executor) Run(ctx context.Context, cmd Command) Report {
 	return report
 }
 
-// shell runs a bash script capturing combined stdout+stderr output.
-func shell(ctx context.Context, script string) (string, error) {
+// shell runs a bash script, streaming each output line to the executor's
+// logCallback in real-time while also accumulating the full output.
+func (e *Executor) shell(ctx context.Context, script string) (string, error) {
 	cmd := exec.CommandContext(ctx, "/bin/bash", "-c", script)
-	var buf bytes.Buffer
-	cmd.Stdout = &buf
-	cmd.Stderr = &buf
-	err := cmd.Run()
-	output := buf.String()
-	if err != nil {
-		return output, fmt.Errorf("%w: %s", err, output)
+
+	pr, pw := io.Pipe()
+	cmd.Stdout = pw
+	cmd.Stderr = pw
+
+	var fullOutput strings.Builder
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		scanner := bufio.NewScanner(pr)
+		// Allow lines up to 1 MB (apt-get progress, curl, etc.).
+		scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+		for scanner.Scan() {
+			line := scanner.Text()
+			fullOutput.WriteString(line + "\n")
+			e.emitLine(line)
+		}
+	}()
+
+	if err := cmd.Start(); err != nil {
+		pw.Close()
+		return "", err
+	}
+
+	cmdErr := cmd.Wait()
+	pw.Close()
+	<-done
+
+	output := fullOutput.String()
+	if cmdErr != nil {
+		return output, fmt.Errorf("%w: %s", cmdErr, output)
 	}
 	return output, nil
 }
@@ -320,7 +460,7 @@ func (e *Executor) configPostgres(ctx context.Context, cmd Command) error {
 	confDir := fmt.Sprintf("/etc/postgresql/%s/main", version)
 	confPath := confDir + "/postgresql.conf"
 	writeScript := fmt.Sprintf("cat >> %s << 'PGCONF'\n\n# stroppy-agent overrides\n%sPGCONF", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write postgresql.conf: %w", err)
 	}
 
@@ -334,7 +474,7 @@ host    replication     all   0.0.0.0/0     trust
 local   replication     all                 trust
 `
 	hbaScript := fmt.Sprintf("cat > %s << 'PGHBA'\n%sPGHBA", hbaPath, hbaContent)
-	if _, err := shell(ctx, hbaScript); err != nil {
+	if _, err := e.shell(ctx, hbaScript); err != nil {
 		return fmt.Errorf("write pg_hba.conf: %w", err)
 	}
 
@@ -345,7 +485,7 @@ for i in $(seq 1 30); do
   pg_isready -U postgres && break
   sleep 1
 done`, version)
-		if _, err := shell(ctx, startScript); err != nil {
+		if _, err := e.shell(ctx, startScript); err != nil {
 			return fmt.Errorf("start postgres: %w", err)
 		}
 	} else {
@@ -362,7 +502,7 @@ sudo -u postgres pg_basebackup -h %s -D %s -U postgres -Fp -Xs -P -R
 chown -R postgres:postgres %s
 pg_ctlcluster %s main start`, version, dataDir, masterHost, dataDir, dataDir, version)
 
-		if _, err := shell(ctx, replicaScript); err != nil {
+		if _, err := e.shell(ctx, replicaScript); err != nil {
 			return fmt.Errorf("setup replica: %w", err)
 		}
 	}
@@ -393,7 +533,7 @@ func (e *Executor) installMySQL(ctx context.Context, cmd Command) error {
 	// MySQL postinst tries to start/stop mysqld which fails in Docker.
 	// Install with error tolerance, then verify binary exists.
 	if err := e.installFromPackageSet(ctx, ps); err != nil {
-		if _, verr := shell(ctx, "which mysqld"); verr != nil {
+		if _, verr := e.shell(ctx, "which mysqld"); verr != nil {
 			return fmt.Errorf("install mysql: %w", err)
 		}
 	}
@@ -428,7 +568,7 @@ func (e *Executor) configMySQL(ctx context.Context, cmd Command) error {
 
 	confPath := "/etc/mysql/my.cnf"
 	writeScript := fmt.Sprintf("mkdir -p /etc/mysql && cat > %s << 'MYCNF'\n%sMYCNF", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write my.cnf: %w", err)
 	}
 
@@ -440,20 +580,24 @@ if [ ! -f %s/ibdata1 ]; then
   rm -rf %s/*
   mysqld --initialize-insecure --datadir=%s --user=mysql
 fi`, dataDir, dataDir, dataDir)
-	if _, err := shell(ctx, initScript); err != nil {
+	if _, err := e.shell(ctx, initScript); err != nil {
 		return fmt.Errorf("init mysql: %w", err)
 	}
 
-	startScript := fmt.Sprintf(`nohup mysqld --defaults-file=/etc/mysql/my.cnf --datadir=%s --user=mysql > /var/log/mysql/mysqld.log 2>&1 &
-for i in $(seq 1 30); do mysqladmin ping -u root --silent 2>/dev/null && break; sleep 1; done`, dataDir)
-	if _, err := shell(ctx, startScript); err != nil {
+	if err := e.startDaemon("mysqld", "mysqld",
+		"--defaults-file=/etc/mysql/my.cnf",
+		"--datadir="+dataDir,
+		"--user=mysql",
+	); err != nil {
 		return fmt.Errorf("start mysql: %w", err)
 	}
+	// Wait for mysqld to be ready.
+	e.shell(ctx, `for i in $(seq 1 30); do mysqladmin ping -h 127.0.0.1 -u root --silent 2>/dev/null && break; sleep 1; done`)
 
 	if cfg.Role == "primary" {
 		// Create replication user on primary so replicas can connect.
 		replUserScript := `mysql -h 127.0.0.1 -u root -e "CREATE USER IF NOT EXISTS 'repl'@'%' IDENTIFIED BY 'repl_password'; GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%'; FLUSH PRIVILEGES;"`
-		if _, err := shell(ctx, replUserScript); err != nil {
+		if _, err := e.shell(ctx, replUserScript); err != nil {
 			return fmt.Errorf("create replication user: %w", err)
 		}
 	}
@@ -462,12 +606,12 @@ for i in $(seq 1 30); do mysqladmin ping -u root --silent 2>/dev/null && break; 
 		// Wait for primary to be reachable before configuring replication.
 		waitPrimary := fmt.Sprintf(`for i in $(seq 1 30); do mysql -h %s -u repl -prepl_password -e "SELECT 1" 2>/dev/null && break; sleep 2; done`,
 			cfg.PrimaryHost)
-		if _, err := shell(ctx, waitPrimary); err != nil {
+		if _, err := e.shell(ctx, waitPrimary); err != nil {
 			return fmt.Errorf("wait for mysql primary: %w", err)
 		}
 		replicaScript := fmt.Sprintf(`mysql -h 127.0.0.1 -u root -e "CHANGE REPLICATION SOURCE TO SOURCE_HOST='%s', SOURCE_USER='repl', SOURCE_PASSWORD='repl_password', SOURCE_AUTO_POSITION=1; START REPLICA;"`,
 			cfg.PrimaryHost)
-		if _, err := shell(ctx, replicaScript); err != nil {
+		if _, err := e.shell(ctx, replicaScript); err != nil {
 			return fmt.Errorf("setup mysql replica: %w", err)
 		}
 	}
@@ -565,17 +709,20 @@ func (e *Executor) configPicodata(ctx context.Context, cmd Command) error {
 
 	confPath := "/etc/picodata/picodata.yaml"
 	writeScript := fmt.Sprintf("mkdir -p /etc/picodata && cat > %s << 'PICOCONF'\n%sPICOCONF", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write picodata config: %w", err)
 	}
 
 	// Start picodata.
 	dataDir := "/var/lib/picodata"
-	startScript := fmt.Sprintf(`mkdir -p %s /var/log && nohup picodata run --config %s > /var/log/picodata.log 2>&1 &
-for i in $(seq 1 30); do curl -sf http://localhost:8081/api/v1/health/ready 2>/dev/null && break; sleep 2; done`,
-		dataDir, confPath)
-	if _, err := shell(ctx, startScript); err != nil {
+	e.shell(ctx, fmt.Sprintf("mkdir -p %s", dataDir))
+	if err := e.startDaemon("picodata", "picodata", "run", "--config", confPath); err != nil {
 		return fmt.Errorf("start picodata: %w", err)
+	}
+	// Wait for picodata readiness.
+	_, startErr := e.shell(ctx, `for i in $(seq 1 30); do curl -sf http://localhost:8081/api/v1/health/ready 2>/dev/null && break; sleep 2; done`)
+	if startErr != nil {
+		return fmt.Errorf("picodata readiness: %w", startErr)
 	}
 
 	return nil
@@ -586,11 +733,16 @@ for i in $(seq 1 30); do curl -sf http://localhost:8081/api/v1/health/ready 2>/d
 // ---------------------------------------------------------------------------
 
 func (e *Executor) installMonitor(ctx context.Context, cmd Command) error {
-	settings := types.DefaultServerSettings()
-	neVer := settings.Monitoring.NodeExporterVersion
-	peVer := settings.Monitoring.PostgresExporterVersion
+	var cfg MonitorInstallConfig
+	if err := parseConfig(cmd, &cfg); err != nil {
+		return err
+	}
 
-	// Download and install node_exporter.
+	settings := types.DefaultServerSettings()
+	machineID := os.Getenv("STROPPY_MACHINE_ID")
+
+	// --- node_exporter on ALL machines ---
+	neVer := settings.Monitoring.NodeExporterVersion
 	neURL := fmt.Sprintf(
 		"https://github.com/prometheus/node_exporter/releases/download/v%s/node_exporter-%s.linux-amd64.tar.gz",
 		neVer, neVer,
@@ -603,25 +755,51 @@ func (e *Executor) installMonitor(ctx context.Context, cmd Command) error {
 			`rm -rf /tmp/node_exporter*`,
 		neURL, neVer,
 	)
-	if _, err := shell(ctx, neScript); err != nil {
+	if _, err := e.shell(ctx, neScript); err != nil {
 		return fmt.Errorf("install node_exporter: %w", err)
 	}
 
-	// Download and install postgres_exporter.
-	peURL := fmt.Sprintf(
-		"https://github.com/prometheus-community/postgres_exporter/releases/download/v%s/postgres_exporter-%s.linux-amd64.tar.gz",
-		peVer, peVer,
-	)
-	peScript := fmt.Sprintf(
-		`curl -fsSL "%s" -o /tmp/postgres_exporter.tar.gz && `+
-			`tar xzf /tmp/postgres_exporter.tar.gz -C /tmp && `+
-			`cp /tmp/postgres_exporter-%s.linux-amd64/postgres_exporter /usr/local/bin/postgres_exporter && `+
-			`chmod +x /usr/local/bin/postgres_exporter && `+
-			`rm -rf /tmp/postgres_exporter*`,
-		peURL, peVer,
-	)
-	if _, err := shell(ctx, peScript); err != nil {
-		return fmt.Errorf("install postgres_exporter: %w", err)
+	// --- postgres_exporter only on database machines (and only for postgres) ---
+	if strings.Contains(machineID, "-database-") && cfg.DatabaseKind == "postgres" {
+		peVer := settings.Monitoring.PostgresExporterVersion
+		peURL := fmt.Sprintf(
+			"https://github.com/prometheus-community/postgres_exporter/releases/download/v%s/postgres_exporter-%s.linux-amd64.tar.gz",
+			peVer, peVer,
+		)
+		peScript := fmt.Sprintf(
+			`curl -fsSL "%s" -o /tmp/postgres_exporter.tar.gz && `+
+				`tar xzf /tmp/postgres_exporter.tar.gz -C /tmp && `+
+				`cp /tmp/postgres_exporter-%s.linux-amd64/postgres_exporter /usr/local/bin/postgres_exporter && `+
+				`chmod +x /usr/local/bin/postgres_exporter && `+
+				`rm -rf /tmp/postgres_exporter*`,
+			peURL, peVer,
+		)
+		if _, err := e.shell(ctx, peScript); err != nil {
+			return fmt.Errorf("install postgres_exporter: %w", err)
+		}
+	}
+
+	// --- vmagent only on monitor machines ---
+	if strings.Contains(machineID, "-monitor-") {
+		vaVer := settings.Monitoring.VmagentVersion
+		if vaVer == "" {
+			vaVer = "1.115.0"
+		}
+		vaURL := fmt.Sprintf(
+			"https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v%s/vmutils-linux-amd64-v%s.tar.gz",
+			vaVer, vaVer,
+		)
+		vaScript := fmt.Sprintf(
+			`curl -fsSL "%s" -o /tmp/vmutils.tar.gz && `+
+				`tar xzf /tmp/vmutils.tar.gz -C /tmp && `+
+				`cp /tmp/vmagent-prod /usr/local/bin/vmagent && `+
+				`chmod +x /usr/local/bin/vmagent && `+
+				`rm -rf /tmp/vmutils* /tmp/vmagent* /tmp/vmalert* /tmp/vmauth* /tmp/vmbackup* /tmp/vmrestore*`,
+			vaURL,
+		)
+		if _, err := e.shell(ctx, vaScript); err != nil {
+			return fmt.Errorf("install vmagent: %w", err)
+		}
 	}
 
 	return nil
@@ -637,30 +815,72 @@ func (e *Executor) configMonitor(ctx context.Context, cmd Command) error {
 		return err
 	}
 
-	// Write a simple prometheus scrape config (used by vmagent or standalone prom).
-	var confBuf strings.Builder
-	confBuf.WriteString("# Generated by stroppy-agent\nglobal:\n  scrape_interval: 15s\nscrape_configs:\n")
-	confBuf.WriteString("  - job_name: node\n    static_configs:\n      - targets:\n")
-	for _, t := range cfg.ScrapeTargets {
-		fmt.Fprintf(&confBuf, "          - '%s'\n", t)
-	}
+	machineID := os.Getenv("STROPPY_MACHINE_ID")
 
-	confPath := "/etc/prometheus/prometheus.yml"
-	writeScript := fmt.Sprintf("mkdir -p /etc/prometheus && cat > %s << 'PROMCFG'\n%sPROMCFG", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
-		return fmt.Errorf("write prometheus config: %w", err)
-	}
-
-	// Start node_exporter as a background process (no systemd in docker).
-	if _, err := shell(ctx, "nohup /usr/local/bin/node_exporter > /var/log/node_exporter.log 2>&1 &"); err != nil {
+	// --- node_exporter on EVERY machine ---
+	if err := e.startDaemon("node_exporter", "/usr/local/bin/node_exporter"); err != nil {
 		return fmt.Errorf("start node_exporter: %w", err)
 	}
 
-	// Start postgres_exporter as a background process.
-	peScript := `export DATA_SOURCE_NAME="postgresql://postgres@localhost:5432/postgres?sslmode=disable"
-nohup /usr/local/bin/postgres_exporter > /var/log/postgres_exporter.log 2>&1 &`
-	if _, err := shell(ctx, peScript); err != nil {
-		return fmt.Errorf("start postgres_exporter: %w", err)
+	// --- postgres_exporter on database machines (connects to LOCAL postgres) ---
+	if strings.Contains(machineID, "-database-") && cfg.DatabaseKind == "postgres" {
+		os.Setenv("DATA_SOURCE_NAME", "postgresql://postgres@localhost:5432/postgres?sslmode=disable")
+		if err := e.startDaemon("postgres_exporter", "/usr/local/bin/postgres_exporter"); err != nil {
+			// Non-fatal: postgres_exporter may fail transiently if PG is still starting.
+			log.Printf("WARNING: postgres_exporter failed to start: %v", err)
+		}
+	}
+
+	// --- vmagent ONLY on monitor machine ---
+	if strings.Contains(machineID, "-monitor-") {
+		// Build scrape config for vmagent.
+		var confBuf strings.Builder
+		confBuf.WriteString("# Generated by stroppy-agent\n")
+		confBuf.WriteString("global:\n  scrape_interval: 5s\n")
+
+		// External labels -- tag all metrics with run_id.
+		if cfg.RunID != "" {
+			fmt.Fprintf(&confBuf, "  external_labels:\n    stroppy_run_id: '%s'\n", cfg.RunID)
+		}
+
+		confBuf.WriteString("\nscrape_configs:\n")
+
+		// node_exporter on ALL scrape targets (:9100).
+		confBuf.WriteString("  - job_name: node\n    static_configs:\n      - targets:\n")
+		for _, t := range cfg.ScrapeTargets {
+			fmt.Fprintf(&confBuf, "          - '%s:9100'\n", t)
+		}
+
+		// postgres_exporter only on database targets (:9187).
+		if cfg.DatabaseKind == "postgres" {
+			confBuf.WriteString("  - job_name: postgres\n    static_configs:\n      - targets:\n")
+			for _, t := range cfg.ScrapeTargets {
+				if strings.Contains(t, "-database-") {
+					fmt.Fprintf(&confBuf, "          - '%s:9187'\n", t)
+				}
+			}
+		}
+
+		confPath := "/etc/vmagent/scrape.yml"
+		writeScript := fmt.Sprintf("mkdir -p /etc/vmagent && cat > %s << 'PROMCFG'\n%sPROMCFG", confPath, confBuf.String())
+		if _, err := e.shell(ctx, writeScript); err != nil {
+			return fmt.Errorf("write vmagent scrape config: %w", err)
+		}
+
+		// Start vmagent with remote_write to VictoriaMetrics.
+		remoteWrite := cfg.MetricsEndpoint
+		if remoteWrite == "" {
+			remoteWrite = "http://172.17.0.1:8428/api/v1/write"
+		}
+
+		e.shell(ctx, "mkdir -p /var/lib/vmagent")
+		if err := e.startDaemon("vmagent", "/usr/local/bin/vmagent",
+			"-promscrape.config="+confPath,
+			"-remoteWrite.url="+remoteWrite,
+			"-remoteWrite.tmpDataPath=/var/lib/vmagent",
+		); err != nil {
+			return fmt.Errorf("start vmagent: %w", err)
+		}
 	}
 
 	return nil
@@ -678,7 +898,8 @@ func (e *Executor) installStroppy(ctx context.Context, cmd Command) error {
 
 	version := cfg.Version
 	if version == "" {
-		version = "3.1.0"
+		// Fallback matches DefaultServerSettings().StroppyDefaults.Version.
+		version = types.DefaultServerSettings().StroppyDefaults.Version
 	}
 
 	dlURL := fmt.Sprintf("https://github.com/stroppy-io/stroppy/releases/download/v%s/stroppy_linux_amd64.tar.gz", version)
@@ -691,7 +912,7 @@ func (e *Executor) installStroppy(ctx context.Context, cmd Command) error {
 			`rm -rf /tmp/stroppy*`,
 		dlURL,
 	)
-	if _, err := shell(ctx, script); err != nil {
+	if _, err := e.shell(ctx, script); err != nil {
 		return fmt.Errorf("install stroppy: %w", err)
 	}
 
@@ -752,7 +973,7 @@ func (e *Executor) runStroppy(ctx context.Context, cmd Command) error {
 	script := fmt.Sprintf("%sstroppy run %s -- --duration %s --vus %d",
 		exports.String(), cfg.Workload, duration, workers)
 
-	if _, err := shell(ctx, script); err != nil {
+	if _, err := e.shell(ctx, script); err != nil {
 		return fmt.Errorf("run stroppy: %w", err)
 	}
 
@@ -771,7 +992,8 @@ func (e *Executor) installEtcd(ctx context.Context, cmd Command) error {
 
 	version := cfg.Version
 	if version == "" {
-		version = "3.5.17"
+		// Fallback matches DefaultServerSettings().Monitoring.EtcdVersion.
+		version = types.DefaultServerSettings().Monitoring.EtcdVersion
 	}
 
 	// Download etcd from GitHub releases.
@@ -788,7 +1010,7 @@ func (e *Executor) installEtcd(ctx context.Context, cmd Command) error {
 			`rm -rf /tmp/etcd*`,
 		dlURL, version, version,
 	)
-	if _, err := shell(ctx, script); err != nil {
+	if _, err := e.shell(ctx, script); err != nil {
 		return fmt.Errorf("install etcd: %w", err)
 	}
 
@@ -828,32 +1050,24 @@ ETCD_INITIAL_ADVERTISE_PEER_URLS=%s
 		cfg.AdvertiseClient, cfg.AdvertisePeer)
 
 	writeScript := fmt.Sprintf("cat > /etc/default/etcd << 'ETCDENV'\n%sETCDENV", envContent)
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write etcd env: %w", err)
 	}
 
-	// Create data directory and start etcd.
 	dataDir := "/var/lib/etcd"
-	startScript := fmt.Sprintf(
-		`mkdir -p %s && `+
-			`nohup etcd --name=%s `+
-			`--initial-cluster=%s `+
-			`--initial-cluster-state=%s `+
-			`--listen-client-urls=%s `+
-			`--listen-peer-urls=%s `+
-			`--advertise-client-urls=%s `+
-			`--initial-advertise-peer-urls=%s `+
-			`--data-dir=%s `+
-			`> /var/log/etcd.log 2>&1 &`,
-		dataDir, cfg.Name, cfg.InitialCluster, cfg.State,
-		cfg.ClientURL, cfg.PeerURL,
-		cfg.AdvertiseClient, cfg.AdvertisePeer, dataDir,
-	)
-	if _, err := shell(ctx, startScript); err != nil {
+	e.shell(ctx, fmt.Sprintf("mkdir -p %s", dataDir))
+	if err := e.startDaemon("etcd", "/usr/local/bin/etcd",
+		"--name="+cfg.Name,
+		"--initial-cluster="+cfg.InitialCluster,
+		"--initial-cluster-state="+cfg.State,
+		"--listen-client-urls="+cfg.ClientURL,
+		"--listen-peer-urls="+cfg.PeerURL,
+		"--advertise-client-urls="+cfg.AdvertiseClient,
+		"--initial-advertise-peer-urls="+cfg.AdvertisePeer,
+		"--data-dir="+dataDir,
+	); err != nil {
 		return fmt.Errorf("start etcd: %w", err)
 	}
-
-	// Don't block — etcd cluster forms asynchronously when all peers start.
 	return nil
 }
 
@@ -865,7 +1079,7 @@ func (e *Executor) installPatroni(ctx context.Context, cmd Command) error {
 	if err := e.aptInstall(ctx, "python3-pip python3-dev libpq-dev"); err != nil {
 		return fmt.Errorf("install patroni deps: %w", err)
 	}
-	if _, err := shell(ctx, "pip3 install patroni[etcd3] psycopg2-binary"); err != nil {
+	if _, err := e.shell(ctx, "pip3 install patroni[etcd3] psycopg2-binary"); err != nil {
 		return fmt.Errorf("install patroni: %w", err)
 	}
 
@@ -948,18 +1162,17 @@ func (e *Executor) configPatroni(ctx context.Context, cmd Command) error {
 
 	confPath := "/etc/patroni/patroni.yml"
 	writeScript := fmt.Sprintf("mkdir -p /etc/patroni && cat > %s << 'PATRONICFG'\n%sPATRONICFG", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write patroni config: %w", err)
 	}
 
-	// Start patroni in background.
-	startScript := fmt.Sprintf("mkdir -p %s && nohup patroni %s > /var/log/patroni.log 2>&1 &", dataDir, confPath)
-	if _, err := shell(ctx, startScript); err != nil {
+	e.shell(ctx, fmt.Sprintf("mkdir -p %s", dataDir))
+	if err := e.startDaemon("patroni", "patroni", confPath); err != nil {
 		return fmt.Errorf("start patroni: %w", err)
 	}
 
 	// Wait for patroni to be ready.
-	if _, err := shell(ctx, `for i in $(seq 1 60); do curl -sf http://localhost:8008/health && break; sleep 1; done`); err != nil {
+	if _, err := e.shell(ctx, `for i in $(seq 1 60); do curl -sf http://localhost:8008/health && break; sleep 1; done`); err != nil {
 		return fmt.Errorf("patroni health check: %w", err)
 	}
 
@@ -1030,7 +1243,7 @@ logfile = /var/log/pgbouncer/pgbouncer.log
 		cfg.PoolMode, cfg.MaxClientConn, cfg.DefaultPoolSize)
 
 	iniScript := fmt.Sprintf("mkdir -p /etc/pgbouncer && cat > /etc/pgbouncer/pgbouncer.ini << 'PGBCFG'\n%sPGBCFG", iniContent)
-	if _, err := shell(ctx, iniScript); err != nil {
+	if _, err := e.shell(ctx, iniScript); err != nil {
 		return fmt.Errorf("write pgbouncer.ini: %w", err)
 	}
 
@@ -1038,7 +1251,7 @@ logfile = /var/log/pgbouncer/pgbouncer.log
 	userlistScript := `cat > /etc/pgbouncer/userlist.txt << 'PGBUSR'
 "postgres" ""
 PGBUSR`
-	if _, err := shell(ctx, userlistScript); err != nil {
+	if _, err := e.shell(ctx, userlistScript); err != nil {
 		return fmt.Errorf("write pgbouncer userlist: %w", err)
 	}
 
@@ -1046,7 +1259,7 @@ PGBUSR`
 		`mkdir -p /var/run/pgbouncer /var/log/pgbouncer && ` +
 		`chown -R pgbouncer:pgbouncer /etc/pgbouncer /var/run/pgbouncer /var/log/pgbouncer 2>/dev/null; ` +
 		`su -s /bin/bash pgbouncer -c "pgbouncer -d /etc/pgbouncer/pgbouncer.ini"`
-	if _, err := shell(ctx, startScript); err != nil {
+	if _, err := e.shell(ctx, startScript); err != nil {
 		return fmt.Errorf("start pgbouncer: %w", err)
 	}
 
@@ -1160,12 +1373,12 @@ func (e *Executor) configHAProxy(ctx context.Context, cmd Command) error {
 
 	confPath := "/etc/haproxy/haproxy.cfg"
 	writeScript := fmt.Sprintf("mkdir -p /etc/haproxy && cat > %s << 'HAPCFG'\n%sHAPCFG", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write haproxy config: %w", err)
 	}
 
 	// Start haproxy.
-	if _, err := shell(ctx, "haproxy -f /etc/haproxy/haproxy.cfg -D"); err != nil {
+	if _, err := e.shell(ctx, "haproxy -f /etc/haproxy/haproxy.cfg -D"); err != nil {
 		return fmt.Errorf("start haproxy: %w", err)
 	}
 
@@ -1182,7 +1395,7 @@ func (e *Executor) installProxySQL(ctx context.Context, cmd Command) error {
 	url := fmt.Sprintf("https://github.com/sysown/proxysql/releases/download/v%s/proxysql_%s-ubuntu22_amd64.deb", version, version)
 	githubScript := fmt.Sprintf(`curl -fsSL "%s" -o /tmp/proxysql.deb && dpkg -i /tmp/proxysql.deb && rm -f /tmp/proxysql.deb`, url)
 
-	if _, err := shell(ctx, githubScript); err != nil {
+	if _, err := e.shell(ctx, githubScript); err != nil {
 		// Fallback: use apt repo if GitHub download fails.
 		preInstall := []string{
 			`wget -qO - https://repo.proxysql.com/ProxySQL/repo_pub_key | apt-key add -`,
@@ -1260,12 +1473,12 @@ func (e *Executor) configProxySQL(ctx context.Context, cmd Command) error {
 
 	confPath := "/etc/proxysql.cnf"
 	writeScript := fmt.Sprintf("cat > %s << 'PSQLCFG'\n%sPSQLCFG", confPath, confBuf.String())
-	if _, err := shell(ctx, writeScript); err != nil {
+	if _, err := e.shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write proxysql config: %w", err)
 	}
 
 	// Start proxysql.
-	if _, err := shell(ctx, "mkdir -p /var/lib/proxysql && proxysql --initial -f -D /var/lib/proxysql -c /etc/proxysql.cnf &"); err != nil {
+	if _, err := e.shell(ctx, "mkdir -p /var/lib/proxysql && proxysql --initial -f -D /var/lib/proxysql -c /etc/proxysql.cnf &"); err != nil {
 		return fmt.Errorf("start proxysql: %w", err)
 	}
 

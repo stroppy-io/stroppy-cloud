@@ -1,0 +1,199 @@
+{
+  "uid": "stroppy-mysql",
+  "title": "MySQL — Database Metrics",
+  "tags": ["stroppy", "mysql"],
+  "timezone": "browser",
+  "editable": true,
+  "schemaVersion": 39,
+  "style": "dark",
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "5s",
+  "templating": {
+    "list": [
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "query",
+        "datasource": "VictoriaMetrics",
+        "query": "label_values(mysql_global_status_queries{stroppy_run_id!=\"\"}, stroppy_run_id)",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      },
+      {
+        "name": "instance",
+        "label": "Instance",
+        "type": "query",
+        "datasource": "VictoriaMetrics",
+        "query": "label_values(mysql_up{stroppy_run_id=\"$run_id\"}, instance)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Queries/s",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_queries{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Connections",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "mysql_global_status_threads_connected{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} connected",
+          "refId": "A"
+        },
+        {
+          "expr": "mysql_global_status_threads_running{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} running",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "InnoDB Buffer Pool Hit Ratio",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "1 - (rate(mysql_global_status_innodb_buffer_pool_reads{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m]) / rate(mysql_global_status_innodb_buffer_pool_read_requests{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "InnoDB Row Operations",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_innodb_rows_read{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} reads",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(mysql_global_status_innodb_rows_inserted{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} inserts",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(mysql_global_status_innodb_rows_updated{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} updates",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(mysql_global_status_innodb_rows_deleted{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} deletes",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Slow Queries",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_slow_queries{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Replication Lag",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        {
+          "expr": "mysql_slave_status_seconds_behind_master{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Table Locks",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "targets": [
+        {
+          "expr": "rate(mysql_global_status_table_locks_waited{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} waited",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(mysql_global_status_table_locks_immediate{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} immediate",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    }
+  ]
+}

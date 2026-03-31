@@ -1,0 +1,64 @@
+name: Release
+on:
+  push:
+    tags: ['v*']
+jobs:
+  build-binaries:
+    strategy:
+      matrix:
+        include:
+          - { goos: linux, goarch: amd64 }
+          - { goos: linux, goarch: arm64 }
+          - { goos: darwin, goarch: amd64 }
+          - { goos: darwin, goarch: arm64 }
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: go.mod }
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          CGO_ENABLED=0 go build \
+            -ldflags="-w -s -X github.com/stroppy-io/stroppy-cloud/internal/core/build.Version=$VERSION -X github.com/stroppy-io/stroppy-cloud/internal/core/build.ServiceName=stroppy-cloud" \
+            -trimpath -o stroppy-cloud-${{ matrix.goos }}-${{ matrix.goarch }} ./cmd/cli/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stroppy-cloud-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: stroppy-cloud-*
+
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deployments/docker/stroppy-cloud.Dockerfile
+          push: true
+          tags: |
+            ghcr.io/stroppy-io/stroppy-cloud:${{ github.ref_name }}
+            ghcr.io/stroppy-io/stroppy-cloud:latest
+          build-args: VERSION=${{ github.ref_name }}
+
+  release:
+    needs: [build-binaries, docker]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: stroppy-cloud-*/stroppy-cloud-*
+          generate_release_notes: true

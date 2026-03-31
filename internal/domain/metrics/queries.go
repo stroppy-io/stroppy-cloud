@@ -1,6 +1,9 @@
 package metrics
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // RunLabel is the label injected by monitoring to identify a run.
 const RunLabel = "stroppy_run_id"
@@ -21,30 +24,30 @@ func runFilter(runID string) string {
 // DefaultMetrics returns the standard set of metrics collected per run.
 func DefaultMetrics() []MetricDef {
 	return []MetricDef{
-		// --- Database ---
+		// --- Database (standard postgres_exporter metrics) ---
 		{
-			Name:  "DB Queries Per Second",
-			Key:   "db_qps",
-			Query: `rate(pg_stat_statements_calls_total{%s}[1m])`,
-			Unit:  "ops/s",
+			Name:  "DB Transactions Per Second",
+			Key:   "db_tps",
+			Query: `sum(rate(pg_stat_database_xact_commit{%s}[1m]) + rate(pg_stat_database_xact_rollback{%s}[1m]))`,
+			Unit:  "txn/s",
 		},
 		{
-			Name:  "DB Query Latency p99",
-			Key:   "db_latency_p99",
-			Query: `histogram_quantile(0.99, rate(pg_stat_statements_seconds_bucket{%s}[5m]))`,
-			Unit:  "s",
+			Name:  "DB Rows Fetched Per Second",
+			Key:   "db_qps",
+			Query: `sum(rate(pg_stat_database_tup_fetched{%s}[1m]))`,
+			Unit:  "rows/s",
 		},
 		{
 			Name:  "DB Active Connections",
 			Key:   "db_connections",
-			Query: `pg_stat_activity_count{%s}`,
+			Query: `sum(pg_stat_activity_count{%s})`,
 			Unit:  "",
 		},
 		{
 			Name:  "DB Replication Lag",
 			Key:   "db_repl_lag",
-			Query: `pg_replication_lag{%s}`,
-			Unit:  "s",
+			Query: `pg_stat_replication_pg_wal_lsn_diff{%s}`,
+			Unit:  "bytes",
 		},
 
 		// --- System ---
@@ -57,7 +60,7 @@ func DefaultMetrics() []MetricDef {
 		{
 			Name:  "Memory Usage",
 			Key:   "memory_usage",
-			Query: `(1 - node_memory_MemAvailable_bytes{%s} / node_memory_MemTotal_bytes{%s}) * 100`,
+			Query: `(1 - node_memory_MemAvailable_bytes{%s} / node_memory_MemTotal_bytes) * 100`,
 			Unit:  "%",
 		},
 		{
@@ -85,30 +88,49 @@ func DefaultMetrics() []MetricDef {
 			Unit:  "bytes/s",
 		},
 
-		// --- Stroppy ---
+		// --- Stroppy (K6 OTEL metrics, matching stroppy-otel.json dashboard) ---
+		// Note: stroppy K6 OTEL metrics use service.name label, not stroppy_run_id.
 		{
-			Name:  "Stroppy Operations/s",
-			Key:   "stroppy_ops",
-			Query: `rate(stroppy_operations_total{%s}[1m])`,
-			Unit:  "ops/s",
+			Name:  "Stroppy Active VUs",
+			Key:   "stroppy_vus",
+			Query: `sum(stroppy_vus{service_name="stroppy"})`,
+			Unit:  "",
 		},
 		{
-			Name:  "Stroppy Latency p99",
+			Name:  "Stroppy Iterations/s",
+			Key:   "stroppy_ops",
+			Query: `sum(rate(stroppy_iterations_total{service_name="stroppy"}[30s]))`,
+			Unit:  "iter/s",
+		},
+		{
+			Name:  "Stroppy Iteration Duration p99",
+			Key:   "stroppy_iter_p99",
+			Query: `histogram_quantile(0.99, sum by (le) (rate(stroppy_iteration_duration_milliseconds_bucket{service_name="stroppy"}[30s])))`,
+			Unit:  "ms",
+		},
+		{
+			Name:  "Stroppy Query Rate",
+			Key:   "stroppy_query_rate",
+			Query: `sum(rate(stroppy_run_query_count_total{service_name="stroppy"}[30s]))`,
+			Unit:  "q/s",
+		},
+		{
+			Name:  "Stroppy Query Duration p99",
 			Key:   "stroppy_latency_p99",
-			Query: `histogram_quantile(0.99, rate(stroppy_operation_duration_seconds_bucket{%s}[5m]))`,
-			Unit:  "s",
+			Query: `histogram_quantile(0.99, sum by (le) (rate(stroppy_run_query_duration_milliseconds_bucket{service_name="stroppy"}[30s])))`,
+			Unit:  "ms",
 		},
 		{
 			Name:  "Stroppy Error Rate",
 			Key:   "stroppy_errors",
-			Query: `rate(stroppy_errors_total{%s}[1m])`,
+			Query: `sum(rate(stroppy_run_query_error_rate_total{service_name="stroppy"}[30s]))`,
 			Unit:  "errors/s",
 		},
 	}
 }
 
-// RenderQuery fills the run_id filter into a MetricDef query.
+// RenderQuery fills the run_id filter into all %s placeholders in a MetricDef query.
 func RenderQuery(def MetricDef, runID string) string {
 	f := runFilter(runID)
-	return fmt.Sprintf(def.Query, f)
+	return strings.ReplaceAll(def.Query, "%s", f)
 }

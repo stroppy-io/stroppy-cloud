@@ -54,6 +54,7 @@ const (
 // LogLine is a streamed log entry from agent to server.
 type LogLine struct {
 	CommandID string `json:"command_id"`
+	MachineID string `json:"machine_id,omitempty"`
 	Line      string `json:"line"`
 	Stream    string `json:"stream"` // "stdout" or "stderr"
 }

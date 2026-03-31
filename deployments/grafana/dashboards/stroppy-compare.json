@@ -1,0 +1,283 @@
+{
+  "uid": "stroppy-compare",
+  "title": "Stroppy Compare",
+  "tags": ["stroppy", "compare"],
+  "timezone": "browser",
+  "editable": true,
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "run_a",
+        "label": "Run A",
+        "type": "custom",
+        "query": "",
+        "current": { "text": "", "value": "" },
+        "options": []
+      },
+      {
+        "name": "run_b",
+        "label": "Run B",
+        "type": "custom",
+        "query": "",
+        "current": { "text": "", "value": "" },
+        "options": []
+      }
+    ]
+  },
+  "panels": [
+    {
+      "title": "DB Performance",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "title": "QPS — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_statements_calls_total{stroppy_run_id=\"$run_a\"}[1m])",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "QPS — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+      "targets": [
+        {
+          "expr": "rate(pg_stat_statements_calls_total{stroppy_run_id=\"$run_b\"}[1m])",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Query Latency p99 — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(pg_stat_statements_seconds_bucket{stroppy_run_id=\"$run_a\"}[5m]))",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Query Latency p99 — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(pg_stat_statements_seconds_bucket{stroppy_run_id=\"$run_b\"}[5m]))",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Active Connections — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 17 },
+      "targets": [
+        {
+          "expr": "pg_stat_activity_count{stroppy_run_id=\"$run_a\"}",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Active Connections — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 17 },
+      "targets": [
+        {
+          "expr": "pg_stat_activity_count{stroppy_run_id=\"$run_b\"}",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "System",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 25 },
+      "collapsed": false
+    },
+    {
+      "title": "CPU Usage — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 26 },
+      "targets": [
+        {
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", stroppy_run_id=\"$run_a\"}[1m])) * 100)",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "CPU Usage — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 26 },
+      "targets": [
+        {
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", stroppy_run_id=\"$run_b\"}[1m])) * 100)",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Memory Usage — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 34 },
+      "targets": [
+        {
+          "expr": "(1 - node_memory_MemAvailable_bytes{stroppy_run_id=\"$run_a\"} / node_memory_MemTotal_bytes{stroppy_run_id=\"$run_a\"}) * 100",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Memory Usage — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 34 },
+      "targets": [
+        {
+          "expr": "(1 - node_memory_MemAvailable_bytes{stroppy_run_id=\"$run_b\"} / node_memory_MemTotal_bytes{stroppy_run_id=\"$run_b\"}) * 100",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Disk IO Read — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 42 },
+      "targets": [
+        {
+          "expr": "rate(node_disk_read_bytes_total{stroppy_run_id=\"$run_a\"}[1m])",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Disk IO Read — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 42 },
+      "targets": [
+        {
+          "expr": "rate(node_disk_read_bytes_total{stroppy_run_id=\"$run_b\"}[1m])",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "Bps", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Stroppy",
+      "type": "row",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 50 },
+      "collapsed": false
+    },
+    {
+      "title": "Operations/s — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 51 },
+      "targets": [
+        {
+          "expr": "rate(stroppy_operations_total{stroppy_run_id=\"$run_a\"}[1m])",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Operations/s — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 51 },
+      "targets": [
+        {
+          "expr": "rate(stroppy_operations_total{stroppy_run_id=\"$run_b\"}[1m])",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ops", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Latency p99 — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 59 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(stroppy_operation_duration_seconds_bucket{stroppy_run_id=\"$run_a\"}[5m]))",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Latency p99 — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 59 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, rate(stroppy_operation_duration_seconds_bucket{stroppy_run_id=\"$run_b\"}[5m]))",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Error Rate — Run A",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 67 },
+      "targets": [
+        {
+          "expr": "rate(stroppy_errors_total{stroppy_run_id=\"$run_a\"}[1m])",
+          "legendFormat": "Run A {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "errors/s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    },
+    {
+      "title": "Error Rate — Run B",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 67 },
+      "targets": [
+        {
+          "expr": "rate(stroppy_errors_total{stroppy_run_id=\"$run_b\"}[1m])",
+          "legendFormat": "Run B {{instance}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "errors/s", "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 } } }
+    }
+  ],
+  "schemaVersion": 39
+}

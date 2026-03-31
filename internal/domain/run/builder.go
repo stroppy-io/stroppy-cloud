@@ -45,6 +45,7 @@ type builder struct {
 func (b *builder) ph(p types.Phase) string { return string(p) }
 
 func (b *builder) add(phase string, deps []string, task dag.Task) {
+	// g.Add only fails on duplicate IDs; phases are unique constants, so error is impossible.
 	_ = b.g.Add(&dag.Node{ID: phase, Type: phase, Deps: deps, Task: task})
 	b.reg.Register(phase, func() dag.Task { return task })
 }
@@ -54,7 +55,7 @@ func (b *builder) build() error {
 
 	// --- infrastructure ---
 	b.add(b.ph(types.PhaseNetwork), nil,
-		&networkTask{cfg: b.cfg.Network, provider: b.cfg.Provider, deployer: b.deps.Deployer, state: b.deps.State})
+		&networkTask{cfg: b.cfg.Network, provider: b.cfg.Provider, deployer: b.deps.Deployer, state: b.deps.State, runID: b.cfg.ID})
 
 	b.add(b.ph(types.PhaseMachines), []string{b.ph(types.PhaseNetwork)},
 		&machinesTask{runCfg: b.cfg, state: b.deps.State, deployer: b.deps.Deployer, serverAddr: b.deps.ServerAddr, settings: b.deps.Settings})
@@ -75,10 +76,12 @@ func (b *builder) build() error {
 	b.add(b.ph(types.PhaseConfigureDB), configDBDeps, configDB)
 
 	// --- monitoring ---
+	// Install exporters on ALL machines (node_exporter everywhere, DB exporter on DB nodes, vmagent on monitor).
 	b.add(b.ph(types.PhaseInstallMonitor), afterMachines,
-		&monitorInstallTask{client: b.deps.Client, state: b.deps.State})
-	b.add(b.ph(types.PhaseConfigureMonitor), []string{b.ph(types.PhaseInstallMonitor)},
-		&monitorConfigTask{client: b.deps.Client, state: b.deps.State, monitor: b.cfg.Monitor})
+		&monitorInstallTask{client: b.deps.Client, state: b.deps.State, dbKind: b.cfg.Database.Kind})
+	// Configure/start daemons after install AND after DB is configured (so postgres_exporter can connect).
+	b.add(b.ph(types.PhaseConfigureMonitor), []string{b.ph(types.PhaseInstallMonitor), b.ph(types.PhaseConfigureDB)},
+		&monitorConfigTask{client: b.deps.Client, state: b.deps.State, monitor: b.cfg.Monitor, runID: b.cfg.ID, settings: b.deps.Settings, dbKind: b.cfg.Database.Kind})
 
 	// --- pgbouncer (if Postgres HA with pgbouncer, colocated on DB nodes) ---
 	if b.needsPgBouncer() {
@@ -155,7 +158,7 @@ func (b *builder) needsProxy() bool {
 
 func (b *builder) addEtcd(afterMachines []string) {
 	b.add(b.ph(types.PhaseInstallEtcd), afterMachines,
-		&etcdInstallTask{client: b.deps.Client, state: b.deps.State})
+		&etcdInstallTask{client: b.deps.Client, state: b.deps.State, settings: b.deps.Settings})
 	b.add(b.ph(types.PhaseConfigureEtcd), []string{b.ph(types.PhaseInstallEtcd)},
 		&etcdConfigTask{client: b.deps.Client, state: b.deps.State})
 }
@@ -165,7 +168,7 @@ func (b *builder) addPgBouncer(afterMachines []string) {
 	b.add(b.ph(types.PhaseInstallPgBouncer), afterMachines,
 		&pgBouncerInstallTask{client: b.deps.Client, state: b.deps.State})
 	b.add(b.ph(types.PhaseConfigurePgBouncer), []string{b.ph(types.PhaseInstallPgBouncer), b.ph(types.PhaseConfigureDB)},
-		&pgBouncerConfigTask{client: b.deps.Client, state: b.deps.State})
+		&pgBouncerConfigTask{client: b.deps.Client, state: b.deps.State, topology: b.cfg.Database.Postgres})
 	b.runStroppyDeps = append(b.runStroppyDeps, b.ph(types.PhaseConfigurePgBouncer))
 }
 

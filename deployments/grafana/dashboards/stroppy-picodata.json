@@ -1,0 +1,154 @@
+{
+  "uid": "stroppy-picodata",
+  "title": "Picodata — Database Metrics",
+  "tags": ["stroppy", "picodata"],
+  "timezone": "browser",
+  "editable": true,
+  "schemaVersion": 39,
+  "style": "dark",
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "5s",
+  "templating": {
+    "list": [
+      {
+        "name": "run_id",
+        "label": "Run ID",
+        "type": "query",
+        "datasource": "VictoriaMetrics",
+        "query": "label_values(picodata_info{stroppy_run_id!=\"\"}, stroppy_run_id)",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false,
+        "current": {}
+      },
+      {
+        "name": "instance",
+        "label": "Instance",
+        "type": "query",
+        "datasource": "VictoriaMetrics",
+        "query": "label_values(picodata_info{stroppy_run_id=\"$run_id\"}, instance)",
+        "refresh": 2,
+        "includeAll": true,
+        "multi": true,
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "title": "Operations (placeholder)",
+      "description": "Picodata exposes metrics on :8081/metrics. Update metric names once confirmed.",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(picodata_sql_operations_total{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}[1m])",
+          "legendFormat": "{{instance}} {{operation}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Memory — Memtx (placeholder)",
+      "description": "Update metric name once picodata metric schema is confirmed.",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "picodata_memtx_memory_used_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} memtx used",
+          "refId": "A"
+        },
+        {
+          "expr": "picodata_memtx_memory_max_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} memtx max",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Memory — Vinyl (placeholder)",
+      "description": "Update metric name once picodata metric schema is confirmed.",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "picodata_vinyl_memory_used_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} vinyl used",
+          "refId": "A"
+        },
+        {
+          "expr": "picodata_vinyl_memory_limit_bytes{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} vinyl limit",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Network Connections (placeholder)",
+      "description": "Update metric name once picodata metric schema is confirmed.",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "picodata_net_connections{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    },
+    {
+      "title": "Raft State (placeholder)",
+      "description": "Update metric name once picodata metric schema is confirmed.",
+      "type": "timeseries",
+      "datasource": "VictoriaMetrics",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "targets": [
+        {
+          "expr": "picodata_raft_term{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} term",
+          "refId": "A"
+        },
+        {
+          "expr": "picodata_raft_applied_index{stroppy_run_id=\"$run_id\",instance=~\"$instance\"}",
+          "legendFormat": "{{instance}} applied index",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "lineWidth": 2 }
+        }
+      }
+    }
+  ]
+}

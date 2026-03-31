@@ -60,7 +60,7 @@ func startE2E(t *testing.T) *e2eServer {
 	if err != nil {
 		t.Fatalf("create app: %v", err)
 	}
-	s := api.NewServer(app, logger, "", "", "")
+	s := api.NewServer(app, logger, "", "", "", "")
 	ts := httptest.NewServer(s.Router())
 
 	t.Cleanup(func() {

@@ -4,16 +4,24 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/fs"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/network"
+	"github.com/docker/docker/client"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/metrics"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
@@ -27,6 +35,7 @@ type Server struct {
 	hub       *wsHub
 	collector *metrics.Collector
 	apiKey    string
+	users     *UserStore
 
 	// agentRegistry tracks connected agents by machine ID.
 	agentsMu sync.RWMutex
@@ -36,13 +45,21 @@ type Server struct {
 	settingsMu   sync.RWMutex
 	settings     *types.ServerSettings
 	settingsPath string
+
+	// spaFS serves the embedded SPA files. If nil, SPA is not served.
+	spaFS http.FileSystem
+
+	// victoriaLogs forwards agent log lines to VictoriaLogs for persistence.
+	// nil when VictoriaLogs is not configured.
+	victoriaLogs *victoria.LogsClient
 }
 
 // NewServer creates an HTTP server backed by the App.
 // victoriaURL may be empty to disable metrics endpoints.
+// victoriaLogsURL may be empty to disable log persistence.
 // apiKey may be empty to disable authentication (development mode).
 // settingsPath may be empty to disable settings persistence.
-func NewServer(app *App, logger *zap.Logger, victoriaURL, apiKey, settingsPath string) *Server {
+func NewServer(app *App, logger *zap.Logger, victoriaURL, victoriaLogsURL, apiKey, settingsPath string) *Server {
 	defaults := types.DefaultServerSettings()
 	s := &Server{
 		app:          app,
@@ -51,10 +68,14 @@ func NewServer(app *App, logger *zap.Logger, victoriaURL, apiKey, settingsPath s
 		agents:       make(map[string]agent.Target),
 		settings:     &defaults,
 		apiKey:       apiKey,
+		users:        NewUserStore(), // always created for SPA login
 		settingsPath: settingsPath,
 	}
 	if victoriaURL != "" {
 		s.collector = metrics.NewCollector(victoria.NewClient(victoriaURL))
+	}
+	if victoriaLogsURL != "" {
+		s.victoriaLogs = victoria.NewLogsClient(victoriaLogsURL)
 	}
 	// Load persisted settings from disk (if available).
 	s.loadSettingsFromDisk()
@@ -71,9 +92,7 @@ func (s *Server) Router() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 
-	if s.apiKey != "" {
-		r.Use(AuthMiddleware(s.apiKey))
-	}
+	r.Use(AuthMiddleware(s.apiKey, s.users))
 
 	// --- Health ---
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -87,14 +106,22 @@ func (s *Server) Router() http.Handler {
 		r.Post("/log", s.agentLog)
 	})
 
+	// --- Auth API ---
+	r.Post("/api/v1/auth/login", s.login)
+	r.Get("/api/v1/auth/me", s.me)
+
 	// --- External API ---
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Post("/run", s.runStart)
-		r.Post("/run/{runID}/resume", s.runResume)
 		r.Post("/validate", s.runValidate)
 		r.Post("/dry-run", s.runDryRun)
 		r.Get("/run/{runID}/status", s.runStatus)
+		r.Delete("/run/{runID}", s.deleteRun)
+		r.Get("/runs", s.listRuns)
 		r.Get("/presets", s.listPresets)
+
+		// --- Logs (VictoriaLogs) ---
+		r.Get("/run/{runID}/logs", s.runLogs)
 
 		// --- Metrics ---
 		r.Get("/run/{runID}/metrics", s.runMetrics)
@@ -108,6 +135,7 @@ func (s *Server) Router() http.Handler {
 			r.Put("/packages", s.updatePackages)
 			r.Get("/db-defaults/{kind}", s.getDBDefaults)
 			r.Get("/db-defaults/{kind}/{version}", s.getDBDefaultsVersion)
+			r.Get("/grafana", s.getGrafanaSettings)
 		})
 	})
 
@@ -122,7 +150,36 @@ func (s *Server) Router() http.Handler {
 	// --- Agent binary download ---
 	r.Get("/agent/binary", s.serveBinary)
 
+	// --- SPA (embedded frontend) ---
+	if s.spaFS != nil {
+		// Serve static files, fallback to index.html for SPA routing.
+		r.Get("/*", s.serveSPA)
+	}
+
 	return r
+}
+
+// SetSPA configures the embedded SPA filesystem.
+// Call with the sub-directory containing index.html (e.g. web.Dist "dist" subdir).
+func (s *Server) SetSPA(fsys fs.FS) {
+	s.spaFS = http.FS(fsys)
+}
+
+func (s *Server) serveSPA(w http.ResponseWriter, r *http.Request) {
+	// Try to serve the exact file first.
+	path := r.URL.Path
+	if path == "/" {
+		path = "/index.html"
+	}
+	f, err := s.spaFS.Open(path[1:]) // strip leading /
+	if err == nil {
+		f.Close()
+		http.FileServer(s.spaFS).ServeHTTP(w, r)
+		return
+	}
+	// File not found → serve index.html for client-side routing.
+	r.URL.Path = "/"
+	http.FileServer(s.spaFS).ServeHTTP(w, r)
 }
 
 // ============================================================
@@ -181,7 +238,21 @@ func (s *Server) agentLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.hub.broadcast(wsMessage{Type: "agent_log", Payload: line})
+	// Extract run ID from machine ID (format: {runID}-{role}-{index}).
+	runID := extractRunID(line.MachineID)
+
+	// Broadcast to all connected WebSocket clients for live viewing.
+	s.hub.broadcast(wsMessage{Type: "agent_log", RunID: runID, Payload: line})
+
+	// Persist to VictoriaLogs (fire-and-forget).
+	if s.victoriaLogs != nil {
+		go func() {
+			if err := s.victoriaLogs.Ingest(line.MachineID, line.CommandID, runID, line.Stream, line.Line); err != nil {
+				s.logger.Debug("vlogs ingest failed", zap.Error(err))
+			}
+		}()
+	}
+
 	w.WriteHeader(http.StatusNoContent)
 }
 
@@ -196,6 +267,19 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Auto-generate ID if empty.
+	if cfg.ID == "" {
+		cfg.ID = fmt.Sprintf("run-%d", time.Now().UnixMilli())
+	}
+
+	// Check for duplicate (run already exists in storage).
+	if snap, _ := s.app.Storage().Load(r.Context(), cfg.ID); snap != nil {
+		writeJSON(w, http.StatusConflict, map[string]string{
+			"error": fmt.Sprintf("run %q already exists", cfg.ID),
+		})
+		return
+	}
+
 	// Run asynchronously, return run ID immediately.
 	go func() {
 		if err := s.app.Start(context.Background(), cfg); err != nil {
@@ -204,24 +288,6 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	writeJSON(w, http.StatusAccepted, map[string]string{"run_id": cfg.ID, "status": "started"})
-}
-
-func (s *Server) runResume(w http.ResponseWriter, r *http.Request) {
-	runID := chi.URLParam(r, "runID")
-
-	var cfg types.RunConfig
-	if err := json.NewDecoder(r.Body).Decode(&cfg); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	go func() {
-		if err := s.app.Resume(context.Background(), runID, cfg); err != nil {
-			s.logger.Error("resume failed", zap.String("run_id", runID), zap.Error(err))
-		}
-	}()
-
-	writeJSON(w, http.StatusAccepted, map[string]string{"run_id": runID, "status": "resumed"})
 }
 
 func (s *Server) runValidate(w http.ResponseWriter, r *http.Request) {
@@ -268,6 +334,250 @@ func (s *Server) runStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, snap)
+}
+
+func (s *Server) listRuns(w http.ResponseWriter, r *http.Request) {
+	runs, err := s.app.Storage().List(r.Context())
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	writeJSON(w, http.StatusOK, runs)
+}
+
+func (s *Server) deleteRun(w http.ResponseWriter, r *http.Request) {
+	runID := chi.URLParam(r, "runID")
+
+	// Check exists.
+	snap, err := s.app.Storage().Load(r.Context(), runID)
+	if err != nil || snap == nil {
+		http.Error(w, "not found", http.StatusNotFound)
+		return
+	}
+
+	// Clean up Docker resources (best-effort).
+	s.cleanupRunResources(runID)
+
+	// Delete from storage.
+	if err := s.app.Storage().Delete(r.Context(), runID); err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"status": "deleted", "run_id": runID})
+}
+
+// cleanupRunResources removes Docker containers and networks associated with a run.
+func (s *Server) cleanupRunResources(runID string) {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		s.logger.Warn("cleanup: docker client failed", zap.Error(err))
+		return
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
+
+	// Remove containers matching this run (name pattern: stroppy-agent-{runID}-*)
+	containers, _ := cli.ContainerList(ctx, container.ListOptions{All: true})
+	prefix := fmt.Sprintf("stroppy-agent-%s-", runID)
+	for _, c := range containers {
+		for _, name := range c.Names {
+			cleanName := strings.TrimPrefix(name, "/")
+			if strings.HasPrefix(cleanName, prefix) {
+				s.logger.Info("cleanup: removing container", zap.String("name", cleanName))
+				cli.ContainerRemove(ctx, c.ID, container.RemoveOptions{Force: true})
+			}
+		}
+	}
+
+	// Remove network for this run (name pattern: stroppy-{runID})
+	netName := fmt.Sprintf("stroppy-%s", runID)
+	networks, _ := cli.NetworkList(ctx, network.ListOptions{})
+	for _, n := range networks {
+		if n.Name == netName {
+			s.logger.Info("cleanup: removing network", zap.String("name", n.Name))
+			cli.NetworkRemove(ctx, n.ID)
+		}
+	}
+}
+
+// RecoverOrCleanupRuns attempts to resume incomplete runs whose Docker containers
+// are still alive. Runs that cannot be recovered are marked as failed and their
+// resources are cleaned up. Called on server startup.
+func (s *Server) RecoverOrCleanupRuns() {
+	ctx := context.Background()
+
+	runs, err := s.app.Storage().List(ctx)
+	if err != nil {
+		s.logger.Warn("recovery: failed to list runs", zap.Error(err))
+		return
+	}
+
+	// Track run IDs that are being recovered so we don't clean up their containers.
+	activeRunIDs := make(map[string]bool)
+
+	for _, r := range runs {
+		if r.Pending == 0 {
+			continue // completed or fully failed — nothing to do
+		}
+
+		s.logger.Info("recovery: found incomplete run",
+			zap.String("id", r.ID), zap.Int("pending", r.Pending))
+
+		snap, err := s.app.Storage().Load(ctx, r.ID)
+		if err != nil || snap == nil || snap.State == nil {
+			s.logger.Warn("recovery: no state saved, marking as failed", zap.String("id", r.ID))
+			s.markRunFailed(ctx, snap, r.ID)
+			s.cleanupRunResources(r.ID)
+			continue
+		}
+
+		if s.canRecoverRun(snap.State) {
+			s.logger.Info("recovery: containers alive, resuming run", zap.String("id", r.ID))
+			activeRunIDs[r.ID] = true
+			go s.recoverRun(r.ID, snap)
+		} else {
+			s.logger.Warn("recovery: containers dead, marking as failed", zap.String("id", r.ID))
+			s.markRunFailed(ctx, snap, r.ID)
+			s.cleanupRunResources(r.ID)
+		}
+	}
+
+	// Clean up orphaned containers that don't belong to any active/recovering run.
+	s.cleanupOrphanedContainers(activeRunIDs)
+}
+
+// CleanupOrphanedRuns is kept for backward compatibility; it delegates to RecoverOrCleanupRuns.
+func (s *Server) CleanupOrphanedRuns() {
+	s.RecoverOrCleanupRuns()
+}
+
+// canRecoverRun checks whether the Docker containers from a previous run are still running.
+func (s *Server) canRecoverRun(state *dag.RunState) bool {
+	if state == nil || len(state.ContainerIDs) == 0 {
+		return false
+	}
+
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		return false
+	}
+	defer cli.Close()
+
+	for _, cid := range state.ContainerIDs {
+		inspect, err := cli.ContainerInspect(context.Background(), cid)
+		if err == nil && inspect.State.Running {
+			return true // at least one container alive — worth trying
+		}
+	}
+
+	return false
+}
+
+// recoverRun rebuilds state from a snapshot and resumes execution.
+func (s *Server) recoverRun(runID string, snap *dag.Snapshot) {
+	ctx := context.Background()
+
+	if err := s.app.RecoverRun(ctx, snap); err != nil {
+		s.logger.Error("recovery: run failed",
+			zap.String("id", runID), zap.Error(err))
+	}
+}
+
+// markRunFailed marks all pending nodes in a snapshot as failed.
+func (s *Server) markRunFailed(ctx context.Context, snap *dag.Snapshot, runID string) {
+	if snap == nil {
+		return
+	}
+	changed := false
+	for i := range snap.Nodes {
+		if snap.Nodes[i].Status == dag.StatusPending {
+			snap.Nodes[i].Status = dag.StatusFailed
+			snap.Nodes[i].Error = "server restarted — run orphaned"
+			changed = true
+		}
+	}
+	if changed {
+		_ = s.app.Storage().Save(ctx, runID, snap)
+	}
+}
+
+// cleanupOrphanedContainers removes stroppy-agent containers and networks
+// that don't belong to any actively recovering run.
+func (s *Server) cleanupOrphanedContainers(activeRunIDs map[string]bool) {
+	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	if err != nil {
+		s.logger.Warn("orphan cleanup: docker client failed", zap.Error(err))
+		return
+	}
+	defer cli.Close()
+
+	ctx := context.Background()
+
+	containers, err := cli.ContainerList(ctx, container.ListOptions{All: true})
+	if err != nil {
+		return
+	}
+
+	removed := 0
+	for _, c := range containers {
+		for _, name := range c.Names {
+			cleanName := strings.TrimPrefix(name, "/")
+			if !strings.HasPrefix(cleanName, "stroppy-agent-") {
+				continue
+			}
+			// Check if this container belongs to an active run.
+			belongsToActive := false
+			for runID := range activeRunIDs {
+				prefix := fmt.Sprintf("stroppy-agent-%s-", runID)
+				if strings.HasPrefix(cleanName, prefix) {
+					belongsToActive = true
+					break
+				}
+			}
+			if !belongsToActive {
+				s.logger.Info("orphan cleanup: removing container", zap.String("name", cleanName))
+				cli.ContainerRemove(ctx, c.ID, container.RemoveOptions{Force: true})
+				removed++
+			}
+		}
+	}
+
+	if removed > 0 {
+		s.logger.Info("orphan cleanup: removed stale containers", zap.Int("count", removed))
+	}
+
+	// Remove stroppy-* networks not belonging to active runs.
+	networks, _ := cli.NetworkList(ctx, network.ListOptions{})
+	for _, n := range networks {
+		if !strings.HasPrefix(n.Name, "stroppy-") || strings.Contains(n.Name, "cloud") {
+			continue
+		}
+		// Check if network belongs to active run (name pattern: stroppy-{runID}).
+		belongsToActive := false
+		for runID := range activeRunIDs {
+			if n.Name == fmt.Sprintf("stroppy-%s", runID) {
+				belongsToActive = true
+				break
+			}
+		}
+		if !belongsToActive {
+			s.logger.Info("orphan cleanup: removing network", zap.String("name", n.Name))
+			cli.NetworkRemove(ctx, n.ID)
+		}
+	}
+}
+
+// extractRunID gets the run ID from a machine ID.
+// Machine IDs follow the pattern "{runID}-{role}-{index}".
+func extractRunID(machineID string) string {
+	// Find the last two "-" separated segments and strip them.
+	parts := strings.Split(machineID, "-")
+	if len(parts) >= 3 {
+		return strings.Join(parts[:len(parts)-2], "-")
+	}
+	return machineID
 }
 
 func (s *Server) listPresets(w http.ResponseWriter, r *http.Request) {
@@ -328,6 +638,44 @@ func (s *Server) Agents() map[string]agent.Target {
 		cp[k] = v
 	}
 	return cp
+}
+
+// ============================================================
+// Log query handler (VictoriaLogs)
+// ============================================================
+
+func (s *Server) runLogs(w http.ResponseWriter, r *http.Request) {
+	if s.victoriaLogs == nil {
+		http.Error(w, "log storage not configured (no VictoriaLogs URL)", http.StatusServiceUnavailable)
+		return
+	}
+
+	runID := chi.URLParam(r, "runID")
+
+	// Pass through optional query params to VictoriaLogs.
+	query := fmt.Sprintf(`run_id:"%s"`, runID)
+	start := r.URL.Query().Get("start")
+	end := r.URL.Query().Get("end")
+
+	vlURL := fmt.Sprintf("%s/select/logsql/query?query=%s",
+		s.victoriaLogs.BaseURL(), url.QueryEscape(query))
+	if start != "" {
+		vlURL += "&start=" + url.QueryEscape(start)
+	}
+	if end != "" {
+		vlURL += "&end=" + url.QueryEscape(end)
+	}
+
+	resp, err := http.Get(vlURL)
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, map[string]string{"error": err.Error()})
+		return
+	}
+	defer resp.Body.Close()
+
+	w.Header().Set("Content-Type", "application/x-ndjson")
+	w.WriteHeader(resp.StatusCode)
+	io.Copy(w, resp.Body)
 }
 
 // ============================================================

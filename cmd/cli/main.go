@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -12,6 +13,8 @@ import (
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+
+	"github.com/stroppy-io/stroppy-cloud/web"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
@@ -34,7 +37,6 @@ func main() {
 	root.AddCommand(
 		serveCmd(),
 		runCmd(),
-		resumeCmd(),
 		validateCmd(),
 		dryRunCmd(),
 		agentCmd(),
@@ -48,6 +50,7 @@ func main() {
 func serveCmd() *cobra.Command {
 	var addr string
 	var victoriaURL string
+	var victoriaLogsURL string
 	var apiKey string
 	var settingsFile string
 	cmd := &cobra.Command{
@@ -66,7 +69,15 @@ func serveCmd() *cobra.Command {
 			defer app.Close()
 
 			logger, _ := zap.NewDevelopment()
-			srv := api.NewServer(app, logger, victoriaURL, apiKey, settingsFile)
+			srv := api.NewServer(app, logger, victoriaURL, victoriaLogsURL, apiKey, settingsFile)
+			srv.CleanupOrphanedRuns()
+
+			// Embed SPA into the server.
+			spaFS, err := fs.Sub(web.Dist, "dist")
+			if err == nil {
+				srv.SetSPA(spaFS)
+				logger.Info("SPA embedded and served at /")
+			}
 
 			httpSrv := &http.Server{Addr: addr, Handler: srv.Router()}
 
@@ -85,6 +96,7 @@ func serveCmd() *cobra.Command {
 	}
 	cmd.Flags().StringVar(&addr, "addr", ":8080", "listen address")
 	cmd.Flags().StringVar(&victoriaURL, "victoria-url", "", "VictoriaMetrics URL (e.g. http://localhost:8428)")
+	cmd.Flags().StringVar(&victoriaLogsURL, "victoria-logs-url", "", "VictoriaLogs URL for log persistence (e.g. http://localhost:9428)")
 	cmd.Flags().StringVar(&apiKey, "api-key", "", "API key for authentication (empty = auth disabled)")
 	cmd.Flags().StringVar(&settingsFile, "settings-file", "settings.json", "path to settings JSON file for persistence")
 	return cmd
@@ -110,35 +122,6 @@ func runCmd() *cobra.Command {
 			return app.Start(ctx, cfg)
 		},
 	}
-}
-
-func resumeCmd() *cobra.Command {
-	var runID string
-	cmd := &cobra.Command{
-		Use:   "resume",
-		Short: "Resume an interrupted run",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := api.LoadConfig(configFile)
-			if err != nil {
-				return err
-			}
-
-			if runID == "" {
-				runID = cfg.ID
-			}
-
-			app, err := newApp()
-			if err != nil {
-				return err
-			}
-			defer app.Close()
-
-			ctx := signalCtx()
-			return app.Resume(ctx, runID, cfg)
-		},
-	}
-	cmd.Flags().StringVar(&runID, "run-id", "", "run ID to resume (defaults to config ID)")
-	return cmd
 }
 
 func validateCmd() *cobra.Command {
@@ -235,7 +218,8 @@ func agentCmd() *cobra.Command {
 
 			ctx := signalCtx()
 			<-ctx.Done()
-			log.Println("agent shutting down")
+			log.Println("agent shutting down — killing managed processes")
+			srv.Executor().Shutdown()
 			return httpSrv.Shutdown(context.Background())
 		},
 	}

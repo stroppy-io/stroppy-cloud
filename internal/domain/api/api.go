@@ -63,6 +63,8 @@ func New(cfg Config) (*App, error) {
 
 // Start builds a DAG from RunConfig and executes it.
 func (a *App) Start(ctx context.Context, cfg types.RunConfig) error {
+	run.FillMachinesFromTopology(&cfg)
+
 	deps, cleanup, err := a.buildDeps(cfg)
 	if err != nil {
 		return err
@@ -75,33 +77,22 @@ func (a *App) Start(ctx context.Context, cfg types.RunConfig) error {
 	}
 
 	exec := dag.NewExecutor(cfg.ID, graph, a.storage, a.logger, a.sink)
+
+	// Wire state exporter so snapshots include recoverable run state.
+	cfgJSON, _ := json.Marshal(cfg)
+	exec.SetStateExporter(func() *dag.RunState {
+		rs := deps.State.ExportRunState()
+		rs.Provider = string(cfg.Provider)
+		rs.RunConfig = cfgJSON
+		return rs
+	})
+
 	return exec.Run(ctx)
-}
-
-// Resume restores a previously interrupted run and continues from where it stopped.
-func (a *App) Resume(ctx context.Context, runID string, cfg types.RunConfig) error {
-	deps, cleanup, err := a.buildDeps(cfg)
-	if err != nil {
-		return err
-	}
-	defer cleanup()
-
-	_, reg, err := run.Build(cfg, deps)
-	if err != nil {
-		return fmt.Errorf("api: build registry: %w", err)
-	}
-
-	graph, err := a.loadGraph(ctx, runID, reg)
-	if err != nil {
-		return err
-	}
-
-	exec := dag.NewExecutor(runID, graph, a.storage, a.logger, a.sink)
-	return exec.Resume(ctx, reg)
 }
 
 // Validate checks that a RunConfig produces a valid DAG without executing it.
 func (a *App) Validate(cfg types.RunConfig) error {
+	run.FillMachinesFromTopology(&cfg)
 	state := run.NewState()
 	deps := run.Deps{Client: a.client, State: state}
 	_, _, err := run.Build(cfg, deps)
@@ -110,6 +101,7 @@ func (a *App) Validate(cfg types.RunConfig) error {
 
 // DryRun builds the DAG and returns its structure as JSON.
 func (a *App) DryRun(cfg types.RunConfig) ([]byte, error) {
+	run.FillMachinesFromTopology(&cfg)
 	state := run.NewState()
 	deps := run.Deps{Client: a.client, State: state}
 	graph, _, err := run.Build(cfg, deps)
@@ -117,6 +109,64 @@ func (a *App) DryRun(cfg types.RunConfig) ([]byte, error) {
 		return nil, err
 	}
 	return json.MarshalIndent(graph, "", "  ")
+}
+
+// RecoverRun resumes execution of an incomplete run from a saved snapshot.
+// It rebuilds deps, restores state from the snapshot, and re-executes
+// only the nodes that were not yet completed.
+func (a *App) RecoverRun(ctx context.Context, snap *dag.Snapshot) error {
+	if snap.State == nil {
+		return fmt.Errorf("api: snapshot has no run state for recovery")
+	}
+
+	var cfg types.RunConfig
+	if err := json.Unmarshal(snap.State.RunConfig, &cfg); err != nil {
+		return fmt.Errorf("api: unmarshal run config: %w", err)
+	}
+
+	run.FillMachinesFromTopology(&cfg)
+
+	deps, cleanup, err := a.buildDeps(cfg)
+	if err != nil {
+		return fmt.Errorf("api: build deps for recovery: %w", err)
+	}
+	defer cleanup()
+
+	// Restore run state (targets, container IDs, etc.) from snapshot.
+	deps.State.ImportRunState(snap.State)
+
+	// Build a fresh graph with tasks wired to the restored deps/state.
+	graph, reg, err := run.Build(cfg, deps)
+	if err != nil {
+		return fmt.Errorf("api: build graph for recovery: %w", err)
+	}
+
+	// Try to restore the graph from snapshot (preserves structure),
+	// falling back to the freshly built graph.
+	restoredGraph, unmarshalErr := reg.Unmarshal(snap.GraphJSON)
+	if unmarshalErr != nil {
+		restoredGraph = graph
+	}
+
+	exec := dag.NewExecutor(cfg.ID, restoredGraph, a.storage, a.logger, a.sink)
+
+	// Mark previously completed nodes so they are skipped.
+	for _, ns := range snap.Nodes {
+		if ns.Status == dag.StatusDone {
+			exec.MarkNodeDone(ns.ID)
+		}
+	}
+
+	// Wire state exporter for continued snapshots.
+	cfgJSON, _ := json.Marshal(cfg)
+	exec.SetStateExporter(func() *dag.RunState {
+		rs := deps.State.ExportRunState()
+		rs.Provider = string(cfg.Provider)
+		rs.RunConfig = cfgJSON
+		return rs
+	})
+
+	return exec.Run(ctx)
 }
 
 // Storage returns the DAG storage (used by server for status queries).
@@ -157,13 +207,19 @@ func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
 	}
 
 	if cfg.Provider == types.ProviderDocker {
-		deployer, err := agent.NewDockerDeployer("stroppy-run-net")
+		deployer, err := agent.NewDockerDeployer(fmt.Sprintf("stroppy-%s", cfg.ID))
 		if err != nil {
 			return deps, noop, fmt.Errorf("api: docker deployer: %w", err)
 		}
 		deps.Deployer = deployer
 		deps.Client = agent.NewHTTPClient()
-		deps.ServerAddr = "http://host.docker.internal:8080" // server from inside containers
+		// Server address for agent registration callbacks (best-effort).
+		// Agent→server communication is non-critical; server→agent is what matters.
+		serverAddr := os.Getenv("STROPPY_SERVER_ADDR")
+		if serverAddr == "" {
+			serverAddr = "http://172.17.0.1:8080" // docker0 bridge — host reachable from containers
+		}
+		deps.ServerAddr = serverAddr
 		return deps, func() { deployer.Close() }, nil
 	}
 
@@ -174,19 +230,4 @@ func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
 	}
 
 	return deps, noop, nil
-}
-
-func (a *App) loadGraph(ctx context.Context, runID string, reg *dag.Registry) (*dag.Graph, error) {
-	snap, err := a.storage.Load(ctx, runID)
-	if err != nil {
-		return nil, fmt.Errorf("api: load snapshot: %w", err)
-	}
-	if snap == nil {
-		return nil, fmt.Errorf("api: no saved state for run %q", runID)
-	}
-	graph, err := reg.Unmarshal(snap.GraphJSON)
-	if err != nil {
-		return nil, fmt.Errorf("api: restore graph: %w", err)
-	}
-	return graph, nil
 }

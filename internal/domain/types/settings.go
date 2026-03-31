@@ -23,9 +23,11 @@ type MonitoringStack struct {
 	PostgresExporterVersion string `json:"postgres_exporter_version"`
 	OtelColVersion          string `json:"otel_col_version"`
 	VmagentVersion          string `json:"vmagent_version"`
+	EtcdVersion             string `json:"etcd_version"`
 	VictoriaMetricsURL      string `json:"victoria_metrics_url"`
 	VictoriaMetricsUser     string `json:"victoria_metrics_user"`
 	VictoriaMetricsPassword string `json:"victoria_metrics_password"`
+	VictoriaLogsURL         string `json:"victoria_logs_url"`
 }
 
 // StroppySettings holds default stroppy configuration applied to every run.
@@ -51,6 +53,9 @@ func (s StroppySettings) StroppyEnv(runID string) map[string]string {
 		}
 	}
 
+	// Enable k6 OTEL output extension.
+	env["K6_OUT"] = "experimental-opentelemetry"
+
 	set("K6_OTEL_EXPORTER_TYPE", s.OTLPExporterType)
 	set("K6_OTEL_HTTP_EXPORTER_ENDPOINT", s.OTLPEndpoint)
 	set("K6_OTEL_HTTP_EXPORTER_URL_PATH", s.OTLPURLPath)
@@ -72,12 +77,20 @@ func (s StroppySettings) StroppyEnv(runID string) map[string]string {
 	return env
 }
 
+// GrafanaSettings configures the Grafana integration for embedded dashboards.
+type GrafanaSettings struct {
+	URL          string            `json:"url"`           // e.g. "http://localhost:3001"
+	EmbedEnabled bool              `json:"embed_enabled"` // whether to show embedded dashboards
+	Dashboards   map[string]string `json:"dashboards"`    // name -> uid
+}
+
 // ServerSettings is the top-level admin settings struct combining all subsections.
 type ServerSettings struct {
 	Cloud           CloudSettings   `json:"cloud"`
 	Monitoring      MonitoringStack `json:"monitoring"`
 	Packages        PackageDefaults `json:"packages"`
 	StroppyDefaults StroppySettings `json:"stroppy_defaults"`
+	Grafana         GrafanaSettings `json:"grafana"`
 }
 
 // DefaultServerSettings returns ServerSettings populated with sensible defaults.
@@ -93,14 +106,30 @@ func DefaultServerSettings() ServerSettings {
 			PostgresExporterVersion: "0.16.0",
 			OtelColVersion:          "0.127.0",
 			VmagentVersion:          "1.115.0",
+			EtcdVersion:             "3.5.17",
 		},
 		Packages: DefaultPackages(),
 		StroppyDefaults: StroppySettings{
 			Version:          "3.1.0",
 			OTLPExporterType: "http",
-			OTLPInsecure:     false,
-			OTLPURLPath:      "/insert/multitenant/opentelemetry/v1/metrics",
+			OTLPEndpoint:     "172.17.0.1:8428",
+			OTLPInsecure:     true,
+			OTLPURLPath:      "/opentelemetry/v1/metrics",
 			OTLPMetricPrefix: "stroppy_",
+			OTLPServiceName:  "stroppy",
+		},
+		Grafana: GrafanaSettings{
+			URL:          "http://localhost:3001",
+			EmbedEnabled: true,
+			Dashboards: map[string]string{
+				"overview": "stroppy-run",
+				"system":   "stroppy-system",
+				"postgres": "stroppy-postgres",
+				"mysql":    "stroppy-mysql",
+				"picodata": "stroppy-picodata",
+				"stroppy":  "stroppy-metrics-v1",
+				"compare":  "stroppy-compare",
+			},
 		},
 	}
 }

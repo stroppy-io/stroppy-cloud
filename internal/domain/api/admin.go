@@ -75,6 +75,16 @@ func (s *Server) updatePackages(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
+// getGrafanaSettings returns the current Grafana integration settings.
+// GET /api/v1/admin/grafana
+func (s *Server) getGrafanaSettings(w http.ResponseWriter, r *http.Request) {
+	s.settingsMu.RLock()
+	grafana := s.settings.Grafana
+	s.settingsMu.RUnlock()
+
+	writeJSON(w, http.StatusOK, grafana)
+}
+
 // getDBDefaults returns the topology presets for the given database kind.
 // GET /api/v1/admin/db-defaults/{kind}
 func (s *Server) getDBDefaults(w http.ResponseWriter, r *http.Request) {

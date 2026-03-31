@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/docker/docker/api/types/network"
@@ -16,14 +15,20 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/terraform"
+
+	yctf "github.com/stroppy-io/stroppy-cloud/deployments/terraform/yandex"
 )
 
 // isHostMode returns true when the server runs on the host (not inside Docker).
 // In that case we use localhost + mapped ports to reach agent containers.
 func isHostMode() bool {
-	// Inside a Docker container /.dockerenv exists.
+	// Explicit override via env var (for Docker network_mode: host).
+	if os.Getenv("STROPPY_HOST_MODE") == "true" {
+		return true
+	}
+	// Outside Docker — always host mode.
 	_, err := os.Stat("/.dockerenv")
-	return err != nil // not in docker -> host mode
+	return err != nil
 }
 
 // networkTask creates a Docker network (for docker provider).
@@ -32,6 +37,7 @@ type networkTask struct {
 	provider types.Provider
 	deployer *agent.DockerDeployer
 	state    *State
+	runID    string
 }
 
 func (t *networkTask) Execute(nc *dag.NodeContext) error {
@@ -63,7 +69,7 @@ func (t *networkTask) dockerNetwork(nc *dag.NodeContext) error {
 	}
 	defer cli.Close()
 
-	netName := "stroppy-run-net"
+	netName := fmt.Sprintf("stroppy-%s", t.runID)
 	nc.Log().Info("creating docker network", zap.String("name", netName))
 
 	// Reuse if already exists.
@@ -88,6 +94,7 @@ func (t *networkTask) dockerNetwork(nc *dag.NodeContext) error {
 
 	t.state.SetNetworkID(resp.ID)
 	nc.Log().Info("docker network created", zap.String("id", resp.ID))
+
 	return nil
 }
 
@@ -108,7 +115,7 @@ func (t *machinesTask) Execute(nc *dag.NodeContext) error {
 	case types.ProviderYandex:
 		return t.yandexMachines(nc)
 	default:
-		return fmt.Errorf("machine provisioning not implemented for provider %q", t.runCfg.Provider)
+		return fmt.Errorf("machines: unsupported provider %q (supported: %s, %s)", t.runCfg.Provider, types.ProviderDocker, types.ProviderYandex)
 	}
 }
 
@@ -215,9 +222,6 @@ type yandexTfVM struct {
 	CloudInit string `json:"cloud_init"`
 }
 
-// terraformTemplatesDir is the directory containing .tf files for Yandex Cloud.
-const terraformTemplatesDir = "/etc/stroppy/terraform/yandex"
-
 func (t *machinesTask) yandexMachines(nc *dag.NodeContext) error {
 	if t.settings == nil {
 		return fmt.Errorf("machines: server settings not configured for Yandex Cloud provider")
@@ -235,19 +239,13 @@ func (t *machinesTask) yandexMachines(nc *dag.NodeContext) error {
 		return fmt.Errorf("machines: binary_url or server_addr must be configured for cloud provider")
 	}
 
-	// Check that terraform template files exist.
-	tfDir := terraformTemplatesDir
-	if _, err := os.Stat(tfDir); os.IsNotExist(err) {
-		return fmt.Errorf("terraform templates not configured -- set up templates via admin API (expected at %s)", tfDir)
-	}
-
-	// Read all .tf files from the templates directory.
-	tfFiles, err := loadTfFiles(tfDir)
+	// Load embedded terraform templates for Yandex Cloud.
+	tfFiles, err := yctf.EmbeddedTfFiles()
 	if err != nil {
-		return fmt.Errorf("machines: load terraform templates: %w", err)
+		return fmt.Errorf("machines: load embedded terraform templates: %w", err)
 	}
 	if len(tfFiles) == 0 {
-		return fmt.Errorf("terraform templates not configured -- no .tf files found in %s", tfDir)
+		return fmt.Errorf("machines: no embedded terraform templates found")
 	}
 
 	// Build cloud-init and VM specs for each machine.
@@ -406,29 +404,6 @@ func (t *machinesTask) yandexMachines(nc *dag.NodeContext) error {
 	return nil
 }
 
-// loadTfFiles reads all .tf files from a directory and returns them as terraform TfFile slices.
-func loadTfFiles(dir string) ([]terraform.TfFile, error) {
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
-	}
-	var files []terraform.TfFile
-	for _, e := range entries {
-		if e.IsDir() {
-			continue
-		}
-		if filepath.Ext(e.Name()) != ".tf" {
-			continue
-		}
-		data, err := os.ReadFile(filepath.Join(dir, e.Name()))
-		if err != nil {
-			return nil, fmt.Errorf("read %s: %w", e.Name(), err)
-		}
-		files = append(files, terraform.NewTfFile(data, e.Name()))
-	}
-	return files, nil
-}
-
 // waitForAgents polls the /health endpoint on each agent until all respond or timeout.
 func waitForAgents(ctx context.Context, log *zap.Logger, vms []yandexTfVM, ips map[string]string) error {
 	const (
@@ -497,8 +472,9 @@ func (t *teardownTask) Execute(nc *dag.NodeContext) error {
 	case types.ProviderYandex:
 		return t.yandexTeardown(nc)
 	default:
-		nc.Log().Info("teardown: not implemented for provider", zap.String("provider", string(t.provider)))
-		return nil
+		nc.Log().Warn("teardown: provider not supported, skipping",
+			zap.String("provider", string(t.provider)))
+		return nil // not an error — unsupported providers just skip teardown
 	}
 }
 

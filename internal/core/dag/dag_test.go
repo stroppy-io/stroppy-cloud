@@ -7,11 +7,25 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"go.uber.org/zap/zapcore"
 )
 
 // --- test task implementations ---
+
+type flakyTask struct {
+	failCount int
+	attempts  *atomic.Int64
+}
+
+func (t *flakyTask) Execute(*NodeContext) error {
+	n := t.attempts.Add(1)
+	if int(n) <= t.failCount {
+		return errors.New("transient failure")
+	}
+	return nil
+}
 
 type noopTask struct{}
 
@@ -172,35 +186,43 @@ func TestExecutorContextCancel(t *testing.T) {
 	}
 }
 
-func TestExecutorResume(t *testing.T) {
-	var calls atomic.Int64
-	reg := NewRegistry()
-	reg.Register("x", func() Task { return &counterTask{&calls} })
+func TestExecutorRetry(t *testing.T) {
+	var attempts atomic.Int64
+
+	// Task that fails twice then succeeds.
+	flaky := &flakyTask{failCount: 2, attempts: &attempts}
 
 	g := New()
-	must(t, g.Add(&Node{ID: "a", Type: "x", Task: noopTask{}}))
-	must(t, g.Add(&Node{ID: "b", Type: "x", Task: noopTask{}, Deps: []string{"a"}}))
-	must(t, g.Add(&Node{ID: "c", Type: "x", Task: noopTask{}, Deps: []string{"b"}}))
+	must(t, g.Add(&Node{ID: "a", Type: "x", Task: flaky}))
 
-	graphJSON, err := json.Marshal(g)
+	exec := NewExecutor("retry-1", g, nil, nil, nil)
+	exec.SetRetryPolicy(RetryPolicy{MaxRetries: 3, BaseDelay: 10 * time.Millisecond, MaxDelay: 50 * time.Millisecond})
+	err := exec.Run(context.Background())
 	must(t, err)
 
-	store := &memStorage{data: map[string]*Snapshot{
-		"run-1": {
-			GraphJSON: graphJSON,
-			Nodes: []NodeStatus{
-				{ID: "a", Status: StatusDone},
-				{ID: "b", Status: StatusFailed, Error: "transient"},
-				{ID: "c", Status: StatusPending},
-			},
-		},
-	}}
+	if attempts.Load() != 3 {
+		t.Fatalf("expected 3 attempts (2 fail + 1 success), got %d", attempts.Load())
+	}
+}
 
-	exec := NewExecutor("run-1", g, store, nil, nil)
-	must(t, exec.Resume(context.Background(), reg))
+func TestExecutorRetryExhausted(t *testing.T) {
+	var attempts atomic.Int64
 
-	if calls.Load() != 2 {
-		t.Fatalf("expected 2 calls (b + c), got %d", calls.Load())
+	// Task that always fails.
+	alwaysFail := &flakyTask{failCount: 999, attempts: &attempts}
+
+	g := New()
+	must(t, g.Add(&Node{ID: "a", Type: "x", Task: alwaysFail}))
+
+	exec := NewExecutor("retry-2", g, nil, nil, nil)
+	exec.SetRetryPolicy(RetryPolicy{MaxRetries: 2, BaseDelay: 10 * time.Millisecond, MaxDelay: 50 * time.Millisecond})
+	err := exec.Run(context.Background())
+
+	if err == nil {
+		t.Fatal("expected error after retries exhausted")
+	}
+	if attempts.Load() != 3 {
+		t.Fatalf("expected 3 attempts (1 initial + 2 retries), got %d", attempts.Load())
 	}
 }
 
