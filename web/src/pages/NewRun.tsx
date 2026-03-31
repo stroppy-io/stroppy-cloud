@@ -53,10 +53,13 @@ const PRESET_NAMES: Record<DatabaseKind, string[]> = {
   picodata: ["single", "cluster", "scale"],
 };
 
-const DB_META: Record<DatabaseKind, { icon: typeof Database; color: string; accent: string; label: string }> = {
-  postgres: { icon: Database, color: "text-blue-400", accent: "border-blue-500/40 bg-blue-500/[0.06]", label: "PostgreSQL" },
-  mysql:    { icon: Server,   color: "text-orange-400", accent: "border-orange-500/40 bg-orange-500/[0.06]", label: "MySQL" },
-  picodata: { icon: Cpu,      color: "text-emerald-400", accent: "border-emerald-500/40 bg-emerald-500/[0.06]", label: "Picodata" },
+// DB_META now derives colors from the centralized DB_COLORS.
+import { DB_COLORS } from "@/lib/db-colors";
+
+const DB_META: Record<DatabaseKind, { icon: typeof Database; label: string }> = {
+  postgres: { icon: Database, label: "PostgreSQL" },
+  mysql:    { icon: Server,   label: "MySQL" },
+  picodata: { icon: Cpu,      label: "Picodata" },
 };
 
 const PROVIDER_META: Record<Provider, { icon: typeof Cloud; label: string }> = {
@@ -187,6 +190,7 @@ export function NewRun() {
   }
 
   const dbMeta = DB_META[kind];
+  const dbColor = DB_COLORS[kind];
   const DbIcon = dbMeta.icon;
 
   return (
@@ -194,9 +198,9 @@ export function NewRun() {
       {/* Sticky launch bar */}
       <div className="shrink-0 border-b border-zinc-800 bg-[#070707] px-5 py-3 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className={`flex items-center gap-2 px-2.5 py-1 border ${dbMeta.accent}`}>
-            <DbIcon className={`h-3.5 w-3.5 ${dbMeta.color}`} />
-            <span className={`text-xs font-mono font-medium ${dbMeta.color}`}>{dbMeta.label}</span>
+          <div className={`flex items-center gap-2 px-2.5 py-1 border ${dbColor.accent}`}>
+            <DbIcon className={`h-3.5 w-3.5 ${dbColor.text}`} />
+            <span className={`text-xs font-mono font-medium ${dbColor.text}`}>{dbMeta.label}</span>
             <span className="text-[10px] text-zinc-600 font-mono">v{version}</span>
           </div>
           <span className="text-zinc-700 text-xs">/</span>
@@ -256,6 +260,7 @@ export function NewRun() {
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {DB_KINDS.map((k) => {
                   const meta = DB_META[k];
+                  const kColor = DB_COLORS[k];
                   const Icon = meta.icon;
                   const active = kind === k;
                   return (
@@ -265,12 +270,12 @@ export function NewRun() {
                       onClick={() => setKind(k)}
                       className={`flex items-center gap-2.5 border p-3 transition-all cursor-pointer ${
                         active
-                          ? `${meta.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
+                          ? `${kColor.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
                           : "border-zinc-800/60 bg-transparent hover:bg-zinc-900/50 hover:border-zinc-700"
                       }`}
                     >
-                      <Icon className={`h-4 w-4 ${active ? meta.color : "text-zinc-600"}`} />
-                      <span className={`text-sm font-mono font-medium ${active ? meta.color : "text-zinc-500"}`}>
+                      <Icon className={`h-4 w-4 ${active ? kColor.text : "text-zinc-600"}`} />
+                      <span className={`text-sm font-mono font-medium ${active ? kColor.text : "text-zinc-500"}`}>
                         {meta.label}
                       </span>
                     </button>
@@ -332,18 +337,19 @@ export function NewRun() {
                       onClick={() => setPreset(p)}
                       className={`border p-4 text-left transition-all cursor-pointer ${
                         active
-                          ? `${dbMeta.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
+                          ? `${dbColor.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
                           : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700"
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
-                        <span className={`text-xs font-mono font-semibold uppercase tracking-wider ${active ? dbMeta.color : "text-zinc-400"}`}>
+                        <span className={`text-xs font-mono font-semibold uppercase tracking-wider ${active ? dbColor.text : "text-zinc-400"}`}>
                           {p}
                         </span>
                         {active && (
-                          <div className={`w-1.5 h-1.5 rounded-full ${
-                            kind === "postgres" ? "bg-blue-400" : kind === "mysql" ? "bg-orange-400" : "bg-emerald-400"
-                          }`} />
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: dbColor.hex }}
+                          />
                         )}
                       </div>
                       <TopologyDiagram kind={kind} preset={p} />

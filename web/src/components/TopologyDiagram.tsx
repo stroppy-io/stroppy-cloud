@@ -1,4 +1,5 @@
 import type { DatabaseKind } from "@/api/types";
+import { DB_COLORS } from "@/lib/db-colors";
 import { Database, Server, Cpu, Shield, Layers, Globe } from "lucide-react";
 
 interface TopologyDiagramProps {
@@ -13,24 +14,30 @@ interface RoleDef {
   icon: typeof Database;
 }
 
+// Infra roles use a neutral color across all DB types.
+const INFRA_PROXY = "#A0860A";
+const INFRA_COORD = "#7C6CC8";
+
 function getRoles(kind: DatabaseKind, preset: string): RoleDef[] {
+  const c = DB_COLORS[kind];
+
   if (kind === "postgres") {
     switch (preset) {
       case "single":
-        return [{ label: "Master", count: 1, color: "#3b82f6", icon: Database }];
+        return [{ label: "Master", count: 1, color: c.hex, icon: Database }];
       case "ha":
         return [
-          { label: "Master", count: 1, color: "#3b82f6", icon: Database },
-          { label: "Replica", count: 2, color: "#6366f1", icon: Database },
-          { label: "HAProxy", count: 1, color: "#eab308", icon: Globe },
-          { label: "Etcd", count: 3, color: "#8b5cf6", icon: Layers },
+          { label: "Master", count: 1, color: c.hex, icon: Database },
+          { label: "Replica", count: 2, color: c.hexSecondary, icon: Database },
+          { label: "HAProxy", count: 1, color: INFRA_PROXY, icon: Globe },
+          { label: "Etcd", count: 3, color: INFRA_COORD, icon: Layers },
         ];
       case "scale":
         return [
-          { label: "Master", count: 1, color: "#3b82f6", icon: Database },
-          { label: "Replica", count: 4, color: "#6366f1", icon: Database },
-          { label: "HAProxy", count: 2, color: "#eab308", icon: Globe },
-          { label: "Etcd", count: 3, color: "#8b5cf6", icon: Layers },
+          { label: "Master", count: 1, color: c.hex, icon: Database },
+          { label: "Replica", count: 4, color: c.hexSecondary, icon: Database },
+          { label: "HAProxy", count: 2, color: INFRA_PROXY, icon: Globe },
+          { label: "Etcd", count: 3, color: INFRA_COORD, icon: Layers },
         ];
     }
   }
@@ -38,18 +45,18 @@ function getRoles(kind: DatabaseKind, preset: string): RoleDef[] {
   if (kind === "mysql") {
     switch (preset) {
       case "single":
-        return [{ label: "Primary", count: 1, color: "#f97316", icon: Server }];
+        return [{ label: "Primary", count: 1, color: c.hex, icon: Server }];
       case "replica":
         return [
-          { label: "Primary", count: 1, color: "#f97316", icon: Server },
-          { label: "Replica", count: 2, color: "#fb923c", icon: Server },
-          { label: "ProxySQL", count: 1, color: "#eab308", icon: Globe },
+          { label: "Primary", count: 1, color: c.hex, icon: Server },
+          { label: "Replica", count: 2, color: c.hexSecondary, icon: Server },
+          { label: "ProxySQL", count: 1, color: INFRA_PROXY, icon: Globe },
         ];
       case "group":
         return [
-          { label: "Primary", count: 1, color: "#f97316", icon: Server },
-          { label: "Replica", count: 2, color: "#fb923c", icon: Server },
-          { label: "ProxySQL", count: 2, color: "#eab308", icon: Globe },
+          { label: "Primary", count: 1, color: c.hex, icon: Server },
+          { label: "Replica", count: 2, color: c.hexSecondary, icon: Server },
+          { label: "ProxySQL", count: 2, color: INFRA_PROXY, icon: Globe },
         ];
     }
   }
@@ -57,17 +64,17 @@ function getRoles(kind: DatabaseKind, preset: string): RoleDef[] {
   if (kind === "picodata") {
     switch (preset) {
       case "single":
-        return [{ label: "Instance", count: 1, color: "#22c55e", icon: Cpu }];
+        return [{ label: "Instance", count: 1, color: c.hex, icon: Cpu }];
       case "cluster":
         return [
-          { label: "Instance", count: 3, color: "#22c55e", icon: Cpu },
-          { label: "HAProxy", count: 1, color: "#eab308", icon: Globe },
+          { label: "Instance", count: 3, color: c.hex, icon: Cpu },
+          { label: "HAProxy", count: 1, color: INFRA_PROXY, icon: Globe },
         ];
       case "scale":
         return [
-          { label: "Compute", count: 3, color: "#22c55e", icon: Cpu },
-          { label: "Storage", count: 3, color: "#10b981", icon: Shield },
-          { label: "HAProxy", count: 2, color: "#eab308", icon: Globe },
+          { label: "Compute", count: 3, color: c.hex, icon: Cpu },
+          { label: "Storage", count: 3, color: c.hexSecondary, icon: Shield },
+          { label: "HAProxy", count: 2, color: INFRA_PROXY, icon: Globe },
         ];
     }
   }
@@ -104,7 +111,6 @@ export function TopologyDiagram({ kind, preset }: TopologyDiagramProps) {
         <span className="text-[10px] font-mono text-zinc-600 tabular-nums">
           {totalNodes} node{totalNodes !== 1 ? "s" : ""}
         </span>
-        {/* Visual dots representing node count */}
         <div className="flex gap-0.5 ml-auto">
           {roles.map((role, ri) =>
             Array.from({ length: Math.min(role.count, 6) }).map((_, j) => (

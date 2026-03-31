@@ -63,11 +63,7 @@ function extractPresetInfo(data: PresetsResponse): PresetInfo[] {
   return result;
 }
 
-const kindColors: Record<DatabaseKind, string> = {
-  postgres: "text-blue-400",
-  mysql: "text-orange-400",
-  picodata: "text-green-400",
-};
+import { DB_COLORS } from "@/lib/db-colors";
 
 export function Presets() {
   const [presets, setPresets] = useState<PresetInfo[]>([]);
@@ -108,7 +104,7 @@ export function Presets() {
       {(["postgres", "mysql", "picodata"] as DatabaseKind[]).map((kind) => (
         <div key={kind}>
           <div className="flex items-center justify-between mb-3">
-            <h2 className={`text-sm font-semibold uppercase tracking-wider ${kindColors[kind]}`}>
+            <h2 className={`text-sm font-semibold uppercase tracking-wider ${DB_COLORS[kind].text}`}>
               {kind}
             </h2>
             <button
