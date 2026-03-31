@@ -3,7 +3,7 @@ package run
 import (
 	"sync"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 )
 
 // State is the shared mutable state for a single run.
@@ -25,6 +25,9 @@ type State struct {
 	// Docker-specific: container IDs for teardown.
 	containerIDs []string
 	networkID    string
+
+	// Cloud-specific: terraform working directory ID for teardown.
+	terraformWdId string
 }
 
 func NewState() *State { return &State{} }
@@ -116,6 +119,18 @@ func (s *State) NetworkID() string {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 	return s.networkID
+}
+
+func (s *State) SetTerraformWdId(id string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.terraformWdId = id
+}
+
+func (s *State) TerraformWdId() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.terraformWdId
 }
 
 // AllTargetHosts returns all known hosts for monitoring scrape targets.

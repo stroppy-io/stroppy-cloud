@@ -3,9 +3,9 @@ package run
 import (
 	"fmt"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 type stroppyInstallTask struct {
@@ -27,10 +27,12 @@ func (t *stroppyInstallTask) Execute(nc *dag.NodeContext) error {
 }
 
 type stroppyRunTask struct {
-	client  agent.Client
-	state   *State
-	stroppy types.StroppyConfig
-	dbKind  types.DatabaseKind
+	client          agent.Client
+	state           *State
+	stroppy         types.StroppyConfig
+	stroppySettings types.StroppySettings
+	dbKind          types.DatabaseKind
+	runID           string
 }
 
 func (t *stroppyRunTask) Execute(nc *dag.NodeContext) error {
@@ -40,6 +42,9 @@ func (t *stroppyRunTask) Execute(nc *dag.NodeContext) error {
 	}
 	dbHost, dbPort := t.state.DBEndpoint()
 	nc.Log().Info("running stroppy test")
+
+	otlpEnv := t.stroppySettings.StroppyEnv(t.runID)
+
 	return t.client.Send(nc, *target, agent.Command{
 		Action: agent.ActionRunStroppy,
 		Config: agent.StroppyRunConfig{
@@ -50,6 +55,7 @@ func (t *stroppyRunTask) Execute(nc *dag.NodeContext) error {
 			Duration: t.stroppy.Duration,
 			Workers:  t.stroppy.Workers,
 			Options:  t.stroppy.Options,
+			OTLPEnv:  otlpEnv,
 		},
 	})
 }

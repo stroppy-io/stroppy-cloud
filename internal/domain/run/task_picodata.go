@@ -1,9 +1,9 @@
 package run
 
 import (
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 type picoInstallTask struct {
@@ -11,6 +11,7 @@ type picoInstallTask struct {
 	state    *State
 	version  string
 	topology *types.PicodataTopology
+	packages *types.PackageSet
 }
 
 func (t *picoInstallTask) Execute(nc *dag.NodeContext) error {
@@ -19,8 +20,9 @@ func (t *picoInstallTask) Execute(nc *dag.NodeContext) error {
 	return t.client.SendAll(nc, targets, agent.Command{
 		Action: agent.ActionInstallPicodata,
 		Config: agent.PicodataInstallConfig{
-			Version: t.version,
-			DataDir: "/var/lib/picodata",
+			Version:  t.version,
+			DataDir:  "/var/lib/picodata",
+			Packages: t.packages,
 		},
 	})
 }

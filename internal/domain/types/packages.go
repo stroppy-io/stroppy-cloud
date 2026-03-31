@@ -15,6 +15,16 @@ type PackageSet struct {
 	// PreInstall are shell commands to run before package install (add repos, keys, etc.)
 	PreInstallApt []string `json:"pre_install_apt,omitempty"`
 	PreInstallRpm []string `json:"pre_install_rpm,omitempty"`
+	// CustomRepoApt is a full apt repo line (e.g. "deb https://my-registry.corp/apt jammy main")
+	CustomRepoApt string `json:"custom_repo_apt,omitempty"`
+	// CustomRepoKey is the URL to the GPG key for the custom repo
+	CustomRepoKey string `json:"custom_repo_key,omitempty"`
+	// CustomRepoRpm is a full yum/dnf repo baseurl
+	CustomRepoRpm string `json:"custom_repo_rpm,omitempty"`
+	// DebFiles are URLs to raw .deb files to download and install with dpkg
+	DebFiles []string `json:"deb_files,omitempty"`
+	// RpmFiles are URLs to raw .rpm files to download and install with rpm
+	RpmFiles []string `json:"rpm_files,omitempty"`
 }
 
 // PackageDefaults holds default package sets for all components.

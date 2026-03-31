@@ -3,7 +3,7 @@ package agent
 import (
 	"go.uber.org/zap"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 )
 
 // NoopClient logs commands but does not execute them.

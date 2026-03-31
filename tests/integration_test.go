@@ -11,13 +11,15 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/api"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 // ---------------------------------------------------------------------------
@@ -37,7 +39,7 @@ func startTestServer(t *testing.T) *testServer {
 	if err != nil {
 		t.Fatalf("create app: %v", err)
 	}
-	s := api.NewServer(app, logger, "")
+	s := api.NewServer(app, logger, "", "", "")
 	ts := httptest.NewServer(s.Router())
 	t.Cleanup(func() { ts.Close(); app.Close() })
 	return &testServer{app: app, srv: ts, url: ts.URL}
@@ -813,4 +815,42 @@ func makeMetrics(runID string, vals map[string]float64) runMetrics {
 		ms = append(ms, metricSummary{Key: k, Name: k, Avg: v, Max: v * 1.1})
 	}
 	return runMetrics{RunID: runID, Metrics: ms}
+}
+
+// ---------------------------------------------------------------------------
+// Test: WebSocket log streaming
+// ---------------------------------------------------------------------------
+
+func TestWebSocketLogs(t *testing.T) {
+	ts := startTestServer(t)
+
+	// Connect WebSocket
+	wsURL := "ws" + strings.TrimPrefix(ts.url, "http") + "/ws/logs"
+	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	if err != nil {
+		t.Fatalf("ws connect: %v", err)
+	}
+	defer conn.Close()
+
+	// Trigger an agent log via API
+	body := map[string]any{
+		"command_id": "test-cmd",
+		"line":       "test log line",
+		"stream":     "stdout",
+	}
+	resp := ts.post(t, "/api/agent/log", body)
+	resp.Body.Close()
+
+	// Read message from WebSocket (with timeout)
+	conn.SetReadDeadline(time.Now().Add(2 * time.Second))
+	_, msg, err := conn.ReadMessage()
+	if err != nil {
+		t.Fatalf("ws read: %v", err)
+	}
+
+	var wsMsg map[string]any
+	json.Unmarshal(msg, &wsMsg)
+	if wsMsg["type"] != "agent_log" {
+		t.Errorf("expected agent_log, got %v", wsMsg["type"])
+	}
 }

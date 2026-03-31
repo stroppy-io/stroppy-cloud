@@ -7,7 +7,7 @@ import (
 
 	badgerdb "github.com/dgraph-io/badger/v4"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 )
 
 const dagPrefix = "dag:"

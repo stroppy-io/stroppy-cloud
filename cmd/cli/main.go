@@ -13,8 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/api"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
 )
 
 var (
@@ -48,10 +48,17 @@ func main() {
 func serveCmd() *cobra.Command {
 	var addr string
 	var victoriaURL string
+	var apiKey string
+	var settingsFile string
 	cmd := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the HTTP server (agent API + external API + WS)",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			// Default to persistent storage in serve mode.
+			if dataDir == "" {
+				dataDir = "./data"
+			}
+
 			app, err := newApp()
 			if err != nil {
 				return err
@@ -59,7 +66,7 @@ func serveCmd() *cobra.Command {
 			defer app.Close()
 
 			logger, _ := zap.NewDevelopment()
-			srv := api.NewServer(app, logger, victoriaURL)
+			srv := api.NewServer(app, logger, victoriaURL, apiKey, settingsFile)
 
 			httpSrv := &http.Server{Addr: addr, Handler: srv.Router()}
 
@@ -78,6 +85,8 @@ func serveCmd() *cobra.Command {
 	}
 	cmd.Flags().StringVar(&addr, "addr", ":8080", "listen address")
 	cmd.Flags().StringVar(&victoriaURL, "victoria-url", "", "VictoriaMetrics URL (e.g. http://localhost:8428)")
+	cmd.Flags().StringVar(&apiKey, "api-key", "", "API key for authentication (empty = auth disabled)")
+	cmd.Flags().StringVar(&settingsFile, "settings-file", "settings.json", "path to settings JSON file for persistence")
 	return cmd
 }
 
@@ -239,7 +248,7 @@ func newApp() (*api.App, error) {
 	return api.New(api.Config{
 		DataDir: dataDir,
 		Logger:  logger,
-		Client:  nil, // TODO: wire HTTP agent client
+		Client:  nil, // buildDeps defaults to HTTPClient when nil
 		Sink:    nil, // wired by NewServer when in serve mode
 	})
 }

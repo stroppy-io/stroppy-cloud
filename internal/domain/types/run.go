@@ -243,4 +243,7 @@ type RunConfig struct {
 	Database DatabaseConfig `json:"database"`
 	Monitor  MonitorConfig  `json:"monitor"`
 	Stroppy  StroppyConfig  `json:"stroppy"`
+	// Packages overrides default apt/rpm packages for the database.
+	// If nil, DefaultPackages() is used. Set via admin API.
+	Packages *PackageSet `json:"packages,omitempty"`
 }

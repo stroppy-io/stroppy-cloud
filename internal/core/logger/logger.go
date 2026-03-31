@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
-	"github.com/stroppy-io/hatchet-workflow/internal/core/build"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/build"
 	"go.uber.org/zap"
 	"go.uber.org/zap/exp/zapslog"
 	"go.uber.org/zap/zapcore"

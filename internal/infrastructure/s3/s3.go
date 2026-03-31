@@ -12,9 +12,9 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewS3Client(config *Config, lg *zap.Logger) *s3.Client {
+func NewS3Client(ctx context.Context, config *Config, lg *zap.Logger) *s3.Client {
 	cfg, err := awsCfg.LoadDefaultConfig(
-		context.TODO(),
+		ctx,
 		awsCfg.WithRegion(config.Region),
 		awsCfg.WithCredentialsProvider(aws.CredentialsProviderFunc(func(_ context.Context) (aws.Credentials, error) {
 			return aws.Credentials{
@@ -42,15 +42,15 @@ func NewS3Client(config *Config, lg *zap.Logger) *s3.Client {
 	)
 }
 
-func CreateS3BucketIfNotExists(s3Client *s3.Client, bucketName string) error {
-	buckets, err := s3Client.ListBuckets(context.TODO(), &s3.ListBucketsInput{})
+func CreateS3BucketIfNotExists(ctx context.Context, s3Client *s3.Client, bucketName string) error {
+	buckets, err := s3Client.ListBuckets(ctx, &s3.ListBucketsInput{})
 	if err != nil {
 		return err
 	}
 	if !lo.ContainsBy(buckets.Buckets, func(item types.Bucket) bool {
 		return item.Name != nil && *item.Name == bucketName
 	}) {
-		_, err = s3Client.CreateBucket(context.TODO(), &s3.CreateBucketInput{
+		_, err = s3Client.CreateBucket(ctx, &s3.CreateBucketInput{
 			Bucket: aws.String(bucketName),
 		})
 	}

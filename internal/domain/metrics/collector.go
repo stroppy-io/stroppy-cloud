@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/infrastructure/victoria"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
 )
 
 // TimeRange defines the observation window for a run.

@@ -5,7 +5,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 func mysqlCfg(id string, preset types.MySQLPreset, version string) types.RunConfig {

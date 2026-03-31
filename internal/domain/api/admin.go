@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 // ============================================================
@@ -34,6 +34,11 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
 
 	s.settingsMu.Lock()
 	s.settings = &updated
+	if err := s.saveSettingsToDisk(); err != nil {
+		s.settingsMu.Unlock()
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "persist settings: " + err.Error()})
+		return
+	}
 	s.settingsMu.Unlock()
 
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
@@ -60,6 +65,11 @@ func (s *Server) updatePackages(w http.ResponseWriter, r *http.Request) {
 
 	s.settingsMu.Lock()
 	s.settings.Packages = updated
+	if err := s.saveSettingsToDisk(); err != nil {
+		s.settingsMu.Unlock()
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "persist settings: " + err.Error()})
+		return
+	}
 	s.settingsMu.Unlock()
 
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})

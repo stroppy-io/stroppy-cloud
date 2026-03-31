@@ -1,9 +1,9 @@
 package run
 
 import (
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 type pgInstallTask struct {
@@ -11,6 +11,7 @@ type pgInstallTask struct {
 	state    *State
 	version  string
 	topology *types.PostgresTopology
+	packages *types.PackageSet
 }
 
 func (t *pgInstallTask) Execute(nc *dag.NodeContext) error {
@@ -19,8 +20,9 @@ func (t *pgInstallTask) Execute(nc *dag.NodeContext) error {
 	return t.client.SendAll(nc, targets, agent.Command{
 		Action: agent.ActionInstallPostgres,
 		Config: agent.PostgresInstallConfig{
-			Version: t.version,
-			DataDir: "/var/lib/postgresql/data",
+			Version:  t.version,
+			DataDir:  "/var/lib/postgresql/data",
+			Packages: t.packages,
 		},
 	})
 }

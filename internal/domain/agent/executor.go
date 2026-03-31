@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 // Executor runs agent commands on the local machine.
@@ -57,6 +57,53 @@ func (e *Executor) aptPreInstall(ctx context.Context, cmds []string) error {
 			return err
 		}
 	}
+	return nil
+}
+
+// installFromPackageSet handles all package installation modes:
+// 1. Custom repo (CustomRepoApt) — adds repo + optional GPG key, then apt-get update
+// 2. Raw .deb files (DebFiles) — downloads and dpkg -i, with apt-get install -f fallback
+// 3. Standard apt packages (PreInstallApt + Apt) — pre-install commands then apt install
+func (e *Executor) installFromPackageSet(ctx context.Context, ps types.PackageSet) error {
+	// 1. Add custom repo if specified
+	if ps.CustomRepoApt != "" {
+		if ps.CustomRepoKey != "" {
+			if _, err := e.shellWithAptLock(ctx, fmt.Sprintf(
+				`curl -fsSL "%s" | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/custom.gpg --import && chmod 644 /etc/apt/trusted.gpg.d/custom.gpg`,
+				ps.CustomRepoKey)); err != nil {
+				return fmt.Errorf("add custom repo key: %w", err)
+			}
+		}
+		if _, err := e.shellWithAptLock(ctx, fmt.Sprintf(
+			`echo "%s" > /etc/apt/sources.list.d/custom.list && apt-get update`,
+			ps.CustomRepoApt)); err != nil {
+			return fmt.Errorf("add custom repo: %w", err)
+		}
+	}
+
+	// 2. Install raw .deb files
+	if len(ps.DebFiles) > 0 {
+		for i, url := range ps.DebFiles {
+			debPath := fmt.Sprintf("/tmp/custom_%d.deb", i)
+			script := fmt.Sprintf(`curl -fsSL "%s" -o %s && dpkg -i %s || apt-get install -f -y`, url, debPath, debPath)
+			if _, err := e.shellWithAptLock(ctx, script); err != nil {
+				return fmt.Errorf("install deb %s: %w", url, err)
+			}
+		}
+	}
+
+	// 3. Standard apt packages
+	if len(ps.PreInstallApt) > 0 {
+		if err := e.aptPreInstall(ctx, ps.PreInstallApt); err != nil {
+			return fmt.Errorf("pre-install: %w", err)
+		}
+	}
+	if len(ps.Apt) > 0 {
+		if err := e.aptInstall(ctx, strings.Join(ps.Apt, " ")); err != nil {
+			return fmt.Errorf("apt install: %w", err)
+		}
+	}
+
 	return nil
 }
 
@@ -192,6 +239,31 @@ func parseConfig(cmd Command, target any) error {
 	return nil
 }
 
+// resolvePackages returns custom packages if provided, otherwise falls back to defaults.
+func resolvePackages(custom *types.PackageSet, kind string, version string) types.PackageSet {
+	if custom != nil && (len(custom.Apt) > 0 || len(custom.Rpm) > 0 ||
+		custom.CustomRepoApt != "" || custom.CustomRepoRpm != "" ||
+		len(custom.DebFiles) > 0 || len(custom.RpmFiles) > 0) {
+		return *custom
+	}
+	defaults := types.DefaultPackages()
+	switch kind {
+	case "postgres":
+		if ps, ok := defaults.Postgres[version]; ok {
+			return ps
+		}
+	case "mysql":
+		if ps, ok := defaults.MySQL[version]; ok {
+			return ps
+		}
+	case "picodata":
+		if ps, ok := defaults.Picodata[version]; ok {
+			return ps
+		}
+	}
+	return types.PackageSet{}
+}
+
 // ---------------------------------------------------------------------------
 // installPostgres
 // ---------------------------------------------------------------------------
@@ -207,17 +279,13 @@ func (e *Executor) installPostgres(ctx context.Context, cmd Command) error {
 		version = "16"
 	}
 
-	pkgs := types.DefaultPackages()
-	ps, ok := pkgs.Postgres[version]
-	if !ok {
-		return fmt.Errorf("unsupported postgres version: %s", version)
+	ps := resolvePackages(cfg.Packages, "postgres", version)
+	if len(ps.Apt) == 0 && len(ps.DebFiles) == 0 && ps.CustomRepoApt == "" {
+		return fmt.Errorf("no apt packages defined for postgres version %s", version)
 	}
 
-	if err := e.aptPreInstall(ctx, ps.PreInstallApt); err != nil {
-		return fmt.Errorf("pre-install: %w", err)
-	}
-	if err := e.aptInstall(ctx, strings.Join(ps.Apt, " ")); err != nil {
-		return fmt.Errorf("install postgres packages: %w", err)
+	if err := e.installFromPackageSet(ctx, ps); err != nil {
+		return fmt.Errorf("install postgres: %w", err)
 	}
 	return nil
 }
@@ -317,20 +385,17 @@ func (e *Executor) installMySQL(ctx context.Context, cmd Command) error {
 		version = "8.0"
 	}
 
-	pkgs := types.DefaultPackages()
-	ps, ok := pkgs.MySQL[version]
-	if !ok {
-		return fmt.Errorf("unsupported mysql version: %s", version)
+	ps := resolvePackages(cfg.Packages, "mysql", version)
+	if len(ps.Apt) == 0 && len(ps.DebFiles) == 0 && ps.CustomRepoApt == "" {
+		return fmt.Errorf("no apt packages defined for mysql version %s", version)
 	}
 
-	if err := e.aptPreInstall(ctx, ps.PreInstallApt); err != nil {
-		return fmt.Errorf("pre-install: %w", err)
-	}
 	// MySQL postinst tries to start/stop mysqld which fails in Docker.
 	// Install with error tolerance, then verify binary exists.
-	e.aptInstall(ctx, strings.Join(ps.Apt, " "))
-	if _, err := shell(ctx, "which mysqld"); err != nil {
-		return fmt.Errorf("mysql binary not found after install")
+	if err := e.installFromPackageSet(ctx, ps); err != nil {
+		if _, verr := shell(ctx, "which mysqld"); verr != nil {
+			return fmt.Errorf("install mysql: %w", err)
+		}
 	}
 	return nil
 }
@@ -385,10 +450,22 @@ for i in $(seq 1 30); do mysqladmin ping -u root --silent 2>/dev/null && break; 
 		return fmt.Errorf("start mysql: %w", err)
 	}
 
+	if cfg.Role == "primary" {
+		// Create replication user on primary so replicas can connect.
+		replUserScript := `mysql -h 127.0.0.1 -u root -e "CREATE USER IF NOT EXISTS 'repl'@'%' IDENTIFIED BY 'repl_password'; GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%'; FLUSH PRIVILEGES;"`
+		if _, err := shell(ctx, replUserScript); err != nil {
+			return fmt.Errorf("create replication user: %w", err)
+		}
+	}
+
 	if cfg.Role == "replica" && cfg.PrimaryHost != "" {
-		// Wait extra for mysqld to be fully ready on replica.
-		shell(ctx, `for i in $(seq 1 30); do mysqladmin ping -h 127.0.0.1 -u root --silent 2>/dev/null && break; sleep 1; done`)
-		replicaScript := fmt.Sprintf(`mysql -h 127.0.0.1 -u root -e "CHANGE REPLICATION SOURCE TO SOURCE_HOST='%s', SOURCE_USER='repl', SOURCE_AUTO_POSITION=1; START REPLICA;"`,
+		// Wait for primary to be reachable before configuring replication.
+		waitPrimary := fmt.Sprintf(`for i in $(seq 1 30); do mysql -h %s -u repl -prepl_password -e "SELECT 1" 2>/dev/null && break; sleep 2; done`,
+			cfg.PrimaryHost)
+		if _, err := shell(ctx, waitPrimary); err != nil {
+			return fmt.Errorf("wait for mysql primary: %w", err)
+		}
+		replicaScript := fmt.Sprintf(`mysql -h 127.0.0.1 -u root -e "CHANGE REPLICATION SOURCE TO SOURCE_HOST='%s', SOURCE_USER='repl', SOURCE_PASSWORD='repl_password', SOURCE_AUTO_POSITION=1; START REPLICA;"`,
 			cfg.PrimaryHost)
 		if _, err := shell(ctx, replicaScript); err != nil {
 			return fmt.Errorf("setup mysql replica: %w", err)
@@ -413,17 +490,13 @@ func (e *Executor) installPicodata(ctx context.Context, cmd Command) error {
 		version = "25.3"
 	}
 
-	pkgs := types.DefaultPackages()
-	ps, ok := pkgs.Picodata[version]
-	if !ok {
-		return fmt.Errorf("unsupported picodata version: %s", version)
+	ps := resolvePackages(cfg.Packages, "picodata", version)
+	if len(ps.Apt) == 0 && len(ps.DebFiles) == 0 && ps.CustomRepoApt == "" {
+		return fmt.Errorf("no apt packages defined for picodata version %s", version)
 	}
 
-	if err := e.aptPreInstall(ctx, ps.PreInstallApt); err != nil {
-		return fmt.Errorf("pre-install: %w", err)
-	}
-	if err := e.aptInstall(ctx, strings.Join(ps.Apt, " ")); err != nil {
-		return fmt.Errorf("install picodata packages: %w", err)
+	if err := e.installFromPackageSet(ctx, ps); err != nil {
+		return fmt.Errorf("install picodata: %w", err)
 	}
 	return nil
 }
@@ -439,35 +512,68 @@ func (e *Executor) configPicodata(ctx context.Context, cmd Command) error {
 	}
 
 	defaults := types.PicodataDefaults("25.3")
+	resolveMemoryDefaults(defaults)
 	for k, v := range cfg.Options {
 		defaults[k] = v
 	}
 
-	// Build picodata config.
-	var confBuf strings.Builder
-	confBuf.WriteString("# Generated by stroppy-agent\n")
-	fmt.Fprintf(&confBuf, "instance_id = %d\n", cfg.InstanceID)
-	fmt.Fprintf(&confBuf, "replication_factor = %d\n", cfg.Replication)
-	fmt.Fprintf(&confBuf, "shards = %d\n", cfg.Shards)
-	for k, v := range defaults {
-		// Skip keys already written explicitly.
-		if k == "replication_factor" || k == "shards" {
-			continue
-		}
-		fmt.Fprintf(&confBuf, "%s = %s\n", k, v)
+	replication := cfg.Replication
+	if replication < 1 {
+		replication = 2
 	}
 
-	confPath := "/etc/picodata/picodata.conf"
+	// The first peer is the bootstrap instance; all others join via it.
+	firstPeer := cfg.Peers[0]
+	if !strings.Contains(firstPeer, ":") {
+		firstPeer = firstPeer + ":3301"
+	}
+
+	memtxMemory := defaults["memtx_memory"]
+	// Convert MB suffix to bytes for picodata YAML config.
+	memtxMemory = strings.TrimSuffix(memtxMemory, "MB")
+	var memtxBytes int
+	fmt.Sscanf(memtxMemory, "%d", &memtxBytes)
+	if memtxBytes > 0 {
+		memtxBytes = memtxBytes * 1024 * 1024
+	} else {
+		memtxBytes = 256 * 1024 * 1024
+	}
+
+	// Build proper picodata YAML config.
+	var confBuf strings.Builder
+	confBuf.WriteString("# Generated by stroppy-agent\n")
+	confBuf.WriteString("cluster:\n")
+	confBuf.WriteString("  name: stroppy-cluster\n")
+	confBuf.WriteString("  tier:\n")
+	confBuf.WriteString("    default:\n")
+	fmt.Fprintf(&confBuf, "      replication_factor: %d\n", replication)
+	confBuf.WriteString("      can_vote: true\n")
+	confBuf.WriteString("\n")
+	confBuf.WriteString("instance:\n")
+	fmt.Fprintf(&confBuf, "  name: instance-%d\n", cfg.InstanceID)
+	confBuf.WriteString("  tier: default\n")
+	confBuf.WriteString("  peer:\n")
+	fmt.Fprintf(&confBuf, "    - %s\n", firstPeer)
+	confBuf.WriteString("  iproto:\n")
+	confBuf.WriteString("    listen: 0.0.0.0:3301\n")
+	confBuf.WriteString("  pgproto:\n")
+	confBuf.WriteString("    listen: 0.0.0.0:4327\n")
+	confBuf.WriteString("  http:\n")
+	confBuf.WriteString("    listen: 0.0.0.0:8081\n")
+	confBuf.WriteString("  memtx:\n")
+	fmt.Fprintf(&confBuf, "    memory: %d\n", memtxBytes)
+
+	confPath := "/etc/picodata/picodata.yaml"
 	writeScript := fmt.Sprintf("mkdir -p /etc/picodata && cat > %s << 'PICOCONF'\n%sPICOCONF", confPath, confBuf.String())
 	if _, err := shell(ctx, writeScript); err != nil {
 		return fmt.Errorf("write picodata config: %w", err)
 	}
 
-	// Start picodata with peer list.
-	peerAddrs := strings.Join(cfg.Peers, ",")
+	// Start picodata.
 	dataDir := "/var/lib/picodata"
-	startScript := fmt.Sprintf("mkdir -p %s && picodata run --config %s --peers %s --data-dir %s &",
-		dataDir, confPath, peerAddrs, dataDir)
+	startScript := fmt.Sprintf(`mkdir -p %s /var/log && nohup picodata run --config %s > /var/log/picodata.log 2>&1 &
+for i in $(seq 1 30); do curl -sf http://localhost:8081/api/v1/health/ready 2>/dev/null && break; sleep 2; done`,
+		dataDir, confPath)
 	if _, err := shell(ctx, startScript); err != nil {
 		return fmt.Errorf("start picodata: %w", err)
 	}
@@ -624,6 +730,9 @@ func (e *Executor) runStroppy(ctx context.Context, cmd Command) error {
 		if strings.HasPrefix(k, "K6_OTEL_") || strings.HasPrefix(k, "k6_otel_") {
 			envParts = append(envParts, fmt.Sprintf("%s='%s'", strings.ToUpper(k), v))
 		}
+	}
+	for k, v := range cfg.OTLPEnv {
+		envParts = append(envParts, fmt.Sprintf("%s='%s'", k, v))
 	}
 
 	duration := cfg.Duration
@@ -1068,17 +1177,24 @@ func (e *Executor) configHAProxy(ctx context.Context, cmd Command) error {
 // ---------------------------------------------------------------------------
 
 func (e *Executor) installProxySQL(ctx context.Context, cmd Command) error {
-	// Add ProxySQL apt repo and install.
-	preInstall := []string{
-		`wget -qO - https://repo.proxysql.com/ProxySQL/repo_pub_key | apt-key add -`,
-		`echo "deb https://repo.proxysql.com/ProxySQL/proxysql-2.7.x/$(lsb_release -sc)/ ./" > /etc/apt/sources.list.d/proxysql.list`,
-		`apt-get update`,
-	}
-	if err := e.aptPreInstall(ctx, preInstall); err != nil {
-		return fmt.Errorf("proxysql repo setup: %w", err)
-	}
-	if err := e.aptInstall(ctx, "proxysql"); err != nil {
-		return fmt.Errorf("install proxysql: %w", err)
+	// Download ProxySQL from GitHub releases (more reliable than repo.proxysql.com).
+	version := "2.7.3"
+	url := fmt.Sprintf("https://github.com/sysown/proxysql/releases/download/v%s/proxysql_%s-ubuntu22_amd64.deb", version, version)
+	githubScript := fmt.Sprintf(`curl -fsSL "%s" -o /tmp/proxysql.deb && dpkg -i /tmp/proxysql.deb && rm -f /tmp/proxysql.deb`, url)
+
+	if _, err := shell(ctx, githubScript); err != nil {
+		// Fallback: use apt repo if GitHub download fails.
+		preInstall := []string{
+			`wget -qO - https://repo.proxysql.com/ProxySQL/repo_pub_key | apt-key add -`,
+			`echo "deb https://repo.proxysql.com/ProxySQL/proxysql-2.7.x/$(lsb_release -sc)/ ./" > /etc/apt/sources.list.d/proxysql.list`,
+			`apt-get update`,
+		}
+		if err := e.aptPreInstall(ctx, preInstall); err != nil {
+			return fmt.Errorf("proxysql repo setup (fallback): %w", err)
+		}
+		if err := e.aptInstall(ctx, "proxysql"); err != nil {
+			return fmt.Errorf("install proxysql (fallback): %w", err)
+		}
 	}
 	return nil
 }

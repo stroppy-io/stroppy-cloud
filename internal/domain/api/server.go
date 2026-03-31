@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -13,10 +14,10 @@ import (
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/metrics"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
-	"github.com/stroppy-io/hatchet-workflow/internal/infrastructure/victoria"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/metrics"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
 )
 
 // Server is the HTTP server exposing agent, external, and UI APIs.
@@ -25,32 +26,42 @@ type Server struct {
 	logger    *zap.Logger
 	hub       *wsHub
 	collector *metrics.Collector
+	apiKey    string
 
 	// agentRegistry tracks connected agents by machine ID.
 	agentsMu sync.RWMutex
 	agents   map[string]agent.Target
 
 	// settings holds admin-managed server settings, protected by settingsMu.
-	settingsMu sync.RWMutex
-	settings   *types.ServerSettings
+	settingsMu   sync.RWMutex
+	settings     *types.ServerSettings
+	settingsPath string
 }
 
 // NewServer creates an HTTP server backed by the App.
 // victoriaURL may be empty to disable metrics endpoints.
-func NewServer(app *App, logger *zap.Logger, victoriaURL string) *Server {
+// apiKey may be empty to disable authentication (development mode).
+// settingsPath may be empty to disable settings persistence.
+func NewServer(app *App, logger *zap.Logger, victoriaURL, apiKey, settingsPath string) *Server {
 	defaults := types.DefaultServerSettings()
 	s := &Server{
-		app:      app,
-		logger:   logger,
-		hub:      newWSHub(),
-		agents:   make(map[string]agent.Target),
-		settings: &defaults,
+		app:          app,
+		logger:       logger,
+		hub:          newWSHub(),
+		agents:       make(map[string]agent.Target),
+		settings:     &defaults,
+		apiKey:       apiKey,
+		settingsPath: settingsPath,
 	}
 	if victoriaURL != "" {
 		s.collector = metrics.NewCollector(victoria.NewClient(victoriaURL))
 	}
+	// Load persisted settings from disk (if available).
+	s.loadSettingsFromDisk()
 	// Wire LogSink so executor logs stream to WebSocket clients.
 	app.sink = s.hub
+	// Wire settings getter so buildDeps can access current cloud settings.
+	app.settingsFunc = s.currentSettings
 	return s
 }
 
@@ -59,6 +70,15 @@ func (s *Server) Router() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
+
+	if s.apiKey != "" {
+		r.Use(AuthMiddleware(s.apiKey))
+	}
+
+	// --- Health ---
+	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+	})
 
 	// --- Agent API ---
 	r.Route("/api/agent", func(r chi.Router) {
@@ -94,6 +114,10 @@ func (s *Server) Router() http.Handler {
 	// --- UI WebSocket ---
 	r.Get("/ws/logs", s.wsLogs)
 	r.Get("/ws/logs/{runID}", s.wsLogsRun)
+
+	// --- Upload & package serving ---
+	r.Post("/api/v1/upload/deb", s.uploadDeb)
+	r.Get("/packages/*", http.StripPrefix("/packages/", http.FileServer(http.Dir(uploadDir))).ServeHTTP)
 
 	// --- Agent binary download ---
 	r.Get("/agent/binary", s.serveBinary)
@@ -397,4 +421,44 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	json.NewEncoder(w).Encode(v)
+}
+
+// ============================================================
+// Settings persistence
+// ============================================================
+
+// currentSettings returns a snapshot of the current server settings.
+func (s *Server) currentSettings() *types.ServerSettings {
+	s.settingsMu.RLock()
+	defer s.settingsMu.RUnlock()
+	cp := *s.settings
+	return &cp
+}
+
+// loadSettingsFromDisk loads settings from the JSON file at settingsPath.
+// If the file does not exist or cannot be parsed, defaults are kept.
+func (s *Server) loadSettingsFromDisk() {
+	if s.settingsPath == "" {
+		return
+	}
+	data, err := os.ReadFile(s.settingsPath)
+	if err != nil {
+		return // file missing or unreadable — use defaults
+	}
+	var settings types.ServerSettings
+	if json.Unmarshal(data, &settings) == nil {
+		s.settings = &settings
+	}
+}
+
+// saveSettingsToDisk persists the current settings to the JSON file at settingsPath.
+func (s *Server) saveSettingsToDisk() error {
+	if s.settingsPath == "" {
+		return nil
+	}
+	data, err := json.MarshalIndent(s.settings, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(s.settingsPath, data, 0644)
 }

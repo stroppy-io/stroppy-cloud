@@ -12,9 +12,9 @@ import (
 	"github.com/hashicorp/terraform-exec/tfexec"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/samber/lo"
-	"github.com/stroppy-io/hatchet-workflow/internal/core/defaults"
-	"github.com/stroppy-io/hatchet-workflow/internal/core/logger"
-	"github.com/stroppy-io/hatchet-workflow/internal/core/uow"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/defaults"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/logger"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/uow"
 )
 
 const (

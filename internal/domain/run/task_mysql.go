@@ -1,9 +1,9 @@
 package run
 
 import (
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 type mysqlInstallTask struct {
@@ -11,6 +11,7 @@ type mysqlInstallTask struct {
 	state    *State
 	version  string
 	topology *types.MySQLTopology
+	packages *types.PackageSet
 }
 
 func (t *mysqlInstallTask) Execute(nc *dag.NodeContext) error {
@@ -19,8 +20,9 @@ func (t *mysqlInstallTask) Execute(nc *dag.NodeContext) error {
 	return t.client.SendAll(nc, targets, agent.Command{
 		Action: agent.ActionInstallMySQL,
 		Config: agent.MySQLInstallConfig{
-			Version: t.version,
-			DataDir: "/var/lib/mysql",
+			Version:  t.version,
+			DataDir:  "/var/lib/mysql",
+			Packages: t.packages,
 		},
 	})
 }

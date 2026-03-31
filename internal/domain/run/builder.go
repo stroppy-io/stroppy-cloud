@@ -3,9 +3,9 @@ package run
 import (
 	"fmt"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
 )
 
 // Deps holds external dependencies injected into DAG tasks.
@@ -15,6 +15,8 @@ type Deps struct {
 	State    *State
 	// ServerAddr is the server callback address for agents.
 	ServerAddr string
+	// Settings provides cloud configuration (Yandex credentials, binary URL, etc.).
+	Settings *types.ServerSettings
 }
 
 // Build constructs a dag.Graph and dag.Registry from a RunConfig.
@@ -55,7 +57,7 @@ func (b *builder) build() error {
 		&networkTask{cfg: b.cfg.Network, provider: b.cfg.Provider, deployer: b.deps.Deployer, state: b.deps.State})
 
 	b.add(b.ph(types.PhaseMachines), []string{b.ph(types.PhaseNetwork)},
-		&machinesTask{runCfg: b.cfg, state: b.deps.State, deployer: b.deps.Deployer, serverAddr: b.deps.ServerAddr})
+		&machinesTask{runCfg: b.cfg, state: b.deps.State, deployer: b.deps.Deployer, serverAddr: b.deps.ServerAddr, settings: b.deps.Settings})
 
 	// --- etcd (if Postgres HA with etcd) ---
 	configDBDeps := []string{b.ph(types.PhaseInstallDB)}
@@ -98,8 +100,19 @@ func (b *builder) build() error {
 		b.ph(types.PhaseConfigureMonitor),
 		b.ph(types.PhaseInstallStroppy),
 	)
+	var stroppySettings types.StroppySettings
+	if b.deps.Settings != nil {
+		stroppySettings = b.deps.Settings.StroppyDefaults
+	}
 	b.add(b.ph(types.PhaseRunStroppy), b.runStroppyDeps,
-		&stroppyRunTask{client: b.deps.Client, state: b.deps.State, stroppy: b.cfg.Stroppy, dbKind: b.cfg.Database.Kind})
+		&stroppyRunTask{
+			client:          b.deps.Client,
+			state:           b.deps.State,
+			stroppy:         b.cfg.Stroppy,
+			stroppySettings: stroppySettings,
+			dbKind:          b.cfg.Database.Kind,
+			runID:           b.cfg.ID,
+		})
 
 	// --- teardown ---
 	b.add(b.ph(types.PhaseTeardown), []string{b.ph(types.PhaseRunStroppy)},
@@ -170,15 +183,16 @@ func (b *builder) addProxy(afterMachines []string) {
 
 func (b *builder) dbTasks() (install dag.Task, config dag.Task, err error) {
 	db := b.cfg.Database
+	pkgs := b.cfg.Packages // may be nil — agent will use defaults
 	switch db.Kind {
 	case types.DatabasePostgres:
-		return &pgInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.Postgres},
+		return &pgInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.Postgres, packages: pkgs},
 			&pgConfigTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.Postgres}, nil
 	case types.DatabaseMySQL:
-		return &mysqlInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.MySQL},
+		return &mysqlInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.MySQL, packages: pkgs},
 			&mysqlConfigTask{client: b.deps.Client, state: b.deps.State, topology: db.MySQL}, nil
 	case types.DatabasePicodata:
-		return &picoInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.Picodata},
+		return &picoInstallTask{client: b.deps.Client, state: b.deps.State, version: db.Version, topology: db.Picodata, packages: pkgs},
 			&picoConfigTask{client: b.deps.Client, state: b.deps.State, topology: db.Picodata}, nil
 	default:
 		return nil, nil, fmt.Errorf("unsupported database kind %q", db.Kind)

@@ -9,11 +9,11 @@ import (
 	badgerdb "github.com/dgraph-io/badger/v4"
 	"go.uber.org/zap"
 
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/agent"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/run"
-	"github.com/stroppy-io/hatchet-workflow/internal/domain/types"
-	badgerstorage "github.com/stroppy-io/hatchet-workflow/internal/infrastructure/badger"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	badgerstorage "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/badger"
 )
 
 // App is the top-level application facade.
@@ -24,6 +24,9 @@ type App struct {
 	logger  *zap.Logger
 	client  agent.Client
 	sink    dag.LogSink
+	// settingsFunc returns the current server settings snapshot.
+	// Set by Server after construction.
+	settingsFunc func() *types.ServerSettings
 }
 
 // Config holds application-level settings.
@@ -143,10 +146,15 @@ func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
 	state := run.NewState()
 	cl := a.client
 	if cl == nil {
-		cl = agent.NoopClient{}
+		cl = agent.NewHTTPClient()
 	}
 	deps := run.Deps{Client: cl, State: state}
 	noop := func() {}
+
+	// Attach current settings snapshot if available.
+	if a.settingsFunc != nil {
+		deps.Settings = a.settingsFunc()
+	}
 
 	if cfg.Provider == types.ProviderDocker {
 		deployer, err := agent.NewDockerDeployer("stroppy-run-net")
@@ -157,6 +165,12 @@ func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
 		deps.Client = agent.NewHTTPClient()
 		deps.ServerAddr = "http://host.docker.internal:8080" // server from inside containers
 		return deps, func() { deployer.Close() }, nil
+	}
+
+	// For cloud providers, use settings-based server address and HTTP client.
+	if deps.Settings != nil && deps.Settings.Cloud.ServerAddr != "" {
+		deps.ServerAddr = deps.Settings.Cloud.ServerAddr
+		deps.Client = agent.NewHTTPClient()
 	}
 
 	return deps, noop, nil

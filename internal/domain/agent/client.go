@@ -1,7 +1,7 @@
 package agent
 
 import (
-	"github.com/stroppy-io/hatchet-workflow/internal/core/dag"
+	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 )
 
 // Client sends commands to agents and receives reports.
