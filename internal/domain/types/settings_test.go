@@ -7,7 +7,6 @@ import (
 func TestStroppyEnv_AllFieldsSet(t *testing.T) {
 	s := StroppySettings{
 		OTLPExporterType: "http",
-		OTLPEndpoint:     "https://metrics.example.com",
 		OTLPURLPath:      "/v1/metrics",
 		OTLPInsecure:     true,
 		OTLPHeaders:      "Authorization=Basic abc",
@@ -19,7 +18,6 @@ func TestStroppyEnv_AllFieldsSet(t *testing.T) {
 
 	expected := map[string]string{
 		"K6_OTEL_EXPORTER_TYPE":          "http",
-		"K6_OTEL_HTTP_EXPORTER_ENDPOINT": "https://metrics.example.com",
 		"K6_OTEL_HTTP_EXPORTER_URL_PATH": "/v1/metrics",
 		"K6_OTEL_HTTP_EXPORTER_INSECURE": "true",
 		"K6_OTEL_HEADERS":                "Authorization=Basic abc",
@@ -48,27 +46,15 @@ func TestStroppyEnv_EmptyFields(t *testing.T) {
 	}
 }
 
-func TestStroppyEnv_InsecureFalseWithEndpoint(t *testing.T) {
-	s := StroppySettings{
-		OTLPEndpoint: "https://metrics.example.com",
-		OTLPInsecure: false,
-	}
-	env := s.StroppyEnv("")
-
-	if env["K6_OTEL_HTTP_EXPORTER_INSECURE"] != "false" {
-		t.Errorf("expected insecure=false when endpoint is set, got %q", env["K6_OTEL_HTTP_EXPORTER_INSECURE"])
-	}
-}
-
-func TestStroppyEnv_InsecureFalseWithoutEndpoint(t *testing.T) {
+func TestStroppyEnv_InsecureFalse(t *testing.T) {
 	s := StroppySettings{
 		OTLPInsecure: false,
 	}
 	env := s.StroppyEnv("")
 
-	// When endpoint is empty and insecure is false, the key should not be set.
+	// When insecure is false, the key should not be set (only set when true).
 	if _, ok := env["K6_OTEL_HTTP_EXPORTER_INSECURE"]; ok {
-		t.Error("insecure key should not be set when endpoint is empty and insecure is false")
+		t.Error("insecure key should not be set when insecure is false")
 	}
 }
 
@@ -105,34 +91,37 @@ func TestDefaultServerSettings_Populated(t *testing.T) {
 	}
 }
 
-func TestDefaultServerSettings_Monitoring(t *testing.T) {
-	ss := DefaultServerSettings()
+func TestDefaultMonitoring(t *testing.T) {
+	mon := DefaultMonitoring()
 
-	if ss.Monitoring.NodeExporterVersion == "" {
+	if mon.NodeExporterVersion == "" {
 		t.Error("NodeExporterVersion should not be empty")
 	}
-	if ss.Monitoring.PostgresExporterVersion == "" {
+	if mon.PostgresExporterVersion == "" {
 		t.Error("PostgresExporterVersion should not be empty")
 	}
-	if ss.Monitoring.OtelColVersion == "" {
+	if mon.OtelColVersion == "" {
 		t.Error("OtelColVersion should not be empty")
 	}
-	if ss.Monitoring.VmagentVersion == "" {
+	if mon.VmagentVersion == "" {
 		t.Error("VmagentVersion should not be empty")
+	}
+	if mon.EtcdVersion == "" {
+		t.Error("EtcdVersion should not be empty")
 	}
 }
 
-func TestDefaultServerSettings_StroppyDefaults(t *testing.T) {
-	ss := DefaultServerSettings()
+func TestDefaultStroppySettings(t *testing.T) {
+	ss := DefaultStroppySettings()
 
-	if ss.StroppyDefaults.Version == "" {
+	if ss.Version == "" {
 		t.Error("stroppy version should not be empty")
 	}
-	if ss.StroppyDefaults.OTLPExporterType != "http" {
-		t.Errorf("expected OTLPExporterType=http, got %s", ss.StroppyDefaults.OTLPExporterType)
+	if ss.OTLPExporterType != "http" {
+		t.Errorf("expected OTLPExporterType=http, got %s", ss.OTLPExporterType)
 	}
-	if ss.StroppyDefaults.OTLPMetricPrefix != "stroppy_" {
-		t.Errorf("expected OTLPMetricPrefix=stroppy_, got %s", ss.StroppyDefaults.OTLPMetricPrefix)
+	if ss.OTLPMetricPrefix != "stroppy_" {
+		t.Errorf("expected OTLPMetricPrefix=stroppy_, got %s", ss.OTLPMetricPrefix)
 	}
 }
 

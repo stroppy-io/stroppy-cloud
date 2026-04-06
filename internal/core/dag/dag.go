@@ -17,6 +17,10 @@ type Node struct {
 	Type string `json:"type"`
 	// Deps lists IDs of nodes that must complete before this one.
 	Deps []string `json:"deps,omitempty"`
+	// AlwaysRun means this node executes even when upstream nodes have failed.
+	// Its deps are considered resolved when they are either done or failed.
+	// Use this for cleanup/teardown nodes that must run regardless of errors.
+	AlwaysRun bool `json:"always_run,omitempty"`
 
 	// Task is restored from the registry on Unmarshal; not serialized.
 	Task Task `json:"-"`
@@ -118,6 +122,29 @@ func (r *Registry) Unmarshal(data []byte) (*Graph, error) {
 	}
 
 	return &g, nil
+}
+
+// ReadyAlwaysRun returns AlwaysRun nodes whose dependencies are all resolved
+// (either completed or failed). This is used after a failure to find cleanup nodes.
+func (g *Graph) ReadyAlwaysRun(done map[string]bool, failed map[string]bool) []*Node {
+	resolved := make(map[string]bool, len(done)+len(failed))
+	for id := range done {
+		resolved[id] = true
+	}
+	for id := range failed {
+		resolved[id] = true
+	}
+
+	var ready []*Node
+	for _, n := range g.Nodes {
+		if done[n.ID] || failed[n.ID] || !n.AlwaysRun {
+			continue
+		}
+		if g.depsComplete(n, resolved) {
+			ready = append(ready, n)
+		}
+	}
+	return ready
 }
 
 // --- internals ---

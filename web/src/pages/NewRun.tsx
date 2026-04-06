@@ -53,7 +53,6 @@ const PRESET_NAMES: Record<DatabaseKind, string[]> = {
   picodata: ["single", "cluster", "scale"],
 };
 
-// DB_META now derives colors from the centralized DB_COLORS.
 import { DB_COLORS } from "@/lib/db-colors";
 
 const DB_META: Record<DatabaseKind, { icon: typeof Database; label: string }> = {
@@ -68,25 +67,9 @@ const PROVIDER_META: Record<Provider, { icon: typeof Cloud; label: string }> = {
 };
 
 const WORKLOAD_DESC: Record<string, string> = {
-  tpcb: "TPC-B banking benchmark",
-  tpcc: "TPC-C order processing benchmark",
+  tpcb: "TPC-B banking",
+  tpcc: "TPC-C orders",
 };
-
-// --- Phase header ---
-
-function PhaseHeader({ num, title, subtitle }: { num: number; title: string; subtitle?: string }) {
-  return (
-    <div className="flex items-center gap-3 mb-4">
-      <div className="w-7 h-7 border border-zinc-700 bg-zinc-900 flex items-center justify-center text-[11px] font-mono text-zinc-400 shrink-0">
-        {num}
-      </div>
-      <div>
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-zinc-300">{title}</h2>
-        {subtitle && <p className="text-[11px] text-zinc-600 mt-0.5">{subtitle}</p>}
-      </div>
-    </div>
-  );
-}
 
 // --- Main ---
 
@@ -106,14 +89,14 @@ export function NewRun() {
   const [vusScale, setVusScale] = useState("1");
   const [poolSize, setPoolSize] = useState("100");
   const [scaleFactor, setScaleFactor] = useState("1");
-  const [cidr, setCidr] = useState("10.0.0.0/24");
   const [showPackages, setShowPackages] = useState(false);
   const [customPackagesJSON, setCustomPackagesJSON] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{ ok: boolean; message: string } | null>(null);
-  const [dryRunResult, setDryRunResult] = useState<unknown | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [dryRunResult, setDryRunResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -140,7 +123,7 @@ export function NewRun() {
     const topo = buildTopology();
     const cfg: RunConfig = {
       id, provider,
-      network: { cidr },
+      network: { cidr: "10.0.0.0/24" },
       machines: [],
       database: { kind, version, ...topo } as RunConfig["database"],
       monitor: {},
@@ -157,7 +140,7 @@ export function NewRun() {
       try { cfg.packages = JSON.parse(customPackagesJSON); } catch { /* ignore */ }
     }
     return cfg;
-  }, [kind, preset, provider, version, workload, duration, vusScale, poolSize, scaleFactor, cidr, presets, customPackagesJSON]);
+  }, [kind, preset, provider, version, workload, duration, vusScale, poolSize, scaleFactor, presets, customPackagesJSON]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -180,7 +163,6 @@ export function NewRun() {
 
   async function handleSubmit() {
     if (!config.stroppy.duration.trim()) { setError("Duration is required"); return; }
-    if (!config.network.cidr.trim()) { setError("Network CIDR is required"); return; }
     setSubmitting(true); setError(null);
     try {
       const result = await startRun(config);
@@ -202,9 +184,9 @@ export function NewRun() {
   const DbIcon = dbMeta.icon;
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Sticky launch bar */}
-      <div className="shrink-0 border-b border-zinc-800 bg-[#070707] px-5 py-3 flex items-center justify-between z-10">
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Sticky top bar */}
+      <div className="shrink-0 border-b border-zinc-800 bg-[#070707] px-5 py-2.5 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
           <div className={`flex items-center gap-2 px-2.5 py-1 border ${dbColor.accent}`}>
             <DbIcon className={`h-3.5 w-3.5 ${dbColor.text}`} />
@@ -214,7 +196,7 @@ export function NewRun() {
           <span className="text-zinc-700 text-xs">/</span>
           <span className="text-xs font-mono text-zinc-500">{preset}</span>
           <span className="text-zinc-700 text-xs">/</span>
-          <span className="text-xs font-mono text-zinc-500">{workload}</span>
+          <span className="text-xs font-mono text-zinc-500">{workload.toUpperCase()}</span>
           <span className="text-zinc-700 text-xs">/</span>
           <span className="text-xs font-mono text-zinc-600">{PROVIDER_META[provider].label}</span>
         </div>
@@ -230,12 +212,12 @@ export function NewRun() {
           </Button>
           <Button size="sm" onClick={handleSubmit} disabled={submitting} className="gap-1.5">
             <Rocket className="h-3.5 w-3.5" />
-            {submitting ? "Launching..." : "Launch Run"}
+            {submitting ? "Launching..." : "Launch"}
           </Button>
         </div>
       </div>
 
-      {/* Feedback messages */}
+      {/* Feedback */}
       {(validationResult || error) && (
         <div className="shrink-0 px-5 py-2 border-b border-zinc-800/50">
           {validationResult && (
@@ -255,17 +237,16 @@ export function NewRun() {
         </div>
       )}
 
-      {/* Main content */}
-      <div className="flex-1 min-h-0 overflow-auto">
-        <div className="grid grid-cols-[1fr_380px] h-full">
-          {/* Left: Form */}
-          <div className="p-5 space-y-8 border-r border-zinc-800/50 overflow-auto">
+      {/* Main: form left | JSON right */}
+      <div className="flex-1 min-h-0 flex overflow-hidden">
+        {/* Left — form */}
+        <div className="flex-1 min-w-0 overflow-y-auto p-5">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5 max-w-4xl">
 
-            {/* Phase 1: Target */}
-            <section>
-              <PhaseHeader num={1} title="Target" subtitle="Database engine, version, and deployment target" />
-
-              <div className="grid grid-cols-3 gap-2 mb-4">
+            {/* ── Database ── */}
+            <div className="col-span-2">
+              <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-3">Database</h2>
+              <div className="grid grid-cols-3 gap-2">
                 {DB_KINDS.map((k) => {
                   const meta = DB_META[k];
                   const kColor = DB_COLORS[k];
@@ -276,7 +257,7 @@ export function NewRun() {
                       type="button"
                       key={k}
                       onClick={() => setKind(k)}
-                      className={`flex items-center gap-2.5 border p-3 transition-all cursor-pointer ${
+                      className={`flex items-center gap-2.5 border p-2.5 transition-all cursor-pointer ${
                         active
                           ? `${kColor.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
                           : "border-zinc-800/60 bg-transparent hover:bg-zinc-900/50 hover:border-zinc-700"
@@ -290,51 +271,49 @@ export function NewRun() {
                   );
                 })}
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Version</Label>
-                  <Select value={version} onValueChange={setVersion}>
-                    <SelectTrigger className="h-9 font-mono text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {DB_VERSIONS[kind].map((v) => (
-                        <SelectItem key={v} value={v}>{dbMeta.label} {v}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Provider</Label>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {PROVIDERS.map((p) => {
-                      const pm = PROVIDER_META[p];
-                      const PIcon = pm.icon;
-                      const active = provider === p;
-                      return (
-                        <button
-                          type="button"
-                          key={p}
-                          onClick={() => setProvider(p)}
-                          className={`flex items-center gap-1.5 border px-3 py-2 text-xs font-mono transition-colors cursor-pointer ${
-                            active
-                              ? "border-primary/40 text-primary bg-primary/[0.06]"
-                              : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
-                          }`}
-                        >
-                          <PIcon className="h-3 w-3" />
-                          {pm.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+            {/* Version + Provider */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Version</Label>
+              <Select value={version} onValueChange={setVersion}>
+                <SelectTrigger className="h-8 font-mono text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DB_VERSIONS[kind].map((v) => (
+                    <SelectItem key={v} value={v}>{dbMeta.label} {v}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Provider</Label>
+              <div className="grid grid-cols-2 gap-1.5">
+                {PROVIDERS.map((p) => {
+                  const pm = PROVIDER_META[p];
+                  const PIcon = pm.icon;
+                  const active = provider === p;
+                  return (
+                    <button
+                      type="button"
+                      key={p}
+                      onClick={() => setProvider(p)}
+                      className={`flex items-center gap-1.5 border px-3 py-1.5 text-xs font-mono transition-colors cursor-pointer ${
+                        active
+                          ? "border-primary/40 text-primary bg-primary/[0.06]"
+                          : "border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                      }`}
+                    >
+                      <PIcon className="h-3 w-3" />
+                      {pm.label}
+                    </button>
+                  );
+                })}
               </div>
-            </section>
+            </div>
 
-            {/* Phase 2: Topology */}
-            <section>
-              <PhaseHeader num={2} title="Topology" subtitle="Cluster architecture and node layout" />
-
+            {/* ── Topology ── */}
+            <div className="col-span-2">
+              <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-3">Topology</h2>
               <div className="grid grid-cols-3 gap-3">
                 {PRESET_NAMES[kind].map((p) => {
                   const active = preset === p;
@@ -343,35 +322,29 @@ export function NewRun() {
                       type="button"
                       key={p}
                       onClick={() => setPreset(p)}
-                      className={`border p-4 text-left transition-all cursor-pointer ${
+                      className={`border p-3 text-left transition-all cursor-pointer ${
                         active
                           ? `${dbColor.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
                           : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700"
                       }`}
                     >
-                      <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center justify-between mb-2">
                         <span className={`text-xs font-mono font-semibold uppercase tracking-wider ${active ? dbColor.text : "text-zinc-400"}`}>
                           {p}
                         </span>
-                        {active && (
-                          <div
-                            className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: dbColor.hex }}
-                          />
-                        )}
+                        {active && <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dbColor.hex }} />}
                       </div>
                       <TopologyDiagram kind={kind} preset={p} />
                     </button>
                   );
                 })}
               </div>
-            </section>
+            </div>
 
-            {/* Phase 3: Workload */}
-            <section>
-              <PhaseHeader num={3} title="Workload" subtitle="Stroppy benchmark configuration" />
-
-              <div className="grid grid-cols-3 gap-2 mb-4">
+            {/* ── Workload ── */}
+            <div className="col-span-2">
+              <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-3">Workload</h2>
+              <div className="grid grid-cols-2 gap-2">
                 {WORKLOADS.map((w) => {
                   const active = workload === w;
                   return (
@@ -379,7 +352,7 @@ export function NewRun() {
                       type="button"
                       key={w}
                       onClick={() => setWorkload(w)}
-                      className={`border p-3 text-left transition-all cursor-pointer ${
+                      className={`border p-2.5 text-left transition-all cursor-pointer ${
                         active
                           ? "border-primary/40 bg-primary/[0.06]"
                           : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700"
@@ -388,141 +361,97 @@ export function NewRun() {
                       <div className={`text-xs font-mono font-semibold uppercase tracking-wider ${active ? "text-primary" : "text-zinc-400"}`}>
                         {w}
                       </div>
-                      <div className="text-[10px] text-zinc-600 mt-1">{WORKLOAD_DESC[w]}</div>
+                      <div className="text-[10px] text-zinc-600 mt-0.5">{WORKLOAD_DESC[w]}</div>
                     </button>
                   );
                 })}
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Duration</Label>
-                  <Input
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    placeholder="5m"
-                    className="font-mono text-xs h-9"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Scale Factor</Label>
-                  <Input
-                    value={scaleFactor}
-                    onChange={(e) => setScaleFactor(e.target.value)}
-                    placeholder="1"
-                    className="font-mono text-xs h-9"
-                  />
-                  <span className="text-[9px] text-zinc-700 font-mono">TPC-C warehouses</span>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-3">
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">VUS Scale</Label>
-                  <Input
-                    value={vusScale}
-                    onChange={(e) => setVusScale(e.target.value)}
-                    placeholder="1"
-                    className="font-mono text-xs h-9"
-                  />
-                  <span className="text-[9px] text-zinc-700 font-mono">1 = ~99 VUs for TPC-C</span>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Pool Size</Label>
-                  <Input
-                    value={poolSize}
-                    onChange={(e) => setPoolSize(e.target.value)}
-                    placeholder="100"
-                    className="font-mono text-xs h-9"
-                  />
-                  <span className="text-[9px] text-zinc-700 font-mono">DB connections</span>
-                </div>
-                <div className="space-y-1.5">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Network CIDR</Label>
-                  <Input
-                    value={cidr}
-                    onChange={(e) => setCidr(e.target.value)}
-                    placeholder="10.0.0.0/24"
-                    className="font-mono text-xs h-9"
-                  />
-                </div>
-              </div>
-            </section>
+            {/* Duration + Scale Factor */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Duration</Label>
+              <Input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="5m" className="font-mono text-xs h-8" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Scale Factor</Label>
+              <Input value={scaleFactor} onChange={(e) => setScaleFactor(e.target.value)} placeholder="1" className="font-mono text-xs h-8" />
+              <span className="text-[9px] text-zinc-700 font-mono">TPC-C warehouses</span>
+            </div>
 
-            {/* Phase 4: Advanced (collapsible) */}
-            <section>
+            {/* VUS + Pool */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">VUS Scale</Label>
+              <Input value={vusScale} onChange={(e) => setVusScale(e.target.value)} placeholder="1" className="font-mono text-xs h-8" />
+              <span className="text-[9px] text-zinc-700 font-mono">1 = ~99 VUs for TPC-C</span>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Pool Size</Label>
+              <Input value={poolSize} onChange={(e) => setPoolSize(e.target.value)} placeholder="100" className="font-mono text-xs h-8" />
+              <span className="text-[9px] text-zinc-700 font-mono">DB connections</span>
+            </div>
+
+            {/* ── Packages (collapsible) ── */}
+            <div className="col-span-2">
               <button
                 type="button"
-                className="flex items-center gap-3 mb-4 group cursor-pointer"
+                className="flex items-center gap-2 group cursor-pointer"
                 onClick={() => setShowPackages(!showPackages)}
               >
-                <div className="w-7 h-7 border border-zinc-800 bg-zinc-900/50 flex items-center justify-center text-[11px] font-mono text-zinc-600 shrink-0">
-                  4
-                </div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-[13px] font-semibold uppercase tracking-[0.12em] text-zinc-500 group-hover:text-zinc-300 transition-colors">
-                    Packages
-                  </h2>
-                  <Badge variant="secondary" className="text-[9px]">optional</Badge>
-                  {showPackages ? (
-                    <ChevronDown className="h-3 w-3 text-zinc-600" />
-                  ) : (
-                    <ChevronRight className="h-3 w-3 text-zinc-600" />
-                  )}
-                </div>
+                <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider group-hover:text-zinc-300 transition-colors">
+                  Packages
+                </h2>
+                <Badge variant="secondary" className="text-[9px]">optional</Badge>
+                {showPackages ? <ChevronDown className="h-3 w-3 text-zinc-600" /> : <ChevronRight className="h-3 w-3 text-zinc-600" />}
               </button>
 
               {showPackages && (
-                <div className="ml-10">
-                  <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5 block">
-                    PackageSet JSON
-                  </Label>
+                <div className="mt-2">
                   <textarea
-                    className="w-full h-28 bg-[#050505] border border-zinc-800 p-3 font-mono text-xs text-foreground resize-y focus:outline-none focus:ring-1 focus:ring-ring"
+                    className="w-full h-24 bg-[#050505] border border-zinc-800 p-3 font-mono text-xs text-foreground resize-y focus:outline-none focus:ring-1 focus:ring-ring"
                     value={customPackagesJSON}
                     onChange={(e) => setCustomPackagesJSON(e.target.value)}
-                    placeholder='{"apt": ["custom-pkg"], "pre_install_apt": ["apt-get update"]}'
+                    placeholder='{"apt": ["custom-pkg"]}'
                     spellCheck={false}
                   />
                 </div>
               )}
-            </section>
+            </div>
           </div>
+        </div>
 
-          {/* Right: Live config */}
-          <div className="flex flex-col bg-[#050505] overflow-hidden">
-            <div className="shrink-0 flex items-center justify-between px-4 py-2.5 border-b border-zinc-800/50">
-              <div className="flex items-center gap-2">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
-                  {dryRunResult ? "Dry Run Output" : "Config"}
-                </span>
-                <span className="text-[10px] font-mono text-zinc-700 tabular-nums">
-                  {runIDRef.current}
-                </span>
-              </div>
-              <div className="flex items-center gap-1">
-                {dryRunResult != null && (
-                  <button
-                    type="button"
-                    onClick={() => setDryRunResult(null)}
-                    className="px-2 py-0.5 text-[10px] font-mono text-zinc-500 hover:text-zinc-300 border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
-                  >
-                    Config
-                  </button>
-                )}
+        {/* Right — live JSON config */}
+        <div className="w-80 shrink-0 flex flex-col bg-[#050505] border-l border-zinc-800/50 overflow-hidden">
+          <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-zinc-800/50">
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-zinc-500">
+                {dryRunResult ? "Dry Run" : "Config"}
+              </span>
+              <span className="text-[10px] font-mono text-zinc-700 tabular-nums">{runIDRef.current}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              {dryRunResult != null && (
                 <button
                   type="button"
-                  onClick={handleCopy}
-                  className="p-1.5 text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
-                  title="Copy to clipboard"
+                  onClick={() => setDryRunResult(null)}
+                  className="px-2 py-0.5 text-[10px] font-mono text-zinc-500 hover:text-zinc-300 border border-zinc-800 hover:border-zinc-700 transition-colors cursor-pointer"
                 >
-                  {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                  Config
                 </button>
-              </div>
+              )}
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="p-1 text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
+                title="Copy"
+              >
+                {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+              </button>
             </div>
-            <pre className="flex-1 p-4 text-[11px] font-mono leading-[1.6] text-zinc-400 overflow-auto selection:bg-primary/20">
-              {dryRunResult ? JSON.stringify(dryRunResult, null, 2) : configJSON}
-            </pre>
           </div>
+          <pre className="flex-1 p-3 text-[11px] font-mono leading-[1.6] text-zinc-400 overflow-auto selection:bg-primary/20">
+            {dryRunResult ? JSON.stringify(dryRunResult, null, 2) : configJSON}
+          </pre>
         </div>
       </div>
     </div>

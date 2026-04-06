@@ -1,0 +1,1 @@
+ALTER TABLE tenants ADD COLUMN account_id SERIAL UNIQUE;

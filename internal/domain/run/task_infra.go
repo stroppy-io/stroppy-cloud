@@ -3,7 +3,6 @@ package run
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
@@ -16,18 +15,6 @@ import (
 
 	yctf "github.com/stroppy-io/stroppy-cloud/deployments/terraform/yandex"
 )
-
-// isHostMode returns true when the server runs on the host (not inside Docker).
-// In that case we use localhost + mapped ports to reach agent containers.
-func isHostMode() bool {
-	// Explicit override via env var (for Docker network_mode: host).
-	if os.Getenv("STROPPY_HOST_MODE") == "true" {
-		return true
-	}
-	// Outside Docker — always host mode.
-	_, err := os.Stat("/.dockerenv")
-	return err != nil
-}
 
 // networkTask creates a Docker network (for docker provider).
 type networkTask struct {

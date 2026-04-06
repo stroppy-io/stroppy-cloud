@@ -2,6 +2,7 @@ package run
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
@@ -17,6 +18,12 @@ type Deps struct {
 	ServerAddr string
 	// Settings provides cloud configuration (Yandex credentials, binary URL, etc.).
 	Settings *types.ServerSettings
+	// MonitoringURL is the vmauth base URL for metrics/logs ingestion.
+	MonitoringURL string
+	// MonitoringToken is the bearer token for vmauth.
+	MonitoringToken string
+	// AccountID is the per-tenant VictoriaMetrics account ID for data isolation.
+	AccountID int32
 }
 
 // Build constructs a dag.Graph and dag.Registry from a RunConfig.
@@ -47,6 +54,11 @@ func (b *builder) ph(p types.Phase) string { return string(p) }
 func (b *builder) add(phase string, deps []string, task dag.Task) {
 	// g.Add only fails on duplicate IDs; phases are unique constants, so error is impossible.
 	_ = b.g.Add(&dag.Node{ID: phase, Type: phase, Deps: deps, Task: task})
+	b.reg.Register(phase, func() dag.Task { return task })
+}
+
+func (b *builder) addAlwaysRun(phase string, deps []string, task dag.Task) {
+	_ = b.g.Add(&dag.Node{ID: phase, Type: phase, Deps: deps, Task: task, AlwaysRun: true})
 	b.reg.Register(phase, func() dag.Task { return task })
 }
 
@@ -81,7 +93,7 @@ func (b *builder) build() error {
 		&monitorInstallTask{client: b.deps.Client, state: b.deps.State, dbKind: b.cfg.Database.Kind})
 	// Configure/start daemons after install AND after DB is configured (so postgres_exporter can connect).
 	b.add(b.ph(types.PhaseConfigureMonitor), []string{b.ph(types.PhaseInstallMonitor), b.ph(types.PhaseConfigureDB)},
-		&monitorConfigTask{client: b.deps.Client, state: b.deps.State, monitor: b.cfg.Monitor, runID: b.cfg.ID, settings: b.deps.Settings, dbKind: b.cfg.Database.Kind})
+		&monitorConfigTask{client: b.deps.Client, state: b.deps.State, monitor: b.cfg.Monitor, runID: b.cfg.ID, dbKind: b.cfg.Database.Kind, monitoringURL: b.deps.MonitoringURL, monitoringToken: b.deps.MonitoringToken, accountID: b.deps.AccountID})
 
 	// --- pgbouncer (if Postgres HA with pgbouncer, colocated on DB nodes) ---
 	if b.needsPgBouncer() {
@@ -103,9 +115,12 @@ func (b *builder) build() error {
 		b.ph(types.PhaseConfigureMonitor),
 		b.ph(types.PhaseInstallStroppy),
 	)
-	var stroppySettings types.StroppySettings
-	if b.deps.Settings != nil {
-		stroppySettings = b.deps.Settings.StroppyDefaults
+	stroppySettings := types.DefaultStroppySettings()
+	// Metric prefix = runID so each run's metrics are namespaced (e.g. run_xxx_vus, run_xxx_iterations).
+	// Replace dashes with underscores — PromQL metric names don't support dashes.
+	stroppySettings.OTLPMetricPrefix = strings.ReplaceAll(b.cfg.ID, "-", "_") + "_"
+	if b.deps.MonitoringURL != "" {
+		stroppySettings.SetFromMonitoringURL(b.deps.MonitoringURL, b.deps.MonitoringToken, b.deps.AccountID)
 	}
 	b.add(b.ph(types.PhaseRunStroppy), b.runStroppyDeps,
 		&stroppyRunTask{
@@ -115,10 +130,13 @@ func (b *builder) build() error {
 			stroppySettings: stroppySettings,
 			dbKind:          b.cfg.Database.Kind,
 			runID:           b.cfg.ID,
+			monitoringURL:   b.deps.MonitoringURL,
+			monitoringToken: b.deps.MonitoringToken,
+			accountID:       b.deps.AccountID,
 		})
 
-	// --- teardown ---
-	b.add(b.ph(types.PhaseTeardown), []string{b.ph(types.PhaseRunStroppy)},
+	// --- teardown (always runs, even if upstream fails) ---
+	b.addAlwaysRun(b.ph(types.PhaseTeardown), []string{b.ph(types.PhaseRunStroppy)},
 		&teardownTask{provider: b.cfg.Provider, state: b.deps.State, deployer: b.deps.Deployer})
 
 	if err := b.g.Validate(); err != nil {
@@ -158,7 +176,7 @@ func (b *builder) needsProxy() bool {
 
 func (b *builder) addEtcd(afterMachines []string) {
 	b.add(b.ph(types.PhaseInstallEtcd), afterMachines,
-		&etcdInstallTask{client: b.deps.Client, state: b.deps.State, settings: b.deps.Settings})
+		&etcdInstallTask{client: b.deps.Client, state: b.deps.State})
 	b.add(b.ph(types.PhaseConfigureEtcd), []string{b.ph(types.PhaseInstallEtcd)},
 		&etcdConfigTask{client: b.deps.Client, state: b.deps.State})
 }

@@ -1,0 +1,47 @@
+{
+  "cloud": {
+    "server_addr": "http://84.201.148.157:8080",
+    "yandex": {
+      "token": "",
+      "cloud_id": "",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-b",
+      "network_id": "enpooag27t2uf69he3pt",
+      "network_name": "stroppy-net",
+      "subnet_cidr": "10.1.0.0/16",
+      "platform_id": "standard-v2",
+      "image_id": "fd82pkek8uu0ejjkh4vn",
+      "ssh_public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4euZHbJ7gotvGExbz7MizamlxXRNoggVDV6uM6bXamgCCb3SmdhyByAW8/1PcnV0HJV+HhSwLGNxhF7chH/um68tlz3SUaCQLjwEyemxeXqQHj2ORs6h903tkHE1UbDBNPYPgyD+u8fg9/PlMweR8w0DikwMCUQ40cmYW72bSVKSHtozCRXSNjKyAsIa0Iay7Vj2FGT4k0em8aA2xONP+Y4xUiz4bUKksxzCZnPEWjrT6noS6eV7q0G0eDIUFWnjnlFZSxl/kOPDCFRc6FyMZe3zrB5atnR7y0EviuaNLPEmVcsdyoK8fyRasfPzIrMQywRaFAYTYp0O9gGU27+GJ"
+    }
+  },
+  "monitoring": {
+    "victoria_metrics_url": "http://84.201.148.157:8428",
+    "node_exporter_version": "1.9.1",
+    "postgres_exporter_version": "0.16.0",
+    "otel_col_version": "0.127.0",
+    "vmagent_version": "1.115.0",
+    "etcd_version": "3.5.17"
+  },
+  "stroppy_defaults": {
+    "version": "3.1.0",
+    "otlp_exporter_type": "http",
+    "otlp_endpoint": "84.201.148.157:8428",
+    "otlp_insecure": true,
+    "otlp_url_path": "/opentelemetry/v1/metrics",
+    "otlp_metric_prefix": "stroppy_",
+    "otlp_service_name": "stroppy"
+  },
+  "grafana": {
+    "url": "http://localhost:3001",
+    "embed_enabled": true,
+    "dashboards": {
+      "overview": "stroppy-run",
+      "system": "stroppy-system",
+      "postgres": "stroppy-postgres",
+      "mysql": "stroppy-mysql",
+      "picodata": "stroppy-picodata",
+      "stroppy": "stroppy-metrics-v1",
+      "compare": "stroppy-compare"
+    }
+  }
+}

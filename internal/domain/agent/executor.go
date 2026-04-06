@@ -741,11 +741,11 @@ func (e *Executor) installMonitor(ctx context.Context, cmd Command) error {
 		return err
 	}
 
-	settings := types.DefaultServerSettings()
+	mon := types.DefaultMonitoring()
 	machineID := os.Getenv("STROPPY_MACHINE_ID")
 
 	// --- node_exporter on ALL machines ---
-	neVer := settings.Monitoring.NodeExporterVersion
+	neVer := mon.NodeExporterVersion
 	neURL := fmt.Sprintf(
 		"https://github.com/prometheus/node_exporter/releases/download/v%s/node_exporter-%s.linux-amd64.tar.gz",
 		neVer, neVer,
@@ -764,7 +764,7 @@ func (e *Executor) installMonitor(ctx context.Context, cmd Command) error {
 
 	// --- postgres_exporter only on database machines (and only for postgres) ---
 	if strings.Contains(machineID, "-database-") && cfg.DatabaseKind == "postgres" {
-		peVer := settings.Monitoring.PostgresExporterVersion
+		peVer := mon.PostgresExporterVersion
 		peURL := fmt.Sprintf(
 			"https://github.com/prometheus-community/postgres_exporter/releases/download/v%s/postgres_exporter-%s.linux-amd64.tar.gz",
 			peVer, peVer,
@@ -784,9 +784,9 @@ func (e *Executor) installMonitor(ctx context.Context, cmd Command) error {
 
 	// --- vmagent on every machine (scrapes local exporters, pushes to VictoriaMetrics) ---
 	{
-		vaVer := settings.Monitoring.VmagentVersion
+		vaVer := mon.VmagentVersion
 		if vaVer == "" {
-			vaVer = "1.115.0"
+			vaVer = "1.139.0"
 		}
 		vaURL := fmt.Sprintf(
 			"https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v%s/vmutils-linux-amd64-v%s.tar.gz",
@@ -866,11 +866,15 @@ func (e *Executor) configMonitor(ctx context.Context, cmd Command) error {
 		remoteWrite := cfg.MetricsEndpoint
 
 		e.shell(ctx, "mkdir -p /var/lib/vmagent")
-		if err := e.startDaemon("vmagent", "/usr/local/bin/vmagent",
-			"-promscrape.config="+confPath,
-			"-remoteWrite.url="+remoteWrite,
+		vmagentArgs := []string{
+			"-promscrape.config=" + confPath,
+			"-remoteWrite.url=" + remoteWrite,
 			"-remoteWrite.tmpDataPath=/var/lib/vmagent",
-		); err != nil {
+		}
+		if cfg.BearerToken != "" {
+			vmagentArgs = append(vmagentArgs, "-remoteWrite.bearerToken="+cfg.BearerToken)
+		}
+		if err := e.startDaemon("vmagent", "/usr/local/bin/vmagent", vmagentArgs...); err != nil {
 			return fmt.Errorf("start vmagent: %w", err)
 		}
 	}
@@ -890,8 +894,8 @@ func (e *Executor) installStroppy(ctx context.Context, cmd Command) error {
 
 	version := cfg.Version
 	if version == "" {
-		// Fallback matches DefaultServerSettings().StroppyDefaults.Version.
-		version = types.DefaultServerSettings().StroppyDefaults.Version
+		// Fallback matches DefaultStroppySettings().Version.
+		version = types.DefaultStroppySettings().Version
 	}
 
 	dlURL := fmt.Sprintf("https://github.com/stroppy-io/stroppy/releases/download/v%s/stroppy_linux_amd64.tar.gz", version)
@@ -980,7 +984,9 @@ func (e *Executor) runStroppy(ctx context.Context, cmd Command) error {
 
 	var exports strings.Builder
 	for _, ep := range envParts {
-		fmt.Fprintf(&exports, "export %s\n", ep)
+		// Quote values to handle = and spaces in values (e.g. K6_OTEL_HEADERS=Authorization=Bearer ...)
+		k, v, _ := strings.Cut(ep, "=")
+		fmt.Fprintf(&exports, "export %s='%s'\n", k, v)
 	}
 
 	// Build K6 args passed after "--".
@@ -1032,8 +1038,8 @@ func (e *Executor) installEtcd(ctx context.Context, cmd Command) error {
 
 	version := cfg.Version
 	if version == "" {
-		// Fallback matches DefaultServerSettings().Monitoring.EtcdVersion.
-		version = types.DefaultServerSettings().Monitoring.EtcdVersion
+		// Fallback matches DefaultMonitoring().EtcdVersion.
+		version = types.DefaultMonitoring().EtcdVersion
 	}
 
 	// Download etcd from GitHub releases.

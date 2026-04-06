@@ -13,9 +13,8 @@ import (
 )
 
 type etcdInstallTask struct {
-	client   agent.Client
-	state    *State
-	settings *types.ServerSettings
+	client agent.Client
+	state  *State
 }
 
 func (t *etcdInstallTask) Execute(nc *dag.NodeContext) error {
@@ -24,11 +23,8 @@ func (t *etcdInstallTask) Execute(nc *dag.NodeContext) error {
 	if len(targets) > 3 {
 		targets = targets[:3]
 	}
-	// Pass etcd version from settings; agent executor falls back to built-in default.
-	var etcdVersion string
-	if t.settings != nil {
-		etcdVersion = t.settings.Monitoring.EtcdVersion
-	}
+	// Use platform-wide default etcd version.
+	etcdVersion := types.DefaultMonitoring().EtcdVersion
 	nc.Log().Info("installing etcd on DB nodes")
 	return t.client.SendAll(nc, targets, agent.Command{
 		Action: agent.ActionInstallEtcd,

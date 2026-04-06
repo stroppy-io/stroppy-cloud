@@ -38,16 +38,17 @@ func DefaultRetryPolicy() RetryPolicy {
 // Executor walks a Graph and runs nodes as their dependencies complete.
 // Failed nodes are automatically retried with exponential backoff.
 type Executor struct {
-	id      string
-	graph   *Graph
-	storage Storage
-	log     *zap.Logger
-	sink    LogSink
-	retry   RetryPolicy
-	done    map[string]bool
-	failed  map[string]string // id → error message for snapshots
-	errs    []error           // original errors for return
-	mu      sync.Mutex
+	id       string
+	tenantID string
+	graph    *Graph
+	storage  Storage
+	log      *zap.Logger
+	sink     LogSink
+	retry    RetryPolicy
+	done     map[string]bool
+	failed   map[string]string // id → error message for snapshots
+	errs     []error           // original errors for return
+	mu       sync.Mutex
 
 	startedAt time.Time
 
@@ -57,19 +58,20 @@ type Executor struct {
 }
 
 // NewExecutor creates an executor for the given graph.
-func NewExecutor(id string, g *Graph, storage Storage, log *zap.Logger, sink LogSink) *Executor {
+func NewExecutor(tenantID, id string, g *Graph, storage Storage, log *zap.Logger, sink LogSink) *Executor {
 	if log == nil {
 		log = zap.NewNop()
 	}
 	return &Executor{
-		id:      id,
-		graph:   g,
-		storage: storage,
-		log:     log,
-		sink:    sink,
-		retry:   DefaultRetryPolicy(),
-		done:    make(map[string]bool, len(g.Nodes)),
-		failed:  make(map[string]string),
+		id:       id,
+		tenantID: tenantID,
+		graph:    g,
+		storage:  storage,
+		log:      log,
+		sink:     sink,
+		retry:    DefaultRetryPolicy(),
+		done:     make(map[string]bool, len(g.Nodes)),
+		failed:   make(map[string]string),
 	}
 }
 
@@ -94,7 +96,8 @@ func (e *Executor) MarkNodeDone(id string) {
 
 // Run executes the graph to completion.
 // Failed nodes are retried with exponential backoff up to MaxRetries times.
-// After all retries are exhausted, the run fails.
+// After all retries are exhausted, AlwaysRun nodes (e.g. teardown) still execute,
+// then the run fails with the original error.
 func (e *Executor) Run(ctx context.Context) error {
 	if e.startedAt.IsZero() {
 		e.startedAt = time.Now()
@@ -123,6 +126,11 @@ func (e *Executor) Run(ctx context.Context) error {
 		}
 	}
 
+	// Run AlwaysRun nodes (teardown) even after failure.
+	if e.hasFailed() {
+		e.runAlwaysRunNodes(ctx)
+	}
+
 	e.mu.Lock()
 	defer e.mu.Unlock()
 
@@ -135,6 +143,40 @@ func (e *Executor) Run(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// runAlwaysRunNodes executes AlwaysRun nodes whose deps are all resolved (done or failed).
+// This ensures cleanup/teardown runs even when upstream nodes have failed.
+func (e *Executor) runAlwaysRunNodes(ctx context.Context) {
+	for {
+		e.mu.Lock()
+		failedSet := make(map[string]bool, len(e.failed))
+		for id := range e.failed {
+			failedSet[id] = true
+		}
+		doneCopy := make(map[string]bool, len(e.done))
+		for id := range e.done {
+			doneCopy[id] = true
+		}
+		e.mu.Unlock()
+
+		ready := e.graph.ReadyAlwaysRun(doneCopy, failedSet)
+		if len(ready) == 0 {
+			return
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(len(ready))
+		for _, n := range ready {
+			go func(n *Node) {
+				defer wg.Done()
+				e.executeWithRetry(ctx, n)
+			}(n)
+		}
+		wg.Wait()
+
+		_ = e.save(ctx)
+	}
 }
 
 // executeWithRetry runs a node's task with automatic retries and exponential backoff.
@@ -225,7 +267,7 @@ func (e *Executor) save(ctx context.Context) error {
 	snap := e.snapshot()
 	e.mu.Unlock()
 
-	return e.storage.Save(ctx, e.id, snap)
+	return e.storage.Save(ctx, e.tenantID, e.id, snap)
 }
 
 func (e *Executor) snapshot() *Snapshot {

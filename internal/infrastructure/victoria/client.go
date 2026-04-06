@@ -13,13 +13,16 @@ import (
 // Client queries a VictoriaMetrics (or Prometheus-compatible) API.
 type Client struct {
 	baseURL    string
+	token      string // bearer token for vmauth (empty = no auth)
 	httpClient *http.Client
 }
 
 // NewClient creates a VictoriaMetrics client.
-func NewClient(baseURL string) *Client {
+// token may be empty to disable bearer auth.
+func NewClient(baseURL, token string) *Client {
 	return &Client{
 		baseURL:    baseURL,
+		token:      token,
 		httpClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
@@ -89,6 +92,9 @@ func (c *Client) doQuery(ctx context.Context, path string, params url.Values) (*
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("victoria: build request: %w", err)
+	}
+	if c.token != "" {
+		req.Header.Set("Authorization", "Bearer "+c.token)
 	}
 
 	resp, err := c.httpClient.Do(req)

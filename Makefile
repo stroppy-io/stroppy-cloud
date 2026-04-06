@@ -58,10 +58,10 @@ test: ## Run unit tests
 	go test ./... -count=1 -race
 
 test-integration: build ## Run integration tests (requires Docker)
-	STROPPY_BINARY_HOST_PATH=$(PWD)/bin/$(BINARY) go test -tags=integration -timeout 30m -v ./tests/
+	go test -tags=integration -timeout 30m -v ./tests/
 
 test-e2e: build ## Run E2E tests for all databases
-	STROPPY_BINARY_HOST_PATH=$(PWD)/bin/$(BINARY) go test -tags=integration -timeout 60m -v ./tests/ -run TestE2E
+	go test -tags=integration -timeout 60m -v ./tests/ -run TestE2E
 
 test-coverage: ## Run tests with coverage report
 	go test ./... -coverprofile=coverage.out -count=1
@@ -90,13 +90,13 @@ docker-push: docker-build ## Push Docker image to GHCR
 	docker push $(DOCKER_IMAGE):latest
 
 docker-up: ## Start test stack (server + VictoriaMetrics)
-	docker compose -f docker-compose.test.yaml up -d
+	docker compose -f docker-compose.yaml up -d
 
 docker-down: ## Stop test stack
-	docker compose -f docker-compose.test.yaml down
+	docker compose -f docker-compose.yaml down
 
 docker-logs: ## Show server logs
-	docker compose -f docker-compose.test.yaml logs -f server
+	docker compose -f docker-compose.yaml logs -f server
 
 # ============================================================
 # Serve (development)
@@ -133,7 +133,7 @@ web-build: ## Build web for production
 # ============================================================
 clean: ## Clean build artifacts
 	rm -rf bin/ coverage.out coverage.html data/
-	docker compose -f docker-compose.test.yaml down -v 2>/dev/null || true
+	docker compose -f docker-compose.yaml down -v 2>/dev/null || true
 	docker ps -a --filter "name=stroppy-agent" -q | xargs -r docker rm -f 2>/dev/null || true
 	docker network rm stroppy-run-net 2>/dev/null || true
 

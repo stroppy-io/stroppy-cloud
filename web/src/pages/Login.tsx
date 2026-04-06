@@ -1,22 +1,25 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Activity } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
-interface LoginProps {
-  onLogin: (username: string, password: string) => Promise<void>;
-}
-
-export function Login({ onLogin }: LoginProps) {
+export function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await onLogin(username, password);
+      await login(username, password);
+      const redirect = searchParams.get("redirect") || "/";
+      navigate(redirect, { replace: true });
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {

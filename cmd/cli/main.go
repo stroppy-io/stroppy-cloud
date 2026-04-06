@@ -25,11 +25,12 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 )
 
 var (
 	configFile string
-	dataDir    string
+	dbPath     string
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	root.PersistentFlags().StringVarP(&configFile, "config", "c", "run.json", "path to run config JSON")
-	root.PersistentFlags().StringVar(&dataDir, "data-dir", "", "badger data directory (empty = in-memory)")
+	root.PersistentFlags().StringVar(&dbPath, "db", "", "PostgreSQL DSN (e.g. postgres://stroppy:stroppy@localhost:5432/stroppy?sslmode=disable)")
 
 	root.AddCommand(
 		serveCmd(),
@@ -57,29 +58,45 @@ func main() {
 	}
 }
 
+func envOrDefault(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
 func serveCmd() *cobra.Command {
 	var addr string
-	var victoriaURL string
-	var victoriaLogsURL string
-	var apiKey string
-	var settingsFile string
+	var jwtSecret string
 	cmd := &cobra.Command{
 		Use:   "serve",
 		Short: "Start the HTTP server (agent API + external API + WS)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Default to persistent storage in serve mode.
-			if dataDir == "" {
-				dataDir = "./data"
+			dbDSN := envOrDefault("DATABASE_URL", dbPath)
+			if dbDSN == "" {
+				dbDSN = "postgres://stroppy:stroppy@localhost:5432/stroppy?sslmode=disable"
 			}
 
-			app, err := newApp()
-			if err != nil {
-				return err
+			jwtSec := envOrDefault("JWT_SECRET", jwtSecret)
+			if jwtSec == "" {
+				jwtSec = "stroppy-dev-secret"
 			}
-			defer app.Close()
+
+			monitoringURL := os.Getenv("MONITORING_URL")     // empty = monitoring disabled
+			monitoringToken := os.Getenv("MONITORING_TOKEN") // bearer token for vmauth
+			grafanaURL := os.Getenv("GRAFANA_URL")           // empty = grafana disabled
+			listenAddr := envOrDefault("LISTEN_ADDR", addr)
+
+			ctx := context.Background()
+			pool, err := postgres.Open(ctx, dbDSN)
+			if err != nil {
+				return fmt.Errorf("open database: %w", err)
+			}
+			defer pool.Close()
 
 			logger, _ := zap.NewDevelopment()
-			srv := api.NewServer(app, logger, victoriaURL, victoriaLogsURL, apiKey, settingsFile)
+			app := api.New(api.Config{Pool: pool, Logger: logger})
+			srv := api.NewServer(app, logger, pool, jwtSec, monitoringURL, monitoringToken, grafanaURL, listenAddr)
 			srv.CleanupOrphanedRuns()
 
 			// Embed SPA into the server.
@@ -89,26 +106,23 @@ func serveCmd() *cobra.Command {
 				logger.Info("SPA embedded and served at /")
 			}
 
-			httpSrv := &http.Server{Addr: addr, Handler: srv.Router()}
+			httpSrv := &http.Server{Addr: listenAddr, Handler: srv.Router()}
 
 			go func() {
-				logger.Info("server listening", zap.String("addr", addr))
+				logger.Info("server listening", zap.String("addr", listenAddr))
 				if err := httpSrv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 					logger.Fatal("server error", zap.Error(err))
 				}
 			}()
 
-			ctx := signalCtx()
-			<-ctx.Done()
+			sigCtx := signalCtx()
+			<-sigCtx.Done()
 			logger.Info("shutting down")
 			return httpSrv.Shutdown(context.Background())
 		},
 	}
 	cmd.Flags().StringVar(&addr, "addr", ":8080", "listen address")
-	cmd.Flags().StringVar(&victoriaURL, "victoria-url", "", "VictoriaMetrics URL (e.g. http://localhost:8428)")
-	cmd.Flags().StringVar(&victoriaLogsURL, "victoria-logs-url", "", "VictoriaLogs URL for log persistence (e.g. http://localhost:9428)")
-	cmd.Flags().StringVar(&apiKey, "api-key", "", "API key for authentication (empty = auth disabled)")
-	cmd.Flags().StringVar(&settingsFile, "settings-file", "settings.json", "path to settings JSON file for persistence")
+	cmd.Flags().StringVar(&jwtSecret, "jwt-secret", "", "JWT signing secret (default: stroppy-dev-secret)")
 	return cmd
 }
 
@@ -122,14 +136,23 @@ func runCmd() *cobra.Command {
 				return err
 			}
 
-			app, err := newApp()
+			dbDSN := envOrDefault("DATABASE_URL", dbPath)
+			if dbDSN == "" {
+				return fmt.Errorf("--db flag or DATABASE_URL env is required (PostgreSQL DSN)")
+			}
+
+			ctx := signalCtx()
+			pool, err := postgres.Open(ctx, dbDSN)
 			if err != nil {
 				return err
 			}
-			defer app.Close()
+			defer pool.Close()
 
-			ctx := signalCtx()
-			return app.Start(ctx, cfg)
+			logger, _ := zap.NewDevelopment()
+			app := api.New(api.Config{Pool: pool, Logger: logger})
+
+			// CLI runs use an empty tenant ID.
+			return app.Start(ctx, "", cfg)
 		},
 	}
 }
@@ -144,11 +167,20 @@ func validateCmd() *cobra.Command {
 				return err
 			}
 
-			app, err := newApp()
+			dbDSN := envOrDefault("DATABASE_URL", dbPath)
+			if dbDSN == "" {
+				return fmt.Errorf("--db flag or DATABASE_URL env is required (PostgreSQL DSN)")
+			}
+
+			ctx := context.Background()
+			pool, err := postgres.Open(ctx, dbDSN)
 			if err != nil {
 				return err
 			}
-			defer app.Close()
+			defer pool.Close()
+
+			logger, _ := zap.NewDevelopment()
+			app := api.New(api.Config{Pool: pool, Logger: logger})
 
 			if err := app.Validate(cfg); err != nil {
 				return fmt.Errorf("validation failed: %w", err)
@@ -169,11 +201,20 @@ func dryRunCmd() *cobra.Command {
 				return err
 			}
 
-			app, err := newApp()
+			dbDSN := envOrDefault("DATABASE_URL", dbPath)
+			if dbDSN == "" {
+				return fmt.Errorf("--db flag or DATABASE_URL env is required (PostgreSQL DSN)")
+			}
+
+			ctx := context.Background()
+			pool, err := postgres.Open(ctx, dbDSN)
 			if err != nil {
 				return err
 			}
-			defer app.Close()
+			defer pool.Close()
+
+			logger, _ := zap.NewDevelopment()
+			app := api.New(api.Config{Pool: pool, Logger: logger})
 
 			data, err := app.DryRun(cfg)
 			if err != nil {
@@ -210,7 +251,7 @@ func agentCmd() *cobra.Command {
 
 			ctx := signalCtx()
 
-			// Run poll loop — blocks until ctx is cancelled.
+			// Run poll loop -- blocks until ctx is cancelled.
 			go func() {
 				if err := srv.Run(ctx); err != nil {
 					log.Printf("agent poll loop error: %v", err)
@@ -218,22 +259,12 @@ func agentCmd() *cobra.Command {
 			}()
 
 			<-ctx.Done()
-			log.Println("agent shutting down — killing managed processes")
+			log.Println("agent shutting down -- killing managed processes")
 			srv.Executor().Shutdown()
 			return nil
 		},
 	}
 	return cmd
-}
-
-func newApp() (*api.App, error) {
-	logger, _ := zap.NewDevelopment()
-	return api.New(api.Config{
-		DataDir: dataDir,
-		Logger:  logger,
-		Client:  nil, // buildDeps defaults to HTTPClient when nil
-		Sink:    nil, // wired by NewServer when in serve mode
-	})
 }
 
 func signalCtx() context.Context {
@@ -324,9 +355,9 @@ func compareCmd() *cobra.Command {
 				verdict := m.Verdict
 				switch verdict {
 				case "better":
-					verdict = "✓ better"
+					verdict = "better"
 				case "worse":
-					verdict = "✗ worse"
+					verdict = "worse"
 				case "same":
 					verdict = "= same"
 				}

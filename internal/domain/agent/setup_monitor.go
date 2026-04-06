@@ -14,4 +14,5 @@ type MonitorSetupConfig struct {
 	ScrapeTargets   []string `json:"scrape_targets"` // internal hostnames of all monitored nodes
 	RunID           string   `json:"run_id"`         // added as external label to all metrics
 	DatabaseKind    string   `json:"database_kind,omitempty"`
+	BearerToken     string   `json:"bearer_token,omitempty"` // auth token for vmauth
 }

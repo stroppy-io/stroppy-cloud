@@ -149,7 +149,7 @@ func TestExecutorHappyPath(t *testing.T) {
 	must(t, g.Add(&Node{ID: "c", Type: "x", Task: &counterTask{&counter}, Deps: []string{"a"}}))
 	must(t, g.Add(&Node{ID: "d", Type: "x", Task: &counterTask{&counter}, Deps: []string{"b", "c"}}))
 
-	err := NewExecutor("test", g, nil, nil, nil).Run(context.Background())
+	err := NewExecutor("", "test", g, nil, nil, nil).Run(context.Background())
 	must(t, err)
 
 	if counter.Load() != 4 {
@@ -164,7 +164,7 @@ func TestExecutorFailFast(t *testing.T) {
 	must(t, g.Add(&Node{ID: "a", Type: "x", Task: &failTask{boom}}))
 	must(t, g.Add(&Node{ID: "b", Type: "x", Task: noopTask{}, Deps: []string{"a"}}))
 
-	err := NewExecutor("test", g, nil, nil, nil).Run(context.Background())
+	err := NewExecutor("", "test", g, nil, nil, nil).Run(context.Background())
 	if err == nil {
 		t.Fatal("expected error")
 	}
@@ -180,7 +180,7 @@ func TestExecutorContextCancel(t *testing.T) {
 	g := New()
 	must(t, g.Add(&Node{ID: "a", Type: "x", Task: ctxTask{}}))
 
-	err := NewExecutor("test", g, nil, nil, nil).Run(ctx)
+	err := NewExecutor("", "test", g, nil, nil, nil).Run(ctx)
 	if err == nil {
 		t.Fatal("expected error from cancelled context")
 	}
@@ -195,7 +195,7 @@ func TestExecutorRetry(t *testing.T) {
 	g := New()
 	must(t, g.Add(&Node{ID: "a", Type: "x", Task: flaky}))
 
-	exec := NewExecutor("retry-1", g, nil, nil, nil)
+	exec := NewExecutor("", "retry-1", g, nil, nil, nil)
 	exec.SetRetryPolicy(RetryPolicy{MaxRetries: 3, BaseDelay: 10 * time.Millisecond, MaxDelay: 50 * time.Millisecond})
 	err := exec.Run(context.Background())
 	must(t, err)
@@ -214,7 +214,7 @@ func TestExecutorRetryExhausted(t *testing.T) {
 	g := New()
 	must(t, g.Add(&Node{ID: "a", Type: "x", Task: alwaysFail}))
 
-	exec := NewExecutor("retry-2", g, nil, nil, nil)
+	exec := NewExecutor("", "retry-2", g, nil, nil, nil)
 	exec.SetRetryPolicy(RetryPolicy{MaxRetries: 2, BaseDelay: 10 * time.Millisecond, MaxDelay: 50 * time.Millisecond})
 	err := exec.Run(context.Background())
 
@@ -232,7 +232,7 @@ func TestExecutorLogSink(t *testing.T) {
 	g := New()
 	must(t, g.Add(&Node{ID: "a", Type: "x", Task: logTask{}}))
 
-	err := NewExecutor("exec-1", g, nil, nil, sink).Run(context.Background())
+	err := NewExecutor("", "exec-1", g, nil, nil, sink).Run(context.Background())
 	must(t, err)
 
 	if len(sink.entries()) == 0 {
@@ -245,7 +245,72 @@ func TestExecutorLogSink(t *testing.T) {
 	}
 }
 
+func TestExecutorAlwaysRunAfterFailure(t *testing.T) {
+	var teardownRan atomic.Bool
+
+	g := New()
+	must(t, g.Add(&Node{ID: "a", Type: "x", Task: noopTask{}}))
+	must(t, g.Add(&Node{ID: "b", Type: "x", Task: &failTask{errors.New("boom")}, Deps: []string{"a"}}))
+	must(t, g.Add(&Node{ID: "c", Type: "x", Task: &recordTask{ran: &teardownRan}, Deps: []string{"b"}, AlwaysRun: true}))
+
+	exec := NewExecutor("", "always-run-1", g, nil, nil, nil)
+	exec.SetRetryPolicy(RetryPolicy{MaxRetries: 0, BaseDelay: time.Millisecond, MaxDelay: time.Millisecond})
+	err := exec.Run(context.Background())
+
+	if err == nil {
+		t.Fatal("expected error from failed node")
+	}
+	if !teardownRan.Load() {
+		t.Fatal("AlwaysRun node should have executed after upstream failure")
+	}
+}
+
+func TestExecutorAlwaysRunNotTriggeredOnSuccess(t *testing.T) {
+	var counter atomic.Int64
+
+	g := New()
+	must(t, g.Add(&Node{ID: "a", Type: "x", Task: &counterTask{&counter}}))
+	must(t, g.Add(&Node{ID: "b", Type: "x", Task: &counterTask{&counter}, Deps: []string{"a"}, AlwaysRun: true}))
+
+	err := NewExecutor("", "always-run-2", g, nil, nil, nil).Run(context.Background())
+	must(t, err)
+
+	if counter.Load() != 2 {
+		t.Fatalf("expected 2 executions (both nodes), got %d", counter.Load())
+	}
+}
+
+func TestReadyAlwaysRun(t *testing.T) {
+	g := New()
+	must(t, g.Add(&Node{ID: "a", Type: "x"}))
+	must(t, g.Add(&Node{ID: "b", Type: "x", Deps: []string{"a"}}))
+	must(t, g.Add(&Node{ID: "c", Type: "x", Deps: []string{"b"}, AlwaysRun: true}))
+
+	// b failed, c should be ready (AlwaysRun treats failed deps as resolved)
+	ready := g.ReadyAlwaysRun(
+		map[string]bool{"a": true},
+		map[string]bool{"b": true},
+	)
+	assertIDs(t, ready, "c")
+
+	// Neither done nor failed — c should not be ready
+	ready = g.ReadyAlwaysRun(
+		map[string]bool{"a": true},
+		map[string]bool{},
+	)
+	assertIDs(t, ready)
+}
+
 // --- helpers ---
+
+type recordTask struct {
+	ran *atomic.Bool
+}
+
+func (t *recordTask) Execute(*NodeContext) error {
+	t.ran.Store(true)
+	return nil
+}
 
 func must(t *testing.T, err error) {
 	t.Helper()
@@ -285,7 +350,7 @@ type memStorage struct {
 	data map[string]*Snapshot
 }
 
-func (m *memStorage) Save(_ context.Context, id string, snap *Snapshot) error {
+func (m *memStorage) Save(_ context.Context, _, id string, snap *Snapshot) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.data == nil {
@@ -295,10 +360,18 @@ func (m *memStorage) Save(_ context.Context, id string, snap *Snapshot) error {
 	return nil
 }
 
-func (m *memStorage) Load(_ context.Context, id string) (*Snapshot, error) {
+func (m *memStorage) Load(_ context.Context, _, id string) (*Snapshot, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.data[id], nil
+}
+
+func (m *memStorage) List(_ context.Context, _ string) ([]RunSummary, error)     { return nil, nil }
+func (m *memStorage) Delete(_ context.Context, _, _ string) error                { return nil }
+func (m *memStorage) SetBaseline(_ context.Context, _, _, _ string) error        { return nil }
+func (m *memStorage) GetBaseline(_ context.Context, _, _ string) (string, error) { return "", nil }
+func (m *memStorage) ListBaselines(_ context.Context, _ string) (map[string]string, error) {
+	return nil, nil
 }
 
 type logEntry struct {

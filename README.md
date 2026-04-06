@@ -17,7 +17,7 @@ Database benchmarking orchestrator. One binary that deploys databases, configure
 make build
 
 # Start the full stack (server + VictoriaMetrics + VictoriaLogs + Grafana)
-docker compose -f docker-compose.test.yaml up -d --build
+docker compose -f docker-compose.yaml up -d --build
 
 # Open the web UI
 open http://localhost:8080

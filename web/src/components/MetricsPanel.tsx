@@ -201,7 +201,7 @@ export function MetricsPanel({ runID, startedAt, finishedAt }: MetricsPanelProps
 
       {/* Raw data table */}
       {metrics.length > 0 && (
-        <details className="group">
+        <details className="group" open={true}>
           <summary className="text-[10px] uppercase tracking-widest text-zinc-600 cursor-pointer hover:text-zinc-400 transition-colors py-2">
             Raw metric values ({metrics.length})
           </summary>

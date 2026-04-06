@@ -8,7 +8,6 @@ import (
 	"io/fs"
 	"net/http"
 	"net/url"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,79 +19,100 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/websocket"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/metrics"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	pgdb "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/generated"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
 )
 
 // Server is the HTTP server exposing agent, external, and UI APIs.
 type Server struct {
-	app       *App
-	logger    *zap.Logger
-	hub       *wsHub
-	collector *metrics.Collector
-	apiKey    string
-	users     *UserStore
+	app    *App
+	logger *zap.Logger
+	hub    *wsHub
+	pool   *pgxpool.Pool
+
+	jwtIssuer *auth.JWTIssuer
+
+	// monitoringURL is the vmauth base URL (env MONITORING_URL).
+	// Empty means monitoring is disabled.
+	monitoringURL string
+	// monitoringToken is the bearer token for vmauth (env MONITORING_TOKEN).
+	monitoringToken string
+
+	// grafanaURL is the Grafana base URL (env GRAFANA_URL).
+	// Empty means Grafana integration is disabled.
+	grafanaURL string
+
+	// grafanaDashboards maps dashboard names to UIDs (hardcoded defaults).
+	grafanaDashboards map[string]string
 
 	// agentRegistry tracks connected agents by machine ID.
 	agentsMu sync.RWMutex
 	agents   map[string]agent.Target
 
-	// pollClient is the command queue used for agent↔server communication.
+	// pollClient is the command queue used for agent<->server communication.
 	pollClient *agent.PollClient
-
-	// settings holds admin-managed server settings, protected by settingsMu.
-	settingsMu   sync.RWMutex
-	settings     *types.ServerSettings
-	settingsPath string
 
 	// spaFS serves the embedded SPA files. If nil, SPA is not served.
 	spaFS http.FileSystem
-
-	// victoriaLogs forwards agent log lines to VictoriaLogs for persistence.
-	// nil when VictoriaLogs is not configured.
-	victoriaLogs *victoria.LogsClient
 }
 
 // NewServer creates an HTTP server backed by the App.
-// victoriaURL may be empty to disable metrics endpoints.
-// victoriaLogsURL may be empty to disable log persistence.
-// apiKey may be empty to disable authentication (development mode).
-// settingsPath may be empty to disable settings persistence.
-func NewServer(app *App, logger *zap.Logger, victoriaURL, victoriaLogsURL, apiKey, settingsPath string) *Server {
-	defaults := types.DefaultServerSettings()
+// monitoringURL is the vmauth base URL (empty = monitoring disabled).
+// grafanaURL is the Grafana base URL (empty = Grafana integration disabled).
+func NewServer(app *App, logger *zap.Logger, pool *pgxpool.Pool, jwtSecret, monitoringURL, monitoringToken, grafanaURL, listenAddr string) *Server {
 	pc := agent.NewPollClient(logger)
 	s := &Server{
-		app:          app,
-		logger:       logger,
-		hub:          newWSHub(),
-		agents:       make(map[string]agent.Target),
-		pollClient:   pc,
-		settings:     &defaults,
-		apiKey:       apiKey,
-		users:        NewUserStore(),
-		settingsPath: settingsPath,
+		app:             app,
+		logger:          logger,
+		hub:             newWSHub(),
+		agents:          make(map[string]agent.Target),
+		pollClient:      pc,
+		pool:            pool,
+		jwtIssuer:       auth.NewJWTIssuer(jwtSecret),
+		monitoringURL:   monitoringURL,
+		monitoringToken: monitoringToken,
+		grafanaURL:      grafanaURL,
+		grafanaDashboards: map[string]string{
+			"system":   "stroppy-system",
+			"postgres": "stroppy-postgres",
+			"mysql":    "stroppy-mysql",
+			"picodata": "stroppy-picodata",
+			"stroppy":  "stroppy-metrics-v1",
+			"compare":  "stroppy-compare",
+		},
 	}
-	if victoriaURL != "" {
-		s.collector = metrics.NewCollector(victoria.NewClient(victoriaURL))
-	}
-	if victoriaLogsURL != "" {
-		s.victoriaLogs = victoria.NewLogsClient(victoriaLogsURL)
-	}
-	// Load persisted settings from disk (if available).
-	s.loadSettingsFromDisk()
 	// Wire LogSink so executor logs stream to WebSocket clients and VictoriaLogs.
-	s.hub.victoriaLogs = s.victoriaLogs
+	if monitoringURL != "" {
+		s.hub.victoriaLogs = victoria.NewLogsClient(monitoringURL, monitoringToken)
+	}
 	s.hub.logger = logger
+	s.hub.accountIDResolver = func(runID string) int32 {
+		id, _ := s.accountIDFromRunID(context.Background(), runID)
+		return id
+	}
 	app.sink = s.hub
-	// Wire settings getter so buildDeps can access current cloud settings.
-	app.settingsFunc = s.currentSettings
+	// Wire settings getter so buildDeps can access current cloud settings from DB.
+	app.settingsFunc = s.settingsForTenant
+	// Wire monitoring config so buildDeps can derive OTLP/metrics endpoints.
+	app.monitoringURL = monitoringURL
+	app.monitoringToken = monitoringToken
+	// Wire accountID resolver so buildDeps can set per-tenant victoria accountID.
+	app.accountIDFunc = func(tenantID string) int32 {
+		id, _ := s.tenantAccountID(context.Background(), tenantID)
+		return id
+	}
 	// Wire PollClient as the agent client — all command dispatch goes through polling.
 	app.client = pc
+	// Wire listen address so Docker agents can reach the server.
+	app.listenAddr = listenAddr
 	return s
 }
 
@@ -102,7 +122,7 @@ func (s *Server) Router() http.Handler {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 
-	r.Use(AuthMiddleware(s.apiKey, s.users))
+	r.Use(auth.NewAuthMiddleware(s.jwtIssuer, s.pool))
 
 	// --- Health ---
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -117,49 +137,79 @@ func (s *Server) Router() http.Handler {
 		r.Post("/log", s.agentLog)
 	})
 
-	// --- Auth API ---
+	// --- Auth (public — handled by isPublicPath in middleware) ---
 	r.Post("/api/v1/auth/login", s.login)
-	r.Get("/api/v1/auth/me", s.me)
+	r.Post("/api/v1/auth/refresh", s.refresh)
+	r.Post("/api/v1/auth/logout", s.logout)
 
-	// --- External API ---
+	// --- Authenticated, no tenant required ---
+	r.Get("/api/v1/auth/me", s.authMe)
+	r.Post("/api/v1/auth/select-tenant", s.selectTenant)
+	r.Put("/api/v1/auth/password", s.changePassword)
+
+	// --- Grafana config (infrastructure, not tenant) ---
+	r.Get("/api/v1/grafana", s.getGrafanaConfig)
+
+	// --- Tenant-scoped ---
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Post("/run", s.runStart)
-		r.Post("/validate", s.runValidate)
-		r.Post("/dry-run", s.runDryRun)
-		r.Get("/run/{runID}/status", s.runStatus)
-		r.Delete("/run/{runID}", s.deleteRun)
+		r.Use(auth.TenantRequired())
+
+		// Viewer+
 		r.Get("/runs", s.listRuns)
-		r.Get("/presets", s.listPresets)
-
-		// --- Logs (VictoriaLogs) ---
+		r.Get("/run/{runID}/status", s.runStatus)
 		r.Get("/run/{runID}/logs", s.runLogs)
-
-		// --- Metrics ---
 		r.Get("/run/{runID}/metrics", s.runMetrics)
-		r.Get("/compare", s.compareRuns) // ?a=runA&b=runB&start=...&end=...
+		r.Get("/compare", s.compareRuns)
+		r.Get("/presets", s.listPresets)
+		r.Get("/settings", s.getSettings)
 
-		// --- Admin ---
-		r.Route("/admin", func(r chi.Router) {
-			r.Get("/settings", s.getSettings)
-			r.Put("/settings", s.updateSettings)
-			r.Get("/packages", s.getPackages)
-			r.Put("/packages", s.updatePackages)
-			r.Get("/db-defaults/{kind}", s.getDBDefaults)
-			r.Get("/db-defaults/{kind}/{version}", s.getDBDefaultsVersion)
-			r.Get("/grafana", s.getGrafanaSettings)
+		// Operator+
+		r.Group(func(r chi.Router) {
+			r.Use(auth.RequireRole("operator"))
+			r.Post("/run", s.runStart)
+			r.Post("/validate", s.runValidate)
+			r.Post("/dry-run", s.runDryRun)
+			r.Delete("/run/{runID}", s.deleteRun)
 			r.Put("/baseline/{name}", s.setBaseline)
 			r.Get("/baseline/{name}", s.getBaseline)
 			r.Get("/baselines", s.listBaselines)
+			r.Post("/upload/deb", s.uploadPackage)
+			r.Post("/upload/rpm", s.uploadPackage)
 		})
+
+		// Owner+
+		r.Group(func(r chi.Router) {
+			r.Use(auth.RequireRole("owner"))
+			r.Put("/settings", s.updateSettings)
+			r.Route("/tenant", func(r chi.Router) {
+				r.Get("/members", s.listMembers)
+				r.Post("/members", s.addMember)
+				r.Put("/members/{userID}", s.updateMember)
+				r.Delete("/members/{userID}", s.removeMember)
+				r.Get("/tokens", s.listAPITokens)
+				r.Post("/tokens", s.createAPIToken)
+				r.Delete("/tokens/{id}", s.revokeAPIToken)
+			})
+		})
+	})
+
+	// --- Root only ---
+	r.Route("/api/v1/admin", func(r chi.Router) {
+		r.Use(auth.RequireRoot())
+		r.Get("/tenants", s.listTenantsAdmin)
+		r.Post("/tenants", s.createTenantAdmin)
+		r.Delete("/tenants/{id}", s.deleteTenantAdmin)
+		r.Get("/users", s.listUsersAdmin)
+		r.Post("/users", s.createUserAdmin)
+		r.Delete("/users/{id}", s.deleteUserAdmin)
+		r.Put("/users/{id}/password", s.resetPasswordAdmin)
 	})
 
 	// --- UI WebSocket ---
 	r.Get("/ws/logs", s.wsLogs)
 	r.Get("/ws/logs/{runID}", s.wsLogsRun)
 
-	// --- Upload & package serving ---
-	r.Post("/api/v1/upload/deb", s.uploadPackage)
-	r.Post("/api/v1/upload/rpm", s.uploadPackage)
+	// --- Package serving ---
 	r.Get("/packages/*", http.StripPrefix("/packages/", http.FileServer(http.Dir(uploadDir))).ServeHTTP)
 
 	// --- Agent binary download ---
@@ -167,8 +217,15 @@ func (s *Server) Router() http.Handler {
 
 	// --- SPA (embedded frontend) ---
 	if s.spaFS != nil {
-		// Serve static files, fallback to index.html for SPA routing.
 		r.Get("/*", s.serveSPA)
+		// Unknown paths: SPA fallback for non-API, JSON 404 for API.
+		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, "/api/") {
+				writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
+				return
+			}
+			s.serveSPA(w, r)
+		})
 	}
 
 	return r
@@ -192,7 +249,7 @@ func (s *Server) serveSPA(w http.ResponseWriter, r *http.Request) {
 		http.FileServer(s.spaFS).ServeHTTP(w, r)
 		return
 	}
-	// File not found → serve index.html for client-side routing.
+	// File not found -> serve index.html for client-side routing.
 	r.URL.Path = "/"
 	http.FileServer(s.spaFS).ServeHTTP(w, r)
 }
@@ -280,10 +337,16 @@ func (s *Server) agentLog(w http.ResponseWriter, r *http.Request) {
 	// Broadcast to all connected WebSocket clients for live viewing.
 	s.hub.broadcast(wsMessage{Type: "agent_log", RunID: runID, Payload: line})
 
-	// Persist to VictoriaLogs (fire-and-forget).
-	if s.victoriaLogs != nil {
+	// Persist to VictoriaLogs via vmauth (fire-and-forget).
+	if s.monitoringURL != "" {
+		// Look up tenant accountID from run → tenant_id (agent endpoints have no auth context).
+		accountID, accErr := s.accountIDFromRunID(r.Context(), runID)
+		if accErr != nil {
+			s.logger.Warn("vlogs: cannot resolve accountID for run", zap.String("run_id", runID), zap.Error(accErr))
+		}
 		go func() {
-			if err := s.victoriaLogs.Ingest(line.MachineID, line.CommandID, runID, line.Stream, line.Line); err != nil {
+			vlClient := victoria.NewLogsClient(s.monitoringURL, s.monitoringToken)
+			if err := vlClient.IngestWithAccount(accountID, line.MachineID, line.CommandID, runID, line.Stream, line.Line); err != nil {
 				s.logger.Debug("vlogs ingest failed", zap.Error(err))
 			}
 		}()
@@ -297,6 +360,8 @@ func (s *Server) agentLog(w http.ResponseWriter, r *http.Request) {
 // ============================================================
 
 func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
+	tenantID := auth.TenantID(r.Context())
+
 	var cfg types.RunConfig
 	if err := json.NewDecoder(r.Body).Decode(&cfg); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -309,7 +374,7 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check for duplicate (run already exists in storage).
-	if snap, _ := s.app.Storage().Load(r.Context(), cfg.ID); snap != nil {
+	if snap, _ := s.app.Storage().Load(r.Context(), tenantID, cfg.ID); snap != nil {
 		writeJSON(w, http.StatusConflict, map[string]string{
 			"error": fmt.Sprintf("run %q already exists", cfg.ID),
 		})
@@ -318,7 +383,7 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 
 	// Run asynchronously, return run ID immediately.
 	go func() {
-		if err := s.app.Start(context.Background(), cfg); err != nil {
+		if err := s.app.Start(context.Background(), tenantID, cfg); err != nil {
 			s.logger.Error("run failed", zap.String("run_id", cfg.ID), zap.Error(err))
 		}
 	}()
@@ -358,9 +423,10 @@ func (s *Server) runDryRun(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) runStatus(w http.ResponseWriter, r *http.Request) {
+	tenantID := auth.TenantID(r.Context())
 	runID := chi.URLParam(r, "runID")
 
-	snap, err := s.app.storage.Load(r.Context(), runID)
+	snap, err := s.app.storage.Load(r.Context(), tenantID, runID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -373,7 +439,9 @@ func (s *Server) runStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listRuns(w http.ResponseWriter, r *http.Request) {
-	runs, err := s.app.Storage().List(r.Context())
+	tenantID := auth.TenantID(r.Context())
+
+	runs, err := s.app.Storage().List(r.Context(), tenantID)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -382,10 +450,11 @@ func (s *Server) listRuns(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) deleteRun(w http.ResponseWriter, r *http.Request) {
+	tenantID := auth.TenantID(r.Context())
 	runID := chi.URLParam(r, "runID")
 
 	// Check exists.
-	snap, err := s.app.Storage().Load(r.Context(), runID)
+	snap, err := s.app.Storage().Load(r.Context(), tenantID, runID)
 	if err != nil || snap == nil {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -395,7 +464,7 @@ func (s *Server) deleteRun(w http.ResponseWriter, r *http.Request) {
 	s.cleanupRunResources(runID)
 
 	// Delete from storage.
-	if err := s.app.Storage().Delete(r.Context(), runID); err != nil {
+	if err := s.app.Storage().Delete(r.Context(), tenantID, runID); err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
@@ -441,42 +510,69 @@ func (s *Server) cleanupRunResources(runID string) {
 // RecoverOrCleanupRuns attempts to resume incomplete runs whose Docker containers
 // are still alive. Runs that cannot be recovered are marked as failed and their
 // resources are cleaned up. Called on server startup.
+//
+// For recovery, we query all runs across all tenants.
 func (s *Server) RecoverOrCleanupRuns() {
 	ctx := context.Background()
 
-	runs, err := s.app.Storage().List(ctx)
+	// Query all runs across all tenants for recovery.
+	rows, err := s.pool.Query(ctx, "SELECT id, tenant_id, snapshot FROM runs ORDER BY created_at DESC")
 	if err != nil {
 		s.logger.Warn("recovery: failed to list runs", zap.Error(err))
 		return
+	}
+	defer rows.Close()
+
+	type runInfo struct {
+		id       string
+		tenantID string
+		snap     *dag.Snapshot
+	}
+
+	var incompleteRuns []runInfo
+	for rows.Next() {
+		var id, tenantID, data string
+		if err := rows.Scan(&id, &tenantID, &data); err != nil {
+			continue
+		}
+		var snap dag.Snapshot
+		if json.Unmarshal([]byte(data), &snap) != nil {
+			continue
+		}
+		// Check if any nodes are pending.
+		pending := false
+		for _, n := range snap.Nodes {
+			if n.Status == dag.StatusPending {
+				pending = true
+				break
+			}
+		}
+		if pending {
+			incompleteRuns = append(incompleteRuns, runInfo{id: id, tenantID: tenantID, snap: &snap})
+		}
 	}
 
 	// Track run IDs that are being recovered so we don't clean up their containers.
 	activeRunIDs := make(map[string]bool)
 
-	for _, r := range runs {
-		if r.Pending == 0 {
-			continue // completed or fully failed — nothing to do
-		}
+	for _, r := range incompleteRuns {
+		s.logger.Info("recovery: found incomplete run", zap.String("id", r.id), zap.String("tenant", r.tenantID))
 
-		s.logger.Info("recovery: found incomplete run",
-			zap.String("id", r.ID), zap.Int("pending", r.Pending))
-
-		snap, err := s.app.Storage().Load(ctx, r.ID)
-		if err != nil || snap == nil || snap.State == nil {
-			s.logger.Warn("recovery: no state saved, marking as failed", zap.String("id", r.ID))
-			s.markRunFailed(ctx, snap, r.ID)
-			s.cleanupRunResources(r.ID)
+		if r.snap.State == nil {
+			s.logger.Warn("recovery: no state saved, marking as failed", zap.String("id", r.id))
+			s.markRunFailed(ctx, r.tenantID, r.snap, r.id)
+			s.cleanupRunResources(r.id)
 			continue
 		}
 
-		if s.canRecoverRun(snap.State) {
-			s.logger.Info("recovery: containers alive, resuming run", zap.String("id", r.ID))
-			activeRunIDs[r.ID] = true
-			go s.recoverRun(r.ID, snap)
+		if s.canRecoverRun(r.snap.State) {
+			s.logger.Info("recovery: containers alive, resuming run", zap.String("id", r.id))
+			activeRunIDs[r.id] = true
+			go s.recoverRun(r.id, r.tenantID, r.snap)
 		} else {
-			s.logger.Warn("recovery: containers dead, marking as failed", zap.String("id", r.ID))
-			s.markRunFailed(ctx, snap, r.ID)
-			s.cleanupRunResources(r.ID)
+			s.logger.Warn("recovery: containers dead, marking as failed", zap.String("id", r.id))
+			s.markRunFailed(ctx, r.tenantID, r.snap, r.id)
+			s.cleanupRunResources(r.id)
 		}
 	}
 
@@ -504,7 +600,7 @@ func (s *Server) canRecoverRun(state *dag.RunState) bool {
 	for _, cid := range state.ContainerIDs {
 		inspect, err := cli.ContainerInspect(context.Background(), cid)
 		if err == nil && inspect.State.Running {
-			return true // at least one container alive — worth trying
+			return true // at least one container alive -- worth trying
 		}
 	}
 
@@ -512,17 +608,17 @@ func (s *Server) canRecoverRun(state *dag.RunState) bool {
 }
 
 // recoverRun rebuilds state from a snapshot and resumes execution.
-func (s *Server) recoverRun(runID string, snap *dag.Snapshot) {
+func (s *Server) recoverRun(runID, tenantID string, snap *dag.Snapshot) {
 	ctx := context.Background()
 
-	if err := s.app.RecoverRun(ctx, snap); err != nil {
+	if err := s.app.RecoverRun(ctx, tenantID, snap); err != nil {
 		s.logger.Error("recovery: run failed",
 			zap.String("id", runID), zap.Error(err))
 	}
 }
 
 // markRunFailed marks all pending nodes in a snapshot as failed.
-func (s *Server) markRunFailed(ctx context.Context, snap *dag.Snapshot, runID string) {
+func (s *Server) markRunFailed(ctx context.Context, tenantID string, snap *dag.Snapshot, runID string) {
 	if snap == nil {
 		return
 	}
@@ -530,12 +626,12 @@ func (s *Server) markRunFailed(ctx context.Context, snap *dag.Snapshot, runID st
 	for i := range snap.Nodes {
 		if snap.Nodes[i].Status == dag.StatusPending {
 			snap.Nodes[i].Status = dag.StatusFailed
-			snap.Nodes[i].Error = "server restarted — run orphaned"
+			snap.Nodes[i].Error = "server restarted -- run orphaned"
 			changed = true
 		}
 	}
 	if changed {
-		_ = s.app.Storage().Save(ctx, runID, snap)
+		_ = s.app.Storage().Save(ctx, tenantID, runID, snap)
 	}
 }
 
@@ -681,8 +777,15 @@ func (s *Server) Agents() map[string]agent.Target {
 // ============================================================
 
 func (s *Server) runLogs(w http.ResponseWriter, r *http.Request) {
-	if s.victoriaLogs == nil {
-		http.Error(w, "log storage not configured (no VictoriaLogs URL)", http.StatusServiceUnavailable)
+	if s.monitoringURL == "" {
+		http.Error(w, "log storage not configured (no MONITORING_URL)", http.StatusServiceUnavailable)
+		return
+	}
+
+	tenantID := auth.TenantID(r.Context())
+	accountID, err := s.tenantAccountID(r.Context(), tenantID)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -694,7 +797,7 @@ func (s *Server) runLogs(w http.ResponseWriter, r *http.Request) {
 	end := r.URL.Query().Get("end")
 
 	vlURL := fmt.Sprintf("%s/select/logsql/query?query=%s",
-		s.victoriaLogs.BaseURL(), url.QueryEscape(query))
+		s.monitoringURL, url.QueryEscape(query))
 	if start != "" {
 		vlURL += "&start=" + url.QueryEscape(start)
 	}
@@ -702,7 +805,18 @@ func (s *Server) runLogs(w http.ResponseWriter, r *http.Request) {
 		vlURL += "&end=" + url.QueryEscape(end)
 	}
 
-	resp, err := http.Get(vlURL)
+	req, err := http.NewRequestWithContext(r.Context(), http.MethodGet, vlURL, nil)
+	if err != nil {
+		writeJSON(w, http.StatusBadGateway, map[string]string{"error": err.Error()})
+		return
+	}
+	if s.monitoringToken != "" {
+		req.Header.Set("Authorization", "Bearer "+s.monitoringToken)
+	}
+	if accountID > 0 {
+		req.Header.Set("AccountID", fmt.Sprintf("%d", accountID))
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		writeJSON(w, http.StatusBadGateway, map[string]string{"error": err.Error()})
 		return
@@ -724,17 +838,68 @@ type MetricsRequest struct {
 	End   string `json:"end"`   // RFC3339
 }
 
+// accountIDFromRunID resolves accountID by looking up the run's tenant, then the tenant's account_id.
+func (s *Server) accountIDFromRunID(ctx context.Context, runID string) (int32, error) {
+	var tenantID string
+	err := s.pool.QueryRow(ctx, "SELECT tenant_id FROM runs WHERE id = $1 LIMIT 1", runID).Scan(&tenantID)
+	if err != nil {
+		return 0, fmt.Errorf("lookup tenant for run %s: %w", runID, err)
+	}
+	return s.tenantAccountID(ctx, tenantID)
+}
+
+// tenantAccountID looks up the account_id for a tenant.
+func (s *Server) tenantAccountID(ctx context.Context, tenantID string) (int32, error) {
+	q := pgdb.New(s.pool)
+	t, err := q.GetTenant(ctx, tenantID)
+	if err != nil {
+		return 0, fmt.Errorf("get tenant: %w", err)
+	}
+	if !t.AccountID.Valid {
+		return 0, fmt.Errorf("tenant %s has no account_id", tenantID)
+	}
+	return t.AccountID.Int32, nil
+}
+
+// metricsCollector returns a metrics.Collector configured for the given accountID.
+func (s *Server) metricsCollector(accountID int32) *metrics.Collector {
+	prefix := fmt.Sprintf("%s/select/%d/prometheus", s.monitoringURL, accountID)
+	return metrics.NewCollector(victoria.NewClient(prefix, s.monitoringToken))
+}
+
+// logsBaseURL returns the VictoriaLogs query base URL for the given accountID.
+func (s *Server) logsBaseURL(accountID int32) string {
+	return fmt.Sprintf("%s/select/%d", s.monitoringURL, accountID)
+}
+
+// getGrafanaConfig handles GET /api/v1/grafana.
+func (s *Server) getGrafanaConfig(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]any{
+		"url":           s.grafanaURL,
+		"embed_enabled": s.grafanaURL != "",
+		"dashboards":    s.grafanaDashboards,
+	})
+}
+
 func (s *Server) runMetrics(w http.ResponseWriter, r *http.Request) {
-	if s.collector == nil {
-		http.Error(w, "metrics not configured (no VictoriaMetrics URL)", http.StatusServiceUnavailable)
+	if s.monitoringURL == "" {
+		http.Error(w, "metrics not configured (no MONITORING_URL)", http.StatusServiceUnavailable)
 		return
 	}
 
+	tenantID := auth.TenantID(r.Context())
 	runID := chi.URLParam(r, "runID")
+
+	accountID, err := s.tenantAccountID(r.Context(), tenantID)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	collector := s.metricsCollector(accountID)
 	tr, err := parseTimeRange(r)
 	if err != nil {
 		// Auto-resolve from run snapshot timestamps.
-		snap, _ := s.app.storage.Load(r.Context(), runID)
+		snap, _ := s.app.storage.Load(r.Context(), tenantID, runID)
 		if snap != nil && !snap.StartedAt.IsZero() {
 			end := snap.FinishedAt
 			if end.IsZero() {
@@ -747,7 +912,7 @@ func (s *Server) runMetrics(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	result, err := s.collector.Collect(r.Context(), runID, tr)
+	result, err := collector.Collect(r.Context(), runID, tr)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		return
@@ -756,10 +921,19 @@ func (s *Server) runMetrics(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) compareRuns(w http.ResponseWriter, r *http.Request) {
-	if s.collector == nil {
-		http.Error(w, "metrics not configured (no VictoriaMetrics URL)", http.StatusServiceUnavailable)
+	if s.monitoringURL == "" {
+		http.Error(w, "metrics not configured (no MONITORING_URL)", http.StatusServiceUnavailable)
 		return
 	}
+
+	tenantID := auth.TenantID(r.Context())
+
+	accountID, err := s.tenantAccountID(r.Context(), tenantID)
+	if err != nil {
+		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		return
+	}
+	collector := s.metricsCollector(accountID)
 
 	runA := r.URL.Query().Get("a")
 	runB := r.URL.Query().Get("b")
@@ -772,8 +946,8 @@ func (s *Server) compareRuns(w http.ResponseWriter, r *http.Request) {
 	tr, err := parseTimeRange(r)
 	if err != nil {
 		// Try to derive from run snapshots.
-		snapA, _ := s.app.storage.Load(r.Context(), runA)
-		snapB, _ := s.app.storage.Load(r.Context(), runB)
+		snapA, _ := s.app.storage.Load(r.Context(), tenantID, runA)
+		snapB, _ := s.app.storage.Load(r.Context(), tenantID, runB)
 		if snapA == nil || snapB == nil {
 			http.Error(w, "runs not found and no explicit time range provided", http.StatusBadRequest)
 			return
@@ -794,13 +968,13 @@ func (s *Server) compareRuns(w http.ResponseWriter, r *http.Request) {
 		tr = metrics.TimeRange{Start: start.Add(-30 * time.Second), End: end.Add(30 * time.Second)}
 	}
 
-	metricsA, err := s.collector.Collect(r.Context(), runA, tr)
+	metricsA, err := collector.Collect(r.Context(), runA, tr)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "run A: " + err.Error()})
 		return
 	}
 
-	metricsB, err := s.collector.Collect(r.Context(), runB, tr)
+	metricsB, err := collector.Collect(r.Context(), runB, tr)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "run B: " + err.Error()})
 		return
@@ -849,6 +1023,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 // ============================================================
 
 func (s *Server) setBaseline(w http.ResponseWriter, r *http.Request) {
+	tenantID := auth.TenantID(r.Context())
 	name := chi.URLParam(r, "name")
 	var body struct {
 		RunID string `json:"run_id"`
@@ -857,7 +1032,7 @@ func (s *Server) setBaseline(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "request body must contain run_id", http.StatusBadRequest)
 		return
 	}
-	if err := s.app.Storage().SetBaseline(r.Context(), name, body.RunID); err != nil {
+	if err := s.app.Storage().SetBaseline(r.Context(), tenantID, name, body.RunID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -865,8 +1040,9 @@ func (s *Server) setBaseline(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getBaseline(w http.ResponseWriter, r *http.Request) {
+	tenantID := auth.TenantID(r.Context())
 	name := chi.URLParam(r, "name")
-	runID, err := s.app.Storage().GetBaseline(r.Context(), name)
+	runID, err := s.app.Storage().GetBaseline(r.Context(), tenantID, name)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -879,50 +1055,11 @@ func (s *Server) getBaseline(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listBaselines(w http.ResponseWriter, r *http.Request) {
-	baselines, err := s.app.Storage().ListBaselines(r.Context())
+	tenantID := auth.TenantID(r.Context())
+	baselines, err := s.app.Storage().ListBaselines(r.Context(), tenantID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	writeJSON(w, http.StatusOK, baselines)
-}
-
-// ============================================================
-// Settings persistence
-// ============================================================
-
-// currentSettings returns a snapshot of the current server settings.
-func (s *Server) currentSettings() *types.ServerSettings {
-	s.settingsMu.RLock()
-	defer s.settingsMu.RUnlock()
-	cp := *s.settings
-	return &cp
-}
-
-// loadSettingsFromDisk loads settings from the JSON file at settingsPath.
-// If the file does not exist or cannot be parsed, defaults are kept.
-func (s *Server) loadSettingsFromDisk() {
-	if s.settingsPath == "" {
-		return
-	}
-	data, err := os.ReadFile(s.settingsPath)
-	if err != nil {
-		return // file missing or unreadable — use defaults
-	}
-	var settings types.ServerSettings
-	if json.Unmarshal(data, &settings) == nil {
-		s.settings = &settings
-	}
-}
-
-// saveSettingsToDisk persists the current settings to the JSON file at settingsPath.
-func (s *Server) saveSettingsToDisk() error {
-	if s.settingsPath == "" {
-		return nil
-	}
-	data, err := json.MarshalIndent(s.settings, "", "  ")
-	if err != nil {
-		return err
-	}
-	return os.WriteFile(s.settingsPath, data, 0644)
 }

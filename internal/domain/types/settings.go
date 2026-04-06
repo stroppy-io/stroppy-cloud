@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/webhook"
 )
@@ -70,10 +71,6 @@ type MonitoringStack struct {
 	OtelColVersion          string `json:"otel_col_version"`
 	VmagentVersion          string `json:"vmagent_version"`
 	EtcdVersion             string `json:"etcd_version"`
-	VictoriaMetricsURL      string `json:"victoria_metrics_url"`
-	VictoriaMetricsUser     string `json:"victoria_metrics_user"`
-	VictoriaMetricsPassword string `json:"victoria_metrics_password"`
-	VictoriaLogsURL         string `json:"victoria_logs_url"`
 }
 
 // StroppySettings holds default stroppy configuration applied to every run.
@@ -81,12 +78,31 @@ type MonitoringStack struct {
 type StroppySettings struct {
 	Version          string `json:"version"`
 	OTLPExporterType string `json:"otlp_exporter_type"` // K6_OTEL_EXPORTER_TYPE (http|grpc)
-	OTLPEndpoint     string `json:"otlp_endpoint"`      // K6_OTEL_HTTP_EXPORTER_ENDPOINT
+	OTLPEndpoint     string `json:"otlp_endpoint"`      // K6_OTEL_HTTP_EXPORTER_ENDPOINT — set at runtime from monitoring URL
 	OTLPURLPath      string `json:"otlp_url_path"`      // K6_OTEL_HTTP_EXPORTER_URL_PATH
 	OTLPInsecure     bool   `json:"otlp_insecure"`      // K6_OTEL_HTTP_EXPORTER_INSECURE
 	OTLPHeaders      string `json:"otlp_headers"`       // K6_OTEL_HEADERS (e.g. Authorization=Basic ...)
 	OTLPMetricPrefix string `json:"otlp_metric_prefix"` // K6_OTEL_METRIC_PREFIX
 	OTLPServiceName  string `json:"otlp_service_name"`  // K6_OTEL_SERVICE_NAME
+}
+
+// SetFromMonitoringURL configures OTLP settings from a monitoring URL (vmauth).
+// K6 expects endpoint as host:port (no scheme), path separate, and token in headers.
+func (s *StroppySettings) SetFromMonitoringURL(monitoringURL, token string, accountID int32) {
+	u, err := url.Parse(monitoringURL)
+	if err != nil {
+		return
+	}
+	// K6_OTEL_HTTP_EXPORTER_ENDPOINT = host:port (no scheme)
+	s.OTLPEndpoint = u.Host
+	// K6_OTEL_HTTP_EXPORTER_URL_PATH = /insert/<accountID>/opentelemetry/v1/metrics
+	s.OTLPURLPath = fmt.Sprintf("/insert/%d/opentelemetry/v1/metrics", accountID)
+	// K6_OTEL_HTTP_EXPORTER_INSECURE = true for http, false for https
+	s.OTLPInsecure = u.Scheme != "https"
+	// Auth header
+	if token != "" {
+		s.OTLPHeaders = "Authorization=Bearer " + token
+	}
 }
 
 // StroppyEnv returns the K6_OTEL_* environment variables for stroppy execution.
@@ -112,8 +128,6 @@ func (s StroppySettings) StroppyEnv(runID string) map[string]string {
 
 	if s.OTLPInsecure {
 		env["K6_OTEL_HTTP_EXPORTER_INSECURE"] = "true"
-	} else if s.OTLPEndpoint != "" {
-		env["K6_OTEL_HTTP_EXPORTER_INSECURE"] = "false"
 	}
 
 	// Inject service name and run_id as OTEL resource attributes for correlation.
@@ -122,21 +136,11 @@ func (s StroppySettings) StroppyEnv(runID string) map[string]string {
 	return env
 }
 
-// GrafanaSettings configures the Grafana integration for embedded dashboards.
-type GrafanaSettings struct {
-	URL          string            `json:"url"`           // e.g. "http://localhost:3001"
-	EmbedEnabled bool              `json:"embed_enabled"` // whether to show embedded dashboards
-	Dashboards   map[string]string `json:"dashboards"`    // name -> uid
-}
-
-// ServerSettings is the top-level admin settings struct combining all subsections.
+// ServerSettings is the per-tenant settings (stored in DB).
 type ServerSettings struct {
-	Cloud           CloudSettings   `json:"cloud"`
-	Monitoring      MonitoringStack `json:"monitoring"`
-	Packages        PackageDefaults `json:"packages"`
-	StroppyDefaults StroppySettings `json:"stroppy_defaults"`
-	Grafana         GrafanaSettings `json:"grafana"`
-	Webhooks        webhook.Config  `json:"webhooks"`
+	Cloud    CloudSettings   `json:"cloud"`
+	Packages PackageDefaults `json:"packages"`
+	Webhooks webhook.Config  `json:"webhooks"`
 }
 
 // DefaultServerSettings returns ServerSettings populated with sensible defaults.
@@ -150,35 +154,29 @@ func DefaultServerSettings() ServerSettings {
 				PlatformID:  "standard-v2",
 			},
 		},
-		Monitoring: MonitoringStack{
-			NodeExporterVersion:     "1.9.1",
-			PostgresExporterVersion: "0.16.0",
-			OtelColVersion:          "0.127.0",
-			VmagentVersion:          "1.115.0",
-			EtcdVersion:             "3.5.17",
-		},
 		Packages: DefaultPackages(),
-		StroppyDefaults: StroppySettings{
-			Version:          "3.1.0",
-			OTLPExporterType: "http",
-			OTLPEndpoint:     "",
-			OTLPInsecure:     true,
-			OTLPURLPath:      "/opentelemetry/v1/metrics",
-			OTLPMetricPrefix: "stroppy_",
-			OTLPServiceName:  "stroppy",
-		},
-		Grafana: GrafanaSettings{
-			URL:          "http://localhost:3001",
-			EmbedEnabled: true,
-			Dashboards: map[string]string{
-				"overview": "stroppy-run",
-				"system":   "stroppy-system",
-				"postgres": "stroppy-postgres",
-				"mysql":    "stroppy-mysql",
-				"picodata": "stroppy-picodata",
-				"stroppy":  "stroppy-metrics-v1",
-				"compare":  "stroppy-compare",
-			},
-		},
+	}
+}
+
+// DefaultMonitoring returns the platform-wide monitoring agent versions.
+func DefaultMonitoring() MonitoringStack {
+	return MonitoringStack{
+		NodeExporterVersion:     "1.9.1",
+		PostgresExporterVersion: "0.16.0",
+		OtelColVersion:          "0.127.0",
+		VmagentVersion:          "1.139.0",
+		EtcdVersion:             "3.5.17",
+	}
+}
+
+// DefaultStroppySettings returns platform-wide stroppy OTLP defaults.
+func DefaultStroppySettings() StroppySettings {
+	return StroppySettings{
+		Version:          "3.1.0",
+		OTLPExporterType: "http",
+		OTLPInsecure:     true,
+		OTLPURLPath:      "/opentelemetry/v1/metrics",
+		OTLPMetricPrefix: "stroppy_",
+		OTLPServiceName:  "stroppy",
 	}
 }

@@ -33,6 +33,9 @@ type stroppyRunTask struct {
 	stroppySettings types.StroppySettings
 	dbKind          types.DatabaseKind
 	runID           string
+	monitoringURL   string
+	monitoringToken string
+	accountID       int32
 }
 
 func (t *stroppyRunTask) Execute(nc *dag.NodeContext) error {
@@ -43,7 +46,12 @@ func (t *stroppyRunTask) Execute(nc *dag.NodeContext) error {
 	dbHost, dbPort := t.state.DBEndpoint()
 	nc.Log().Info("running stroppy test")
 
-	otlpEnv := t.stroppySettings.StroppyEnv(t.runID)
+	settings := t.stroppySettings
+	// Fallback: if builder didn't set endpoint (e.g. CLI mode), derive from monitoringURL.
+	if settings.OTLPEndpoint == "" && t.monitoringURL != "" {
+		settings.SetFromMonitoringURL(t.monitoringURL, t.monitoringToken, t.accountID)
+	}
+	otlpEnv := settings.StroppyEnv(t.runID)
 
 	return t.client.Send(nc, *target, agent.Command{
 		Action: agent.ActionRunStroppy,

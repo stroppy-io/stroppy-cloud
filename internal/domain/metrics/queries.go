@@ -5,15 +5,15 @@ import (
 	"strings"
 )
 
-// RunLabel is the label injected by monitoring to identify a run.
+// RunLabel is the label injected by monitoring (vmagent external_labels) to identify a run.
 const RunLabel = "stroppy_run_id"
 
 // MetricDef defines a named PromQL query template.
-// All templates accept a run_id filter.
+// Templates use %s for run_id label filter and %p for metric prefix (runID with dashes→underscores).
 type MetricDef struct {
 	Name  string // human-readable name
 	Key   string // stable key for comparison
-	Query string // PromQL template with %s for run_id filter
+	Query string // PromQL template
 	Unit  string // e.g. "ops/s", "ms", "bytes", "%"
 }
 
@@ -21,11 +21,16 @@ func runFilter(runID string) string {
 	return fmt.Sprintf(`%s="%s"`, RunLabel, runID)
 }
 
+// metricPrefix converts a run ID to a PromQL-safe metric prefix (dashes→underscores).
+func metricPrefix(runID string) string {
+	return strings.ReplaceAll(runID, "-", "_")
+}
+
 // DefaultMetrics returns the standard set of metrics collected per run.
 func DefaultMetrics() []MetricDef {
 	return []MetricDef{
 		// --- Database (standard postgres_exporter metrics) ---
-		// Use 5m rate window to smooth out counter reset spikes at startup.
+		// Filtered by stroppy_run_id label (set by vmagent external_labels).
 		{
 			Name:  "DB Transactions Per Second",
 			Key:   "db_tps",
@@ -52,7 +57,7 @@ func DefaultMetrics() []MetricDef {
 		},
 
 		// --- System ---
-		// clamp_min ensures no negative values from rate() anomalies.
+		// Filtered by stroppy_run_id label (set by vmagent external_labels).
 		{
 			Name:  "CPU Usage",
 			Key:   "cpu_usage",
@@ -90,48 +95,51 @@ func DefaultMetrics() []MetricDef {
 			Unit:  "bytes/s",
 		},
 
-		// --- Stroppy (K6 OTEL metrics with per-run stroppy_run_id label) ---
+		// --- Stroppy (K6 OTEL metrics, prefixed with runID_) ---
+		// Metric names use %p prefix (runID with underscores).
 		{
 			Name:  "Stroppy Active VUs",
 			Key:   "stroppy_vus",
-			Query: `sum(stroppy_vus{%s})`,
+			Query: `sum(%p_vus)`,
 			Unit:  "",
 		},
 		{
 			Name:  "Stroppy Iterations/s",
 			Key:   "stroppy_ops",
-			Query: `sum(rate(stroppy_iterations_total{%s}[30s]))`,
+			Query: `sum(rate(%p_iterations[30s]))`,
 			Unit:  "iter/s",
 		},
 		{
 			Name:  "Stroppy Iteration Duration p99",
 			Key:   "stroppy_iter_p99",
-			Query: `histogram_quantile(0.99, sum by (le) (rate(stroppy_iteration_duration_milliseconds_bucket{%s}[30s])))`,
+			Query: `histogram_quantile(0.99, sum by (le) (rate(%p_iteration_duration_bucket[30s])))`,
 			Unit:  "ms",
 		},
 		{
 			Name:  "Stroppy Query Rate",
 			Key:   "stroppy_query_rate",
-			Query: `sum(rate(stroppy_run_query_count_total{%s}[30s]))`,
+			Query: `sum(rate(%p_run_query_count[30s]))`,
 			Unit:  "q/s",
 		},
 		{
 			Name:  "Stroppy Query Duration p99",
 			Key:   "stroppy_latency_p99",
-			Query: `histogram_quantile(0.99, sum by (le) (rate(stroppy_run_query_duration_milliseconds_bucket{%s}[30s])))`,
+			Query: `histogram_quantile(0.99, sum by (le) (rate(%p_run_query_duration_bucket[30s])))`,
 			Unit:  "ms",
 		},
 		{
 			Name:  "Stroppy Error Count",
 			Key:   "stroppy_errors",
-			Query: `sum(stroppy_run_query_error_rate_total{%s})`,
+			Query: `sum(%p_run_query_error_rate)`,
 			Unit:  "",
 		},
 	}
 }
 
-// RenderQuery fills the run_id filter into all %s placeholders in a MetricDef query.
+// RenderQuery fills the run_id filter (%s) and metric prefix (%p) into a MetricDef query.
 func RenderQuery(def MetricDef, runID string) string {
-	f := runFilter(runID)
-	return strings.ReplaceAll(def.Query, "%s", f)
+	q := def.Query
+	q = strings.ReplaceAll(q, "%s", runFilter(runID))
+	q = strings.ReplaceAll(q, "%p", metricPrefix(runID))
+	return q
 }

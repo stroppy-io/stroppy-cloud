@@ -1,0 +1,114 @@
+services:
+  # --- PostgreSQL ---
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: stroppy
+      POSTGRES_USER: stroppy
+      POSTGRES_PASSWORD: stroppy
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U stroppy" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- VictoriaMetrics cluster (multi-tenant metrics) ---
+  vmstorage:
+    image: victoriametrics/vmstorage:v1.139.0-cluster
+    command:
+      - "-storageDataPath=/storage"
+      - "-retentionPeriod=30d"
+    volumes:
+      - vmdata:/storage
+
+  vminsert:
+    image: victoriametrics/vminsert:v1.139.0-cluster
+    command:
+      - "-storageNode=vmstorage:8400"
+    depends_on:
+      - vmstorage
+
+  vmselect:
+    image: victoriametrics/vmselect:v1.139.0-cluster
+    command:
+      - "-storageNode=vmstorage:8401"
+    depends_on:
+      - vmstorage
+
+  # --- VictoriaLogs (multi-tenant logs) ---
+  victorialogs:
+    image: victoriametrics/victoria-logs:v1.48.0
+    command:
+      - "-storageDataPath=/storage"
+      - "-retentionPeriod=30d"
+    volumes:
+      - vldata:/storage
+
+  # --- vmauth (single entry point for all monitoring) ---
+  vmauth:
+    image: victoriametrics/vmauth:v1.139.0
+    command:
+      - "-auth.config=/etc/vmauth/config.yml"
+    ports:
+      - "8427:8427"
+    environment:
+      VMAUTH_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
+    volumes:
+      - ./deployments/vmauth/config.yml:/etc/vmauth/config.yml:ro
+    depends_on:
+      - vminsert
+      - vmselect
+      - victorialogs
+
+  grafana:
+    image: grafana/grafana:12.4.2
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./deployments/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./deployments/grafana/dashboards:/var/lib/grafana/dashboards:ro
+
+  # --- Stroppy Cloud server ---
+  # Runs with host networking so it can reach Docker agent containers directly.
+  server:
+    build:
+      context: .
+      dockerfile: deployments/docker/stroppy-cloud.Dockerfile
+    network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+      vmauth:
+        condition: service_started
+    command:
+      - serve
+      - --addr=:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DATABASE_URL: postgres://stroppy:stroppy@127.0.0.1:5436/stroppy?sslmode=disable
+      JWT_SECRET: ${JWT_SECRET:-stroppy-dev-secret}
+      MONITORING_URL: http://127.0.0.1:8427
+      MONITORING_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
+      GRAFANA_URL: http://127.0.0.1:3001
+      STROPPY_ADMIN_PASSWORD: ${STROPPY_ADMIN_PASSWORD:-}
+      YC_TOKEN: ${YC_TOKEN:-}
+      YC_CLOUD_ID: ${YC_CLOUD_ID:-}
+      YC_FOLDER_ID: ${YC_FOLDER_ID:-}
+
+volumes:
+  pgdata:
+  vmdata:
+  vldata:
+  grafanadata:

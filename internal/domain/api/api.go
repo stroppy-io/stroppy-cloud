@@ -4,68 +4,64 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"os"
+	"runtime"
+	"strings"
 
-	badgerdb "github.com/dgraph-io/badger/v4"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
-	badgerstorage "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/badger"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 )
 
 // App is the top-level application facade.
 // It wires DAG, executor, storage, and agent client together.
 type App struct {
-	db      *badgerdb.DB
-	storage dag.Storage
-	logger  *zap.Logger
-	client  agent.Client
-	sink    dag.LogSink
-	// settingsFunc returns the current server settings snapshot.
+	storage    dag.Storage
+	logger     *zap.Logger
+	client     agent.Client
+	sink       dag.LogSink
+	listenAddr string // server listen address (e.g. ":8080"), set by Server
+	// settingsFunc returns the current server settings snapshot for a tenant.
 	// Set by Server after construction.
-	settingsFunc func() *types.ServerSettings
+	settingsFunc func(tenantID string) *types.ServerSettings
+	// monitoringURL is the vmauth base URL for metrics/logs.
+	// Set by Server after construction.
+	monitoringURL   string
+	monitoringToken string
+	// accountIDFunc resolves tenantID → victoria accountID.
+	// Set by Server after construction.
+	accountIDFunc func(tenantID string) int32
 }
 
 // Config holds application-level settings.
 type Config struct {
-	DataDir string // badger data directory; empty = in-memory
-	Logger  *zap.Logger
-	Client  agent.Client
-	Sink    dag.LogSink
+	Pool   *pgxpool.Pool
+	Logger *zap.Logger
 }
 
-// New creates a new App. Call Close() when done.
-func New(cfg Config) (*App, error) {
+// New creates a new App backed by PostgreSQL storage.
+func New(cfg Config) *App {
 	if cfg.Logger == nil {
 		cfg.Logger = zap.NewNop()
 	}
 
-	opts := badgerdb.DefaultOptions(cfg.DataDir).WithLogger(nil)
-	if cfg.DataDir == "" {
-		opts = opts.WithInMemory(true)
-	}
-	db, err := badgerdb.Open(opts)
-	if err != nil {
-		return nil, fmt.Errorf("api: open badger: %w", err)
-	}
-
 	return &App{
-		db:      db,
-		storage: badgerstorage.NewDAGStorage(db),
+		storage: postgres.NewRunStorage(cfg.Pool),
 		logger:  cfg.Logger,
-		client:  cfg.Client,
-		sink:    cfg.Sink,
-	}, nil
+	}
 }
 
 // Start builds a DAG from RunConfig and executes it.
-func (a *App) Start(ctx context.Context, cfg types.RunConfig) error {
+func (a *App) Start(ctx context.Context, tenantID string, cfg types.RunConfig) error {
 	run.FillMachinesFromTopology(&cfg)
 
-	deps, cleanup, err := a.buildDeps(cfg)
+	deps, cleanup, err := a.buildDeps(tenantID, cfg)
 	if err != nil {
 		return err
 	}
@@ -76,7 +72,7 @@ func (a *App) Start(ctx context.Context, cfg types.RunConfig) error {
 		return fmt.Errorf("api: build graph: %w", err)
 	}
 
-	exec := dag.NewExecutor(cfg.ID, graph, a.storage, a.logger, a.sink)
+	exec := dag.NewExecutor(tenantID, cfg.ID, graph, a.storage, a.logger, a.sink)
 
 	// Wire state exporter so snapshots include recoverable run state.
 	cfgJSON, _ := json.Marshal(cfg)
@@ -114,7 +110,7 @@ func (a *App) DryRun(cfg types.RunConfig) ([]byte, error) {
 // RecoverRun resumes execution of an incomplete run from a saved snapshot.
 // It rebuilds deps, restores state from the snapshot, and re-executes
 // only the nodes that were not yet completed.
-func (a *App) RecoverRun(ctx context.Context, snap *dag.Snapshot) error {
+func (a *App) RecoverRun(ctx context.Context, tenantID string, snap *dag.Snapshot) error {
 	if snap.State == nil {
 		return fmt.Errorf("api: snapshot has no run state for recovery")
 	}
@@ -126,7 +122,7 @@ func (a *App) RecoverRun(ctx context.Context, snap *dag.Snapshot) error {
 
 	run.FillMachinesFromTopology(&cfg)
 
-	deps, cleanup, err := a.buildDeps(cfg)
+	deps, cleanup, err := a.buildDeps(tenantID, cfg)
 	if err != nil {
 		return fmt.Errorf("api: build deps for recovery: %w", err)
 	}
@@ -148,7 +144,7 @@ func (a *App) RecoverRun(ctx context.Context, snap *dag.Snapshot) error {
 		restoredGraph = graph
 	}
 
-	exec := dag.NewExecutor(cfg.ID, restoredGraph, a.storage, a.logger, a.sink)
+	exec := dag.NewExecutor(tenantID, cfg.ID, restoredGraph, a.storage, a.logger, a.sink)
 
 	// Mark previously completed nodes so they are skipped.
 	for _, ns := range snap.Nodes {
@@ -187,32 +183,44 @@ func LoadConfig(path string) (types.RunConfig, error) {
 	return cfg, nil
 }
 
-// Close releases resources.
-func (a *App) Close() error {
-	return a.db.Close()
-}
-
-func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
+func (a *App) buildDeps(tenantID string, cfg types.RunConfig) (run.Deps, func(), error) {
 	state := run.NewState()
 	cl := a.client
 	if cl == nil {
 		// Fallback for CLI mode (no server) — direct HTTP push.
 		cl = agent.NewHTTPClient()
 	}
-	deps := run.Deps{Client: cl, State: state}
+	deps := run.Deps{Client: cl, State: state, MonitoringURL: a.monitoringURL, MonitoringToken: a.monitoringToken}
 	noop := func() {}
+
+	// Resolve per-tenant victoria accountID.
+	if a.accountIDFunc != nil && tenantID != "" {
+		deps.AccountID = a.accountIDFunc(tenantID)
+	}
 
 	// Attach current settings snapshot if available.
 	if a.settingsFunc != nil {
-		deps.Settings = a.settingsFunc()
+		deps.Settings = a.settingsFunc(tenantID)
 	}
 
-	// Server address for agent→server communication — comes from settings only.
+	// Server address for agent→server communication.
 	if deps.Settings != nil {
 		deps.ServerAddr = deps.Settings.Cloud.ServerAddr
 	}
 
 	if cfg.Provider == types.ProviderDocker {
+		// Docker agents run on the same host — auto-detect addresses
+		// so it works without manual settings configuration.
+		if deps.ServerAddr == "" {
+			deps.ServerAddr = dockerHostAddr(a.listenAddr)
+		}
+
+		// Rewrite monitoringURL for Docker containers (localhost -> host gateway).
+		if a.monitoringURL != "" {
+			dockerHost := dockerHostOnly()
+			deps.MonitoringURL = rewriteLocalhost(a.monitoringURL, dockerHost)
+		}
+
 		deployer, err := agent.NewDockerDeployer(fmt.Sprintf("stroppy-%s", cfg.ID))
 		if err != nil {
 			return deps, noop, fmt.Errorf("api: docker deployer: %w", err)
@@ -222,4 +230,37 @@ func (a *App) buildDeps(cfg types.RunConfig) (run.Deps, func(), error) {
 	}
 
 	return deps, noop, nil
+}
+
+// dockerHostAddr builds an HTTP address that Docker containers can use to reach the server.
+// On Linux containers use the Docker bridge gateway (172.17.0.1).
+// On macOS/Windows they use host.docker.internal.
+func dockerHostAddr(listenAddr string) string {
+	_, port, _ := net.SplitHostPort(listenAddr)
+	if port == "" {
+		port = "8080"
+	}
+
+	host := "host.docker.internal"
+	if runtime.GOOS == "linux" {
+		host = "172.17.0.1"
+	}
+
+	return fmt.Sprintf("http://%s:%s", host, port)
+}
+
+// dockerHostOnly returns the Docker host gateway without port.
+func dockerHostOnly() string {
+	if runtime.GOOS == "linux" {
+		return "172.17.0.1"
+	}
+	return "host.docker.internal"
+}
+
+// rewriteLocalhost replaces localhost/127.0.0.1 in a URL with the given host.
+func rewriteLocalhost(rawURL, host string) string {
+	for _, local := range []string{"localhost", "127.0.0.1"} {
+		rawURL = strings.ReplaceAll(rawURL, local, host)
+	}
+	return rawURL
 }

@@ -68,17 +68,17 @@ type RunSummary struct {
 // Storage is the interface for persisting executor state.
 type Storage interface {
 	// Save persists the current execution snapshot.
-	Save(ctx context.Context, id string, snap *Snapshot) error
+	Save(ctx context.Context, tenantID, id string, snap *Snapshot) error
 	// Load restores a previously saved snapshot. Returns nil, nil if not found.
-	Load(ctx context.Context, id string) (*Snapshot, error)
+	Load(ctx context.Context, tenantID, id string) (*Snapshot, error)
 	// List returns IDs and summary of all saved snapshots.
-	List(ctx context.Context) ([]RunSummary, error)
+	List(ctx context.Context, tenantID string) ([]RunSummary, error)
 	// Delete removes a saved snapshot by ID.
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, tenantID, id string) error
 	// SetBaseline marks a run as the baseline for a given name (e.g., "postgres-16").
-	SetBaseline(ctx context.Context, name string, runID string) error
+	SetBaseline(ctx context.Context, tenantID, name string, runID string) error
 	// GetBaseline returns the run ID for a named baseline. Returns "" if not set.
-	GetBaseline(ctx context.Context, name string) (string, error)
+	GetBaseline(ctx context.Context, tenantID, name string) (string, error)
 	// ListBaselines returns all named baselines.
-	ListBaselines(ctx context.Context) (map[string]string, error)
+	ListBaselines(ctx context.Context, tenantID string) (map[string]string, error)
 }

@@ -8,29 +8,63 @@ import type {
   ComparisonResponse,
   MetricValue,
   GrafanaSettings,
+  AuthUser,
+  Tenant,
+  TenantMember,
+  TenantAPIToken,
 } from "./types";
 
 const API_BASE = "/api/v1";
 
-function getToken(): string | null {
-  return localStorage.getItem("token");
+// Module-level access token — never stored in localStorage.
+let _accessToken: string | null = null;
+
+export function setAccessToken(token: string | null) {
+  _accessToken = token;
 }
+
+export function getAccessToken(): string | null {
+  return _accessToken;
+}
+
+// Flag to avoid concurrent refresh attempts.
+let _refreshPromise: Promise<{ access_token: string }> | null = null;
 
 async function request<T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  _isRetry = false
 ): Promise<T> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
 
-  const token = getToken();
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  if (_accessToken) {
+    headers["Authorization"] = `Bearer ${_accessToken}`;
   }
 
   const res = await fetch(path, { ...options, headers });
+
+  if (res.status === 401 && !_isRetry && _accessToken) {
+    // Try a single silent refresh (only if we had a token — skip for login/public calls).
+    try {
+      const r = await refreshToken();
+      _accessToken = r.access_token;
+      headers["Authorization"] = `Bearer ${_accessToken}`;
+      const retry = await fetch(path, { ...options, headers });
+      if (!retry.ok) {
+        const text = await retry.text();
+        throw new SessionExpiredError(`${retry.status}: ${text}`);
+      }
+      return retry.json();
+    } catch (e) {
+      // Refresh failed — clear token, throw SessionExpiredError so UI can redirect.
+      _accessToken = null;
+      if (e instanceof SessionExpiredError) throw e;
+      throw new SessionExpiredError("session expired");
+    }
+  }
 
   if (!res.ok) {
     const text = await res.text();
@@ -40,29 +74,203 @@ async function request<T>(
   return res.json();
 }
 
-// --- Auth ---
+// Thrown when auth refresh fails — UI should redirect to login.
+export class SessionExpiredError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SessionExpiredError";
+  }
+}
 
-export async function login(
+// ---------- Auth ----------
+
+export async function loginAPI(
   username: string,
   password: string
-): Promise<{ token: string; username: string }> {
+): Promise<{ access_token: string }> {
   return request(`${API_BASE}/auth/login`, {
     method: "POST",
     body: JSON.stringify({ username, password }),
   });
 }
 
-export async function me(): Promise<{ username: string; role: string }> {
+export async function refreshToken(): Promise<{ access_token: string }> {
+  if (_refreshPromise) return _refreshPromise;
+  _refreshPromise = (async () => {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("refresh failed");
+    return res.json();
+  })();
+  try {
+    return await _refreshPromise;
+  } finally {
+    _refreshPromise = null;
+  }
+}
+
+export async function meAPI(): Promise<AuthUser> {
   return request(`${API_BASE}/auth/me`);
 }
 
-// --- Health ---
+export async function logoutAPI(): Promise<void> {
+  await fetch(`${API_BASE}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+    headers: _accessToken
+      ? { Authorization: `Bearer ${_accessToken}` }
+      : undefined,
+  });
+}
+
+export async function selectTenantAPI(
+  tenantId: string
+): Promise<{ access_token: string }> {
+  return request(`${API_BASE}/auth/select-tenant`, {
+    method: "POST",
+    body: JSON.stringify({ tenant_id: tenantId }),
+  });
+}
+
+export async function changePasswordAPI(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/auth/password`, {
+    method: "PUT",
+    body: JSON.stringify({
+      current_password: currentPassword,
+      new_password: newPassword,
+    }),
+  });
+}
+
+// ---------- Tenant members ----------
+
+export async function listMembers(): Promise<TenantMember[]> {
+  return request(`${API_BASE}/tenant/members`);
+}
+
+export async function addMember(
+  userId: string,
+  role: string
+): Promise<TenantMember> {
+  return request(`${API_BASE}/tenant/members`, {
+    method: "POST",
+    body: JSON.stringify({ user_id: userId, role }),
+  });
+}
+
+export async function updateMemberRole(
+  userId: string,
+  role: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/tenant/members/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify({ role }),
+  });
+}
+
+export async function removeMember(
+  userId: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/tenant/members/${userId}`, {
+    method: "DELETE",
+  });
+}
+
+// ---------- Tenant API tokens ----------
+
+export async function listAPITokens(): Promise<TenantAPIToken[]> {
+  return request(`${API_BASE}/tenant/tokens`);
+}
+
+export async function createAPIToken(
+  name: string,
+  role: string,
+  expiresAt?: string
+): Promise<{ token: TenantAPIToken; plaintext: string }> {
+  return request(`${API_BASE}/tenant/tokens`, {
+    method: "POST",
+    body: JSON.stringify({ name, role, expires_at: expiresAt || null }),
+  });
+}
+
+export async function revokeAPIToken(
+  id: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/tenant/tokens/${id}`, {
+    method: "DELETE",
+  });
+}
+
+// ---------- Admin ----------
+
+export async function listTenantsAdmin(): Promise<Tenant[]> {
+  return request(`${API_BASE}/admin/tenants`);
+}
+
+export async function createTenantAdmin(
+  name: string
+): Promise<Tenant> {
+  return request(`${API_BASE}/admin/tenants`, {
+    method: "POST",
+    body: JSON.stringify({ name }),
+  });
+}
+
+export async function deleteTenantAdmin(
+  id: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/admin/tenants/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function listUsersAdmin(): Promise<
+  { id: string; username: string; is_root: boolean; created_at: string }[]
+> {
+  return request(`${API_BASE}/admin/users`);
+}
+
+export async function createUserAdmin(
+  username: string,
+  password: string,
+  isRoot: boolean
+): Promise<{ id: string; username: string }> {
+  return request(`${API_BASE}/admin/users`, {
+    method: "POST",
+    body: JSON.stringify({ username, password, is_root: isRoot }),
+  });
+}
+
+export async function deleteUserAdmin(
+  id: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/admin/users/${id}`, {
+    method: "DELETE",
+  });
+}
+
+export async function resetPasswordAdmin(
+  userId: string,
+  password: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/admin/users/${userId}/password`, {
+    method: "PUT",
+    body: JSON.stringify({ password }),
+  });
+}
+
+// ---------- Health ----------
 
 export async function getHealth(): Promise<{ status: string }> {
   return request("/health");
 }
 
-// --- Runs ---
+// ---------- Runs ----------
 
 export async function startRun(
   config: RunConfig
@@ -72,7 +280,6 @@ export async function startRun(
     body: JSON.stringify(config),
   });
 }
-
 
 export async function listRuns(): Promise<RunSummary[]> {
   return request(`${API_BASE}/runs`);
@@ -104,13 +311,13 @@ export async function getRunStatus(runID: string): Promise<Snapshot> {
   return request(`${API_BASE}/run/${runID}/status`);
 }
 
-// --- Presets ---
+// ---------- Presets ----------
 
 export async function getPresets(): Promise<PresetsResponse> {
   return request(`${API_BASE}/presets`);
 }
 
-// --- Metrics ---
+// ---------- Metrics ----------
 
 export async function getRunMetrics(
   runID: string,
@@ -122,19 +329,20 @@ export async function getRunMetrics(
   );
 }
 
-// Fetch historical logs from VictoriaLogs (NDJSON format).
 export async function getRunLogs(runID: string): Promise<string[]> {
-  const token = getToken();
   const headers: Record<string, string> = {};
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (_accessToken) headers["Authorization"] = `Bearer ${_accessToken}`;
 
   const res = await fetch(`${API_BASE}/run/${runID}/logs`, { headers });
-  if (!res.ok) return []; // 503 = vlogs not configured
+  if (res.status === 503) return []; // monitoring not configured — no logs, not an error
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`logs: ${res.status}: ${text}`);
+  }
 
   const text = await res.text();
   if (!text.trim()) return [];
 
-  // NDJSON: each line is a JSON object with _msg, machine_id, etc.
   return text
     .trim()
     .split("\n")
@@ -163,47 +371,48 @@ export async function compareRuns(
   return request(`${API_BASE}/compare?${params.toString()}`);
 }
 
-// --- Admin ---
+// ---------- Settings ----------
 
 export async function getSettings(): Promise<ServerSettings> {
-  return request(`${API_BASE}/admin/settings`);
+  return request(`${API_BASE}/settings`);
 }
 
 export async function updateSettings(
   settings: ServerSettings
 ): Promise<{ status: string }> {
-  return request(`${API_BASE}/admin/settings`, {
+  return request(`${API_BASE}/settings`, {
     method: "PUT",
     body: JSON.stringify(settings),
   });
 }
 
 export async function getPackages(): Promise<PackageDefaults> {
-  return request(`${API_BASE}/admin/packages`);
+  const s = await getSettings();
+  return s.packages;
 }
 
 export async function updatePackages(
   packages: PackageDefaults
 ): Promise<{ status: string }> {
-  return request(`${API_BASE}/admin/packages`, {
-    method: "PUT",
-    body: JSON.stringify(packages),
-  });
+  const s = await getSettings();
+  s.packages = packages;
+  return updateSettings(s);
 }
 
 export async function getDBDefaults(
   kind: string
 ): Promise<Record<string, unknown>> {
-  return request(`${API_BASE}/admin/db-defaults/${kind}`);
+  const presets = await getPresets();
+  return (presets as unknown as Record<string, Record<string, unknown>>)[kind] || {};
 }
 
-// --- Grafana ---
+// ---------- Grafana ----------
 
 export async function getGrafanaSettings(): Promise<GrafanaSettings> {
-  return request(`${API_BASE}/admin/grafana`);
+  return request(`${API_BASE}/grafana`);
 }
 
-// --- Upload ---
+// ---------- Upload ----------
 
 export async function uploadDeb(
   file: File
@@ -212,9 +421,8 @@ export async function uploadDeb(
   formData.append("file", file);
 
   const headers: Record<string, string> = {};
-  const token = getToken();
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  if (_accessToken) {
+    headers["Authorization"] = `Bearer ${_accessToken}`;
   }
 
   const res = await fetch(`${API_BASE}/upload/deb`, {

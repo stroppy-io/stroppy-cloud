@@ -30,5 +30,3 @@ jobs:
       - run: docker pull ubuntu:22.04
       - run: CGO_ENABLED=0 go build -o /tmp/stroppy-cloud ./cmd/cli/
       - run: go test -tags=integration -timeout 30m -v ./tests/ -run TestE2E_Postgres_Single_TPCB
-        env:
-          STROPPY_BINARY_HOST_PATH: /tmp/stroppy-cloud

@@ -7,6 +7,7 @@ import {
   uploadDeb,
 } from "@/api/client";
 import type { ServerSettings, PackageDefaults } from "@/api/types";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import { Save, Upload, AlertCircle, Check } from "lucide-react";
 
 export function SettingsPage() {
+  const { user } = useAuth();
+  const canEdit = !!user && (user.is_root || user.role === "owner");
   const [settings, setSettings] = useState<ServerSettings | null>(null);
   const [packages, setPackages] = useState<PackageDefaults | null>(null);
   const [loading, setLoading] = useState(true);
@@ -143,8 +146,6 @@ export function SettingsPage() {
       <Tabs defaultValue="cloud">
         <TabsList>
           <TabsTrigger value="cloud">Cloud</TabsTrigger>
-          <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
-          <TabsTrigger value="stroppy">Stroppy / OTLP</TabsTrigger>
           <TabsTrigger value="packages">Packages</TabsTrigger>
           <TabsTrigger value="upload">Upload .deb</TabsTrigger>
         </TabsList>
@@ -350,148 +351,12 @@ export function SettingsPage() {
                   />
                 </div>
 
-                <Button onClick={handleSaveSettings} disabled={saving}>
-                  <Save className="h-3.5 w-3.5" />
-                  {saving ? "Saving..." : "Save Settings"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        {/* Monitoring */}
-        <TabsContent value="monitoring">
-          {settings && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Monitoring Stack</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {(
-                    [
-                      ["node_exporter_version", "Node Exporter Version"],
-                      ["postgres_exporter_version", "Postgres Exporter Version"],
-                      ["otel_col_version", "OTel Collector Version"],
-                      ["vmagent_version", "VMAgent Version"],
-                      ["victoria_metrics_url", "VictoriaMetrics URL"],
-                      ["victoria_metrics_user", "VictoriaMetrics User"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <div key={key} className="space-y-2">
-                      <Label>{label}</Label>
-                      <Input
-                        value={
-                          (settings.monitoring as any)[key] || ""
-                        }
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            monitoring: {
-                              ...settings.monitoring,
-                              [key]: e.target.value,
-                            },
-                          })
-                        }
-                        className="font-mono text-xs"
-                      />
-                    </div>
-                  ))}
-                  <div className="space-y-2">
-                    <Label>VictoriaMetrics Password</Label>
-                    <Input
-                      type="password"
-                      value={settings.monitoring.victoria_metrics_password || ""}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          monitoring: {
-                            ...settings.monitoring,
-                            victoria_metrics_password: e.target.value,
-                          },
-                        })
-                      }
-                      className="font-mono text-xs"
-                    />
-                  </div>
-                </div>
-                <Button onClick={handleSaveSettings} disabled={saving}>
-                  <Save className="h-3.5 w-3.5" />
-                  {saving ? "Saving..." : "Save Settings"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        {/* Stroppy / OTLP */}
-        <TabsContent value="stroppy">
-          {settings && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Stroppy Defaults / OTLP</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {(
-                    [
-                      ["version", "Stroppy Version"],
-                      ["otlp_exporter_type", "OTLP Exporter Type (http/grpc)"],
-                      ["otlp_endpoint", "OTLP Endpoint"],
-                      ["otlp_url_path", "OTLP URL Path"],
-                      ["otlp_headers", "OTLP Headers"],
-                      ["otlp_metric_prefix", "OTLP Metric Prefix"],
-                      ["otlp_service_name", "OTLP Service Name"],
-                    ] as const
-                  ).map(([key, label]) => (
-                    <div key={key} className="space-y-2">
-                      <Label>{label}</Label>
-                      <Input
-                        value={
-                          (settings.stroppy_defaults as any)[
-                            key
-                          ] || ""
-                        }
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            stroppy_defaults: {
-                              ...settings.stroppy_defaults,
-                              [key]: e.target.value,
-                            },
-                          })
-                        }
-                        className="font-mono text-xs"
-                      />
-                    </div>
-                  ))}
-                  <div className="space-y-2">
-                    <Label>OTLP Insecure</Label>
-                    <div className="flex items-center gap-2 h-9">
-                      <input
-                        type="checkbox"
-                        checked={settings.stroppy_defaults.otlp_insecure}
-                        onChange={(e) =>
-                          setSettings({
-                            ...settings,
-                            stroppy_defaults: {
-                              ...settings.stroppy_defaults,
-                              otlp_insecure: e.target.checked,
-                            },
-                          })
-                        }
-                        className="accent-primary"
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        Allow insecure connections
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <Button onClick={handleSaveSettings} disabled={saving}>
-                  <Save className="h-3.5 w-3.5" />
-                  {saving ? "Saving..." : "Save Settings"}
-                </Button>
+                {canEdit && (
+                  <Button onClick={handleSaveSettings} disabled={saving}>
+                    <Save className="h-3.5 w-3.5" />
+                    {saving ? "Saving..." : "Save Settings"}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}
@@ -520,10 +385,12 @@ export function SettingsPage() {
                     }
                   }}
                 />
-                <Button onClick={handleSavePackages} disabled={saving}>
-                  <Save className="h-3.5 w-3.5" />
-                  {saving ? "Saving..." : "Save Packages"}
-                </Button>
+                {canEdit && (
+                  <Button onClick={handleSavePackages} disabled={saving}>
+                    <Save className="h-3.5 w-3.5" />
+                    {saving ? "Saving..." : "Save Packages"}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           )}

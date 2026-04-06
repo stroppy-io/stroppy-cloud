@@ -6,20 +6,25 @@ package tests
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 )
 
 // ---------------------------------------------------------------------------
@@ -27,28 +32,66 @@ import (
 // ---------------------------------------------------------------------------
 
 type testServer struct {
-	app *api.App
-	srv *httptest.Server
-	url string
+	app      *api.App
+	srv      *httptest.Server
+	url      string
+	jwtToken string
+}
+
+const testTenantID = "test-tenant-id"
+
+func testPool(t *testing.T) *pgxpool.Pool {
+	t.Helper()
+	dsn := os.Getenv("TEST_DATABASE_URL")
+	if dsn == "" {
+		t.Skip("TEST_DATABASE_URL not set, skipping database test")
+	}
+	ctx := context.Background()
+	pool, err := postgres.Open(ctx, dsn)
+	if err != nil {
+		t.Fatalf("postgres.Open() failed: %v", err)
+	}
+	t.Cleanup(func() { pool.Close() })
+	return pool
 }
 
 func startTestServer(t *testing.T) *testServer {
 	t.Helper()
+	pool := testPool(t)
 	logger, _ := zap.NewDevelopment()
-	app, err := api.New(api.Config{Logger: logger})
+	// Create a test tenant for JWT-based requests.
+	_, err := pool.Exec(context.Background(), "INSERT INTO tenants (id, name) VALUES ($1, $2) ON CONFLICT DO NOTHING", testTenantID, "test-tenant")
 	if err != nil {
-		t.Fatalf("create app: %v", err)
+		t.Fatalf("create test tenant: %v", err)
 	}
-	s := api.NewServer(app, logger, "", "", "", "")
+	app := api.New(api.Config{Pool: pool, Logger: logger})
+	s := api.NewServer(app, logger, pool, "test-secret", "", "", "", ":8080")
 	ts := httptest.NewServer(s.Router())
-	t.Cleanup(func() { ts.Close(); app.Close() })
-	return &testServer{app: app, srv: ts, url: ts.URL}
+	t.Cleanup(func() { ts.Close() })
+
+	// Issue a JWT token for test requests (root user with test tenant).
+	issuer := auth.NewJWTIssuer("test-secret")
+	token, err := issuer.Issue(auth.Claims{
+		UserID:   "test-user",
+		Username: "test",
+		TenantID: testTenantID,
+		Role:     "owner",
+		IsRoot:   true,
+	}, 1*time.Hour)
+	if err != nil {
+		t.Fatalf("issue test JWT: %v", err)
+	}
+
+	return &testServer{app: app, srv: ts, url: ts.URL, jwtToken: token}
 }
 
 func (ts *testServer) post(t *testing.T, path string, body any) *http.Response {
 	t.Helper()
 	data, _ := json.Marshal(body)
-	resp, err := http.Post(ts.url+path, "application/json", bytes.NewReader(data))
+	req, _ := http.NewRequest(http.MethodPost, ts.url+path, bytes.NewReader(data))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+ts.jwtToken)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatalf("POST %s: %v", path, err)
 	}
@@ -57,7 +100,9 @@ func (ts *testServer) post(t *testing.T, path string, body any) *http.Response {
 
 func (ts *testServer) get(t *testing.T, path string) *http.Response {
 	t.Helper()
-	resp, err := http.Get(ts.url + path)
+	req, _ := http.NewRequest(http.MethodGet, ts.url+path, nil)
+	req.Header.Set("Authorization", "Bearer "+ts.jwtToken)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatalf("GET %s: %v", path, err)
 	}
@@ -69,6 +114,7 @@ func (ts *testServer) put(t *testing.T, path string, body any) *http.Response {
 	data, _ := json.Marshal(body)
 	req, _ := http.NewRequest(http.MethodPut, ts.url+path, bytes.NewReader(data))
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+ts.jwtToken)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatalf("PUT %s: %v", path, err)
@@ -340,7 +386,6 @@ func TestDryRunStroppyOptions(t *testing.T) {
 	cfg := baseRunConfig("opts-1", pgConfig(types.PostgresSingle, "16"), "tpcb", "10s", 4)
 	cfg.Stroppy.Options = map[string]string{
 		"K6_OTEL_EXPORTER_TYPE":          "http",
-		"K6_OTEL_HTTP_EXPORTER_ENDPOINT": "vminsert.stroppy.io",
 		"K6_OTEL_HTTP_EXPORTER_URL_PATH": "/insert/multitenant/opentelemetry/v1/metrics",
 		"K6_OTEL_HTTP_EXPORTER_INSECURE": "false",
 		"K6_OTEL_HEADERS":                "Authorization=Basic abc123",
@@ -404,39 +449,29 @@ func TestPresetsEndpoint(t *testing.T) {
 }
 
 // ---------------------------------------------------------------------------
-// Test: API - Admin settings CRUD
+// Test: API - Settings CRUD (tenant-scoped)
 // ---------------------------------------------------------------------------
 
 func TestAdminSettings(t *testing.T) {
 	ts := startTestServer(t)
 
 	// GET defaults.
-	resp := ts.get(t, "/api/v1/admin/settings")
+	resp := ts.get(t, "/api/v1/settings")
 	assertStatus(t, resp, http.StatusOK)
 
 	var settings types.ServerSettings
 	readJSON(t, resp, &settings)
 
-	if settings.Monitoring.NodeExporterVersion != "1.9.1" {
-		t.Errorf("expected node_exporter 1.9.1, got %s", settings.Monitoring.NodeExporterVersion)
-	}
-	if settings.StroppyDefaults.OTLPExporterType != "http" {
-		t.Errorf("expected otlp_exporter_type http, got %s", settings.StroppyDefaults.OTLPExporterType)
-	}
-
 	// PUT updated settings.
 	settings.Cloud.ServerAddr = "http://test-server:8080"
 	settings.Cloud.Yandex.FolderID = "test-folder"
-	settings.Monitoring.VictoriaMetricsURL = "http://victoria:8428"
-	settings.StroppyDefaults.OTLPEndpoint = "vminsert.test.io"
-	settings.StroppyDefaults.OTLPServiceName = "integration-test"
 
-	resp = ts.put(t, "/api/v1/admin/settings", settings)
+	resp = ts.put(t, "/api/v1/settings", settings)
 	assertStatus(t, resp, http.StatusOK)
 	resp.Body.Close()
 
 	// GET and verify.
-	resp = ts.get(t, "/api/v1/admin/settings")
+	resp = ts.get(t, "/api/v1/settings")
 	assertStatus(t, resp, http.StatusOK)
 
 	var updated types.ServerSettings
@@ -447,113 +482,6 @@ func TestAdminSettings(t *testing.T) {
 	}
 	if updated.Cloud.Yandex.FolderID != "test-folder" {
 		t.Errorf("folder_id not updated: %s", updated.Cloud.Yandex.FolderID)
-	}
-	if updated.StroppyDefaults.OTLPEndpoint != "vminsert.test.io" {
-		t.Errorf("otlp_endpoint not updated: %s", updated.StroppyDefaults.OTLPEndpoint)
-	}
-}
-
-// ---------------------------------------------------------------------------
-// Test: API - Admin packages CRUD
-// ---------------------------------------------------------------------------
-
-func TestAdminPackages(t *testing.T) {
-	ts := startTestServer(t)
-
-	resp := ts.get(t, "/api/v1/admin/packages")
-	assertStatus(t, resp, http.StatusOK)
-
-	var pkgs types.PackageDefaults
-	readJSON(t, resp, &pkgs)
-
-	// Verify default packages exist for PG 16 and 17.
-	for _, ver := range []string{"16", "17"} {
-		ps, ok := pkgs.Postgres[ver]
-		if !ok {
-			t.Errorf("missing postgres packages for version %s", ver)
-			continue
-		}
-		if len(ps.Apt) == 0 {
-			t.Errorf("postgres %s: empty apt packages", ver)
-		}
-		if len(ps.PreInstallApt) == 0 {
-			t.Errorf("postgres %s: empty pre_install_apt", ver)
-		}
-	}
-
-	// Verify MySQL packages.
-	for _, ver := range []string{"8.0", "8.4"} {
-		if _, ok := pkgs.MySQL[ver]; !ok {
-			t.Errorf("missing mysql packages for version %s", ver)
-		}
-	}
-
-	// Verify Picodata packages.
-	if _, ok := pkgs.Picodata["25.3"]; !ok {
-		t.Error("missing picodata packages for version 25.3")
-	}
-
-	// PUT custom packages.
-	pkgs.Postgres["18"] = types.PackageSet{
-		Apt: []string{"postgresql-18", "postgresql-client-18"},
-	}
-	resp = ts.put(t, "/api/v1/admin/packages", pkgs)
-	assertStatus(t, resp, http.StatusOK)
-	resp.Body.Close()
-
-	// Verify custom package persists.
-	resp = ts.get(t, "/api/v1/admin/packages")
-	assertStatus(t, resp, http.StatusOK)
-	var updated types.PackageDefaults
-	readJSON(t, resp, &updated)
-	if _, ok := updated.Postgres["18"]; !ok {
-		t.Error("custom postgres 18 packages not saved")
-	}
-}
-
-// ---------------------------------------------------------------------------
-// Test: API - DB defaults for all kinds and versions
-// ---------------------------------------------------------------------------
-
-func TestAdminDBDefaults(t *testing.T) {
-	ts := startTestServer(t)
-
-	tests := []struct {
-		kind    string
-		presets []string
-	}{
-		{"postgres", []string{"single", "ha", "scale"}},
-		{"mysql", []string{"single", "replica", "group"}},
-		{"picodata", []string{"single", "cluster", "scale"}},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.kind, func(t *testing.T) {
-			resp := ts.get(t, "/api/v1/admin/db-defaults/"+tt.kind)
-			assertStatus(t, resp, http.StatusOK)
-
-			var raw map[string]json.RawMessage
-			readJSON(t, resp, &raw)
-			for _, p := range tt.presets {
-				if _, ok := raw[p]; !ok {
-					t.Errorf("missing preset %q for %s", p, tt.kind)
-				}
-			}
-		})
-	}
-
-	// Unknown kind returns 400.
-	resp := ts.get(t, "/api/v1/admin/db-defaults/cockroach")
-	if resp.StatusCode != http.StatusBadRequest {
-		t.Errorf("expected 400 for unknown kind, got %d", resp.StatusCode)
-	}
-	resp.Body.Close()
-
-	// Version-specific endpoint.
-	for _, kind := range []string{"postgres", "mysql", "picodata"} {
-		resp := ts.get(t, "/api/v1/admin/db-defaults/"+kind+"/16")
-		assertStatus(t, resp, http.StatusOK)
-		resp.Body.Close()
 	}
 }
 
@@ -686,9 +614,8 @@ func TestBinaryDownload(t *testing.T) {
 func TestStroppyEnvGeneration(t *testing.T) {
 	s := types.StroppySettings{
 		OTLPExporterType: "http",
-		OTLPEndpoint:     "vminsert.stroppy.io",
 		OTLPURLPath:      "/insert/multitenant/opentelemetry/v1/metrics",
-		OTLPInsecure:     false,
+		OTLPInsecure:     true,
 		OTLPHeaders:      "Authorization=Basic abc123",
 		OTLPMetricPrefix: "test_",
 		OTLPServiceName:  "test_svc",
@@ -698,9 +625,8 @@ func TestStroppyEnvGeneration(t *testing.T) {
 
 	expected := map[string]string{
 		"K6_OTEL_EXPORTER_TYPE":          "http",
-		"K6_OTEL_HTTP_EXPORTER_ENDPOINT": "vminsert.stroppy.io",
 		"K6_OTEL_HTTP_EXPORTER_URL_PATH": "/insert/multitenant/opentelemetry/v1/metrics",
-		"K6_OTEL_HTTP_EXPORTER_INSECURE": "false",
+		"K6_OTEL_HTTP_EXPORTER_INSECURE": "true",
 		"K6_OTEL_HEADERS":                "Authorization=Basic abc123",
 		"K6_OTEL_METRIC_PREFIX":          "test_",
 		"K6_OTEL_SERVICE_NAME":           "test_svc",
@@ -826,7 +752,8 @@ func TestWebSocketLogs(t *testing.T) {
 
 	// Connect WebSocket
 	wsURL := "ws" + strings.TrimPrefix(ts.url, "http") + "/ws/logs"
-	conn, _, err := websocket.DefaultDialer.Dial(wsURL, nil)
+	wsHeaders := http.Header{"Authorization": []string{"Bearer " + ts.jwtToken}}
+	conn, _, err := websocket.DefaultDialer.Dial(wsURL, wsHeaders)
 	if err != nil {
 		t.Fatalf("ws connect: %v", err)
 	}

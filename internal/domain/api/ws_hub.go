@@ -43,6 +43,10 @@ type wsHub struct {
 	// nil when VictoriaLogs is not configured.
 	victoriaLogs *victoria.LogsClient
 	logger       *zap.Logger
+
+	// accountIDResolver resolves runID → tenant accountID for per-tenant log ingestion.
+	// Set by Server after construction.
+	accountIDResolver func(runID string) int32
 }
 
 func newWSHub() *wsHub {
@@ -147,8 +151,12 @@ func (h *wsHub) WriteLog(_ context.Context, executionID string, nodeID string, e
 	// Persist server log to VictoriaLogs so it appears in historical queries.
 	if h.victoriaLogs != nil {
 		line := formatLogLine(entry.Level.CapitalString(), nodeID, entry.Message, encoded)
+		var accountID int32
+		if h.accountIDResolver != nil {
+			accountID = h.accountIDResolver(executionID)
+		}
 		go func() {
-			if err := h.victoriaLogs.Ingest("server", "", executionID, "server", line); err != nil {
+			if err := h.victoriaLogs.IngestWithAccount(accountID, "server", "", executionID, "server", line); err != nil {
 				if h.logger != nil {
 					h.logger.Debug("vlogs server log ingest failed", zap.Error(err))
 				}

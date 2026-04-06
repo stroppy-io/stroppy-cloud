@@ -8,11 +8,13 @@ package tests
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
@@ -22,6 +24,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/api"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 )
 
 // ---------------------------------------------------------------------------
@@ -53,14 +56,18 @@ func startE2E(t *testing.T) *e2eServer {
 	if o, err := build.CombinedOutput(); err != nil {
 		t.Fatalf("build stroppy-cloud binary: %s\n%s", err, o)
 	}
-	t.Setenv("STROPPY_BINARY_HOST_PATH", "/tmp/stroppy-cloud")
+	dsn := os.Getenv("TEST_DATABASE_URL")
+	if dsn == "" {
+		t.Skip("TEST_DATABASE_URL not set, skipping database test")
+	}
 
 	logger, _ := zap.NewDevelopment()
-	app, err := api.New(api.Config{Logger: logger})
+	pool, err := postgres.Open(context.Background(), dsn)
 	if err != nil {
-		t.Fatalf("create app: %v", err)
+		t.Fatalf("open db: %v", err)
 	}
-	s := api.NewServer(app, logger, "", "", "", "")
+	app := api.New(api.Config{Pool: pool, Logger: logger})
+	s := api.NewServer(app, logger, pool, "test-secret", "", "", "", ":8080")
 	ts := httptest.NewServer(s.Router())
 
 	t.Cleanup(func() {
@@ -70,7 +77,7 @@ func startE2E(t *testing.T) *e2eServer {
 				`docker network rm stroppy-run-net 2>/dev/null; true`)
 		cleanup.Run()
 		ts.Close()
-		app.Close()
+		pool.Close()
 	})
 
 	return &e2eServer{app: app, srv: ts, url: ts.URL}

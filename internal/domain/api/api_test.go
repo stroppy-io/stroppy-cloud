@@ -1,19 +1,36 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
+	"os"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 )
+
+func testPool(t *testing.T) *pgxpool.Pool {
+	t.Helper()
+	dsn := os.Getenv("TEST_DATABASE_URL")
+	if dsn == "" {
+		t.Skip("TEST_DATABASE_URL not set, skipping database test")
+	}
+	ctx := context.Background()
+	pool, err := postgres.Open(ctx, dsn)
+	if err != nil {
+		t.Fatalf("postgres.Open() failed: %v", err)
+	}
+	t.Cleanup(func() { pool.Close() })
+	return pool
+}
 
 func newTestApp(t *testing.T) *App {
 	t.Helper()
-	app, err := New(Config{}) // in-memory badger
-	if err != nil {
-		t.Fatalf("New() failed: %v", err)
-	}
-	t.Cleanup(func() { app.Close() })
+	pool := testPool(t)
+	app := New(Config{Pool: pool})
 	return app
 }
 
@@ -40,9 +57,6 @@ func postgresSingleConfig() types.RunConfig {
 
 func TestNew_InMemory(t *testing.T) {
 	app := newTestApp(t)
-	if app.db == nil {
-		t.Fatal("expected non-nil db")
-	}
 	if app.storage == nil {
 		t.Fatal("expected non-nil storage")
 	}

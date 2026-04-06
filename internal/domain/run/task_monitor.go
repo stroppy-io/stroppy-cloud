@@ -1,6 +1,8 @@
 package run
 
 import (
+	"fmt"
+
 	"go.uber.org/zap"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
@@ -26,22 +28,24 @@ func (t *monitorInstallTask) Execute(nc *dag.NodeContext) error {
 }
 
 type monitorConfigTask struct {
-	client   agent.Client
-	state    *State
-	monitor  types.MonitorConfig
-	runID    string
-	settings *types.ServerSettings
-	dbKind   types.DatabaseKind
+	client          agent.Client
+	state           *State
+	monitor         types.MonitorConfig
+	runID           string
+	dbKind          types.DatabaseKind
+	monitoringURL   string
+	monitoringToken string
+	accountID       int32
 }
 
 func (t *monitorConfigTask) Execute(nc *dag.NodeContext) error {
 	allTargets := t.state.AllTargets()
 	nc.Log().Info("configuring monitoring on all machines", zap.Int("count", len(allTargets)))
 
-	// VictoriaMetrics remote_write endpoint -- must be reachable from agent VMs/containers.
+	// VictoriaMetrics remote_write endpoint -- derived from monitoringURL + accountID.
 	metricsEndpoint := t.monitor.MetricsEndpoint
-	if metricsEndpoint == "" && t.settings != nil && t.settings.Monitoring.VictoriaMetricsURL != "" {
-		metricsEndpoint = t.settings.Monitoring.VictoriaMetricsURL + "/api/v1/write"
+	if metricsEndpoint == "" && t.monitoringURL != "" {
+		metricsEndpoint = fmt.Sprintf("%s/insert/%d/prometheus/api/v1/write", t.monitoringURL, t.accountID)
 	}
 
 	// Scrape targets -- use InternalHost (container names) for container-to-container scraping.
@@ -60,6 +64,7 @@ func (t *monitorConfigTask) Execute(nc *dag.NodeContext) error {
 		ScrapeTargets:   scrapeHosts,
 		RunID:           t.runID,
 		DatabaseKind:    string(t.dbKind),
+		BearerToken:     t.monitoringToken,
 	}
 	return t.client.SendAll(nc, allTargets, agent.Command{
 		Action: agent.ActionConfigMonitor,

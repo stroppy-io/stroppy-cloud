@@ -193,27 +193,6 @@ export interface CloudSettings {
   binary_url: string;
 }
 
-export interface MonitoringStack {
-  node_exporter_version: string;
-  postgres_exporter_version: string;
-  otel_col_version: string;
-  vmagent_version: string;
-  victoria_metrics_url: string;
-  victoria_metrics_user: string;
-  victoria_metrics_password: string;
-}
-
-export interface StroppySettings {
-  version: string;
-  otlp_exporter_type: string;
-  otlp_endpoint: string;
-  otlp_url_path: string;
-  otlp_insecure: boolean;
-  otlp_headers: string;
-  otlp_metric_prefix: string;
-  otlp_service_name: string;
-}
-
 export interface PackageDefaults {
   postgres: Record<string, PackageSet>;
   mysql: Record<string, PackageSet>;
@@ -230,10 +209,8 @@ export interface GrafanaSettings {
 
 export interface ServerSettings {
   cloud: CloudSettings;
-  monitoring: MonitoringStack;
   packages: PackageDefaults;
-  stroppy_defaults: StroppySettings;
-  grafana: GrafanaSettings;
+  webhooks?: Record<string, unknown>;
 }
 
 // --- Metrics / Compare ---
@@ -264,6 +241,42 @@ export interface ComparisonResponse {
   end: string;
   metrics: ComparisonRow[];
   summary: { better: number; worse: number; same: number };
+}
+
+// --- Auth / Multi-tenancy ---
+
+export interface AuthUser {
+  id: string;
+  username: string;
+  tenant_id: string | null;
+  tenant_name: string | null;
+  role: "viewer" | "operator" | "owner";
+  is_root: boolean;
+  tenants: { id: string; tenant_name: string; role: string }[];
+}
+
+export interface Tenant {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface TenantMember {
+  tenant_id: string;
+  user_id: string;
+  username: string;
+  role: string;
+  created_at: string;
+}
+
+export interface TenantAPIToken {
+  id: string;
+  tenant_id: string;
+  name: string;
+  role: string;
+  created_by: string;
+  expires_at: string | null;
+  created_at: string;
 }
 
 // --- WebSocket messages ---

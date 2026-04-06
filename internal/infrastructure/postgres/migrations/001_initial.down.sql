@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS tenant_settings;
+DROP TABLE IF EXISTS baselines;
+DROP TABLE IF EXISTS runs;
+DROP TABLE IF EXISTS tenant_api_tokens;
+DROP TABLE IF EXISTS refresh_tokens;
+DROP TABLE IF EXISTS tenant_members;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS tenants;

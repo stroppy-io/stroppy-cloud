@@ -59,6 +59,8 @@ export function LogStream({ runID }: LogStreamProps) {
     [lines, selectedSource]
   );
 
+  const [logError, setLogError] = useState<string | null>(null);
+
   // Load historical logs from VictoriaLogs on mount.
   useEffect(() => {
     if (!runID) return;
@@ -75,8 +77,11 @@ export function LogStream({ runID }: LogStreamProps) {
         if (historical.length > 0) {
           setLines((prev) => [...historical, ...prev]);
         }
+        setLogError(null);
       })
-      .catch(() => {});
+      .catch((err) => {
+        setLogError(err instanceof Error ? err.message : "Failed to load historical logs");
+      });
   }, [runID]);
 
   // Live WebSocket stream.
@@ -193,7 +198,9 @@ export function LogStream({ runID }: LogStreamProps) {
         onScroll={handleScroll}
         className="flex-1 overflow-auto p-2 font-mono text-xs leading-5 bg-[#0a0a0a] text-gray-200"
       >
-        {filteredLines.length === 0 ? (
+        {logError ? (
+          <span className="text-destructive text-xs">{logError}</span>
+        ) : filteredLines.length === 0 ? (
           <span className="text-zinc-600">
             {lines.length === 0 ? "Waiting for agent output..." : "No logs matching filter."}
           </span>

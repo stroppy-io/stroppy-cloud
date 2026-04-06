@@ -133,7 +133,7 @@ func TestSamplePair_UnmarshalFromJSON(t *testing.T) {
 }
 
 func TestNewClient(t *testing.T) {
-	c := NewClient("http://localhost:8428")
+	c := NewClient("http://localhost:8428", "")
 	if c == nil {
 		t.Fatal("NewClient returned nil")
 	}

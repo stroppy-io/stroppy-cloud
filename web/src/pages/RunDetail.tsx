@@ -1,12 +1,12 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getRunStatus, getGrafanaSettings, deleteRun } from "@/api/client";
 import type { Snapshot, NodeStatus, GrafanaSettings } from "@/api/types";
-import { DagGraph } from "@/components/DagGraph";
+import { RunOverview } from "@/components/RunOverview";
 import { LogStream } from "@/components/LogStream";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { RefreshCw, AlertCircle, BarChart3, Trash2 } from "lucide-react";
@@ -17,27 +17,39 @@ const DB_DASHBOARDS = ["postgres", "mysql", "picodata"];
 function DashboardSelector({ grafana, runID, dbKind, startedAt, finishedAt }: {
   grafana: GrafanaSettings; runID: string; dbKind?: string; startedAt?: string; finishedAt?: string;
 }) {
-  const [selectedDashboard, setSelectedDashboard] = useState("overview");
-
   const dashboards = grafana.dashboards || {};
 
   const visibleDashboards = Object.keys(dashboards).filter(name => {
-    if (name === "compare") return false;
+    if (name === "compare" || name === "overview") return false;
     if (DB_DASHBOARDS.includes(name)) return name === dbKind;
     return true;
   });
 
-  const uid = dashboards[selectedDashboard] || dashboards["overview"] || "";
+  const [selectedDashboard, setSelectedDashboard] = useState(visibleDashboards[0] || "stroppy");
 
-  // Build time range from run timestamps so Grafana shows the correct window.
-  let timeParams = "";
-  if (startedAt && startedAt !== "0001-01-01T00:00:00Z") {
-    const from = new Date(startedAt).getTime() - 30000; // 30s before
-    const to = finishedAt && finishedAt !== "0001-01-01T00:00:00Z"
-      ? new Date(finishedAt).getTime() + 60000  // 1min after
-      : Date.now();
-    timeParams = `&from=${from}&to=${to}`;
-  }
+  const uid = dashboards[selectedDashboard] || "";
+
+  // Build iframe src — memoize to avoid reloading iframe on every poll.
+  // While run is in progress, use "now" as end time (Grafana auto-refreshes internally).
+  // Once finished, lock the time range.
+  const iframeSrc = useMemo(() => {
+    let timeParams = "";
+    if (startedAt && startedAt !== "0001-01-01T00:00:00Z") {
+      const from = new Date(startedAt).getTime() - 30000;
+      if (finishedAt && finishedAt !== "0001-01-01T00:00:00Z") {
+        const to = new Date(finishedAt).getTime() + 60000;
+        timeParams = `&from=${from}&to=${to}`;
+      } else {
+        // Run in progress — use relative "now" so Grafana auto-refreshes.
+        timeParams = `&from=${from}&to=now&refresh=5s`;
+      }
+    }
+    // var-run_id for system/db dashboards (vmagent external_labels), var-prefix for stroppy dashboard (K6 metric prefix = runID_)
+    const prefix = runID.replace(/-/g, "_") + "_";
+    return `${grafana.url}/d/${uid}?var-run_id=${runID}&var-prefix=${prefix}${timeParams}&kiosk&theme=dark`;
+    // Only recalculate when dashboard, startedAt, or finishedAt changes — NOT on every poll.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [grafana.url, uid, runID, startedAt, finishedAt]);
 
   return (
     <>
@@ -58,8 +70,8 @@ function DashboardSelector({ grafana, runID, dbKind, startedAt, finishedAt }: {
         ))}
       </div>
       <iframe
-        src={`${grafana.url}/d/${uid}?var-run_id=${runID}${timeParams}&kiosk&theme=dark`}
-        className="w-full h-[600px] border-0"
+        src={iframeSrc}
+        className="w-full border-0 h-[calc(100vh-14rem)]"
         title="Run Metrics Dashboard"
         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
       />
@@ -186,11 +198,10 @@ export function RunDetail() {
         </div>
       )}
 
-      <Tabs defaultValue="dag">
+      <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="dag">DAG</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="logs">Logs</TabsTrigger>
-          <TabsTrigger value="phases">Phases</TabsTrigger>
           <TabsTrigger value="metrics">
             <BarChart3 className="h-3 w-3 mr-1" />
             Metrics
@@ -200,94 +211,20 @@ export function RunDetail() {
           )}
         </TabsList>
 
-        <TabsContent value="dag">
-          <Card>
-            <CardHeader>
-              <CardTitle>Execution DAG</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DagGraph nodes={nodes} />
+        <TabsContent value="overview">
+          <Card className="h-[calc(100vh-11rem)]">
+            <CardContent className="p-0 h-full">
+              <RunOverview nodes={nodes} snapshot={snapshot} />
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="logs">
-          <Card className="h-[calc(100vh-280px)]">
+          <Card className="h-[calc(100vh-11rem)]">
             <CardContent className="p-0 h-full relative">
               <LogStream runID={id} />
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="phases">
-          <Card>
-            <CardHeader>
-              <CardTitle>Phase Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {nodes.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No phase data yet.</p>
-              ) : (
-                <div className="space-y-1">
-                  {nodes.map((node) => (
-                    <div
-                      key={node.id}
-                      className="flex items-center gap-3 py-1.5 border-b border-border/30 last:border-0"
-                    >
-                      <div
-                        className={`w-2 h-2 shrink-0 ${
-                          node.status === "done"
-                            ? "bg-success"
-                            : node.status === "failed"
-                              ? "bg-destructive"
-                              : "bg-pending"
-                        }`}
-                      />
-                      <span className="font-mono text-xs w-48 shrink-0">{node.id}</span>
-                      <div className="flex-1">
-                        <div
-                          className={`h-4 ${
-                            node.status === "done"
-                              ? "bg-success/20"
-                              : node.status === "failed"
-                                ? "bg-destructive/20"
-                                : "bg-muted"
-                          }`}
-                          style={{
-                            width: node.status === "done" ? "100%" : node.status === "failed" ? "60%" : "0%",
-                          }}
-                        />
-                      </div>
-                      <Badge
-                        variant={
-                          node.status === "done" ? "success" : node.status === "failed" ? "destructive" : "pending"
-                        }
-                        className="shrink-0"
-                      >
-                        {node.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {hasFailed && (
-            <Card className="mt-4 border-destructive/30">
-              <CardHeader>
-                <CardTitle className="text-destructive">Errors</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {failedNodes.map((node) => (
-                  <div key={node.id} className="p-3 bg-destructive/5 border border-destructive/20">
-                    <div className="text-xs font-mono font-medium text-destructive mb-1">{node.id}</div>
-                    <div className="text-xs font-mono text-destructive/80">{node.error || "Unknown error"}</div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
         {/* Metrics tab — direct API data */}
@@ -303,9 +240,6 @@ export function RunDetail() {
         {grafana?.embed_enabled && (
           <TabsContent value="grafana">
             <Card>
-              <CardHeader>
-                <CardTitle>Grafana Dashboard</CardTitle>
-              </CardHeader>
               <CardContent className="p-0">
                 <DashboardSelector
                   grafana={grafana}
