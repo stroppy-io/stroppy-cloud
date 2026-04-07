@@ -54,7 +54,7 @@ services:
     command:
       - "-auth.config=/etc/vmauth/config.yml"
     ports:
-      - "${BIND_ADDR:-0.0.0.0}:8427:8427"
+      - "8427:8427"
     environment:
       VMAUTH_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
     volumes:
