@@ -192,20 +192,21 @@ func cloudLoginCmd() *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("load credentials: %w", err)
 			}
-			creds.Current = "default"
-			creds.Profiles["default"] = &Profile{
+			pname := resolveProfile(creds)
+			creds.Profiles[pname] = &Profile{
 				Server:       server,
 				Tenant:       tenantName,
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}
+			creds.Current = pname
 			if err := creds.Save(); err != nil {
 				return fmt.Errorf("save credentials: %w", err)
 			}
 
 			// 6. Print result
 			fmt.Printf("Logged in as %s @ %s (%s)\n", me.Username, tenantName, role)
-			fmt.Printf("Credentials saved to %s\n", credentialsPath())
+			fmt.Printf("Profile: %s | Credentials saved to %s\n", pname, credentialsPath())
 			return nil
 		},
 	}
@@ -225,9 +226,9 @@ func cloudLogoutCmd() *cobra.Command {
 				return err
 			}
 
-			p := creds.CurrentProfile()
+			pname := resolveProfile(creds)
+			p := creds.Profiles[pname]
 			if p != nil && p.RefreshToken != "" {
-				// Best-effort server logout
 				server := p.Server
 				if server == "" {
 					server = "http://localhost:8080"
@@ -237,12 +238,16 @@ func cloudLogoutCmd() *cobra.Command {
 				_, _ = http.DefaultClient.Do(req) //nolint:bodyclose
 			}
 
-			delete(creds.Profiles, creds.Current)
+			delete(creds.Profiles, pname)
+			// If we deleted the current profile, reset to "default".
+			if creds.Current == pname {
+				creds.Current = "default"
+			}
 			if err := creds.Save(); err != nil {
 				return fmt.Errorf("save credentials: %w", err)
 			}
 
-			fmt.Println("Logged out.")
+			fmt.Printf("Logged out (profile: %s).\n", pname)
 			return nil
 		},
 	}
@@ -258,23 +263,24 @@ func cloudStatusCmd() *cobra.Command {
 				return err
 			}
 
-			p := creds.CurrentProfile()
+			pname := resolveProfile(creds)
+			p := creds.Profiles[pname]
 			if p == nil {
-				fmt.Println("Not logged in. Run: stroppy-cloud cloud login")
+				fmt.Printf("Not logged in (profile: %s). Run: stroppy-cloud cloud login\n", pname)
 				return nil
 			}
 
-			fmt.Printf("Profile:  %s\n", creds.Current)
+			fmt.Printf("Profile:  %s\n", pname)
 			fmt.Printf("Server:   %s\n", p.Server)
 			fmt.Printf("Tenant:   %s\n", p.Tenant)
 
-			tokenStatus := "present"
-			if p.AccessToken == "" {
-				tokenStatus = "none"
-			} else if isJWTExpired(p.AccessToken) {
-				tokenStatus = "expired"
-			} else {
-				tokenStatus = "valid"
+			tokenStatus := "none"
+			if p.AccessToken != "" {
+				if isJWTExpired(p.AccessToken) {
+					tokenStatus = "expired (will auto-refresh)"
+				} else {
+					tokenStatus = "valid"
+				}
 			}
 			fmt.Printf("Token:    %s\n", tokenStatus)
 			return nil
@@ -380,7 +386,7 @@ func cloudUseCmd() *cobra.Command {
 			}
 
 			// Update credentials
-			p := c.creds.CurrentProfile()
+			p := c.creds.Profiles[c.profileName]
 			if p == nil {
 				return fmt.Errorf("no current profile; please run: stroppy-cloud cloud login")
 			}
@@ -391,6 +397,59 @@ func cloudUseCmd() *cobra.Command {
 			}
 
 			fmt.Printf("Switched to tenant: %s\n", tenantName)
+			return nil
+		},
+	}
+}
+
+func cloudProfilesCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "profiles",
+		Short: "List saved profiles",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			creds, err := loadCredentials()
+			if err != nil {
+				return err
+			}
+			if len(creds.Profiles) == 0 {
+				fmt.Println("No profiles. Run: stroppy-cloud cloud login")
+				return nil
+			}
+			for name, p := range creds.Profiles {
+				marker := " "
+				if name == creds.Current {
+					marker = "*"
+				}
+				tenant := p.Tenant
+				if tenant == "" {
+					tenant = "(no tenant)"
+				}
+				fmt.Printf("  %s %-15s  %s  %s\n", marker, name, p.Server, tenant)
+			}
+			return nil
+		},
+	}
+}
+
+func cloudUseProfileCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "use-profile <name>",
+		Short: "Switch the default profile",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			name := args[0]
+			creds, err := loadCredentials()
+			if err != nil {
+				return err
+			}
+			if _, ok := creds.Profiles[name]; !ok {
+				return fmt.Errorf("profile %q not found", name)
+			}
+			creds.Current = name
+			if err := creds.Save(); err != nil {
+				return fmt.Errorf("save credentials: %w", err)
+			}
+			fmt.Printf("Default profile: %s\n", name)
 			return nil
 		},
 	}

@@ -14,8 +14,9 @@ import (
 )
 
 var (
-	cloudServer string
-	cloudToken  string
+	cloudServer  string
+	cloudToken   string
+	cloudProfile string
 )
 
 func cloudCmd() *cobra.Command {
@@ -26,6 +27,7 @@ func cloudCmd() *cobra.Command {
 
 	cmd.PersistentFlags().StringVar(&cloudServer, "server", "", "server URL (env: STROPPY_SERVER)")
 	cmd.PersistentFlags().StringVar(&cloudToken, "token", "", "API or access token (env: STROPPY_TOKEN)")
+	cmd.PersistentFlags().StringVar(&cloudProfile, "profile", "", "credentials profile (env: STROPPY_PROFILE)")
 
 	cmd.AddCommand(
 		cloudLoginCmd(),
@@ -33,6 +35,8 @@ func cloudCmd() *cobra.Command {
 		cloudStatusCmd(),
 		cloudTenantsCmd(),
 		cloudUseCmd(),
+		cloudProfilesCmd(),
+		cloudUseProfileCmd(),
 		cloudRunCmd(),
 		cloudCompareCmd(),
 		cloudBenchCmd(),
@@ -51,22 +55,34 @@ type cloudHTTPClient struct {
 	profileName string
 }
 
+// resolveProfile returns the active profile name from --profile flag, env, or credentials default.
+func resolveProfile(creds *Credentials) string {
+	if cloudProfile != "" {
+		return cloudProfile
+	}
+	if p := os.Getenv("STROPPY_PROFILE"); p != "" {
+		return p
+	}
+	return creds.Current
+}
+
 func newCloudClient() (*cloudHTTPClient, error) {
 	creds, err := loadCredentials()
 	if err != nil {
 		return nil, fmt.Errorf("load credentials: %w", err)
 	}
 
-	c := &cloudHTTPClient{creds: creds, profileName: creds.Current}
+	pname := resolveProfile(creds)
+	c := &cloudHTTPClient{creds: creds, profileName: pname}
+
+	prof := creds.Profiles[pname]
 
 	c.server = cloudServer
 	if c.server == "" {
 		c.server = os.Getenv("STROPPY_SERVER")
 	}
-	if c.server == "" {
-		if p := creds.CurrentProfile(); p != nil {
-			c.server = p.Server
-		}
+	if c.server == "" && prof != nil {
+		c.server = prof.Server
 	}
 	if c.server == "" {
 		c.server = "http://localhost:8080"
@@ -77,10 +93,8 @@ func newCloudClient() (*cloudHTTPClient, error) {
 	if c.token == "" {
 		c.token = os.Getenv("STROPPY_TOKEN")
 	}
-	if c.token == "" {
-		if p := creds.CurrentProfile(); p != nil {
-			c.token = p.AccessToken
-		}
+	if c.token == "" && prof != nil {
+		c.token = prof.AccessToken
 	}
 
 	return c, nil
@@ -91,7 +105,7 @@ func (c *cloudHTTPClient) ensureValidToken() error {
 		return nil
 	}
 
-	p := c.creds.CurrentProfile()
+	p := c.creds.Profiles[c.profileName]
 	if p == nil || p.RefreshToken == "" {
 		return nil
 	}

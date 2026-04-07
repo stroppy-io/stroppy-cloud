@@ -27,8 +27,10 @@ var (
 
 func main() {
 	root := &cobra.Command{
-		Use:   "stroppy-cloud",
-		Short: "Database testing orchestrator",
+		Use:           "stroppy-cloud",
+		Short:         "Database testing orchestrator",
+		SilenceUsage:  true,
+		SilenceErrors: true,
 	}
 
 	root.PersistentFlags().StringVarP(&configFile, "config", "c", "run.json", "path to run config JSON")
@@ -44,6 +46,7 @@ func main() {
 	)
 
 	if err := root.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 		os.Exit(1)
 	}
 }

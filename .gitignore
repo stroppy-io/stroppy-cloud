@@ -2,6 +2,7 @@ tools/proto/easyp_vendor
 .idea
 deployments/.kubectl.config.yaml
 .env
+.env.production
 bin
 examples/test.yaml
 examples/test.json

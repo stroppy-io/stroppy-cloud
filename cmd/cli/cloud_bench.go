@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -15,7 +18,7 @@ func cloudBenchCmd() *cobra.Command {
 	var baselineConfig, candidateConfig string
 	var baselineDeb, candidateDeb string
 	var runA, runB string
-	var format string
+	var outputFiles []string
 	var threshold float64
 	var timeout, interval time.Duration
 
@@ -24,6 +27,12 @@ func cloudBenchCmd() *cobra.Command {
 		Short: "Run two configs (or wait for two runs), then compare results",
 		Long: `Launch baseline and candidate runs in parallel, wait for both to complete,
 then compare their metrics. Alternatively, pass existing run IDs to skip launching.
+
+A comparison table is always printed to the console. Use -o to save results
+to files — the format is determined by extension:
+  .md    → markdown
+  .json  → json
+  .xml   → junit XML
 
 Examples:
   # Launch two configs and compare
@@ -34,8 +43,9 @@ Examples:
     --baseline run.json --baseline-deb ./pg16-custom.deb \
     --candidate run.json --candidate-deb ./pg17-custom.deb
 
-  # Compare two existing runs
-  stroppy-cloud cloud bench --run-a run-123 --run-b run-456`,
+  # Save results to multiple formats
+  stroppy-cloud cloud bench --run-a run-123 --run-b run-456 \
+    -o results.md -o results.json -o results.xml`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := newCloudClient()
 			if err != nil {
@@ -109,7 +119,7 @@ Examples:
 
 			// Compare.
 			fmt.Println("Comparing results...")
-			return runCompare(c, idA, idB, format, threshold)
+			return runCompare(c, idA, idB, threshold, outputFiles)
 		},
 	}
 
@@ -119,7 +129,7 @@ Examples:
 	cmd.Flags().StringVar(&candidateDeb, "candidate-deb", "", "path to .deb for candidate run")
 	cmd.Flags().StringVar(&runA, "run-a", "", "existing baseline run ID (skip launch)")
 	cmd.Flags().StringVar(&runB, "run-b", "", "existing candidate run ID (skip launch)")
-	cmd.Flags().StringVar(&format, "format", "table", "output format: table, json, junit")
+	cmd.Flags().StringArrayVarP(&outputFiles, "output", "o", nil, "output file (format from extension: .md .json .xml); repeatable")
 	cmd.Flags().Float64Var(&threshold, "threshold", 0, "custom threshold percentage (0 = server default)")
 	cmd.Flags().DurationVar(&timeout, "timeout", 60*time.Minute, "max wait time per run")
 	cmd.Flags().DurationVar(&interval, "interval", 5*time.Second, "poll interval")
@@ -127,8 +137,28 @@ Examples:
 	return cmd
 }
 
-// runCompare fetches and prints the comparison between two runs.
-func runCompare(c *cloudHTTPClient, runA, runB, format string, threshold float64) error {
+type compareResult struct {
+	RunA    string `json:"run_a"`
+	RunB    string `json:"run_b"`
+	Metrics []struct {
+		Key        string  `json:"key"`
+		Name       string  `json:"name"`
+		Unit       string  `json:"unit"`
+		AvgA       float64 `json:"avg_a"`
+		AvgB       float64 `json:"avg_b"`
+		DiffAvgPct float64 `json:"diff_avg_pct"`
+		Verdict    string  `json:"verdict"`
+	} `json:"metrics"`
+	Summary struct {
+		Better int `json:"better"`
+		Worse  int `json:"worse"`
+		Same   int `json:"same"`
+	} `json:"summary"`
+}
+
+// runCompare fetches the comparison, prints a table to stdout,
+// and writes each -o file in the format matching its extension.
+func runCompare(c *cloudHTTPClient, runA, runB string, threshold float64, outputFiles []string) error {
 	path := fmt.Sprintf("/api/v1/compare?a=%s&b=%s",
 		url.QueryEscape(runA), url.QueryEscape(runB))
 	if threshold > 0 {
@@ -143,66 +173,102 @@ func runCompare(c *cloudHTTPClient, runA, runB, format string, threshold float64
 		return fmt.Errorf("server error %d: %s", status, string(body))
 	}
 
-	if format == "json" {
-		fmt.Println(string(body))
-		return nil
-	}
-
-	var result struct {
-		RunA    string `json:"run_a"`
-		RunB    string `json:"run_b"`
-		Metrics []struct {
-			Key        string  `json:"key"`
-			Name       string  `json:"name"`
-			Unit       string  `json:"unit"`
-			AvgA       float64 `json:"avg_a"`
-			AvgB       float64 `json:"avg_b"`
-			DiffAvgPct float64 `json:"diff_avg_pct"`
-			Verdict    string  `json:"verdict"`
-		} `json:"metrics"`
-		Summary struct {
-			Better int `json:"better"`
-			Worse  int `json:"worse"`
-			Same   int `json:"same"`
-		} `json:"summary"`
-	}
+	var result compareResult
 	if err := json.Unmarshal(body, &result); err != nil {
 		return fmt.Errorf("parse response: %w", err)
 	}
 
-	if format == "junit" {
-		fmt.Println(`<?xml version="1.0" encoding="UTF-8"?>`)
-		fmt.Printf("<testsuite name=\"stroppy-compare\" tests=\"%d\" failures=\"%d\">\n",
-			len(result.Metrics), result.Summary.Worse)
-		for _, m := range result.Metrics {
-			fmt.Printf("  <testcase name=\"%s\" classname=\"stroppy.%s\">\n", m.Name, m.Key)
-			if m.Verdict == "worse" {
-				fmt.Printf("    <failure message=\"%s regressed by %.1f%%\">avg_a=%.2f avg_b=%.2f diff=%.1f%%</failure>\n",
-					m.Name, m.DiffAvgPct, m.AvgA, m.AvgB, m.DiffAvgPct)
-			}
-			fmt.Println("  </testcase>")
+	// Always print table to console.
+	var table strings.Builder
+	renderTable(&table, &result)
+	fmt.Print(table.String())
+
+	// Write output files.
+	for _, outPath := range outputFiles {
+		var buf strings.Builder
+		switch formatFromExt(outPath) {
+		case "json":
+			var pretty bytes.Buffer
+			json.Indent(&pretty, body, "", "  ")
+			buf.WriteString(pretty.String())
+			buf.WriteString("\n")
+		case "junit":
+			renderJUnit(&buf, &result)
+		case "markdown":
+			renderMarkdown(&buf, &result)
+		default:
+			renderTable(&buf, &result)
 		}
-		fmt.Println("</testsuite>")
-		return nil
+		if err := os.WriteFile(outPath, []byte(buf.String()), 0644); err != nil {
+			return fmt.Errorf("write %s: %w", outPath, err)
+		}
+		fmt.Fprintf(os.Stderr, "Saved: %s\n", outPath)
 	}
 
-	// Table format (default)
-	fmt.Printf("\nCompare: %s vs %s\n\n", result.RunA, result.RunB)
-	fmt.Printf("%-35s %12s %12s %10s %8s\n", "METRIC", "BASELINE", "CANDIDATE", "DIFF %", "VERDICT")
-	fmt.Println(strings.Repeat("-", 82))
-	for _, m := range result.Metrics {
+	return nil
+}
+
+func formatFromExt(path string) string {
+	switch filepath.Ext(path) {
+	case ".md", ".markdown":
+		return "markdown"
+	case ".json":
+		return "json"
+	case ".xml":
+		return "junit"
+	default:
+		return "table"
+	}
+}
+
+func renderTable(w *strings.Builder, r *compareResult) {
+	fmt.Fprintf(w, "\nCompare: %s vs %s\n\n", r.RunA, r.RunB)
+	fmt.Fprintf(w, "%-35s %12s %12s %10s %8s\n", "METRIC", "BASELINE", "CANDIDATE", "DIFF %", "VERDICT")
+	fmt.Fprintln(w, strings.Repeat("-", 82))
+	for _, m := range r.Metrics {
 		verdict := m.Verdict
 		if verdict == "same" {
 			verdict = "= same"
 		}
-		fmt.Printf("%-35s %12.2f %12.2f %+9.1f%% %8s\n",
+		fmt.Fprintf(w, "%-35s %12.2f %12.2f %+9.1f%% %8s\n",
 			m.Name, m.AvgA, m.AvgB, m.DiffAvgPct, verdict)
 	}
-	fmt.Printf("\nSummary: %d better, %d worse, %d same\n",
-		result.Summary.Better, result.Summary.Worse, result.Summary.Same)
+	fmt.Fprintf(w, "\nSummary: %d better, %d worse, %d same\n",
+		r.Summary.Better, r.Summary.Worse, r.Summary.Same)
+}
 
-	if result.Summary.Worse > 2 {
-		return fmt.Errorf("performance regression: %d metrics worse", result.Summary.Worse)
+func renderMarkdown(w *strings.Builder, r *compareResult) {
+	fmt.Fprintf(w, "## Benchmark: %s vs %s\n\n", r.RunA, r.RunB)
+	fmt.Fprintln(w, "| Metric | Baseline | Candidate | Diff % | Verdict |")
+	fmt.Fprintln(w, "|--------|----------|-----------|--------|---------|")
+	for _, m := range r.Metrics {
+		verdict := m.Verdict
+		switch verdict {
+		case "better":
+			verdict = ":white_check_mark: better"
+		case "worse":
+			verdict = ":x: worse"
+		case "same":
+			verdict = ":heavy_minus_sign: same"
+		}
+		fmt.Fprintf(w, "| %s | %.2f %s | %.2f %s | %+.1f%% | %s |\n",
+			m.Name, m.AvgA, m.Unit, m.AvgB, m.Unit, m.DiffAvgPct, verdict)
 	}
-	return nil
+	fmt.Fprintf(w, "\n**Summary:** %d better, %d worse, %d same\n",
+		r.Summary.Better, r.Summary.Worse, r.Summary.Same)
+}
+
+func renderJUnit(w *strings.Builder, r *compareResult) {
+	fmt.Fprintln(w, `<?xml version="1.0" encoding="UTF-8"?>`)
+	fmt.Fprintf(w, "<testsuite name=\"stroppy-compare\" tests=\"%d\" failures=\"%d\">\n",
+		len(r.Metrics), r.Summary.Worse)
+	for _, m := range r.Metrics {
+		fmt.Fprintf(w, "  <testcase name=\"%s\" classname=\"stroppy.%s\">\n", m.Name, m.Key)
+		if m.Verdict == "worse" {
+			fmt.Fprintf(w, "    <failure message=\"%s regressed by %.1f%%\">avg_a=%.2f avg_b=%.2f diff=%.1f%%</failure>\n",
+				m.Name, m.DiffAvgPct, m.AvgA, m.AvgB, m.DiffAvgPct)
+		}
+		fmt.Fprintln(w, "  </testcase>")
+	}
+	fmt.Fprintln(w, "</testsuite>")
 }

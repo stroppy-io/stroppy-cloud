@@ -26,11 +26,18 @@ echo "=== OrioleDB vs PostgreSQL 17 benchmark ==="
 echo "  OrioleDB deb: $DEB"
 echo ""
 
+OUTDIR="${SCRIPT_DIR}/../bench-results"
+mkdir -p "$OUTDIR"
+TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
+
 # Run bench: baseline = vanilla PG17, candidate = OrioleDB with custom .deb
 # Both use the same hardware config, same workload, same duration.
-exec "$CLI" cloud bench \
+# Table is always printed to console; -o files get format from extension.
+"$CLI" cloud bench \
   --baseline  "${SCRIPT_DIR}/bench-pg17-vanilla.json" \
   --candidate "${SCRIPT_DIR}/bench-pg17-vanilla.json" \
   --candidate-deb "$DEB" \
-  --format table \
+  -o "${OUTDIR}/orioledb-${TIMESTAMP}.md" \
+  -o "${OUTDIR}/orioledb-${TIMESTAMP}.json" \
+  -o "${OUTDIR}/orioledb-${TIMESTAMP}.xml" \
   --timeout 30m

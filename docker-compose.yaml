@@ -5,9 +5,9 @@ services:
     environment:
       POSTGRES_DB: stroppy
       POSTGRES_USER: stroppy
-      POSTGRES_PASSWORD: stroppy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-stroppy}
     ports:
-      - "5436:5432"
+      - "${BIND_ADDR:-0.0.0.0}:5436:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -54,7 +54,7 @@ services:
     command:
       - "-auth.config=/etc/vmauth/config.yml"
     ports:
-      - "8427:8427"
+      - "${BIND_ADDR:-0.0.0.0}:8427:8427"
     environment:
       VMAUTH_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
     volumes:
@@ -67,11 +67,11 @@ services:
   grafana:
     image: grafana/grafana:12.4.2
     ports:
-      - "3001:3000"
+      - "${BIND_ADDR:-0.0.0.0}:3001:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
-      GF_SECURITY_ADMIN_PASSWORD: admin
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
+      GF_AUTH_ANONYMOUS_ENABLED: ${GF_ANON_ENABLED:-true}
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
       GF_SECURITY_ALLOW_EMBEDDING: "true"
     volumes:
@@ -93,11 +93,11 @@ services:
         condition: service_started
     command:
       - serve
-      - --addr=:8080
+      - --addr=${BIND_ADDR:-0.0.0.0}:8080
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      DATABASE_URL: postgres://stroppy:stroppy@127.0.0.1:5436/stroppy?sslmode=disable
+      DATABASE_URL: postgres://stroppy:${POSTGRES_PASSWORD:-stroppy}@127.0.0.1:5436/stroppy?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-stroppy-dev-secret}
       MONITORING_URL: http://127.0.0.1:8427
       MONITORING_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
@@ -107,8 +107,24 @@ services:
       YC_CLOUD_ID: ${YC_CLOUD_ID:-}
       YC_FOLDER_ID: ${YC_FOLDER_ID:-}
 
+  # --- Caddy reverse proxy (prod only) ---
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    profiles: [prod]
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployments/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    network_mode: host
+
 volumes:
   pgdata:
   vmdata:
   vldata:
   grafanadata:
+  caddy_data:
+  caddy_config:
