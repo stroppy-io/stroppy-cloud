@@ -1,3 +1,9 @@
 cloud.stroppy.io {
+    # Grafana under /grafana/ sub-path (Grafana configured with GF_SERVER_SERVE_FROM_SUB_PATH=true)
+    handle /grafana/* {
+        reverse_proxy 127.0.0.1:3001
+    }
+
+    # Stroppy Cloud API + SPA
     reverse_proxy 127.0.0.1:8080
 }

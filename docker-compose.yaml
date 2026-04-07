@@ -74,6 +74,8 @@ services:
       GF_AUTH_ANONYMOUS_ENABLED: ${GF_ANON_ENABLED:-true}
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
       GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_SERVER_ROOT_URL: ${GF_ROOT_URL:-http://localhost:3001}
+      GF_SERVER_SERVE_FROM_SUB_PATH: ${GF_SERVE_SUB_PATH:-false}
     volumes:
       - grafanadata:/var/lib/grafana
       - ./deployments/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -101,7 +103,7 @@ services:
       JWT_SECRET: ${JWT_SECRET:-stroppy-dev-secret}
       MONITORING_URL: http://127.0.0.1:8427
       MONITORING_TOKEN: ${MONITORING_TOKEN:-stroppy-monitoring-secret}
-      GRAFANA_URL: http://127.0.0.1:3001
+      GRAFANA_URL: ${GRAFANA_URL:-http://127.0.0.1:3001}
       STROPPY_ADMIN_PASSWORD: ${STROPPY_ADMIN_PASSWORD:-}
       YC_TOKEN: ${YC_TOKEN:-}
       YC_CLOUD_ID: ${YC_CLOUD_ID:-}
@@ -112,14 +114,11 @@ services:
     image: caddy:2-alpine
     restart: unless-stopped
     profiles: [prod]
-    ports:
-      - "80:80"
-      - "443:443"
+    network_mode: host
     volumes:
       - ./deployments/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
       - caddy_config:/config
-    network_mode: host
 
 volumes:
   pgdata:
