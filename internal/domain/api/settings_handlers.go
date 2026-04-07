@@ -29,6 +29,14 @@ func (s *Server) updateSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// server_addr and binary_url are root-only fields.
+	claims := auth.GetClaims(r.Context())
+	if claims == nil || !claims.IsRoot {
+		prev := s.loadTenantSettings(r, tenantID)
+		updated.Cloud.ServerAddr = prev.Cloud.ServerAddr
+		updated.Cloud.BinaryURL = prev.Cloud.BinaryURL
+	}
+
 	data, err := json.Marshal(updated)
 	if err != nil {
 		writeJSON(w, http.StatusInternalServerError, map[string]string{"error": "marshal settings: " + err.Error()})

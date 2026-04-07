@@ -242,7 +242,7 @@ export function NewRun() {
       <div className="flex-1 min-h-0 flex overflow-hidden">
         {/* Left — form */}
         <div className="flex-1 min-w-0 overflow-y-auto p-5">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-5 max-w-4xl">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-5">
 
             {/* ── Provider ── */}
             <div className="col-span-2">

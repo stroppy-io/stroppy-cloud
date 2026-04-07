@@ -120,12 +120,14 @@ export function SettingsPage() {
                   <div className="space-y-2">
                     <Label>
                       Server Address <Badge variant="destructive" className="text-[10px] ml-1">required</Badge>
+                      {!user?.is_root && <Badge variant="secondary" className="text-[10px] ml-1">root only</Badge>}
                     </Label>
                     <Input
                       value={settings.cloud.server_addr || ""}
                       onChange={(e) =>
                         updateField("cloud", "server_addr", e.target.value)
                       }
+                      disabled={!user?.is_root}
                       className="font-mono text-xs"
                       placeholder="http://84.201.148.157:8080"
                     />
@@ -134,12 +136,16 @@ export function SettingsPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label>Binary URL Override</Label>
+                    <Label>
+                      Binary URL Override
+                      {!user?.is_root && <Badge variant="secondary" className="text-[10px] ml-1">root only</Badge>}
+                    </Label>
                     <Input
                       value={settings.cloud.binary_url || ""}
                       onChange={(e) =>
                         updateField("cloud", "binary_url", e.target.value)
                       }
+                      disabled={!user?.is_root}
                       className="font-mono text-xs"
                       placeholder="defaults to server_addr/agent/binary"
                     />
