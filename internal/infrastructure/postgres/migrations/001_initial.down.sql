@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS packages;
 DROP TABLE IF EXISTS tenant_settings;
 DROP TABLE IF EXISTS baselines;
 DROP TABLE IF EXISTS runs;
