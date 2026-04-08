@@ -99,13 +99,38 @@ export interface MonitorConfig {
 
 export interface StroppyConfig {
   version: string;
-  workload: string;
+  script: string;               // e.g. "tpcc/procs", "tpcc/tx", "tpcb/procs", "tpcb/tx"
   duration: string;
-  vus_scale?: number;
+  vus: number;
   pool_size?: number;
   scale_factor?: number;
-  workers?: number; // deprecated
-  options?: Record<string, string>;
+  steps?: string[];             // step allowlist
+  no_steps?: string[];          // step blocklist
+  machine?: MachineSpec;        // stroppy runner machine spec
+  // Deprecated — kept for backward compat with existing runs.
+  workload?: string;
+  vus_scale?: number;
+  workers?: number;
+}
+
+export interface ProbeRequest {
+  script: string;
+  driver_type?: string;
+  pool_size?: number;
+  scale_factor?: number;
+}
+
+export interface EnvDeclaration {
+  names: string[];
+  default?: string;
+  description: string;
+}
+
+export interface ProbeResponse {
+  env_declarations?: EnvDeclaration[];
+  steps?: string[];
+  sql_sections?: { name: string; queries?: { name: string }[] }[];
+  driver_setups?: { index: number; defaults: Record<string, unknown> }[];
 }
 
 export interface NetworkConfig {

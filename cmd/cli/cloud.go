@@ -43,6 +43,8 @@ func cloudCmd() *cobra.Command {
 		cloudUploadCmd(),
 		cloudWaitCmd(),
 		cloudPackagesCmd(),
+		cloudProbeCmd(),
+		cloudPresetsCmd(),
 	)
 
 	return cmd

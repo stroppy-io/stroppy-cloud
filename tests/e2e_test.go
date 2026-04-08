@@ -275,9 +275,7 @@ func TestE2E_Postgres_Scale(t *testing.T) {
 func TestE2E_Postgres_StroppyOptions(t *testing.T) {
 	ts := startE2E(t)
 	cfg := pgRunConfig("e2e-pg-opts", types.PostgresSingle, "16", "tpcb", "10s", 2)
-	cfg.Stroppy.Options = map[string]string{
-		"SCALE_FACTOR": "1",
-	}
+	cfg.Stroppy.ScaleFactor = 1
 	ts.run(t, cfg, true)
 }
 

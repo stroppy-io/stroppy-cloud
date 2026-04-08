@@ -384,15 +384,7 @@ func TestDryRunStroppyOptions(t *testing.T) {
 	ts := startTestServer(t)
 
 	cfg := baseRunConfig("opts-1", pgConfig(types.PostgresSingle, "16"), "tpcb", "10s", 4)
-	cfg.Stroppy.Options = map[string]string{
-		"K6_OTEL_EXPORTER_TYPE":          "http",
-		"K6_OTEL_HTTP_EXPORTER_URL_PATH": "/insert/multitenant/opentelemetry/v1/metrics",
-		"K6_OTEL_HTTP_EXPORTER_INSECURE": "false",
-		"K6_OTEL_HEADERS":                "Authorization=Basic abc123",
-		"K6_OTEL_METRIC_PREFIX":          "test_prefix_",
-		"K6_OTEL_SERVICE_NAME":           "test_service",
-		"SCALE_FACTOR":                   "10",
-	}
+	cfg.Stroppy.ScaleFactor = 10
 
 	resp := ts.post(t, "/api/v1/validate", cfg)
 	assertStatus(t, resp, http.StatusOK)

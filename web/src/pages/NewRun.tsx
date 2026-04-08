@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { startRun, validateRun, dryRun, listPresets, listPackages } from "@/api/client";
+import { startRun, validateRun, dryRun, listPresets, listPackages, probeScript } from "@/api/client";
 import type {
   RunConfig,
   DatabaseKind,
   Provider,
   Preset,
   Package,
+  ProbeResponse,
 } from "@/api/types";
 import { generateRunID } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -35,13 +36,18 @@ import {
 } from "lucide-react";
 
 import { DB_COLORS } from "@/lib/db-colors";
-import { NumericSlider, DurationSlider } from "@/components/ui/sliders";
+import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps } from "@/components/ui/sliders";
 
 // --- Constants ---
 
 const DB_KINDS: DatabaseKind[] = ["postgres", "mysql", "picodata"];
 const PROVIDERS: Provider[] = ["docker", "yandex"];
-const WORKLOADS = ["tpcb", "tpcc"];
+const SCRIPTS: { id: string; label: string; desc: string; dbs: DatabaseKind[] }[] = [
+  { id: "tpcc/procs", label: "TPC-C Procs", desc: "Stored procedures", dbs: ["postgres", "mysql"] },
+  { id: "tpcc/tx", label: "TPC-C Tx", desc: "Raw transactions", dbs: ["postgres", "mysql", "picodata"] },
+  { id: "tpcb/procs", label: "TPC-B Procs", desc: "Stored procedures", dbs: ["postgres", "mysql"] },
+  { id: "tpcb/tx", label: "TPC-B Tx", desc: "Raw transactions", dbs: ["postgres", "mysql", "picodata"] },
+];
 
 const DB_VERSIONS: Record<DatabaseKind, string[]> = {
   postgres: ["16", "17"],
@@ -60,10 +66,6 @@ const PROVIDER_META: Record<Provider, { icon: typeof Cloud; label: string }> = {
   yandex: { icon: Cloud,     label: "Yandex Cloud" },
 };
 
-const WORKLOAD_DESC: Record<string, string> = {
-  tpcb: "TPC-B banking",
-  tpcc: "TPC-C orders",
-};
 
 const STEPS = [
   { key: "infra", label: "Infrastructure" },
@@ -87,11 +89,18 @@ export function NewRun() {
   const [selectedPresetId, setSelectedPresetId] = useState(searchParams.get("preset_id") || "");
   const [provider, setProvider] = useState<Provider>("docker");
   const [version, setVersion] = useState(DB_VERSIONS[kind][0]);
-  const [workload, setWorkload] = useState("tpcc");
+  const [script, setScript] = useState("tpcc/procs");
   const [duration, setDuration] = useState("5m");
-  const [vusScale, setVusScale] = useState(1);
+  const [vus, setVus] = useState(10);
   const [poolSize, setPoolSize] = useState(100);
   const [scaleFactor, setScaleFactor] = useState(1);
+  const [probeData, setProbeData] = useState<ProbeResponse | null>(null);
+  const [availableSteps, setAvailableSteps] = useState<string[]>([]);
+  const [selectedSteps, setSelectedSteps] = useState<string[]>([]);
+  const [noSteps, setNoSteps] = useState<string[]>([]);
+  const [stroppyCpus, setStroppyCpus] = useState(2);
+  const [stroppyMemory, setStroppyMemory] = useState(4096);
+  const [stroppyDisk, setStroppyDisk] = useState(25);
   const [packageId, setPackageId] = useState("");
   const [availablePackages, setAvailablePackages] = useState<Package[]>([]);
 
@@ -110,6 +119,11 @@ export function NewRun() {
       setSelectedPresetId(matching[0].id);
     }
     setVersion(DB_VERSIONS[kind][0]);
+    // Reset script if incompatible with new db kind.
+    const compatible = SCRIPTS.filter((s) => s.dbs.includes(kind));
+    if (!compatible.find((s) => s.id === script)) {
+      setScript(compatible[0]?.id || "tpcb/tx");
+    }
   }, [kind, allPresets]);
   useEffect(() => {
     listPackages({ db_kind: kind, db_version: version }).then(setAvailablePackages).catch(() => {});
@@ -136,18 +150,21 @@ export function NewRun() {
       database: { kind, version },
       monitor: {},
       stroppy: {
-        version: "3.1.0",
-        workload,
+        version: "4.1.0",
+        script,
         duration,
-        vus_scale: vusScale,
+        vus,
         pool_size: poolSize,
         scale_factor: scaleFactor,
+        ...(selectedSteps.length > 0 ? { steps: selectedSteps } : {}),
+        ...(noSteps.length > 0 ? { no_steps: noSteps } : {}),
+        machine: { role: "stroppy" as const, count: 1, cpus: stroppyCpus, memory_mb: stroppyMemory, disk_gb: stroppyDisk },
       },
     };
     if (selectedPresetId) cfg.preset_id = selectedPresetId;
     if (packageId) cfg.package_id = packageId;
     return cfg;
-  }, [kind, selectedPresetId, provider, version, workload, duration, vusScale, poolSize, scaleFactor, packageId]);
+  }, [kind, selectedPresetId, provider, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -247,11 +264,19 @@ export function NewRun() {
           )}
           {step === 2 && (
             <StepStroppy
-              workload={workload} setWorkload={setWorkload}
+              script={script} setScript={setScript}
               duration={duration} setDuration={setDuration}
               scaleFactor={scaleFactor} setScaleFactor={setScaleFactor}
-              vusScale={vusScale} setVusScale={setVusScale}
+              vus={vus} setVus={setVus}
               poolSize={poolSize} setPoolSize={setPoolSize}
+              dbKind={kind}
+              availableSteps={availableSteps} setAvailableSteps={setAvailableSteps}
+              selectedSteps={selectedSteps} setSelectedSteps={setSelectedSteps}
+              noSteps={noSteps} setNoSteps={setNoSteps}
+              probeData={probeData} setProbeData={setProbeData}
+              stroppyCpus={stroppyCpus} setStroppyCpus={setStroppyCpus}
+              stroppyMemory={stroppyMemory} setStroppyMemory={setStroppyMemory}
+              stroppyDisk={stroppyDisk} setStroppyDisk={setStroppyDisk}
             />
           )}
           {step === 3 && (
@@ -289,8 +314,9 @@ export function NewRun() {
               {selectedPreset && (
                 <SummaryRow label="Topology" value={selectedPreset.name} />
               )}
-              <SummaryRow label="Workload" value={`${workload.toUpperCase()} / ${duration}`} />
-              <SummaryRow label="VUs" value={`${vusScale}x`} />
+              <SummaryRow label="Script" value={script} />
+              <SummaryRow label="Duration" value={duration} />
+              <SummaryRow label="VUs" value={String(vus)} />
               <SummaryRow label="Pool" value={String(poolSize)} />
               {scaleFactor > 1 && <SummaryRow label="Scale" value={String(scaleFactor)} />}
             </div>
@@ -487,51 +513,196 @@ function StepDatabase({
 
 // ─── Step 3: Stroppy ─────────────────────────────────────────────
 
+// Suggest optimal stroppy machine based on VUs and pool size.
+function suggestStroppyMachine(vus: number, poolSize: number): { cpus: number; memory: number; disk: number; reason: string } {
+  // Rule of thumb: 1 vCPU per ~20 VUs, min 2. Memory = cpus * 2GB. Pool adds memory overhead.
+  const cpus = Math.max(2, Math.min(32, Math.ceil(vus / 20) * 2));
+  const memBase = cpus * 2048;
+  const memPool = Math.ceil(poolSize / 100) * 512;
+  const memory = Math.max(2048, memBase + memPool);
+  const disk = 25;
+  const reason = `${vus} VUs → ${cpus} vCPU, pool ${poolSize} → ${(memory/1024).toFixed(0)} GB RAM`;
+  return { cpus, memory, disk, reason };
+}
+
 function StepStroppy({
-  workload, setWorkload,
+  script, setScript,
   duration, setDuration,
   scaleFactor, setScaleFactor,
-  vusScale, setVusScale,
+  vus, setVus,
   poolSize, setPoolSize,
+  dbKind,
+  availableSteps, setAvailableSteps,
+  selectedSteps, setSelectedSteps,
+  noSteps, setNoSteps,
+  probeData, setProbeData,
+  stroppyCpus, setStroppyCpus,
+  stroppyMemory, setStroppyMemory,
+  stroppyDisk, setStroppyDisk,
 }: {
-  workload: string; setWorkload: (v: string) => void;
+  script: string; setScript: (v: string) => void;
   duration: string; setDuration: (v: string) => void;
   scaleFactor: number; setScaleFactor: (v: number) => void;
-  vusScale: number; setVusScale: (v: number) => void;
+  vus: number; setVus: (v: number) => void;
   poolSize: number; setPoolSize: (v: number) => void;
+  dbKind: DatabaseKind;
+  availableSteps: string[]; setAvailableSteps: (v: string[]) => void;
+  selectedSteps: string[]; setSelectedSteps: (v: string[]) => void;
+  noSteps: string[]; setNoSteps: (v: string[]) => void;
+  probeData: ProbeResponse | null; setProbeData: (v: ProbeResponse | null) => void;
+  stroppyCpus: number; setStroppyCpus: (v: number) => void;
+  stroppyMemory: number; setStroppyMemory: (v: number) => void;
+  stroppyDisk: number; setStroppyDisk: (v: number) => void;
 }) {
+  // Probe on script change to get steps/env.
+  useEffect(() => {
+    probeScript({ script, driver_type: dbKind, pool_size: poolSize, scale_factor: scaleFactor })
+      .then((data) => {
+        setProbeData(data);
+        setAvailableSteps(data.steps || []);
+      })
+      .catch(() => {
+        setProbeData(null);
+        setAvailableSteps([]);
+      });
+  }, [script, dbKind]);
+
+  const toggleNoStep = (step: string) => {
+    setNoSteps(noSteps.includes(step) ? noSteps.filter((s) => s !== step) : [...noSteps, step]);
+  };
+
   return (
-    <div className="space-y-5 max-w-lg">
+    <div className="space-y-5">
       <div>
         <h2 className="text-sm font-semibold mb-1">Workload Settings</h2>
-        <p className="text-xs text-zinc-500">Configure the Stroppy test runner parameters.</p>
+        <p className="text-xs text-zinc-500">Choose the benchmark script and tune execution parameters.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        {WORKLOADS.map((w) => {
-          const active = workload === w;
-          return (
-            <button type="button" key={w} onClick={() => setWorkload(w)}
-              className={`border p-3 text-left transition-all cursor-pointer ${
-                active ? "border-primary/40 bg-primary/[0.06]" : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700"
-              }`}
-            >
-              <div className={`text-sm font-mono font-semibold uppercase ${active ? "text-primary" : "text-zinc-400"}`}>{w}</div>
-              <div className="text-[10px] text-zinc-600 mt-0.5">{WORKLOAD_DESC[w]}</div>
-            </button>
-          );
-        })}
+      {/* Script selector */}
+      <div>
+        <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-2 block">Script</span>
+        <div className="grid grid-cols-2 gap-2">
+          {SCRIPTS.map((s) => {
+            const supported = s.dbs.includes(dbKind);
+            const active = script === s.id;
+            return (
+              <button type="button" key={s.id}
+                onClick={() => supported && setScript(s.id)}
+                disabled={!supported}
+                className={`border p-3 text-left transition-all ${
+                  !supported
+                    ? "border-zinc-800/40 opacity-40 cursor-not-allowed"
+                    : active
+                      ? "border-primary/40 bg-primary/[0.06] cursor-pointer"
+                      : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700 cursor-pointer"
+                }`}
+              >
+                <div className={`text-xs font-mono font-semibold ${!supported ? "text-zinc-600" : active ? "text-primary" : "text-zinc-400"}`}>{s.label}</div>
+                <div className="text-[10px] text-zinc-600 mt-0.5">
+                  {s.desc}
+                  {!supported && <span className="text-zinc-700"> — not available for {dbKind}</span>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
+      {/* Parameters */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-4">
         <DurationSlider label="Duration" value={duration} onChange={setDuration} />
+        <NumericSlider label="VUs" value={vus} min={1} max={200}
+          onChange={setVus} hint="Virtual users (k6 --vus)" />
         <NumericSlider label="Scale Factor" value={scaleFactor} min={1} max={100}
-          onChange={setScaleFactor} hint="TPC-C warehouses" />
-        <NumericSlider label="VUS Scale" value={vusScale} min={1} max={50}
-          onChange={setVusScale} hint="1 = ~99 VUs for TPC-C" />
+          onChange={setScaleFactor} hint="TPC-C warehouses / TPC-B branches" />
         <NumericSlider label="Pool Size" value={poolSize} min={10} max={1000} step={10}
           onChange={setPoolSize} hint="DB connections" />
       </div>
+
+      {/* Steps (from probe) */}
+      {availableSteps.length > 0 && (
+        <div>
+          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-2 block">
+            Steps <span className="text-zinc-700">(uncheck to skip)</span>
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {availableSteps.map((step) => {
+              const skipped = noSteps.includes(step);
+              return (
+                <button type="button" key={step} onClick={() => toggleNoStep(step)}
+                  className={`px-3 py-1.5 text-xs font-mono border transition-all cursor-pointer ${
+                    skipped
+                      ? "border-zinc-800/60 text-zinc-600 line-through"
+                      : "border-primary/30 text-primary bg-primary/[0.06]"
+                  }`}
+                >
+                  {step}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Stroppy machine */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Runner Machine</span>
+          <button type="button"
+            onClick={() => {
+              const s = suggestStroppyMachine(vus, poolSize);
+              setStroppyCpus(s.cpus);
+              setStroppyMemory(s.memory);
+              setStroppyDisk(s.disk);
+            }}
+            className="text-[9px] font-mono text-primary hover:text-primary/80 cursor-pointer"
+          >
+            Auto-suggest
+          </button>
+        </div>
+        {(() => {
+          const suggestion = suggestStroppyMachine(vus, poolSize);
+          const isOptimal = stroppyCpus >= suggestion.cpus && stroppyMemory >= suggestion.memory;
+          return (
+            <>
+              <div className="grid grid-cols-3 gap-3">
+                <SliderField label="CPUs" value={stroppyCpus} steps={CPU_STEPS}
+                  onChange={setStroppyCpus} format={(v) => `${v} vCPU`} />
+                <SliderField label="Memory" value={stroppyMemory}
+                  steps={ramSteps(stroppyCpus)}
+                  onChange={setStroppyMemory}
+                  format={(v) => v >= 1024 ? `${(v/1024).toFixed(v%1024?1:0)} GB` : `${v} MB`} />
+                <SliderField label="Disk" value={stroppyDisk} steps={DISK_STEPS}
+                  onChange={setStroppyDisk} format={(v) => `${v} GB`} />
+              </div>
+              <div className={`mt-2 text-[9px] font-mono ${isOptimal ? "text-zinc-600" : "text-amber-500"}`}>
+                {isOptimal
+                  ? `Recommended: ${suggestion.cpus} vCPU / ${(suggestion.memory/1024).toFixed(0)} GB — current config meets requirements`
+                  : `Recommendation: ${suggestion.cpus} vCPU / ${(suggestion.memory/1024).toFixed(0)} GB (${suggestion.reason}). Current may be undersized.`
+                }
+              </div>
+            </>
+          );
+        })()}
+      </div>
+
+      {/* Env declarations from probe */}
+      {probeData?.env_declarations && probeData.env_declarations.length > 0 && (
+        <details className="group">
+          <summary className="text-[10px] font-mono text-zinc-600 cursor-pointer hover:text-zinc-400 select-none">
+            Script environment variables ({probeData.env_declarations.length})
+          </summary>
+          <div className="mt-2 space-y-1">
+            {probeData.env_declarations.map((e, i) => (
+              <div key={i} className="flex items-center gap-2 text-[10px] font-mono">
+                <span className="text-zinc-400">{e.names.join(" | ")}</span>
+                {e.default && <span className="text-zinc-700">= {e.default}</span>}
+                {e.description && <span className="text-zinc-600 text-[9px]">— {e.description}</span>}
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
     </div>
   );
 }

@@ -963,100 +963,13 @@ func (e *Executor) runStroppy(ctx context.Context, cmd Command) error {
 		return err
 	}
 
-	// Build driver URL based on db kind.
-	var driverURL string
-	switch cfg.DBKind {
-	case "postgres":
-		driverURL = fmt.Sprintf("postgresql://postgres@%s:%d/postgres?sslmode=disable", cfg.DBHost, cfg.DBPort)
-	case "mysql":
-		driverURL = fmt.Sprintf("root@tcp(%s:%d)/", cfg.DBHost, cfg.DBPort)
-	case "picodata":
-		driverURL = fmt.Sprintf("postgresql://admin@%s:%d/admin?sslmode=disable", cfg.DBHost, cfg.DBPort)
-	default:
-		driverURL = fmt.Sprintf("%s:%d", cfg.DBHost, cfg.DBPort)
+	// Write stroppy-config.json and run via -f flag.
+	configPath := "/tmp/stroppy-config.json"
+	if err := os.WriteFile(configPath, []byte(cfg.ConfigJSON), 0644); err != nil {
+		return fmt.Errorf("write stroppy config: %w", err)
 	}
 
-	// Build env vars. Stroppy v4 uses STROPPY_DRIVER_0 (JSON format) for driver config.
-	driverJSON := fmt.Sprintf(`{"url":"%s","driverType":"%s"}`, driverURL, cfg.DBKind)
-	var envParts []string
-	envParts = append(envParts, fmt.Sprintf(`STROPPY_DRIVER_0=%s`, driverJSON))
-	envParts = append(envParts, fmt.Sprintf("DRIVER_URL=%s", driverURL))
-	for k, v := range cfg.Options {
-		if strings.HasPrefix(k, "K6_OTEL_") || strings.HasPrefix(k, "k6_otel_") {
-			envParts = append(envParts, fmt.Sprintf("%s=%s", strings.ToUpper(k), v))
-		}
-	}
-	for k, v := range cfg.OTLPEnv {
-		envParts = append(envParts, fmt.Sprintf("%s=%s", k, v))
-	}
-
-	duration := cfg.Duration
-	if duration == "" {
-		duration = "60s"
-	}
-
-	// Resolve VUS scale: new field takes priority, fall back to deprecated Workers.
-	vusScale := cfg.VUSScale
-	if vusScale == 0 && cfg.Workers > 0 {
-		vusScale = float64(cfg.Workers)
-	}
-	if vusScale == 0 {
-		vusScale = 1
-	}
-
-	poolSize := cfg.PoolSize
-	if poolSize == 0 {
-		poolSize = 100
-	}
-
-	scaleFactor := cfg.ScaleFactor
-	if scaleFactor == 0 {
-		scaleFactor = 1
-	}
-
-	// Env vars read by preset scripts.
-	envParts = append(envParts, fmt.Sprintf("DURATION=%s", duration))
-	envParts = append(envParts, fmt.Sprintf("VUS_SCALE=%.2f", vusScale))
-	envParts = append(envParts, fmt.Sprintf("POOL_SIZE=%d", poolSize))
-	envParts = append(envParts, fmt.Sprintf("SCALE_FACTOR=%d", scaleFactor))
-
-	var exports strings.Builder
-	for _, ep := range envParts {
-		// Quote values to handle = and spaces in values (e.g. K6_OTEL_HEADERS=Authorization=Bearer ...)
-		k, v, _ := strings.Cut(ep, "=")
-		fmt.Fprintf(&exports, "export %s='%s'\n", k, v)
-	}
-
-	// Build K6 args passed after "--".
-	// tpcc uses K6 scenarios (reads DURATION/VUS_SCALE from env) — no CLI duration/vus.
-	// tpcb/simple use export default function() — need --duration and --vus via CLI.
-	var k6ArgParts []string
-	if len(cfg.OTLPEnv) > 0 {
-		k6ArgParts = append(k6ArgParts, "--out", "opentelemetry")
-	}
-
-	// Presets with scenarios manage their own duration/vus via env vars.
-	// Presets with default function need CLI flags.
-	usesScenarios := cfg.Workload == "tpcc"
-	if !usesScenarios {
-		vus := int(vusScale)
-		if vus < 1 {
-			vus = 1
-		}
-		k6ArgParts = append(k6ArgParts, "--duration", duration, "--vus", fmt.Sprintf("%d", vus))
-	}
-
-	k6Args := ""
-	if len(k6ArgParts) > 0 {
-		k6Args = " -- " + strings.Join(k6ArgParts, " ")
-	}
-
-	script := fmt.Sprintf(
-		`%sstroppy run %s%s`,
-		exports.String(),
-		cfg.Workload, k6Args,
-	)
-
+	script := fmt.Sprintf("stroppy run -f %s", configPath)
 	if _, err := e.shell(ctx, script); err != nil {
 		return fmt.Errorf("run stroppy: %w", err)
 	}

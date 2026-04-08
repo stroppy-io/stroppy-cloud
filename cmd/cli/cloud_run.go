@@ -12,8 +12,8 @@ import (
 )
 
 func cloudRunCmd() *cobra.Command {
-	var configPath, runID, debFile string
-	var wait bool
+	var configPath, runID, debFile, presetID string
+	var wait, skipValidation bool
 	var timeout, interval time.Duration
 	cmd := &cobra.Command{
 		Use:   "run",
@@ -23,14 +23,44 @@ func cloudRunCmd() *cobra.Command {
 If --deb is provided, a temporary package is created with the .deb file
 and its ID is injected into the config as package_id before launching.
 
+If --preset-id is provided, the preset topology is used (server resolves it).
+
+The config is validated before launch unless --skip-validation is set.
+
 Examples:
   stroppy-cloud cloud run -c run.json
   stroppy-cloud cloud run -c run.json --wait
+  stroppy-cloud cloud run -c run.json --preset-id <id>
   stroppy-cloud cloud run -c run.json --deb ./custom-pg.deb --wait`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, err := newCloudClient()
 			if err != nil {
 				return err
+			}
+
+			// Validate first (unless skipped).
+			if !skipValidation {
+				fmt.Print("Validating config... ")
+				data, err := os.ReadFile(configPath)
+				if err != nil {
+					return fmt.Errorf("read config: %w", err)
+				}
+				var cfg map[string]any
+				if err := json.Unmarshal(data, &cfg); err != nil {
+					return fmt.Errorf("parse config: %w", err)
+				}
+				if presetID != "" {
+					cfg["preset_id"] = presetID
+				}
+				valData, _ := json.Marshal(cfg)
+				body, status, err := c.doJSON("POST", "/api/v1/validate", strings.NewReader(string(valData)))
+				if err != nil {
+					return fmt.Errorf("validation request: %w", err)
+				}
+				if status != 200 {
+					return fmt.Errorf("validation failed: %s", string(body))
+				}
+				fmt.Println("OK")
 			}
 
 			id, err := submitRun(c, configPath, runID, debFile)
@@ -49,8 +79,10 @@ Examples:
 	}
 	cmd.Flags().StringVarP(&configPath, "config", "c", "", "path to run config JSON")
 	cmd.Flags().StringVar(&runID, "id", "", "custom run ID (auto-generated if omitted)")
+	cmd.Flags().StringVar(&presetID, "preset-id", "", "topology preset ID (server resolves topology)")
 	cmd.Flags().StringVar(&debFile, "deb", "", "path to .deb file (creates package and injects package_id)")
 	cmd.Flags().BoolVar(&wait, "wait", false, "wait for run to complete")
+	cmd.Flags().BoolVar(&skipValidation, "skip-validation", false, "skip server-side validation")
 	cmd.Flags().DurationVar(&timeout, "timeout", 30*time.Minute, "max wait time (with --wait)")
 	cmd.Flags().DurationVar(&interval, "interval", 5*time.Second, "poll interval (with --wait)")
 	cmd.MarkFlagRequired("config")

@@ -63,6 +63,9 @@ func New(cfg Config) *App {
 
 // Start builds a DAG from RunConfig and executes it.
 func (a *App) Start(ctx context.Context, tenantID string, cfg types.RunConfig) error {
+	if err := run.ValidateConfig(cfg); err != nil {
+		return fmt.Errorf("api: validate: %w", err)
+	}
 	run.FillMachinesFromTopology(&cfg)
 
 	deps, cleanup, err := a.buildDeps(tenantID, cfg)
@@ -92,6 +95,9 @@ func (a *App) Start(ctx context.Context, tenantID string, cfg types.RunConfig) e
 
 // Validate checks that a RunConfig produces a valid DAG without executing it.
 func (a *App) Validate(cfg types.RunConfig) error {
+	if err := run.ValidateConfig(cfg); err != nil {
+		return err
+	}
 	run.FillMachinesFromTopology(&cfg)
 	state := run.NewState()
 	deps := run.Deps{Client: a.client, State: state}

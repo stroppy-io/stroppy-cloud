@@ -13,6 +13,8 @@ import type {
   TenantMember,
   TenantAPIToken,
   DatabaseKind,
+  ProbeRequest,
+  ProbeResponse,
 } from "./types";
 
 const API_BASE = "/api/v1";
@@ -359,6 +361,15 @@ export async function deletePreset(id: string): Promise<{ status: string }> {
 
 export async function clonePreset(id: string): Promise<{ id: string; name: string }> {
   return request(`${API_BASE}/presets/${id}/clone`, { method: "POST" });
+}
+
+// ---------- Probe ----------
+
+export async function probeScript(req: ProbeRequest): Promise<ProbeResponse> {
+  return request(`${API_BASE}/probe`, {
+    method: "POST",
+    body: JSON.stringify(req),
+  });
 }
 
 // ---------- Metrics ----------

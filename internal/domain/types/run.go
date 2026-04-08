@@ -248,14 +248,20 @@ type MonitorConfig struct {
 
 // StroppyConfig holds stroppy test runner settings.
 type StroppyConfig struct {
-	Version     string            `json:"version"`
-	Workload    string            `json:"workload"`
-	Duration    string            `json:"duration"`
-	VUSScale    float64           `json:"vus_scale,omitempty"`    // VU scaling factor (1 = default VUs per scenario)
-	PoolSize    int               `json:"pool_size,omitempty"`    // DB connection pool size
-	ScaleFactor int               `json:"scale_factor,omitempty"` // Warehouses / scale factor for TPC-C
-	Workers     int               `json:"workers,omitempty"`      // Deprecated: use vus_scale
-	Options     map[string]string `json:"options,omitempty"`
+	Version     string   `json:"version"`                // stroppy binary version (e.g. "4.1.0")
+	Script      string   `json:"script"`                 // e.g. "tpcc/procs", "tpcc/tx", "tpcb/procs", "tpcb/tx"
+	Duration    string   `json:"duration"`               // k6 --duration flag
+	VUs         int      `json:"vus,omitempty"`          // k6 --vus flag
+	PoolSize    int      `json:"pool_size,omitempty"`    // DB connection pool size → env POOL_SIZE + driver pool
+	ScaleFactor int      `json:"scale_factor,omitempty"` // Warehouses → env SCALE_FACTOR
+	Steps       []string `json:"steps,omitempty"`        // step allowlist (e.g. ["create_schema","load_data","workload"])
+	NoSteps     []string `json:"no_steps,omitempty"`     // step blocklist (e.g. ["drop_schema"])
+	// Machine spec for the stroppy runner node. If nil, defaults to 2 vCPU / 4 GB / 20 GB.
+	Machine *MachineSpec `json:"machine,omitempty"`
+	// Deprecated fields kept for backward compatibility with existing runs.
+	Workload string  `json:"workload,omitempty"`  // Deprecated: use Script
+	VUSScale float64 `json:"vus_scale,omitempty"` // Deprecated: use VUs
+	Workers  int     `json:"workers,omitempty"`   // Deprecated: use VUs
 }
 
 // NetworkConfig holds network/subnet allocation settings.

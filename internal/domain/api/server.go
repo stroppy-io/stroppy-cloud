@@ -175,6 +175,7 @@ func (s *Server) Router() http.Handler {
 			r.Post("/run", s.runStart)
 			r.Post("/validate", s.runValidate)
 			r.Post("/dry-run", s.runDryRun)
+			r.Post("/probe", s.stroppyProbe)
 			r.Delete("/run/{runID}", s.deleteRun)
 			r.Put("/baseline/{name}", s.setBaseline)
 			r.Get("/baseline/{name}", s.getBaseline)
