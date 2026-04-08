@@ -131,6 +131,7 @@ export interface RunConfig {
   database: DatabaseConfig;
   monitor: MonitorConfig;
   stroppy: StroppyConfig;
+  preset_id?: string;
   package_id?: string;
 }
 
@@ -170,10 +171,22 @@ export interface RunSummary {
 
 // --- Presets ---
 
+// Legacy format (kept for backward compatibility with TopologyDiagram).
 export interface PresetsResponse {
   postgres: Record<string, PostgresTopology>;
   mysql: Record<string, MySQLTopology>;
   picodata: Record<string, PicodataTopology>;
+}
+
+// Per-tenant preset stored in the DB.
+export interface Preset {
+  id: string;
+  name: string;
+  description: string;
+  db_kind: DatabaseKind;
+  is_builtin: boolean;
+  topology: PostgresTopology | MySQLTopology | PicodataTopology;
+  created_at?: string;
 }
 
 // --- Settings ---

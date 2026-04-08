@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { startRun, validateRun, dryRun, getPresets, listPackages } from "@/api/client";
+import { startRun, validateRun, dryRun, listPresets, listPackages } from "@/api/client";
 import type {
   RunConfig,
   DatabaseKind,
   Provider,
-  PresetsResponse,
+  Preset,
   Package,
 } from "@/api/types";
 import { generateRunID } from "@/lib/utils";
@@ -45,12 +45,6 @@ const DB_VERSIONS: Record<DatabaseKind, string[]> = {
   picodata: ["25.3"],
 };
 
-const PRESET_NAMES: Record<DatabaseKind, string[]> = {
-  postgres: ["single", "ha", "scale"],
-  mysql: ["single", "replica", "group"],
-  picodata: ["single", "cluster", "scale"],
-};
-
 import { DB_COLORS } from "@/lib/db-colors";
 
 const DB_META: Record<DatabaseKind, { icon: typeof Database; label: string }> = {
@@ -75,11 +69,11 @@ export function NewRun() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [presets, setPresets] = useState<PresetsResponse | null>(null);
+  const [allPresets, setAllPresets] = useState<Preset[]>([]);
   const [kind, setKind] = useState<DatabaseKind>(
     (searchParams.get("kind") as DatabaseKind) || "postgres"
   );
-  const [preset, setPreset] = useState(searchParams.get("preset") || "single");
+  const [selectedPresetId, setSelectedPresetId] = useState(searchParams.get("preset_id") || "");
   const [provider, setProvider] = useState<Provider>("docker");
   const [version, setVersion] = useState(DB_VERSIONS[kind][0]);
   const [workload, setWorkload] = useState("tpcc");
@@ -98,35 +92,38 @@ export function NewRun() {
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => { getPresets().then(setPresets).catch(() => {}); }, []);
-  useEffect(() => { setVersion(DB_VERSIONS[kind][0]); setPreset(PRESET_NAMES[kind][0]); }, [kind]);
+  useEffect(() => { listPresets().then(setAllPresets).catch(() => {}); }, []);
+  useEffect(() => {
+    // Reset preset selection when kind changes — pick first matching preset.
+    const matching = allPresets.filter((p) => p.db_kind === kind);
+    if (matching.length > 0 && !matching.find((p) => p.id === selectedPresetId)) {
+      setSelectedPresetId(matching[0].id);
+    }
+    setVersion(DB_VERSIONS[kind][0]);
+  }, [kind, allPresets]);
   useEffect(() => {
     listPackages({ db_kind: kind, db_version: version }).then(setAvailablePackages).catch(() => {});
   }, [kind, version]);
+
+  const presetsForKind = useMemo(
+    () => allPresets.filter((p) => p.db_kind === kind),
+    [allPresets, kind]
+  );
+
+  const selectedPreset = useMemo(
+    () => presetsForKind.find((p) => p.id === selectedPresetId),
+    [presetsForKind, selectedPresetId]
+  );
 
   const runIDRef = useRef(generateRunID());
 
   const config = useMemo((): RunConfig => {
     const id = runIDRef.current;
-    const buildTopology = () => {
-      if (presets) {
-        const p = kind === "postgres" ? presets.postgres[preset]
-          : kind === "mysql" ? presets.mysql[preset]
-          : presets.picodata[preset];
-        if (p) {
-          if (kind === "postgres") return { postgres: p };
-          if (kind === "mysql") return { mysql: p };
-          if (kind === "picodata") return { picodata: p };
-        }
-      }
-      return {};
-    };
-    const topo = buildTopology();
     const cfg: RunConfig = {
       id, provider,
       network: { cidr: "10.0.0.0/24" },
       machines: [],
-      database: { kind, version, ...topo } as RunConfig["database"],
+      database: { kind, version },
       monitor: {},
       stroppy: {
         version: "3.1.0",
@@ -137,11 +134,14 @@ export function NewRun() {
         scale_factor: parseInt(scaleFactor) || 1,
       },
     };
+    if (selectedPresetId) {
+      cfg.preset_id = selectedPresetId;
+    }
     if (packageId) {
       cfg.package_id = packageId;
     }
     return cfg;
-  }, [kind, preset, provider, version, workload, duration, vusScale, poolSize, scaleFactor, presets, packageId]);
+  }, [kind, selectedPresetId, provider, version, workload, duration, vusScale, poolSize, scaleFactor, packageId]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -195,7 +195,7 @@ export function NewRun() {
             <span className="text-[10px] text-zinc-600 font-mono">v{version}</span>
           </div>
           <span className="text-zinc-700 text-xs">/</span>
-          <span className="text-xs font-mono text-zinc-500">{preset}</span>
+          <span className="text-xs font-mono text-zinc-500">{selectedPreset?.name || "—"}</span>
           <span className="text-zinc-700 text-xs">/</span>
           <span className="text-xs font-mono text-zinc-500">{workload.toUpperCase()}</span>
           <span className="text-zinc-700 text-xs">/</span>
@@ -333,17 +333,20 @@ export function NewRun() {
               </span>
             </div>
 
-            {/* ── Topology ── */}
+            {/* ── Topology Preset ── */}
             <div className="col-span-2">
-              <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-3">Topology</h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Topology</h2>
+                <a href="/presets" className="text-[9px] font-mono text-zinc-500 hover:text-zinc-300">manage presets</a>
+              </div>
               <div className="grid grid-cols-3 gap-3">
-                {PRESET_NAMES[kind].map((p) => {
-                  const active = preset === p;
+                {presetsForKind.map((p) => {
+                  const active = selectedPresetId === p.id;
                   return (
                     <button
                       type="button"
-                      key={p}
-                      onClick={() => setPreset(p)}
+                      key={p.id}
+                      onClick={() => setSelectedPresetId(p.id)}
                       className={`border p-3 text-left transition-all cursor-pointer ${
                         active
                           ? `${dbColor.accent} shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]`
@@ -352,11 +355,16 @@ export function NewRun() {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <span className={`text-xs font-mono font-semibold uppercase tracking-wider ${active ? dbColor.text : "text-zinc-400"}`}>
-                          {p}
+                          {p.name}
                         </span>
-                        {active && <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dbColor.hex }} />}
+                        <div className="flex items-center gap-1">
+                          {!p.is_builtin && (
+                            <span className="text-[8px] text-zinc-600 font-mono">custom</span>
+                          )}
+                          {active && <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: dbColor.hex }} />}
+                        </div>
                       </div>
-                      <TopologyDiagram kind={kind} preset={p} />
+                      <TopologyDiagram kind={kind} topology={p.topology} />
                     </button>
                   );
                 })}

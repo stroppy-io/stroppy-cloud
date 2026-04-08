@@ -165,7 +165,8 @@ func (s *Server) Router() http.Handler {
 		r.Get("/run/{runID}/logs", s.runLogs)
 		r.Get("/run/{runID}/metrics", s.runMetrics)
 		r.Get("/compare", s.compareRuns)
-		r.Get("/presets", s.listPresets)
+		r.Get("/presets", s.listPresetsTenant)
+		r.Get("/presets/{id}", s.getPreset)
 		r.Get("/settings", s.getSettings)
 
 		// Operator+
@@ -180,6 +181,10 @@ func (s *Server) Router() http.Handler {
 			r.Get("/baselines", s.listBaselines)
 			r.Post("/upload/deb", s.uploadPackage)
 			r.Post("/upload/rpm", s.uploadPackage)
+			r.Post("/presets", s.createPreset)
+			r.Put("/presets/{id}", s.updatePreset)
+			r.Delete("/presets/{id}", s.deletePreset)
+			r.Post("/presets/{id}/clone", s.clonePreset)
 			r.Post("/packages", s.createPackage)
 			r.Put("/packages/{id}", s.updatePackage)
 			r.Delete("/packages/{id}", s.deletePackage)
@@ -381,6 +386,12 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 	// Auto-generate ID if empty.
 	if cfg.ID == "" {
 		cfg.ID = fmt.Sprintf("run-%d", time.Now().UnixMilli())
+	}
+
+	// Resolve preset topology if preset_id is provided and no explicit topology set.
+	if err := s.resolveRunPreset(r.Context(), tenantID, &cfg); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
 	}
 
 	// Resolve package (from package_id or default built-in).
@@ -726,14 +737,6 @@ func extractRunID(machineID string) string {
 		return strings.Join(parts[:len(parts)-2], "-")
 	}
 	return machineID
-}
-
-func (s *Server) listPresets(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, http.StatusOK, map[string]any{
-		"postgres": types.PostgresPresets,
-		"mysql":    types.MySQLPresets,
-		"picodata": types.PicodataPresets,
-	})
 }
 
 // ============================================================

@@ -246,6 +246,9 @@ type RunConfig struct {
 	Database DatabaseConfig `json:"database"`
 	Monitor  MonitorConfig  `json:"monitor"`
 	Stroppy  StroppyConfig  `json:"stroppy"`
+	// PresetID references a presets row. If set and no topology is provided in Database,
+	// the preset's topology is applied. Topology in the request takes priority.
+	PresetID string `json:"preset_id,omitempty"`
 	// PackageID references a packages row. Resolved to ResolvedPackage at run start.
 	// If empty, the default built-in package for db_kind+version is used.
 	PackageID string `json:"package_id,omitempty"`

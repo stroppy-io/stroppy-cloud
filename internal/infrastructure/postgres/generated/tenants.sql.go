@@ -7,8 +7,6 @@ package pgdb
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createTenant = `-- name: CreateTenant :exec
@@ -38,16 +36,9 @@ const getTenant = `-- name: GetTenant :one
 SELECT id, name, account_id, created_at FROM tenants WHERE id = $1
 `
 
-type GetTenantRow struct {
-	ID        string
-	Name      string
-	AccountID pgtype.Int4
-	CreatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) GetTenant(ctx context.Context, id string) (GetTenantRow, error) {
+func (q *Queries) GetTenant(ctx context.Context, id string) (Tenant, error) {
 	row := q.db.QueryRow(ctx, getTenant, id)
-	var i GetTenantRow
+	var i Tenant
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -61,16 +52,9 @@ const getTenantByName = `-- name: GetTenantByName :one
 SELECT id, name, account_id, created_at FROM tenants WHERE name = $1
 `
 
-type GetTenantByNameRow struct {
-	ID        string
-	Name      string
-	AccountID pgtype.Int4
-	CreatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) GetTenantByName(ctx context.Context, name string) (GetTenantByNameRow, error) {
+func (q *Queries) GetTenantByName(ctx context.Context, name string) (Tenant, error) {
 	row := q.db.QueryRow(ctx, getTenantByName, name)
-	var i GetTenantByNameRow
+	var i Tenant
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -84,22 +68,15 @@ const listTenants = `-- name: ListTenants :many
 SELECT id, name, account_id, created_at FROM tenants ORDER BY created_at
 `
 
-type ListTenantsRow struct {
-	ID        string
-	Name      string
-	AccountID pgtype.Int4
-	CreatedAt pgtype.Timestamptz
-}
-
-func (q *Queries) ListTenants(ctx context.Context) ([]ListTenantsRow, error) {
+func (q *Queries) ListTenants(ctx context.Context) ([]Tenant, error) {
 	rows, err := q.db.Query(ctx, listTenants)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ListTenantsRow
+	var items []Tenant
 	for rows.Next() {
-		var i ListTenantsRow
+		var i Tenant
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,

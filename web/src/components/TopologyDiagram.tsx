@@ -1,10 +1,11 @@
-import type { DatabaseKind } from "@/api/types";
+import type { DatabaseKind, PostgresTopology, MySQLTopology, PicodataTopology } from "@/api/types";
 import { DB_COLORS } from "@/lib/db-colors";
 import { Database, Server, Cpu, Shield, Layers, Globe } from "lucide-react";
 
 interface TopologyDiagramProps {
   kind: DatabaseKind;
-  preset: string;
+  preset?: string;
+  topology?: PostgresTopology | MySQLTopology | PicodataTopology;
 }
 
 interface RoleDef {
@@ -18,7 +19,58 @@ interface RoleDef {
 const INFRA_PROXY = "#A0860A";
 const INFRA_COORD = "#7C6CC8";
 
-function getRoles(kind: DatabaseKind, preset: string): RoleDef[] {
+function getRolesFromTopology(kind: DatabaseKind, topology: PostgresTopology | MySQLTopology | PicodataTopology): RoleDef[] {
+  const c = DB_COLORS[kind];
+
+  if (kind === "postgres") {
+    const t = topology as PostgresTopology;
+    const roles: RoleDef[] = [];
+    if (t.master) roles.push({ label: "Master", count: t.master.count || 1, color: c.hex, icon: Database });
+    if (t.replicas?.length) {
+      const total = t.replicas.reduce((s, r) => s + r.count, 0);
+      if (total > 0) roles.push({ label: "Replica", count: total, color: c.hexSecondary, icon: Database });
+    }
+    if (t.haproxy) roles.push({ label: "HAProxy", count: t.haproxy.count || 1, color: INFRA_PROXY, icon: Globe });
+    if (t.etcd) roles.push({ label: "Etcd", count: 3, color: INFRA_COORD, icon: Layers });
+    return roles;
+  }
+
+  if (kind === "mysql") {
+    const t = topology as MySQLTopology;
+    const roles: RoleDef[] = [];
+    if (t.primary) roles.push({ label: "Primary", count: t.primary.count || 1, color: c.hex, icon: Server });
+    if (t.replicas?.length) {
+      const total = t.replicas.reduce((s, r) => s + r.count, 0);
+      if (total > 0) roles.push({ label: "Replica", count: total, color: c.hexSecondary, icon: Server });
+    }
+    if (t.proxysql) roles.push({ label: "ProxySQL", count: t.proxysql.count || 1, color: INFRA_PROXY, icon: Globe });
+    return roles;
+  }
+
+  if (kind === "picodata") {
+    const t = topology as PicodataTopology;
+    const roles: RoleDef[] = [];
+    if (t.tiers?.length) {
+      for (const tier of t.tiers) {
+        roles.push({
+          label: tier.name.charAt(0).toUpperCase() + tier.name.slice(1),
+          count: tier.count,
+          color: tier.can_vote ? c.hex : c.hexSecondary,
+          icon: tier.can_vote ? Cpu : Shield,
+        });
+      }
+    } else if (t.instances?.length) {
+      const total = t.instances.reduce((s, i) => s + i.count, 0);
+      roles.push({ label: "Instance", count: total, color: c.hex, icon: Cpu });
+    }
+    if (t.haproxy) roles.push({ label: "HAProxy", count: t.haproxy.count || 1, color: INFRA_PROXY, icon: Globe });
+    return roles;
+  }
+
+  return [{ label: "Node", count: 1, color: "#6b7280", icon: Server }];
+}
+
+function getRolesFromPresetName(kind: DatabaseKind, preset: string): RoleDef[] {
   const c = DB_COLORS[kind];
 
   if (kind === "postgres") {
@@ -82,8 +134,13 @@ function getRoles(kind: DatabaseKind, preset: string): RoleDef[] {
   return [{ label: "Node", count: 1, color: "#6b7280", icon: Server }];
 }
 
-export function TopologyDiagram({ kind, preset }: TopologyDiagramProps) {
-  const roles = getRoles(kind, preset);
+export function TopologyDiagram({ kind, preset, topology }: TopologyDiagramProps) {
+  const roles = topology
+    ? getRolesFromTopology(kind, topology)
+    : preset
+      ? getRolesFromPresetName(kind, preset)
+      : [{ label: "Node", count: 1, color: "#6b7280", icon: Server }];
+
   const totalNodes = roles.reduce((s, r) => s + r.count, 0);
 
   return (

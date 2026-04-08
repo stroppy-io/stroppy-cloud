@@ -32,6 +32,18 @@ type Package struct {
 	UpdatedAt     pgtype.Timestamptz
 }
 
+type Preset struct {
+	ID          string
+	TenantID    string
+	Name        string
+	Description string
+	DbKind      string
+	Topology    string
+	IsBuiltin   bool
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
 type RefreshToken struct {
 	ID        string
 	UserID    string
@@ -51,8 +63,8 @@ type Run struct {
 type Tenant struct {
 	ID        string
 	Name      string
-	CreatedAt pgtype.Timestamptz
 	AccountID pgtype.Int4
+	CreatedAt pgtype.Timestamptz
 }
 
 type TenantApiToken struct {

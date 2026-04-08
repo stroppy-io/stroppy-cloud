@@ -9,6 +9,7 @@ import { Compare } from "@/pages/Compare";
 import { SettingsPage } from "@/pages/Settings";
 import { Presets } from "@/pages/Presets";
 import { Packages } from "@/pages/Packages";
+import { PresetDesigner } from "@/pages/PresetDesigner";
 
 import { Login } from "@/pages/Login";
 import { SelectTenant } from "@/pages/SelectTenant";
@@ -114,6 +115,8 @@ function AppRoutes() {
         {/* Operator+ */}
         <Route element={<ProtectedRoute minRole="operator" />}>
           <Route path="/runs/new" element={<NewRun />} />
+          <Route path="/presets/new" element={<PresetDesigner />} />
+          <Route path="/presets/:id/edit" element={<PresetDesigner />} />
         </Route>
 
         {/* Owner+ */}

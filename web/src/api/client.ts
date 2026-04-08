@@ -2,7 +2,7 @@ import type {
   RunConfig,
   Snapshot,
   RunSummary,
-  PresetsResponse,
+  Preset,
   ServerSettings,
   Package,
   ComparisonResponse,
@@ -12,6 +12,7 @@ import type {
   Tenant,
   TenantMember,
   TenantAPIToken,
+  DatabaseKind,
 } from "./types";
 
 const API_BASE = "/api/v1";
@@ -313,8 +314,51 @@ export async function getRunStatus(runID: string): Promise<Snapshot> {
 
 // ---------- Presets ----------
 
-export async function getPresets(): Promise<PresetsResponse> {
-  return request(`${API_BASE}/presets`);
+export async function listPresets(params?: {
+  db_kind?: string;
+}): Promise<Preset[]> {
+  const qs = new URLSearchParams();
+  if (params?.db_kind) qs.set("db_kind", params.db_kind);
+  const suffix = qs.toString() ? `?${qs}` : "";
+  return request(`${API_BASE}/presets${suffix}`);
+}
+
+export async function getPreset(id: string): Promise<Preset> {
+  return request(`${API_BASE}/presets/${id}`);
+}
+
+export async function createPreset(data: {
+  name: string;
+  description?: string;
+  db_kind: DatabaseKind;
+  topology: unknown;
+}): Promise<{ id: string }> {
+  return request(`${API_BASE}/presets`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updatePreset(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+    topology?: unknown;
+  },
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/presets/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deletePreset(id: string): Promise<{ status: string }> {
+  return request(`${API_BASE}/presets/${id}`, { method: "DELETE" });
+}
+
+export async function clonePreset(id: string): Promise<{ id: string; name: string }> {
+  return request(`${API_BASE}/presets/${id}/clone`, { method: "POST" });
 }
 
 // ---------- Metrics ----------
@@ -389,8 +433,12 @@ export async function updateSettings(
 export async function getDBDefaults(
   kind: string
 ): Promise<Record<string, unknown>> {
-  const presets = await getPresets();
-  return (presets as unknown as Record<string, Record<string, unknown>>)[kind] || {};
+  const presets = await listPresets({ db_kind: kind });
+  const result: Record<string, unknown> = {};
+  for (const p of presets) {
+    result[p.name] = p.topology;
+  }
+  return result;
 }
 
 // ---------- Grafana ----------

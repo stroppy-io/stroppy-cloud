@@ -74,7 +74,16 @@ func stripScheme(dsn string) string {
 }
 
 func seed(ctx context.Context, pool *pgxpool.Pool) error {
-	// Skip if users already exist AND at least one tenant exists.
+	// Ensure root user + default tenant exist.
+	if err := seedUsersAndTenants(ctx, pool); err != nil {
+		return err
+	}
+
+	// Seed built-in packages and presets for every tenant that is missing them.
+	return seedBuiltins(ctx, pool)
+}
+
+func seedUsersAndTenants(ctx context.Context, pool *pgxpool.Pool) error {
 	var userCount, tenantCount int
 	if err := pool.QueryRow(ctx, "SELECT COUNT(*) FROM users").Scan(&userCount); err != nil {
 		return err
@@ -96,7 +105,6 @@ func seed(ctx context.Context, pool *pgxpool.Pool) error {
 	var userID string
 	err = tx.QueryRow(ctx, "SELECT id FROM users WHERE username = 'admin'").Scan(&userID)
 	if err != nil {
-		// User doesn't exist — create.
 		adminPass := os.Getenv("STROPPY_ADMIN_PASSWORD")
 		if adminPass == "" {
 			adminPass = "admin"
@@ -125,7 +133,6 @@ func seed(ctx context.Context, pool *pgxpool.Pool) error {
 		); err != nil {
 			return err
 		}
-		// Create default settings with sensible defaults (grafana embed, monitoring versions, etc.)
 		defaultSettings := types.DefaultServerSettings()
 		settingsJSON, _ := json.Marshal(defaultSettings)
 		if _, err := tx.Exec(ctx,
@@ -144,28 +151,70 @@ func seed(ctx context.Context, pool *pgxpool.Pool) error {
 		return err
 	}
 
-	// Seed built-in packages for all tenants that don't have any.
-	var pkgCount int
-	_ = tx.QueryRow(ctx, "SELECT COUNT(*) FROM packages WHERE tenant_id = $1", tenantID).Scan(&pkgCount)
-	if pkgCount == 0 {
-		for _, bp := range types.BuiltinPackages() {
-			apt := bp.AptPackages
-			if apt == nil {
-				apt = []string{}
+	return tx.Commit(ctx)
+}
+
+// seedBuiltins ensures every tenant has built-in packages and presets.
+// Runs on every startup — idempotent via ON CONFLICT DO NOTHING and count checks.
+func seedBuiltins(ctx context.Context, pool *pgxpool.Pool) error {
+	rows, err := pool.Query(ctx, "SELECT id FROM tenants")
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	var tenantIDs []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return err
+		}
+		tenantIDs = append(tenantIDs, id)
+	}
+
+	for _, tenantID := range tenantIDs {
+		// Seed packages.
+		var pkgCount int
+		_ = pool.QueryRow(ctx, "SELECT COUNT(*) FROM packages WHERE tenant_id = $1", tenantID).Scan(&pkgCount)
+		if pkgCount == 0 {
+			for _, bp := range types.BuiltinPackages() {
+				apt := bp.AptPackages
+				if apt == nil {
+					apt = []string{}
+				}
+				pre := bp.PreInstall
+				if pre == nil {
+					pre = []string{}
+				}
+				_, _ = pool.Exec(ctx,
+					`INSERT INTO packages (id, tenant_id, name, description, db_kind, db_version, is_builtin, apt_packages, pre_install, custom_repo, custom_repo_key, deb_filename)
+					 VALUES ($1, $2, $3, $4, $5, $6, TRUE, $7, $8, $9, $10, '')
+					 ON CONFLICT DO NOTHING`,
+					uuid.New().String(), tenantID, bp.Name, bp.Description,
+					bp.DbKind, bp.DbVersion, apt, pre, bp.CustomRepo, bp.CustomRepoKey,
+				)
 			}
-			pre := bp.PreInstall
-			if pre == nil {
-				pre = []string{}
+		}
+
+		// Seed presets.
+		var presetCount int
+		_ = pool.QueryRow(ctx, "SELECT COUNT(*) FROM presets WHERE tenant_id = $1", tenantID).Scan(&presetCount)
+		if presetCount == 0 {
+			for _, bp := range types.BuiltinPresets() {
+				topoJSON, err := bp.TopologyJSON()
+				if err != nil {
+					continue
+				}
+				_, _ = pool.Exec(ctx,
+					`INSERT INTO presets (id, tenant_id, name, description, db_kind, topology, is_builtin)
+					 VALUES ($1, $2, $3, $4, $5, $6, TRUE)
+					 ON CONFLICT DO NOTHING`,
+					uuid.New().String(), tenantID, bp.Name, bp.Description,
+					bp.DbKind, topoJSON,
+				)
 			}
-			_, _ = tx.Exec(ctx,
-				`INSERT INTO packages (id, tenant_id, name, description, db_kind, db_version, is_builtin, apt_packages, pre_install, custom_repo, custom_repo_key, deb_filename)
-				 VALUES ($1, $2, $3, $4, $5, $6, TRUE, $7, $8, $9, $10, '')
-				 ON CONFLICT DO NOTHING`,
-				uuid.New().String(), tenantID, bp.Name, bp.Description,
-				bp.DbKind, bp.DbVersion, apt, pre, bp.CustomRepo, bp.CustomRepoKey,
-			)
 		}
 	}
 
-	return tx.Commit(ctx)
+	return nil
 }
