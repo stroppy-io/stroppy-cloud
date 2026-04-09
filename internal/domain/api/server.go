@@ -57,6 +57,10 @@ type Server struct {
 	agentsMu sync.RWMutex
 	agents   map[string]agent.Target
 
+	// runCancels tracks cancel functions for running DAG executions.
+	runCancelsMu sync.Mutex
+	runCancels   map[string]context.CancelFunc
+
 	// pollClient is the command queue used for agent<->server communication.
 	pollClient *agent.PollClient
 
@@ -74,6 +78,7 @@ func NewServer(app *App, logger *zap.Logger, pool *pgxpool.Pool, jwtSecret, moni
 		logger:          logger,
 		hub:             newWSHub(),
 		agents:          make(map[string]agent.Target),
+		runCancels:      make(map[string]context.CancelFunc),
 		pollClient:      pc,
 		pool:            pool,
 		jwtIssuer:       auth.NewJWTIssuer(jwtSecret),
@@ -178,6 +183,7 @@ func (s *Server) Router() http.Handler {
 			r.Post("/dry-run", s.runDryRun)
 			r.Post("/probe", s.stroppyProbe)
 			r.Delete("/run/{runID}", s.deleteRun)
+			r.Post("/run/{runID}/cancel", s.cancelRun)
 			r.Put("/baseline/{name}", s.setBaseline)
 			r.Get("/baseline/{name}", s.getBaseline)
 			r.Get("/baselines", s.listBaselines)
@@ -410,9 +416,20 @@ func (s *Server) runStart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Run asynchronously, return run ID immediately.
+	// Run asynchronously with cancellable context.
+	ctx, cancel := context.WithCancel(context.Background())
+	s.runCancelsMu.Lock()
+	s.runCancels[cfg.ID] = cancel
+	s.runCancelsMu.Unlock()
+
 	go func() {
-		if err := s.app.Start(context.Background(), tenantID, cfg); err != nil {
+		defer func() {
+			s.runCancelsMu.Lock()
+			delete(s.runCancels, cfg.ID)
+			s.runCancelsMu.Unlock()
+			cancel()
+		}()
+		if err := s.app.Start(ctx, tenantID, cfg); err != nil {
 			s.logger.Error("run failed", zap.String("run_id", cfg.ID), zap.Error(err))
 		}
 	}()
@@ -476,6 +493,24 @@ func (s *Server) listRuns(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, runs)
+}
+
+func (s *Server) cancelRun(w http.ResponseWriter, r *http.Request) {
+	runID := chi.URLParam(r, "runID")
+
+	s.runCancelsMu.Lock()
+	cancel, ok := s.runCancels[runID]
+	s.runCancelsMu.Unlock()
+
+	if !ok {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "run not active or already finished"})
+		return
+	}
+
+	s.logger.Info("cancelling run", zap.String("run_id", runID))
+	cancel()
+
+	writeJSON(w, http.StatusOK, map[string]string{"status": "cancelling", "run_id": runID})
 }
 
 func (s *Server) deleteRun(w http.ResponseWriter, r *http.Request) {

@@ -375,24 +375,24 @@ function StepInfra({ provider, setProvider }: {
         <h2 className="text-sm font-semibold mb-1">Where to run?</h2>
         <p className="text-xs text-zinc-500">Choose the infrastructure provider for provisioning machines.</p>
       </div>
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-2 gap-3">
         {PROVIDERS.map((p) => {
           const pm = PROVIDER_META[p];
           const PIcon = pm.icon;
           const active = provider === p;
           return (
             <button type="button" key={p} onClick={() => setProvider(p)}
-              className={`flex items-center gap-4 border p-4 transition-all cursor-pointer ${
+              className={`flex items-center gap-3 border p-4 transition-all cursor-pointer ${
                 active
                   ? "border-primary/40 text-primary bg-primary/[0.06]"
                   : "border-zinc-800/60 hover:bg-zinc-900/50 hover:border-zinc-700"
               }`}
             >
-              <PIcon className={`h-6 w-6 ${active ? "text-primary" : "text-zinc-600"}`} />
+              <PIcon className={`h-5 w-5 shrink-0 ${active ? "text-primary" : "text-zinc-600"}`} />
               <div className="text-left">
-                <div className={`text-sm font-mono font-medium ${active ? "text-primary" : "text-zinc-400"}`}>{pm.label}</div>
+                <div className={`text-xs font-mono font-medium ${active ? "text-primary" : "text-zinc-400"}`}>{pm.label}</div>
                 <div className="text-[10px] text-zinc-600">
-                  {p === "docker" ? "Local containers — fast, no cloud credentials needed" : "Yandex Cloud VMs — real infrastructure, production-like"}
+                  {p === "docker" ? "Local containers" : "Yandex Cloud VMs"}
                 </div>
               </div>
             </button>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getRunStatus, getGrafanaSettings, deleteRun } from "@/api/client";
+import { getRunStatus, getGrafanaSettings, deleteRun, cancelRun } from "@/api/client";
 import { ALL_DB_KINDS, type Snapshot, type NodeStatus, type GrafanaSettings, type RunConfig } from "@/api/types";
 import { RunOverview } from "@/components/RunOverview";
 import { LogStream } from "@/components/LogStream";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { RefreshCw, AlertCircle, Trash2 } from "lucide-react";
+import { RefreshCw, AlertCircle, Trash2, StopCircle } from "lucide-react";
 
 // DB-specific dashboards — only show the one matching the run's database kind.
 const DB_DASHBOARDS = ALL_DB_KINDS;
@@ -85,9 +85,12 @@ export function RunDetail() {
   const navigate = useNavigate();
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [grafana, setGrafana] = useState<GrafanaSettings | null>(null);
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
+
   const fetchStatus = useCallback(async () => {
     if (!id) return;
     try {
@@ -95,7 +98,12 @@ export function RunDetail() {
       setSnapshot(snap);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch status");
+      // Run may not be ready yet (DAG still building) — don't show error immediately.
+      if (!snapshotRef.current) {
+        setError(null); // suppress error, keep showing loading
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to fetch status");
+      }
     } finally {
       setLoading(false);
     }
@@ -128,6 +136,20 @@ export function RunDetail() {
       .then(setGrafana)
       .catch(() => setGrafana(null));
   }, []);
+
+  const [cancelling, setCancelling] = useState(false);
+
+  async function handleCancel() {
+    if (!id || cancelling) return;
+    setCancelling(true);
+    try {
+      await cancelRun(id);
+      // Don't reset cancelling — polling will show the run finishing via teardown.
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to cancel run");
+      setCancelling(false);
+    }
+  }
 
   async function handleDelete() {
     if (!id) return;
@@ -166,9 +188,23 @@ export function RunDetail() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-lg font-semibold font-mono">{id}</h1>
-          <p className="text-sm text-muted-foreground">Run detail view</p>
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-lg font-semibold font-mono">{id}</h1>
+            <p className="text-sm text-muted-foreground">Run detail view</p>
+          </div>
+          {/* Run status badge */}
+          {snapshot && (
+            cancelling ? (
+              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 animate-pulse">Cancelling...</Badge>
+            ) : !isFinished ? (
+              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 animate-pulse">Running</Badge>
+            ) : hasFailed ? (
+              <Badge variant="destructive">Failed</Badge>
+            ) : (
+              <Badge variant="success">Completed</Badge>
+            )
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="flex gap-2 text-xs">
@@ -184,6 +220,19 @@ export function RunDetail() {
             Refresh
           </Button>
 
+          {!isFinished && snapshot && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+              disabled={cancelling}
+              className="border-amber-800 text-amber-400 hover:bg-amber-500/10"
+            >
+              <StopCircle className="h-3.5 w-3.5" />
+              {cancelling ? "Cancelling..." : "Cancel Run"}
+            </Button>
+          )}
+
           {isFinished && (
             <Button
               variant="destructive"
@@ -198,7 +247,7 @@ export function RunDetail() {
         </div>
       </div>
 
-      {loading && !snapshot && (
+      {!snapshot && !error && (
         <div className="text-sm text-muted-foreground">Loading run status...</div>
       )}
 

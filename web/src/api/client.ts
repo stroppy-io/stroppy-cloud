@@ -294,6 +294,12 @@ export async function deleteRun(
   return request(`${API_BASE}/run/${runID}`, { method: "DELETE" });
 }
 
+export async function cancelRun(
+  runID: string
+): Promise<{ status: string }> {
+  return request(`${API_BASE}/run/${runID}/cancel`, { method: "POST" });
+}
+
 export async function validateRun(
   config: RunConfig
 ): Promise<{ status: string; error?: string }> {

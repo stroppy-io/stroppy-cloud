@@ -98,11 +98,19 @@ func (e *Executor) MarkNodeDone(id string) {
 // Failed nodes are retried with exponential backoff up to MaxRetries times.
 // After all retries are exhausted, AlwaysRun nodes (e.g. teardown) still execute,
 // then the run fails with the original error.
+// If ctx is cancelled, running tasks are interrupted and teardown runs immediately
+// with a fresh context.
 func (e *Executor) Run(ctx context.Context) error {
 	if e.startedAt.IsZero() {
 		e.startedAt = time.Now()
 	}
 	for {
+		// Check for cancellation before scheduling new work.
+		if ctx.Err() != nil {
+			e.markFailed("_cancelled", fmt.Errorf("run cancelled"))
+			break
+		}
+
 		ready := e.getReady()
 		if len(ready) == 0 {
 			break
@@ -121,15 +129,18 @@ func (e *Executor) Run(ctx context.Context) error {
 		wg.Wait()
 
 		if e.hasFailed() {
-			_ = e.save(ctx)
+			_ = e.save(context.Background())
 			break
 		}
 	}
 
-	// Run AlwaysRun nodes (teardown) even after failure.
+	// Run AlwaysRun nodes (teardown) even after failure/cancel.
+	// Use a fresh context so teardown is not affected by cancellation.
 	if e.hasFailed() {
-		e.runAlwaysRunNodes(ctx)
+		e.runAlwaysRunNodes(context.Background())
 	}
+
+	_ = e.save(context.Background())
 
 	e.mu.Lock()
 	defer e.mu.Unlock()
