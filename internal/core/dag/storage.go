@@ -17,9 +17,11 @@ type NodeStatus struct {
 type Status string
 
 const (
-	StatusPending Status = "pending"
-	StatusDone    Status = "done"
-	StatusFailed  Status = "failed"
+	StatusPending   Status = "pending"
+	StatusRunning   Status = "running"
+	StatusDone      Status = "done"
+	StatusFailed    Status = "failed"
+	StatusCancelled Status = "cancelled"
 )
 
 // RunState holds the runtime state needed to recover a run after restart.

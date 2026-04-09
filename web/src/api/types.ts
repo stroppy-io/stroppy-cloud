@@ -31,7 +31,7 @@ export type MachineRole =
   | "proxy"
   | "pgbouncer";
 
-export type NodeStatusValue = "pending" | "done" | "failed";
+export type NodeStatusValue = "pending" | "running" | "done" | "failed" | "cancelled";
 
 // --- Machine / Topology ---
 

@@ -45,10 +45,12 @@ type Executor struct {
 	log      *zap.Logger
 	sink     LogSink
 	retry    RetryPolicy
-	done     map[string]bool
-	failed   map[string]string // id → error message for snapshots
-	errs     []error           // original errors for return
-	mu       sync.Mutex
+	// Node state machine: pending → running → done/failed/cancelled.
+	nodeStatus map[string]Status
+	nodeErrors map[string]string // id → error message
+	errs       []error           // original errors for return
+	cancelled  bool              // true when cancel was requested
+	mu         sync.Mutex
 
 	startedAt time.Time
 
@@ -63,15 +65,15 @@ func NewExecutor(tenantID, id string, g *Graph, storage Storage, log *zap.Logger
 		log = zap.NewNop()
 	}
 	return &Executor{
-		id:       id,
-		tenantID: tenantID,
-		graph:    g,
-		storage:  storage,
-		log:      log,
-		sink:     sink,
-		retry:    DefaultRetryPolicy(),
-		done:     make(map[string]bool, len(g.Nodes)),
-		failed:   make(map[string]string),
+		id:         id,
+		tenantID:   tenantID,
+		graph:      g,
+		storage:    storage,
+		log:        log,
+		sink:       sink,
+		retry:      DefaultRetryPolicy(),
+		nodeStatus: make(map[string]Status, len(g.Nodes)),
+		nodeErrors: make(map[string]string),
 	}
 }
 
@@ -91,29 +93,37 @@ func (e *Executor) SetStateExporter(fn func() *RunState) {
 func (e *Executor) MarkNodeDone(id string) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.done[id] = true
+	e.nodeStatus[id] = StatusDone
 }
 
-// Run executes the graph to completion.
-// Failed nodes are retried with exponential backoff up to MaxRetries times.
-// After all retries are exhausted, AlwaysRun nodes (e.g. teardown) still execute,
-// then the run fails with the original error.
-// If ctx is cancelled, running tasks are interrupted and teardown runs immediately
-// with a fresh context.
+// Run executes the graph to completion using a proper state machine.
+//
+// Node FSM: pending → running → done | failed | cancelled
+// Run FSM:  running → completed | failed | cancelling → cancelled
 func (e *Executor) Run(ctx context.Context) error {
 	if e.startedAt.IsZero() {
 		e.startedAt = time.Now()
 	}
 
-	// cancellableCtx is used for non-MustComplete tasks — cancelled on cancel.
-	// MustComplete tasks get a background context so they finish cleanly.
+	// cancellableCtx for non-MustComplete tasks.
 	cancellableCtx, cancelNonCritical := context.WithCancel(ctx)
 	defer cancelNonCritical()
 
 	for {
-		// Check for cancellation before scheduling new work.
+		// Check for cancel before scheduling new work.
 		if ctx.Err() != nil {
-			e.markFailed("_cancelled", fmt.Errorf("run cancelled"))
+			e.mu.Lock()
+			e.cancelled = true
+			// Mark all pending nodes as cancelled (not failed — they never ran).
+			for _, n := range e.graph.Nodes {
+				if e.nodeStatus[n.ID] == "" || e.nodeStatus[n.ID] == StatusPending {
+					if !n.AlwaysRun {
+						e.nodeStatus[n.ID] = StatusCancelled
+					}
+				}
+			}
+			e.mu.Unlock()
+			_ = e.save(context.Background())
 			break
 		}
 
@@ -122,36 +132,38 @@ func (e *Executor) Run(ctx context.Context) error {
 			break
 		}
 
+		// Mark nodes as running.
+		e.mu.Lock()
+		for _, n := range ready {
+			e.nodeStatus[n.ID] = StatusRunning
+		}
+		e.mu.Unlock()
+		_ = e.save(context.Background())
+
 		var wg sync.WaitGroup
 		wg.Add(len(ready))
-
 		for _, n := range ready {
 			go func(n *Node) {
 				defer wg.Done()
 				if n.MustComplete {
-					// MustComplete tasks run with background context — not interrupted by cancel.
 					e.executeWithRetry(context.Background(), n)
 				} else {
 					e.executeWithRetry(cancellableCtx, n)
 				}
 			}(n)
 		}
-
-		// Always wait for ALL running tasks to finish (including MustComplete).
 		wg.Wait()
 
-		if e.hasFailed() {
+		if e.hasFailedOrCancelled() {
 			_ = e.save(context.Background())
 			break
 		}
 	}
 
-	// Cancel any remaining non-critical tasks (in case we broke out due to failure).
 	cancelNonCritical()
 
-	// Run AlwaysRun nodes (teardown) even after failure/cancel.
-	// Fresh context with generous timeout — teardown must complete fully.
-	if e.hasFailed() {
+	// Teardown (AlwaysRun) — must complete fully regardless of cancel.
+	if e.hasFailedOrCancelled() {
 		teardownCtx, teardownCancel := context.WithTimeout(context.Background(), 10*time.Minute)
 		defer teardownCancel()
 		e.runAlwaysRunNodes(teardownCtx)
@@ -165,22 +177,31 @@ func (e *Executor) Run(ctx context.Context) error {
 	if len(e.errs) > 0 {
 		return e.errs[0]
 	}
-
-	if len(e.done) < len(e.graph.Nodes) {
-		return fmt.Errorf("dag: %d nodes not reached (upstream failure)", len(e.graph.Nodes)-len(e.done))
+	if e.cancelled {
+		return fmt.Errorf("run cancelled")
 	}
 
+	completed := 0
+	for _, s := range e.nodeStatus {
+		if s == StatusDone {
+			completed++
+		}
+	}
+	if completed < len(e.graph.Nodes) {
+		return fmt.Errorf("dag: %d nodes not reached", len(e.graph.Nodes)-completed)
+	}
 	return nil
 }
 
-// runAlwaysRunNodes executes AlwaysRun nodes after the main loop has stopped.
-// This ensures cleanup/teardown runs even when upstream nodes have failed.
+// runAlwaysRunNodes executes AlwaysRun nodes (teardown) after the main loop stops.
 func (e *Executor) runAlwaysRunNodes(ctx context.Context) {
 	for {
 		e.mu.Lock()
-		doneCopy := make(map[string]bool, len(e.done))
-		for id := range e.done {
-			doneCopy[id] = true
+		doneCopy := make(map[string]bool, len(e.nodeStatus))
+		for id, s := range e.nodeStatus {
+			if s == StatusDone || s == StatusFailed || s == StatusCancelled {
+				doneCopy[id] = true
+			}
 		}
 		e.mu.Unlock()
 
@@ -188,6 +209,12 @@ func (e *Executor) runAlwaysRunNodes(ctx context.Context) {
 		if len(ready) == 0 {
 			return
 		}
+
+		e.mu.Lock()
+		for _, n := range ready {
+			e.nodeStatus[n.ID] = StatusRunning
+		}
+		e.mu.Unlock()
 
 		var wg sync.WaitGroup
 		wg.Add(len(ready))
@@ -198,12 +225,11 @@ func (e *Executor) runAlwaysRunNodes(ctx context.Context) {
 			}(n)
 		}
 		wg.Wait()
-
 		_ = e.save(ctx)
 	}
 }
 
-// executeWithRetry runs a node's task with automatic retries and exponential backoff.
+// executeWithRetry runs a node with retries. Updates state to done/failed/cancelled.
 func (e *Executor) executeWithRetry(ctx context.Context, n *Node) {
 	nc := &NodeContext{
 		Context: ctx,
@@ -223,11 +249,14 @@ func (e *Executor) executeWithRetry(ctx context.Context, n *Node) {
 			)
 			select {
 			case <-ctx.Done():
-				e.markFailed(n.ID, ctx.Err())
+				// Context cancelled during retry wait.
+				e.mu.Lock()
+				e.nodeStatus[n.ID] = StatusCancelled
+				e.nodeErrors[n.ID] = "cancelled"
+				e.mu.Unlock()
 				return
 			case <-time.After(delay):
 			}
-			// Exponential backoff with cap.
 			delay *= 2
 			if delay > e.retry.MaxDelay {
 				delay = e.retry.MaxDelay
@@ -248,49 +277,66 @@ func (e *Executor) executeWithRetry(ctx context.Context, n *Node) {
 		)
 	}
 
-	// All retries exhausted.
 	e.markFailed(n.ID, fmt.Errorf("after %d attempts: %w", e.retry.MaxRetries+1, lastErr))
 }
 
 func (e *Executor) getReady() []*Node {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	if len(e.failed) > 0 {
+	// Stop scheduling if any node failed or cancelled (except during cancel — AlwaysRun handled separately).
+	for _, s := range e.nodeStatus {
+		if s == StatusFailed {
+			return nil
+		}
+	}
+	if e.cancelled {
 		return nil
 	}
-	return e.graph.Ready(e.done)
+	doneCopy := make(map[string]bool, len(e.nodeStatus))
+	for id, s := range e.nodeStatus {
+		if s == StatusDone {
+			doneCopy[id] = true
+		}
+	}
+	return e.graph.Ready(doneCopy)
 }
 
 func (e *Executor) markDone(ctx context.Context, id string) {
 	e.mu.Lock()
-	e.done[id] = true
+	e.nodeStatus[id] = StatusDone
 	e.mu.Unlock()
-
 	_ = e.save(ctx)
 }
 
 func (e *Executor) markFailed(id string, err error) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.failed[id] = err.Error()
+	e.nodeStatus[id] = StatusFailed
+	e.nodeErrors[id] = err.Error()
 	e.errs = append(e.errs, fmt.Errorf("node %q: %w", id, err))
 }
 
-func (e *Executor) hasFailed() bool {
+func (e *Executor) hasFailedOrCancelled() bool {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	return len(e.failed) > 0
+	if e.cancelled {
+		return true
+	}
+	for _, s := range e.nodeStatus {
+		if s == StatusFailed {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *Executor) save(ctx context.Context) error {
 	if e.storage == nil {
 		return nil
 	}
-
 	e.mu.Lock()
 	snap := e.snapshot()
 	e.mu.Unlock()
-
 	return e.storage.Save(ctx, e.tenantID, e.id, snap)
 }
 
@@ -299,11 +345,12 @@ func (e *Executor) snapshot() *Snapshot {
 
 	nodes := make([]NodeStatus, 0, len(e.graph.Nodes))
 	for _, n := range e.graph.Nodes {
-		ns := NodeStatus{ID: n.ID, Status: StatusPending}
-		if e.done[n.ID] {
-			ns.Status = StatusDone
-		} else if msg, ok := e.failed[n.ID]; ok {
-			ns.Status = StatusFailed
+		s := e.nodeStatus[n.ID]
+		if s == "" {
+			s = StatusPending
+		}
+		ns := NodeStatus{ID: n.ID, Status: s}
+		if msg := e.nodeErrors[n.ID]; msg != "" {
 			ns.Error = msg
 		}
 		nodes = append(nodes, ns)
@@ -314,11 +361,10 @@ func (e *Executor) snapshot() *Snapshot {
 		state = e.stateExporter()
 	}
 
-	// Compute finishedAt if all nodes are done or failed.
 	finishedAt := time.Time{}
 	allDone := true
 	for _, ns := range nodes {
-		if ns.Status == StatusPending {
+		if ns.Status == StatusPending || ns.Status == StatusRunning {
 			allDone = false
 			break
 		}

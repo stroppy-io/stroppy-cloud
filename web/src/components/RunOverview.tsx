@@ -44,12 +44,13 @@ const phaseGroups: { label: string; icon: typeof Zap; phases: string[] }[] = [
 function groupStatus(
   phases: string[],
   nodeMap: Map<string, NodeStatus>,
-): NodeStatusValue | "running" {
+): NodeStatusValue {
   const statuses = phases.map((p) => nodeMap.get(p)?.status).filter(Boolean) as NodeStatusValue[];
   if (statuses.length === 0) return "pending";
   if (statuses.some((s) => s === "failed")) return "failed";
+  if (statuses.some((s) => s === "cancelled")) return "cancelled";
   if (statuses.every((s) => s === "done")) return "done";
-  if (statuses.some((s) => s === "done")) return "running";
+  if (statuses.some((s) => s === "running" || s === "done")) return "running";
   return "pending";
 }
 
@@ -79,15 +80,15 @@ const statusStyles = {
 
 // ─── Tiny components ─────────────────────────────────────────────
 
-function StepDot({ status, active, cancelled }: { status: NodeStatusValue; active?: boolean; cancelled?: boolean }) {
+function StepDot({ status }: { status: NodeStatusValue; active?: boolean; cancelled?: boolean }) {
   if (status === "done")
     return <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center shrink-0"><Check className="w-2 h-2 text-white" strokeWidth={3} /></div>;
-  if (status === "failed" && cancelled)
+  if (status === "cancelled")
     return <div className="w-3.5 h-3.5 rounded-full bg-zinc-500 flex items-center justify-center shrink-0"><X className="w-2 h-2 text-white" strokeWidth={3} /></div>;
   if (status === "failed")
     return <div className="w-3.5 h-3.5 rounded-full bg-red-500 flex items-center justify-center shrink-0"><X className="w-2 h-2 text-white" strokeWidth={3} /></div>;
-  if (active)
-    return <div className="w-3.5 h-3.5 rounded-full bg-amber-500 flex items-center justify-center shrink-0 animate-pulse"><Loader2 className="w-2 h-2 text-white animate-spin" strokeWidth={3} /></div>;
+  if (status === "running")
+    return <div className="w-3.5 h-3.5 rounded-full bg-blue-500 flex items-center justify-center shrink-0 animate-pulse"><Loader2 className="w-2 h-2 text-white animate-spin" strokeWidth={3} /></div>;
   return <div className="w-3.5 h-3.5 rounded-full border border-zinc-700 bg-zinc-900 flex items-center justify-center shrink-0"><Circle className="w-1 h-1 text-zinc-600" fill="currentColor" /></div>;
 }
 
@@ -311,13 +312,15 @@ function DagPipeline({ nodes, cancelled }: { nodes: NodeStatus[]; cancelled?: bo
 
                     return (
                       <div key={phaseId}>
-                        <div className={`flex items-center gap-2 py-0.5 px-0.5 rounded-sm ${active ? "bg-amber-500/[0.06]" : ""}`}>
-                          <StepDot status={node.status} active={active} cancelled={cancelled} />
+                        <div className={`flex items-center gap-2 py-0.5 px-0.5 rounded-sm ${node.status === "running" ? "bg-blue-500/[0.06]" : active ? "bg-amber-500/[0.06]" : ""}`}>
+                          <StepDot status={node.status} />
                           <span
                             className={`text-[11px] font-mono leading-tight truncate ${
                               node.status === "done" ? "text-zinc-400"
-                                : node.status === "failed" ? (cancelled ? "text-zinc-400" : "text-red-400")
-                                  : active ? "text-amber-300" : "text-zinc-600"
+                                : node.status === "running" ? "text-blue-300"
+                                : node.status === "failed" ? "text-red-400"
+                                : node.status === "cancelled" ? "text-zinc-400"
+                                : active ? "text-amber-300" : "text-zinc-600"
                             }`}
                             title={humanPhase(phaseId)}
                           >
@@ -326,10 +329,10 @@ function DagPipeline({ nodes, cancelled }: { nodes: NodeStatus[]; cancelled?: bo
                         </div>
 
                         {/* Error — scrollable, copyable */}
-                        {node.status === "failed" && node.error && (
+                        {(node.status === "failed" || node.status === "cancelled") && node.error && (
                           <div className="mt-0.5 mb-1 ml-5 flex items-start gap-1">
                             <div className={`flex-1 min-w-0 p-1.5 text-[11px] font-mono leading-relaxed max-h-20 overflow-auto select-text whitespace-pre-wrap break-all ${
-                              cancelled
+                              node.status === "cancelled"
                                 ? "bg-zinc-500/5 border border-zinc-500/20 text-zinc-400/80"
                                 : "bg-red-500/5 border border-red-500/20 text-red-400/80"
                             }`}>
@@ -419,13 +422,16 @@ export function RunOverview({ nodes, snapshot, runStatus }: RunOverviewProps) {
             <div className="flex items-center gap-2.5 text-[10px] font-mono text-zinc-500">
               {(() => {
                 const done = nodes.filter(n => n.status === "done").length;
+                const running = nodes.filter(n => n.status === "running").length;
                 const failed = nodes.filter(n => n.status === "failed").length;
+                const cancelled = nodes.filter(n => n.status === "cancelled").length;
                 const pending = nodes.filter(n => n.status === "pending").length;
-                const isCancelled = runStatus === "cancelled";
                 return (
                   <>
                     {done > 0 && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />{done}</span>}
-                    {failed > 0 && <span className="flex items-center gap-1"><span className={`w-1.5 h-1.5 rounded-full inline-block ${isCancelled ? "bg-zinc-500" : "bg-red-500"}`} />{failed}</span>}
+                    {running > 0 && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse inline-block" />{running}</span>}
+                    {failed > 0 && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-red-500 inline-block" />{failed}</span>}
+                    {cancelled > 0 && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-zinc-500 inline-block" />{cancelled}</span>}
                     {pending > 0 && <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-zinc-700 inline-block" />{pending}</span>}
                   </>
                 );

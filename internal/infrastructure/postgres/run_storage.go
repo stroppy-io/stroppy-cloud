@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -114,9 +113,11 @@ func (s *RunStorage) List(ctx context.Context, tenantID string) ([]dag.RunSummar
 				summary.Done++
 			case dag.StatusFailed:
 				summary.Failed++
-				if strings.Contains(n.Error, "context canceled") || strings.Contains(n.Error, "_cancelled") {
-					summary.Cancelled = true
-				}
+			case dag.StatusCancelled:
+				summary.Cancelled = true
+				summary.Failed++ // count cancelled in failed for progress bar
+			case dag.StatusRunning:
+				summary.Pending++ // running = not yet done
 			default:
 				summary.Pending++
 			}
