@@ -21,6 +21,10 @@ type Node struct {
 	// Its deps are considered resolved when they are either done or failed.
 	// Use this for cleanup/teardown nodes that must run regardless of errors.
 	AlwaysRun bool `json:"always_run,omitempty"`
+	// MustComplete means this node must finish before teardown can begin on cancel.
+	// Used for infrastructure provisioning (terraform apply) that must not be interrupted
+	// mid-way to avoid orphaned resources.
+	MustComplete bool `json:"must_complete,omitempty"`
 
 	// Task is restored from the registry on Unmarshal; not serialized.
 	Task Task `json:"-"`

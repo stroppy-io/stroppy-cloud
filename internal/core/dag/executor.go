@@ -104,6 +104,12 @@ func (e *Executor) Run(ctx context.Context) error {
 	if e.startedAt.IsZero() {
 		e.startedAt = time.Now()
 	}
+
+	// cancellableCtx is used for non-MustComplete tasks — cancelled on cancel.
+	// MustComplete tasks get a background context so they finish cleanly.
+	cancellableCtx, cancelNonCritical := context.WithCancel(ctx)
+	defer cancelNonCritical()
+
 	for {
 		// Check for cancellation before scheduling new work.
 		if ctx.Err() != nil {
@@ -122,10 +128,16 @@ func (e *Executor) Run(ctx context.Context) error {
 		for _, n := range ready {
 			go func(n *Node) {
 				defer wg.Done()
-				e.executeWithRetry(ctx, n)
+				if n.MustComplete {
+					// MustComplete tasks run with background context — not interrupted by cancel.
+					e.executeWithRetry(context.Background(), n)
+				} else {
+					e.executeWithRetry(cancellableCtx, n)
+				}
 			}(n)
 		}
 
+		// Always wait for ALL running tasks to finish (including MustComplete).
 		wg.Wait()
 
 		if e.hasFailed() {
@@ -134,10 +146,15 @@ func (e *Executor) Run(ctx context.Context) error {
 		}
 	}
 
+	// Cancel any remaining non-critical tasks (in case we broke out due to failure).
+	cancelNonCritical()
+
 	// Run AlwaysRun nodes (teardown) even after failure/cancel.
-	// Use a fresh context so teardown is not affected by cancellation.
+	// Fresh context with generous timeout — teardown must complete fully.
 	if e.hasFailed() {
-		e.runAlwaysRunNodes(context.Background())
+		teardownCtx, teardownCancel := context.WithTimeout(context.Background(), 10*time.Minute)
+		defer teardownCancel()
+		e.runAlwaysRunNodes(teardownCtx)
 	}
 
 	_ = e.save(context.Background())

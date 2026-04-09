@@ -62,6 +62,11 @@ func (b *builder) add(phase string, deps []string, task dag.Task) {
 	b.reg.Register(phase, func() dag.Task { return task })
 }
 
+func (b *builder) addMustComplete(phase string, deps []string, task dag.Task) {
+	_ = b.g.Add(&dag.Node{ID: phase, Type: phase, Deps: deps, Task: task, MustComplete: true})
+	b.reg.Register(phase, func() dag.Task { return task })
+}
+
 func (b *builder) addAlwaysRun(phase string, deps []string, task dag.Task) {
 	_ = b.g.Add(&dag.Node{ID: phase, Type: phase, Deps: deps, Task: task, AlwaysRun: true})
 	b.reg.Register(phase, func() dag.Task { return task })
@@ -70,11 +75,11 @@ func (b *builder) addAlwaysRun(phase string, deps []string, task dag.Task) {
 func (b *builder) build() error {
 	afterMachines := []string{b.ph(types.PhaseMachines)}
 
-	// --- infrastructure ---
-	b.add(b.ph(types.PhaseNetwork), nil,
+	// --- infrastructure (MustComplete — must finish before teardown on cancel) ---
+	b.addMustComplete(b.ph(types.PhaseNetwork), nil,
 		&networkTask{cfg: b.cfg.Network, provider: b.cfg.Provider, deployer: b.deps.Deployer, state: b.deps.State, runID: b.cfg.ID})
 
-	b.add(b.ph(types.PhaseMachines), []string{b.ph(types.PhaseNetwork)},
+	b.addMustComplete(b.ph(types.PhaseMachines), []string{b.ph(types.PhaseNetwork)},
 		&machinesTask{runCfg: b.cfg, state: b.deps.State, deployer: b.deps.Deployer, serverAddr: b.deps.ServerAddr, settings: b.deps.Settings, jwtIssuer: b.deps.JWTIssuer, tenantID: b.deps.TenantID})
 
 	// --- etcd (if Postgres HA with etcd) ---
