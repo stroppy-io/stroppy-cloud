@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 
 import { DB_COLORS } from "@/lib/db-colors";
-import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps } from "@/components/ui/sliders";
+import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps, DiskTypeSelect } from "@/components/ui/sliders";
 
 // --- Constants ---
 
@@ -104,6 +104,7 @@ export function NewRun() {
   const [stroppyCpus, setStroppyCpus] = useState(2);
   const [stroppyMemory, setStroppyMemory] = useState(4096);
   const [stroppyDisk, setStroppyDisk] = useState(25);
+  const [stroppyDiskType, setStroppyDiskType] = useState("network-ssd");
   const [packageId, setPackageId] = useState("");
   const [availablePackages, setAvailablePackages] = useState<Package[]>([]);
 
@@ -161,13 +162,13 @@ export function NewRun() {
         scale_factor: scaleFactor,
         ...(selectedSteps.length > 0 ? { steps: selectedSteps } : {}),
         ...(noSteps.length > 0 ? { no_steps: noSteps } : {}),
-        machine: { role: "stroppy" as const, count: 1, cpus: stroppyCpus, memory_mb: stroppyMemory, disk_gb: stroppyDisk },
+        machine: { role: "stroppy" as const, count: 1, cpus: stroppyCpus, memory_mb: stroppyMemory, disk_gb: stroppyDisk, disk_type: stroppyDiskType },
       },
     };
     if (selectedPresetId) cfg.preset_id = selectedPresetId;
     if (packageId) cfg.package_id = packageId;
     return cfg;
-  }, [kind, selectedPresetId, provider, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk]);
+  }, [kind, selectedPresetId, provider, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk, stroppyDiskType]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -273,6 +274,7 @@ export function NewRun() {
               vus={vus} setVus={setVus}
               poolSize={poolSize} setPoolSize={setPoolSize}
               dbKind={kind}
+              provider={provider}
               availableSteps={availableSteps} setAvailableSteps={setAvailableSteps}
               selectedSteps={selectedSteps} setSelectedSteps={setSelectedSteps}
               noSteps={noSteps} setNoSteps={setNoSteps}
@@ -280,6 +282,7 @@ export function NewRun() {
               stroppyCpus={stroppyCpus} setStroppyCpus={setStroppyCpus}
               stroppyMemory={stroppyMemory} setStroppyMemory={setStroppyMemory}
               stroppyDisk={stroppyDisk} setStroppyDisk={setStroppyDisk}
+              stroppyDiskType={stroppyDiskType} setStroppyDiskType={setStroppyDiskType}
             />
           )}
           {step === 3 && (
@@ -535,6 +538,7 @@ function StepStroppy({
   vus, setVus,
   poolSize, setPoolSize,
   dbKind,
+  provider,
   availableSteps, setAvailableSteps,
   selectedSteps, setSelectedSteps,
   noSteps, setNoSteps,
@@ -542,6 +546,7 @@ function StepStroppy({
   stroppyCpus, setStroppyCpus,
   stroppyMemory, setStroppyMemory,
   stroppyDisk, setStroppyDisk,
+  stroppyDiskType, setStroppyDiskType,
 }: {
   script: string; setScript: (v: string) => void;
   duration: string; setDuration: (v: string) => void;
@@ -549,6 +554,7 @@ function StepStroppy({
   vus: number; setVus: (v: number) => void;
   poolSize: number; setPoolSize: (v: number) => void;
   dbKind: DatabaseKind;
+  provider: Provider;
   availableSteps: string[]; setAvailableSteps: (v: string[]) => void;
   selectedSteps: string[]; setSelectedSteps: (v: string[]) => void;
   noSteps: string[]; setNoSteps: (v: string[]) => void;
@@ -556,6 +562,7 @@ function StepStroppy({
   stroppyCpus: number; setStroppyCpus: (v: number) => void;
   stroppyMemory: number; setStroppyMemory: (v: number) => void;
   stroppyDisk: number; setStroppyDisk: (v: number) => void;
+  stroppyDiskType: string; setStroppyDiskType: (v: string) => void;
 }) {
   // Probe on script change to get steps/env.
   useEffect(() => {
@@ -647,7 +654,8 @@ function StepStroppy({
         </div>
       )}
 
-      {/* Stroppy machine */}
+      {/* Stroppy machine — only for cloud providers */}
+      {provider === "yandex" && (
       <div>
         <div className="flex items-center justify-between mb-2">
           <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Runner Machine</span>
@@ -678,6 +686,11 @@ function StepStroppy({
                 <SliderField label="Disk" value={stroppyDisk} steps={DISK_STEPS}
                   onChange={setStroppyDisk} format={(v) => `${v} GB`} />
               </div>
+              <DiskTypeSelect
+                value={stroppyDiskType}
+                onChange={setStroppyDiskType}
+                diskSizeGb={stroppyDisk}
+              />
               <div className={`mt-2 text-[9px] font-mono ${isOptimal ? "text-zinc-600" : "text-amber-500"}`}>
                 {isOptimal
                   ? `Recommended: ${suggestion.cpus} vCPU / ${(suggestion.memory/1024).toFixed(0)} GB — current config meets requirements`
@@ -688,6 +701,7 @@ function StepStroppy({
           );
         })()}
       </div>
+      )}
 
       {/* Env parameters from probe — editable */}
       {probeData?.env_declarations && probeData.env_declarations.length > 0 && (() => {

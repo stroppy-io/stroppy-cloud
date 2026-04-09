@@ -248,6 +248,7 @@ type yandexTfVM struct {
 	Cores       int    `json:"cores"`
 	Memory      int    `json:"memory"`
 	DiskSize    int    `json:"disk_size"`
+	DiskType    string `json:"disk_type"`
 	InternalIP  string `json:"internal_ip"`
 	HasPublicIP bool   `json:"has_public_ip"`
 	UserData    string `json:"user_data"`
@@ -334,10 +335,16 @@ func (t *machinesTask) yandexMachines(nc *dag.NodeContext) error {
 				zap.Int("disk_gb", diskGB),
 			)
 
+			diskType := spec.DiskType
+			if diskType == "" {
+				diskType = "network-ssd"
+			}
+
 			vmSpecs[machineID] = yandexTfVM{
 				Cores:       cores,
 				Memory:      memGB,
 				DiskSize:    diskGB,
+				DiskType:    diskType,
 				HasPublicIP: yc.AssignPublicIP,
 				UserData:    cloudInit,
 			}

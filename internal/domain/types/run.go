@@ -62,6 +62,7 @@ type MachineSpec struct {
 	CPUs     int         `json:"cpus"`
 	MemoryMB int         `json:"memory_mb"`
 	DiskGB   int         `json:"disk_gb"`
+	DiskType string      `json:"disk_type,omitempty"`
 }
 
 // --- Database topologies ---

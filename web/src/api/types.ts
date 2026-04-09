@@ -41,6 +41,7 @@ export interface MachineSpec {
   cpus: number;
   memory_mb: number;
   disk_gb: number;
+  disk_type?: string;
 }
 
 export interface PostgresTopology {

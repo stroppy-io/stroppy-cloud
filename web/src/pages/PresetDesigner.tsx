@@ -37,7 +37,7 @@ import {
   X,
 } from "lucide-react";
 import { DB_COLORS } from "@/lib/db-colors";
-import { SliderField, NumericSlider, closestStep, ramSteps, CPU_STEPS, DISK_STEPS } from "@/components/ui/sliders";
+import { SliderField, NumericSlider, closestStep, ramSteps, CPU_STEPS, DISK_STEPS, DiskTypeSelect } from "@/components/ui/sliders";
 
 // ─── Validation ──────────────────────────────────────────────────
 
@@ -313,6 +313,11 @@ function MachineEditor({
           onChange={(v) => onChange({ ...spec, disk_gb: v })}
           format={(v) => `${v} GB`} />
       </div>
+      <DiskTypeSelect
+        value={spec.disk_type || "network-ssd"}
+        onChange={(v) => onChange({ ...spec, disk_type: v })}
+        diskSizeGb={spec.disk_gb}
+      />
       {children}
     </div>
   );

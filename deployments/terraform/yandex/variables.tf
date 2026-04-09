@@ -36,6 +36,7 @@ variable "compute" {
       cores         = number
       memory        = number
       disk_size     = number
+      disk_type     = string
       internal_ip   = string
       has_public_ip = bool
       user_data     = string

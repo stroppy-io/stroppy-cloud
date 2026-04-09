@@ -15,6 +15,7 @@ resource "yandex_compute_instance" "vms" {
     initialize_params {
       image_id = var.compute.image_id
       size     = each.value.disk_size
+      type     = each.value.disk_type
     }
   }
   metadata = {
