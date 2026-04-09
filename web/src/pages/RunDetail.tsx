@@ -165,17 +165,18 @@ export function RunDetail() {
   }
 
   const nodes: NodeStatus[] = snapshot?.nodes || [];
-  const failedNodes = nodes.filter((n) => n.status === "failed");
-  const hasFailed = failedNodes.length > 0;
+  const hasFailed = nodes.some((n) => n.status === "failed");
+  const hasCancelled = nodes.some((n) => n.status === "cancelled");
+  const hasRunning = nodes.some((n) => n.status === "running");
+  const hasPending = nodes.some((n) => n.status === "pending");
 
-  // Run is finished if: no pending nodes, OR has failed nodes (executor stopped, pending won't run).
+  // Run is finished when no nodes are pending or running.
   const isFinished = snapshot
-    ? snapshot.nodes.length > 0 && (hasFailed || !snapshot.nodes.some((n) => n.status === "pending"))
+    ? snapshot.nodes.length > 0 && !hasPending && !hasRunning
     : false;
 
-  const isCancelled = isFinished && failedNodes.some(
-    (n) => n.error?.includes("context canceled") || n.error?.includes("_cancelled")
-  );
+  // Cancelled = has cancelled nodes (proper FSM state from backend).
+  const isCancelled = hasCancelled;
 
   const runConfig = useMemo<RunConfig | null>(() => {
     const rc = snapshot?.state?.run_config;

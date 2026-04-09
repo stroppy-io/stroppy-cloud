@@ -239,6 +239,20 @@ func (a *App) buildDeps(tenantID string, cfg types.RunConfig) (run.Deps, func(),
 		return deps, func() { deployer.Close() }, nil
 	}
 
+	// Yandex Cloud: agents run on remote VMs — rewrite localhost in monitoringURL
+	// to the server's public address so vmagent on VMs can reach vmauth.
+	if cfg.Provider == types.ProviderYandex && a.monitoringURL != "" && deps.ServerAddr != "" {
+		// Extract host from ServerAddr (e.g. "http://51.250.1.2:8080" → "51.250.1.2").
+		serverHost := deps.ServerAddr
+		for _, prefix := range []string{"https://", "http://"} {
+			serverHost = strings.TrimPrefix(serverHost, prefix)
+		}
+		if idx := strings.IndexByte(serverHost, ':'); idx > 0 {
+			serverHost = serverHost[:idx]
+		}
+		deps.MonitoringURL = rewriteLocalhost(a.monitoringURL, serverHost)
+	}
+
 	return deps, noop, nil
 }
 
