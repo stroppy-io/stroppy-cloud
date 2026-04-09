@@ -97,6 +97,7 @@ export function Presets() {
               <SelectItem value="postgres">PostgreSQL</SelectItem>
               <SelectItem value="mysql">MySQL</SelectItem>
               <SelectItem value="picodata">Picodata</SelectItem>
+              <SelectItem value="ydb">YDB</SelectItem>
             </SelectContent>
           </Select>
           <Link to="/presets/new">
@@ -234,6 +235,12 @@ function extractFeatures(preset: Preset): string[] {
     features.push(`rf=${pico.replication_factor}`);
     if (pico.haproxy) features.push("HAProxy");
     if (pico.tiers?.length) features.push(`${pico.tiers.length} tiers`);
+  } else if (preset.db_kind === "ydb") {
+    const ydb = t as import("@/api/types").YDBTopology;
+    if (ydb.database) features.push("Split storage/compute");
+    else features.push("Combined");
+    if (ydb.haproxy) features.push("HAProxy");
+    if (ydb.fault_tolerance && ydb.fault_tolerance !== "none") features.push(ydb.fault_tolerance);
   }
 
   return features;
@@ -260,6 +267,12 @@ function countNodes(preset: Preset): number {
     const pico = t as import("@/api/types").PicodataTopology;
     return (pico.instances?.reduce((s, i) => s + i.count, 0) || 0)
       + (pico.haproxy?.count || 0);
+  }
+  if (preset.db_kind === "ydb") {
+    const ydb = t as import("@/api/types").YDBTopology;
+    return (ydb.storage?.count || 0)
+      + (ydb.database?.count || 0)
+      + (ydb.haproxy?.count || 0);
   }
   return 0;
 }

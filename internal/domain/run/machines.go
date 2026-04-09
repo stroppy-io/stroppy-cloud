@@ -44,16 +44,31 @@ func FillMachinesFromTopology(cfg *types.RunConfig) {
 		}
 	case types.DatabaseYDB:
 		if db.YDB != nil {
-			cfg.Machines = append(cfg.Machines, types.MachineSpec{
-				Role: types.RoleDatabase, Count: db.YDB.Storage.Count,
-				CPUs: db.YDB.Storage.CPUs, MemoryMB: db.YDB.Storage.MemoryMB, DiskGB: db.YDB.Storage.DiskGB,
-			})
+			// In combined mode (Database==nil), storage nodes run both storage + database processes.
+			// In split mode, each node still runs both — we use the larger count and best specs.
+			// True split (separate machines for storage vs database) requires a new machine role.
+			count := db.YDB.Storage.Count
+			cpus := db.YDB.Storage.CPUs
+			mem := db.YDB.Storage.MemoryMB
+			disk := db.YDB.Storage.DiskGB
 			if db.YDB.Database != nil {
-				cfg.Machines = append(cfg.Machines, types.MachineSpec{
-					Role: types.RoleDatabase, Count: db.YDB.Database.Count,
-					CPUs: db.YDB.Database.CPUs, MemoryMB: db.YDB.Database.MemoryMB, DiskGB: db.YDB.Database.DiskGB,
-				})
+				if db.YDB.Database.Count > count {
+					count = db.YDB.Database.Count
+				}
+				if db.YDB.Database.CPUs > cpus {
+					cpus = db.YDB.Database.CPUs
+				}
+				if db.YDB.Database.MemoryMB > mem {
+					mem = db.YDB.Database.MemoryMB
+				}
+				if db.YDB.Database.DiskGB > disk {
+					disk = db.YDB.Database.DiskGB
+				}
 			}
+			cfg.Machines = append(cfg.Machines, types.MachineSpec{
+				Role: types.RoleDatabase, Count: count,
+				CPUs: cpus, MemoryMB: mem, DiskGB: disk,
+			})
 			if db.YDB.HAProxy != nil {
 				cfg.Machines = append(cfg.Machines, *db.YDB.HAProxy)
 			}

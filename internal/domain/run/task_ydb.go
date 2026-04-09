@@ -2,6 +2,7 @@ package run
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
@@ -49,6 +50,9 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 		ft = "none"
 	}
 
+	// Start all static nodes in parallel — YDB needs all nodes up to form a cluster.
+	var wg sync.WaitGroup
+	errs := make([]error, len(targets))
 	for i, target := range targets {
 		advHost := target.InternalHost
 		if advHost == "" {
@@ -62,9 +66,17 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 			FaultTolerance: ft,
 			Options:        t.topology.StorageOptions,
 		}
-		if err := t.client.Send(nc, target, agent.Command{
-			Action: agent.ActionConfigYDB, Config: cfg,
-		}); err != nil {
+		wg.Add(1)
+		go func(idx int, tgt agent.Target, c agent.YDBStaticConfig) {
+			defer wg.Done()
+			errs[idx] = t.client.Send(nc, tgt, agent.Command{
+				Action: agent.ActionConfigYDB, Config: c,
+			})
+		}(i, target, cfg)
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
 			return err
 		}
 	}
@@ -129,7 +141,10 @@ func (t *ydbStartDBTask) Execute(nc *dag.NodeContext) error {
 		dbPath = "/Root/testdb"
 	}
 
-	for _, target := range targets {
+	// Start all dynamic nodes in parallel.
+	var wg sync.WaitGroup
+	errs := make([]error, len(targets))
+	for i, target := range targets {
 		advHost := target.InternalHost
 		if advHost == "" {
 			advHost = target.Host
@@ -140,9 +155,17 @@ func (t *ydbStartDBTask) Execute(nc *dag.NodeContext) error {
 			DatabasePath:    dbPath,
 			Options:         t.topology.DatabaseOptions,
 		}
-		if err := t.client.Send(nc, target, agent.Command{
-			Action: agent.ActionStartYDBDB, Config: cfg,
-		}); err != nil {
+		wg.Add(1)
+		go func(idx int, tgt agent.Target, c agent.YDBDatabaseConfig) {
+			defer wg.Done()
+			errs[idx] = t.client.Send(nc, tgt, agent.Command{
+				Action: agent.ActionStartYDBDB, Config: c,
+			})
+		}(i, target, cfg)
+	}
+	wg.Wait()
+	for _, err := range errs {
+		if err != nil {
 			return err
 		}
 	}

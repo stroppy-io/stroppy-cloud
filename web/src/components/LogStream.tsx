@@ -25,7 +25,7 @@ interface DisplayLine {
 
 /* ---------- constants ---------- */
 
-const MAX_LINES = 10_000;
+const MAX_LINES = 50_000;
 const PAGE_SIZE = 500;
 const PREFETCH_PX = 50;
 
