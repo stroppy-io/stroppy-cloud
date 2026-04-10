@@ -2,6 +2,7 @@ services:
   # --- PostgreSQL ---
   postgres:
     image: postgres:17
+    restart: always
     environment:
       POSTGRES_DB: stroppy
       POSTGRES_USER: stroppy
@@ -19,6 +20,7 @@ services:
   # --- VictoriaMetrics cluster (multi-tenant metrics) ---
   vmstorage:
     image: victoriametrics/vmstorage:v1.139.0-cluster
+    restart: always
     command:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=30d"
@@ -27,6 +29,7 @@ services:
 
   vminsert:
     image: victoriametrics/vminsert:v1.139.0-cluster
+    restart: always
     command:
       - "-storageNode=vmstorage:8400"
     depends_on:
@@ -34,6 +37,7 @@ services:
 
   vmselect:
     image: victoriametrics/vmselect:v1.139.0-cluster
+    restart: always
     command:
       - "-storageNode=vmstorage:8401"
     depends_on:
@@ -42,6 +46,7 @@ services:
   # --- VictoriaLogs (multi-tenant logs) ---
   victorialogs:
     image: victoriametrics/victoria-logs:v1.48.0
+    restart: always
     command:
       - "-storageDataPath=/storage"
       - "-retentionPeriod=30d"
@@ -51,6 +56,7 @@ services:
   # --- vmauth (single entry point for all monitoring) ---
   vmauth:
     image: victoriametrics/vmauth:v1.139.0
+    restart: always
     command:
       - "-auth.config=/etc/vmauth/config.yml"
     ports:
@@ -66,6 +72,7 @@ services:
 
   grafana:
     image: grafana/grafana:12.4.2
+    restart: always
     ports:
       - "${BIND_ADDR:-0.0.0.0}:3001:3000"
     environment:
@@ -84,6 +91,7 @@ services:
   # --- Stroppy Cloud server ---
   # Runs with host networking so it can reach Docker agent containers directly.
   server:
+    restart: always
     build:
       context: .
       dockerfile: deployments/docker/stroppy-cloud.Dockerfile
