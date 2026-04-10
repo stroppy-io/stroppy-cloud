@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -19,6 +20,16 @@ type AgentServer struct {
 	machineID  string
 	token      string // JWT token for authenticating with the server
 	httpClient *http.Client
+
+	// Log dedup + batching.
+	logMu      sync.Mutex
+	logBuf     []LogLine
+	lastLine   string // previous line text for dedup
+	repeatCnt  int    // consecutive repeats of lastLine
+	lastAction string
+	lastCmdID  string
+	logTicker  *time.Ticker
+	logDone    chan struct{}
 }
 
 // NewAgentServer creates a new polling-based agent.
@@ -28,13 +39,107 @@ func NewAgentServer(serverAddr string, machineID string, _ int) *AgentServer {
 		serverAddr: serverAddr,
 		machineID:  machineID,
 		httpClient: &http.Client{Timeout: 90 * time.Second},
+		logTicker:  time.NewTicker(200 * time.Millisecond),
+		logDone:    make(chan struct{}),
 	}
 
 	s.executor.SetLogCallback(func(commandID, action, line, stream string) {
-		s.sendLogLine(commandID, action, line, stream)
+		s.bufferLogLine(commandID, action, line, stream)
 	})
 
+	// Background flusher — sends batched logs every 200ms.
+	go s.logFlusher()
+
 	return s
+}
+
+// bufferLogLine deduplicates repeated lines and buffers for batch send.
+func (s *AgentServer) bufferLogLine(commandID, action, line, stream string) {
+	s.logMu.Lock()
+	defer s.logMu.Unlock()
+
+	if line == s.lastLine && action == s.lastAction {
+		s.repeatCnt++
+		return
+	}
+
+	// Flush previous repeated line.
+	if s.repeatCnt > 0 {
+		s.logBuf = append(s.logBuf, LogLine{
+			CommandID: s.lastCmdID,
+			MachineID: s.machineID,
+			Action:    s.lastAction,
+			Line:      fmt.Sprintf("[repeated %d times] %s", s.repeatCnt, s.lastLine),
+			Stream:    stream,
+		})
+	}
+
+	s.lastLine = line
+	s.lastAction = action
+	s.lastCmdID = commandID
+	s.repeatCnt = 0
+
+	s.logBuf = append(s.logBuf, LogLine{
+		CommandID: commandID,
+		MachineID: s.machineID,
+		Action:    action,
+		Line:      line,
+		Stream:    stream,
+	})
+}
+
+// logFlusher runs in background, sends batched logs to server every 200ms.
+func (s *AgentServer) logFlusher() {
+	for {
+		select {
+		case <-s.logTicker.C:
+			s.flushLogs()
+		case <-s.logDone:
+			s.flushLogs() // final flush
+			return
+		}
+	}
+}
+
+func (s *AgentServer) flushLogs() {
+	s.logMu.Lock()
+	if len(s.logBuf) == 0 && s.repeatCnt == 0 {
+		s.logMu.Unlock()
+		return
+	}
+	// Flush any pending repeated line.
+	if s.repeatCnt > 0 {
+		s.logBuf = append(s.logBuf, LogLine{
+			CommandID: s.lastCmdID,
+			MachineID: s.machineID,
+			Action:    s.lastAction,
+			Line:      fmt.Sprintf("[repeated %d times] %s", s.repeatCnt, s.lastLine),
+			Stream:    "stdout",
+		})
+		s.repeatCnt = 0
+	}
+	batch := s.logBuf
+	s.logBuf = nil
+	s.logMu.Unlock()
+
+	if s.serverAddr == "" || len(batch) == 0 {
+		return
+	}
+
+	data, err := json.Marshal(batch)
+	if err != nil {
+		return
+	}
+	req, err := http.NewRequest(http.MethodPost, s.serverAddr+"/api/agent/logs-batch", bytes.NewReader(data))
+	if err != nil {
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+	s.setAuth(req)
+	resp, err := s.httpClient.Do(req)
+	if err == nil {
+		resp.Body.Close()
+	}
 }
 
 // SetToken sets the JWT token for server authentication.
@@ -145,34 +250,10 @@ func (s *AgentServer) sendReport(ctx context.Context, report Report) error {
 	return nil
 }
 
-// sendLogLine posts a single log line to the server (fire-and-forget).
-func (s *AgentServer) sendLogLine(commandID, action, line, stream string) {
-	if s.serverAddr == "" {
-		return
-	}
-	ll := LogLine{
-		CommandID: commandID,
-		MachineID: s.machineID,
-		Action:    action,
-		Line:      line,
-		Stream:    stream,
-	}
-	data, err := json.Marshal(ll)
-	if err != nil {
-		return
-	}
-	go func() {
-		req, err := http.NewRequest(http.MethodPost, s.serverAddr+"/api/agent/log", bytes.NewReader(data))
-		if err != nil {
-			return
-		}
-		req.Header.Set("Content-Type", "application/json")
-		s.setAuth(req)
-		resp, err := s.httpClient.Do(req)
-		if err == nil {
-			resp.Body.Close()
-		}
-	}()
+// StopLogFlusher stops the background log flusher (call on shutdown).
+func (s *AgentServer) StopLogFlusher() {
+	s.logTicker.Stop()
+	close(s.logDone)
 }
 
 // Register calls back to the orchestration server to announce this agent.

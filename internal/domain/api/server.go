@@ -154,7 +154,7 @@ func (s *Server) Router() http.Handler {
 		r.Post("/register", s.agentRegister)
 		r.Post("/poll", s.agentPoll)
 		r.Post("/report", s.agentReport)
-		r.Post("/log", s.agentLog)
+		r.Post("/logs-batch", s.agentLogBatch)
 	})
 
 	// --- Auth (public — handled by isPublicPath in middleware) ---
@@ -364,32 +364,26 @@ func (s *Server) agentReport(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 }
 
-func (s *Server) agentLog(w http.ResponseWriter, r *http.Request) {
-	var line agent.LogLine
-	if err := json.NewDecoder(r.Body).Decode(&line); err != nil {
+func (s *Server) agentLogBatch(w http.ResponseWriter, r *http.Request) {
+	var lines []agent.LogLine
+	if err := json.NewDecoder(r.Body).Decode(&lines); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Extract run ID from machine ID (format: {runID}-{role}-{index}).
-	runID := extractRunID(line.MachineID)
+	for i := range lines {
+		line := &lines[i]
+		runID := extractRunID(line.MachineID)
+		s.hub.broadcast(wsMessage{Type: "agent_log", RunID: runID, Payload: *line})
 
-	// Broadcast to all connected WebSocket clients for live viewing.
-	s.hub.broadcast(wsMessage{Type: "agent_log", RunID: runID, Payload: line})
-
-	// Persist to VictoriaLogs via vmauth (fire-and-forget).
-	if s.monitoringURL != "" {
-		// Look up tenant accountID from run → tenant_id (agent endpoints have no auth context).
-		accountID, accErr := s.accountIDFromRunID(r.Context(), runID)
-		if accErr != nil {
-			s.logger.Warn("vlogs: cannot resolve accountID for run", zap.String("run_id", runID), zap.Error(accErr))
+		if s.monitoringURL != "" {
+			accountID, _ := s.accountIDFromRunID(r.Context(), runID)
+			ll := *line // capture for goroutine
+			go func() {
+				vlClient := victoria.NewLogsClient(s.monitoringURL, s.monitoringToken)
+				vlClient.IngestWithAccount(accountID, ll.MachineID, ll.CommandID, ll.Action, runID, ll.Stream, ll.Line)
+			}()
 		}
-		go func() {
-			vlClient := victoria.NewLogsClient(s.monitoringURL, s.monitoringToken)
-			if err := vlClient.IngestWithAccount(accountID, line.MachineID, line.CommandID, line.Action, runID, line.Stream, line.Line); err != nil {
-				s.logger.Debug("vlogs ingest failed", zap.Error(err))
-			}
-		}()
 	}
 
 	w.WriteHeader(http.StatusNoContent)
