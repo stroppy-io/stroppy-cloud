@@ -261,6 +261,18 @@ export function RunDetail() {
                 {shareUrl ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
                 {sharing ? "Sharing..." : shareUrl ? "Copied!" : "Share"}
               </Button>
+              {shareUrl && (
+                <a
+                  href={shareUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-mono text-primary hover:underline truncate max-w-xs"
+                  onClick={(e) => { e.preventDefault(); navigator.clipboard.writeText(window.location.origin + shareUrl); }}
+                  title="Click to copy"
+                >
+                  {window.location.origin}{shareUrl}
+                </a>
+              )}
               <Button
                 variant="destructive"
                 size="sm"
