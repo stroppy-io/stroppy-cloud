@@ -1678,10 +1678,25 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 		diskPath = "/ydb_data"
 	}
 
+	// Disk size: use allocated disk minus 2 GB headroom for OS/logs, min 10 GB.
+	diskGB := cfg.DiskGB
+	if diskGB <= 0 {
+		diskGB = 80
+	}
+	pdiskGB := diskGB - 2
+	if pdiskGB < 10 {
+		pdiskGB = 10
+	}
+
+	// Memory: reserve 15% for OS, rest for YDB. Read from /proc/meminfo for actual.
+	memMB := cfg.MemoryMB
+	if memMB <= 0 {
+		memMB = getTotalMemoryMB()
+	}
+	ydbMemHardMB := memMB * 85 / 100 // 85% of total
+	ydbMemSoftMB := ydbMemHardMB * 90 / 100
+
 	nHosts := len(cfg.Hosts)
-	// Erasure selection: with 1 disk per node (Docker emulation), only "none" works.
-	// mirror-3-dc requires 3+ disks per node, block-4-2 requires 8+ nodes with 2+ disks.
-	// Use "none" by default — can be overridden via FaultTolerance for real hardware.
 	erasure := "none"
 	if cfg.FaultTolerance != "" {
 		erasure = cfg.FaultTolerance
@@ -1750,8 +1765,18 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 	// table_service_config
 	confBuf.WriteString("table_service_config:\n  sql_version: 1\n")
 
-	// actor_system_config
-	confBuf.WriteString("actor_system_config:\n  use_auto_config: true\n")
+	// actor_system_config — auto-tune threads from CPU count, hint node type.
+	confBuf.WriteString("actor_system_config:\n")
+	confBuf.WriteString("  use_auto_config: true\n")
+	confBuf.WriteString("  node_type: STORAGE\n")
+	if cfg.CPUs > 0 {
+		fmt.Fprintf(&confBuf, "  cpu_count: %d\n", cfg.CPUs)
+	}
+
+	// memory_controller_config — tell YDB how much RAM it can use.
+	fmt.Fprintf(&confBuf, "memory_controller_config:\n")
+	fmt.Fprintf(&confBuf, "  hard_limit_bytes: %d\n", int64(ydbMemHardMB)*1024*1024)
+	fmt.Fprintf(&confBuf, "  soft_limit_bytes: %d\n", int64(ydbMemSoftMB)*1024*1024)
 
 	// blob_storage_config
 	confBuf.WriteString("blob_storage_config:\n")
@@ -1760,7 +1785,6 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 	fmt.Fprintf(&confBuf, "    - erasure_species: %s\n", erasure)
 	confBuf.WriteString("      rings:\n")
 	if erasure == "mirror-3-dc" {
-		// 3 rings, one per DC. Each ring has one fail_domain with one vdisk.
 		for i, host := range cfg.Hosts {
 			_ = host
 			confBuf.WriteString("      - fail_domains:\n")
@@ -1770,7 +1794,6 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 			fmt.Fprintf(&confBuf, "            path: %s/pdisk.data\n", diskPath)
 		}
 	} else {
-		// none / block-4-2: single ring.
 		confBuf.WriteString("      - fail_domains:\n")
 		for i := range cfg.Hosts {
 			confBuf.WriteString("        - vdisk_locations:\n")
@@ -1799,9 +1822,9 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 		return fmt.Errorf("write ydb config: %w", err)
 	}
 
-	// Prepare disk
+	// Prepare disk — size to actual allocation.
 	e.shell(ctx, fmt.Sprintf("mkdir -p %s && chown -R ydb:ydb %s", diskPath, diskPath))
-	e.shell(ctx, fmt.Sprintf(`test -f %s/pdisk.data || truncate -s 80G %s/pdisk.data`, diskPath, diskPath))
+	e.shell(ctx, fmt.Sprintf(`test -f %s/pdisk.data || truncate -s %dG %s/pdisk.data`, diskPath, pdiskGB, diskPath))
 	e.shell(ctx, fmt.Sprintf("chown ydb:ydb %s/pdisk.data", diskPath))
 
 	e.emitLine("preparing YDB disk...")

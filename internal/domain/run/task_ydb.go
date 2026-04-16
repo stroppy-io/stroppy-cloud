@@ -63,6 +63,9 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 			InstanceID:     i,
 			AdvertiseHost:  advHost,
 			DiskPath:       "/ydb_data",
+			DiskGB:         t.topology.Storage.DiskGB,
+			MemoryMB:       t.topology.Storage.MemoryMB,
+			CPUs:           t.topology.Storage.CPUs,
 			FaultTolerance: ft,
 			Options:        t.topology.StorageOptions,
 		}
@@ -149,10 +152,19 @@ func (t *ydbStartDBTask) Execute(nc *dag.NodeContext) error {
 		if advHost == "" {
 			advHost = target.Host
 		}
+		// Use database node specs if split mode, otherwise storage specs.
+		memMB := t.topology.Storage.MemoryMB
+		cpus := t.topology.Storage.CPUs
+		if t.topology.Database != nil {
+			memMB = t.topology.Database.MemoryMB
+			cpus = t.topology.Database.CPUs
+		}
 		cfg := agent.YDBDatabaseConfig{
 			StaticEndpoints: staticHosts,
 			AdvertiseHost:   advHost,
 			DatabasePath:    dbPath,
+			MemoryMB:        memMB,
+			CPUs:            cpus,
 			Options:         t.topology.DatabaseOptions,
 		}
 		wg.Add(1)

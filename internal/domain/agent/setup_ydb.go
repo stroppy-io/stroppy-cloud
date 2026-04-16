@@ -11,6 +11,9 @@ type YDBStaticConfig struct {
 	InstanceID     int               `json:"instance_id"`
 	AdvertiseHost  string            `json:"advertise_host"`
 	DiskPath       string            `json:"disk_path"` // "/ydb_data" in Docker, real disk on VM
+	DiskGB         int               `json:"disk_gb"`   // allocated disk size; pdisk is sized to this
+	MemoryMB       int               `json:"memory_mb"` // total machine RAM for memory limits
+	CPUs           int               `json:"cpus"`      // vCPUs for actor system tuning
 	FaultTolerance string            `json:"fault_tolerance"`
 	Options        map[string]string `json:"options,omitempty"`
 }
@@ -27,5 +30,7 @@ type YDBDatabaseConfig struct {
 	StaticEndpoints []string          `json:"static_endpoints"` // node-broker addresses
 	AdvertiseHost   string            `json:"advertise_host"`
 	DatabasePath    string            `json:"database_path"` // /Root/testdb
+	MemoryMB        int               `json:"memory_mb"`     // total machine RAM for memory limits
+	CPUs            int               `json:"cpus"`          // vCPUs for actor system tuning
 	Options         map[string]string `json:"options,omitempty"`
 }
