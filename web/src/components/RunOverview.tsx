@@ -308,96 +308,7 @@ function ConfigPanel({ config, startedAt, finishedAt, isRunning }: {
 
 // ─── Effective config per group ──────────────────────────────────
 
-function fmtBytes(mb: number | undefined): string {
-  if (!mb) return "—";
-  if (mb >= 1024) return `${(mb / 1024).toFixed(mb % 1024 ? 1 : 0)} GB`;
-  return `${mb} MB`;
-}
 
-function GroupConfigDetail({ groupLabel, config }: { groupLabel: string; config: RunConfig | null }) {
-  if (!config) return null;
-  const db = config.database;
-  const s = config.stroppy;
-
-  if (groupLabel === "Infrastructure") {
-    return (
-      <div className="space-y-0.5">
-        <CfgRow k="provider" v={config.provider} />
-        {config.platform_id && <CfgRow k="platform" v={config.platform_id} />}
-        <CfgRow k="network" v={config.network?.cidr} />
-        {config.machines?.map((m, i) => (
-          <CfgRow key={i} k={m.role} v={`${m.count}× ${m.cpus} vCPU / ${fmtBytes(m.memory_mb)} / ${m.disk_gb} GB`} />
-        ))}
-      </div>
-    );
-  }
-
-  if (groupLabel === "Database") {
-    const lines: [string, string][] = [["kind", `${db.kind} v${db.version}`]];
-    if (db.ydb) {
-      const st = db.ydb.storage;
-      const diskGB = config.machine_override?.disk_gb || st.disk_gb || 80;
-      const memMB = config.machine_override?.memory_mb || st.memory_mb || 4096;
-      const cpus = config.machine_override?.cpus || st.cpus || 2;
-      const pdiskGB = Math.max(10, diskGB - 2);
-      const hardMB = Math.floor(memMB * 85 / 100);
-      const softMB = Math.floor(hardMB * 90 / 100);
-      lines.push(["nodes", `${st.count} storage${db.ydb.database ? ` + ${db.ydb.database.count} compute` : " (combined)"}`]);
-      lines.push(["per node", `${cpus} vCPU / ${fmtBytes(memMB)} / ${diskGB} GB`]);
-      lines.push(["pdisk", `${pdiskGB} GB SSD`]);
-      lines.push(["mem hard", fmtBytes(hardMB)]);
-      lines.push(["mem soft", fmtBytes(softMB)]);
-      lines.push(["cpu_count", String(cpus)]);
-      lines.push(["erasure", db.ydb.fault_tolerance || "none"]);
-      lines.push(["db_path", db.ydb.database_path || "/Root/testdb"]);
-      if (db.ydb.storage_options) for (const [k, v] of Object.entries(db.ydb.storage_options)) lines.push([k, v]);
-    } else if (db.postgres) {
-      const m = db.postgres.master;
-      lines.push(["master", `${m.count}× ${m.cpus} vCPU / ${fmtBytes(m.memory_mb)}`]);
-      if (db.postgres.replicas?.length) lines.push(["replicas", `${db.postgres.replicas.length}× ${db.postgres.replicas[0]?.cpus || "?"} vCPU`]);
-      if (db.postgres.patroni) lines.push(["HA", "Patroni + etcd"]);
-      if (db.postgres.pgbouncer) lines.push(["pooler", "PgBouncer"]);
-      if (db.postgres.master_options) for (const [k, v] of Object.entries(db.postgres.master_options)) lines.push([k, v]);
-    } else if (db.mysql) {
-      const m = db.mysql.primary;
-      lines.push(["primary", `${m.count}× ${m.cpus} vCPU / ${fmtBytes(m.memory_mb)}`]);
-      if (db.mysql.replicas?.length) lines.push(["replicas", String(db.mysql.replicas.length)]);
-      if (db.mysql.group_replication) lines.push(["repl", "Group Replication"]);
-      if (db.mysql.primary_options) for (const [k, v] of Object.entries(db.mysql.primary_options)) lines.push([k, v]);
-    } else if (db.picodata) {
-      lines.push(["instances", String(db.picodata.instances?.length || 0)]);
-      lines.push(["shards", String(db.picodata.shards)]);
-      lines.push(["rf", String(db.picodata.replication_factor)]);
-      if (db.picodata.instance_options) for (const [k, v] of Object.entries(db.picodata.instance_options)) lines.push([k, v]);
-    }
-    return <div className="space-y-0.5">{lines.map(([k, v], i) => <CfgRow key={i} k={k} v={v} />)}</div>;
-  }
-
-  if (groupLabel === "Monitoring") {
-    return (
-      <div className="space-y-0.5">
-        <CfgRow k="metrics" v={config.monitor?.metrics_endpoint || "built-in"} />
-        {config.monitor?.logs_endpoint && <CfgRow k="logs" v={config.monitor.logs_endpoint} />}
-      </div>
-    );
-  }
-
-  if (groupLabel === "Benchmark") {
-    return (
-      <div className="space-y-0.5">
-        <CfgRow k="script" v={s?.script || s?.workload || ""} />
-        {s?.version && <CfgRow k="stroppy" v={`v${s.version}`} />}
-        <CfgRow k="duration" v={s?.duration || ""} />
-        {(s?.vus || 0) > 0 && <CfgRow k="VUs" v={String(s.vus)} />}
-        {(s?.pool_size || 0) > 0 && <CfgRow k="pool" v={String(s.pool_size)} />}
-        {(s?.scale_factor || 0) > 0 && <CfgRow k="scale" v={String(s.scale_factor)} />}
-        {s?.machine && <CfgRow k="runner" v={`${s.machine.cpus} vCPU / ${fmtBytes(s.machine.memory_mb)}`} />}
-      </div>
-    );
-  }
-
-  return null;
-}
 
 function CfgRow({ k, v }: { k: string; v?: string | null }) {
   if (!v) return null;
@@ -411,7 +322,7 @@ function CfgRow({ k, v }: { k: string; v?: string | null }) {
 
 // ─── DAG pipeline (vertical) ─────────────────────────────────────
 
-function DagPipeline({ nodes, cancelled, config }: { nodes: NodeStatus[]; cancelled?: boolean; config?: RunConfig | null }) {
+function DagPipeline({ nodes, cancelled, effectiveConfigs }: { nodes: NodeStatus[]; cancelled?: boolean; effectiveConfigs?: Record<string, Record<string, string>> }) {
   const allPhaseIds = useMemo(() => phaseGroups.flatMap((g) => g.phases), []);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -542,11 +453,24 @@ function DagPipeline({ nodes, cancelled, config }: { nodes: NodeStatus[]; cancel
                     </div>
 
                     {/* Effective config for this group */}
-                    {config && (
-                      <div className="border-t border-zinc-800/20 px-2.5 py-1.5 bg-zinc-900/30">
-                        <GroupConfigDetail groupLabel={group.label} config={config} />
-                      </div>
-                    )}
+                    {(() => {
+                      const groupKey = group.label.toLowerCase();
+                      const stored = effectiveConfigs?.[groupKey];
+                      if (stored) {
+                        return (
+                          <div className="border-t border-zinc-800/20 px-2.5 py-1.5 bg-zinc-900/30">
+                            <div className="space-y-0.5">
+                              {Object.entries(stored).map(([k, v]) => <CfgRow key={k} k={k} v={v} />)}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return (
+                        <div className="border-t border-zinc-800/20 px-2.5 py-1.5 bg-zinc-900/30">
+                          <span className="text-[10px] font-mono text-zinc-700">config not available for this run</span>
+                        </div>
+                      );
+                    })()}
                   </>
                 )}
               </div>
@@ -578,6 +502,7 @@ interface RunOverviewProps {
     state?: {
       provider?: string;
       run_config?: Record<string, unknown> | string;
+      effective_configs?: Record<string, Record<string, string>>;
     };
   } | null;
 }
@@ -653,7 +578,7 @@ export function RunOverview({ nodes, snapshot, runStatus }: RunOverviewProps) {
 
       {/* Right — DAG pipeline */}
       <div className="flex-1 min-w-0">
-        <DagPipeline nodes={nodes} cancelled={runStatus === "cancelled"} config={config} />
+        <DagPipeline nodes={nodes} cancelled={runStatus === "cancelled"} effectiveConfigs={snapshot?.state?.effective_configs} />
       </div>
     </div>
   );

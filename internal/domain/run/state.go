@@ -31,6 +31,9 @@ type State struct {
 	// Cloud-specific: terraform working directory ID and actor for teardown.
 	terraformWdId  string
 	terraformActor *terraform.Actor
+
+	// Effective configs per component, set by config tasks at runtime.
+	effectiveConfigs map[string]map[string]string
 }
 
 func NewState() *State { return &State{} }
@@ -148,6 +151,15 @@ func (s *State) TerraformActor() *terraform.Actor {
 	return s.terraformActor
 }
 
+func (s *State) SetEffectiveConfig(component string, cfg map[string]string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.effectiveConfigs == nil {
+		s.effectiveConfigs = make(map[string]map[string]string)
+	}
+	s.effectiveConfigs[component] = cfg
+}
+
 // AllTargets returns all known agent targets across all roles.
 func (s *State) AllTargets() []agent.Target {
 	s.mu.RLock()
@@ -168,10 +180,11 @@ func (s *State) ExportRunState() *dag.RunState {
 	defer s.mu.RUnlock()
 
 	rs := &dag.RunState{
-		ContainerIDs: append([]string{}, s.containerIDs...),
-		NetworkID:    s.networkID,
-		DBHost:       s.dbHost,
-		DBPort:       s.dbPort,
+		ContainerIDs:     append([]string{}, s.containerIDs...),
+		NetworkID:        s.networkID,
+		DBHost:           s.dbHost,
+		DBPort:           s.dbPort,
+		EffectiveConfigs: s.effectiveConfigs,
 	}
 
 	for _, t := range s.dbTargets {
@@ -199,6 +212,7 @@ func (s *State) ImportRunState(rs *dag.RunState) {
 	s.networkID = rs.NetworkID
 	s.dbHost = rs.DBHost
 	s.dbPort = rs.DBPort
+	s.effectiveConfigs = rs.EffectiveConfigs
 
 	s.dbTargets = nil
 	s.monitorTargets = nil

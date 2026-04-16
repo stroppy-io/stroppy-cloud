@@ -33,6 +33,9 @@ type RunState struct {
 	NetworkID    string          `json:"network_id"`
 	DBHost       string          `json:"db_host"`
 	DBPort       int             `json:"db_port"`
+	// EffectiveConfigs stores the actual resolved config per component (e.g. "database", "monitoring").
+	// Set by config tasks at execution time so the UI shows real values, not derived estimates.
+	EffectiveConfigs map[string]map[string]string `json:"effective_configs,omitempty"`
 }
 
 // TargetInfo is a serializable representation of an agent target.

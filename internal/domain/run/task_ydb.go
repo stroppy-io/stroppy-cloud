@@ -83,6 +83,45 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 			return err
 		}
 	}
+
+	// Store effective config for UI display.
+	st := t.topology.Storage
+	diskGB := st.DiskGB
+	if diskGB <= 0 {
+		diskGB = 80
+	}
+	memMB := st.MemoryMB
+	if memMB <= 0 {
+		memMB = 4096
+	}
+	cpus := st.CPUs
+	if cpus <= 0 {
+		cpus = 2
+	}
+	pdiskGB := diskGB - 2
+	if pdiskGB < 10 {
+		pdiskGB = 10
+	}
+	hardMB := memMB * 85 / 100
+	softMB := hardMB * 90 / 100
+	nodes := fmt.Sprintf("%d storage", st.Count)
+	if t.topology.Database != nil {
+		nodes += fmt.Sprintf(" + %d compute", t.topology.Database.Count)
+	} else {
+		nodes += " (combined)"
+	}
+	t.state.SetEffectiveConfig("database", map[string]string{
+		"kind":      "ydb",
+		"nodes":     nodes,
+		"per_node":  fmt.Sprintf("%d vCPU / %d MB / %d GB", cpus, memMB, diskGB),
+		"pdisk_gb":  fmt.Sprintf("%d", pdiskGB),
+		"mem_hard":  fmt.Sprintf("%d MB", hardMB),
+		"mem_soft":  fmt.Sprintf("%d MB", softMB),
+		"cpu_count": fmt.Sprintf("%d", cpus),
+		"erasure":   ft,
+		"db_path":   t.topology.DatabasePath,
+	})
+
 	return nil
 }
 

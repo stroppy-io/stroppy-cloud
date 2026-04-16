@@ -86,5 +86,26 @@ func (t *mysqlConfigTask) Execute(nc *dag.NodeContext) error {
 			return err
 		}
 	}
+
+	// Store effective config.
+	p := t.topology.Primary
+	ec := map[string]string{
+		"kind":    "mysql",
+		"primary": fmt.Sprintf("%d× %d vCPU / %d MB / %d GB", p.Count, p.CPUs, p.MemoryMB, p.DiskGB),
+	}
+	if len(t.topology.Replicas) > 0 {
+		r := t.topology.Replicas[0]
+		ec["replicas"] = fmt.Sprintf("%d× %d vCPU / %d MB", r.Count, r.CPUs, r.MemoryMB)
+	}
+	if t.topology.GroupRepl {
+		ec["replication"] = "group"
+	} else if t.topology.SemiSync {
+		ec["replication"] = "semi-sync"
+	}
+	for k, v := range t.topology.PrimaryOptions {
+		ec[k] = v
+	}
+	t.state.SetEffectiveConfig("database", ec)
+
 	return nil
 }

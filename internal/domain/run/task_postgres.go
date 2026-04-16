@@ -1,6 +1,8 @@
 package run
 
 import (
+	"fmt"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
@@ -64,6 +66,28 @@ func (t *pgConfigTask) Execute(nc *dag.NodeContext) error {
 			return err
 		}
 	}
+	// Store effective config.
+	m := t.topology.Master
+	ec := map[string]string{
+		"kind":    "postgres",
+		"version": t.version,
+		"master":  fmt.Sprintf("%d× %d vCPU / %d MB / %d GB", m.Count, m.CPUs, m.MemoryMB, m.DiskGB),
+	}
+	if len(t.topology.Replicas) > 0 {
+		r := t.topology.Replicas[0]
+		ec["replicas"] = fmt.Sprintf("%d× %d vCPU / %d MB", r.Count, r.CPUs, r.MemoryMB)
+	}
+	if t.topology.Patroni {
+		ec["ha"] = "patroni + etcd"
+	}
+	if t.topology.PgBouncer {
+		ec["pooler"] = "pgbouncer"
+	}
+	for k, v := range t.topology.MasterOptions {
+		ec[k] = v
+	}
+	t.state.SetEffectiveConfig("database", ec)
+
 	// DB endpoint is set by machinesTask with the container name (for container-to-container).
 	return nil
 }

@@ -1,6 +1,8 @@
 package run
 
 import (
+	"fmt"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/core/dag"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/agent"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/types"
@@ -66,5 +68,22 @@ func (t *picoConfigTask) Execute(nc *dag.NodeContext) error {
 			return err
 		}
 	}
+
+	// Store effective config.
+	ec := map[string]string{
+		"kind":      "picodata",
+		"instances": fmt.Sprintf("%d", len(targets)),
+		"shards":    fmt.Sprintf("%d", t.topology.Shards),
+		"rf":        fmt.Sprintf("%d", t.topology.Replication),
+	}
+	if len(t.topology.Instances) > 0 {
+		inst := t.topology.Instances[0]
+		ec["per_node"] = fmt.Sprintf("%d vCPU / %d MB / %d GB", inst.CPUs, inst.MemoryMB, inst.DiskGB)
+	}
+	for k, v := range t.topology.InstanceOptions {
+		ec[k] = v
+	}
+	t.state.SetEffectiveConfig("database", ec)
+
 	return nil
 }

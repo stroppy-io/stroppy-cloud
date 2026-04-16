@@ -210,6 +210,7 @@ export interface Snapshot {
     provider?: string;
     run_config?: Record<string, unknown> | string; // object or JSON string
     targets?: SnapshotTarget[];
+    effective_configs?: Record<string, Record<string, string>>;
     [key: string]: unknown;
   };
 }
