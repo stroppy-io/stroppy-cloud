@@ -552,3 +552,20 @@ export async function uploadPackageDeb(
 
   return res.json();
 }
+
+// ---------- Share ----------
+
+export async function createShareLink(runID: string): Promise<{ token: string; url: string }> {
+  return request(`${API_BASE}/run/${runID}/share`, { method: "POST" });
+}
+
+export async function getSharedRun(token: string): Promise<{
+  run_id: string;
+  snapshot: unknown;
+  metrics: unknown;
+  created_at: string;
+}> {
+  const res = await fetch(`/api/share/${token}`);
+  if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+  return res.json();
+}

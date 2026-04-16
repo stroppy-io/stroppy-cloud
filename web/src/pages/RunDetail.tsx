@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getRunStatus, getGrafanaSettings, deleteRun, cancelRun } from "@/api/client";
+import { getRunStatus, getGrafanaSettings, deleteRun, cancelRun, createShareLink } from "@/api/client";
 import { ALL_DB_KINDS, type Snapshot, type NodeStatus, type GrafanaSettings, type RunConfig } from "@/api/types";
 import { RunOverview } from "@/components/RunOverview";
 import { LogStream } from "@/components/LogStream";
@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { RefreshCw, AlertCircle, Trash2, StopCircle } from "lucide-react";
+import { RefreshCw, AlertCircle, Trash2, StopCircle, Share2, Check } from "lucide-react";
 
 // DB-specific dashboards — only show the one matching the run's database kind.
 const DB_DASHBOARDS = ALL_DB_KINDS;
@@ -85,6 +85,8 @@ export function RunDetail() {
   const navigate = useNavigate();
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [sharing, setSharing] = useState(false);
   const [, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [grafana, setGrafana] = useState<GrafanaSettings | null>(null);
@@ -233,15 +235,42 @@ export function RunDetail() {
           )}
 
           {isFinished && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleDelete}
-              disabled={deleting}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              {deleting ? "Deleting..." : "Delete"}
-            </Button>
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={sharing}
+                className="border-primary/40 text-primary hover:bg-primary/10"
+                onClick={async () => {
+                  if (shareUrl) {
+                    navigator.clipboard.writeText(window.location.origin + shareUrl);
+                    return;
+                  }
+                  setSharing(true);
+                  try {
+                    const res = await createShareLink(id!);
+                    setShareUrl(res.url);
+                    navigator.clipboard.writeText(window.location.origin + res.url);
+                  } catch (err) {
+                    setError(err instanceof Error ? err.message : "Failed to create share link");
+                  } finally {
+                    setSharing(false);
+                  }
+                }}
+              >
+                {shareUrl ? <Check className="h-3.5 w-3.5" /> : <Share2 className="h-3.5 w-3.5" />}
+                {sharing ? "Sharing..." : shareUrl ? "Copied!" : "Share"}
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleDelete}
+                disabled={deleting}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                {deleting ? "Deleting..." : "Delete"}
+              </Button>
+            </>
           )}
         </div>
       </div>

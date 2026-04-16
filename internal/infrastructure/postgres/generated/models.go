@@ -60,6 +60,16 @@ type Run struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type SharedRun struct {
+	Token     string
+	RunID     string
+	TenantID  string
+	Snapshot  string
+	Metrics   string
+	CreatedBy string
+	CreatedAt pgtype.Timestamptz
+}
+
 type Tenant struct {
 	ID        string
 	Name      string

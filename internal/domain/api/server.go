@@ -158,6 +158,9 @@ func (s *Server) Router() http.Handler {
 		r.Post("/logs-batch", s.agentLogBatch)
 	})
 
+	// --- Public share links (no auth) ---
+	r.Get("/api/share/{token}", s.getSharedRun)
+
 	// --- Auth (public — handled by isPublicPath in middleware) ---
 	r.Post("/api/v1/auth/login", s.login)
 	r.Post("/api/v1/auth/refresh", s.refresh)
@@ -198,6 +201,7 @@ func (s *Server) Router() http.Handler {
 			r.Post("/probe", s.stroppyProbe)
 			r.Delete("/run/{runID}", s.deleteRun)
 			r.Post("/run/{runID}/cancel", s.cancelRun)
+			r.Post("/run/{runID}/share", s.createShareLink)
 			r.Put("/baseline/{name}", s.setBaseline)
 			r.Get("/baseline/{name}", s.getBaseline)
 			r.Get("/baselines", s.listBaselines)

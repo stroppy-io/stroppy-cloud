@@ -11,6 +11,7 @@ import { Presets } from "@/pages/Presets";
 import { Packages } from "@/pages/Packages";
 import { PresetDesigner } from "@/pages/PresetDesigner";
 import { ServerHealth } from "@/pages/ServerHealth";
+import { SharedRun } from "@/pages/SharedRun";
 
 import { Login } from "@/pages/Login";
 import { SelectTenant } from "@/pages/SelectTenant";
@@ -57,6 +58,15 @@ function AppRoutes() {
       <div className="flex h-screen items-center justify-center bg-background text-sm text-muted-foreground">
         Loading...
       </div>
+    );
+  }
+
+  // Share pages are always accessible, regardless of auth.
+  if (location.pathname.startsWith("/share/")) {
+    return (
+      <Routes>
+        <Route path="/share/:token" element={<SharedRun />} />
+      </Routes>
     );
   }
 
