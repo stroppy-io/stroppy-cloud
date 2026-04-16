@@ -182,6 +182,7 @@ export interface RunConfig {
   stroppy: StroppyConfig;
   preset_id?: string;
   package_id?: string;
+  platform_id?: string;
 }
 
 // --- DAG / Snapshot ---

@@ -106,8 +106,61 @@ export function DurationSlider({ label, value, onChange, disabled }: {
   );
 }
 
-export const CPU_STEPS = [2, 4, 8, 12, 16, 24, 32];
+export const CPU_STEPS = [2, 4, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192, 256];
 export const DISK_STEPS = [25, 50, 100, 200, 300, 500, 750, 1024];
+
+// ─── Yandex Cloud Platforms ──────────────────────────────────────
+
+export interface PlatformLimits {
+  label: string;
+  desc: string;
+  maxCores: number;
+  maxRamMb: number;     // per VM
+}
+
+export const YC_PLATFORMS: Record<string, PlatformLimits> = {
+  "standard-v2": { label: "Standard v2", desc: "Intel Cascade Lake", maxCores: 80, maxRamMb: 640 * 1024 },
+  "standard-v3": { label: "Standard v3", desc: "Intel Ice Lake",     maxCores: 96, maxRamMb: 768 * 1024 },
+  "highfreq-v3": { label: "High-freq v3", desc: "Intel Ice Lake HF", maxCores: 96, maxRamMb: 768 * 1024 },
+};
+
+export function platformLimits(platformId: string): PlatformLimits {
+  return YC_PLATFORMS[platformId] ?? YC_PLATFORMS["standard-v3"];
+}
+
+export function cpuStepsForPlatform(platformId: string): number[] {
+  const { maxCores } = platformLimits(platformId);
+  return CPU_STEPS.filter((s) => s <= maxCores);
+}
+
+export function PlatformSelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div>
+      <label className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1 block">Platform</label>
+      <div className="flex gap-1.5">
+        {Object.entries(YC_PLATFORMS).map(([id, spec]) => {
+          const active = value === id;
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onChange(id)}
+              className={`flex-1 px-2 py-1.5 text-left border transition-colors ${
+                active
+                  ? "border-primary/40 bg-primary/[0.06]"
+                  : "border-zinc-800 hover:border-zinc-700"
+              }`}
+            >
+              <div className={`text-[11px] font-mono font-medium ${active ? "text-primary" : "text-zinc-400"}`}>{spec.label}</div>
+              <div className="text-[9px] text-zinc-600">{spec.desc}</div>
+              <div className="text-[9px] text-zinc-700">{spec.maxCores} vCPU / {spec.maxRamMb / 1024} GB</div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 /**
  * Yandex Cloud disk performance specs.
@@ -190,11 +243,12 @@ export function DiskTypeSelect({ value, onChange, diskSizeGb }: { value: string;
   );
 }
 
-export function ramSteps(cpus: number): number[] {
+export function ramSteps(cpus: number, maxRamMb?: number): number[] {
   const min = cpus * 1024;
+  const cap = maxRamMb ?? 262144;
   const steps: number[] = [];
   let v = min;
-  while (v <= 262144) {
+  while (v <= cap) {
     steps.push(v);
     if (v < 8192) v += 1024;
     else if (v < 32768) v += 4096;

@@ -121,8 +121,8 @@ func TestPicodataDefaults_BaseKeys(t *testing.T) {
 
 func TestPicodataDefaults_PercentagePlaceholders(t *testing.T) {
 	d := PicodataDefaults("25.3")
-	if d["memtx_memory"] != "25%" {
-		t.Errorf("expected memtx_memory=25%%, got %s", d["memtx_memory"])
+	if d["memtx_memory"] != "2048MB" {
+		t.Errorf("expected memtx_memory=2048MB, got %s", d["memtx_memory"])
 	}
 	if d["vinyl_memory"] != "25%" {
 		t.Errorf("expected vinyl_memory=25%%, got %s", d["vinyl_memory"])

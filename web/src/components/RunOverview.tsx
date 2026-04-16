@@ -285,6 +285,7 @@ function ConfigPanel({ config, startedAt, finishedAt, isRunning }: {
       <div className="px-3 py-2 border-b border-zinc-800/50">
         <div className="text-[11px] text-zinc-500 uppercase tracking-wider mb-1.5">Infrastructure</div>
         <ConfigLine label="provider" value={config.provider} icon={Container} />
+        {config.platform_id && <ConfigLine label="platform" value={config.platform_id} />}
         <ConfigLine label="network" value={config.network?.cidr} icon={Network} />
         {config.network?.zone && <ConfigLine label="zone" value={config.network.zone} />}
       </div>

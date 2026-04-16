@@ -367,7 +367,11 @@ func (t *machinesTask) yandexMachines(nc *dag.NodeContext) error {
 		}
 	}
 
-	platformID := yc.PlatformID
+	// Per-run platform_id overrides the global setting.
+	platformID := t.runCfg.PlatformID
+	if platformID == "" {
+		platformID = yc.PlatformID
+	}
 	if platformID == "" {
 		platformID = "standard-v2"
 	}

@@ -303,6 +303,8 @@ type RunConfig struct {
 	// PackageID references a packages row. Resolved to ResolvedPackage at run start.
 	// If empty, the default built-in package for db_kind+version is used.
 	PackageID string `json:"package_id,omitempty"`
+	// PlatformID overrides the Yandex Cloud platform from server settings (e.g. "standard-v3").
+	PlatformID string `json:"platform_id,omitempty"`
 	// ResolvedPackage is populated by the server before building the DAG. Not sent by clients.
 	ResolvedPackage *Package `json:"-"`
 }

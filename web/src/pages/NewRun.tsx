@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 
 import { DB_COLORS } from "@/lib/db-colors";
-import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps, DiskTypeSelect } from "@/components/ui/sliders";
+import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps, DiskTypeSelect, PlatformSelect, cpuStepsForPlatform, platformLimits } from "@/components/ui/sliders";
 
 // --- Constants ---
 
@@ -91,6 +91,7 @@ export function NewRun() {
   );
   const [selectedPresetId, setSelectedPresetId] = useState(searchParams.get("preset_id") || "");
   const [provider, setProvider] = useState<Provider>("docker");
+  const [platformId, setPlatformId] = useState("standard-v3");
   const [version, setVersion] = useState(DB_VERSIONS[kind][0]);
   const [script, setScript] = useState("tpcc/procs");
   const [duration, setDuration] = useState("5m");
@@ -171,8 +172,9 @@ export function NewRun() {
     };
     if (selectedPresetId) cfg.preset_id = selectedPresetId;
     if (packageId) cfg.package_id = packageId;
+    if (provider === "yandex") cfg.platform_id = platformId;
     return cfg;
-  }, [kind, selectedPresetId, provider, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk, stroppyDiskType, stroppyVersion]);
+  }, [kind, selectedPresetId, provider, platformId, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk, stroppyDiskType, stroppyVersion]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -257,7 +259,7 @@ export function NewRun() {
         {/* Left — step content */}
         <div className="flex-1 min-w-0 overflow-y-auto p-5">
           {step === 0 && (
-            <StepInfra provider={provider} setProvider={setProvider} />
+            <StepInfra provider={provider} setProvider={setProvider} platformId={platformId} setPlatformId={setPlatformId} />
           )}
           {step === 1 && (
             <StepDatabase
@@ -279,6 +281,7 @@ export function NewRun() {
               poolSize={poolSize} setPoolSize={setPoolSize}
               dbKind={kind}
               provider={provider}
+              platformId={platformId}
               availableSteps={availableSteps} setAvailableSteps={setAvailableSteps}
               selectedSteps={selectedSteps} setSelectedSteps={setSelectedSteps}
               noSteps={noSteps} setNoSteps={setNoSteps}
@@ -324,6 +327,7 @@ export function NewRun() {
             <div className="text-[10px] font-mono text-zinc-600 uppercase tracking-wider">Setup Summary</div>
             <div className="space-y-1.5">
               <SummaryRow icon={ProvIcon} label="Provider" value={PROVIDER_META[provider].label} />
+              {provider === "yandex" && <SummaryRow label="Platform" value={platformLimits(platformId).label} />}
               <SummaryRow icon={DbIcon} label="Database" value={`${dbMeta.label} ${version}`} color={dbColor.text} />
               {selectedPreset && (
                 <SummaryRow label="Topology" value={selectedPreset.name} />
@@ -376,9 +380,11 @@ function SummaryRow({ icon: Icon, label, value, color }: {
 
 // ─── Step 1: Infrastructure ──────────────────────────────────────
 
-function StepInfra({ provider, setProvider }: {
+function StepInfra({ provider, setProvider, platformId, setPlatformId }: {
   provider: Provider;
   setProvider: (p: Provider) => void;
+  platformId: string;
+  setPlatformId: (p: string) => void;
 }) {
   return (
     <div className="space-y-5 max-w-lg">
@@ -410,6 +416,9 @@ function StepInfra({ provider, setProvider }: {
           );
         })}
       </div>
+      {provider === "yandex" && (
+        <PlatformSelect value={platformId} onChange={setPlatformId} />
+      )}
     </div>
   );
 }
@@ -530,7 +539,7 @@ function StepDatabase({
 // Suggest optimal stroppy machine based on VUs and pool size.
 function suggestStroppyMachine(vus: number, poolSize: number): { cpus: number; memory: number; disk: number; reason: string } {
   // Rule of thumb: 1 vCPU per ~20 VUs, min 2. Memory = cpus * 2GB. Pool adds memory overhead.
-  const cpus = Math.max(2, Math.min(32, Math.ceil(vus / 20) * 2));
+  const cpus = Math.max(2, Math.min(256, Math.ceil(vus / 20) * 2));
   const memBase = cpus * 2048;
   const memPool = Math.ceil(poolSize / 100) * 512;
   const memory = Math.max(2048, memBase + memPool);
@@ -547,6 +556,7 @@ function StepStroppy({
   poolSize, setPoolSize,
   dbKind,
   provider,
+  platformId,
   availableSteps, setAvailableSteps,
   selectedSteps, setSelectedSteps,
   noSteps, setNoSteps,
@@ -567,6 +577,7 @@ function StepStroppy({
   poolSize: number; setPoolSize: (v: number) => void;
   dbKind: DatabaseKind;
   provider: Provider;
+  platformId: string;
   availableSteps: string[]; setAvailableSteps: (v: string[]) => void;
   selectedSteps: string[]; setSelectedSteps: (v: string[]) => void;
   noSteps: string[]; setNoSteps: (v: string[]) => void;
@@ -719,10 +730,10 @@ function StepStroppy({
           return (
             <>
               <div className="grid grid-cols-3 gap-3">
-                <SliderField label="CPUs" value={stroppyCpus} steps={CPU_STEPS}
+                <SliderField label="CPUs" value={stroppyCpus} steps={cpuStepsForPlatform(platformId)}
                   onChange={setStroppyCpus} format={(v) => `${v} vCPU`} />
                 <SliderField label="Memory" value={stroppyMemory}
-                  steps={ramSteps(stroppyCpus)}
+                  steps={ramSteps(stroppyCpus, platformLimits(platformId).maxRamMb)}
                   onChange={setStroppyMemory}
                   format={(v) => v >= 1024 ? `${(v/1024).toFixed(v%1024?1:0)} GB` : `${v} MB`} />
                 <SliderField label="Disk" value={stroppyDisk} steps={DISK_STEPS}
