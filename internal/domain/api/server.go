@@ -1183,7 +1183,23 @@ func (s *Server) compareRuns(w http.ResponseWriter, r *http.Request) {
 	comp := metrics.Compare(metricsA, metricsB, threshold)
 	comp.Start = tr.Start
 	comp.End = tr.End
-	writeJSON(w, http.StatusOK, comp)
+
+	// Enrich with run configs so the UI can show hardware info.
+	snapAFull, _ := s.app.storage.Load(r.Context(), tenantID, runA)
+	snapBFull, _ := s.app.storage.Load(r.Context(), tenantID, runB)
+	type enriched struct {
+		*metrics.Comparison
+		ConfigA json.RawMessage `json:"config_a,omitempty"`
+		ConfigB json.RawMessage `json:"config_b,omitempty"`
+	}
+	resp := enriched{Comparison: comp}
+	if snapAFull != nil && snapAFull.State != nil {
+		resp.ConfigA = snapAFull.State.RunConfig
+	}
+	if snapBFull != nil && snapBFull.State != nil {
+		resp.ConfigB = snapBFull.State.RunConfig
+	}
+	writeJSON(w, http.StatusOK, resp)
 }
 
 func parseTimeRange(r *http.Request) (metrics.TimeRange, error) {

@@ -317,6 +317,8 @@ export interface ComparisonResponse {
   end: string;
   metrics: ComparisonRow[];
   summary: { better: number; worse: number; same: number };
+  config_a?: RunConfig;
+  config_b?: RunConfig;
 }
 
 // --- Auth / Multi-tenancy ---

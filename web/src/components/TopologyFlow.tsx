@@ -139,7 +139,7 @@ function buildYDB(t: YDBTopology): { nodes: TopoNode[]; edges: TopoEdge[] } {
   if (t.database) {
     const dbCount = t.database.count || 1;
     nodes.push({ id: "database", label: "Database", count: dbCount, color: c.hexSecondary, group: "db" });
-    edges.push({ from: "storage", to: "database", label: "tablets", animated: true });
+    edges.push({ from: "storage", to: "database", label: "grpc", animated: true });
   }
 
   if (t.haproxy) {

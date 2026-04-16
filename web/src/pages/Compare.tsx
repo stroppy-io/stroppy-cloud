@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { AlertCircle, GitCompare, ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
+import { AlertCircle, GitCompare, ArrowLeft, ExternalLink, Loader2, Cpu } from "lucide-react";
+import type { RunConfig, MachineSpec } from "@/api/types";
 
 export function Compare() {
   const [searchParams] = useSearchParams();
@@ -175,6 +176,14 @@ export function Compare() {
         </div>
       )}
 
+      {/* Hardware summary */}
+      {result && (result.config_a || result.config_b) && (
+        <div className="grid grid-cols-2 gap-3">
+          <HardwareCard label="Run A" runId={result.run_a} config={result.config_a} color="text-cyan-400" />
+          <HardwareCard label="Run B" runId={result.run_b} config={result.config_b} color="text-amber-400" />
+        </div>
+      )}
+
       {/* Results */}
       {result && (
         <Card className="border-zinc-800/80 bg-[#080808]">
@@ -227,5 +236,60 @@ export function Compare() {
         </Card>
       )}
     </div>
+  );
+}
+
+function fmtMem(mb: number): string {
+  return mb >= 1024 ? `${(mb / 1024).toFixed(mb % 1024 ? 1 : 0)} GB` : `${mb} MB`;
+}
+
+function dbMachineFromConfig(cfg: RunConfig): MachineSpec | null {
+  const db = cfg.database;
+  if (db?.postgres?.master) return db.postgres.master;
+  if (db?.mysql?.primary) return db.mysql.primary;
+  if (db?.picodata?.instances?.[0]) return db.picodata.instances[0];
+  if (db?.ydb?.storage) return db.ydb.storage;
+  if (cfg.machine_override) return cfg.machine_override;
+  return cfg.machines?.find((m) => m.role === "database") ?? null;
+}
+
+function HardwareCard({ label, runId, config, color }: { label: string; runId: string; config?: RunConfig; color: string }) {
+  if (!config) return null;
+  const db = dbMachineFromConfig(config);
+  const stroppy = config.stroppy?.machine;
+  return (
+    <Card className="border-zinc-800/80 bg-[#080808]">
+      <CardContent className="py-3 px-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Cpu className={`h-3.5 w-3.5 ${color}`} />
+          <span className={`text-[11px] font-mono font-medium ${color}`}>{label}</span>
+          <span className="text-[10px] font-mono text-zinc-600">{runId}</span>
+        </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] font-mono">
+          <span className="text-zinc-500">DB</span>
+          <span className="text-zinc-300">{config.database?.kind} {config.database?.version}</span>
+          {config.platform_id && <>
+            <span className="text-zinc-500">Platform</span>
+            <span className="text-zinc-300">{config.platform_id}</span>
+          </>}
+          {db && <>
+            <span className="text-zinc-500">DB Machine</span>
+            <span className="text-zinc-300">{db.cpus} vCPU / {fmtMem(db.memory_mb)} / {db.disk_gb} GB {db.disk_type || ""}</span>
+          </>}
+          {stroppy && <>
+            <span className="text-zinc-500">Runner</span>
+            <span className="text-zinc-300">{stroppy.cpus} vCPU / {fmtMem(stroppy.memory_mb)}</span>
+          </>}
+          <span className="text-zinc-500">Workload</span>
+          <span className="text-zinc-300">{config.stroppy?.script} / {config.stroppy?.vus} VUs / SF {config.stroppy?.scale_factor || 1}</span>
+          <span className="text-zinc-500">Duration</span>
+          <span className="text-zinc-300">{config.stroppy?.duration}</span>
+          {config.provider && <>
+            <span className="text-zinc-500">Provider</span>
+            <span className="text-zinc-300">{config.provider}</span>
+          </>}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
