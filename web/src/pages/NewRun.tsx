@@ -35,6 +35,7 @@ import {
   ChevronLeft,
   ChevronDown,
   Loader2,
+  Pencil,
 } from "lucide-react";
 
 import { DB_COLORS } from "@/lib/db-colors";
@@ -308,6 +309,21 @@ export function NewRun() {
               error={error}
               submitting={submitting}
               onSubmit={handleSubmit}
+              onEdit={(group, key, value) => {
+                const n = parseInt(value);
+                if (group === "database") {
+                  if (key === "cpu_count" && !isNaN(n)) setDbCpus(closestStep(n, cpuStepsForPlatform(platformId)));
+                  else if (key === "mem_hard" && !isNaN(n)) setDbMemory(n * 100 / 85); // reverse 85%
+                  else if (key === "pdisk_gb" && !isNaN(n)) setDbDisk(n + 2); // reverse disk-2
+                } else if (group === "benchmark") {
+                  if (key === "VUs" && !isNaN(n)) setVus(n);
+                  else if (key === "duration") setDuration(value);
+                  else if (key === "pool" && !isNaN(n)) setPoolSize(n);
+                  else if (key === "scale" && !isNaN(n)) setScaleFactor(n);
+                } else if (group === "infrastructure") {
+                  if (key === "platform") setPlatformId(value);
+                }
+              }}
             />
           )}
 
@@ -817,6 +833,56 @@ function humanPhase(id: string): string {
   return id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+// Keys that can be edited in the review step — mapped back to state via onEdit.
+const EDITABLE_KEYS: Record<string, Set<string>> = {
+  database: new Set(["cpu_count", "pdisk_gb", "mem_hard"]),
+  benchmark: new Set(["VUs", "duration", "pool", "scale"]),
+  infrastructure: new Set(["platform"]),
+};
+
+function EditableCfgRow({ k, v, groupKey, onEdit }: {
+  k: string; v: string; groupKey: string;
+  onEdit?: (group: string, key: string, value: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(v);
+  const editable = onEdit && EDITABLE_KEYS[groupKey]?.has(k);
+
+  const commit = () => {
+    setEditing(false);
+    if (draft !== v && onEdit) onEdit(groupKey, k, draft);
+  };
+
+  if (editing) {
+    return (
+      <div className="flex gap-2 text-[10px] font-mono leading-relaxed">
+        <span className="text-zinc-600 shrink-0 w-20 text-right">{k}</span>
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={commit}
+          onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") { setDraft(v); setEditing(false); } }}
+          className="flex-1 bg-zinc-800 text-zinc-200 px-1 py-0 border border-zinc-600 outline-none text-[10px] font-mono"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex gap-2 text-[10px] font-mono leading-relaxed group/row">
+      <span className="text-zinc-600 shrink-0 w-20 text-right">{k}</span>
+      <span className="text-zinc-400 truncate flex-1" title={v}>{v}</span>
+      {editable && (
+        <button type="button" onClick={() => { setDraft(v); setEditing(true); }}
+          className="opacity-0 group-hover/row:opacity-100 text-zinc-600 hover:text-zinc-400 transition-opacity shrink-0">
+          <Pencil className="w-2.5 h-2.5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 interface DryRunNode {
   id: string;
   type: string;
@@ -830,6 +896,7 @@ function StepReview({
   error,
   submitting,
   onSubmit,
+  onEdit,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dryRunResult: any;
@@ -838,6 +905,7 @@ function StepReview({
   error: string | null;
   submitting: boolean;
   onSubmit: () => void;
+  onEdit?: (group: string, key: string, value: string) => void;
 }) {
   const canLaunch = validationResult?.ok && !dryRunLoading && !error;
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -956,10 +1024,7 @@ function StepReview({
                       {cfgEntries && Object.keys(cfgEntries).length > 0 && (
                         <div className="border-t border-zinc-800/20 px-3 py-1.5 bg-zinc-900/50 space-y-0.5">
                           {Object.entries(cfgEntries).map(([k, v]) => (
-                            <div key={k} className="flex gap-2 text-[10px] font-mono leading-relaxed">
-                              <span className="text-zinc-600 shrink-0 w-20 text-right">{k}</span>
-                              <span className="text-zinc-400 truncate" title={v}>{v}</span>
-                            </div>
+                            <EditableCfgRow key={k} k={k} v={v} groupKey={groupKey} onEdit={onEdit} />
                           ))}
                         </div>
                       )}
