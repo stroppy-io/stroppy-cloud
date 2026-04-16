@@ -183,6 +183,7 @@ export interface RunConfig {
   preset_id?: string;
   package_id?: string;
   platform_id?: string;
+  machine_override?: MachineSpec;
 }
 
 // --- DAG / Snapshot ---

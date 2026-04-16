@@ -305,6 +305,9 @@ type RunConfig struct {
 	PackageID string `json:"package_id,omitempty"`
 	// PlatformID overrides the Yandex Cloud platform from server settings (e.g. "standard-v3").
 	PlatformID string `json:"platform_id,omitempty"`
+	// MachineOverride, when set, overrides the CPU/memory/disk of all database-role
+	// machines from the preset topology. Allows per-run sizing without editing the preset.
+	MachineOverride *MachineSpec `json:"machine_override,omitempty"`
 	// ResolvedPackage is populated by the server before building the DAG. Not sent by clients.
 	ResolvedPackage *Package `json:"-"`
 }

@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 
 import { DB_COLORS } from "@/lib/db-colors";
-import { NumericSlider, DurationSlider, SliderField, CPU_STEPS, DISK_STEPS, ramSteps, DiskTypeSelect, PlatformSelect, cpuStepsForPlatform, platformLimits } from "@/components/ui/sliders";
+import { NumericSlider, DurationSlider, SliderField, DISK_STEPS, ramSteps, DiskTypeSelect, PlatformSelect, cpuStepsForPlatform, platformLimits } from "@/components/ui/sliders";
 
 // --- Constants ---
 
@@ -106,10 +106,10 @@ export function NewRun() {
   const [availableSteps, setAvailableSteps] = useState<string[]>([]);
   const [selectedSteps, setSelectedSteps] = useState<string[]>([]);
   const [noSteps, setNoSteps] = useState<string[]>([]);
-  const [stroppyCpus, setStroppyCpus] = useState(2);
-  const [stroppyMemory, setStroppyMemory] = useState(4096);
-  const [stroppyDisk, setStroppyDisk] = useState(25);
-  const [stroppyDiskType, setStroppyDiskType] = useState("network-ssd");
+  const [dbCpus, setDbCpus] = useState(2);
+  const [dbMemory, setDbMemory] = useState(4096);
+  const [dbDisk, setDbDisk] = useState(25);
+  const [dbDiskType, setDbDiskType] = useState("network-ssd");
   const [packageId, setPackageId] = useState("");
   const [availablePackages, setAvailablePackages] = useState<Package[]>([]);
 
@@ -167,14 +167,17 @@ export function NewRun() {
         scale_factor: scaleFactor,
         ...(selectedSteps.length > 0 ? { steps: selectedSteps } : {}),
         ...(noSteps.length > 0 ? { no_steps: noSteps } : {}),
-        machine: { role: "stroppy" as const, count: 1, cpus: stroppyCpus, memory_mb: stroppyMemory, disk_gb: stroppyDisk, disk_type: stroppyDiskType },
+        ...(provider === "yandex" ? (() => { const s = suggestStroppyMachine(vus, poolSize); return { machine: { role: "stroppy" as const, count: 1, cpus: s.cpus, memory_mb: s.memory, disk_gb: s.disk } }; })() : {}),
       },
     };
     if (selectedPresetId) cfg.preset_id = selectedPresetId;
     if (packageId) cfg.package_id = packageId;
-    if (provider === "yandex") cfg.platform_id = platformId;
+    if (provider === "yandex") {
+      cfg.platform_id = platformId;
+      cfg.machine_override = { role: "database", count: 1, cpus: dbCpus, memory_mb: dbMemory, disk_gb: dbDisk, disk_type: dbDiskType };
+    }
     return cfg;
-  }, [kind, selectedPresetId, provider, platformId, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, stroppyCpus, stroppyMemory, stroppyDisk, stroppyDiskType, stroppyVersion]);
+  }, [kind, selectedPresetId, provider, platformId, version, script, duration, vus, poolSize, scaleFactor, packageId, selectedSteps, noSteps, dbCpus, dbMemory, dbDisk, dbDiskType, stroppyVersion]);
 
   const configJSON = useMemo(() => JSON.stringify(config, null, 2), [config]);
 
@@ -286,10 +289,10 @@ export function NewRun() {
               selectedSteps={selectedSteps} setSelectedSteps={setSelectedSteps}
               noSteps={noSteps} setNoSteps={setNoSteps}
               probeData={probeData} setProbeData={setProbeData}
-              stroppyCpus={stroppyCpus} setStroppyCpus={setStroppyCpus}
-              stroppyMemory={stroppyMemory} setStroppyMemory={setStroppyMemory}
-              stroppyDisk={stroppyDisk} setStroppyDisk={setStroppyDisk}
-              stroppyDiskType={stroppyDiskType} setStroppyDiskType={setStroppyDiskType}
+              dbCpus={dbCpus} setDbCpus={setDbCpus}
+              dbMemory={dbMemory} setDbMemory={setDbMemory}
+              dbDisk={dbDisk} setDbDisk={setDbDisk}
+              dbDiskType={dbDiskType} setDbDiskType={setDbDiskType}
               stroppyVersion={stroppyVersion} setStroppyVersion={setStroppyVersion}
               stroppyVersions={stroppyVersions} setStroppyVersions={setStroppyVersions}
               versionsLoading={versionsLoading} setVersionsLoading={setVersionsLoading}
@@ -561,10 +564,10 @@ function StepStroppy({
   selectedSteps, setSelectedSteps,
   noSteps, setNoSteps,
   probeData, setProbeData,
-  stroppyCpus, setStroppyCpus,
-  stroppyMemory, setStroppyMemory,
-  stroppyDisk, setStroppyDisk,
-  stroppyDiskType, setStroppyDiskType,
+  dbCpus, setDbCpus,
+  dbMemory, setDbMemory,
+  dbDisk, setDbDisk,
+  dbDiskType, setDbDiskType,
   stroppyVersion, setStroppyVersion,
   stroppyVersions, setStroppyVersions,
   versionsLoading, setVersionsLoading,
@@ -582,10 +585,10 @@ function StepStroppy({
   selectedSteps: string[]; setSelectedSteps: (v: string[]) => void;
   noSteps: string[]; setNoSteps: (v: string[]) => void;
   probeData: ProbeResponse | null; setProbeData: (v: ProbeResponse | null) => void;
-  stroppyCpus: number; setStroppyCpus: (v: number) => void;
-  stroppyMemory: number; setStroppyMemory: (v: number) => void;
-  stroppyDisk: number; setStroppyDisk: (v: number) => void;
-  stroppyDiskType: string; setStroppyDiskType: (v: string) => void;
+  dbCpus: number; setDbCpus: (v: number) => void;
+  dbMemory: number; setDbMemory: (v: number) => void;
+  dbDisk: number; setDbDisk: (v: number) => void;
+  dbDiskType: string; setDbDiskType: (v: string) => void;
   stroppyVersion: string; setStroppyVersion: (v: string) => void;
   stroppyVersions: string[]; setStroppyVersions: (v: string[]) => void;
   versionsLoading: boolean; setVersionsLoading: (v: boolean) => void;
@@ -707,52 +710,28 @@ function StepStroppy({
         </div>
       )}
 
-      {/* Stroppy machine — only for cloud providers */}
+      {/* Database machine override — only for cloud providers */}
       {provider === "yandex" && (
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Runner Machine</span>
-          <button type="button"
-            onClick={() => {
-              const s = suggestStroppyMachine(vus, poolSize);
-              setStroppyCpus(s.cpus);
-              setStroppyMemory(s.memory);
-              setStroppyDisk(s.disk);
-            }}
-            className="text-[9px] font-mono text-primary hover:text-primary/80 cursor-pointer"
-          >
-            Auto-suggest
-          </button>
+        <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider mb-2 block">Database Machine</span>
+        <div className="grid grid-cols-3 gap-3">
+          <SliderField label="CPUs" value={dbCpus} steps={cpuStepsForPlatform(platformId)}
+            onChange={setDbCpus} format={(v) => `${v} vCPU`} />
+          <SliderField label="Memory" value={dbMemory}
+            steps={ramSteps(dbCpus, platformLimits(platformId).maxRamMb)}
+            onChange={setDbMemory}
+            format={(v) => v >= 1024 ? `${(v/1024).toFixed(v%1024?1:0)} GB` : `${v} MB`} />
+          <SliderField label="Disk" value={dbDisk} steps={DISK_STEPS}
+            onChange={setDbDisk} format={(v) => `${v} GB`} />
         </div>
-        {(() => {
-          const suggestion = suggestStroppyMachine(vus, poolSize);
-          const isOptimal = stroppyCpus >= suggestion.cpus && stroppyMemory >= suggestion.memory;
-          return (
-            <>
-              <div className="grid grid-cols-3 gap-3">
-                <SliderField label="CPUs" value={stroppyCpus} steps={cpuStepsForPlatform(platformId)}
-                  onChange={setStroppyCpus} format={(v) => `${v} vCPU`} />
-                <SliderField label="Memory" value={stroppyMemory}
-                  steps={ramSteps(stroppyCpus, platformLimits(platformId).maxRamMb)}
-                  onChange={setStroppyMemory}
-                  format={(v) => v >= 1024 ? `${(v/1024).toFixed(v%1024?1:0)} GB` : `${v} MB`} />
-                <SliderField label="Disk" value={stroppyDisk} steps={DISK_STEPS}
-                  onChange={setStroppyDisk} format={(v) => `${v} GB`} />
-              </div>
-              <DiskTypeSelect
-                value={stroppyDiskType}
-                onChange={setStroppyDiskType}
-                diskSizeGb={stroppyDisk}
-              />
-              <div className={`mt-2 text-[9px] font-mono ${isOptimal ? "text-zinc-600" : "text-amber-500"}`}>
-                {isOptimal
-                  ? `Recommended: ${suggestion.cpus} vCPU / ${(suggestion.memory/1024).toFixed(0)} GB — current config meets requirements`
-                  : `Recommendation: ${suggestion.cpus} vCPU / ${(suggestion.memory/1024).toFixed(0)} GB (${suggestion.reason}). Current may be undersized.`
-                }
-              </div>
-            </>
-          );
-        })()}
+        <DiskTypeSelect
+          value={dbDiskType}
+          onChange={setDbDiskType}
+          diskSizeGb={dbDisk}
+        />
+        <div className="mt-2 text-[9px] font-mono text-zinc-600">
+          Overrides preset machine specs for all database nodes. Stroppy runner auto-sizes from VUs.
+        </div>
       </div>
       )}
 
