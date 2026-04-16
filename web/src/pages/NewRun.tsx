@@ -539,6 +539,18 @@ function StepDatabase({
 
 // ─── Step 3: Stroppy ─────────────────────────────────────────────
 
+// Suggest minimum disk size (GB) based on script type and scale factor.
+// TPC-C: ~100 MB per warehouse. TPC-B: ~15 MB per scale unit. 2x headroom for WAL/indexes.
+function suggestDiskGb(script: string, scaleFactor: number): { diskGb: number; reason: string } {
+  const isTpcc = script.startsWith("tpcc");
+  const dataPerUnit = isTpcc ? 1000 : 150; // MB — realistic with indexes, WAL, bloat
+  const rawMb = dataPerUnit * Math.max(1, scaleFactor);
+  const withHeadroom = rawMb * 2;
+  const diskGb = Math.max(25, Math.ceil(withHeadroom / 1024) * 25); // round up to nearest 25 GB
+  const reason = `${isTpcc ? "TPC-C" : "TPC-B"} × ${scaleFactor} ≈ ${Math.ceil(rawMb / 1024)} GB data → ${diskGb} GB with headroom`;
+  return { diskGb, reason };
+}
+
 // Suggest optimal stroppy machine based on VUs and pool size.
 function suggestStroppyMachine(vus: number, poolSize: number): { cpus: number; memory: number; disk: number; reason: string } {
   // Rule of thumb: 1 vCPU per ~20 VUs, min 2. Memory = cpus * 2GB. Pool adds memory overhead.
@@ -677,9 +689,9 @@ function StepStroppy({
       {/* Parameters */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-4">
         <DurationSlider label="Duration" value={duration} onChange={setDuration} />
-        <NumericSlider label="VUs" value={vus} min={1} max={200}
-          onChange={setVus} hint="Virtual users (k6 --vus)" />
-        <NumericSlider label="Scale Factor" value={scaleFactor} min={1} max={100}
+        <NumericSlider label="VUs" value={vus} min={1} max={1000}
+          onChange={setVus} hint="Virtual users (k6 --vus), ~VUs/warehouses per warehouse" />
+        <NumericSlider label="Scale Factor" value={scaleFactor} min={1} max={1000}
           onChange={setScaleFactor} hint="TPC-C warehouses / TPC-B branches" />
         <NumericSlider label="Pool Size" value={poolSize} min={10} max={1000} step={10}
           onChange={setPoolSize} hint="DB connections" />
@@ -729,9 +741,17 @@ function StepStroppy({
           onChange={setDbDiskType}
           diskSizeGb={dbDisk}
         />
-        <div className="mt-2 text-[9px] font-mono text-zinc-600">
-          Overrides preset machine specs for all database nodes. Stroppy runner auto-sizes from VUs.
-        </div>
+        {(() => {
+          const ds = suggestDiskGb(script, scaleFactor);
+          const undersized = dbDisk < ds.diskGb;
+          return (
+            <div className={`mt-2 text-[9px] font-mono ${undersized ? "text-amber-500" : "text-zinc-600"}`}>
+              {undersized
+                ? `Disk may be undersized: ${ds.reason}. Consider ${ds.diskGb} GB+.`
+                : ds.reason}
+            </div>
+          );
+        })()}
       </div>
       )}
 
