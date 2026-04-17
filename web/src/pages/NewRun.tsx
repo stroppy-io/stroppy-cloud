@@ -53,10 +53,10 @@ const SCRIPTS: { id: string; label: string; desc: string; dbs: DatabaseKind[] }[
 ];
 
 const DB_VERSIONS: Record<DatabaseKind, string[]> = {
-  postgres: ["16", "17"],
-  mysql: ["8.0", "8.4"],
+  postgres: ["17", "16", "15"],
+  mysql: ["8.4", "8.0"],
   picodata: ["25.3"],
-  ydb: ["25.3"],
+  ydb: ["25.3", "25.2", "25.1", "24.4", "24.3"],
 };
 
 const DB_META: Record<DatabaseKind, { icon: typeof Database; label: string }> = {
@@ -533,14 +533,18 @@ function StepDatabase({
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Version</Label>
-          <Select value={version} onValueChange={setVersion}>
-            <SelectTrigger className="h-8 font-mono text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {DB_VERSIONS[kind].map((v) => (
-                <SelectItem key={v} value={v}>{dbMeta.label} {v}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <input
+            list={`versions-${kind}`}
+            value={version}
+            onChange={(e) => setVersion(e.target.value)}
+            className="h-8 w-full px-2 font-mono text-xs bg-transparent border border-zinc-800 text-zinc-300 outline-none focus:border-zinc-600"
+            placeholder={DB_VERSIONS[kind][0]}
+          />
+          <datalist id={`versions-${kind}`}>
+            {DB_VERSIONS[kind].map((v) => (
+              <option key={v} value={v} />
+            ))}
+          </datalist>
         </div>
         <div className="space-y-1.5">
           <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Package</Label>
