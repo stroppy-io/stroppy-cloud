@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { RefreshCw, AlertCircle, Trash2, StopCircle, Share2, Check } from "lucide-react";
+import { RefreshCw, AlertCircle, Trash2, StopCircle, Share2, Check, RotateCcw } from "lucide-react";
 
 // DB-specific dashboards — only show the one matching the run's database kind.
 const DB_DASHBOARDS = ALL_DB_KINDS;
@@ -243,6 +243,19 @@ export function RunDetail() {
 
           {isFinished && (
             <>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (runConfig) {
+                    sessionStorage.setItem("rerun_config", JSON.stringify(runConfig));
+                  }
+                  navigate(`/runs/new?kind=${runConfig?.database?.kind || "postgres"}`);
+                }}
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Rerun
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

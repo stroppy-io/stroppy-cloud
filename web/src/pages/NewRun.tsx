@@ -85,34 +85,50 @@ export function NewRun() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  // Check for rerun config from sessionStorage (set by RunDetail's Rerun button).
+  const rerunConfig = useMemo<RunConfig | null>(() => {
+    try {
+      const raw = sessionStorage.getItem("rerun_config");
+      if (raw) {
+        sessionStorage.removeItem("rerun_config");
+        return JSON.parse(raw) as RunConfig;
+      }
+    } catch { /* ignore */ }
+    return null;
+  }, []);
+
+  const rc = rerunConfig; // shorthand
+  const rcS = rc?.stroppy;
+  const rcOv = rc?.machine_override;
+
   const [step, setStep] = useState(0);
 
   const [allPresets, setAllPresets] = useState<Preset[]>([]);
   const [kind, setKind] = useState<DatabaseKind>(
-    (searchParams.get("kind") as DatabaseKind) || "postgres"
+    rc?.database?.kind as DatabaseKind || (searchParams.get("kind") as DatabaseKind) || "postgres"
   );
-  const [selectedPresetId, setSelectedPresetId] = useState(searchParams.get("preset_id") || "");
-  const [provider, setProvider] = useState<Provider>("docker");
-  const [platformId, setPlatformId] = useState("standard-v3");
-  const [version, setVersion] = useState(DB_VERSIONS[kind][0]);
-  const [script, setScript] = useState("tpcc/procs");
-  const [duration, setDuration] = useState("5m");
-  const [vus, setVus] = useState(10);
-  const [poolSize, setPoolSize] = useState(100);
-  const [scaleFactor, setScaleFactor] = useState(1);
-  const [stroppyVersion, setStroppyVersion] = useState("4.1.0");
-  const [stroppyVersions, setStroppyVersions] = useState<string[]>(["4.1.0"]);
+  const [selectedPresetId, setSelectedPresetId] = useState(rc?.preset_id || searchParams.get("preset_id") || "");
+  const [provider, setProvider] = useState<Provider>(rc?.provider || "docker");
+  const [platformId, setPlatformId] = useState(rc?.platform_id || "standard-v3");
+  const [version, setVersion] = useState(rc?.database?.version || DB_VERSIONS[kind][0]);
+  const [script, setScript] = useState(rcS?.script || rcS?.workload || "tpcc/procs");
+  const [duration, setDuration] = useState(rcS?.duration || "5m");
+  const [vus, setVus] = useState(rcS?.vus || rcS?.vus_scale || 10);
+  const [poolSize, setPoolSize] = useState(rcS?.pool_size || 100);
+  const [scaleFactor, setScaleFactor] = useState(rcS?.scale_factor || 1);
+  const [stroppyVersion, setStroppyVersion] = useState(rcS?.version || "4.1.0");
+  const [stroppyVersions, setStroppyVersions] = useState<string[]>([rcS?.version || "4.1.0"]);
   const [versionsLoading, setVersionsLoading] = useState(false);
   const versionsLoaded = useRef(false);
   const [probeData, setProbeData] = useState<ProbeResponse | null>(null);
   const [availableSteps, setAvailableSteps] = useState<string[]>([]);
-  const [selectedSteps, setSelectedSteps] = useState<string[]>([]);
-  const [noSteps, setNoSteps] = useState<string[]>([]);
-  const [dbCpus, setDbCpus] = useState(2);
-  const [dbMemory, setDbMemory] = useState(4096);
-  const [dbDisk, setDbDisk] = useState(25);
-  const [dbDiskType, setDbDiskType] = useState("network-ssd");
-  const [packageId, setPackageId] = useState("");
+  const [selectedSteps, setSelectedSteps] = useState<string[]>(rcS?.steps || []);
+  const [noSteps, setNoSteps] = useState<string[]>(rcS?.no_steps || []);
+  const [dbCpus, setDbCpus] = useState(rcOv?.cpus || 2);
+  const [dbMemory, setDbMemory] = useState(rcOv?.memory_mb || 4096);
+  const [dbDisk, setDbDisk] = useState(rcOv?.disk_gb || 25);
+  const [dbDiskType, setDbDiskType] = useState(rcOv?.disk_type || "network-ssd");
+  const [packageId, setPackageId] = useState(rc?.package_id || "");
   const [availablePackages, setAvailablePackages] = useState<Package[]>([]);
 
   const [submitting, setSubmitting] = useState(false);
