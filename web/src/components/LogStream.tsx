@@ -136,9 +136,9 @@ function HighlightText({ text, search }: { text: string; search: string }) {
 
 /* ---------- component ---------- */
 
-interface LogStreamProps { runID?: string; snapshot?: Snapshot | null; }
+interface LogStreamProps { runID?: string; snapshot?: Snapshot | null; focusPhase?: string | null; }
 
-export function LogStream({ runID, snapshot }: LogStreamProps) {
+export function LogStream({ runID, snapshot, focusPhase }: LogStreamProps) {
   const [lines, setLines] = useState<DisplayLine[]>([]);
   const [autoScroll, setAutoScroll] = useState(true);
   const [filterMachines, setFilterMachines] = useState<Set<string>>(new Set());
@@ -159,6 +159,14 @@ export function LogStream({ runID, snapshot }: LogStreamProps) {
 
   const scopes = useMemo(() => extractScopes(snapshot), [snapshot]);
   const a2p = scopes.a2p;
+
+  // --- Focus on phase (from "View in Logs" click) ---
+  useEffect(() => {
+    if (focusPhase) {
+      setFilterPhases(new Set([focusPhase]));
+      setAutoScroll(false); // don't jump to bottom, show phase from the start
+    }
+  }, [focusPhase]);
 
   // --- Line highlight ---
   // Read target line from URL hash once on mount (for initial load strategy + scroll).

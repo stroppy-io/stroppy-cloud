@@ -87,6 +87,13 @@ export function RunDetail() {
   const [deleting, setDeleting] = useState(false);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [logFocusPhase, setLogFocusPhase] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("tab")) return params.get("tab")!;
+    if (window.location.hash.startsWith("#L")) return "logs";
+    return "overview";
+  });
   const [, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [grafana, setGrafana] = useState<GrafanaSettings | null>(null);
@@ -298,12 +305,7 @@ export function RunDetail() {
         </div>
       )}
 
-      <Tabs defaultValue={(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get("tab")) return params.get("tab")!;
-        if (window.location.hash.startsWith("#L")) return "logs";
-        return "overview";
-      })()}>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="topology">Topology</TabsTrigger>
@@ -318,7 +320,12 @@ export function RunDetail() {
         <TabsContent value="overview">
           <Card className="h-[calc(100vh-11rem)]">
             <CardContent className="p-0 h-full">
-              <RunOverview nodes={nodes} snapshot={snapshot} runStatus={isCancelled ? "cancelled" : cancelling ? "cancelling" : !isFinished ? "running" : hasFailed ? "failed" : "completed"} />
+              <RunOverview
+                nodes={nodes}
+                snapshot={snapshot}
+                runStatus={isCancelled ? "cancelled" : cancelling ? "cancelling" : !isFinished ? "running" : hasFailed ? "failed" : "completed"}
+                onViewLogs={(phase) => { setLogFocusPhase(phase); setActiveTab("logs"); }}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -334,7 +341,7 @@ export function RunDetail() {
         <TabsContent value="logs" forceMount className="data-[state=inactive]:hidden">
           <Card className="h-[calc(100vh-11rem)]">
             <CardContent className="p-0 h-full relative">
-              <LogStream runID={id} snapshot={snapshot} />
+              <LogStream runID={id} snapshot={snapshot} focusPhase={logFocusPhase} />
             </CardContent>
           </Card>
         </TabsContent>

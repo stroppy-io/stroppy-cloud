@@ -322,7 +322,7 @@ function CfgRow({ k, v }: { k: string; v?: string | null }) {
 
 // ─── DAG pipeline (vertical) ─────────────────────────────────────
 
-function DagPipeline({ nodes, cancelled, effectiveConfigs }: { nodes: NodeStatus[]; cancelled?: boolean; effectiveConfigs?: Record<string, Record<string, string>> }) {
+function DagPipeline({ nodes, cancelled, effectiveConfigs, onViewLogs }: { nodes: NodeStatus[]; cancelled?: boolean; effectiveConfigs?: Record<string, Record<string, string>>; onViewLogs?: (phase: string) => void }) {
   const allPhaseIds = useMemo(() => phaseGroups.flatMap((g) => g.phases), []);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -434,17 +434,28 @@ function DagPipeline({ nodes, cancelled, effectiveConfigs }: { nodes: NodeStatus
                               </span>
                             </div>
 
-                            {/* Error — scrollable, copyable */}
+                            {/* Error — full height, copyable, with log link */}
                             {(node.status === "failed" || node.status === "cancelled") && node.error && (
-                              <div className="mt-0.5 mb-1 ml-5 flex items-start gap-1">
-                                <div className={`flex-1 min-w-0 p-1.5 text-[11px] font-mono leading-relaxed max-h-48 overflow-auto select-text whitespace-pre-wrap break-all ${
+                              <div className="mt-0.5 mb-1 ml-5">
+                                <div className={`p-1.5 text-[11px] font-mono leading-relaxed select-text whitespace-pre-wrap break-all ${
                                   node.status === "cancelled"
                                     ? "bg-zinc-500/5 border border-zinc-500/20 text-zinc-400/80"
                                     : "bg-red-500/5 border border-red-500/20 text-red-400/80"
                                 }`}>
                                   {node.error}
                                 </div>
-                                <CopyButton text={node.error} />
+                                <div className="flex items-center gap-2 mt-1">
+                                  <CopyButton text={node.error} />
+                                  {onViewLogs && (
+                                    <button
+                                      type="button"
+                                      onClick={() => onViewLogs(phaseId)}
+                                      className="text-[9px] font-mono text-primary hover:underline cursor-pointer"
+                                    >
+                                      View in Logs
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             )}
                           </div>
@@ -496,6 +507,7 @@ type RunStatusValue = "running" | "cancelling" | "cancelled" | "failed" | "compl
 interface RunOverviewProps {
   nodes: NodeStatus[];
   runStatus?: RunStatusValue;
+  onViewLogs?: (phase: string) => void;
   snapshot?: {
     started_at?: string;
     finished_at?: string;
@@ -507,7 +519,7 @@ interface RunOverviewProps {
   } | null;
 }
 
-export function RunOverview({ nodes, snapshot, runStatus }: RunOverviewProps) {
+export function RunOverview({ nodes, snapshot, runStatus, onViewLogs }: RunOverviewProps) {
   const config = useMemo<RunConfig | null>(() => {
     const rc = snapshot?.state?.run_config;
     if (!rc) return null;
@@ -578,7 +590,7 @@ export function RunOverview({ nodes, snapshot, runStatus }: RunOverviewProps) {
 
       {/* Right — DAG pipeline */}
       <div className="flex-1 min-w-0">
-        <DagPipeline nodes={nodes} cancelled={runStatus === "cancelled"} effectiveConfigs={snapshot?.state?.effective_configs} />
+        <DagPipeline nodes={nodes} cancelled={runStatus === "cancelled"} effectiveConfigs={snapshot?.state?.effective_configs} onViewLogs={onViewLogs} />
       </div>
     </div>
   );
