@@ -103,7 +103,6 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 		pdiskGB = 10
 	}
 	hardMB := memMB * 85 / 100
-	softMB := hardMB * 90 / 100
 	nodes := fmt.Sprintf("%d storage", st.Count)
 	if t.topology.Database != nil {
 		nodes += fmt.Sprintf(" + %d compute", t.topology.Database.Count)
@@ -115,8 +114,7 @@ func (t *ydbConfigTask) Execute(nc *dag.NodeContext) error {
 		"nodes":     nodes,
 		"per_node":  fmt.Sprintf("%d vCPU / %d MB / %d GB", cpus, memMB, diskGB),
 		"pdisk_gb":  fmt.Sprintf("%d", pdiskGB),
-		"mem_hard":  fmt.Sprintf("%d MB", hardMB),
-		"mem_soft":  fmt.Sprintf("%d MB", softMB),
+		"mem_limit": fmt.Sprintf("%d MB", hardMB),
 		"cpu_count": fmt.Sprintf("%d", cpus),
 		"erasure":   ft,
 		"db_path":   t.topology.DatabasePath,

@@ -313,7 +313,7 @@ export function NewRun() {
                 const n = parseInt(value);
                 if (group === "database") {
                   if (key === "cpu_count" && !isNaN(n)) setDbCpus(closestStep(n, cpuStepsForPlatform(platformId)));
-                  else if (key === "mem_hard" && !isNaN(n)) setDbMemory(n * 100 / 85); // reverse 85%
+                  else if (key === "mem_limit" && !isNaN(n)) setDbMemory(Math.round(n * 100 / 85)); // reverse 85%
                   else if (key === "pdisk_gb" && !isNaN(n)) setDbDisk(n + 2); // reverse disk-2
                 } else if (group === "benchmark") {
                   if (key === "VUs" && !isNaN(n)) setVus(n);
@@ -835,7 +835,7 @@ function humanPhase(id: string): string {
 
 // Keys that can be edited in the review step — mapped back to state via onEdit.
 const EDITABLE_KEYS: Record<string, Set<string>> = {
-  database: new Set(["cpu_count", "pdisk_gb", "mem_hard"]),
+  database: new Set(["cpu_count", "pdisk_gb", "mem_limit"]),
   benchmark: new Set(["VUs", "duration", "pool", "scale"]),
   infrastructure: new Set(["platform"]),
 };

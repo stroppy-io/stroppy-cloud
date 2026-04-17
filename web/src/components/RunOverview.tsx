@@ -437,7 +437,7 @@ function DagPipeline({ nodes, cancelled, effectiveConfigs }: { nodes: NodeStatus
                             {/* Error — scrollable, copyable */}
                             {(node.status === "failed" || node.status === "cancelled") && node.error && (
                               <div className="mt-0.5 mb-1 ml-5 flex items-start gap-1">
-                                <div className={`flex-1 min-w-0 p-1.5 text-[11px] font-mono leading-relaxed max-h-20 overflow-auto select-text whitespace-pre-wrap break-all ${
+                                <div className={`flex-1 min-w-0 p-1.5 text-[11px] font-mono leading-relaxed max-h-48 overflow-auto select-text whitespace-pre-wrap break-all ${
                                   node.status === "cancelled"
                                     ? "bg-zinc-500/5 border border-zinc-500/20 text-zinc-400/80"
                                     : "bg-red-500/5 border border-red-500/20 text-red-400/80"

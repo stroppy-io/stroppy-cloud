@@ -45,8 +45,6 @@ func ComputeEffectiveConfigs(cfg *types.RunConfig) map[string]map[string]string 
 				pdiskGB = 10
 			}
 			hardMB := memMB * 85 / 100
-			softMB := hardMB * 90 / 100
-
 			ft := db.YDB.FaultTolerance
 			if ft == "" {
 				ft = "none"
@@ -63,8 +61,7 @@ func ComputeEffectiveConfigs(cfg *types.RunConfig) map[string]map[string]string 
 				"nodes":     nodes,
 				"per_node":  fmt.Sprintf("%d vCPU / %d MB / %d GB", cpus, memMB, diskGB),
 				"pdisk_gb":  fmt.Sprintf("%d", pdiskGB),
-				"mem_hard":  fmt.Sprintf("%d MB", hardMB),
-				"mem_soft":  fmt.Sprintf("%d MB", softMB),
+				"mem_limit": fmt.Sprintf("%d MB", hardMB),
 				"cpu_count": fmt.Sprintf("%d", cpus),
 				"erasure":   ft,
 				"db_path":   db.YDB.DatabasePath,
