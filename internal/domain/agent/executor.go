@@ -1654,8 +1654,14 @@ func (e *Executor) installYDB(ctx context.Context, cmd Command) error {
 		return nil
 	}
 
-	e.emitLine("downloading ydbd server binary...")
-	if _, err := e.shell(ctx, `mkdir -p /opt/ydb && curl -fSL https://binaries.ydb.tech/ydbd-stable-linux-amd64.tar.gz | tar -xz --strip-component=1 -C /opt/ydb`); err != nil {
+	// Use versioned binary — ydbd-stable lacks memory_controller_config support.
+	ydbVersion := cfg.Version
+	if ydbVersion == "" {
+		ydbVersion = "25.3.1.25"
+	}
+	downloadURL := fmt.Sprintf("https://binaries.ydb.tech/release/%s/ydbd-%s-linux-amd64.tar.gz", ydbVersion, ydbVersion)
+	e.emitLine(fmt.Sprintf("downloading ydbd %s...", ydbVersion))
+	if _, err := e.shell(ctx, fmt.Sprintf(`mkdir -p /opt/ydb && curl -fSL %s | tar -xz --strip-component=1 -C /opt/ydb`, downloadURL)); err != nil {
 		return fmt.Errorf("download ydbd: %w", err)
 	}
 
@@ -1772,6 +1778,12 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 		fmt.Fprintf(&confBuf, "  cpu_count: %d\n", cfg.CPUs)
 	}
 
+	// memory_controller_config — tell YDB how much RAM it can use.
+	if ydbMemHardMB > 0 {
+		fmt.Fprintf(&confBuf, "memory_controller_config:\n")
+		fmt.Fprintf(&confBuf, "  hard_limit_bytes: %d\n", int64(ydbMemHardMB)*1024*1024)
+	}
+
 	// blob_storage_config
 	confBuf.WriteString("blob_storage_config:\n")
 	confBuf.WriteString("  service_set:\n")
@@ -1834,11 +1846,7 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 		e.shell(ctx, fmt.Sprintf("hostnamectl set-hostname %s 2>/dev/null || hostname %s", cfg.AdvertiseHost, cfg.AdvertiseHost))
 	}
 
-	// Start static node — pass memory limit via CLI (compatible with all YDB versions).
-	memFlag := ""
-	if ydbMemHardMB > 0 {
-		memFlag = fmt.Sprintf(" --memory-limit %d", int64(ydbMemHardMB)*1024*1024)
-	}
+	// Start static node.
 	e.shell(ctx, "systemctl stop ydbd-storage 2>/dev/null; systemctl reset-failed ydbd-storage 2>/dev/null")
 	e.emitLine("starting YDB static (storage) node...")
 	startCmd := fmt.Sprintf(
@@ -1847,8 +1855,8 @@ func (e *Executor) configYDB(ctx context.Context, cmd Command) error {
 			`/opt/ydb/bin/ydbd server `+
 			`--yaml-config %s `+
 			`--grpc-port 2136 --ic-port 19001 --mon-port 8765 `+
-			`--node static%s`,
-		confPath, memFlag)
+			`--node static`,
+		confPath)
 	if _, err := e.shell(ctx, startCmd); err != nil {
 		return fmt.Errorf("start ydbd-storage: %w", err)
 	}
@@ -1917,14 +1925,6 @@ func (e *Executor) startYDBDB(ctx context.Context, cmd Command) error {
 		fmt.Fprintf(&brokerFlags, " --node-broker grpc://%s:2136", ep)
 	}
 
-	// Memory limit via CLI flag.
-	memFlag := ""
-	memMB := cfg.MemoryMB
-	if memMB > 0 {
-		hardMB := memMB * 85 / 100
-		memFlag = fmt.Sprintf(" --memory-limit %d", int64(hardMB)*1024*1024)
-	}
-
 	e.shell(ctx, "systemctl stop ydbd-database 2>/dev/null; systemctl reset-failed ydbd-database 2>/dev/null")
 	e.emitLine("starting YDB dynamic (database) node...")
 	startCmd := fmt.Sprintf(
@@ -1933,8 +1933,8 @@ func (e *Executor) startYDBDB(ctx context.Context, cmd Command) error {
 			`/opt/ydb/bin/ydbd server `+
 			`--yaml-config /opt/ydb/cfg/config.yaml `+
 			`--grpc-port 2136 --ic-port 19002 --mon-port 8766 `+
-			`--tenant %s%s%s`,
-		dbPath, brokerFlags.String(), memFlag)
+			`--tenant %s%s`,
+		dbPath, brokerFlags.String())
 	if _, err := e.shell(ctx, startCmd); err != nil {
 		return fmt.Errorf("start ydbd-database: %w", err)
 	}
