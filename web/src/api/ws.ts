@@ -1,11 +1,12 @@
 import type { WSMessage, LogLine } from "./types";
+import { getAccessToken } from "./client";
 
 export type WSMessageHandler = (msg: WSMessage) => void;
 export type LogHandler = (line: LogLine) => void;
 
 export class WSConnection {
   private ws: WebSocket | null = null;
-  private url: string;
+  private baseUrl: string;
   private handlers: WSMessageHandler[] = [];
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private shouldReconnect = true;
@@ -13,13 +14,16 @@ export class WSConnection {
   constructor(runID?: string) {
     const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
     const base = `${proto}//${window.location.host}`;
-    this.url = runID ? `${base}/ws/logs/${runID}` : `${base}/ws/logs`;
+    this.baseUrl = runID ? `${base}/ws/logs/${runID}` : `${base}/ws/logs`;
   }
 
   connect(): void {
     if (this.ws?.readyState === WebSocket.OPEN) return;
 
-    this.ws = new WebSocket(this.url);
+    // Pass JWT via query param — browsers can't set headers on WebSocket.
+    const token = getAccessToken();
+    const url = token ? `${this.baseUrl}?token=${encodeURIComponent(token)}` : this.baseUrl;
+    this.ws = new WebSocket(url);
 
     this.ws.onmessage = (event) => {
       try {

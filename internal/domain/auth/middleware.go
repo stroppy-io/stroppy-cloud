@@ -20,6 +20,12 @@ func NewAuthMiddleware(jwt *JWTIssuer, pool *pgxpool.Pool) func(http.Handler) ht
 			}
 
 			header := r.Header.Get("Authorization")
+			// WebSocket: browsers can't set headers, accept token from query param.
+			if header == "" {
+				if qToken := r.URL.Query().Get("token"); qToken != "" {
+					header = "Bearer " + qToken
+				}
+			}
 			if header == "" {
 				http.Error(w, "missing Authorization header", http.StatusUnauthorized)
 				return
@@ -119,6 +125,10 @@ func isPublicPath(path string) bool {
 	// Public share links.
 	if strings.HasPrefix(path, "/api/share/") {
 		return true
+	}
+	// WebSocket: authenticated via ?token= query param (browsers can't set headers on WS).
+	if strings.HasPrefix(path, "/ws/") {
+		return false // let middleware handle auth from query param
 	}
 	// Agent API is now authenticated via JWT (agent tokens).
 	// Everything outside /api/ is public: health, SPA (index.html, JS, CSS), agent binary, packages.
