@@ -119,6 +119,8 @@ export function NewRun() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dryRunResult, setDryRunResult] = useState<any>(null);
   const [dryRunLoading, setDryRunLoading] = useState(false);
+  const [resolvedConfig, setResolvedConfig] = useState<RunConfig | null>(null);
+  const [dbConfigDraft, setDbConfigDraft] = useState<string | null>(null);
   const [validationResult, setValidationResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -200,7 +202,15 @@ export function NewRun() {
       }
       try {
         const dr = await dryRun(config);
-        if (!cancelled) setDryRunResult(dr);
+        if (!cancelled) {
+          setDryRunResult(dr);
+          const drObj = dr as Record<string, unknown>;
+          if (drObj.resolved_config) {
+            const rc = drObj.resolved_config as RunConfig;
+            setResolvedConfig(rc);
+            setDbConfigDraft(JSON.stringify(rc.database, null, 2));
+          }
+        }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : "Dry run failed");
       }
@@ -213,7 +223,18 @@ export function NewRun() {
     if (!config.stroppy.duration.trim()) { setError("Duration is required"); return; }
     setSubmitting(true); setError(null);
     try {
-      const result = await startRun(config);
+      // Merge edited database config from review textarea if available.
+      const launchConfig = { ...config };
+      if (dbConfigDraft && resolvedConfig) {
+        try {
+          launchConfig.database = JSON.parse(dbConfigDraft);
+        } catch {
+          setError("Invalid JSON in database config");
+          setSubmitting(false);
+          return;
+        }
+      }
+      const result = await startRun(launchConfig);
       navigate(`/runs/${result.run_id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to start run");
@@ -324,6 +345,8 @@ export function NewRun() {
                   if (key === "platform") setPlatformId(value);
                 }
               }}
+              dbConfigDraft={dbConfigDraft}
+              setDbConfigDraft={setDbConfigDraft}
             />
           )}
 
@@ -897,6 +920,8 @@ function StepReview({
   submitting,
   onSubmit,
   onEdit,
+  dbConfigDraft,
+  setDbConfigDraft,
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   dryRunResult: any;
@@ -906,6 +931,8 @@ function StepReview({
   submitting: boolean;
   onSubmit: () => void;
   onEdit?: (group: string, key: string, value: string) => void;
+  dbConfigDraft: string | null;
+  setDbConfigDraft: (v: string) => void;
 }) {
   const canLaunch = validationResult?.ok && !dryRunLoading && !error;
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -1021,13 +1048,33 @@ function StepReview({
                         })}
                       </div>
 
-                      {cfgEntries && Object.keys(cfgEntries).length > 0 && (
+                      {groupKey === "database" && dbConfigDraft !== null ? (
+                        <div className="border-t border-zinc-800/20 px-3 py-1.5 bg-zinc-900/50">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-[9px] font-mono text-zinc-600 uppercase">Database Config (editable JSON)</span>
+                          </div>
+                          <textarea
+                            value={dbConfigDraft}
+                            onChange={(e) => setDbConfigDraft(e.target.value)}
+                            spellCheck={false}
+                            className="w-full h-64 bg-[#0a0a0a] text-[11px] font-mono text-zinc-300 border border-zinc-800 p-2 outline-none focus:border-zinc-600 resize-y"
+                          />
+                          {cfgEntries && Object.keys(cfgEntries).length > 0 && (
+                            <div className="mt-2 space-y-0.5">
+                              <span className="text-[9px] font-mono text-zinc-600 uppercase">Effective Config</span>
+                              {Object.entries(cfgEntries).map(([k, v]) => (
+                                <EditableCfgRow key={k} k={k} v={v} groupKey={groupKey} onEdit={onEdit} />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ) : cfgEntries && Object.keys(cfgEntries).length > 0 ? (
                         <div className="border-t border-zinc-800/20 px-3 py-1.5 bg-zinc-900/50 space-y-0.5">
                           {Object.entries(cfgEntries).map(([k, v]) => (
                             <EditableCfgRow key={k} k={k} v={v} groupKey={groupKey} onEdit={onEdit} />
                           ))}
                         </div>
-                      )}
+                      ) : null}
                     </>
                   )}
                 </div>
