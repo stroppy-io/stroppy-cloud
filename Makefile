@@ -63,6 +63,9 @@ test-integration: build ## Run integration tests (requires Docker)
 test-e2e: build ## Run E2E tests for all databases
 	go test -tags=integration -timeout 60m -v ./tests/ -run TestE2E
 
+test-browser: ## Run Playwright browser E2E tests (requires running server at localhost:8080)
+	cd tests/e2e && npx playwright test
+
 test-coverage: ## Run tests with coverage report
 	go test ./... -coverprofile=coverage.out -count=1
 	go tool cover -html=coverage.out -o coverage.html

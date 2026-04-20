@@ -10,3 +10,6 @@ examples/dump_test.go
 web/node_modules
 web/dist
 *.tsbuildinfo
+tests/e2e/node_modules
+tests/e2e/report
+tests/e2e/test-results
