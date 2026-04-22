@@ -57,7 +57,7 @@ const DB_VERSIONS: Record<DatabaseKind, string[]> = {
   postgres: ["17", "16", "15"],
   mysql: ["8.4", "8.0"],
   picodata: ["25.3"],
-  ydb: ["25.3", "25.2", "25.1", "24.4", "24.3"],
+  ydb: ["25.2", "25.1", "24.4", "24.3"],
 };
 
 const DB_META: Record<DatabaseKind, { icon: typeof Database; label: string }> = {

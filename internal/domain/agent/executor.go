@@ -1657,7 +1657,7 @@ func (e *Executor) installYDB(ctx context.Context, cmd Command) error {
 	// Use versioned binary — ydbd-stable lacks memory_controller_config support.
 	ydbVersion := cfg.Version
 	if ydbVersion == "" {
-		ydbVersion = "25.3.1.25"
+		ydbVersion = "25.2.1.24"
 	}
 	downloadURL := fmt.Sprintf("https://binaries.ydb.tech/release/%s/ydbd-%s-linux-amd64.tar.gz", ydbVersion, ydbVersion)
 	e.emitLine(fmt.Sprintf("downloading ydbd %s...", ydbVersion))
