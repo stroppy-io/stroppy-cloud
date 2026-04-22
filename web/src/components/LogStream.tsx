@@ -90,6 +90,16 @@ function resolvePhase(action: string, a2p: Record<string, string>): string {
   return a2p[action] || action || "";
 }
 
+function expandPhasesToActions(phases: Set<string>): string[] {
+  const actions = new Set<string>();
+  for (const p of phases) {
+    actions.add(p);
+    const aa = PHASE_ACTIONS[p];
+    if (aa) for (const a of aa) actions.add(a);
+  }
+  return [...actions];
+}
+
 /* ---------- helpers ---------- */
 
 function machineColor(id: string, cm: Map<string, string>): string {
@@ -167,6 +177,22 @@ export function LogStream({ runID, snapshot, focusPhase }: LogStreamProps) {
       setAutoScroll(false); // don't jump to bottom, show phase from the start
     }
   }, [focusPhase]);
+
+  // --- Refetch when phase filter changes — gets older logs for filtered phase ---
+  useEffect(() => {
+    if (!runID || filterPhases.size === 0) return;
+    const actions = expandPhasesToActions(filterPhases);
+    getRunLogs(runID, { actions, desc: false, limit: 2000 })
+      .then((raw) => {
+        const parsed = raw.map(parseLine);
+        setLines((prev) => {
+          const seen = new Set(parsed.map((l) => `${l.ts}|${l.text}`));
+          const streamed = prev.filter((l) => !seen.has(`${l.ts}|${l.text}`));
+          return [...parsed, ...streamed];
+        });
+      })
+      .catch(() => { /* silent — keep existing lines */ });
+  }, [runID, filterPhases]);
 
   // --- Line highlight ---
   // Read target line from URL hash once on mount (for initial load strategy + scroll).

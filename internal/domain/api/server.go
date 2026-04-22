@@ -1047,6 +1047,19 @@ func (s *Server) runLogs(w http.ResponseWriter, r *http.Request) {
 		query += fmt.Sprintf(` _msg:"%s"`, strings.ReplaceAll(search, `"`, `\"`))
 	}
 
+	// Filter by action (phase) if provided — exact match on action stream.
+	if actions := r.URL.Query()["action"]; len(actions) > 0 {
+		parts := make([]string, len(actions))
+		for i, a := range actions {
+			parts[i] = fmt.Sprintf(`action:"%s"`, strings.ReplaceAll(a, `"`, `\"`))
+		}
+		if len(parts) == 1 {
+			query += " " + parts[0]
+		} else {
+			query += " (" + strings.Join(parts, " OR ") + ")"
+		}
+	}
+
 	// Sort direction: "desc" returns newest first (for chat-like UI), default is "asc".
 	dir := r.URL.Query().Get("dir")
 	if dir == "desc" {
