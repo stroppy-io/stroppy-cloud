@@ -762,8 +762,24 @@ func (s *Server) canRecoverRun(state *dag.RunState) bool {
 }
 
 // recoverRun rebuilds state from a snapshot and resumes execution.
+// Registers the cancel function so users can cancel recovered runs.
 func (s *Server) recoverRun(runID, tenantID string, snap *dag.Snapshot) {
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+
+	s.runCancelsMu.Lock()
+	s.runCancels[runID] = cancel
+	s.runTenants[runID] = tenantID
+	s.runCancelsMu.Unlock()
+
+	activeRuns.Inc()
+	defer func() {
+		activeRuns.Dec()
+		s.runCancelsMu.Lock()
+		delete(s.runCancels, runID)
+		delete(s.runTenants, runID)
+		s.runCancelsMu.Unlock()
+		cancel()
+	}()
 
 	if err := s.app.RecoverRun(ctx, tenantID, snap); err != nil {
 		s.logger.Error("recovery: run failed",
