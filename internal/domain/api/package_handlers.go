@@ -320,6 +320,11 @@ func (s *Server) seedBuiltinPackages(ctx context.Context, tenantID string) {
 // resolveRunPackage loads a Package by ID or finds the default built-in for db_kind+version.
 // It sets the DebFilename to the download URL so the agent can curl it.
 func (s *Server) resolveRunPackage(ctx context.Context, tenantID string, cfg *types.RunConfig) error {
+	// YDB doesn't use apt packages — it downloads the ydbd binary directly.
+	if cfg.Database.Kind == types.DatabaseYDB {
+		return nil
+	}
+
 	q := pgdb.New(s.pool)
 
 	var pkg pgdb.GetPackageRow

@@ -561,21 +561,23 @@ function StepDatabase({
             ))}
           </datalist>
         </div>
-        <div className="space-y-1.5">
-          <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Package</Label>
-          <Select value={packageId || "__default__"} onValueChange={(v) => setPackageId(v === "__default__" ? "" : v)}>
-            <SelectTrigger className="h-8 font-mono text-xs"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="__default__">Default</SelectItem>
-              {availablePackages.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  {p.name}{p.has_deb ? " [.deb]" : ""}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <a href="/packages" className="text-[9px] font-mono text-zinc-500 hover:text-zinc-300">manage packages</a>
-        </div>
+        {kind !== "ydb" && (
+          <div className="space-y-1.5">
+            <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Package</Label>
+            <Select value={packageId || "__default__"} onValueChange={(v) => setPackageId(v === "__default__" ? "" : v)}>
+              <SelectTrigger className="h-8 font-mono text-xs"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__default__">Default</SelectItem>
+                {availablePackages.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}{p.has_deb ? " [.deb]" : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <a href="/packages" className="text-[9px] font-mono text-zinc-500 hover:text-zinc-300">manage packages</a>
+          </div>
+        )}
       </div>
 
       {/* Topology Preset */}
