@@ -548,18 +548,26 @@ function StepDatabase({
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1.5">
           <Label className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider">Version</Label>
-          <input
-            list={`versions-${kind}`}
-            value={version}
-            onChange={(e) => setVersion(e.target.value)}
-            className="h-8 w-full px-2 font-mono text-xs bg-transparent border border-zinc-800 text-zinc-300 outline-none focus:border-zinc-600"
-            placeholder={DB_VERSIONS[kind][0]}
-          />
-          <datalist id={`versions-${kind}`}>
-            {DB_VERSIONS[kind].map((v) => (
-              <option key={v} value={v} />
-            ))}
-          </datalist>
+          <Select
+            value={DB_VERSIONS[kind].includes(version) ? version : "__custom__"}
+            onValueChange={(v) => { if (v !== "__custom__") setVersion(v); }}
+          >
+            <SelectTrigger className="h-8 font-mono text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {DB_VERSIONS[kind].map((v) => (
+                <SelectItem key={v} value={v}>{v}</SelectItem>
+              ))}
+              <SelectItem value="__custom__">Custom...</SelectItem>
+            </SelectContent>
+          </Select>
+          {!DB_VERSIONS[kind].includes(version) && (
+            <input
+              value={version}
+              onChange={(e) => setVersion(e.target.value)}
+              placeholder="Enter version"
+              className="h-7 w-full px-2 font-mono text-xs bg-transparent border border-zinc-800 text-zinc-300 outline-none focus:border-zinc-600"
+            />
+          )}
         </div>
         {kind !== "ydb" && (
           <div className="space-y-1.5">
