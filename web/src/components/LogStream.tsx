@@ -235,31 +235,42 @@ export function LogStream({ runID, snapshot, focusPhase }: LogStreamProps) {
   }, [lines, searchResults, filterMachines, filterPhases, a2p]);
 
   // --- Initial load ---
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   useEffect(() => {
     if (!runID) return;
     noMoreOlderRef.current = false;
+    setInitialLoadDone(false);
+
+    // Merge historical logs with any WS-streamed lines that arrived first.
+    // Dedupe by (ts, text) — WS-streamed lines have ts=Date.now(), HTTP lines have _time from VL.
+    const merge = (prev: DisplayLine[], historical: DisplayLine[]): DisplayLine[] => {
+      if (prev.length === 0) return historical;
+      const seen = new Set(historical.map((l) => `${l.ts}|${l.text}`));
+      const streamed = prev.filter((l) => !seen.has(`${l.ts}|${l.text}`));
+      return [...historical, ...streamed];
+    };
 
     if (initialTargetLine !== null) {
-      // Load from start up to the highlighted line + buffer so we can scroll to it.
       const loadCount = initialTargetLine + 200;
       getRunLogs(runID, { desc: false, limit: loadCount })
         .then((raw) => {
           const parsed = raw.map(parseLine);
           if (parsed.length < loadCount) noMoreOlderRef.current = true;
-          setLines(parsed);
+          setLines((prev) => merge(prev, parsed));
           setLogError(null);
         })
-        .catch((err) => setLogError(err instanceof Error ? err.message : "Failed to load logs"));
+        .catch((err) => setLogError(err instanceof Error ? err.message : "Failed to load logs"))
+        .finally(() => setInitialLoadDone(true));
     } else {
-      // Normal: load newest 500, scroll to bottom.
       getRunLogs(runID, { desc: true, limit: PAGE_SIZE })
         .then((raw) => {
           const parsed = raw.map(parseLine).reverse();
           if (parsed.length < PAGE_SIZE) noMoreOlderRef.current = true;
-          setLines(parsed);
+          setLines((prev) => merge(prev, parsed));
           setLogError(null);
         })
-        .catch((err) => setLogError(err instanceof Error ? err.message : "Failed to load logs"));
+        .catch((err) => setLogError(err instanceof Error ? err.message : "Failed to load logs"))
+        .finally(() => setInitialLoadDone(true));
     }
   }, [runID, initialTargetLine]);
 
@@ -429,8 +440,16 @@ export function LogStream({ runID, snapshot, focusPhase }: LogStreamProps) {
         {logError ? (
           <div className="p-3 text-destructive text-xs">{logError}</div>
         ) : rows.length === 0 ? (
-          <div className="p-3 text-zinc-600">
-            {isSearching ? "No matches." : lines.length === 0 ? "Waiting for agent output..." : "No logs matching filter."}
+          <div className="p-3 text-zinc-600 flex items-center gap-2">
+            {isSearching ? "No matches." :
+             lines.length === 0 && !initialLoadDone ? (
+               <>
+                 <span className="inline-block w-2 h-2 rounded-full bg-zinc-600 animate-pulse" />
+                 Loading logs...
+               </>
+             ) :
+             lines.length === 0 ? "No logs yet. Will appear as agents start reporting." :
+             "No logs matching filter."}
           </div>
         ) : (
           <VList ref={vlistRef} style={{ flex: 1 }} shift={shifting} onScroll={handleScroll} onScrollEnd={handleScrollEnd}>
