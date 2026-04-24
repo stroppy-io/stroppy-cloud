@@ -544,14 +544,14 @@ func (s *Server) runDryRun(w http.ResponseWriter, r *http.Request) {
 	resp.ResolvedConfig = cfgJSON
 	resp.EffectiveConfig = run.ComputeEffectiveConfigs(&cfg)
 
-	// Build stroppy config preview — use placeholder host/port (resolved at run time).
+	// Build stroppy config preview. dbHost="" + dbPort=0 asks BuildStroppyConfigJSON
+	// to emit sentinel tokens (substituted at run time) — the real DB endpoint is
+	// only known once the DB is provisioned.
 	if cfg.Stroppy.ConfigOverrideJSON != "" {
 		resp.StroppyConfig = cfg.Stroppy.ConfigOverrideJSON
 	} else {
-		settings := s.settingsForTenant(tenantID).Cloud.Yandex
-		_ = settings
 		stroppySettings := types.DefaultStroppySettings()
-		if b, err := run.BuildStroppyConfigJSON(cfg.Stroppy, cfg.Database.Kind, "<db-host>", 0, stroppySettings, cfg.ID); err == nil {
+		if b, err := run.BuildStroppyConfigJSON(cfg.Stroppy, cfg.Database.Kind, "", 0, stroppySettings, cfg.ID); err == nil {
 			resp.StroppyConfig = string(b)
 		}
 	}

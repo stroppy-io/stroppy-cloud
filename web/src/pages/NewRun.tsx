@@ -147,6 +147,7 @@ export function NewRun() {
   const [resolvedConfig, setResolvedConfig] = useState<RunConfig | null>(null);
   const [dbConfigDraft, setDbConfigDraft] = useState<string | null>(null);
   const [stroppyConfigDraft, setStroppyConfigDraft] = useState<string | null>(null);
+  const [stroppyConfigPristine, setStroppyConfigPristine] = useState<string | null>(null);
   const [validationResult, setValidationResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -239,6 +240,7 @@ export function NewRun() {
           }
           if (typeof drObj.stroppy_config === "string") {
             setStroppyConfigDraft(drObj.stroppy_config);
+            setStroppyConfigPristine(drObj.stroppy_config);
           }
         }
       } catch (err) {
@@ -264,8 +266,10 @@ export function NewRun() {
           return;
         }
       }
-      // If the stroppy config was edited in review, send as override.
-      if (stroppyConfigDraft) {
+      // Only send override when the user actually edited the preview — the server
+      // builds the preview with placeholder db host/port (resolved at run time), so
+      // sending it back verbatim would ship those placeholders to the stroppy binary.
+      if (stroppyConfigDraft && stroppyConfigDraft !== stroppyConfigPristine) {
         try {
           JSON.parse(stroppyConfigDraft); // validate
           launchConfig.stroppy = { ...launchConfig.stroppy, config_override_json: stroppyConfigDraft };
@@ -281,7 +285,7 @@ export function NewRun() {
       setError(err instanceof Error ? err.message : "Failed to start run");
       setSubmitting(false);
     }
-  }, [config, navigate, dbConfigDraft, resolvedConfig, stroppyConfigDraft]);
+  }, [config, navigate, dbConfigDraft, resolvedConfig, stroppyConfigDraft, stroppyConfigPristine]);
 
   function handleCopy() {
     navigator.clipboard.writeText(configJSON);
