@@ -1,0 +1,48 @@
+{
+  "execution": {
+    "machines": {
+      "db-1": {
+        "cpu": 8,
+        "memory_gb": 32,
+        "preemptible": false
+      }
+    },
+    "containers": [
+      {
+        "name": "db-1-postgres",
+        "set": {
+          "files": [
+            {
+              "path": "/etc/contract-example.conf",
+              "content": "# exact content\nvalue = '$literal'\nempty = \"\"\n"
+            },
+            {
+              "path": "/etc/empty-example.conf",
+              "content": ""
+            }
+          ],
+          "healthcheck": null
+        }
+      }
+    ],
+    "workload": {
+      "segments": [
+        {
+          "name": "main",
+          "seed": "18446744073709551615",
+          "workload": {
+            "script": "simple"
+          },
+          "run": {
+            "vus": 1,
+            "iterations": 1,
+            "executor": "shared-iterations"
+          },
+          "thresholds": {
+            "error_rate": 0
+          }
+        }
+      ]
+    }
+  }
+}

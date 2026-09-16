@@ -4,21 +4,26 @@ import (
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/provider"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
 )
 
 // Suite is spec.suite@1 — the params of the stroppy-suite pipeline: a list of
 // cells, each carrying a whole RunSpec, plus how many run at once.
 //
-// A cell's run_spec stays an opaque JSON object rather than a Ref to
-// spec.run@1: the suite pipeline never looks inside it, it only hands it to a
-// child run, and keeping it opaque means a suite never has to be revalidated
-// when spec.run gains a field.
+// Every cell is validated using the same Run schema as a standalone run.
 //
 // doc: STROPPY.MD §6.2, §16.7.
 func Suite() *schemapb.Schema {
 	return schemapb.NewSchema(ids.Spec("suite", 1)).
 		Descr("SuiteSpec: the cells of a matrix run and how many of them run in parallel.").
 		Strict().Coerce().
+		DefSchema("run", Run()).
+		DefSchema("segment", workload.Segment()).
+		DefSchema("driver", workload.NativeDriver()).
+		DefSchema("baseline", workload.Baseline()).
+		DefSchema("yandex_settings", runProviderSettings(provider.YandexSettings())).
+		DefSchema("aws_settings", runProviderSettings(provider.AwsSettings())).
 		Fields(
 			schemapb.Str("suite_run_id").Title("Suite run id").Group("Identity").
 				Desc("Suite run id minted by the server; the parent Graphene run id.").
@@ -32,8 +37,8 @@ func Suite() *schemapb.Schema {
 					schemapb.Str("id").Title("Cell id").
 						Desc("Stable cell id; the child run id is derived from parent + cell id.").
 						Pattern(`^[a-z0-9][a-z0-9_-]{0,63}$`).Required(),
-					schemapb.JSON("run_spec").Title("RunSpec").
-						Desc("A complete spec.run@1 value; the suite hands it to a child run unread.").
+					schemapb.Ref("run_spec", "run").Title("RunSpec").
+						Desc("A complete spec.run@1 value, validated before starting child runs.").
 						Required(),
 				).Strict(),
 			).Title("Cells").Group("Cells").

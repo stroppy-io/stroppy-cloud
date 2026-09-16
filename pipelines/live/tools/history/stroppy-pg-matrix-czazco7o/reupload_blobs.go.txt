@@ -1,0 +1,33 @@
+package main
+import (
+ "context"
+ "encoding/json"
+ "fmt"
+ "io"
+ "os"
+ "sync"
+ "time"
+ "github.com/graphene-ci/pipeline/pkg/cliconfig"
+ api "github.com/graphene-ci/pipeline/pkg/proto/workerplane/v1"
+ "google.golang.org/grpc"
+ "google.golang.org/grpc/credentials"
+ "google.golang.org/grpc/metadata"
+)
+type blob struct { Ref string `json:"ref"`; Location string `json:"location"`; Digest string `json:"digest"`; Size int64 `json:"size"` }
+func main(){
+ cc,_,err:=cliconfig.Resolve("");if err!=nil{panic(err)}
+ conn,err:=grpc.NewClient(cc.Server,grpc.WithTransportCredentials(credentials.NewTLS(nil)));if err!=nil{panic(err)};defer conn.Close()
+ client:=api.NewBlobsAPIClient(conn)
+ raw,err:=os.ReadFile(os.Args[1]);if err!=nil{panic(err)};var blobs []blob;if err=json.Unmarshal(raw,&blobs);err!=nil{panic(err)};blobs=blobs[:2]
+ ctx,cancel:=context.WithTimeout(context.Background(),60*time.Second);defer cancel();ctx=metadata.NewOutgoingContext(ctx,metadata.Pairs("authorization","Bearer "+cc.Token,"x-graphene-namespace","t-stroppy-live"))
+ data:=make([][]byte,2)
+ for i,b:=range blobs{
+  if b.Size>1<<20{panic("test only accepts small existing blobs")}
+  stream,err:=client.GetBlob(ctx,&api.GetBlobRequest{Location:b.Location});if err!=nil{panic(err)}
+  for{chunk,err:=stream.Recv();if err==io.EOF{break};if err!=nil{panic(err)};data[i]=append(data[i],chunk.GetChunk()...)}
+ }
+ start:=make(chan struct{});var wg sync.WaitGroup;errs:=make(chan error,2)
+ for i,b:=range blobs{wg.Add(1);go func(i int,b blob){defer wg.Done();<-start;s,err:=client.PutBlob(ctx);if err==nil{err=s.Send(&api.PutBlobRequest{Chunk:data[i]})};if err==nil{var r *api.PutBlobResponse;r,err=s.CloseAndRecv();if err==nil&&(r.GetDigest()!=b.Digest||r.GetSize()!=b.Size||r.GetLocation()!=b.Location){err=fmt.Errorf("content-addressed identity changed")}};errs<-err}(i,b)}
+ began:=time.Now().UTC();close(start);wg.Wait();close(errs);for err:=range errs{if err!=nil{panic(err)}}
+ result:=map[string]any{"concurrent_uploads":2,"started_at":began,"finished_at":time.Now().UTC(),"same_existing_bytes":true,"identities_verified":true,"blobs":blobs};raw,_=json.MarshalIndent(result,"","  ");fmt.Println(string(raw))
+}

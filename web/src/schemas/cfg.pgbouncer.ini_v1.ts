@@ -64,4 +64,3 @@ export interface CfgPgbouncerIni1 {
   /** Stats users. Comma-separated roles allowed read-only access to the admin console; the exporter uses one of these. */
   stats_users?: string;
 }
-

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "run_id": null,
+  "checked_at": null,
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "not_run",
+      "reason": "Draft only; token fix preceded launch planning.",
+      "evidence": null
+    }
+  ]
+}

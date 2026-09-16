@@ -22,6 +22,8 @@ type Segment struct {
 	ExtraParams map[string]string `json:"extra_params,omitempty"`
 	Files       []SegmentFile     `json:"files,omitempty"`
 	Thresholds  Thresholds        `json:"thresholds,omitempty,omitzero"`
+	Seed        *uint64           `json:"seed,omitempty"`
+	Timeout     Duration          `json:"timeout,omitempty"`
 	Warmup      Duration          `json:"warmup,omitempty"`
 	LogLevel    string            `json:"log_level,omitempty"`
 	Raw         json.RawMessage   `json:"-"`
@@ -37,8 +39,8 @@ type WorkloadParams struct {
 
 // UnmarshalJSON splits the discriminator from the parameters.
 func (w *WorkloadParams) UnmarshalJSON(b []byte) error {
-	var m map[string]any
-	if err := json.Unmarshal(b, &m); err != nil {
+	m, err := DecodeObject(b)
+	if err != nil {
 		return err
 	}
 	script, ok := m["script"].(string)
@@ -81,8 +83,8 @@ const (
 // Thresholds are the pass/fail bounds the pipeline applies to a segment's
 // bench summary.
 type Thresholds struct {
-	P99Ms     float64 `json:"p99_ms,omitempty"`
-	ErrorRate float64 `json:"error_rate,omitempty"`
+	P99Ms     float64  `json:"p99_ms,omitempty"`
+	ErrorRate *float64 `json:"error_rate,omitempty"`
 }
 
 // SegmentFile is a file shipped next to the config.
@@ -112,4 +114,17 @@ func DecodeSegments(raw []json.RawMessage) ([]Segment, error) {
 		out = append(out, s)
 	}
 	return out, nil
+}
+
+// MarshalJSON preserves explicitly empty inline files while omitting content
+// for an artifact reference, matching the schema's exclusive source rule.
+func (f SegmentFile) MarshalJSON() ([]byte, error) {
+	type plain SegmentFile
+	if f.Ref != "" {
+		return json.Marshal(plain(f))
+	}
+	return json.Marshal(struct {
+		plain
+		Content string `json:"content"`
+	}{plain(f), f.Content})
 }

@@ -1,0 +1,25 @@
+{
+  "metrics": {"queries_per_second": {"value": 12.5, "unit": "queries/s", "min": 0, "max": 20, "avg": 12.5}},
+  "segments": [
+    {
+      "name": "measurement",
+      "status": "failed",
+      "started_at": "2026-09-16T10:00:00Z",
+      "finished_at": "2026-09-16T10:01:00Z",
+      "metrics": {"iterations_total": {"value": 0, "unit": "iterations"}},
+      "errors": {"terminal_errors": 1, "failed_iterations": 0, "failed_queries": 2, "retry_attempts": 3},
+      "exit_code": 7,
+      "compliance": {"passed": false, "checks": [{"name": "latency", "actual": 0, "limit": 5}], "native_extension": {"values": [0, false, ""]}},
+      "error": "query deadline exceeded"
+    },
+    {"name": "cancelled-cell", "status": "canceled", "exit_code": 0}
+  ],
+  "artifacts": ["artifact/config-example", "artifact/native-report-example"],
+  "baseline": {
+    "ok": false,
+    "verdicts": [{"check": "disk", "status": "failed", "detail": "insufficient throughput"}],
+    "report": {"native_version": 1, "checks": {"disk": {"ok": false, "score": 0}}, "extra": []},
+    "error": "baseline invariant failed"
+  },
+  "summary": {"tps": 3, "latency_p50_ms": 1, "latency_p95_ms": 2, "latency_p99_ms": 3, "errors": 1, "duration": "1m0s"}
+}

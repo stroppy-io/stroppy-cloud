@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-mysql84-fixed-fc2399ff-mysql84-single",
+  "case_paths": [
+    "tests/mysql/8.4/single/simple/smoke-2m-2vus",
+    "tests/mysql/8.4/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.4/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.4/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/single/tpcc-procs/native-otlp-20s-2vus-retry50"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-mysql84-single-fixed.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

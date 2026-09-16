@@ -159,16 +159,16 @@ func parseSummaryLine(line string, into map[string]spec.MetricValue) bool {
 }
 
 // ThresholdViolation names the bound a segment broke; empty when none.
-// A zero threshold is "not set" — the schema requires positive bounds.
+// ErrorRate uses presence: an explicit zero forbids any failed iterations.
 func ThresholdViolation(t spec.Thresholds, s Summary) string {
 	if t.P99Ms > 0 {
 		if p99, ok := s.Metrics["iteration_duration_p99"]; ok && p99.Value > t.P99Ms {
 			return fmt.Sprintf("iteration_duration p99 %.3f ms > %.3f ms", p99.Value, t.P99Ms)
 		}
 	}
-	if t.ErrorRate > 0 {
-		if rate := ErrorRate(s); rate > t.ErrorRate {
-			return fmt.Sprintf("error rate %.4f > %.4f", rate, t.ErrorRate)
+	if t.ErrorRate != nil {
+		if rate := ErrorRate(s); rate > *t.ErrorRate {
+			return fmt.Sprintf("error rate %.4f > %.4f", rate, *t.ErrorRate)
 		}
 	}
 	return ""

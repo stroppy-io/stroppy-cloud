@@ -17,6 +17,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // Registry holds compiled engines by public id (`ns.name@major`).
@@ -66,7 +67,8 @@ func (r *Registry) Render(_ context.Context, id, template string, value json.Raw
 	}
 	generic := map[string]any{}
 	if len(value) > 0 {
-		if err := json.Unmarshal(value, &generic); err != nil {
+		generic, err = spec.DecodeObject(value)
+		if err != nil || generic == nil {
 			return "", errs.Invalid("value is not a JSON object")
 		}
 	}
@@ -128,7 +130,8 @@ func (r *Registry) Bake(_ context.Context, id string, value json.RawMessage) (js
 	}
 	generic := map[string]any{}
 	if len(value) > 0 {
-		if err := json.Unmarshal(value, &generic); err != nil {
+		generic, err = spec.DecodeObject(value)
+		if err != nil || generic == nil {
 			return nil, errs.Invalid("value is not a JSON object")
 		}
 	}
@@ -178,7 +181,8 @@ func (r *Registry) Validate(_ context.Context, id string, value json.RawMessage)
 	}
 	generic := map[string]any{}
 	if len(value) > 0 {
-		if err := json.Unmarshal(value, &generic); err != nil {
+		generic, err = spec.DecodeObject(value)
+		if err != nil || generic == nil {
 			return nil, errs.Invalid("value is not a JSON object")
 		}
 	}
@@ -192,8 +196,8 @@ func (r *Registry) MaskSecrets(id string, value json.RawMessage) json.RawMessage
 	if !ok || len(value) == 0 {
 		return value
 	}
-	var v any
-	if err := json.Unmarshal(value, &v); err != nil {
+	v, err := spec.DecodeObject(value)
+	if err != nil {
 		return value
 	}
 	out, err := json.Marshal(maskFields(sch.GetFields(), v))

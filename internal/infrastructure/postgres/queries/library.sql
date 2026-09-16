@@ -1,14 +1,14 @@
 -- name: InsertDatabase :exec
-INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external)
-VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @external);
+INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external)
+VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @runtime, @external);
 
 -- name: DatabaseByID :one
-SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external, created_at, updated_at
+SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
 FROM databases WHERE id = @id AND deleted_at IS NULL;
 
 -- name: DatabasesOfTenant :many
 -- Filters are optional; sort is decided by the caller through sort_key/desc.
-SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external, created_at, updated_at
+SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
 FROM databases
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@search::text = '' OR name ILIKE '%' || @search::text || '%' OR description ILIKE '%' || @search::text || '%')
@@ -35,6 +35,7 @@ SET name        = COALESCE(@name::text, name),
     image       = COALESCE(@image::text, image),
     params      = COALESCE(@params::jsonb, params),
     configs     = COALESCE(@configs::jsonb, configs),
+    runtime     = COALESCE(@runtime::jsonb, runtime),
     updated_at  = now()
 WHERE id = @id AND deleted_at IS NULL;
 
@@ -88,18 +89,18 @@ UPDATE workloads SET deleted_at = now(), updated_at = now() WHERE id = @id AND d
 
 -- name: InsertTest :exec
 INSERT INTO tests (id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,
-                   sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at)
+                   sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at)
 VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @database_id, @database_inline, @workload_id, @workload_inline,
-        @sizes, @provider_profile_id, @keep, @rating_tenant, @rating_global, @status, @validated_at);
+        @sizes, @execution, @provider_profile_id, @keep, @rating_tenant, @rating_global, @status, @validated_at);
 
 -- name: TestByID :one
 SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,
-       sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
+       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
 FROM tests WHERE id = @id AND deleted_at IS NULL;
 
 -- name: TestsOfTenant :many
 SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,
-       sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
+       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
 FROM tests
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@search::text = '' OR name ILIKE '%' || @search::text || '%' OR description ILIKE '%' || @search::text || '%')
@@ -126,6 +127,7 @@ SET name                = COALESCE(@name::text, name),
     workload_id         = CASE WHEN @set_workload::boolean THEN @workload_id::uuid ELSE workload_id END,
     workload_inline     = CASE WHEN @set_workload::boolean THEN @workload_inline::jsonb ELSE workload_inline END,
     sizes               = COALESCE(@sizes::jsonb, sizes),
+    execution           = COALESCE(@execution::jsonb, execution),
     provider_profile_id = CASE WHEN @set_provider::boolean THEN @provider_profile_id::uuid ELSE provider_profile_id END,
     keep                = COALESCE(@keep::text, keep),
     rating_tenant       = COALESCE(@rating_tenant::boolean, rating_tenant),

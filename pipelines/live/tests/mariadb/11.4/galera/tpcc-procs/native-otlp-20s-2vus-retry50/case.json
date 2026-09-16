@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "tests/mariadb/11.4/galera/tpcc-procs/native-otlp-20s-2vus-retry50",
+  "database": "mariadb",
+  "version": "11.4",
+  "topology": "galera",
+  "workload": "tpcc/procs",
+  "preset": "native-otlp-20s-2vus-retry50",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-maria-monitor-e4a0fdb4-mariadb-galera-114"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/mysql-clusters-check.json",
+    "pointer": "/native_cells/15"
+  },
+  "legacy_row": {
+    "database": "mariadb",
+    "version": "11.4",
+    "topology": "galera",
+    "provider": "yandex",
+    "zone": "ru-central1-a",
+    "workload": "tpcc/procs",
+    "database_actual_version": "11.4.13-MariaDB-ubu2404-log",
+    "started_at": "2026-09-15T11:49:06.272739804Z",
+    "finished_at": "2026-09-15T11:53:02.737056876Z",
+    "preset": "native-otlp-20s-2vus-retry50",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "passed",
+    "pipeline_traces": "passed",
+    "native_tps": "passed",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114",
+    "iterations": "3764.0",
+    "input": "suite-mariadb-monitor-fixed.json",
+    "evidence": "mysql-clusters-check.json",
+    "checked_at": "2026-09-15T12:05:51.338936+00:00",
+    "note": "segment=tpcc-procs; all native workloads and exporter collectors passed; log observations retained separately; MariaDB SLAVE MONITOR included at bootstrap",
+    "component_log_observations": "{\"galera_monitor_timeout\": 3}",
+    "retry_attempts": "0.0",
+    "local_cluster": "",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-mariadb-monitor-fixed.json",
+    "pointer": "/cells/1/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "simple",
+      "script": "simple",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "simple"
+      }
+    },
+    {
+      "name": "tpcb-tx",
+      "script": "tpcb/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/tx",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    },
+    {
+      "name": "tpcb-procs",
+      "script": "tpcb/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/procs",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    },
+    {
+      "name": "tpcc-tx",
+      "script": "tpcc/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcc/tx",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    },
+    {
+      "name": "tpcc-procs",
+      "script": "tpcc/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcc/procs",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

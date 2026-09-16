@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-pgnoop-f4eb20b2-pg-noop-single",
+  "case_paths": [
+    "tests/pg_noop/0.1.2/single/execute_sql/smoke-2m-2vus",
+    "tests/pg_noop/0.1.2/single/execute-sql/native-otlp-2m-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-pg-noop-autoretry.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

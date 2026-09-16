@@ -191,7 +191,7 @@ func (s *Service) ImportTest(ctx context.Context, actor auth.Actor, tenantID uui
 				EntityPatch: EntityPatch{Description: &w.Description, Tags: w.Tags},
 				SetDatabase: true, DatabaseRef: spec.DatabaseRef, DatabaseInline: spec.DatabaseInline,
 				SetWorkload: true, WorkloadRef: spec.WorkloadRef, WorkloadInline: spec.WorkloadInline,
-				Sizes: spec.Sizes, SetProvider: true, ProviderProfileID: spec.ProviderProfileID,
+				Sizes: spec.Sizes, Execution: spec.Execution, SetProvider: true, ProviderProfileID: spec.ProviderProfileID,
 				Keep: &spec.Keep, RatingTenant: &spec.RatingTenant, RatingGlobal: &spec.RatingGlobal,
 			})
 			return t, fit, res, false, err

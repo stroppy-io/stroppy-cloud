@@ -32,10 +32,11 @@ type Renderer interface {
 
 // Input is everything the compiler needs.
 type Input struct {
-	RunID    uuid.UUID
-	Tenant   string
-	Database library.DatabaseSpec
-	Plan     topology.Plan
+	Execution json.RawMessage
+	RunID     uuid.UUID
+	Tenant    string
+	Database  library.DatabaseSpec
+	Plan      topology.Plan
 	// EffectiveConfigs: role → schema id → resolved value.
 	EffectiveConfigs map[string]map[string]json.RawMessage
 	Workload         library.WorkloadSpec
@@ -73,7 +74,6 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 	if err := c.machines(); err != nil {
 		return Output{}, err
 	}
-	c.prepareDataDisks()
 	c.network()
 	c.flows()
 	if err := recipe(c); err != nil {
@@ -94,6 +94,32 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 	// Every measuring workload reports iterations. A generic TPS is not part
 	// of Stroppy 6's output contract and must not make every run degraded.
 	c.out.Spec.ResultExpectations = []string{"iterations_total"}
+	for i, raw := range []json.RawMessage{in.Database.Runtime, in.Execution} {
+		prefix := []string{"database.runtime", "execution"}[i]
+		normalized, err := spec.NormalizeRuntime(raw)
+		if err != nil {
+			return Output{}, spec.WithValidationPath(err, prefix)
+		}
+		if err := spec.ApplyRuntime(&c.out.Spec, normalized); err != nil {
+			return Output{}, spec.WithValidationPath(err, prefix)
+		}
+	}
+	if err := spec.ResourceErrors(spec.CheckResources(c.out.Spec)); err != nil {
+		return Output{}, err
+	}
+	c.prepareDataDisks()
+	// Snapshots must describe the final machines, including per-instance overrides.
+	for i := range c.out.Machines {
+		m := c.out.Spec.Machines[i]
+		c.out.Machines[i].CPU, c.out.Machines[i].MemoryGB = m.CPU, m.MemoryGB
+		c.out.Machines[i].InstanceType, c.out.Machines[i].Location = m.InstanceType, m.Location
+		c.out.Machines[i].DiskGB, c.out.Machines[i].DiskType = 0, ""
+		for _, d := range m.Disks {
+			if d.Mount == "/data" {
+				c.out.Machines[i].DiskGB, c.out.Machines[i].DiskType = d.GB, d.Type
+			}
+		}
+	}
 	sort.SliceStable(c.out.Spec.Containers, func(i, j int) bool { return c.out.Spec.Containers[i].Name < c.out.Spec.Containers[j].Name })
 	return c.out, nil
 }
@@ -135,6 +161,9 @@ func (c *compilation) machines() error {
 			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role))
 		}
 		disk := cell.DefaultDiskGB
+		if rs.DiskGB == 0 && c.in.Workload.Protocol != catalog.ProtoNoop && (node.Role == "db" || strings.HasPrefix(node.Role, "db-")) {
+			disk = max(disk, spec.EstimateDataset(c.in.Workload.Segments).RecommendedGB)
+		}
 		if rs.DiskGB > 0 {
 			disk = rs.DiskGB
 		}
@@ -164,6 +193,15 @@ func (c *compilation) machines() error {
 			if node.Role != topology.RoleRunner && node.Role != topology.RoleProxy {
 				m.Disks = []spec.Disk{{Name: "data", GB: disk, Type: diskType, Mount: "/data"}}
 			}
+			estimate := spec.DatasetEstimate{}
+			if c.in.Workload.Protocol != catalog.ProtoNoop {
+				estimate = spec.EstimateDataset(c.in.Workload.Segments)
+			}
+			m, err = library.ResolveHardware(m, rs, estimate)
+			if err != nil {
+				return fmt.Errorf("sizes.%s.machine: %w", node.Role, err)
+			}
+
 			c.out.Spec.Machines = append(c.out.Spec.Machines, m)
 			c.machinesByRole[node.Role] = append(c.machinesByRole[node.Role], name)
 			snap := run.MachineSnapshot{Name: name, Role: node.Role, Size: rs.Size, CPU: cell.CPU, MemoryGB: cell.MemoryGB, InstanceType: cell.InstanceType, Location: m.Location}
@@ -205,9 +243,13 @@ func (c *compilation) location(settings map[string]any) string {
 func (c *compilation) network() {
 	settings := map[string]any{}
 	_ = json.Unmarshal(c.in.ProviderSettings, &settings) //nolint:errcheck // baked upstream
-	n := spec.Network{CIDR: "10.130.0.0/24"}
+	n := spec.Network{CIDR: "10.130.0.0/24", AllowPublicIPs: true}
+	network, ok := settings["network"].(map[string]any)
+	if !ok {
+		network = map[string]any{}
+	}
 	for _, key := range []string{"subnet_cidr", "cidr"} {
-		if cidr, ok := settings[key].(string); ok && cidr != "" {
+		if cidr, ok := network[key].(string); ok && cidr != "" {
 			n.CIDR = cidr
 		}
 	}
@@ -265,23 +307,32 @@ func (c *compilation) workload() error {
 		}
 	}
 	url, driverType := c.clientURL(baked.Connection)
+	url, err := connectionURL(url, c.in.Workload.Protocol, baked.Connection)
+	if err != nil {
+		return err
+	}
 	driver := map[string]any{}
 	if c.in.Workload.Protocol == catalog.ProtoPicodata {
 		driver["postgres"] = map[string]any{"defaultQueryExecMode": "exec"}
 	}
 	for k, v := range baked.Driver {
-		if k == "pool" || k == "insert_progress" {
+		if k == "pool" || k == "insert_progress" || k == "postgres" || k == "sql" {
 			driver[camel(k)] = camelMap(v)
 			continue
 		}
 		driver[camel(k)] = v
 	}
 	for k, v := range baked.Connection {
-		if k == "kind" {
+		if v == nil || k == "kind" || k == "ca_cert" || k == "sslmode" || k == "application_name" || k == "tls" || k == "charset" {
 			continue
 		}
 		if k == "query_exec_mode" {
-			driver["postgres"] = map[string]any{"defaultQueryExecMode": v}
+			pg, ok := driver["postgres"].(map[string]any)
+			if !ok || pg == nil {
+				pg = map[string]any{}
+			}
+			pg["defaultQueryExecMode"] = v
+			driver["postgres"] = pg
 			continue
 		}
 		driver[camel(k)] = v

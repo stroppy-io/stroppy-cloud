@@ -11,6 +11,8 @@ import (
 
 	"github.com/google/uuid"
 
+	pipelinespec "github.com/stroppy-io/stroppy-cloud/pipelines/spec"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -81,7 +83,17 @@ func (s *Service) normalizeTestSpec(ctx context.Context, spec *TestSpec) error {
 		}
 		spec.WorkloadInline = &baked
 	}
+	var err error
+	spec.Execution, err = pipelinespec.NormalizeRuntime(spec.Execution)
+	if err != nil {
+		return pipelinespec.WithValidationPath(err, "execution")
+	}
 	for role, rs := range spec.Sizes {
+		rs.Machine, err = pipelinespec.NormalizeMachineOverride(rs.Machine)
+		if err != nil {
+			return pipelinespec.WithValidationPath(err, "sizes."+role+".machine")
+		}
+		spec.Sizes[role] = rs
 		if sizeRank[rs.Size] == 0 {
 			return errs.Invalid(fmt.Sprintf("sizes.%s: unknown size %q", role, rs.Size))
 		}
@@ -200,6 +212,13 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		}
 	}
 
+	preview := pipelinespec.Run{}
+	if wlSpec != nil {
+		preview.Workload = pipelinespec.Workload{DriverType: string(wlSpec.Protocol), Segments: wlSpec.Segments}
+	}
+	if res.Profile != nil {
+		preview.Provider.Kind = pipelinespec.ProviderKind(res.Profile.Kind)
+	}
 	// sizes vs requirements
 	if res.DatabaseDerived != nil {
 		roles := []string{}
@@ -225,24 +244,58 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 				issue("sizes."+role, "unknown_size", "ERROR", fmt.Sprintf("no %s size for %s", rs.Size, topology.Family(role)), nil)
 				continue
 			}
-			disk := cell.DefaultDiskGB
-			if rs.DiskGB > 0 {
-				disk = rs.DiskGB
+			estimate := pipelinespec.DatasetEstimate{}
+			if wlSpec != nil && wlSpec.Protocol != catalog.ProtoNoop {
+				estimate = pipelinespec.EstimateDataset(wlSpec.Segments)
 			}
-			if cell.CPU < req.CPU || float64(cell.MemoryGB) < req.MemoryGB {
-				issue("sizes."+role, "too_small", "ERROR",
-					fmt.Sprintf("%s needs %d vCPU / %.0f GB (%s); %s gives %d / %d", role, req.CPU, req.MemoryGB, req.Reason, rs.Size, cell.CPU, cell.MemoryGB),
-					suggestSize(sizes, role, req))
+			runtime := json.RawMessage(nil)
+			if dbSpec != nil {
+				runtime = dbSpec.Runtime
 			}
-			if float64(disk) < req.DiskGB {
-				issue("sizes."+role+".disk", "too_small", "ERROR", fmt.Sprintf("%s needs %.0f GB of disk (%s)", role, req.DiskGB, req.Reason), map[string]any{"gb": int(math.Ceil(req.DiskGB))})
+			for index := 1; index <= n.Count; index++ {
+				m, err := previewHardware(role, index, rs, cell, estimate, runtime, spec.Execution)
+				if err != nil {
+					issue("sizes."+role, "invalid_hardware", "ERROR", err.Error(), nil)
+					continue
+				}
+				disk := 40
+				if m.BootDisk != nil {
+					disk = m.BootDisk.GB
+				}
+				for _, d := range m.Disks {
+					if d.Mount == "/data" {
+						disk = d.GB
+					}
+				}
+				if m.CPU < req.CPU || float64(m.MemoryGB) < req.MemoryGB {
+					issue("sizes."+role, "too_small", "ERROR", fmt.Sprintf("%s needs %d vCPU / %.0f GB (%s); final machine gives %d / %d", m.Name, req.CPU, req.MemoryGB, req.Reason, m.CPU, m.MemoryGB), suggestSize(sizes, role, req))
+				}
+				if float64(disk) < req.DiskGB {
+					issue("sizes."+role+".disk", "too_small", "ERROR", fmt.Sprintf("%s needs %.0f GB of disk (%s)", m.Name, req.DiskGB, req.Reason), map[string]any{"gb": int(math.Ceil(req.DiskGB))})
+				}
+				res.Machines = append(res.Machines, Machine{Role: role, Count: 1, Size: rs.Size, CPU: m.CPU, MemoryGB: m.MemoryGB, DiskGB: disk})
+				preview.Machines = append(preview.Machines, m)
+				if role == "db" || strings.HasPrefix(role, "db-") {
+					preview.Containers = append(preview.Containers, pipelinespec.Container{Name: m.Name, Role: role, Machine: m.Name, Image: string(dbSpec.Kind), Mounts: []pipelinespec.Mount{{Source: "/data", Target: "/data"}}})
+				}
 			}
-			res.Machines = append(res.Machines, Machine{Role: role, Count: n.Count, Size: rs.Size, CPU: cell.CPU, MemoryGB: cell.MemoryGB, DiskGB: disk})
 		}
 		for role := range spec.Sizes {
 			if !contains(roles, role) {
-				issue("sizes."+role, "unknown_role", "WARNING", "the topology has no role "+role, nil)
+				issue("sizes."+role, "unknown_role", "ERROR", "the topology has no role "+role, nil)
 			}
+		}
+	}
+
+	if s.preflight != nil && dbSpec != nil && wlSpec != nil && res.DatabaseDerived != nil && res.Profile != nil {
+		findings, err := s.preflight(ctx, *dbSpec, *wlSpec, res, spec)
+		if err != nil {
+			issue("execution", "preflight", "ERROR", err.Error(), nil)
+		}
+		fit.Issues = append(fit.Issues, findings...)
+	} else {
+		for _, finding := range pipelinespec.CheckResources(preview) {
+			issue(finding.Path, finding.Code, finding.Severity, finding.Message, nil)
 		}
 	}
 
@@ -365,6 +418,9 @@ func (s *Service) UpdateTest(ctx context.Context, actor auth.Actor, tenantID, id
 		p.Name = &n
 	}
 	merged := t.Spec
+	if p.Execution != nil {
+		merged.Execution = p.Execution
+	}
 	if p.SetDatabase {
 		merged.DatabaseRef, merged.DatabaseInline = p.DatabaseRef, p.DatabaseInline
 	}
@@ -390,6 +446,9 @@ func (s *Service) UpdateTest(ctx context.Context, actor auth.Actor, tenantID, id
 		return Test{}, Fit{}, Resolved{}, err
 	}
 	p.DatabaseInline, p.WorkloadInline = merged.DatabaseInline, merged.WorkloadInline
+	if p.Execution != nil {
+		p.Execution = merged.Execution
+	}
 	fit, _, err := s.Validate(ctx, tenantID, merged)
 	if err != nil {
 		return Test{}, Fit{}, Resolved{}, err

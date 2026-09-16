@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/graphene-ci/pipeline/pkg/pipeline"
+
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/provision"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -165,7 +166,7 @@ func TestValidateAndExpectations(t *testing.T) {
 	if err := validate(run); err == nil {
 		t.Error("segment without a script accepted")
 	}
-	run.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"load","workload":{"script":"simple"}}`)}
+	run.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"load","workload":{"script":"simple"},"run":{"executor":"shared-iterations","iterations":1}}`)}
 	if err := validate(run); err != nil {
 		t.Errorf("valid run rejected: %v", err)
 	}
@@ -235,7 +236,7 @@ func TestContainerFlowsStayWithinRun(t *testing.T) {
 func TestValidateRejectsNestedWorkloadParamsBeforeProvisioning(t *testing.T) {
 	run := sampleRun()
 	run.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"tx","workload":{"script":"tpcb/tx","params":{"scale_factor":1}}}`)}
-	if err := validate(run); err == nil || !strings.Contains(err.Error(), "workload.params must be a scalar") {
+	if err := validate(run); err == nil || !strings.Contains(err.Error(), "workload.params") {
 		t.Fatalf("validation = %v", err)
 	}
 }

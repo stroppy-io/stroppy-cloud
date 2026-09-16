@@ -13,7 +13,9 @@ import (
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // validationOf renders a schemapb result on the wire.
@@ -52,11 +54,22 @@ func (h *Handler) NewError(ctx context.Context, err error) *oas.ProblemStatusCod
 	var decode *ogenerrors.DecodeRequestError
 	var params *ogenerrors.DecodeParamsError
 	var security *ogenerrors.SecurityError
+	var pipelineValidation *spec.ValidationError
 	switch {
+	case errors.As(err, &pipelineValidation):
+		code, detail = errs.CodeValidation, "pipeline input validation failed"
+		validation = oas.NewOptValidationResult(resourceValidationOf(pipelineValidation.Issues))
 	case errors.As(err, &domain):
 		code, detail = domain.Code, domain.Detail
 		if vr, ok := domain.Validation.(*schemapb.ValidationResult); ok && vr != nil {
 			validation = oas.NewOptValidationResult(validationOf(vr))
+		}
+		if findings, ok := domain.Validation.([]library.Issue); ok {
+			issues := make([]spec.ResourceIssue, 0, len(findings))
+			for _, i := range findings {
+				issues = append(issues, spec.ResourceIssue{Scope: i.Scope, Path: i.Path, Code: i.Code, Severity: i.Severity, Message: i.Message})
+			}
+			validation = oas.NewOptValidationResult(resourceValidationOf(issues))
 		}
 	case errors.As(err, &decode):
 		code, detail = errs.CodeInvalid, decode.Error()
@@ -88,6 +101,21 @@ func (h *Handler) NewError(ctx context.Context, err error) *oas.ProblemStatusCod
 	}
 	p.Validation = validation
 	return &oas.ProblemStatusCode{StatusCode: status, Response: p}
+}
+
+func validationScope(scope string) oas.ValidationScope {
+	if scope == "run_spec" {
+		return oas.ValidationScopeRunSpec
+	}
+	return oas.ValidationScopeInput
+}
+
+func resourceValidationOf(issues []spec.ResourceIssue) oas.ValidationResult {
+	out := oas.ValidationResult{Errors: make([]oas.ValidationError, 0, len(issues))}
+	for _, i := range issues {
+		out.Errors = append(out.Errors, oas.ValidationError{Path: i.Path, Code: i.Code, Message: oas.NewOptString(i.Message), Severity: oas.NewOptValidationErrorSeverity(oas.ValidationErrorSeverity(i.Severity)), Scope: oas.NewOptValidationScope(validationScope(i.Scope))})
+	}
+	return out
 }
 
 func title(code errs.Code) string {

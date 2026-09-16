@@ -31,6 +31,11 @@ func Run(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) {
 		pipeline.RunAll[spec.Result](ctx, run.PipelineID, nil, 1)
 		return spec.SuiteResult{}, nil
 	}
+	normalized, normalizeErr := spec.NormalizeSuite(s)
+	if normalizeErr != nil {
+		return spec.SuiteResult{}, normalizeErr
+	}
+	s = normalized
 	if len(s.Cells) == 0 {
 		return spec.SuiteResult{}, fmt.Errorf("a suite needs at least one cell")
 	}

@@ -96,4 +96,3 @@ export interface CfgMaxscaleCnf25 {
   /** Rendered extra service parameters. The `custom` map joined into extra key=value lines of the [rwsplit-service] section. */
   readonly custom_rendered?: string;
 }
-

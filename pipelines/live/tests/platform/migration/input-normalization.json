@@ -1,0 +1,21 @@
+{
+  "cases": [
+    "tests/ydb_managed/managed/dedicated-medium/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb_managed/managed/dedicated-medium/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb_managed/managed/dedicated-medium/simple/smoke-2m-2vus",
+    "tests/ydb_managed/managed/dedicated-medium/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.2/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.2/mirror-3-dc/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.2/mirror-3-dc/simple/smoke-2m-2vus",
+    "tests/ydb/26.2/mirror-3-dc/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.1/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.1/mirror-3-dc/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.1/mirror-3-dc/simple/smoke-2m-2vus",
+    "tests/ydb/26.1/mirror-3-dc/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.3/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.3/mirror-3-dc/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.3/mirror-3-dc/simple/smoke-2m-2vus",
+    "tests/ydb/26.3/mirror-3-dc/simple/native-otlp-2m-2vus"
+  ],
+  "change": "Normalize empty observability header placeholders to spec.run@1 in reusable case inputs only. Historical evidence and run snapshots unchanged."
+}

@@ -176,4 +176,3 @@ export interface SystemSizes1 {
   /** aws. Keys are role families (db, proxy, runner, coordinator); each maps XS..XL to a machine. */
   aws?: Record<string, SystemSizes1AwsValue>;
 }
-

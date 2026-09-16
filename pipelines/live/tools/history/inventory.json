@@ -1,0 +1,1858 @@
+[
+  {
+    "source": "/tmp/graphene-disk-check-rnnjai1t/disk-proof.sh",
+    "path": "graphene-disk-check-rnnjai1t/disk-proof.sh",
+    "sha256": "7bbe7618cdcb1ac88c0acde7ab53b04047951757f00f4aecb819a5f2acb99cfd",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/graphene-disk-check-rnnjai1t/postgres-proof.sh",
+    "path": "graphene-disk-check-rnnjai1t/postgres-proof.sh",
+    "sha256": "596162fb6c59fb609917d687619749effb643938675fbede3e7d00d65334e026",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/graphene-disk-check-rnnjai1t/safety-proof.sh",
+    "path": "graphene-disk-check-rnnjai1t/safety-proof.sh",
+    "sha256": "df26077e05540a19ee33a7798a72e16a527e8ff16a5dd02b588e2c229aa1e848",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/accept_verified.py",
+    "path": "stroppy-catalog-0z9hx668/accept_verified.py",
+    "sha256": "ff1bf2744ede6d5858a6ffc7e3c59bd472470a9df385fef7689256dd0c2298cc",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/autonomous_brief.py",
+    "path": "stroppy-catalog-0z9hx668/autonomous_brief.py",
+    "sha256": "19ab035db5e076c11263cb82a3766bacdbc88310f282691551ea8889f29fe0b1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/autonomous_provider.py",
+    "path": "stroppy-catalog-0z9hx668/autonomous_provider.py",
+    "sha256": "a215c9655dd6453b6e4ea25e03f07022f100fc0a077f69bf76e76f81dcc80fe2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/auxiliary/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/auxiliary/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/auxiliary/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/auxiliary/watch_cells.py",
+    "sha256": "ecf0f8df64c3e18d39c0a33e54e07664c50d6eea19fabb0e62ab15078ce99b6b",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/build_native.py",
+    "path": "stroppy-catalog-0z9hx668/build_native.py",
+    "sha256": "ed98df93aa17cd993272c1d6bd39aa94a7e5ab80e44d28f04441c425d3f7c57e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/campaign_status.py",
+    "path": "stroppy-catalog-0z9hx668/campaign_status.py",
+    "sha256": "d5ef122b74010eb29e8f1b3b6afb132340e8407364c1b2a4eb9f12f11ddfb1be",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/check_dedicatedauth.py",
+    "path": "stroppy-catalog-0z9hx668/check_dedicatedauth.py",
+    "sha256": "c01d5a24242da9256c27a9ae50f694b025911a3023d8fe1dc078d39d96689ddb",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/check_parallel_log_filters.py",
+    "path": "stroppy-catalog-0z9hx668/check_parallel_log_filters.py",
+    "sha256": "16c6ca84b48ab27a291e640b7ca6d37f6d789850aa5c76a67c54b0715a212f16",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/check_populationretry.py",
+    "path": "stroppy-catalog-0z9hx668/check_populationretry.py",
+    "sha256": "616b79d021090c46737fd0a846ba848fe86495e8443cdad23bf382b8772c43d9",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/check_ydbretry.py",
+    "path": "stroppy-catalog-0z9hx668/check_ydbretry.py",
+    "sha256": "28896a79f762aa15f5a20d1e20cc70f62c9ab598aef3de01ae873b1bbd2b0dcc",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/classify_ydb_logs.py",
+    "path": "stroppy-catalog-0z9hx668/classify_ydb_logs.py",
+    "sha256": "8724d5173f13edf63f781ba4aeaf13796a2854d30ac6a02d2af4c0ffe17367e3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/inspect_only.py",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/inspect_only.py",
+    "sha256": "cae9d09f771a9c3cb5b4bad104a23ef4c588ba171af67f5e4fa067ba41ca9c18",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/monitor.py",
+    "sha256": "35c18f36815550122d7e3ac892f1a753410fae540f52f2eb99d72c29a834ec5e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-243-automatic_stats.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-243-automatic_stats.go.txt",
+    "sha256": "7d90962f27ce6ea5a6ca1725da0d1bc87e03ec68dfc0707cadfc4f258d540e47",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-243-pebble-compaction.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-243-pebble-compaction.go.txt",
+    "sha256": "dd4cc870ae10d994a9ba3d61310e45f391ef1dd8a16d10e7daabe207f336a9ca",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-252-automatic_stats.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-252-automatic_stats.go.txt",
+    "sha256": "910e0c07b5f4a7318856f54faf0c10ae3365fbb1a3af9793ac23e1438628e6cf",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-254-automatic_stats.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-254-automatic_stats.go.txt",
+    "sha256": "0e39c7addb183d90264c211ec614b2f703db62191282ee5dbe76bd73ac5e4400",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-pebble-compaction.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-pebble-compaction.go.txt",
+    "sha256": "bb70d1d8ee1d802498dc7127476c2f7ab2cb780fff32491074886d18d0ad98db",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/upstream-queue.go",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/upstream-queue.go.txt",
+    "sha256": "cb1a5bb315cf068aeafc039827993567b9e0b34ad41f3d1b92583819b77acc02",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb-matrix/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/crdb-matrix/watch_cells.py",
+    "sha256": "02f22d3abf3dc613a4a2039eec2b52b07163ca36d85a640872b510b5b9d1ab97",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/crdb_workload_health.py",
+    "path": "stroppy-catalog-0z9hx668/crdb_workload_health.py",
+    "sha256": "380a620d33283cf81c8840d9b73283dba3404058c4981a3f509b826c295354bb",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/download_cell_artifacts.py",
+    "path": "stroppy-catalog-0z9hx668/download_cell_artifacts.py",
+    "sha256": "60bdc00d8d5b78e7e88662d9a8b3e6ffdc607b1015cdc37145a2a1f88592dd36",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/download_logs.go",
+    "path": "stroppy-catalog-0z9hx668/download_logs.go.txt",
+    "sha256": "73ae8cb91801ae048505aadc7b8e6601eeb907219256642f901fdceb2221e66c",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/early_autonomous.py",
+    "path": "stroppy-catalog-0z9hx668/early_autonomous.py",
+    "sha256": "e731d6968698d9d7a01d6d4dbd9527f04ecb334bb40d60f29e3b8d8c6f3be960",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/external_campaign.py",
+    "path": "stroppy-catalog-0z9hx668/external_campaign.py",
+    "sha256": "e290f8b7350d00a27fd152458be3e403d31a037916c2e286744c995fed068442",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/extract_segments.go",
+    "path": "stroppy-catalog-0z9hx668/extract_segments.go.txt",
+    "sha256": "609eb59cb24a6589de360d40ecc7eabab7e4cdf3cbe2b5ba6660204fd37d49d0",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/finalize_autonomous.py",
+    "path": "stroppy-catalog-0z9hx668/finalize_autonomous.py",
+    "sha256": "78d09d5c0a2ab285e6a738dd34f32eff25ce2481bf05a8c616be6fcd635db64a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/inspect_crdb_candidates.py",
+    "path": "stroppy-catalog-0z9hx668/inspect_crdb_candidates.py",
+    "sha256": "c2a1a5c73b79cec77582c3a0d862cce4b1bc7bfaea410b955b20d76c55fb6b97",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/inspect_ydb_candidates.py",
+    "path": "stroppy-catalog-0z9hx668/inspect_ydb_candidates.py",
+    "sha256": "c54a3519d2c4f0bb0e59d806ca822fa65e77aff4d3a2552875697cf718b9d799",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/library-docker-heartbeat-checks.py",
+    "path": "stroppy-catalog-0z9hx668/library-docker-heartbeat-checks.py",
+    "sha256": "eac96940f71fae61a080af6268d235c71dffdecb41e1ac50f8e9bafc1dd5b73b",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_crdb.py",
+    "path": "stroppy-catalog-0z9hx668/local_crdb.py",
+    "sha256": "9e5c314d9bd48a5902ddac735297f6b54ea1b477d08aed437c5b47395cf1dbac",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_external_fixture.py",
+    "path": "stroppy-catalog-0z9hx668/local_external_fixture.py",
+    "sha256": "2b74a01d93f73a223e9981c720b719c68775f91c9c0a7e5696bc8f624809a104",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_external_probe.py",
+    "path": "stroppy-catalog-0z9hx668/local_external_probe.py",
+    "sha256": "b2b78d2f2710c815ab849876896910196a16ef3896f4bfa31bb45cf0b9c678ce",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_oriole.py",
+    "path": "stroppy-catalog-0z9hx668/local_oriole.py",
+    "sha256": "539eb11e9a6a104716193f1f2a8ebce77c1466c467869d0efa77c076d043826b",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_pgnoop.py",
+    "path": "stroppy-catalog-0z9hx668/local_pgnoop.py",
+    "sha256": "37071f907818350afe97278d5e095a8d30c1b495f79d55f5182159c0e44b3772",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_pgnoop_auto.py",
+    "path": "stroppy-catalog-0z9hx668/local_pgnoop_auto.py",
+    "sha256": "497a5db008050243df35754a75a1afe62e5df1e5240a0979d9549aabfd53ec21",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_pico.py",
+    "path": "stroppy-catalog-0z9hx668/local_pico.py",
+    "sha256": "e7df74dc8ef22e8914f1960e3c7720c5f0452735e0e5f625bd60ec342b642812",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_pico_termination.py",
+    "path": "stroppy-catalog-0z9hx668/local_pico_termination.py",
+    "sha256": "6e177b2998a5cd76d99a778fe15d0bf205aef1aa520a84e02cbb2b5644386b5d",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_ydb.py",
+    "path": "stroppy-catalog-0z9hx668/local_ydb.py",
+    "sha256": "6f16f2178b65df587632cfc076718dbfe7475b19986b5d010f9167e3060ea16f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_ydb_channels.py",
+    "path": "stroppy-catalog-0z9hx668/local_ydb_channels.py",
+    "sha256": "3b6cd4d36a581531afddd5d5fec1c1af0763833b038dfa77b46a717e38b87890",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/local_ydb_readiness.py",
+    "path": "stroppy-catalog-0z9hx668/local_ydb_readiness.py",
+    "sha256": "1377a8eab283c1ed7cec01c3fc998a4aa1f275208a9c478c9a6cdccad922c4e9",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-error-code/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-error-code/classifier.py",
+    "sha256": "005477446d5384d660f8d7e4b6e6c92e1f752a26a5abc0362bd873d16e572143",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-session-actor/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-session-actor/classifier.py",
+    "sha256": "aa94966324fbc25737b886c1dd9041920fe8fcc5e8f0f36d83eadd8b0c480fa1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-trace/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/different-trace/classifier.py",
+    "sha256": "dca2791ce9e8a7f429713d5b306d1875c41188796a06fcb8d4c75e9c7afb16a0",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/native-terminal-error/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/native-terminal-error/classifier.py",
+    "sha256": "57495a60f2911b3a3c3d2b651ad739607cccd7c062b933e496628fda2d6a2929",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/outside-drop-window/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/outside-drop-window/classifier.py",
+    "sha256": "bbaf0a9e9b10c90f243491fad346fe954eb5827586c2d54e9053573e5eacf137",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.1/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.1/classifier.py",
+    "sha256": "be5a7560ce1c0eed870a2c3f556c6894fcd209f3b5677c715f259c9f7379efd4",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.2/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.2/classifier.py",
+    "sha256": "8e8f337dfce539b344b58853ff0c4a8edb408652b1b2274aadf796a2759f5546",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.3/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/positive-26.3/classifier.py",
+    "sha256": "b022b08297df36b52cc38d2c66ba4f5fa9ff4a2ea8879fca2af7d0520ac65a10",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/unknown-error/classifier.py",
+    "path": "stroppy-catalog-0z9hx668/log-filter-check-ppscz4ec/unknown-error/classifier.py",
+    "sha256": "6a5d8d749838e35c44ac2647b1b74cb50e20e2215c68a6a6ab353edb35bc104a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed/monitor.py",
+    "sha256": "a603d285778304eb5eed2e6535e2af35e796d9f74b23aec55be1e2203910e196",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-access/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-access/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-auth/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-auth/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-dedicated/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-dedicated/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-populationretry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-populationretry/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-populationretry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/managed-populationretry/watch_cells.py",
+    "sha256": "f472f768ebd82331e59f6172ec94b26f653e7acb192871bbb425b2f54a729f83",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-queryready/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-queryready/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-queryready/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/managed-queryready/watch_cells.py",
+    "sha256": "f472f768ebd82331e59f6172ec94b26f653e7acb192871bbb425b2f54a729f83",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-retry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-retry/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-validation/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-validation/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-ydbretry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/managed-ydbretry/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/managed-ydbretry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/managed-ydbretry/watch_cells.py",
+    "sha256": "f472f768ebd82331e59f6172ec94b26f653e7acb192871bbb425b2f54a729f83",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/native_only.py",
+    "path": "stroppy-catalog-0z9hx668/native_only.py",
+    "sha256": "65af66b4e5927d5bf960d4a8353fc871755d35d513ea8f2f4e0d7899ab537af2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/observe_campaigns.py",
+    "path": "stroppy-catalog-0z9hx668/observe_campaigns.py",
+    "sha256": "8972ea8f7acf5a6e760318952d6d4489bd6836d5d7333c4191ae86987e30eabe",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/aggregate.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/aggregate.py",
+    "sha256": "81dfd9bb977293ad57e93738a62c18d876d402c5201ca0afb8fe8b0b8e3ad1e9",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/monitor.py",
+    "sha256": "a603d285778304eb5eed2e6535e2af35e796d9f74b23aec55be1e2203910e196",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/probe_remote.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/probe_remote.py",
+    "sha256": "bb37d770a95ccd2832108cb93b6ed3d50b6456a1ea911527907812318995f5b0",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/raw_health.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/raw_health.py",
+    "sha256": "f4768bfeac07b065bf80f2652bb5fe4c9698bf3f7113d44528f2ac54a4c3043f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/verify_one.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/verify_one.py",
+    "sha256": "50860c540a2e2eb1e9895ff8476899a064d2b508753404f693f1243e5f87c641",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/oriole/watch_cells.py",
+    "sha256": "3e65c9e2d85fe70faefa9fa55b2e42af46584bd4dbdf5ac7546afa9905753fcf",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/aggregate.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/aggregate.py",
+    "sha256": "9019b04ec675da82222e97190dfd367eb1d92bcb0b4ba284d08ae4cbcd1a41cd",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/monitor.py",
+    "sha256": "a603d285778304eb5eed2e6535e2af35e796d9f74b23aec55be1e2203910e196",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/probe_remote.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/probe_remote.py",
+    "sha256": "bb37d770a95ccd2832108cb93b6ed3d50b6456a1ea911527907812318995f5b0",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/raw_health.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/raw_health.py",
+    "sha256": "f4768bfeac07b065bf80f2652bb5fe4c9698bf3f7113d44528f2ac54a4c3043f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/verify_one.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/verify_one.py",
+    "sha256": "50860c540a2e2eb1e9895ff8476899a064d2b508753404f693f1243e5f87c641",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/oriole-retry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/oriole-retry/watch_cells.py",
+    "sha256": "3e65c9e2d85fe70faefa9fa55b2e42af46584bd4dbdf5ac7546afa9905753fcf",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/parallel_brief.py",
+    "path": "stroppy-catalog-0z9hx668/parallel_brief.py",
+    "sha256": "5a646a0dcc31735dabd5d109bd0a8087a94ef5582d9e25b434250aee65fea666",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/parse_metrics.go",
+    "path": "stroppy-catalog-0z9hx668/parse_metrics.go.txt",
+    "sha256": "0f250f847f748050179351255a310bf946efe92e195a72cdad7416df1c4a5571",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pg-noop-autoretry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/pg-noop-autoretry/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pg-noop-autoretry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/pg-noop-autoretry/watch_cells.py",
+    "sha256": "ecf0f8df64c3e18d39c0a33e54e07664c50d6eea19fabb0e62ab15078ce99b6b",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pico-metrics/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/pico-metrics/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pico-metrics/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/pico-metrics/watch_cells.py",
+    "sha256": "79a99d3a88baf6dd77698dc52e4ceae7a9f371208ba0443d00f8fe91077cdd2a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pico-single/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/pico-single/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/pico-single/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/pico-single/watch_cells.py",
+    "sha256": "8471cc6d10d27fa88e1ba826eb1304b94d988d8122730e76ff5df9d0ec1a83b2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/picodata_probe_before_terminate.py",
+    "path": "stroppy-catalog-0z9hx668/picodata_probe_before_terminate.py",
+    "sha256": "5768a260fba30689d33b3545ecc05309efeb2ab3b1f583b3864aa4b862857da4",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/probe_remote_crdb.py",
+    "path": "stroppy-catalog-0z9hx668/probe_remote_crdb.py",
+    "sha256": "5a43b277eced0ad350fa15419df91bbf552dbbb900dff5196a246f106c27acc2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/probe_remote_external.py",
+    "path": "stroppy-catalog-0z9hx668/probe_remote_external.py",
+    "sha256": "0bb4813f8ff3d678c8b98c509875c838945cf6f162c00ff2e6c72a775448fac0",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/probe_remote_pico.py",
+    "path": "stroppy-catalog-0z9hx668/probe_remote_pico.py",
+    "sha256": "4312d38ae0cd02b6a3eb954a74c1291560fdd68ef60096445cf799d67e799006",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/probe_remote_ydb.py",
+    "path": "stroppy-catalog-0z9hx668/probe_remote_ydb.py",
+    "sha256": "9ea041a96badfa10ceea2986371f6b0720cd1e866e4d3075752c34d27b5be9f2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/provider-main.go",
+    "path": "stroppy-catalog-0z9hx668/provider-main.go.txt",
+    "sha256": "9ddf6684abdd3c7970d4e35ae9cb6f1d04c9e542f42a0321ed7c1100f16adbf6",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/publish_native.py",
+    "path": "stroppy-catalog-0z9hx668/publish_native.py",
+    "sha256": "9c143b572d349bf7e63105f0b37be6ab4db6896c7fb866ab574f2cd3dd88e22a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/publish_ydb261.py",
+    "path": "stroppy-catalog-0z9hx668/publish_ydb261.py",
+    "sha256": "c0fe3b27a2555a1321749aac2c2e0937425b36d522d34ca8c17a2cdacc502106",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/recover_vm_links.py",
+    "path": "stroppy-catalog-0z9hx668/recover_vm_links.py",
+    "sha256": "460161ccc0972906e8a0f4849f23e8e707d927af98aceceb1f81032132b78300",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/refresh_progress.py",
+    "path": "stroppy-catalog-0z9hx668/refresh_progress.py",
+    "sha256": "bd6a8dc78c25f95f0cfe928d3b8bc3fa7faea45d9bf995f5e54743e230b32a1c",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_auxiliary.py",
+    "path": "stroppy-catalog-0z9hx668/start_auxiliary.py",
+    "sha256": "f038edc08f82a70a5ecc9ceea66fae3d4a0d4192c74dc91ea82fde266c8df7a4",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_overnight.py",
+    "path": "stroppy-catalog-0z9hx668/start_overnight.py",
+    "sha256": "bd0d796a11d3d81d86bbcff0f26b994c575cd4c62e99ef8ee87d8b5487240b2a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_pgnoop_autoretry.py",
+    "path": "stroppy-catalog-0z9hx668/start_pgnoop_autoretry.py",
+    "sha256": "56b5b5b5a3d62179bf4ecd563f8a98a1b98e383489e39c9d46e5f146c6929db3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_ydb_autonomous.py",
+    "path": "stroppy-catalog-0z9hx668/start_ydb_autonomous.py",
+    "sha256": "58a6975908e0637f6948a168e0491f0eaa96952678c3e4ca988f5a06a48dd4a8",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_ydb_channelretry.py",
+    "path": "stroppy-catalog-0z9hx668/start_ydb_channelretry.py",
+    "sha256": "24355878331a436dd3b4ae2788f6be73a6a4fb5445a3fa78981b1f031b4b4ea1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_ydb_matrix.py",
+    "path": "stroppy-catalog-0z9hx668/start_ydb_matrix.py",
+    "sha256": "31a1021a005b67ac4e3fe857937ff815d6c10e1ae86770abe4b83033461dc680",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_ydb_metricsretry.py",
+    "path": "stroppy-catalog-0z9hx668/start_ydb_metricsretry.py",
+    "sha256": "05f8a8809a84d5a3df2d484c13e24515f85d74ea2b8336d8b3d2306c4eb69205",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/start_ydb_parallel.py",
+    "path": "stroppy-catalog-0z9hx668/start_ydb_parallel.py",
+    "sha256": "6eb2c3db5c819c6594ab0d86229d3ecf4998f7b363a860cd3a9902d112cbd283",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/summarize_events.py",
+    "path": "stroppy-catalog-0z9hx668/summarize_events.py",
+    "sha256": "0b2aa34a61fe37b8e4b110016e125cb5cdf1b8d24bb002be6ce8421cf6318e15",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/telemetry_forward.py",
+    "path": "stroppy-catalog-0z9hx668/telemetry_forward.py",
+    "sha256": "8a90eeb2b0f7c562a7aa90a66f5f4b3fc43bb6d4c461b052695faacc8edaa419",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/validate_input.go",
+    "path": "stroppy-catalog-0z9hx668/validate_input.go.txt",
+    "sha256": "a5412acabde921a66f1d47bbbfef8c972a5205dd2044e23595985f2a1fdc5fc7",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/verify_database.py",
+    "path": "stroppy-catalog-0z9hx668/verify_database.py",
+    "sha256": "dd19c9eb1318c05ad4933f63cdb2c919a6e5880a62250d121166aac3df968d2d",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/verify_ydb_blob_ranges.py",
+    "path": "stroppy-catalog-0z9hx668/verify_ydb_blob_ranges.py",
+    "sha256": "b614ca21a5c673d548e59e11b1a8ca8c20529f5e38168bb534e5e538620d1c31",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/watch_autonomous_health.py",
+    "path": "stroppy-catalog-0z9hx668/watch_autonomous_health.py",
+    "sha256": "d28631eda5e273c1ff95d465e0ea4eca45c5a8e7968f283c7c7da0d29cec6b51",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-autonomous/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-autonomous/monitor.py",
+    "sha256": "b06311ae7c38d7203b6c35a452dfe49199d4c53789cec8b1febcf192ea09805e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-autonomous/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-autonomous/watch_cells.py",
+    "sha256": "84075f38650875f01e86b9cde2aaeaa29b29edc47c62146cc50b17712754566c",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-channelretry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-channelretry/monitor.py",
+    "sha256": "35c18f36815550122d7e3ac892f1a753410fae540f52f2eb99d72c29a834ec5e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-channelretry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-channelretry/watch_cells.py",
+    "sha256": "be1be6d5f2c5d357ca6fae7d7bfb354d1b862578654d24c09cf0718a7f777358",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-matrix/inspect_only.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-matrix/inspect_only.py",
+    "sha256": "155650a1216734f5436baf759552798b903112c799112595b4a1bc9a21f866de",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-matrix/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-matrix/monitor.py",
+    "sha256": "dcb8b8343407da25709aab1d9930298272130f6dc7e1bfa0b468016564b5b0f3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-matrix/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-matrix/watch_cells.py",
+    "sha256": "1dbbfdadcd5a7fb6a6f34bd9aa05d43fa5f18fd9642651ca3b67679618a60161",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-metricsretry/inspect_live_transport.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-metricsretry/inspect_live_transport.py",
+    "sha256": "1a3dba1960ecd8c0040de302301be7eaa71ccec93ee1697adbfe12301104e686",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-metricsretry/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-metricsretry/monitor.py",
+    "sha256": "35c18f36815550122d7e3ac892f1a753410fae540f52f2eb99d72c29a834ec5e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-metricsretry/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-metricsretry/watch_cells.py",
+    "sha256": "bbf062ac7383f3dc54310adb70f4470e7eb9f0596868455e7822ffe9eb33e376",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-parallel/monitor.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-parallel/monitor.py",
+    "sha256": "b06311ae7c38d7203b6c35a452dfe49199d4c53789cec8b1febcf192ea09805e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-catalog-0z9hx668/ydb-parallel/watch_cells.py",
+    "path": "stroppy-catalog-0z9hx668/ydb-parallel/watch_cells.py",
+    "sha256": "84075f38650875f01e86b9cde2aaeaa29b29edc47c62146cc50b17712754566c",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/aggregate.py",
+    "path": "stroppy-clusters-r1gx3otm/aggregate.py",
+    "sha256": "154754dd799e0e33cc3298acb16ed822afaeb747461db8ff248cdb7017aececb",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/apt-check.sh",
+    "path": "stroppy-clusters-r1gx3otm/apt-check.sh",
+    "sha256": "60cb3fdf13e806c1aace59a74b796b627fd701666d20ee6f14836c740fbe750f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/apt-lock.go",
+    "path": "stroppy-clusters-r1gx3otm/apt-lock.go.txt",
+    "sha256": "10a9d368fea7247aeb086b743936ae759102576e330d7468653da098fe483816",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/audit_cleanup.py",
+    "path": "stroppy-clusters-r1gx3otm/audit_cleanup.py",
+    "sha256": "6e7fa1d20b57a8e6cd69d114bb7eb37fd329cd0ea28cd2d69effb07302138a92",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/before/scripts/live-progress.py",
+    "path": "stroppy-clusters-r1gx3otm/before/scripts/live-progress.py",
+    "sha256": "f55f2e62d9a76cbac2903cef582f97d344015e31e28c1552924469cc5a5c04d0",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/check_stand_recovery.py",
+    "path": "stroppy-clusters-r1gx3otm/check_stand_recovery.py",
+    "sha256": "db356e048dde591cfd2ad57ea787f053b09db434ef731ed5ddd589e42fd1579e",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/events.py",
+    "path": "stroppy-clusters-r1gx3otm/events.py",
+    "sha256": "0c215c15b565f1d0b6ce8b1a98be9ca6ec03ac7eaaedccdd103374ca27459efe",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/aggregate.py",
+    "path": "stroppy-clusters-r1gx3otm/final/aggregate.py",
+    "sha256": "a3a0c50bf3db828f9318cbce77cac4a411cd94d9b7154907395f64ea897d48e0",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/monitor.py",
+    "path": "stroppy-clusters-r1gx3otm/final/monitor.py",
+    "sha256": "a603d285778304eb5eed2e6535e2af35e796d9f74b23aec55be1e2203910e196",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/probe_remote.py",
+    "path": "stroppy-clusters-r1gx3otm/final/probe_remote.py",
+    "sha256": "62a2052d27e7ab25f61594d3bb02ea279344b2eafddfcb569fdcba3da92f455a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/raw_health.py",
+    "path": "stroppy-clusters-r1gx3otm/final/raw_health.py",
+    "sha256": "f4768bfeac07b065bf80f2652bb5fe4c9698bf3f7113d44528f2ac54a4c3043f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/verify_one.py",
+    "path": "stroppy-clusters-r1gx3otm/final/verify_one.py",
+    "sha256": "b0a69eb228e388edde06bab0522c117d30313e3aa965abd96bfa329cac8fc2c4",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/final/watch_cells.py",
+    "path": "stroppy-clusters-r1gx3otm/final/watch_cells.py",
+    "sha256": "a47ec3c9c5f20b869000c397549097b937a41b270472e701e381db09b0133fd7",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/gauge-time.go",
+    "path": "stroppy-clusters-r1gx3otm/gauge-time.go.txt",
+    "sha256": "18c8e28afd424d00090bfcbf09eb13d7ae0d0c28f5157097a10bcaee4ac0c779",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/local_check.py",
+    "path": "stroppy-clusters-r1gx3otm/local_check.py",
+    "sha256": "28dee298b57061dd9a260440f50d90fac030862c7756a668f27317856ac1447b",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/monitor.py",
+    "path": "stroppy-clusters-r1gx3otm/monitor.py",
+    "sha256": "572d374212b80816a273d0a727ed29505b87c82e0c277bbee7a9a7f1f71a2e22",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/probe_remote.py",
+    "path": "stroppy-clusters-r1gx3otm/probe_remote.py",
+    "sha256": "62a2052d27e7ab25f61594d3bb02ea279344b2eafddfcb569fdcba3da92f455a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/retry/monitor.py",
+    "path": "stroppy-clusters-r1gx3otm/retry/monitor.py",
+    "sha256": "a603d285778304eb5eed2e6535e2af35e796d9f74b23aec55be1e2203910e196",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/retry/probe_remote.py",
+    "path": "stroppy-clusters-r1gx3otm/retry/probe_remote.py",
+    "sha256": "62a2052d27e7ab25f61594d3bb02ea279344b2eafddfcb569fdcba3da92f455a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/retry/verify_one.py",
+    "path": "stroppy-clusters-r1gx3otm/retry/verify_one.py",
+    "sha256": "99a11eefe31990c9f1b7abfd5f268227a553ff99363273afabf334e497298b1f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/retry/watch_cells.py",
+    "path": "stroppy-clusters-r1gx3otm/retry/watch_cells.py",
+    "sha256": "540c0e12378c10c9ae06f3a88e0d43e44928dfd101c2b7d5693212b4ad2967b1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/verify_one.py",
+    "path": "stroppy-clusters-r1gx3otm/verify_one.py",
+    "sha256": "f2517aac59662d9e6d14beaac0144728e39a87c3917f55f405b99ceaacf48f19",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-clusters-r1gx3otm/watch_cells.py",
+    "path": "stroppy-clusters-r1gx3otm/watch_cells.py",
+    "sha256": "d0ccc4f07e805cd00db6db8d58422ec576d4739b8016887887625776d726f08c",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-matrix-live-v1o48b2m/publish.go",
+    "path": "stroppy-matrix-live-v1o48b2m/publish.go.txt",
+    "sha256": "5f30831082a88b944f2e4143cec7116010a0bfe2f2da106f9d00832d0ea636b6",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-matrix-live-v1o48b2m/status.py",
+    "path": "stroppy-matrix-live-v1o48b2m/status.py",
+    "sha256": "8e2a53c3e171bd359875b7ed4be28fac09c7a61166c927d29bdacf1f0af06c4b",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/audit_cleanup.py",
+    "path": "stroppy-mysql-vnafdcv2/audit_cleanup.py",
+    "sha256": "4bfeda2f92c94e6b89eeff3b594ec3c10ec772b79decc51d679fb3f855036c06",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect.py",
+    "path": "stroppy-mysql-vnafdcv2/collect.py",
+    "sha256": "1d156f3df15aa5cd952c5e4bfed1d1a22b655f17f77290d3bf71515924e4a62f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect211.py",
+    "path": "stroppy-mysql-vnafdcv2/collect211.py",
+    "sha256": "b73bac37a60e9e945fd771624cda3469a53c8b480a6927cb4938e8ad832730ed",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_fixed.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_fixed.py",
+    "sha256": "e350a2bc2653936ae8f4f571e1f3296689d3a145ea414e1e565bfb302fec6f9b",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_maria.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_maria.py",
+    "sha256": "d221d704d5e0b3304582b863ba786b6e1a6b5725a199fc57ff7481a7fe912561",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_remaining.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_remaining.py",
+    "sha256": "99734ce223114e6dbfa8f710e15813e109f05c24322f168c5fa65f11d77e9c69",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_semisync.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_semisync.py",
+    "sha256": "ab6843a059802e99347cfb535d9b08818fff3656323595abcaf623225fbdacc6",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_semisync2.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_semisync2.py",
+    "sha256": "bcb0e9bfd11a8264bcd8e4bf6fab738a984d8e3e62d0918c070e43d8097927d3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/collect_single_fixed.py",
+    "path": "stroppy-mysql-vnafdcv2/collect_single_fixed.py",
+    "sha256": "9887bfa3e2ccf2c78bc0de5eb782b80426cc574ff02ed105cacc03f01ce8d85a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/events.py",
+    "path": "stroppy-mysql-vnafdcv2/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/family211/events.py",
+    "path": "stroppy-mysql-vnafdcv2/family211/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/family211/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/family211/monitor.py",
+    "sha256": "b75dcc794abc73fffe3edbc877bba5f1906f79ad67d34b68e795cd98e42ae554",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/fixed-mariadb/events.py",
+    "path": "stroppy-mysql-vnafdcv2/fixed-mariadb/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/fixed-mariadb/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/fixed-mariadb/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/fixed-mysql/events.py",
+    "path": "stroppy-mysql-vnafdcv2/fixed-mysql/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/fixed-mysql/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/fixed-mysql/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/inspect_pending.go",
+    "path": "stroppy-mysql-vnafdcv2/inspect_pending.go.txt",
+    "sha256": "79a51b8c5837593aa8b871c66fdfea7789f6936f957d0e305413475f0a588e25",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/launch_semisync.py",
+    "path": "stroppy-mysql-vnafdcv2/launch_semisync.py",
+    "sha256": "f6299ef2e7c817a4c507c556a195b7004ff14e0085700b050493be3dbb546310",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/launch_semisync2.py",
+    "path": "stroppy-mysql-vnafdcv2/launch_semisync2.py",
+    "sha256": "5af49a5cbfee2528b077d23fdb4663d2993a85252e3510763f7ab1202cc7ea6a",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": true
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/local_maria1011.py",
+    "path": "stroppy-mysql-vnafdcv2/local_maria1011.py",
+    "sha256": "edf2a2af6e32245e688b9e0be11a45f298f2765f6545e73ae15ce990938933f9",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/local_replication.py",
+    "path": "stroppy-mysql-vnafdcv2/local_replication.py",
+    "sha256": "ad5bab49b4c724999f7e5cc4ece7b33cda40245d8697f4928b9f53a4ebad4c53",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/local_replication2.py",
+    "path": "stroppy-mysql-vnafdcv2/local_replication2.py",
+    "sha256": "af162584b98c334d01d1478baf1909e83fe244e6f842710a3fc47ff288b30f69",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/maria/events.py",
+    "path": "stroppy-mysql-vnafdcv2/maria/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/maria/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/maria/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/maria-retry/events.py",
+    "path": "stroppy-mysql-vnafdcv2/maria-retry/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/maria-retry/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/maria-retry/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/probe_remote.py",
+    "path": "stroppy-mysql-vnafdcv2/probe_remote.py",
+    "sha256": "ea6de762889167a3ccf943439659a21e9c60de540c2929506b38cb09df664ee5",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/progress.py",
+    "path": "stroppy-mysql-vnafdcv2/progress.py",
+    "sha256": "01c981c5f0b19ee5e8cf08e458c42cca4cf68ad52f00a4518df196b190d434d9",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/remaining/events.py",
+    "path": "stroppy-mysql-vnafdcv2/remaining/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/remaining/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/remaining/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/semisync/events.py",
+    "path": "stroppy-mysql-vnafdcv2/semisync/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/semisync/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/semisync/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/semisync2/events.py",
+    "path": "stroppy-mysql-vnafdcv2/semisync2/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/semisync2/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/semisync2/monitor.py",
+    "sha256": "0acd417dcd073ae6444c8491a330dcbc76fb64f57c1118fdba88a946c8122971",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/single-fixed/events.py",
+    "path": "stroppy-mysql-vnafdcv2/single-fixed/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/single-fixed/monitor.py",
+    "path": "stroppy-mysql-vnafdcv2/single-fixed/monitor.py",
+    "sha256": "b75dcc794abc73fffe3edbc877bba5f1906f79ad67d34b68e795cd98e42ae554",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/supervise_final.py",
+    "path": "stroppy-mysql-vnafdcv2/supervise_final.py",
+    "sha256": "29fc3441148d51b606d97a27c9c749705e4aa5ed0bb8fa20bef82888780a11f1",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/verify_one.py",
+    "path": "stroppy-mysql-vnafdcv2/verify_one.py",
+    "sha256": "665a6ddf12ec45876e7b5d58026d539c07eabea2dfdf646d3b0950088946365f",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/verify_progress.py",
+    "path": "stroppy-mysql-vnafdcv2/verify_progress.py",
+    "sha256": "0063e6303b8cd3ce1ff658264a3c5c4f12e4e1e2df47aaa87881890382a1199c",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_replication.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_replication.py",
+    "sha256": "c3fd103b51aad904dd7690186b142bca0bc657484406793873e500c6cfec8854",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_replication2.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_replication2.py",
+    "sha256": "9a9eb52d1f83925c0e06c91e44b6782266a296ce89c78b83ee76169429d20f6c",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_replication211.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_replication211.py",
+    "sha256": "260b334050922ea0bd9acd64620b6b76f46fe510a68ad1e5d1f9f21666b05a76",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_verify.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_verify.py",
+    "sha256": "7368e46b4fb0a249b6672cca14d1e2c7b00c5eef3309d281b00bd0480961348d",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_verify2.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_verify2.py",
+    "sha256": "45d3306d3b5f639ce25114ec87f9c91f5eb428defdb6a4b013ce8473768d82e1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_verify211.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_verify211.py",
+    "sha256": "c55a3351485756cf919362ee7a9bded8d1c8b312baf8ccd86878e8a0134e33e2",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_verify_final.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_verify_final.py",
+    "sha256": "9c52a0ac303c576f87f80cd5f799f33e00e715f566d803b9a979bfa0c49ec90d",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-mysql-vnafdcv2/watch_workers211.py",
+    "path": "stroppy-mysql-vnafdcv2/watch_workers211.py",
+    "sha256": "97d7a7aa521eecaa808ec1840484a12916f9dc0537eb671b81d1148bac00dd91",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/final/events.py",
+    "path": "stroppy-native-0izo0l0o/final/events.py",
+    "sha256": "dd918b06c08533d2983cff3e9a0f08c17c7c51948ac03d3ec0bf856ddc6fc306",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/final/monitor.py",
+    "path": "stroppy-native-0izo0l0o/final/monitor.py",
+    "sha256": "6260c56bd5b110354e334d9b4e02c1f71fcea8797cafb4a062fef4488a9bbb3e",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/final/verify.py",
+    "path": "stroppy-native-0izo0l0o/final/verify.py",
+    "sha256": "d008452c7b019613a322cdfd6eb7526b9e62fee8e1984a2d7d5874704c02ab36",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/monitor.py",
+    "path": "stroppy-native-0izo0l0o/monitor.py",
+    "sha256": "e0534fa142b906aafa5bc8594cb66a84e17bf8cfe70f6a6d65f2352e5fc4c96d",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/retry/events.py",
+    "path": "stroppy-native-0izo0l0o/retry/events.py",
+    "sha256": "db13f0ae80ac2fea398955ef6beaf047966bb5211d7965a76b84f2e4650466d6",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/retry/monitor.py",
+    "path": "stroppy-native-0izo0l0o/retry/monitor.py",
+    "sha256": "e0534fa142b906aafa5bc8594cb66a84e17bf8cfe70f6a6d65f2352e5fc4c96d",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-native-0izo0l0o/retry/verify.py",
+    "path": "stroppy-native-0izo0l0o/retry/verify.py",
+    "sha256": "4b7494c4466b24129e75162f44508c3f1d96e91a990842f7bef0550544a137d9",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/agent_sessions.py",
+    "path": "stroppy-patroni-017zezx1/agent_sessions.py",
+    "sha256": "618c20318fd935dd0ceea70e9c35978c11af34c8ec7998c339b18fbe8c6bc9f4",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/artifact_check.py",
+    "path": "stroppy-patroni-017zezx1/artifact_check.py",
+    "sha256": "fd369b46ae7cd5916abf8d80d248edfd5a3d5695950a737b7d7e9d9aceed6efc",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/build_remaining.py",
+    "path": "stroppy-patroni-017zezx1/build_remaining.py",
+    "sha256": "3225bde86a9841d8d87556e3a50ac416b18a93754222e660707f7f7d17290669",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/collect_telemetry.py",
+    "path": "stroppy-patroni-017zezx1/collect_telemetry.py",
+    "sha256": "bed72041c14b4fe60b248580836a2f4e4e0f923e092690730f0ee726bb47e4db",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/download_logs.go",
+    "path": "stroppy-patroni-017zezx1/download_logs.go.txt",
+    "sha256": "2b887079333080ee609f978d5aecf28f99b363a95ee5af1b049549b86e9ad183",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/finalize.py",
+    "path": "stroppy-patroni-017zezx1/finalize.py",
+    "sha256": "4f9ac4e00497e6e588195a7de433c11a35fe11b7600cdf643a3d1d93e2de3c26",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/local_check.py",
+    "path": "stroppy-patroni-017zezx1/local_check.py",
+    "sha256": "c907806f7152db29068eea17232a0a8a664a4d342983352da9ba1369dd8ed542",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/local_check_v3.py",
+    "path": "stroppy-patroni-017zezx1/local_check_v3.py",
+    "sha256": "34337ddee0fa48606972c39b89bb5cbdd9c2aae4179c068f9a450736e78efaf4",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/metrics-query-proof.py",
+    "path": "stroppy-patroni-017zezx1/metrics-query-proof.py",
+    "sha256": "d3a89b166e28b22d05bfc3c9f45b218b9b6a91adbbd57e561f145969e8361817",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/monitor.py",
+    "path": "stroppy-patroni-017zezx1/monitor.py",
+    "sha256": "e8dffb1fb13cfc721e6db1989dd7c2bd0db91adc8ccda6a0229bc1075eb1502e",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/native_summary.py",
+    "path": "stroppy-patroni-017zezx1/native_summary.py",
+    "sha256": "326096fbe212774bcc91de0e45dbc182209ed87ba5bcb4de2be30e9844cef251",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/push_images.py",
+    "path": "stroppy-patroni-017zezx1/push_images.py",
+    "sha256": "9935258e229812c7597cd2d94de4498d3e3fa2f4ad507737f3b3f0b6885011fd",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/update_docs.py",
+    "path": "stroppy-patroni-017zezx1/update_docs.py",
+    "sha256": "0b164b5327281974db12f900ca27ff8cbd2c9b4c41772a01d164c24d4ead58b9",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/verify_cleanup.py",
+    "path": "stroppy-patroni-017zezx1/verify_cleanup.py",
+    "sha256": "30a8cc6a20672d64b92db1df3bc5781604430dc6526d5f2135e08d043b9fc4bb",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-patroni-017zezx1/verify_completed.py",
+    "path": "stroppy-patroni-017zezx1/verify_completed.py",
+    "sha256": "42c17a709537d3070f61a002a33797798c4fdf76672b83698c16be203df593e6",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/artifact_check.py",
+    "path": "stroppy-pg-matrix-czazco7o/artifact_check.py",
+    "sha256": "fb5813689ccb8cf986c41a5df730e3765e4f46a1a09722a1c1facb704bde6a51",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/check_blobs.go",
+    "path": "stroppy-pg-matrix-czazco7o/check_blobs.go.txt",
+    "sha256": "864e08ed4e5badabe5e4ac821c59e054775c4c031a10ca983189bb795dba5066",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/cleanup_watch.py",
+    "path": "stroppy-pg-matrix-czazco7o/cleanup_watch.py",
+    "sha256": "b3b32e02f7b6d1ea203eae9763f3215a0caebcd96da00a188ae07b01b1e8b293",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/collect_telemetry.py",
+    "path": "stroppy-pg-matrix-czazco7o/collect_telemetry.py",
+    "sha256": "61685e2f275e1499b8df830364a8cc5cbd13456ca5ec0d13d79faab89c72e5ff",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/final/monitor.py",
+    "path": "stroppy-pg-matrix-czazco7o/final/monitor.py",
+    "sha256": "9058e9ad37c34c1d949d804a36ec7f7b3295f6ce8e27f3f5e7e9dd1c5fbb3536",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/finalize_report.py",
+    "path": "stroppy-pg-matrix-czazco7o/finalize_report.py",
+    "sha256": "bce190323cc1d9d7a05d33b1b6aa8f29038ad5ce67d9ecdb482c2544ee0cc4d1",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/local_pool.py",
+    "path": "stroppy-pg-matrix-czazco7o/local_pool.py",
+    "sha256": "6c022554e62456db699acca99a5c3c054ecf6e055bb71103efc0bb418dbb54ca",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/memory_watch.py",
+    "path": "stroppy-pg-matrix-czazco7o/memory_watch.py",
+    "sha256": "3a9b0f4c48870d73f53b0e523d13961edb34cacbe0ff8bbec069cf39858f32d9",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/minio_size.go",
+    "path": "stroppy-pg-matrix-czazco7o/minio_size.go.txt",
+    "sha256": "1f541b3efc1ed89c3e0f6b5e1c53c78fe73ca262c2e7924ba29623de3755441a",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/monitor.py",
+    "path": "stroppy-pg-matrix-czazco7o/monitor.py",
+    "sha256": "c9691153ab6c163cf0e01168325ede18831023ee12bc04d2b0181cc005206ac3",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/retry/monitor.py",
+    "path": "stroppy-pg-matrix-czazco7o/retry/monitor.py",
+    "sha256": "71fbfb839a8bc98777ba2ca03b5cbf2c4205e2cc1656f99cf4d8ff69c9a6db81",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/reupload_blobs.go",
+    "path": "stroppy-pg-matrix-czazco7o/reupload_blobs.go.txt",
+    "sha256": "a242a5ad93c06f579cf2905d82554b68b959abcb89b01746777717880bb6dca5",
+    "status": "historical_recipe",
+    "private_workspace_required": false,
+    "possible_mutations": false
+  },
+  {
+    "source": "/tmp/stroppy-pg-matrix-czazco7o/verify_cleanup.py",
+    "path": "stroppy-pg-matrix-czazco7o/verify_cleanup.py",
+    "sha256": "e60ade951f4e18f0e0d6c1f4e028904aaee3808ef6b850d474425ff5ee781d88",
+    "status": "historical_recipe",
+    "private_workspace_required": true,
+    "possible_mutations": false
+  }
+]

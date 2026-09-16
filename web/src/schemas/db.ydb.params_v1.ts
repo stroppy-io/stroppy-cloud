@@ -30,4 +30,3 @@ export interface DbYdbParams1 {
   /** Fail domains. How many independent failure units the storage layer actually gets — what the erasure mode is checked against. */
   readonly fail_domains?: number | string;
 }
-

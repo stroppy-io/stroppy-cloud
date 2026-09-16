@@ -14,6 +14,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/activities"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/events"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/provision"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/topo"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/stroppycfg"
 )
@@ -37,6 +38,16 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	if ctx.Recording() {
 		recordingWalk(ctx)
 		return spec.Result{}, nil
+	}
+	normalized, normalizeErr := spec.NormalizeRun(run)
+	if normalizeErr != nil {
+		return spec.Result{}, normalizeErr
+	}
+	run = normalized
+	for _, issue := range spec.CheckResources(run) {
+		if issue.Severity == "WARNING" {
+			ctx.Logger().Warn("resource preflight", "path", issue.Path, "code", issue.Code, "reason", issue.Message)
+		}
 	}
 	if err := validate(run); err != nil {
 		return spec.Result{}, err
@@ -150,14 +161,21 @@ func validate(run spec.Run) error {
 	if len(run.Machines) == 0 {
 		return fmt.Errorf("a run needs at least one machine")
 	}
+	nodes := make([]containerNode, 0, len(run.Containers))
+	for _, c := range run.Containers {
+		nodes = append(nodes, containerNode{c: c})
+	}
+	if _, err := topo.Layers(nodes); err != nil {
+		return fmt.Errorf("container dependencies: %w", err)
+	}
 	byName := run.MachineByName()
 	for _, c := range run.Containers {
 		if _, ok := byName[c.Machine]; !ok {
 			return fmt.Errorf("container %s: unknown machine %q", c.Name, c.Machine)
 		}
 	}
-	if len(run.MachinesByRole()[run.Workload.RunnerRole]) == 0 {
-		return fmt.Errorf("no machine of runner role %q", run.Workload.RunnerRole)
+	if len(run.MachinesByRole()[run.Workload.RunnerRole]) != 1 {
+		return fmt.Errorf("exactly one machine required for runner role %q", run.Workload.RunnerRole)
 	}
 	if len(run.Workload.Segments) == 0 {
 		return fmt.Errorf("a run needs at least one workload segment")
@@ -170,7 +188,13 @@ func validate(run spec.Run) error {
 		return err
 	}
 	for _, segment := range segments {
-		if _, err := stroppycfg.Params(segment); err != nil {
+		if err := stroppycfg.ValidateSegment(segment.Raw); err != nil {
+			return err
+		}
+		if _, err := stroppycfg.Config(stroppycfg.Input{Segment: segment, Workload: run.Workload}); err != nil {
+			return err
+		}
+		if err := stroppycfg.ValidateFiles(segment.Files); err != nil {
 			return err
 		}
 	}

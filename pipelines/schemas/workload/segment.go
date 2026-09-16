@@ -9,6 +9,7 @@
 package workload
 
 import (
+	"strings"
 	"time"
 
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
@@ -41,6 +42,7 @@ const (
 	ScriptTpchTx     schemapb.VariantKey = "tpch/tx"
 	ScriptTpcds      schemapb.VariantKey = "tpcds"
 	ScriptSimple     schemapb.VariantKey = "simple"
+	ScriptBaseline   schemapb.VariantKey = "baseline"
 	ScriptExecuteSQL schemapb.VariantKey = "execute_sql"
 )
 
@@ -181,9 +183,9 @@ func tpcdsFields() []schemapb.FieldDef {
 		schemapb.Int64("streams").Title("Query streams").Group("Queries").
 			Desc("Number of query streams (streams).").Gte(1).Lte(64).Default(1),
 		schemapb.Int64("query_stream").Title("Query stream").Group("Queries").
-			Desc("Which query stream to generate (queryStream).").Gte(0).Lte(63).Default(0),
+			Desc("Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.").Gte(0).Nullable(),
 		schemapb.Int64("query_seed").Title("Query seed").Group("Queries").
-			Desc("Query generator seed (querySeed).").Gte(0).Default(19620718),
+			Desc("Query generator seed (querySeed).").Default(19620718),
 		schemapb.Bool("validate_force").Title("Validate outside SF=1").Group("Queries").
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
 		ydbStoreMode(),
@@ -191,6 +193,16 @@ func tpcdsFields() []schemapb.FieldDef {
 			Desc("Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.").
 			Pattern(filePattern).MaxLen(256).Nullable(),
 		sqlFile("Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files."),
+	}
+}
+
+// baselineFields describes `stroppy run baseline`, independently of the
+// machine self-check command `stroppy baseline`.
+func baselineFields() []schemapb.FieldDef {
+	return []schemapb.FieldDef{
+		loadWorkers(20),
+		schemapb.Int64("rows").Title("Rows").Group("Data").Desc("Rows loaded into the baseline probe table (rows).").Gte(1).Default(250000),
+		txIsolation(),
 	}
 }
 
@@ -231,6 +243,7 @@ func Segment() *schemapb.Schema {
 				VariantOf(ScriptTpchTx, strictVariant(tpchFields()...)).
 				VariantOf(ScriptTpcds, strictVariant(tpcdsFields()...)).
 				VariantOf(ScriptSimple, strictVariant()).
+				VariantOf(ScriptBaseline, strictVariant(baselineFields()...)).
 				VariantOf(ScriptExecuteSQL, strictVariant(executeSQLFields()...)).
 				Required(),
 
@@ -260,6 +273,8 @@ func Segment() *schemapb.Schema {
 						`this.executor != "`+ExecutorConstantVUs+`" || ("duration" in this && this.duration != null)`,
 						"constant-vus needs a duration",
 					).ID("constant-vus-needs-duration"),
+					schemapb.Rule(`this.executor != "constant-vus" || !("iterations" in this) || this.iterations == null`, "iterations applies only to shared-iterations").ID("iterations-executor"),
+					schemapb.Rule(`this.executor != "shared-iterations" || !("duration" in this) || this.duration == null`, "duration applies only to constant-vus").ID("duration-executor"),
 					schemapb.Rule(
 						`this.executor != "`+ExecutorSharedIterations+`" || ("iterations" in this && this.iterations != null)`,
 						"shared-iterations needs an iteration count",
@@ -293,7 +308,7 @@ func Segment() *schemapb.Schema {
 				schemapb.Object("",
 					schemapb.Str("name").Title("File name").
 						Desc("Name the file gets in the segment workspace; reference it from sql_file/schema_file.").
-						Pattern(filePattern).MinLen(1).MaxLen(128).Required(),
+						Pattern(`^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$`).MinLen(1).MaxLen(128).Required(),
 					schemapb.Choice("kind").Title("Kind").
 						Desc("What the file is: a schema/DDL file, a config, or a data file.").
 						Opt(schemapb.StrV("sql"), "SQL / DDL").
@@ -303,8 +318,8 @@ func Segment() *schemapb.Schema {
 					schemapb.Str("content").Title("Content").
 						Desc("Inline file body, at most 1 MiB.").MaxLen(1<<20),
 					schemapb.Str("ref").Title("Reference").
-						Desc("Artifact/object reference to fetch instead of inline content.").
-						MinLen(1).MaxLen(512),
+						Desc("Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.").
+						Pattern(`^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$`).MinLen(1).MaxLen(512),
 				).Strict().Rule(schemapb.Rule(
 					`("content" in this) != ("ref" in this)`,
 					"a file needs exactly one of content or ref",
@@ -323,6 +338,10 @@ func Segment() *schemapb.Schema {
 			).Title("Thresholds").Group("Thresholds").
 				Desc("Pass/fail bounds the pipeline applies to the segment summary.").Strict(),
 
+			schemapb.UInt64("seed").Title("Random seed").Group("Scenario").
+				Desc("Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.").Gte(0).Nullable(),
+			schemapb.Duration("timeout").Title("Segment timeout").Group("Scenario").
+				Desc("Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.").Gt(0).Lte(7*24*time.Hour).Nullable(),
 			schemapb.Duration("warmup").Title("Warm-up").Group("Scenario").
 				Desc("Idle wait before the segment starts, letting caches and replicas settle.").
 				Gte(0).Lte(time.Hour).Default(0),
@@ -337,15 +356,23 @@ func Segment() *schemapb.Schema {
 				Default(schemapb.StrV("info")),
 		).
 		Rules(
-			schemapb.Rule(
-				`!("steps" in root) || !("no_steps" in root) || size(root.steps) == 0 || size(root.no_steps) == 0`,
+			segmentRule(stepFilterRule(), "step must be an executable Stroppy step of the selected workload").ID("known-workload-steps"),
+			segmentRule(`!("files" in this) || this.files.all(f, this.files.filter(x, x.name == f.name).size() == 1 && this.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + "/") && !f.name.startsWith(x.name + "/"))) && ["stroppy-config.json", "ca.pem", "stroppy.log"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + "/")))`, "file names must be unique and cannot overwrite runtime files").ID("segment-file-names"),
+			segmentRule(
+				`!("steps" in this) || !("no_steps" in this) || size(this.steps) == 0 || size(this.no_steps) == 0`,
 				"stroppy rejects --steps together with --no-steps",
 			).ID("steps-mutually-exclusive"),
-			schemapb.Rule(
-				`!("workload" in root) || root.workload.script != "`+string(ScriptExecuteSQL)+`" || `+
-					`(("sql_body" in root.workload && root.workload.sql_body != null) != ("sql_file" in root.workload && root.workload.sql_file != null))`,
+			segmentRule(
+				`!("workload" in this) || this.workload.script != "`+string(ScriptExecuteSQL)+`" || `+
+					`(("sql_body" in this.workload && this.workload.sql_body != null) != ("sql_file" in this.workload && this.workload.sql_file != null))`,
 				"execute_sql needs exactly one of sql_body or sql_file",
 			).ID("execute-sql-source"),
 		).
 		MustBuild()
+}
+
+// Segment is used both as a root schema and as a nested object. CEL root
+// remains the outer document; this is nil only at the root.
+func segmentRule(expr, message string) *schemapb.RuleB {
+	return schemapb.Rule("[this == null ? root : this].all(s, "+strings.ReplaceAll(expr, "this", "s")+")", message)
 }

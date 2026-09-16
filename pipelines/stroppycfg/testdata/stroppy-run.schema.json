@@ -1,0 +1,2200 @@
+{
+  "$defs": {
+    "DriverRunConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "driverType",
+              "driver_type"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "bulkSize",
+              "bulk_size"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "caCertFile",
+              "ca_cert_file"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "authToken",
+              "auth_token"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "authUser",
+              "auth_user"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "authPassword",
+              "auth_password"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "tlsInsecureSkipVerify",
+              "tls_insecure_skip_verify"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "defaultInsertMethod",
+              "default_insert_method"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "insertProgress",
+              "insert_progress"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "authPassword": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authToken": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authUser": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auth_password": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auth_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "auth_user": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bulkSize": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bulk_size": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "caCertFile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ca_cert_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "defaultInsertMethod": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_insert_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "driverType": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "driver_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "insertProgress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InsertProgressConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "insert_progress": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InsertProgressConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pool": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PoolConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "postgres": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PostgresConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sql": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SQLConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tlsInsecureSkipVerify": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tls_insecure_skip_verify": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "ExporterConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "otlpExport",
+              "otlp_export"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpExport": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OtlpExport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_export": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/OtlpExport"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "GlobalConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "runId",
+              "run_id"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "exporter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ExporterConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "logger": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LoggerConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "metadata": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "description": "A bare unsigned JSON integer; quoted, decimal-point, and exponent forms are rejected.",
+              "maximum": 18446744073709551615,
+              "minimum": 0,
+              "type": "integer",
+              "x-stroppy-bareInteger": true,
+              "x-stroppy-rejectExponent": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "InsertProgressConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "stallAfter",
+              "stall_after"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "interval": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stallAfter": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "stall_after": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "LoggerConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "logLevel",
+              "log_level"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "logMode",
+              "log_mode"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "logLevel": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "enum": [
+                    "LOG_LEVEL_DEBUG",
+                    "debug",
+                    "LOG_LEVEL_INFO",
+                    "info",
+                    "LOG_LEVEL_WARN",
+                    "warn",
+                    "LOG_LEVEL_ERROR",
+                    "error",
+                    "LOG_LEVEL_FATAL",
+                    "fatal"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "logMode": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "enum": [
+                    "LOG_MODE_DEVELOPMENT",
+                    "development",
+                    "LOG_MODE_PRODUCTION",
+                    "production"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "log_level": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "enum": [
+                    "LOG_LEVEL_DEBUG",
+                    "debug",
+                    "LOG_LEVEL_INFO",
+                    "info",
+                    "LOG_LEVEL_WARN",
+                    "warn",
+                    "LOG_LEVEL_ERROR",
+                    "error",
+                    "LOG_LEVEL_FATAL",
+                    "fatal"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "log_mode": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "enum": [
+                    "LOG_MODE_DEVELOPMENT",
+                    "development",
+                    "LOG_MODE_PRODUCTION",
+                    "production"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "type": "integer"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "OtlpExport": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "otlpGrpcEndpoint",
+              "otlp_grpc_endpoint"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "otlpHttpEndpoint",
+              "otlp_http_endpoint"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "otlpHttpExporterUrlPath",
+              "otlp_http_exporter_url_path"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "otlpEndpointInsecure",
+              "otlp_endpoint_insecure"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "otlpHeaders",
+              "otlp_headers"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "otlpMetricsPrefix",
+              "otlp_metrics_prefix"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "otlpEndpointInsecure": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpGrpcEndpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpHeaders": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpHttpEndpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpHttpExporterUrlPath": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlpMetricsPrefix": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_endpoint_insecure": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_grpc_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_headers": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_http_endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_http_exporter_url_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "otlp_metrics_prefix": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "PoolConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "maxConns",
+              "max_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "minConns",
+              "min_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "minIdleConns",
+              "min_idle_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxConnLifetime",
+              "max_conn_lifetime"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxConnIdleTime",
+              "max_conn_idle_time"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "traceLogLevel",
+              "trace_log_level"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "defaultQueryExecMode",
+              "default_query_exec_mode"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "descriptionCacheCapacity",
+              "description_cache_capacity"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "statementCacheCapacity",
+              "statement_cache_capacity"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxOpenConns",
+              "max_open_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxIdleConns",
+              "max_idle_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "connMaxLifetime",
+              "conn_max_lifetime"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "connMaxIdleTime",
+              "conn_max_idle_time"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "connMaxIdleTime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connMaxLifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conn_max_idle_time": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conn_max_lifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "defaultQueryExecMode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_query_exec_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "descriptionCacheCapacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description_cache_capacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConnIdleTime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConnLifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxIdleConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxOpenConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conn_idle_time": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conn_lifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_idle_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_open_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minIdleConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_idle_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "statementCacheCapacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "statement_cache_capacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceLogLevel": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trace_log_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "PostgresConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "traceLogLevel",
+              "trace_log_level"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxConnLifetime",
+              "max_conn_lifetime"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxConnIdleTime",
+              "max_conn_idle_time"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxConns",
+              "max_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "minConns",
+              "min_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "minIdleConns",
+              "min_idle_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "defaultQueryExecMode",
+              "default_query_exec_mode"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "descriptionCacheCapacity",
+              "description_cache_capacity"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "statementCacheCapacity",
+              "statement_cache_capacity"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "defaultQueryExecMode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "default_query_exec_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "descriptionCacheCapacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "description_cache_capacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConnIdleTime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConnLifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conn_idle_time": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conn_lifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "minIdleConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_idle_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "statementCacheCapacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "statement_cache_capacity": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "traceLogLevel": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trace_log_level": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "RunConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "noSteps",
+              "no_steps"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "drivers": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/DriverRunConfig"
+              },
+              "propertyNames": {
+                "description": "Unsigned decimal uint32; leading zeroes are accepted and canonicalized.",
+                "pattern": "^[0-9]+$",
+                "x-stroppy-uint32Key": true
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "env": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "global": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/GlobalConfig"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "noSteps": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "no_steps": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "params": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "description": "Selected-workload parameter names. Snake-case aliases are canonicalized to lower camel case; null and container values are rejected.",
+          "propertyNames": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][A-Za-z0-9]*$"
+              },
+              {
+                "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)+$"
+              }
+            ]
+          },
+          "type": "object",
+          "x-stroppy-aliasCollision": "snake-to-lower-camel"
+        },
+        "run": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "not": {
+                "required": [
+                  "queryTimeout",
+                  "query_timeout"
+                ]
+              }
+            }
+          ],
+          "properties": {
+            "duration": {
+              "type": "string"
+            },
+            "executor": {
+              "type": "string"
+            },
+            "iterations": {
+              "description": "A bare JSON integer; quoted, decimal-point, and exponent forms are rejected.",
+              "type": "integer",
+              "x-stroppy-bareInteger": true,
+              "x-stroppy-rejectExponent": true
+            },
+            "queryTimeout": {
+              "description": "Per-statement query deadline as a Go duration; 0 disables it.",
+              "type": "string"
+            },
+            "query_timeout": {
+              "description": "Per-statement query deadline as a Go duration; 0 disables it.",
+              "type": "string"
+            },
+            "vus": {
+              "description": "A bare JSON integer; quoted, decimal-point, and exponent forms are rejected.",
+              "type": "integer",
+              "x-stroppy-bareInteger": true,
+              "x-stroppy-rejectExponent": true
+            }
+          },
+          "propertyNames": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][A-Za-z0-9]*$"
+              },
+              {
+                "pattern": "^[a-z][a-z0-9]*(_[a-z0-9]+)+$"
+              }
+            ]
+          },
+          "type": "object"
+        },
+        "script": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sql": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "steps": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    },
+    "SQLConfig": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "not": {
+            "required": [
+              "maxOpenConns",
+              "max_open_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "maxIdleConns",
+              "max_idle_conns"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "connMaxLifetime",
+              "conn_max_lifetime"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "connMaxIdleTime",
+              "conn_max_idle_time"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "connMaxIdleTime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "connMaxLifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conn_max_idle_time": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "conn_max_lifetime": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxIdleConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "maxOpenConns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_idle_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_open_conns": {
+          "anyOf": [
+            {
+              "anyOf": [
+                {
+                  "maximum": 2147483647,
+                  "minimum": -2147483648,
+                  "multipleOf": 1,
+                  "type": "number"
+                },
+                {
+                  "description": "Must evaluate exactly to an in-range int32; fractional and overflowing values are rejected.",
+                  "pattern": "^-?(0|[1-9]\\d*)(\\.\\d+)?([eE][+-]?\\d+)?$",
+                  "type": "string",
+                  "x-stroppy-exactInt32": true
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "type": "object"
+    }
+  },
+  "$ref": "#/$defs/RunConfig",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "The stroppy-config.json file envelope, including typed run and workload parameters.",
+  "title": "Stroppy run configuration"
+}

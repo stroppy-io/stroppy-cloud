@@ -98,4 +98,3 @@ export interface CfgHaproxyCfg2 {
   /** Rendered optional defaults lines. */
   readonly defaults_extra?: string;
 }
-

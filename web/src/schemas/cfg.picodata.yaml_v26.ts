@@ -100,4 +100,3 @@ export interface CfgPicodataYaml26 {
   /** Rendered instance.iproto.advertise. */
   readonly iproto_advertise_line?: string;
 }
-

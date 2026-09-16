@@ -26,4 +26,3 @@ export interface SpecResultQuotas1 {
   /** Quotas. One entry per quota the provider reports for this profile. */
   quotas: Array<SpecResultQuotas1Item>;
 }
-

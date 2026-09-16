@@ -28,4 +28,3 @@ export interface CfgPgHbaConf1 {
   /** Rendered cluster defaults. The unconditional record every stroppy node needs: local superuser access for the agent. The remaining topology records are appended by the server as `rules`. */
   readonly cluster_defaults_rendered?: string;
 }
-

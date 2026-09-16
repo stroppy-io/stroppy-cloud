@@ -12,4 +12,3 @@ export interface SpecQuotas1 {
   /** Location. Zone (yandex) or region (aws) to read zone-scoped quotas for; empty reads all. */
   location?: string;
 }
-

@@ -82,4 +82,3 @@ export interface CfgExporterPostgres1 {
   /** Command line. The full postgres_exporter argument list. */
   readonly opts?: string;
 }
-

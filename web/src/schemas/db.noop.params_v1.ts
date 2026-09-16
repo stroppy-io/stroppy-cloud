@@ -6,4 +6,3 @@ export interface DbNoopParams1 {
   /** Workers. Parallel noop workers inside stroppy; 0 = one per CPU of the runner. */
   workers?: number | string;
 }
-

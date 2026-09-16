@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	pipelinespec "github.com/stroppy-io/stroppy-cloud/pipelines/spec"
+
 	"github.com/google/uuid"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
@@ -166,7 +168,7 @@ func (s *Service) Resume(ctx context.Context, actor auth.Actor, tenantID, runID 
 // a later library edit does not change what is rerun).
 func (r Run) snapshotSpec() library.TestSpec {
 	db, wl := r.Snapshot.Database, r.Snapshot.Workload
-	spec := library.TestSpec{DatabaseInline: &db, WorkloadInline: &wl, Sizes: r.Snapshot.Sizes, Keep: r.Keep, RatingTenant: r.RatingTenant, RatingGlobal: r.RatingGlobal}
+	spec := library.TestSpec{DatabaseInline: &db, WorkloadInline: &wl, Sizes: r.Snapshot.Sizes, Execution: r.Snapshot.Execution, Keep: r.Keep, RatingTenant: r.RatingTenant, RatingGlobal: r.RatingGlobal}
 	if r.Snapshot.ProviderProfile.ID != uuid.Nil {
 		id := r.Snapshot.ProviderProfile.ID
 		spec.ProviderProfileID = &id
@@ -246,7 +248,9 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		return Prepared{}, err
 	}
 	if !fit.Fits {
-		return Prepared{}, errs.Invalid("test does not fit: " + issuesText(fit.Issues))
+		err := errs.Invalid("test does not fit")
+		err.Validation = fit.Issues
+		return Prepared{}, err
 	}
 	if res.Profile == nil || res.DatabaseDerived == nil || res.WorkloadDerived == nil {
 		return Prepared{}, errs.Invalid("test is not fully resolved")
@@ -269,9 +273,6 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	if err := s.checkLimits(ctx, tenantID, spec, res, opts.ExtraLive); err != nil {
 		return Prepared{}, err
 	}
-	if err := s.checkQuotas(ctx, *res.Profile, res); err != nil {
-		return Prepared{}, err
-	}
 	slug, ns, err := s.tenantScope(ctx, actor, tenantID)
 	if err != nil {
 		return Prepared{}, err
@@ -283,9 +284,16 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	compiled, err := s.compiler.Compile(ctx, CompileRequest{
 		RunID: id, Tenant: slug, Namespace: ns, Database: *dbSpec, Derived: *res.DatabaseDerived, Workload: *wlSpec,
-		Sizes: spec.Sizes, Profile: *res.Profile, Keep: spec.Keep, Labels: labels,
+		Sizes: spec.Sizes, Execution: spec.Execution, Profile: *res.Profile, Keep: spec.Keep, Labels: labels,
 	})
 	if err != nil {
+		return Prepared{}, err
+	}
+	var finalSpec pipelinespec.Run
+	if err := json.Unmarshal(compiled.Spec, &finalSpec); err != nil {
+		return Prepared{}, err
+	}
+	if err := s.checkQuotas(ctx, *res.Profile, finalSpec); err != nil {
 		return Prepared{}, err
 	}
 	name := o.Name
@@ -314,7 +322,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	r.Snapshot = Snapshot{
 		Database: *dbSpec, DatabaseName: dbName, Workload: *wlSpec, WorkloadName: wlName,
-		Sizes: spec.Sizes, ProviderProfile: Ref{ID: res.Profile.ID, Name: res.Profile.Name}, ProviderKind: string(res.Profile.Kind),
+		Sizes: spec.Sizes, Execution: spec.Execution, ProviderProfile: Ref{ID: res.Profile.ID, Name: res.Profile.Name}, ProviderKind: string(res.Profile.Kind),
 		EffectiveConfigs: res.DatabaseDerived.EffectiveConfigs, Machines: compiled.Machines, TopologyLabel: res.DatabaseDerived.Plan.Label,
 	}
 	if spec.Keep > 0 {
@@ -369,16 +377,6 @@ func (s *Service) tenantScope(ctx context.Context, actor auth.Actor, tenantID uu
 	}
 	ns, err = s.access.NamespaceOf(ctx, tenantID)
 	return slug, ns, err
-}
-
-func issuesText(issues []library.Issue) string {
-	parts := make([]string, 0, len(issues))
-	for _, i := range issues {
-		if i.Severity == "ERROR" {
-			parts = append(parts, i.Path+": "+i.Message)
-		}
-	}
-	return strings.Join(parts, "; ")
 }
 
 func segmentNames(w library.WorkloadSpec) []string {
@@ -439,22 +437,60 @@ func sizeIndex(size string) int {
 	return -1
 }
 
-// checkQuotas compares the run's CPU/RAM against the profile's fresh
+// checkQuotas compares the final run's compute, storage and egress against fresh
 // quotas; unknown quota names are ignored.
-func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res library.Resolved) error {
+func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipelinespec.Run) error {
 	quotas, err := s.profiles.FreshQuotas(ctx, p)
 	if err != nil {
 		return errs.Wrap(errs.CodeUnavailable, "provider quotas", err)
 	}
-	cpu, mem := 0, 0
+	cpu, mem, highFreqCPU := 0, 0, 0
 	for _, m := range res.Machines {
-		cpu += m.CPU * m.Count
-		mem += m.MemoryGB * m.Count
+		cpu += m.CPU
+		mem += m.MemoryGB
+		if strings.HasPrefix(m.InstanceType, "highfreq-") {
+			highFreqCPU += m.CPU
+		}
+	}
+	storage := map[string]float64{}
+	diskCount := 0
+	for _, m := range res.Machines {
+		boot := pipelinespec.BootDisk{GB: 40, Type: "network-ssd"}
+		if res.Provider.Kind == pipelinespec.ProviderAWS {
+			boot.Type = "gp3"
+		}
+		if m.BootDisk != nil {
+			boot = *m.BootDisk
+		}
+		storage[boot.Type] += float64(boot.GB)
+		diskCount++
+		for _, d := range m.Disks {
+			storage[d.Type] += float64(d.GB)
+			diskCount++
+		}
 	}
 	for _, q := range quotas {
 		name := strings.ToLower(q.Name)
 		var need float64
 		switch {
+		case name == "vpc.gateways.count" || name == "vpc.routetables.count":
+			if pipelinespec.NeedsPrivateEgress(res) {
+				need = 1
+			}
+		case name == "compute.disks.count":
+			need = float64(diskCount)
+		case name == "compute.instances.count":
+			need = float64(len(res.Machines))
+		case name == "compute.hdddisks.size":
+			need = quotaStorageUnit(storage["network-hdd"], q.Unit)
+		case name == "compute.ssddisks.size":
+			need = quotaStorageUnit(storage["network-ssd"], q.Unit)
+		case name == "compute.ssdnonreplicateddisks.size":
+			need = quotaStorageUnit(storage["network-ssd-nonreplicated"], q.Unit)
+		case name == "compute.ssdiom3disks.size":
+			need = quotaStorageUnit(storage["network-ssd-io-m3"], q.Unit)
+		case name == "compute.instancehighfreqcores.count":
+			need = float64(highFreqCPU)
 		case strings.Contains(name, "cpu") || strings.Contains(name, "cores"):
 			need = float64(cpu)
 		case strings.Contains(name, "memory") || strings.Contains(name, "ram"):
@@ -465,7 +501,7 @@ func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res libra
 		default:
 			continue
 		}
-		if q.Limit > 0 && q.Used+need > q.Limit {
+		if q.Limit >= 0 && need > 0 && q.Used+need > q.Limit {
 			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", q.Name, q.Used, need, q.Limit, q.Unit)
 		}
 	}
@@ -771,4 +807,12 @@ func authorOf(a auth.Actor) *uuid.UUID {
 	}
 	id := a.UserID
 	return &id
+}
+
+func quotaStorageUnit(gb float64, unit string) float64 {
+	u := strings.ToLower(unit)
+	if u == "bytes" || u == "byte" || u == "b" {
+		return gb * (1 << 30)
+	}
+	return gb
 }

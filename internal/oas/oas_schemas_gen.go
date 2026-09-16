@@ -3223,8 +3223,10 @@ type Database struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 	DeletedAt   OptNilDateTime  `json:"deleted_at"`
 	IsFavorite  OptBool         `json:"is_favorite"`
-	Kind        DatabaseKind    `json:"kind"`
-	Version     string          `json:"version"`
+	// Advanced deployment overrides, including complete config file content.
+	Runtime OptSchemaValue `json:"runtime"`
+	Kind    DatabaseKind   `json:"kind"`
+	Version string         `json:"version"`
 	// Docker image override (custom builds; registry creds via provider secret).
 	Image  OptString   `json:"image"`
 	Params SchemaValue `json:"params"`
@@ -3284,6 +3286,11 @@ func (s *Database) GetDeletedAt() OptNilDateTime {
 // GetIsFavorite returns the value of IsFavorite.
 func (s *Database) GetIsFavorite() OptBool {
 	return s.IsFavorite
+}
+
+// GetRuntime returns the value of Runtime.
+func (s *Database) GetRuntime() OptSchemaValue {
+	return s.Runtime
 }
 
 // GetKind returns the value of Kind.
@@ -3389,6 +3396,11 @@ func (s *Database) SetDeletedAt(val OptNilDateTime) {
 // SetIsFavorite sets the value of IsFavorite.
 func (s *Database) SetIsFavorite(val OptBool) {
 	s.IsFavorite = val
+}
+
+// SetRuntime sets the value of Runtime.
+func (s *Database) SetRuntime(val OptSchemaValue) {
+	s.Runtime = val
 }
 
 // SetKind sets the value of Kind.
@@ -3624,6 +3636,7 @@ type DatabasePatch struct {
 	Name        OptString               `json:"name"`
 	Description OptString               `json:"description"`
 	Tags        OptDatabasePatchTags    `json:"tags"`
+	Runtime     OptSchemaValue          `json:"runtime"`
 	Version     OptString               `json:"version"`
 	Image       OptString               `json:"image"`
 	Params      OptSchemaValue          `json:"params"`
@@ -3643,6 +3656,11 @@ func (s *DatabasePatch) GetDescription() OptString {
 // GetTags returns the value of Tags.
 func (s *DatabasePatch) GetTags() OptDatabasePatchTags {
 	return s.Tags
+}
+
+// GetRuntime returns the value of Runtime.
+func (s *DatabasePatch) GetRuntime() OptSchemaValue {
+	return s.Runtime
 }
 
 // GetVersion returns the value of Version.
@@ -3678,6 +3696,11 @@ func (s *DatabasePatch) SetDescription(val OptString) {
 // SetTags sets the value of Tags.
 func (s *DatabasePatch) SetTags(val OptDatabasePatchTags) {
 	s.Tags = val
+}
+
+// SetRuntime sets the value of Runtime.
+func (s *DatabasePatch) SetRuntime(val OptSchemaValue) {
+	s.Runtime = val
 }
 
 // SetVersion sets the value of Version.
@@ -3805,8 +3828,10 @@ func (s *DatabasePreviewEffectiveConfigsItem) init() DatabasePreviewEffectiveCon
 
 // Ref: #/components/schemas/DatabaseSpec
 type DatabaseSpec struct {
-	Kind    DatabaseKind `json:"kind"`
-	Version string       `json:"version"`
+	// Advanced deployment overrides, including complete config file content.
+	Runtime OptSchemaValue `json:"runtime"`
+	Kind    DatabaseKind   `json:"kind"`
+	Version string         `json:"version"`
 	// Docker image override (custom builds; registry creds via provider secret).
 	Image  OptString   `json:"image"`
 	Params SchemaValue `json:"params"`
@@ -3815,6 +3840,11 @@ type DatabaseSpec struct {
 	// For kind `external` only.
 	External OptDatabaseSpecExternal `json:"external"`
 	Schema   OptSchemaRef            `json:"schema"`
+}
+
+// GetRuntime returns the value of Runtime.
+func (s *DatabaseSpec) GetRuntime() OptSchemaValue {
+	return s.Runtime
 }
 
 // GetKind returns the value of Kind.
@@ -3850,6 +3880,11 @@ func (s *DatabaseSpec) GetExternal() OptDatabaseSpecExternal {
 // GetSchema returns the value of Schema.
 func (s *DatabaseSpec) GetSchema() OptSchemaRef {
 	return s.Schema
+}
+
+// SetRuntime sets the value of Runtime.
+func (s *DatabaseSpec) SetRuntime(val OptSchemaValue) {
+	s.Runtime = val
 }
 
 // SetKind sets the value of Kind.
@@ -3943,8 +3978,10 @@ type DatabaseWrite struct {
 	Name        string               `json:"name"`
 	Description OptString            `json:"description"`
 	Tags        OptDatabaseWriteTags `json:"tags"`
-	Kind        DatabaseKind         `json:"kind"`
-	Version     string               `json:"version"`
+	// Advanced deployment overrides, including complete config file content.
+	Runtime OptSchemaValue `json:"runtime"`
+	Kind    DatabaseKind   `json:"kind"`
+	Version string         `json:"version"`
 	// Docker image override (custom builds; registry creds via provider secret).
 	Image  OptString   `json:"image"`
 	Params SchemaValue `json:"params"`
@@ -3968,6 +4005,11 @@ func (s *DatabaseWrite) GetDescription() OptString {
 // GetTags returns the value of Tags.
 func (s *DatabaseWrite) GetTags() OptDatabaseWriteTags {
 	return s.Tags
+}
+
+// GetRuntime returns the value of Runtime.
+func (s *DatabaseWrite) GetRuntime() OptSchemaValue {
+	return s.Runtime
 }
 
 // GetKind returns the value of Kind.
@@ -4018,6 +4060,11 @@ func (s *DatabaseWrite) SetDescription(val OptString) {
 // SetTags sets the value of Tags.
 func (s *DatabaseWrite) SetTags(val OptDatabaseWriteTags) {
 	s.Tags = val
+}
+
+// SetRuntime sets the value of Runtime.
+func (s *DatabaseWrite) SetRuntime(val OptSchemaValue) {
+	s.Runtime = val
 }
 
 // SetKind sets the value of Kind.
@@ -4980,12 +5027,18 @@ func (s *Fit) SetStale(val OptFitStale) {
 }
 
 type FitIssuesItem struct {
+	Scope    OptValidationScope    `json:"scope"`
 	Path     string                `json:"path"`
 	Code     string                `json:"code"`
 	Severity FitIssuesItemSeverity `json:"severity"`
 	Message  OptString             `json:"message"`
 	// Suggested value (e.g. a size).
 	Suggested jx.Raw `json:"suggested"`
+}
+
+// GetScope returns the value of Scope.
+func (s *FitIssuesItem) GetScope() OptValidationScope {
+	return s.Scope
 }
 
 // GetPath returns the value of Path.
@@ -5011,6 +5064,11 @@ func (s *FitIssuesItem) GetMessage() OptString {
 // GetSuggested returns the value of Suggested.
 func (s *FitIssuesItem) GetSuggested() jx.Raw {
 	return s.Suggested
+}
+
+// SetScope sets the value of Scope.
+func (s *FitIssuesItem) SetScope(val OptValidationScope) {
+	s.Scope = val
 }
 
 // SetPath sets the value of Path.
@@ -9215,6 +9273,52 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptInt64 returns new OptInt64 with value set to v.
+func NewOptInt64(v int64) OptInt64 {
+	return OptInt64{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptInt64 is optional int64.
+type OptInt64 struct {
+	Value int64
+	Set   bool
+}
+
+// IsSet returns true if OptInt64 was set.
+func (o OptInt64) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptInt64) Reset() {
+	var v int64
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptInt64) SetTo(v int64) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptInt64) Get() (v int64, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptInt64) Or(d int64) int64 {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptLaunchOverrides returns new OptLaunchOverrides with value set to v.
 func NewOptLaunchOverrides(v LaunchOverrides) OptLaunchOverrides {
 	return OptLaunchOverrides{
@@ -10128,6 +10232,52 @@ func (o OptOrder) Or(d Order) Order {
 	return d
 }
 
+// NewOptPipelineSummary returns new OptPipelineSummary with value set to v.
+func NewOptPipelineSummary(v PipelineSummary) OptPipelineSummary {
+	return OptPipelineSummary{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptPipelineSummary is optional PipelineSummary.
+type OptPipelineSummary struct {
+	Value PipelineSummary
+	Set   bool
+}
+
+// IsSet returns true if OptPipelineSummary was set.
+func (o OptPipelineSummary) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptPipelineSummary) Reset() {
+	var v PipelineSummary
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptPipelineSummary) SetTo(v PipelineSummary) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptPipelineSummary) Get() (v PipelineSummary, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptPipelineSummary) Or(d PipelineSummary) PipelineSummary {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptPreferences returns new OptPreferences with value set to v.
 func NewOptPreferences(v Preferences) OptPreferences {
 	return OptPreferences{
@@ -10910,6 +11060,52 @@ func (o OptRoleSizesItemDisk) Or(d RoleSizesItemDisk) RoleSizesItemDisk {
 	return d
 }
 
+// NewOptRunBaselineResult returns new OptRunBaselineResult with value set to v.
+func NewOptRunBaselineResult(v RunBaselineResult) OptRunBaselineResult {
+	return OptRunBaselineResult{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunBaselineResult is optional RunBaselineResult.
+type OptRunBaselineResult struct {
+	Value RunBaselineResult
+	Set   bool
+}
+
+// IsSet returns true if OptRunBaselineResult was set.
+func (o OptRunBaselineResult) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunBaselineResult) Reset() {
+	var v RunBaselineResult
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunBaselineResult) SetTo(v RunBaselineResult) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunBaselineResult) Get() (v RunBaselineResult, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunBaselineResult) Or(d RunBaselineResult) RunBaselineResult {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRunEventLogRef returns new OptRunEventLogRef with value set to v.
 func NewOptRunEventLogRef(v RunEventLogRef) OptRunEventLogRef {
 	return OptRunEventLogRef{
@@ -11502,6 +11698,52 @@ func (o OptRunResultSegmentsItemMetrics) Get() (v RunResultSegmentsItemMetrics, 
 
 // Or returns value if set, or given parameter if does not.
 func (o OptRunResultSegmentsItemMetrics) Or(d RunResultSegmentsItemMetrics) RunResultSegmentsItemMetrics {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunSegmentErrors returns new OptRunSegmentErrors with value set to v.
+func NewOptRunSegmentErrors(v RunSegmentErrors) OptRunSegmentErrors {
+	return OptRunSegmentErrors{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunSegmentErrors is optional RunSegmentErrors.
+type OptRunSegmentErrors struct {
+	Value RunSegmentErrors
+	Set   bool
+}
+
+// IsSet returns true if OptRunSegmentErrors was set.
+func (o OptRunSegmentErrors) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunSegmentErrors) Reset() {
+	var v RunSegmentErrors
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunSegmentErrors) SetTo(v RunSegmentErrors) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunSegmentErrors) Get() (v RunSegmentErrors, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunSegmentErrors) Or(d RunSegmentErrors) RunSegmentErrors {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -14498,6 +14740,52 @@ func (o OptValidationResult) Or(d ValidationResult) ValidationResult {
 	return d
 }
 
+// NewOptValidationScope returns new OptValidationScope with value set to v.
+func NewOptValidationScope(v ValidationScope) OptValidationScope {
+	return OptValidationScope{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptValidationScope is optional ValidationScope.
+type OptValidationScope struct {
+	Value ValidationScope
+	Set   bool
+}
+
+// IsSet returns true if OptValidationScope was set.
+func (o OptValidationScope) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptValidationScope) Reset() {
+	var v ValidationScope
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptValidationScope) SetTo(v ValidationScope) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptValidationScope) Get() (v ValidationScope, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptValidationScope) Or(d ValidationScope) ValidationScope {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptWebhookCreatedLastDelivery returns new OptWebhookCreatedLastDelivery with value set to v.
 func NewOptWebhookCreatedLastDelivery(v WebhookCreatedLastDelivery) OptWebhookCreatedLastDelivery {
 	return OptWebhookCreatedLastDelivery{
@@ -15017,6 +15305,78 @@ func (s *PatchShareReq) SetTTL(val OptString) {
 // SetScope sets the value of Scope.
 func (s *PatchShareReq) SetScope(val OptShareScope) {
 	s.Scope = val
+}
+
+// Native pipeline headline; absent throughput is not zero throughput. Other workload metrics remain
+// in metrics.
+// Ref: #/components/schemas/PipelineSummary
+type PipelineSummary struct {
+	Tps          OptFloat64 `json:"tps"`
+	LatencyP50Ms OptFloat64 `json:"latency_p50_ms"`
+	LatencyP95Ms OptFloat64 `json:"latency_p95_ms"`
+	LatencyP99Ms OptFloat64 `json:"latency_p99_ms"`
+	Errors       OptInt64   `json:"errors"`
+	Duration     OptString  `json:"duration"`
+}
+
+// GetTps returns the value of Tps.
+func (s *PipelineSummary) GetTps() OptFloat64 {
+	return s.Tps
+}
+
+// GetLatencyP50Ms returns the value of LatencyP50Ms.
+func (s *PipelineSummary) GetLatencyP50Ms() OptFloat64 {
+	return s.LatencyP50Ms
+}
+
+// GetLatencyP95Ms returns the value of LatencyP95Ms.
+func (s *PipelineSummary) GetLatencyP95Ms() OptFloat64 {
+	return s.LatencyP95Ms
+}
+
+// GetLatencyP99Ms returns the value of LatencyP99Ms.
+func (s *PipelineSummary) GetLatencyP99Ms() OptFloat64 {
+	return s.LatencyP99Ms
+}
+
+// GetErrors returns the value of Errors.
+func (s *PipelineSummary) GetErrors() OptInt64 {
+	return s.Errors
+}
+
+// GetDuration returns the value of Duration.
+func (s *PipelineSummary) GetDuration() OptString {
+	return s.Duration
+}
+
+// SetTps sets the value of Tps.
+func (s *PipelineSummary) SetTps(val OptFloat64) {
+	s.Tps = val
+}
+
+// SetLatencyP50Ms sets the value of LatencyP50Ms.
+func (s *PipelineSummary) SetLatencyP50Ms(val OptFloat64) {
+	s.LatencyP50Ms = val
+}
+
+// SetLatencyP95Ms sets the value of LatencyP95Ms.
+func (s *PipelineSummary) SetLatencyP95Ms(val OptFloat64) {
+	s.LatencyP95Ms = val
+}
+
+// SetLatencyP99Ms sets the value of LatencyP99Ms.
+func (s *PipelineSummary) SetLatencyP99Ms(val OptFloat64) {
+	s.LatencyP99Ms = val
+}
+
+// SetErrors sets the value of Errors.
+func (s *PipelineSummary) SetErrors(val OptInt64) {
+	s.Errors = val
+}
+
+// SetDuration sets the value of Duration.
+func (s *PipelineSummary) SetDuration(val OptString) {
+	s.Duration = val
 }
 
 // Ref: #/components/schemas/Preferences
@@ -17212,13 +17572,20 @@ func (s *RoleSizes) init() RoleSizes {
 }
 
 type RoleSizesItem struct {
-	Size Size                 `json:"size"`
-	Disk OptRoleSizesItemDisk `json:"disk"`
+	Size Size `json:"size"`
+	// Explicit VM settings over the selected preset.
+	Machine OptSchemaValue       `json:"machine"`
+	Disk    OptRoleSizesItemDisk `json:"disk"`
 }
 
 // GetSize returns the value of Size.
 func (s *RoleSizesItem) GetSize() Size {
 	return s.Size
+}
+
+// GetMachine returns the value of Machine.
+func (s *RoleSizesItem) GetMachine() OptSchemaValue {
+	return s.Machine
 }
 
 // GetDisk returns the value of Disk.
@@ -17229,6 +17596,11 @@ func (s *RoleSizesItem) GetDisk() OptRoleSizesItemDisk {
 // SetSize sets the value of Size.
 func (s *RoleSizesItem) SetSize(val Size) {
 	s.Size = val
+}
+
+// SetMachine sets the value of Machine.
+func (s *RoleSizesItem) SetMachine(val OptSchemaValue) {
+	s.Machine = val
 }
 
 // SetDisk sets the value of Disk.
@@ -17544,6 +17916,91 @@ func (s *Run) SetGraphene(val OptRunGraphene) {
 // SetShares sets the value of Shares.
 func (s *Run) SetShares(val []Ref) {
 	s.Shares = val
+}
+
+// Ref: #/components/schemas/RunBaselineResult
+type RunBaselineResult struct {
+	Ok       bool                            `json:"ok"`
+	Verdicts []RunBaselineResultVerdictsItem `json:"verdicts"`
+	// Complete native machine baseline report.
+	Report jx.Raw    `json:"report"`
+	Error  OptString `json:"error"`
+}
+
+// GetOk returns the value of Ok.
+func (s *RunBaselineResult) GetOk() bool {
+	return s.Ok
+}
+
+// GetVerdicts returns the value of Verdicts.
+func (s *RunBaselineResult) GetVerdicts() []RunBaselineResultVerdictsItem {
+	return s.Verdicts
+}
+
+// GetReport returns the value of Report.
+func (s *RunBaselineResult) GetReport() jx.Raw {
+	return s.Report
+}
+
+// GetError returns the value of Error.
+func (s *RunBaselineResult) GetError() OptString {
+	return s.Error
+}
+
+// SetOk sets the value of Ok.
+func (s *RunBaselineResult) SetOk(val bool) {
+	s.Ok = val
+}
+
+// SetVerdicts sets the value of Verdicts.
+func (s *RunBaselineResult) SetVerdicts(val []RunBaselineResultVerdictsItem) {
+	s.Verdicts = val
+}
+
+// SetReport sets the value of Report.
+func (s *RunBaselineResult) SetReport(val jx.Raw) {
+	s.Report = val
+}
+
+// SetError sets the value of Error.
+func (s *RunBaselineResult) SetError(val OptString) {
+	s.Error = val
+}
+
+type RunBaselineResultVerdictsItem struct {
+	Check  string    `json:"check"`
+	Status string    `json:"status"`
+	Detail OptString `json:"detail"`
+}
+
+// GetCheck returns the value of Check.
+func (s *RunBaselineResultVerdictsItem) GetCheck() string {
+	return s.Check
+}
+
+// GetStatus returns the value of Status.
+func (s *RunBaselineResultVerdictsItem) GetStatus() string {
+	return s.Status
+}
+
+// GetDetail returns the value of Detail.
+func (s *RunBaselineResultVerdictsItem) GetDetail() OptString {
+	return s.Detail
+}
+
+// SetCheck sets the value of Check.
+func (s *RunBaselineResultVerdictsItem) SetCheck(val string) {
+	s.Check = val
+}
+
+// SetStatus sets the value of Status.
+func (s *RunBaselineResultVerdictsItem) SetStatus(val string) {
+	s.Status = val
+}
+
+// SetDetail sets the value of Detail.
+func (s *RunBaselineResultVerdictsItem) SetDetail(val OptString) {
+	s.Detail = val
 }
 
 // Ref: #/components/schemas/RunEvent
@@ -19203,6 +19660,8 @@ type RunResult struct {
 	Metrics   OptRunResultMetrics     `json:"metrics"`
 	Segments  []RunResultSegmentsItem `json:"segments"`
 	Artifacts []string                `json:"artifacts"`
+	Baseline  OptRunBaselineResult    `json:"baseline"`
+	Summary   OptPipelineSummary      `json:"summary"`
 }
 
 // GetMetrics returns the value of Metrics.
@@ -19220,6 +19679,16 @@ func (s *RunResult) GetArtifacts() []string {
 	return s.Artifacts
 }
 
+// GetBaseline returns the value of Baseline.
+func (s *RunResult) GetBaseline() OptRunBaselineResult {
+	return s.Baseline
+}
+
+// GetSummary returns the value of Summary.
+func (s *RunResult) GetSummary() OptPipelineSummary {
+	return s.Summary
+}
+
 // SetMetrics sets the value of Metrics.
 func (s *RunResult) SetMetrics(val OptRunResultMetrics) {
 	s.Metrics = val
@@ -19235,6 +19704,16 @@ func (s *RunResult) SetArtifacts(val []string) {
 	s.Artifacts = val
 }
 
+// SetBaseline sets the value of Baseline.
+func (s *RunResult) SetBaseline(val OptRunBaselineResult) {
+	s.Baseline = val
+}
+
+// SetSummary sets the value of Summary.
+func (s *RunResult) SetSummary(val OptPipelineSummary) {
+	s.Summary = val
+}
+
 type RunResultMetrics map[string]MetricValue
 
 func (s *RunResultMetrics) init() RunResultMetrics {
@@ -19247,10 +19726,17 @@ func (s *RunResultMetrics) init() RunResultMetrics {
 }
 
 type RunResultSegmentsItem struct {
-	Name       string                          `json:"name"`
-	Status     RunResultSegmentsItemStatus     `json:"status"`
-	StartedAt  OptDateTime                     `json:"started_at"`
-	FinishedAt OptDateTime                     `json:"finished_at"`
+	Name       string                      `json:"name"`
+	Status     RunResultSegmentsItemStatus `json:"status"`
+	StartedAt  OptDateTime                 `json:"started_at"`
+	FinishedAt OptDateTime                 `json:"finished_at"`
+	// Native Stroppy process exit code.
+	ExitCode OptInt `json:"exit_code"`
+	// Segment failure diagnostic.
+	Error  OptString           `json:"error"`
+	Errors OptRunSegmentErrors `json:"errors"`
+	// Native workload compliance report.
+	Compliance jx.Raw                          `json:"compliance"`
 	Metrics    OptRunResultSegmentsItemMetrics `json:"metrics"`
 }
 
@@ -19272,6 +19758,26 @@ func (s *RunResultSegmentsItem) GetStartedAt() OptDateTime {
 // GetFinishedAt returns the value of FinishedAt.
 func (s *RunResultSegmentsItem) GetFinishedAt() OptDateTime {
 	return s.FinishedAt
+}
+
+// GetExitCode returns the value of ExitCode.
+func (s *RunResultSegmentsItem) GetExitCode() OptInt {
+	return s.ExitCode
+}
+
+// GetError returns the value of Error.
+func (s *RunResultSegmentsItem) GetError() OptString {
+	return s.Error
+}
+
+// GetErrors returns the value of Errors.
+func (s *RunResultSegmentsItem) GetErrors() OptRunSegmentErrors {
+	return s.Errors
+}
+
+// GetCompliance returns the value of Compliance.
+func (s *RunResultSegmentsItem) GetCompliance() jx.Raw {
+	return s.Compliance
 }
 
 // GetMetrics returns the value of Metrics.
@@ -19297,6 +19803,26 @@ func (s *RunResultSegmentsItem) SetStartedAt(val OptDateTime) {
 // SetFinishedAt sets the value of FinishedAt.
 func (s *RunResultSegmentsItem) SetFinishedAt(val OptDateTime) {
 	s.FinishedAt = val
+}
+
+// SetExitCode sets the value of ExitCode.
+func (s *RunResultSegmentsItem) SetExitCode(val OptInt) {
+	s.ExitCode = val
+}
+
+// SetError sets the value of Error.
+func (s *RunResultSegmentsItem) SetError(val OptString) {
+	s.Error = val
+}
+
+// SetErrors sets the value of Errors.
+func (s *RunResultSegmentsItem) SetErrors(val OptRunSegmentErrors) {
+	s.Errors = val
+}
+
+// SetCompliance sets the value of Compliance.
+func (s *RunResultSegmentsItem) SetCompliance(val jx.Raw) {
+	s.Compliance = val
 }
 
 // SetMetrics sets the value of Metrics.
@@ -19370,19 +19896,74 @@ func (s *RunResultSegmentsItemStatus) UnmarshalText(data []byte) error {
 	}
 }
 
+// Ref: #/components/schemas/RunSegmentErrors
+type RunSegmentErrors struct {
+	TerminalErrors   int64 `json:"terminal_errors"`
+	FailedIterations int64 `json:"failed_iterations"`
+	FailedQueries    int64 `json:"failed_queries"`
+	RetryAttempts    int64 `json:"retry_attempts"`
+}
+
+// GetTerminalErrors returns the value of TerminalErrors.
+func (s *RunSegmentErrors) GetTerminalErrors() int64 {
+	return s.TerminalErrors
+}
+
+// GetFailedIterations returns the value of FailedIterations.
+func (s *RunSegmentErrors) GetFailedIterations() int64 {
+	return s.FailedIterations
+}
+
+// GetFailedQueries returns the value of FailedQueries.
+func (s *RunSegmentErrors) GetFailedQueries() int64 {
+	return s.FailedQueries
+}
+
+// GetRetryAttempts returns the value of RetryAttempts.
+func (s *RunSegmentErrors) GetRetryAttempts() int64 {
+	return s.RetryAttempts
+}
+
+// SetTerminalErrors sets the value of TerminalErrors.
+func (s *RunSegmentErrors) SetTerminalErrors(val int64) {
+	s.TerminalErrors = val
+}
+
+// SetFailedIterations sets the value of FailedIterations.
+func (s *RunSegmentErrors) SetFailedIterations(val int64) {
+	s.FailedIterations = val
+}
+
+// SetFailedQueries sets the value of FailedQueries.
+func (s *RunSegmentErrors) SetFailedQueries(val int64) {
+	s.FailedQueries = val
+}
+
+// SetRetryAttempts sets the value of RetryAttempts.
+func (s *RunSegmentErrors) SetRetryAttempts(val int64) {
+	s.RetryAttempts = val
+}
+
 // Definition frozen at launch.
 // Ref: #/components/schemas/RunSnapshot
 type RunSnapshot struct {
-	Database        DatabaseSpec `json:"database"`
-	DatabaseName    OptString    `json:"database_name"`
-	Workload        WorkloadSpec `json:"workload"`
-	WorkloadName    OptString    `json:"workload_name"`
-	Sizes           RoleSizes    `json:"sizes"`
-	ProviderProfile Ref          `json:"provider_profile"`
-	Keep            OptString    `json:"keep"`
+	// Frozen final deployment overrides used for replay.
+	Execution       OptSchemaValue `json:"execution"`
+	Database        DatabaseSpec   `json:"database"`
+	DatabaseName    OptString      `json:"database_name"`
+	Workload        WorkloadSpec   `json:"workload"`
+	WorkloadName    OptString      `json:"workload_name"`
+	Sizes           RoleSizes      `json:"sizes"`
+	ProviderProfile Ref            `json:"provider_profile"`
+	Keep            OptString      `json:"keep"`
 	// Per role → config schema id → Baked value that was rendered.
 	EffectiveConfigs OptRunSnapshotEffectiveConfigs `json:"effective_configs"`
 	Machines         []RunSnapshotMachinesItem      `json:"machines"`
+}
+
+// GetExecution returns the value of Execution.
+func (s *RunSnapshot) GetExecution() OptSchemaValue {
+	return s.Execution
 }
 
 // GetDatabase returns the value of Database.
@@ -19428,6 +20009,11 @@ func (s *RunSnapshot) GetEffectiveConfigs() OptRunSnapshotEffectiveConfigs {
 // GetMachines returns the value of Machines.
 func (s *RunSnapshot) GetMachines() []RunSnapshotMachinesItem {
 	return s.Machines
+}
+
+// SetExecution sets the value of Execution.
+func (s *RunSnapshot) SetExecution(val OptSchemaValue) {
+	s.Execution = val
 }
 
 // SetDatabase sets the value of Database.
@@ -20506,6 +21092,8 @@ func (s *SchemaRef) SetVersion(val string) {
 // A schemapb value (plain JSON object). The concrete schema is named by
 // the enclosing property's `x-schema`; validate via
 // `/catalog/schemas/{id}:validate`.
+// Integers outside the JavaScript safe range are returned as exact decimal
+// strings. Send these strings back unchanged; never convert them to Number.
 // Ref: #/components/schemas/SchemaValue
 type SchemaValue map[string]jx.Raw
 
@@ -25179,18 +25767,20 @@ func (s *TenantStatus) UnmarshalText(data []byte) error {
 // Merged schema.
 // Ref: #/components/schemas/Test
 type Test struct {
-	ID          uuid.UUID       `json:"id"`
-	Name        string          `json:"name"`
-	Description OptString       `json:"description"`
-	Tags        OptTestTags     `json:"tags"`
-	Author      UserRef         `json:"author"`
-	CreatedAt   time.Time       `json:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at"`
-	DeletedAt   OptNilDateTime  `json:"deleted_at"`
-	IsFavorite  OptBool         `json:"is_favorite"`
-	Database    OptTestDatabase `json:"database"`
-	Workload    OptTestWorkload `json:"workload"`
-	Sizes       OptRoleSizes    `json:"sizes"`
+	ID          uuid.UUID      `json:"id"`
+	Name        string         `json:"name"`
+	Description OptString      `json:"description"`
+	Tags        OptTestTags    `json:"tags"`
+	Author      UserRef        `json:"author"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   OptNilDateTime `json:"deleted_at"`
+	IsFavorite  OptBool        `json:"is_favorite"`
+	// Final deployment overrides applied after database defaults.
+	Execution OptSchemaValue  `json:"execution"`
+	Database  OptTestDatabase `json:"database"`
+	Workload  OptTestWorkload `json:"workload"`
+	Sizes     OptRoleSizes    `json:"sizes"`
 	// Default profile; chosen explicitly at launch when null.
 	ProviderProfileID OptNilUUID `json:"provider_profile_id"`
 	// Go duration; default from tenant settings.
@@ -25247,6 +25837,11 @@ func (s *Test) GetDeletedAt() OptNilDateTime {
 // GetIsFavorite returns the value of IsFavorite.
 func (s *Test) GetIsFavorite() OptBool {
 	return s.IsFavorite
+}
+
+// GetExecution returns the value of Execution.
+func (s *Test) GetExecution() OptSchemaValue {
+	return s.Execution
 }
 
 // GetDatabase returns the value of Database.
@@ -25352,6 +25947,11 @@ func (s *Test) SetDeletedAt(val OptNilDateTime) {
 // SetIsFavorite sets the value of IsFavorite.
 func (s *Test) SetIsFavorite(val OptBool) {
 	s.IsFavorite = val
+}
+
+// SetExecution sets the value of Execution.
+func (s *Test) SetExecution(val OptSchemaValue) {
+	s.Execution = val
 }
 
 // SetDatabase sets the value of Database.
@@ -25509,12 +26109,14 @@ func (s *TestDatabase1) SetInline(val DatabaseSpec) {
 // Merged schema.
 // Ref: #/components/schemas/TestPatch
 type TestPatch struct {
-	Name        OptString            `json:"name"`
-	Description OptString            `json:"description"`
-	Tags        OptTestPatchTags     `json:"tags"`
-	Database    OptTestPatchDatabase `json:"database"`
-	Workload    OptTestPatchWorkload `json:"workload"`
-	Sizes       OptRoleSizes         `json:"sizes"`
+	Name        OptString        `json:"name"`
+	Description OptString        `json:"description"`
+	Tags        OptTestPatchTags `json:"tags"`
+	// Final deployment overrides applied after database defaults.
+	Execution OptSchemaValue       `json:"execution"`
+	Database  OptTestPatchDatabase `json:"database"`
+	Workload  OptTestPatchWorkload `json:"workload"`
+	Sizes     OptRoleSizes         `json:"sizes"`
 	// Default profile; chosen explicitly at launch when null.
 	ProviderProfileID OptNilUUID `json:"provider_profile_id"`
 	// Go duration; default from tenant settings.
@@ -25535,6 +26137,11 @@ func (s *TestPatch) GetDescription() OptString {
 // GetTags returns the value of Tags.
 func (s *TestPatch) GetTags() OptTestPatchTags {
 	return s.Tags
+}
+
+// GetExecution returns the value of Execution.
+func (s *TestPatch) GetExecution() OptSchemaValue {
+	return s.Execution
 }
 
 // GetDatabase returns the value of Database.
@@ -25580,6 +26187,11 @@ func (s *TestPatch) SetDescription(val OptString) {
 // SetTags sets the value of Tags.
 func (s *TestPatch) SetTags(val OptTestPatchTags) {
 	s.Tags = val
+}
+
+// SetExecution sets the value of Execution.
+func (s *TestPatch) SetExecution(val OptSchemaValue) {
+	s.Execution = val
 }
 
 // SetDatabase sets the value of Database.
@@ -26364,12 +26976,14 @@ func (s *TestWorkload1) SetInline(val WorkloadSpec) {
 // Merged schema.
 // Ref: #/components/schemas/TestWrite
 type TestWrite struct {
-	Name        string               `json:"name"`
-	Description OptString            `json:"description"`
-	Tags        OptTestWriteTags     `json:"tags"`
-	Database    OptTestWriteDatabase `json:"database"`
-	Workload    OptTestWriteWorkload `json:"workload"`
-	Sizes       OptRoleSizes         `json:"sizes"`
+	Name        string           `json:"name"`
+	Description OptString        `json:"description"`
+	Tags        OptTestWriteTags `json:"tags"`
+	// Final deployment overrides applied after database defaults.
+	Execution OptSchemaValue       `json:"execution"`
+	Database  OptTestWriteDatabase `json:"database"`
+	Workload  OptTestWriteWorkload `json:"workload"`
+	Sizes     OptRoleSizes         `json:"sizes"`
 	// Default profile; chosen explicitly at launch when null.
 	ProviderProfileID OptNilUUID `json:"provider_profile_id"`
 	// Go duration; default from tenant settings.
@@ -26390,6 +27004,11 @@ func (s *TestWrite) GetDescription() OptString {
 // GetTags returns the value of Tags.
 func (s *TestWrite) GetTags() OptTestWriteTags {
 	return s.Tags
+}
+
+// GetExecution returns the value of Execution.
+func (s *TestWrite) GetExecution() OptSchemaValue {
+	return s.Execution
 }
 
 // GetDatabase returns the value of Database.
@@ -26435,6 +27054,11 @@ func (s *TestWrite) SetDescription(val OptString) {
 // SetTags sets the value of Tags.
 func (s *TestWrite) SetTags(val OptTestWriteTags) {
 	s.Tags = val
+}
+
+// SetExecution sets the value of Execution.
+func (s *TestWrite) SetExecution(val OptSchemaValue) {
+	s.Execution = val
 }
 
 // SetDatabase sets the value of Database.
@@ -27067,6 +27691,7 @@ func (s *ValidateSchemaValueReq) SetValue(val SchemaValue) {
 
 // Ref: #/components/schemas/ValidationError
 type ValidationError struct {
+	Scope      OptValidationScope         `json:"scope"`
 	Path       string                     `json:"path"`
 	Code       string                     `json:"code"`
 	Constraint OptString                  `json:"constraint"`
@@ -27075,6 +27700,11 @@ type ValidationError struct {
 	RuleID     OptString                  `json:"rule_id"`
 	Expected   jx.Raw                     `json:"expected"`
 	Actual     jx.Raw                     `json:"actual"`
+}
+
+// GetScope returns the value of Scope.
+func (s *ValidationError) GetScope() OptValidationScope {
+	return s.Scope
 }
 
 // GetPath returns the value of Path.
@@ -27115,6 +27745,11 @@ func (s *ValidationError) GetExpected() jx.Raw {
 // GetActual returns the value of Actual.
 func (s *ValidationError) GetActual() jx.Raw {
 	return s.Actual
+}
+
+// SetScope sets the value of Scope.
+func (s *ValidationError) SetScope(val OptValidationScope) {
+	s.Scope = val
 }
 
 // SetPath sets the value of Path.
@@ -27198,7 +27833,8 @@ func (s *ValidationErrorSeverity) UnmarshalText(data []byte) error {
 	}
 }
 
-// Schemapb `ValidationResult` in protoJSON.
+// Schema and execution diagnostics. Warnings are nonblocking; branch on code and severity, never
+// message.
 // Ref: #/components/schemas/ValidationResult
 type ValidationResult struct {
 	Errors []ValidationError `json:"errors"`
@@ -27212,6 +27848,50 @@ func (s *ValidationResult) GetErrors() []ValidationError {
 // SetErrors sets the value of Errors.
 func (s *ValidationResult) SetErrors(val []ValidationError) {
 	s.Errors = val
+}
+
+// Path refers to the submitted form (input, also the default if absent) or the compiled RunSpec
+// (run_spec).
+// Ref: #/components/schemas/ValidationScope
+type ValidationScope string
+
+const (
+	ValidationScopeInput   ValidationScope = "input"
+	ValidationScopeRunSpec ValidationScope = "run_spec"
+)
+
+// AllValues returns all ValidationScope values.
+func (ValidationScope) AllValues() []ValidationScope {
+	return []ValidationScope{
+		ValidationScopeInput,
+		ValidationScopeRunSpec,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ValidationScope) MarshalText() ([]byte, error) {
+	switch s {
+	case ValidationScopeInput:
+		return []byte(s), nil
+	case ValidationScopeRunSpec:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ValidationScope) UnmarshalText(data []byte) error {
+	switch ValidationScope(data) {
+	case ValidationScopeInput:
+		*s = ValidationScopeInput
+		return nil
+	case ValidationScopeRunSpec:
+		*s = ValidationScopeRunSpec
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/Webhook

@@ -14,4 +14,3 @@ export interface DbExternalParams1 {
   /** Clean before run. Let the workload drop and recreate its own tables. Off by default: this database is not ours to wipe. */
   truncate_before_run?: boolean;
 }
-

@@ -1,0 +1,12 @@
+package main
+import("context";"crypto/tls";"encoding/json";"fmt";"os";"time";"go.temporal.io/sdk/client";enumspb "go.temporal.io/api/enums/v1";"google.golang.org/grpc";"google.golang.org/grpc/metadata")
+func main(){
+ var cfg struct{Server,Namespace,Token string};b,e:=os.ReadFile("/tmp/stroppy-mysql-vnafdcv2/graphene-connection.json");if e!=nil{panic(e)};if e=json.Unmarshal(b,&cfg);e!=nil{panic(e)}
+ interceptor:=func(ctx context.Context,method string,req,reply any,cc *grpc.ClientConn,invoker grpc.UnaryInvoker,opts ...grpc.CallOption)error{ctx=metadata.AppendToOutgoingContext(ctx,"x-graphene-namespace",cfg.Namespace);return invoker(ctx,method,req,reply,cc,opts...)}
+ c,e:=client.Dial(client.Options{HostPort:cfg.Server,Namespace:cfg.Namespace,Credentials:client.NewAPIKeyStaticCredentials(cfg.Token),ConnectionOptions:client.ConnectionOptions{TLS:&tls.Config{MinVersion:tls.VersionTLS12},DialOptions:[]grpc.DialOption{grpc.WithUnaryInterceptor(interceptor)}}});if e!=nil{panic(e)};defer c.Close()
+ ctx,cancel:=context.WithTimeout(context.Background(),30*time.Second);defer cancel();wfid:="run/matrix-mysql-family-1f79d4b3-mysql84-semi-sync"
+ d,e:=c.DescribeWorkflowExecution(ctx,wfid,"");if e!=nil{panic(e)};runid:=d.WorkflowExecutionInfo.Execution.RunId
+ out:=map[string]any{"workflow_id":wfid,"execution_id":runid,"status":d.WorkflowExecutionInfo.Status.String(),"pending_activities":len(d.PendingActivities)};events:=[]string{};it:=c.GetWorkflowHistory(ctx,wfid,runid,false,enumspb.HISTORY_EVENT_FILTER_TYPE_ALL_EVENT)
+ for it.HasNext(){event,e:=it.Next();if e!=nil{panic(e)};events=append(events,event.EventType.String());if a:=event.GetWorkflowExecutionStartedEventAttributes();a!=nil{keys:=[]string{};for k:=range a.GetSearchAttributes().GetIndexedFields(){keys=append(keys,k)};out["initial_search_attribute_keys"]=keys}}
+ out["events"]=events;b,_=json.MarshalIndent(out,"","  ");fmt.Println(string(b))
+}

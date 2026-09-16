@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
@@ -69,8 +71,15 @@ func newChildSim(t *testing.T) *childSim {
 	return s
 }
 
+const suiteID = "8f1c3f2a-0000-4000-8000-000000000001"
+
 func cell(id string) spec.SuiteCell {
-	return spec.SuiteCell{ID: id, RunSpec: spec.Run{RunID: "run-" + id, Tenant: "acme", Provider: spec.Provider{Kind: spec.ProviderYandex}}}
+	return spec.SuiteCell{ID: id, RunSpec: spec.Run{
+		RunID: uuid.NewSHA1(uuid.Nil, []byte(id)).String(), Tenant: "acme",
+		Provider: spec.Provider{Kind: spec.ProviderYandex, Settings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","network":{"kind":"create"}}`), CredentialsSecret: "yc", ProviderConfigName: "t-acme"},
+		Machines: []spec.Machine{{Name: "runner", Role: "runner", CPU: 2, MemoryGB: 4, Image: "ubuntu", Location: "ru-central1-d", InstanceType: "standard-v3"}},
+		Workload: spec.Workload{RunnerRole: "runner", StroppyImage: "stroppy:6", DriverType: "noop", URL: "noop://localhost", Segments: []json.RawMessage{json.RawMessage(`{"name":"test","workload":{"script":"simple"},"run":{"executor":"shared-iterations","iterations":1}}`)}},
+	}}
 }
 
 func TestSimulatedSuiteFanOut(t *testing.T) {
@@ -82,7 +91,7 @@ func TestSimulatedSuiteFanOut(t *testing.T) {
 		s.delays[parent+"-"+c] = 10 * time.Minute
 	}
 	s.w.Env.ExecuteWorkflow(wf, spec.Suite{
-		SuiteRunID: "suite-1", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b"), cell("c")}, Concurrency: 2,
+		SuiteRunID: suiteID, Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b"), cell("c")}, Concurrency: 2,
 		Defaults: spec.SuiteDefaults{Labels: map[string]string{"nightly": "1"}},
 	})
 	require.NoError(t, s.w.Env.GetWorkflowError())
@@ -95,11 +104,11 @@ func TestSimulatedSuiteFanOut(t *testing.T) {
 	// Every child runs the run pipeline with the cell's RunSpec and the
 	// suite labels; at most two at once.
 	require.Equal(t, "stroppy-run", s.started[0].Pipeline)
-	require.Equal(t, "suite-1", s.started[0].Labels["stroppy-suite-run"])
+	require.Equal(t, suiteID, s.started[0].Labels["stroppy-suite-run"])
 	require.Equal(t, "1", s.started[0].Labels["nightly"])
 	var child spec.Run
 	require.NoError(t, json.Unmarshal(s.started[0].Params, &child))
-	require.Equal(t, "run-a", child.RunID)
+	require.Equal(t, cell("a").RunSpec.RunID, child.RunID)
 	require.Equal(t, 3, count(s.events, CellFinished))
 	require.Equal(t, "completed", result.Cells[2].Status)
 	require.Equal(t, 100.0, result.Cells[2].Result.Summary.TPS)
@@ -116,7 +125,7 @@ func TestSimulatedSuiteConcurrencyBound(t *testing.T) {
 		s.results[parent+"-"+c] = spec.Result{}
 		s.delays[parent+"-"+c] = 10 * time.Minute
 	}
-	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: "s", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b"), cell("c")}, Concurrency: 2})
+	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: suiteID, Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b"), cell("c")}, Concurrency: 2})
 	require.NoError(t, s.w.Env.GetWorkflowError())
 	require.Equal(t, 2, s.peak, "at most two children running at once")
 }
@@ -127,7 +136,7 @@ func TestSimulatedSuiteStopsAtFirstFailure(t *testing.T) {
 	parent := "test-" + PipelineID
 	s.failures[parent+"-a"] = errors.New("segment load failed")
 	s.results[parent+"-b"] = spec.Result{}
-	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: "s", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")}})
+	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: suiteID, Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")}})
 	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "1 of 2 cells failed")
 	require.Contains(t, s.events, CellFailed)
 	require.NotContains(t, s.events, CellFinished, "the second cell is not read after the first failure")
@@ -140,7 +149,7 @@ func TestSimulatedSuiteContinuesOnFailure(t *testing.T) {
 	s.failures[parent+"-a"] = errors.New("quota")
 	s.results[parent+"-b"] = spec.Result{Summary: spec.Summary{TPS: 5}}
 	s.w.Env.ExecuteWorkflow(wf, spec.Suite{
-		SuiteRunID: "s", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")},
+		SuiteRunID: suiteID, Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")},
 		Defaults: spec.SuiteDefaults{ContinueOnFailure: true},
 	})
 	require.NoError(t, s.w.Env.GetWorkflowError())
@@ -156,8 +165,8 @@ func TestSimulatedSuiteContinuesOnFailure(t *testing.T) {
 func TestSimulatedSuiteRejectsEmpty(t *testing.T) {
 	s := newChildSim(t)
 	wf := pipelinetest.Workflow(s.w, PipelineID, Run)
-	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: "s", Tenant: "acme"})
-	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "at least one cell")
+	s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: suiteID, Tenant: "acme"})
+	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "cells")
 	require.Empty(t, s.started)
 }
 
@@ -183,7 +192,7 @@ func TestSimulatedSuiteCancellation(t *testing.T) {
 			s.delays["test-"+PipelineID+"-a"] = 10 * time.Minute
 			s.delays["test-"+PipelineID+"-b"] = 10 * time.Minute
 			s.w.Env.RegisterDelayedCallback(s.w.Env.CancelWorkflow, time.Minute)
-			s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: "s", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")}, Concurrency: 2, Defaults: spec.SuiteDefaults{ContinueOnFailure: continueOnFailure}})
+			s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: suiteID, Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")}, Concurrency: 2, Defaults: spec.SuiteDefaults{ContinueOnFailure: continueOnFailure}})
 			require.True(t, temporal.IsCanceledError(s.w.Env.GetWorkflowError()), "operator cancel must remain canceled: %v", s.w.Env.GetWorkflowError())
 			require.Len(t, s.started, 2)
 			require.NotContains(t, s.events, CellFailed, "operator cancel is not a failed cell")

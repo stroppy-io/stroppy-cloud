@@ -16,4 +16,3 @@ export interface DbCockroachParams1 {
   /** Init SQL. SQL executed against the cluster once it is initialized, before the workload. */
   init_sql?: string;
 }
-

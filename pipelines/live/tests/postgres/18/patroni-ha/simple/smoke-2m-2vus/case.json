@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/18/patroni-ha/simple/smoke-2m-2vus",
+  "database": "postgres",
+  "version": "18",
+  "topology": "patroni-ha",
+  "workload": "simple",
+  "preset": "smoke-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-patroni-96794a09-pg18-patroni-ha",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-patroni-96794a09-pg18-patroni-ha"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/patroni-matrix-check.json",
+    "pointer": "/cells/1"
+  },
+  "legacy_row": {
+    "database": "postgres",
+    "version": "18",
+    "topology": "patroni-ha",
+    "provider": "yandex",
+    "zone": "ru-central1-a",
+    "workload": "simple",
+    "database_actual_version": "",
+    "started_at": "",
+    "finished_at": "",
+    "preset": "smoke-2m-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "pending",
+    "artifacts": "pending",
+    "replication": "pending",
+    "pipeline_traces": "passed",
+    "native_tps": "not_applicable",
+    "native_otlp_metrics": "pending",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-patroni-96794a09-pg18-patroni-ha",
+    "iterations": "134147",
+    "input": "matrix/postgres-patroni-ha-18-simple.json",
+    "evidence": "patroni-matrix-check.json",
+    "checked_at": "2026-09-14T17:10:31.296357+00:00",
+    "note": "",
+    "component_log_observations": "not_checked",
+    "retry_attempts": "",
+    "local_cluster": "not_applicable",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/postgres/18/patroni-ha/simple/smoke-2m-2vus/template.json",
+    "pointer": ""
+  },
+  "actual_segments": [
+    {
+      "name": "smoke",
+      "script": "simple",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "simple"
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

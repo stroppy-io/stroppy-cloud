@@ -8,13 +8,16 @@ Graphene's. Identity is [gopherex/iam](https://github.com/gopherex/iam).
 This branch is a ground-up rewrite. The previous implementation is preserved on
 `main-v0`.
 
+The versioned server/UI/pipeline interface, examples and compatibility checks
+are documented in [the integration handoff](pipelines/live/tests/platform/contracts/HANDOFF.md).
+
 ## Layout
 
-- `cmd/stroppy-server/` — the server binary (API + embedded SPA).
+- `cmd/stroppy-cloud/` — the server binary (API + embedded SPA).
 - `internal/` — server code.
 - `pipelines/` — Graphene pipelines (`stroppy-run`, `stroppy-suite`), a separate
   Go module; `pipelines/spec` is the run specification shared with the server.
-- `api/` — OpenAPI spec (source of truth for the Go server and the TS client).
+- `openapi/parts/` — OpenAPI sources for the Go server and TypeScript API types.
 - `web/` — SPA (React, Vite, Tailwind).
 - `docs/` — documentation and design notes.
 

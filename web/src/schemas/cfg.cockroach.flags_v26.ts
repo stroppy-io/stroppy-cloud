@@ -64,4 +64,3 @@ export interface CfgCockroachFlags26 {
   /** Rendered 25.x/26.x flags. Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr. */
   readonly modern_flags?: string;
 }
-

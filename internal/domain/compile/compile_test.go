@@ -58,7 +58,7 @@ func TestCompileCatalogTopologies(t *testing.T) {
 				out, err := compile.Compile(ctx, reg, compile.Input{
 					RunID: uuid.New(), Tenant: "acme", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs,
 					Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex",
-					ProviderSettings:  json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`),
+					ProviderSettings:  json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`),
 					CredentialsSecret: "provider-x", ProviderConfigName: "t-acme", Keep: time.Hour, Catalog: cat,
 				})
 				if err != nil {
@@ -147,8 +147,10 @@ func TestCompilePostgresConfigVersions(t *testing.T) {
 					params = map[string]any{"image_tag": version.Version}
 				}
 				raw, _ := json.Marshal(params)
-				input := library.DatabaseSpec{Kind: kind, Version: version.Version, Params: raw,
-					Configs: map[string]map[string]json.RawMessage{"db": {prefix + major: json.RawMessage(`{"shared_buffers":256}`)}}}
+				input := library.DatabaseSpec{
+					Kind: kind, Version: version.Version, Params: raw,
+					Configs: map[string]map[string]json.RawMessage{"db": {prefix + major: json.RawMessage(`{"shared_buffers":256}`)}},
+				}
 				dspec, derived, err := lib.DeriveDatabase(ctx, input)
 				if err != nil {
 					t.Fatal(err)
@@ -164,7 +166,7 @@ func TestCompilePostgresConfigVersions(t *testing.T) {
 				for _, n := range derived.Plan.Nodes {
 					sizes[n.Role] = library.RoleSize{Size: "S"}
 				}
-				out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+				out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat})
 				if err != nil {
 					t.Fatal(err)
 				}

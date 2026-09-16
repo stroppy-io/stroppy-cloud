@@ -78,4 +78,3 @@ export interface CfgPatroniYml3 {
   /** Rendered parameters. The postgresql_parameters map as an indented YAML mapping. */
   readonly postgresql_parameters_rendered?: string;
 }
-

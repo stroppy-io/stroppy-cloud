@@ -128,4 +128,3 @@ export interface CfgYdbConfigYaml26 {
   /** Rendered grpc_config TLS keys. */
   readonly grpc_tls_block?: string;
 }
-

@@ -94,6 +94,10 @@ components:
       description: Definition frozen at launch.
       required: [database, workload, sizes, provider_profile]
       properties:
+        execution:
+          allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
+          x-schema: test.runtime@1
+          description: Frozen final deployment overrides used for replay.
         database: { $ref: '#/components/schemas/DatabaseSpec' }
         database_name: { type: string }
         workload: { $ref: '#/components/schemas/WorkloadSpec' }
@@ -139,12 +143,52 @@ components:
               status: { type: string, enum: [completed, failed, skipped, cancelled] }
               started_at: { type: string, format: date-time }
               finished_at: { type: string, format: date-time }
+              exit_code: { type: integer, description: Native Stroppy process exit code, including zero. }
+              error: { type: string, description: Segment failure diagnostic. }
+              errors: { $ref: '#/components/schemas/RunSegmentErrors' }
+              compliance: { description: Native workload compliance report, preserved without interpreting its fields. }
               metrics:
                 type: object
                 additionalProperties: { $ref: '#/components/schemas/MetricValue' }
         artifacts:
           type: array
           items: { type: string, description: 'artifact/<id>' }
+        baseline: { $ref: '#/components/schemas/RunBaselineResult' }
+        summary: { $ref: '#/components/schemas/PipelineSummary' }
+    RunSegmentErrors:
+      type: object
+      required: [terminal_errors, failed_iterations, failed_queries, retry_attempts]
+      properties:
+        terminal_errors: { type: integer, format: int64 }
+        failed_iterations: { type: integer, format: int64 }
+        failed_queries: { type: integer, format: int64 }
+        retry_attempts: { type: integer, format: int64 }
+    RunBaselineResult:
+      type: object
+      required: [ok]
+      properties:
+        ok: { type: boolean }
+        verdicts:
+          type: array
+          items:
+            type: object
+            required: [check, status]
+            properties:
+              check: { type: string }
+              status: { type: string }
+              detail: { type: string }
+        report: { description: Complete native machine baseline report. }
+        error: { type: string }
+    PipelineSummary:
+      type: object
+      description: Native pipeline headline; absent throughput is not zero throughput. Other workload metrics remain in metrics.
+      properties:
+        tps: { type: number }
+        latency_p50_ms: { type: number }
+        latency_p95_ms: { type: number }
+        latency_p99_ms: { type: number }
+        errors: { type: integer, format: int64 }
+        duration: { type: string }
     MetricValue:
       type: object
       required: [value]

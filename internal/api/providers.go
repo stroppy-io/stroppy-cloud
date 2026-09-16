@@ -140,6 +140,7 @@ func rawOf(v oas.SchemaValue) json.RawMessage {
 }
 
 func schemaValueOf(raw json.RawMessage) oas.SchemaValue {
+	raw = browserSchemaJSON(raw)
 	out := oas.SchemaValue{}
 	if len(raw) == 0 {
 		return out

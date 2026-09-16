@@ -40,4 +40,3 @@ export interface ProviderYandexSettings1 {
   /** Preemptible. Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete. */
   preemptible?: boolean;
 }
-

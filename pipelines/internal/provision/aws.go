@@ -67,7 +67,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 	names := NewNames(run.Tenant, run.RunID)
 	pc := run.Provider.ProviderConfigName
 	region := ptr(st.Region)
-	public := run.Network.AllowPublicIPs || st.PublicIPs
+	public := run.Network.AllowPublicIPs
 	cidr := intraCIDR(run)
 	tags := labels(run, nil)
 
@@ -182,20 +182,31 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 				Tags:                withName(tags, names.Disk(m.Name, d.Name)),
 			})
 		}
+		bootGB, bootType := awsBootDiskGB, "gp3"
+		if m.BootDisk != nil {
+			bootGB, bootType = m.BootDisk.GB, m.BootDisk.Type
+		}
+		vmPublic, spot := public, st.Spot
+		if m.PublicIP != nil {
+			vmPublic = *m.PublicIP
+		}
+		if m.Preemptible != nil {
+			spot = *m.Preemptible
+		}
 		vmName := names.Machine(m.Name)
 		params := ec2.InstanceParameters{
 			Region:                   region,
 			AMI:                      ptr(m.Image),
 			InstanceType:             ptr(m.InstanceType),
 			AvailabilityZone:         optional(st.AvailabilityZone),
-			AssociatePublicIPAddress: ptr(public),
+			AssociatePublicIPAddress: ptr(vmPublic),
 			SubnetIDRef:              &xpv1.Reference{Name: names.Subnet()},
 			VPCSecurityGroupIDRefs:   []xpv1.Reference{{Name: names.SecurityGroup()}},
 			UserData:                 ptr(agent.CloudInit()),
 			UserDataReplaceOnChange:  ptr(false),
 			RootBlockDevice: []ec2.RootBlockDeviceParameters{{
-				VolumeSize:          ptr(float64(awsBootDiskGB)),
-				VolumeType:          ptr("gp3"),
+				VolumeSize:          ptr(float64(bootGB)),
+				VolumeType:          ptr(bootType),
 				DeleteOnTermination: ptr(true),
 			}},
 			EBSBlockDevice: ebs,
@@ -204,7 +215,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 			}},
 			Tags: withName(labels(run, m.Labels), vmName),
 		}
-		if st.Spot {
+		if spot {
 			params.InstanceMarketOptions = []ec2.InstanceMarketOptionsParameters{{MarketType: ptr("spot")}}
 		}
 		vm := k8slib.Resource(ctx, k8s, vmName, &ec2.Instance{

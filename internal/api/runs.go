@@ -20,6 +20,7 @@ import (
 // --- wire mapping -----------------------------------------------------------
 
 func bakedValueOf(schema, version string, raw json.RawMessage) oas.BakedValue {
+	raw = browserSchemaJSON(raw)
 	out := oas.BakedValue{Schema: oas.BakedValueSchema{"id": jx.Raw(strconv.Quote(schema)), "version": jx.Raw(strconv.Quote(version))}, Values: oas.BakedValueValues{}}
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &m); err == nil {
@@ -49,6 +50,9 @@ func snapshotOf(s run.Snapshot) oas.RunSnapshot {
 		Database: specToWire(s.Database), Workload: workloadSpecToWire(s.Workload), Sizes: sizesTo(s.Sizes),
 		ProviderProfile: oas.Ref{ID: s.ProviderProfile.ID, Name: oas.NewOptString(s.ProviderProfile.Name)},
 		Machines:        make([]oas.RunSnapshotMachinesItem, 0, len(s.Machines)),
+	}
+	if len(s.Execution) > 0 {
+		out.Execution = oas.NewOptSchemaValue(schemaValueOf(s.Execution))
 	}
 	if s.DatabaseName != "" {
 		out.DatabaseName = oas.NewOptString(s.DatabaseName)
@@ -152,78 +156,40 @@ func summaryOf(s run.Summary) oas.RunSummary {
 	return out
 }
 
-func metricValueOf(v map[string]any) oas.MetricValue {
-	out := oas.MetricValue{}
-	if x, ok := v["value"].(float64); ok {
-		out.Value = x
-	}
-	if x, ok := v["unit"].(string); ok && x != "" {
-		out.Unit = oas.NewOptString(x)
-	}
-	for _, k := range []string{"min", "max", "avg"} {
-		if x, ok := v[k].(float64); ok && x != 0 {
-			switch k {
-			case "min":
-				out.Min = oas.NewOptFloat64(x)
-			case "max":
-				out.Max = oas.NewOptFloat64(x)
-			default:
-				out.Avg = oas.NewOptFloat64(x)
-			}
-		}
-	}
-	return out
-}
-
+// resultOf uses the generated result decoder so API fields retain presence,
+// zero values and opaque native reports. Only the historical status spelling
+// differs between the pipeline and public API.
 func resultOf(raw json.RawMessage) oas.OptRunResult {
 	if len(raw) == 0 {
 		return oas.OptRunResult{}
 	}
-	var res struct {
-		Metrics   map[string]map[string]any `json:"metrics"`
-		Artifacts []string                  `json:"artifacts"`
-		Segments  []struct {
-			Name       string                    `json:"name"`
-			Status     string                    `json:"status"`
-			StartedAt  *time.Time                `json:"started_at"`
-			FinishedAt *time.Time                `json:"finished_at"`
-			Metrics    map[string]map[string]any `json:"metrics"`
-		} `json:"segments"`
-	}
-	if err := json.Unmarshal(raw, &res); err != nil {
+	var envelope map[string]json.RawMessage
+	if json.Unmarshal(raw, &envelope) != nil || envelope == nil {
 		return oas.OptRunResult{}
 	}
-	out := oas.RunResult{Segments: []oas.RunResultSegmentsItem{}, Artifacts: res.Artifacts}
+	if segments, ok := envelope["segments"]; ok {
+		var items []map[string]json.RawMessage
+		if json.Unmarshal(segments, &items) != nil {
+			return oas.OptRunResult{}
+		}
+		for _, item := range items {
+			var status string
+			if json.Unmarshal(item["status"], &status) == nil && status == "canceled" {
+				item["status"] = json.RawMessage(`"cancelled"`)
+			}
+		}
+		envelope["segments"], _ = json.Marshal(items) //nolint:errcheck // valid raw JSON
+	}
+	raw, _ = json.Marshal(envelope) //nolint:errcheck // valid raw JSON
+	var out oas.RunResult
+	if err := out.Decode(jx.DecodeBytes(raw)); err != nil {
+		return oas.OptRunResult{}
+	}
+	if out.Segments == nil {
+		out.Segments = []oas.RunResultSegmentsItem{}
+	}
 	if out.Artifacts == nil {
 		out.Artifacts = []string{}
-	}
-	if len(res.Metrics) > 0 {
-		m := oas.RunResultMetrics{}
-		for k, v := range res.Metrics {
-			m[k] = metricValueOf(v)
-		}
-		out.Metrics = oas.NewOptRunResultMetrics(m)
-	}
-	for _, s := range res.Segments {
-		status := s.Status
-		if status == "canceled" {
-			status = "cancelled"
-		}
-		item := oas.RunResultSegmentsItem{Name: s.Name, Status: oas.RunResultSegmentsItemStatus(status)}
-		if s.StartedAt != nil {
-			item.StartedAt = oas.NewOptDateTime(*s.StartedAt)
-		}
-		if s.FinishedAt != nil {
-			item.FinishedAt = oas.NewOptDateTime(*s.FinishedAt)
-		}
-		if len(s.Metrics) > 0 {
-			m := oas.RunResultSegmentsItemMetrics{}
-			for k, v := range s.Metrics {
-				m[k] = metricValueOf(v)
-			}
-			item.Metrics = oas.NewOptRunResultSegmentsItemMetrics(m)
-		}
-		out.Segments = append(out.Segments, item)
 	}
 	return oas.NewOptRunResult(out)
 }

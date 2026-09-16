@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
@@ -43,7 +44,7 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: database, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: workload, WorkloadBaked: baked, Sizes: map[string]library.RoleSize{"runner": {Size: "S"}}, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: database, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: workload, WorkloadBaked: baked, Sizes: map[string]library.RoleSize{"runner": {Size: "S"}}, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat})
 			if err != nil {
 				t.Fatal(err)
 			}

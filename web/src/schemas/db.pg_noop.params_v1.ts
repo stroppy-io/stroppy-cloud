@@ -14,4 +14,3 @@ export interface DbPgNoopParams1 {
   /** Port. TCP port the blackhole listens on. */
   port?: number | string;
 }
-

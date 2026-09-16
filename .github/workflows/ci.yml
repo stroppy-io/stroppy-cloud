@@ -29,3 +29,22 @@ jobs:
       - run: yarn --cwd web build
       - uses: golangci/golangci-lint-action@v9
         with: { version: v2.12.2 }
+
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version-file: go.mod }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: corepack enable
+      - run: yarn --cwd web install --frozen-lockfile
+      - run: make generate-go generate-ts schemas-export
+      - run: python3 pipelines/live/tools/contract_lock.py
+      - run: git diff --exit-code -- internal/oas openapi/openapi.yaml web/src/api/schema.d.ts
+      - run: yarn --cwd web test:contract
+      - run: yarn --cwd web build
+      - run: go test ./... -count=1
+        working-directory: pipelines
+      - run: go test -tags=integration ./cmd/... -count=1 -p 1

@@ -2,6 +2,7 @@ openapi: 3.1.0
 info:
   title: Stroppy Cloud API
   version: 1.0.0
+  x-pipeline-contract-version: 1.0.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: |
     The Stroppy Cloud HTTP API. The server owns tenants, the benchmark

@@ -106,5 +106,6 @@ func AwsSettings() *schemapb.Schema {
 					"do not use for a measurement that must complete.").
 				Default(false),
 		).
+		Rules(schemapb.Rule(`[this == null ? root : this].all(s, !("network" in s) || s.network.kind == "create")`, "existing networks are not implemented by the pipeline; use a run-owned network").ID("network-create-only")).
 		MustBuild()
 }

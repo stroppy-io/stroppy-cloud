@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "id": "tests/pg_noop/0.1.2/single/execute-sql/native-otlp-2m-2vus",
+  "database": "pg_noop",
+  "version": "0.1.2",
+  "topology": "single",
+  "workload": "execute/sql",
+  "preset": "native-otlp-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-pgnoop-f4eb20b2-pg-noop-single",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-pgnoop-f4eb20b2-pg-noop-single"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/catalog-functional-check.json",
+    "pointer": "/native_cells/49"
+  },
+  "legacy_row": {
+    "database": "pg_noop",
+    "version": "0.1.2",
+    "topology": "single",
+    "provider": "yandex",
+    "zone": "ru-central1-d",
+    "workload": "execute/sql",
+    "database_actual_version": "",
+    "started_at": "2026-09-15T19:39:16.606319712Z",
+    "finished_at": "2026-09-15T19:41:21.252898436Z",
+    "preset": "native-otlp-2m0s-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "not_applicable",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "not_applicable",
+    "pipeline_traces": "passed",
+    "native_tps": "not_applicable",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-pgnoop-f4eb20b2-pg-noop-single",
+    "iterations": "906537.0",
+    "input": "suite-pg-noop-autoretry.json",
+    "evidence": "catalog-functional-check.json",
+    "checked_at": "2026-09-15T19:45:40.283067+00:00",
+    "note": "segment=execute-sql; Native execute_sql throughput and zero terminal errors verified; no logical transactions, TPS, population phase or database replication. Persisted runner/node metrics, logs, traces, artifact downloads and YC cleanup verified.",
+    "component_log_observations": "{}",
+    "retry_attempts": "0.0",
+    "local_cluster": "",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-pg-noop-autoretry.json",
+    "pointer": "/cells/0/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "execute-sql",
+      "script": "execute_sql",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "10s",
+        "vus": 2
+      },
+      "params": {
+        "script": "execute_sql",
+        "sql_body": "--= smoke\nSELECT 1;"
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

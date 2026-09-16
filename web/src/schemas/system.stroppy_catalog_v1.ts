@@ -72,4 +72,3 @@ export interface SystemStroppyCatalog1 {
   /** Versions. Every stroppy build the platform offers. */
   versions: Array<SystemStroppyCatalog1Item>;
 }
-

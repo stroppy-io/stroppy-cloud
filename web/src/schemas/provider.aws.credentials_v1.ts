@@ -10,4 +10,3 @@ export interface ProviderAwsCredentials1 {
   /** Session token. STS session token; required with temporary (ASIA…) credentials, absent otherwise. */
   session_token?: string;
 }
-

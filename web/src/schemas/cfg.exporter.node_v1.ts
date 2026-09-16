@@ -34,4 +34,3 @@ export interface CfgExporterNode1 {
   /** Rendered --collector.textfile.directory. */
   readonly textfile_flag?: string;
 }
-

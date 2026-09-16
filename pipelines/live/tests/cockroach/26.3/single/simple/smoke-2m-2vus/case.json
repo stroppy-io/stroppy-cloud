@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "id": "tests/cockroach/26.3/single/simple/smoke-2m-2vus",
+  "database": "cockroach",
+  "version": "26.3",
+  "topology": "single",
+  "workload": "simple",
+  "preset": "smoke-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-cockroach-74ee56ed-cockroach-single-26.3",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-cockroach-74ee56ed-cockroach-single-26.3"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/catalog-functional-check.json",
+    "pointer": "/native_cells/75"
+  },
+  "legacy_row": {
+    "database": "cockroach",
+    "version": "26.3",
+    "topology": "single",
+    "provider": "yandex",
+    "zone": "ru-central1-a",
+    "workload": "simple",
+    "database_actual_version": "v26.3.1",
+    "started_at": "2026-09-15T18:44:07.55854485Z",
+    "finished_at": "2026-09-15T18:49:30.215743675Z",
+    "preset": "smoke-2m-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "passed",
+    "pipeline_traces": "passed",
+    "native_tps": "not_applicable",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-cockroach-74ee56ed-cockroach-single-26.3",
+    "iterations": "",
+    "input": "suite-cockroach-matrix.json",
+    "evidence": "catalog-functional-check.json",
+    "checked_at": "2026-09-15T18:53:25.354762+00:00",
+    "note": "All configured native workloads completed without terminal errors. Persisted native OTLP, scalar component metrics, logs, traces, artifact downloads and removal of owned YC resources verified. Database histogram/summary export remains pending.",
+    "component_log_observations": "{}",
+    "retry_attempts": "",
+    "local_cluster": "passed",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-cockroach-matrix.json",
+    "pointer": "/cells/5/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "simple",
+      "script": "simple",
+      "run": {
+        "duration": "2m",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "simple"
+      }
+    },
+    {
+      "name": "tpcb-tx",
+      "script": "tpcb/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "load_workers": 2,
+        "retry_attempts": 50,
+        "scale_factor": 1,
+        "script": "tpcb/tx",
+        "sql_file": "crdb.sql"
+      }
+    },
+    {
+      "name": "tpcb-procs",
+      "script": "tpcb/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "load_workers": 2,
+        "retry_attempts": 50,
+        "scale_factor": 1,
+        "script": "tpcb/procs",
+        "sql_file": "crdb.sql"
+      }
+    },
+    {
+      "name": "tpcc-tx",
+      "script": "tpcc/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "load_workers": 2,
+        "pacing": false,
+        "pg_unlogged": false,
+        "retry_attempts": 50,
+        "scale_factor": 1,
+        "script": "tpcc/tx",
+        "sql_file": "crdb.sql",
+        "warehouse_start": 1
+      }
+    },
+    {
+      "name": "tpcc-procs",
+      "script": "tpcc/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "load_workers": 2,
+        "pacing": false,
+        "pg_unlogged": false,
+        "retry_attempts": 50,
+        "scale_factor": 1,
+        "script": "tpcc/procs",
+        "sql_file": "crdb.sql",
+        "warehouse_start": 1
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

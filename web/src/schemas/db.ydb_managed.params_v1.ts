@@ -40,4 +40,3 @@ export interface DbYdbManagedParams1 {
   /** Deletion protection. Refuse terraform destroy on the database; a kept stand still tears down its VMs, so leave this off unless the data matters. */
   deletion_protection?: boolean;
 }
-

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-ydbready-cd74e12d-ydb-managed-serverless",
+  "case_paths": [
+    "tests/ydb_managed/managed/serverless/simple/smoke-2m-2vus",
+    "tests/ydb_managed/managed/serverless/simple/native-otlp-2m-2vus",
+    "tests/ydb_managed/managed/serverless/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb_managed/managed/serverless/tpcc-tx/native-otlp-20s-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-ydb-queryready.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

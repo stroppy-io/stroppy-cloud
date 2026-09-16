@@ -120,4 +120,3 @@ export interface CfgProxysqlCnf2 {
   /** Rendered extra mysql_variables. The `custom` map joined into extra keys inside the mysql_variables block; values must already carry libconfig quoting. */
   readonly custom_rendered?: string;
 }
-

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg18",
+  "case_paths": [
+    "tests/orioledb/beta17-pg18/primary-replica/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcc-procs/native-otlp-20s-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-orioledb.json",
+    "pointer": "/cells/1/run_spec"
+  }
+}

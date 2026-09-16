@@ -57,7 +57,8 @@ func run(out string) error {
 		if err := os.WriteFile(filepath.Join(out, file+".json"), append(js, '\n'), 0o644); err != nil { //nolint:gosec // generated source, world-readable by design
 			return err
 		}
-		if err := os.WriteFile(filepath.Join(out, file+".ts"), []byte(tsgen.Generate(s)), 0o644); err != nil { //nolint:gosec // generated source
+		types := strings.TrimRight(tsgen.Generate(s), "\n") + "\n"
+		if err := os.WriteFile(filepath.Join(out, file+".ts"), []byte(types), 0o644); err != nil { //nolint:gosec // generated source
 			return err
 		}
 		entries = append(entries, entry{id: id, file: file, typ: tsgen.TypeName(s.GetId())})

@@ -1,0 +1,38 @@
+package main
+import (
+ "context"
+ "crypto/sha256"
+ "encoding/hex"
+ "encoding/json"
+ "fmt"
+ "io"
+ "os"
+ "path/filepath"
+ "strings"
+ "time"
+ "github.com/graphene-ci/pipeline/pkg/cliconfig"
+ api "github.com/graphene-ci/pipeline/pkg/proto/workerplane/v1"
+ "google.golang.org/grpc"
+ "google.golang.org/grpc/credentials"
+"google.golang.org/grpc/credentials/insecure"
+ "google.golang.org/grpc/metadata"
+)
+type blob struct {Ref string `json:"ref"`;Location string `json:"location"`;Digest string `json:"digest"`;Size int64 `json:"size"`;Verified bool `json:"download_verified"`}
+func main(){
+ cc,_,err:=cliconfig.Resolve("");if err!=nil{panic(err)}
+ raw,err:=os.ReadFile(os.Args[1]);if err!=nil{panic(err)}
+ var blobs []blob;if err=json.Unmarshal(raw,&blobs);err!=nil{panic(err)}
+ transport:=credentials.TransportCredentials(credentials.NewTLS(nil)); if cc.Insecure { transport=insecure.NewCredentials() }; conn,err:=grpc.NewClient(cc.Server,grpc.WithTransportCredentials(transport));if err!=nil{panic(err)};defer conn.Close()
+ for i:=range blobs{
+  b:=&blobs[i];ctx,cancel:=context.WithTimeout(context.Background(),30*time.Second)
+  ctx=metadata.NewOutgoingContext(ctx,metadata.Pairs("authorization","Bearer "+cc.Token,"x-graphene-namespace","t-stroppy-live"))
+  stream,err:=api.NewBlobsAPIClient(conn).GetBlob(ctx,&api.GetBlobRequest{Location:b.Location});if err!=nil{panic(err)}
+  hash:=sha256.New();var size int64
+  var logFile *os.File
+  if strings.HasSuffix(b.Ref,"-log") { logFile,err=os.OpenFile(filepath.Join(os.Args[2],filepath.Base(b.Ref)+".log"),os.O_CREATE|os.O_TRUNC|os.O_WRONLY,0600);if err!=nil{panic(err)} }
+  for {msg,err:=stream.Recv();if err==io.EOF{break};if err!=nil{panic(err)};chunk:=msg.GetChunk();hash.Write(chunk);if logFile!=nil {if _,err=logFile.Write(chunk);err!=nil {panic(err)}};size+=int64(len(chunk))}
+  if logFile!=nil {if err=logFile.Close();err!=nil{panic(err)}}
+  cancel();digest:="sha256:"+hex.EncodeToString(hash.Sum(nil));if digest!=b.Digest||size!=b.Size{panic("blob checksum mismatch: "+b.Ref)};b.Verified=true
+ }
+ raw,err=json.MarshalIndent(blobs,"","  ");if err!=nil{panic(err)};fmt.Println(string(raw))
+}

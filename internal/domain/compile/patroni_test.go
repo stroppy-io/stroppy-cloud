@@ -41,7 +41,7 @@ func TestPatroniVersions(t *testing.T) {
 			for _, n := range derived.Plan.Nodes {
 				sizes[n.Role] = library.RoleSize{Size: "S"}
 			}
-			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: db, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: w, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", ProviderConfigName: "t-test", Catalog: cat})
+			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: db, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: w, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", ProviderConfigName: "t-test", Catalog: cat})
 			if err != nil {
 				t.Fatal(err)
 			}

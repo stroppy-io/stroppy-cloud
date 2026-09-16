@@ -1,0 +1,10 @@
+{
+  "status": "not_planned",
+  "required": [
+    "full workload parameter matrices",
+    "baseline matrix",
+    "segment matrix",
+    "fault campaigns"
+  ],
+  "note": "Historical pending columns are retained here, not counted as completed or silently removed from full readiness."
+}

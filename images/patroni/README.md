@@ -16,7 +16,7 @@ docker push registry.stroppy.io/stroppy-io/patroni:pg17-4.1.5
 Use existing registry credentials. The run pulls through the anonymous Nexus
 group at `docker.stroppy.io/stroppy-io/patroni:pg17-4.1.5`.
 Published digests and runtime versions are recorded in
-[patroni-images.json](../../pipelines/live/patroni-images.json).
+[patroni-images.json](../../pipelines/live/tests/platform/images/patroni-images.json).
 Rebuilding a base major tag can select a newer PostgreSQL patch release;
 the recorded digest identifies the bytes used by the verification.
 

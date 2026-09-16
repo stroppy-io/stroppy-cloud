@@ -51,6 +51,13 @@ type deployed struct {
 func hostPrep(ctx pipeline.Context, run spec.Run, infra provision.Infra) error {
 	for i, step := range run.HostPrep {
 		targets := agentsOf(infra.ByRole(step.Role))
+		if step.Machine != "" {
+			m, ok := infra.Machines[step.Machine]
+			if !ok || m.Spec.Role != step.Role {
+				return fmt.Errorf("host_prep[%d]: machine does not belong to role", i)
+			}
+			targets = agentsOf([]*provision.Machine{m})
+		}
 		if len(targets) == 0 {
 			return fmt.Errorf("host_prep[%d]: no machines of role %q", i, step.Role)
 		}

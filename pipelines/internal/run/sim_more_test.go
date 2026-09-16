@@ -84,7 +84,7 @@ func (s *sim) convergeAWS(t *testing.T, run spec.Run, ips map[string]string) {
 func TestSimulatedRunAWS(t *testing.T) {
 	s := newSim(t)
 	run := noopRun()
-	run.Provider = spec.Provider{Kind: spec.ProviderAWS, Settings: json.RawMessage(`{"region":"eu-central-1","availability_zone":"eu-central-1a"}`), CredentialsSecret: "aws-keys", ProviderConfigName: "t-acme"}
+	run.Provider = spec.Provider{Kind: spec.ProviderAWS, Settings: json.RawMessage(`{"region":"eu-central-1","availability_zone":"eu-central-1a","network":{"kind":"create"}}`), CredentialsSecret: "aws-keys", ProviderConfigName: "t-acme"}
 	run.Network.Ingress = []spec.Ingress{{Port: 22, Proto: "tcp", CIDR: "0.0.0.0/0"}}
 	run.Machines[0].Image = "ami-0abc"
 	run.Machines[0].InstanceType = "m6i.large"
@@ -115,7 +115,7 @@ func TestSimulatedRunUnsupportedProviderFailsBeforeInfra(t *testing.T) {
 	run.Provider.Kind = "gcp"
 	wf := pipelinetestWorkflow(s)
 	s.w.Env.ExecuteWorkflow(wf, run)
-	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "gcp")
+	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "unknown variant gcp")
 	require.Empty(t, s.configs, "no credentials touched for an unknown provider")
 	require.Empty(t, s.w.Events(), "nothing declared")
 	require.Equal(t, "failure", s.w.Outcome(runOwner()))
@@ -166,6 +166,8 @@ func TestSimulatedRunAgentNeverConnects(t *testing.T) {
 	wf := pipelinetestWorkflow(s)
 	names := provision.NewNames(run.Tenant, run.RunID)
 	// The VM runs, cloud-init never brings the agent up.
+	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycGatewayKind+"/"+names.Gateway()), xpReadyStatus(map[string]any{"id": "nat"})))
+	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycRouteTableKind+"/"+names.RouteTable()), xpReadyStatus(map[string]any{"id": "routes"})))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycNetworkKind+"/"+names.Network()), xpReadyStatus(nil)))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycSubnetKind+"/"+names.Subnet()), xpReadyStatus(nil)))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(nil)))

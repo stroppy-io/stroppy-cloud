@@ -64,8 +64,13 @@ generate-go: openapi ## Generate the ogen server/client into internal/oas
 	python3 scripts/openapi_to_30.py $(OPENAPI) $(OPENAPI_30)
 	$(OGEN) --config .ogen.yaml --target internal/oas --package oas --clean $(OPENAPI_30)
 
-generate-ts: openapi ## Generate the TypeScript client into web/src/api
+generate-ts: openapi ## Generate TypeScript API types into web/src/api
 	cd web && yarn generate
+
+.PHONY: contract-check
+contract-check: ## Verify the reviewed contract and the browser JSON boundary
+	python3 pipelines/live/tools/contract_lock.py
+	cd web && yarn test:contract
 
 schemas-export: ## Export schemapb schemas (protoJSON + TS types) into web/src/schemas
 	cd pipelines && go run ./cmd/schemas-export -out ../web/src/schemas

@@ -58,4 +58,3 @@ export interface CfgCockroachFlags24 {
   /** Rendered 25.x/26.x flags. Empty on 24.x: those flags are modeled from @25 on. */
   readonly modern_flags?: string;
 }
-

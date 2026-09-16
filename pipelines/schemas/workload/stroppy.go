@@ -77,17 +77,12 @@ func Stroppy() *schemapb.Schema {
 				schemapb.Int64("bulk_size").Title("Bulk size").Unit("rows").
 					Desc("Rows per bulk INSERT statement (bulkSize).").
 					Gte(1).Lte(1000000).Default(2500),
-				schemapb.Object("pool",
-					schemapb.Int64("max_conns").Title("Max connections").
-						Desc("pool.maxConns; should cover the VUs of the busiest segment.").Gte(1).Lte(65535).Nullable(),
-					schemapb.Int64("min_conns").Title("Min connections").
-						Desc("pool.minConns; warm connections opened up front.").Gte(0).Lte(65535).Nullable(),
-					schemapb.Duration("max_conn_lifetime").Title("Max connection lifetime").
-						Desc("pool.maxConnLifetime.").Gt(0).Lte(24*time.Hour).Nullable(),
-					schemapb.Duration("max_conn_idle_time").Title("Max idle time").
-						Desc("pool.maxConnIdleTime.").Gt(0).Lte(24*time.Hour).Nullable(),
-				).Title("Connection pool").Desc("pool.* sugar mapped onto the driver's own pool config.").Strict(),
+				driverPool("pool", "Connection pool", poolFields()...),
+				driverPool("postgres", "PostgreSQL driver", postgresFields()...),
+				driverPool("sql", "SQL driver", sqlFields()...),
+
 				schemapb.Object("insert_progress",
+					schemapb.Bool("enabled").Title("Enabled").Desc("Explicit insertProgress.enabled override; unset uses the mode.").Nullable(),
 					schemapb.Choice("mode").Title("Mode").
 						Desc("insertProgress.mode: where load progress goes.").
 						Opt(schemapb.StrV("off"), "Off").
@@ -127,7 +122,7 @@ func Stroppy() *schemapb.Schema {
 						Opt(schemapb.StrV("describe_exec"), "Describe then exec").
 						Opt(schemapb.StrV("exec"), "Exec (no cache)").
 						Opt(schemapb.StrV("simple_protocol"), "Simple protocol").
-						Default(schemapb.StrV("cache_statement")),
+						Nullable(),
 				).
 				Variant("mysql",
 					// doc: github.com/go-sql-driver/mysql#tls
@@ -165,7 +160,7 @@ func Stroppy() *schemapb.Schema {
 						Opt(schemapb.StrV("cache_statement"), "Cache prepared statements").
 						Opt(schemapb.StrV("cache_describe"), "Cache statement descriptions").
 						Opt(schemapb.StrV("describe_exec"), "Describe then exec").
-						Default(schemapb.StrV("exec")),
+						Nullable(),
 				).
 				Variant("cockroach",
 					// doc: cockroachlabs.com/docs/stable/connection-parameters
@@ -203,6 +198,9 @@ func Stroppy() *schemapb.Schema {
 				Desc("Machine self-check with `stroppy baseline`; its JSON report lands in the run result.").Strict(),
 		).
 		Rules(
+			schemapb.Rule(`root.protocol in ["pg", "mysql", "cockroach", "noop"] || root.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, MySQL, CockroachDB or noop").ID("stored-procedure-protocol"),
+			schemapb.Rule(`!(root.protocol in ["ydb_grpc", "ydb_grpcs"]) || root.segments.all(s, s.workload.script != "tpcds" || ((! ("query_stream" in s.workload) || s.workload.query_stream == null) && (!("streams" in s.workload) || s.workload.streams == 1)))`, "YDB TPC-DS supports the baked query set only").ID("tpcds-ydb-baked"),
+			schemapb.Rule(`root.protocol != "picodata" || root.segments.all(s, s.workload.script != "tpcds" || ("no_steps" in s && "workload" in s.no_steps) || ("steps" in s && size(s.steps) > 0 && !("workload" in s.steps)))`, "Picodata TPC-DS supports loading only; exclude the workload step").ID("tpcds-picodata-load-only"),
 			schemapb.Rule(
 				`!("connection" in root) || !("protocol" in root) || `+
 					`root.connection.kind == (root.protocol.startsWith("ydb") ? "ydb" : root.protocol)`,

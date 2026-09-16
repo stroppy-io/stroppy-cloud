@@ -5,11 +5,14 @@
 package spec
 
 import (
+	"strings"
 	"time"
 
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/provider"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
 )
 
 // namePattern is a DNS-ish identifier used for machines, containers and roles.
@@ -33,6 +36,11 @@ func Run() *schemapb.Schema {
 	return schemapb.NewSchema(ids.Spec("run", 1)).
 		Descr("RunSpec: the resolved description of one benchmark run handed to stroppy-run.").
 		Strict().Coerce().
+		DefSchema("segment", workload.Segment()).
+		DefSchema("driver", workload.NativeDriver()).
+		DefSchema("baseline", workload.Baseline()).
+		DefSchema("yandex_settings", runProviderSettings(provider.YandexSettings())).
+		DefSchema("aws_settings", runProviderSettings(provider.AwsSettings())).
 		Fields(
 			schemapb.Str("run_id").Title("Run id").Group("Identity").
 				Desc("Run id minted by the server; also the Graphene run id.").
@@ -41,26 +49,10 @@ func Run() *schemapb.Schema {
 				Desc("Tenant slug; the Graphene namespace is t-<tenant>.").
 				Pattern(namePattern).Required(),
 
-			schemapb.Object("provider",
-				schemapb.Choice("kind").Title("Provider").
-					Desc("Cloud the run is created in.").
-					Opt(schemapb.StrV("yandex"), "Yandex Cloud").
-					Opt(schemapb.StrV("aws"), "AWS").
-					Required(),
-				schemapb.JSON("settings").Title("Settings").
-					Desc("Baked provider.<kind>.settings value; non-secret placement settings.").
-					Required(),
-				schemapb.Str("credentials_secret").Title("Credentials secret").
-					Desc("Name of the Graphene secret holding the provider credentials — never the value.").
-					Pattern(secretNamePattern).Required(),
-				schemapb.Str("provider_config_name").Title("ProviderConfig").
-					Desc("Crossplane ProviderConfig the managed resources reference (t-<tenant>).").
-					Pattern(namePattern).Required(),
-				schemapb.Str("registry_secret").Title("Registry secret").
-					Desc("Name of the Graphene secret with a private docker registry login, when images need one.").
-					Pattern(secretNamePattern),
-			).Title("Provider").Group("Provider").
-				Desc("Where the run is created and with which credentials.").Strict().Required(),
+			schemapb.OneOf("provider", "kind").Title("Provider").Group("Provider").
+				Desc("Cloud placement and named credentials; settings use the existing provider schemas.").Required().
+				Variant("yandex", providerFields("yandex_settings")...).
+				Variant("aws", providerFields("aws_settings")...),
 
 			schemapb.Object("network",
 				schemapb.Str("cidr").Title("CIDR").
@@ -107,13 +99,24 @@ func Run() *schemapb.Schema {
 						Pattern(rolePattern).Required(),
 					schemapb.Int64("cpu").Title("vCPU").Gte(1).Lte(288).Required(),
 					schemapb.Int64("memory_gb").Title("Memory").Unit("GB").Gte(1).Lte(4096).Required(),
+					schemapb.Object("boot_disk",
+						diskBlockSize(),
+						schemapb.Int64("gb").Title("Size").Group("Storage").Desc("OS disk size in GiB; must fit the selected image.").Unit("GiB").Gte(10).Lte(262144).Required(),
+						schemapb.Str("type").Title("Type").Group("Storage").Desc("Cloud disk type.").Pattern(`^[a-z0-9][a-z0-9-]{0,31}$`).Required(),
+					).Title("Boot disk").Group("Storage").Desc("Omit for a 40 GiB SSD OS disk.").Strict(),
+					schemapb.Int64("core_fraction").Title("Guaranteed CPU").Group("Compute").Desc("YC guaranteed CPU percentage; omission means 100. Unsupported on AWS.").Unit("%").Gte(5).Lte(100),
+					schemapb.Bool("preemptible").Title("Preemptible").Group("Compute").Desc("Override the provider profile's preemptible/spot setting; explicit false is preserved."),
+					schemapb.Bool("public_ip").Title("Public IP").Group("Network").Desc("Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls."),
 					schemapb.List("disks",
 						schemapb.Object("",
+							diskBlockSize(),
 							schemapb.Str("name").Title("Device name").Pattern(namePattern).Required(),
 							schemapb.Int64("gb").Title("Size").Unit("GB").Gte(1).Lte(262144).Required(),
 							schemapb.Str("type").Title("Disk type").
 								Desc("Provider disk type id, e.g. network-ssd (yandex) or gp3 (aws).").
 								Pattern(`^[a-z0-9][a-z0-9-]{0,31}$`).Required(),
+							schemapb.Choice("filesystem").Title("Filesystem").Group("Storage").Desc("Automatic filesystem for mounted YC disks; omit for ext4. No mount means a raw block device.").Opt(schemapb.StrV("ext4"), "ext4").Opt(schemapb.StrV("xfs"), "XFS"),
+							schemapb.List("mount_options", schemapb.Str("").Pattern(`^[A-Za-z0-9_=.-]+$`).MaxLen(128)).Title("Mount options").Group("Storage").Desc("mount/fstab options, e.g. noatime; omission uses defaults.").MaxItems(32),
 							schemapb.Str("mount").Title("Mount point").
 								Desc("Absolute path host_prep mounts the disk at; empty leaves it raw.").
 								Pattern(`^/[A-Za-z0-9._/-]*$`),
@@ -157,8 +160,8 @@ func Run() *schemapb.Schema {
 					schemapb.List("ports",
 						schemapb.Object("",
 							schemapb.Int64("container").Title("Container port").Gte(1).Lte(65535).Required(),
-							schemapb.Int64("host").Title("Host port").Gte(1).Lte(65535).Required(),
-						).Strict(),
+							schemapb.Int64("host").Title("Host port").Desc("Host-network port; remapping is not supported.").Gte(1).Lte(65535).Required(),
+						).Strict().Rule(schemapb.Rule(`this.host == this.container`, "host networking requires equal host and container ports").ID("host-network-ports")),
 					).Title("Ports").MaxItems(32),
 					schemapb.List("mounts",
 						schemapb.Object("",
@@ -216,6 +219,7 @@ func Run() *schemapb.Schema {
 			schemapb.List("host_prep",
 				schemapb.Object("",
 					schemapb.Str("role").Title("Role").Pattern(rolePattern).Required(),
+					schemapb.Str("machine").Title("Machine").Group("Machines").Desc("Optional exact machine in this role; omission selects the whole role.").Pattern(namePattern),
 					schemapb.Choice("kind").Title("Kind").
 						Desc("What the step does before any container starts.").
 						Opt(schemapb.StrV("sysctl"), "Kernel parameters").
@@ -227,8 +231,8 @@ func Run() *schemapb.Schema {
 						MinLen(1).MaxLen(1<<16).Required(),
 				).Strict(),
 			).Title("Host preparation").Group("Machines").
-				Desc("Rare pre-deploy steps run on the machine itself (machine.Command).").
-				MaxItems(32),
+				Desc("Pre-deploy steps, including automatic per-disk preparation, run on the machine itself.").
+				MaxItems(2048),
 
 			schemapb.List("scrapes",
 				schemapb.Object("",
@@ -237,7 +241,7 @@ func Run() *schemapb.Schema {
 						Desc("Metrics endpoint on the machine, e.g. http://127.0.0.1:9187/metrics.").
 						MinLen(1).MaxLen(512).Required(),
 					schemapb.Str("job").Title("Job").
-						Desc("Prometheus job label the samples land under.").
+						Desc("Name of the container to attach this scrape to; role must match its role.").
 						Pattern(rolePattern).Required(),
 				).Strict(),
 			).Title("Scrapes").Group("Observability").
@@ -267,7 +271,7 @@ func Run() *schemapb.Schema {
 					"a flow targets exactly one of to_role or external",
 				).ID("flow-target-xor")),
 			).Title("Flows").Group("Network").
-				Desc("Allowed traffic between roles; drives security groups and the topology view.").
+				Desc("Traffic relationships for the topology view; cloud security groups allow intra-network traffic and use network.ingress for extra openings.").
 				MaxItems(128),
 
 			// The compiled form of workload.stroppy@1: the server resolves the
@@ -293,13 +297,13 @@ func Run() *schemapb.Schema {
 				schemapb.Str("url").Title("Connection URL").
 					Desc("drivers.0.url; may carry ${ip:...} placeholders the pipeline expands after provisioning.").
 					MinLen(1).MaxLen(2048).Required(),
-				schemapb.JSON("driver").Title("Driver options").
+				schemapb.Ref("driver", "driver").Title("Driver options").
 					Desc("Remaining drivers.0 keys of stroppy-config.json (bulkSize, pool, insertProgress, caCertFile, authToken…), already in stroppy's lowerCamel form."),
-				schemapb.List("segments", schemapb.JSON("")).
+				schemapb.List("segments", schemapb.Ref("", "segment")).
 					Title("Segments").
-					Desc("Baked workload.segment@1 values in order; opaque to the pipeline beyond the fields it interprets.").
+					Desc("Ordered workload.segment@1 values; validated with the same schema as library workloads.").
 					MinItems(1).MaxItems(64).Required(),
-				schemapb.JSON("baseline").Title("Baseline").
+				schemapb.Ref("baseline", "baseline").Title("Baseline").
 					Desc("Baked workload.stroppy@1 baseline object; absent or disabled = no machine self-check."),
 				schemapb.Str("ydb_iam_credentials_secret").Title("YDB credentials reference").Group("Workload").
 					Desc("Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact.").Pattern(secretNamePattern),
@@ -331,45 +335,63 @@ func Run() *schemapb.Schema {
 				MaxItems(64).Unique(),
 		).
 		Rules(
-			schemapb.Rule(`!("managed_ydb" in root) || "ydb_iam_credentials_secret" in root.workload`, "managed YDB requires named IAM credentials").ID("managed-ydb-iam"),
-			schemapb.Rule(`!("managed_ydb" in root) || root.managed_ydb.type != "dedicated" || ["zones", "resource_preset_id", "node_count", "storage_groups", "storage_type"].all(k, k in root.managed_ydb)`, "dedicated YDB requires placement, compute and storage fields").ID("managed-ydb-dedicated"),
-			schemapb.Rule(`!("managed_ydb" in root) || root.managed_ydb.type != "serverless" || "storage_size_limit_gb" in root.managed_ydb`, "serverless YDB requires a storage limit").ID("managed-ydb-serverless"),
-			schemapb.Rule(`!("managed_ydb" in root) || (root.provider.kind == "yandex" && root.workload.driver_type == "ydb")`, "managed YDB requires YC and the YDB driver").ID("managed-ydb-provider"),
-			schemapb.Rule(`!("ydb_iam_credentials_secret" in root.workload) || root.workload.driver_type == "ydb"`, "IAM credentials only apply to YDB").ID("ydb-iam-driver"),
-			schemapb.Rule(
+			runRule(`root.workload.driver_type in ["postgres", "mysql", "noop"] || root.workload.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, MySQL or noop driver").ID("stored-procedure-driver"),
+			runRule(`root.workload.driver_type != "ydb" || root.workload.segments.all(s, s.workload.script != "tpcds" || ((! ("query_stream" in s.workload) || s.workload.query_stream == null) && (!("streams" in s.workload) || s.workload.streams == 1)))`, "YDB TPC-DS supports the baked query set only").ID("tpcds-ydb-baked"),
+			runRule(`root.workload.driver_type != "picodata" || root.workload.segments.all(s, s.workload.script != "tpcds" || ("no_steps" in s && "workload" in s.no_steps) || ("steps" in s && size(s.steps) > 0 && !("workload" in s.steps)))`, "Picodata TPC-DS supports loading only; exclude the workload step").ID("tpcds-picodata-load-only"),
+			runRule(`!("driver" in root.workload) || !("caCertFile" in root.workload.driver) || !("ca_cert" in root.workload)`, "choose a CA file or inline CA certificate").ID("ca-source"),
+			runRule(`!("scrapes" in root) || root.scrapes.all(s, "containers" in root && root.containers.exists(c, c.name == s.job && c.role == s.role))`, "each scrape must target a container by role and job=name").ID("scrape-container-exists"),
+			runRule(`!("scrapes" in root) || root.scrapes.all(s, root.scrapes.filter(x, x.job == s.job && x.role == s.role).size() == 1)`, "scrape targets must be unique").ID("scrape-targets-unique"),
+			runRule(`!("containers" in root) || root.containers.all(c, !("scrape" in c) || "scrape_port" in c || ("ports" in c && size(c.ports) > 0))`, "a container scrape path requires a metrics port").ID("scrape-port-required"),
+			runRule(`!("containers" in root) || root.containers.all(c, !("depends_on" in c) || c.depends_on.all(d, d != c.name && d in root.containers.map(x, x.name)))`, "container dependencies must name other declared containers").ID("container-dependencies-exist"),
+			runRule(`!("managed_ydb" in root) || "ydb_iam_credentials_secret" in root.workload`, "managed YDB requires named IAM credentials").ID("managed-ydb-iam"),
+			runRule(`!("managed_ydb" in root) || root.managed_ydb.type != "dedicated" || ["zones", "resource_preset_id", "node_count", "storage_groups", "storage_type"].all(k, k in root.managed_ydb)`, "dedicated YDB requires placement, compute and storage fields").ID("managed-ydb-dedicated"),
+			runRule(`!("managed_ydb" in root) || root.managed_ydb.type != "serverless" || "storage_size_limit_gb" in root.managed_ydb`, "serverless YDB requires a storage limit").ID("managed-ydb-serverless"),
+			runRule(`!("managed_ydb" in root) || (root.provider.kind == "yandex" && root.workload.driver_type == "ydb")`, "managed YDB requires YC and the YDB driver").ID("managed-ydb-provider"),
+			runRule(`!("ydb_iam_credentials_secret" in root.workload) || root.workload.driver_type == "ydb"`, "IAM credentials only apply to YDB").ID("ydb-iam-driver"),
+			runRule(
 				`!("machines" in root) || root.machines.all(m, root.machines.filter(x, x.name == m.name).size() == 1)`,
 				"machine names must be unique",
 			).ID("machine-names-unique"),
-			schemapb.Rule(
+			runRule(
 				`!("containers" in root) || root.containers.all(c, `+
 					`root.containers.filter(x, x.name == c.name).size() == 1)`,
 				"container names must be unique",
 			).ID("container-names-unique"),
-			schemapb.Rule(
+			runRule(
 				`!("machines" in root) || !("containers" in root) || root.containers.all(c, c.machine in root.machines.map(m, m.name))`,
 				"every container must land on a declared machine",
 			).ID("container-machine-exists"),
-			schemapb.Rule(
+			runRule(
 				`!("machines" in root) || !("flows" in root) || root.flows.all(f, f.from_role in root.machines.map(m, m.role))`,
 				"flow from_role must be a role of a declared machine",
 			).ID("flow-from-role-exists"),
-			schemapb.Rule(
+			runRule(
 				`!("machines" in root) || !("flows" in root) || root.flows.all(f, `+
 					`!("to_role" in f) || f.to_role in root.machines.map(m, m.role))`,
 				"flow to_role must be a role of a declared machine",
 			).ID("flow-to-role-exists"),
-			schemapb.Rule(
+			runRule(
 				`!("machines" in root) || !("scrapes" in root) || root.scrapes.all(s, s.role in root.machines.map(m, m.role))`,
 				"scrape role must be a role of a declared machine",
 			).ID("scrape-role-exists"),
-			schemapb.Rule(
+			runRule(
 				`!("machines" in root) || !("host_prep" in root) || root.host_prep.all(h, h.role in root.machines.map(m, m.role))`,
 				"host_prep role must be a role of a declared machine",
 			).ID("host-prep-role-exists"),
-			schemapb.Rule(
-				`!("machines" in root) || !("workload" in root) || root.workload.runner_role in root.machines.map(m, m.role)`,
-				"the workload runner role must be a role of a declared machine",
+			runRule(
+				`!("machines" in root) || !("workload" in root) || root.machines.filter(m, m.role == root.workload.runner_role).size() == 1`,
+				"the workload requires exactly one runner machine; distributed runners are not implemented",
 			).ID("runner-role-exists"),
 		).
 		MustBuild()
+}
+
+// Run can be validated as a root or as a suite cell.
+func runRule(expr, message string) *schemapb.RuleB {
+	return schemapb.Rule("[this == null ? root : this].all(r, "+strings.ReplaceAll(expr, "root", "r")+")", message)
+}
+
+// doc: https://yandex.cloud/en/docs/compute/concepts/disk#maximum-disk-size
+func diskBlockSize() schemapb.FieldDef {
+	return schemapb.Int64("block_size").Title("Physical block size").Group("Storage").Desc("YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.").Unit("bytes").Gte(4096).Lte(131072)
 }

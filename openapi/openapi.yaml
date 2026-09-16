@@ -3,6 +3,7 @@ openapi: 3.1.0
 info:
   title: Stroppy Cloud API
   version: 1.0.0
+  x-pipeline-contract-version: 1.0.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -4609,7 +4610,8 @@ components:
           $ref: '#/components/schemas/ValidationResult'
     ValidationResult:
       type: object
-      description: schemapb `ValidationResult` in protoJSON.
+      description: Schema and execution diagnostics. Warnings are nonblocking; branch on code and severity,
+        never message.
       properties:
         errors:
           type: array
@@ -4621,6 +4623,8 @@ components:
       - path
       - code
       properties:
+        scope:
+          $ref: '#/components/schemas/ValidationScope'
         path:
           type: string
           example: params.replicas
@@ -4640,6 +4644,13 @@ components:
           type: string
         expected: {}
         actual: {}
+    ValidationScope:
+      type: string
+      enum:
+      - input
+      - run_spec
+      description: Path refers to the submitted form (input, also the default if absent) or the compiled
+        RunSpec (run_spec).
     SchemaValue:
       type: object
       description: 'A schemapb value (plain JSON object). The concrete schema is named by
@@ -4647,6 +4658,10 @@ components:
         the enclosing property''s `x-schema`; validate via
 
         `/catalog/schemas/{id}:validate`.
+
+        Integers outside the JavaScript safe range are returned as exact decimal
+
+        strings. Send these strings back unchanged; never convert them to Number.
 
         '
       additionalProperties: true
@@ -4829,6 +4844,11 @@ components:
         properties:
           size:
             $ref: '#/components/schemas/Size'
+          machine:
+            allOf:
+            - $ref: '#/components/schemas/SchemaValue'
+            x-schema: test.machine@1
+            description: Explicit VM settings over the selected preset.
           disk:
             type: object
             properties:
@@ -4854,6 +4874,8 @@ components:
             - code
             - severity
             properties:
+              scope:
+                $ref: '#/components/schemas/ValidationScope'
               path:
                 type: string
               code:
@@ -6202,6 +6224,11 @@ components:
       - version
       - params
       properties:
+        runtime:
+          allOf:
+          - $ref: '#/components/schemas/SchemaValue'
+          x-schema: test.runtime@1
+          description: Advanced deployment overrides, including complete config file content.
         kind:
           $ref: '#/components/schemas/DatabaseKind'
         version:
@@ -6273,6 +6300,10 @@ components:
       - $ref: '#/components/schemas/EntityPatch'
       - type: object
         properties:
+          runtime:
+            allOf:
+            - $ref: '#/components/schemas/SchemaValue'
+            x-schema: test.runtime@1
           version:
             type: string
           image:
@@ -6474,6 +6505,11 @@ components:
     TestSpec:
       type: object
       properties:
+        execution:
+          allOf:
+          - $ref: '#/components/schemas/SchemaValue'
+          x-schema: test.runtime@1
+          description: Final deployment overrides applied after database defaults.
         database:
           oneOf:
           - type: object
@@ -6895,6 +6931,11 @@ components:
       - sizes
       - provider_profile
       properties:
+        execution:
+          allOf:
+          - $ref: '#/components/schemas/SchemaValue'
+          x-schema: test.runtime@1
+          description: Frozen final deployment overrides used for replay.
         database:
           $ref: '#/components/schemas/DatabaseSpec'
         database_name:
@@ -6974,6 +7015,18 @@ components:
               finished_at:
                 type: string
                 format: date-time
+              exit_code:
+                type: integer
+                description: Native Stroppy process exit code
+                including zero.: null
+              error:
+                type: string
+                description: Segment failure diagnostic.
+              errors:
+                $ref: '#/components/schemas/RunSegmentErrors'
+              compliance:
+                description: Native workload compliance report
+                preserved without interpreting its fields.: null
               metrics:
                 type: object
                 additionalProperties:
@@ -6983,6 +7036,73 @@ components:
           items:
             type: string
             description: artifact/<id>
+        baseline:
+          $ref: '#/components/schemas/RunBaselineResult'
+        summary:
+          $ref: '#/components/schemas/PipelineSummary'
+    RunSegmentErrors:
+      type: object
+      required:
+      - terminal_errors
+      - failed_iterations
+      - failed_queries
+      - retry_attempts
+      properties:
+        terminal_errors:
+          type: integer
+          format: int64
+        failed_iterations:
+          type: integer
+          format: int64
+        failed_queries:
+          type: integer
+          format: int64
+        retry_attempts:
+          type: integer
+          format: int64
+    RunBaselineResult:
+      type: object
+      required:
+      - ok
+      properties:
+        ok:
+          type: boolean
+        verdicts:
+          type: array
+          items:
+            type: object
+            required:
+            - check
+            - status
+            properties:
+              check:
+                type: string
+              status:
+                type: string
+              detail:
+                type: string
+        report:
+          description: Complete native machine baseline report.
+        error:
+          type: string
+    PipelineSummary:
+      type: object
+      description: Native pipeline headline; absent throughput is not zero throughput. Other workload
+        metrics remain in metrics.
+      properties:
+        tps:
+          type: number
+        latency_p50_ms:
+          type: number
+        latency_p95_ms:
+          type: number
+        latency_p99_ms:
+          type: number
+        errors:
+          type: integer
+          format: int64
+        duration:
+          type: string
     MetricValue:
       type: object
       required:

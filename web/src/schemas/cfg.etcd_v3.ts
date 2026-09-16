@@ -44,4 +44,3 @@ export interface CfgEtcd3 {
   /** Rendered extra keys. The `custom` map joined into YAML lines appended at the end of the file. */
   readonly custom_rendered?: string;
 }
-

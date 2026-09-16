@@ -1,6 +1,17 @@
 // GENERATED from schemapb schema workload.segment@1 — do not edit.
 // One stroppy load segment: workload, typed parameters, scenario, steps and files.
 
+/** variant baseline of workload */
+export interface WorkloadSegment1WorkloadBaseline {
+  script: "baseline";
+  /** Load workers. Workers used to load each table (loadWorkers). */
+  load_workers?: number | string;
+  /** Rows. Rows loaded into the baseline probe table (rows). */
+  rows?: number | string;
+  /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
+  tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
+}
+
 /** variant execute_sql of workload */
 export interface WorkloadSegment1WorkloadExecuteSql {
   script: "execute_sql";
@@ -102,8 +113,8 @@ export interface WorkloadSegment1WorkloadTpcds {
   pg_unlogged?: boolean;
   /** Query streams. Number of query streams (streams). */
   streams?: number | string;
-  /** Query stream. Which query stream to generate (queryStream). */
-  query_stream?: number | string;
+  /** Query stream. Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0. */
+  query_stream?: number | string | null;
   /** Query seed. Query generator seed (querySeed). */
   query_seed?: number | string;
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
@@ -153,7 +164,7 @@ export interface WorkloadSegment1Item {
   kind?: "sql" | "conf" | "data";
   /** Content. Inline file body, at most 1 MiB. */
   content?: string;
-  /** Reference. Artifact/object reference to fetch instead of inline content. */
+  /** Reference. Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner. */
   ref?: string;
 }
 
@@ -170,7 +181,7 @@ export interface WorkloadSegment1 {
   /** Name. Segment id inside the workload; used as the phase label of the run and as a metric label. */
   name: string;
   /** Workload. Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`. */
-  workload: WorkloadSegment1WorkloadExecuteSql | WorkloadSegment1WorkloadSimple | WorkloadSegment1WorkloadTpcbProcs | WorkloadSegment1WorkloadTpcbTx | WorkloadSegment1WorkloadTpccProcs | WorkloadSegment1WorkloadTpccTx | WorkloadSegment1WorkloadTpcds | WorkloadSegment1WorkloadTpchTx;
+  workload: WorkloadSegment1WorkloadBaseline | WorkloadSegment1WorkloadExecuteSql | WorkloadSegment1WorkloadSimple | WorkloadSegment1WorkloadTpcbProcs | WorkloadSegment1WorkloadTpcbTx | WorkloadSegment1WorkloadTpccProcs | WorkloadSegment1WorkloadTpccTx | WorkloadSegment1WorkloadTpcds | WorkloadSegment1WorkloadTpchTx;
   /** Scenario. Load shape of the segment. */
   run: WorkloadSegment1Run;
   /** Only these steps. Run only the listed stroppy steps (--steps); empty = all steps. */
@@ -183,9 +194,12 @@ export interface WorkloadSegment1 {
   files?: Array<WorkloadSegment1Item>;
   /** Thresholds. Pass/fail bounds the pipeline applies to the segment summary. */
   thresholds?: WorkloadSegment1Thresholds;
+  /** Random seed. Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible. */
+  seed?: number | string | null;
+  /** Segment timeout. Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations. */
+  timeout?: string | null;
   /** Warm-up. Idle wait before the segment starts, letting caches and replicas settle. */
   warmup?: string;
   /** Log level. Minimum stroppy log level (--log-level); debug traces parameter resolution. */
   log_level?: "debug" | "info" | "warn" | "error";
 }
-

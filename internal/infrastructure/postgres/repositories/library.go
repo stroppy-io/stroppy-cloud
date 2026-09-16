@@ -69,7 +69,7 @@ func (r *LibraryRepo) InsertDatabase(ctx context.Context, d library.Database) er
 	external, _ := json.Marshal(map[string]string{"dsn": d.Spec.ExternalDSN}) //nolint:errcheck // map always marshals
 	err := r.q.InsertDatabase(ctx, db.InsertDatabaseParams{
 		ID: d.ID, TenantID: d.TenantID, Name: d.Name, Description: d.Description, Tags: tagsJSON(d.Tags), AuthorID: d.AuthorID,
-		Kind: string(d.Spec.Kind), Version: d.Spec.Version, Image: d.Spec.Image, Params: orEmpty(d.Spec.Params), Configs: orEmpty(configs), External: external,
+		Kind: string(d.Spec.Kind), Version: d.Spec.Version, Image: d.Spec.Image, Params: orEmpty(d.Spec.Params), Configs: orEmpty(configs), External: external, Runtime: orEmpty(d.Spec.Runtime),
 	})
 	if err != nil {
 		if isUnique(err) {
@@ -115,6 +115,7 @@ func (r *LibraryRepo) UpdateDatabase(ctx context.Context, id uuid.UUID, p librar
 	if spec != nil {
 		params.Version, params.Image = &spec.Version, &spec.Image
 		params.Params = orEmpty(spec.Params)
+		params.Runtime = orEmpty(spec.Runtime)
 		configs, _ := json.Marshal(spec.Configs) //nolint:errcheck // map always marshals
 		params.Configs = orEmpty(configs)
 	}
@@ -165,7 +166,7 @@ func (r *LibraryRepo) InlineDatabase(ctx context.Context, id uuid.UUID, spec lib
 func databaseOf(row db.DatabaseByIDRow) library.Database {
 	d := library.Database{
 		Entity: entityOf(row.ID, row.TenantID, row.Name, row.Description, row.Tags, row.AuthorID, row.CreatedAt, row.UpdatedAt),
-		Spec:   library.DatabaseSpec{Kind: libraryKind(row.Kind), Version: row.Version, Image: row.Image, Params: row.Params},
+		Spec:   library.DatabaseSpec{Runtime: row.Runtime, Kind: libraryKind(row.Kind), Version: row.Version, Image: row.Image, Params: row.Params},
 	}
 	_ = json.Unmarshal(row.Configs, &d.Spec.Configs) //nolint:errcheck // stored by us
 	var ext struct {
@@ -299,7 +300,7 @@ func (r *LibraryRepo) InsertTest(ctx context.Context, t library.Test) error {
 		ID: t.ID, TenantID: t.TenantID, Name: t.Name, Description: t.Description, Tags: tagsJSON(t.Tags), AuthorID: t.AuthorID,
 		DatabaseID: t.Spec.DatabaseRef, DatabaseInline: specJSON(t.Spec.DatabaseInline),
 		WorkloadID: t.Spec.WorkloadRef, WorkloadInline: specJSON(t.Spec.WorkloadInline),
-		Sizes: orEmpty(sizes), ProviderProfileID: t.Spec.ProviderProfileID, Keep: keepText(t.Spec.Keep),
+		Sizes: orEmpty(sizes), Execution: orEmpty(t.Spec.Execution), ProviderProfileID: t.Spec.ProviderProfileID, Keep: keepText(t.Spec.Keep),
 		RatingTenant: t.Spec.RatingTenant, RatingGlobal: t.Spec.RatingGlobal, Status: string(t.Status), ValidatedAt: t.ValidatedAt,
 	})
 	if err != nil {
@@ -369,7 +370,7 @@ func (r *LibraryRepo) UpdateTest(ctx context.Context, t library.Test, p library.
 		SetDatabase: &p.SetDatabase, DatabaseID: p.DatabaseRef, DatabaseInline: specJSON(p.DatabaseInline),
 		SetWorkload: &p.SetWorkload, WorkloadID: p.WorkloadRef, WorkloadInline: specJSON(p.WorkloadInline),
 		SetProvider: &p.SetProvider, ProviderProfileID: p.ProviderProfileID,
-		RatingTenant: p.RatingTenant, RatingGlobal: p.RatingGlobal,
+		RatingTenant: p.RatingTenant, RatingGlobal: p.RatingGlobal, Execution: p.Execution,
 	}
 	if p.Tags != nil {
 		params.Tags = tagsJSON(p.Tags)
@@ -416,6 +417,7 @@ func testOf(row db.TestByIDRow) library.Test {
 	t := library.Test{
 		Entity: entityOf(row.ID, row.TenantID, row.Name, row.Description, row.Tags, row.AuthorID, row.CreatedAt, row.UpdatedAt),
 		Spec: library.TestSpec{
+			Execution:   row.Execution,
 			DatabaseRef: row.DatabaseID, WorkloadRef: row.WorkloadID, ProviderProfileID: row.ProviderProfileID,
 			RatingTenant: row.RatingTenant, RatingGlobal: row.RatingGlobal, Sizes: map[string]library.RoleSize{},
 		},

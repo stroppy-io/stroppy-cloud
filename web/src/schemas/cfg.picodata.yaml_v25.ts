@@ -88,4 +88,3 @@ export interface CfgPicodataYaml25 {
   /** Rendered the pg advertise address. */
   readonly pg_advertise_line?: string;
 }
-

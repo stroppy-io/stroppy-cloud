@@ -30,4 +30,3 @@ export interface CfgHostDisks1 {
   /** Provisioning script. Derived: the shell fragment that prepares every disk. */
   readonly script?: string;
 }
-

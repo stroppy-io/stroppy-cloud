@@ -27,7 +27,7 @@ func baseRun() map[string]any {
 		"tenant": "acme",
 		"provider": map[string]any{
 			"kind":                 "yandex",
-			"settings":             map[string]any{"folder_id": "b1gia87mbaomkfvsleds"},
+			"settings":             map[string]any{"cloud_id": "b1glku4lgd6gabcdefgh", "folder_id": "b1gia87mbaomkfvsleds", "network": map[string]any{"kind": "create"}},
 			"credentials_secret":   "yc-sa-key",
 			"provider_config_name": "t-acme",
 		},
@@ -39,7 +39,7 @@ func baseRun() map[string]any {
 			"driver_type":   "postgres",
 			"url":           "postgres://u:p@${ip:role:db}:5432/db",
 			"driver":        map[string]any{"bulkSize": int64(5000)},
-			"segments":      []any{map[string]any{"name": "load", "workload": map[string]any{"script": "simple"}}},
+			"segments":      []any{map[string]any{"name": "load", "workload": map[string]any{"script": "simple"}, "run": map[string]any{"executor": "shared-iterations", "iterations": int64(1)}}},
 			"baseline":      map[string]any{"enabled": true, "tiers": []any{"noop"}},
 		},
 	}

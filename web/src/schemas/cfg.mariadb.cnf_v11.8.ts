@@ -156,4 +156,3 @@ export interface CfgMariadbCnf11_8 {
   /** Rendered extra settings. The `custom` map joined into config lines; the template prints it at the end of the file. */
   readonly custom_rendered?: string;
 }
-

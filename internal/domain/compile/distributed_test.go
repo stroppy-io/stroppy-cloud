@@ -7,11 +7,12 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+	"gopkg.in/yaml.v3"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
-	"gopkg.in/yaml.v3"
 )
 
 func TestDistributedCatalogRuntimeContracts(t *testing.T) {
@@ -46,7 +47,7 @@ func TestDistributedCatalogRuntimeContracts(t *testing.T) {
 					for _, node := range derived.Plan.Nodes {
 						sizes[node.Role] = library.RoleSize{Size: "S"}
 					}
-					out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: database, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: workload, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+					out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: database, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: workload, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat})
 					if err != nil {
 						t.Fatal(err)
 					}

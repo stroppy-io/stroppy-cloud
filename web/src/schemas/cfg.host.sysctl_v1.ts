@@ -48,4 +48,3 @@ export interface CfgHostSysctl1 {
   /** Rendered custom lines. Derived: the custom map as sysctl.conf lines. */
   readonly custom_lines?: string;
 }
-

@@ -1,0 +1,14 @@
+{
+  "source_layout": "flat live directory at git a869859f2df320191e5b91b374b1a99e6f29124f",
+  "original_files": 868,
+  "preserved_files": 867,
+  "byte_identical_files": 864,
+  "legacy_csv_preserved_as": "legacy-progress.json",
+  "legacy_rows": 253,
+  "cases": 270,
+  "draft_cases": 17,
+  "csv_columns": 16,
+  "historical_tools": 232,
+  "normalized_case_inputs": 16,
+  "cloud_actions_performed": false
+}

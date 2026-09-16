@@ -59,7 +59,8 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   и read-only SELECT 1. Readiness ограничена пятью минутами, не входит в нагрузку;
   её конфиг и журнал попыток сохраняются отдельными артефактами с общим retention.
 - Сегменты workload — последовательно, `AtMostOnce`, таймаут
-  `duration*1.5 + warmup + 30m`.
+  `duration*1.5 + warmup + 30m` по умолчанию; явный segment.timeout
+  задаёт deadline activity после отдельного idle wait warmup.
 - `Keep` → `ToStand(infra.Root, KeepFor)` после результата; иначе cleanup
   interceptor Graphene сносит всё каскадом от root-сети.
 - Загруженные артефакты перед возвратом результата передаются stand:
@@ -82,8 +83,8 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   Live bootstrap использует постоянный token Secret `graphene/stroppy-live-api-token`
   существующей SA `stroppy-live`. Повторная настройка повторно использует этот
   токен; `--sync-token-only` (старый алиас `--refresh-token-only`) не выдаёт
-  восьмичасовой токен и не меняет RBAC. Конфигурация и проверка — `live/bootstrap.py`,
-  `live/bootstrap-token.yaml`, `live/persistent-kubeconfig-check.json`.
+  восьмичасовой токен и не меняет RBAC. Конфигурация и проверка — `live/tools/bootstrap.py`,
+  `live/tools/bootstrap/bootstrap-token.yaml`, `live/tests/platform/credentials/persistent-kubeconfig-check.json`.
 
 ## Плейсхолдеры и env (контракт с сервером)
 
@@ -189,8 +190,8 @@ without logical transactions do not report TPS. Full metrics and workload-specif
 reports remain available alongside the compact headline.
 
 Native Stroppy fixes are temporarily tested on YC using development images built
-from the uncommitted working tree, with inputs pinned to immutable image digests.
-See [the temporary build procedure](live/README.md#временное-решение-dev-сборки-до-pr-и-релиза-stroppy)
+from the working tree (now preserved in Stroppy PR #166), with inputs pinned to immutable image digests.
+See [the temporary build procedure](live/tests/README.md#dev-сборки-stroppy)
 for provenance requirements and the source-preservation limitation. Retire this
 workaround only after the upstream PR is merged, an official image is published,
 and equivalent checks pass with its digest. Do not infer permission to commit or
@@ -205,7 +206,7 @@ The compiler selects `cfg.my.cnf@8` for MySQL 8.0, `@8.4` for 8.4 and
 requires the plugin afterwards. Replica `read_only=ON` belongs in the permanent
 config, since initdb `SET GLOBAL` does not survive the temporary-server restart.
 A healthy listener alone is insufficient: verify receiver, applier, semisync
-status and replicated test rows. `live/mysql_probe.py` uses ordinary SQL access
+status and replicated test rows. `live/tools/mysql_probe.py` uses ordinary SQL access
 and does not require sudo or Docker access in an agent shell.
 
 Run results allow 256 metrics per segment and 64 segments, so aggregate metrics
@@ -217,3 +218,18 @@ collections/points before gRPC export. Resource identity, labels, timestamps and
 metric semantics are preserved; receiver partial rejections remain errors. Large
 YDB scrapes require this SDK in the published worker. The server receive limit
 and the separate database histogram/summary scrape gap are unchanged.
+
+## Pipeline input contract
+
+The versioned handoff is [live/tests/platform/contracts/HANDOFF.md](live/tests/platform/contracts/HANDOFF.md).
+`spec.ContractVersion` and `contract.lock.json` identify the reviewed interface.
+Run `make contract-check` from the repository root. Do not silently change
+field meanings/defaults, merge rules, diagnostic scopes or result projections
+under the same contract version; follow the handoff compatibility policy.
+
+Inputs use the existing schemas end to end, including nested suite RunSpecs,
+segments, native driver options and machine baseline. See
+[live/tests/platform/contracts/README.md](live/tests/platform/contracts/README.md)
+for server/UI mapping, validation evidence and explicit execution limits.
+`live/tools/check_contract.py` checks against a local Stroppy binary on noop;
+it does not deploy or start cloud resources.

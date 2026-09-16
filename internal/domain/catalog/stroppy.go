@@ -1,76 +1,101 @@
 package catalog
 
-// stroppy is the v0 static stroppy catalog: one build, the scripts stroppy
-// 6.0.0 registers (`stroppy probe -o json`), their steps and typed flags.
-// Later sources (release catalog.json, probe) replace this table.
+import (
+	"strings"
+
+	schemapb "github.com/gopherex/schemapb/go/schemapb"
+
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/workload"
+)
+
+// The schemas own parameter descriptions and defaults. Catalog only adds build
+// identities and protocol availability, never a second handwritten parameter list.
 func stroppy() StroppyCatalog {
 	all := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoCockroach, ProtoNoop}
-	sql := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoCockroach}
-	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach}
-	tpccSteps := []StroppyStep{
-		{ID: "drop_schema", Title: "Drop schema", Phase: "bootstrap"},
-		{ID: "create_schema", Title: "Create schema", Phase: "bootstrap"},
-		{ID: "load_data", Title: "Load data", Phase: "bootstrap"},
-		{ID: "workload_tx_new_order", Title: "New order", Phase: "workload"},
-		{ID: "workload_tx_payment", Title: "Payment", Phase: "workload"},
-		{ID: "workload_tx_order_status", Title: "Order status", Phase: "workload"},
-		{ID: "workload_tx_delivery", Title: "Delivery", Phase: "workload"},
-		{ID: "workload_tx_stock_level", Title: "Stock level", Phase: "workload"},
-		{ID: "workload_mixed", Title: "TPC-C mix", Phase: "workload"},
+	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach, ProtoNoop}
+	scripts := []StroppyScript{
+		{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Protocols: all},
+		{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Protocols: procs},
+		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all},
+		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs},
+		{ID: "tpch/tx", Title: "TPC-H", Protocols: all},
+		{ID: "tpcds", Title: "TPC-DS", Protocols: all, Description: "Picodata: load only. YDB: baked queries only. MySQL generated streams omit queries 51, 88 and 97."},
+		{ID: "simple", Title: "Simple key-value", Protocols: all},
+		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
+		{ID: "baseline", Title: "Baseline workload", Protocols: all, Description: "A baseline workload segment; the machine self-check remains separately configurable."},
 	}
-	tpccParams := []StroppyParam{
-		{Name: "scale-factor", Config: "scaleFactor", Type: "int", Default: 1, Description: "Number of warehouses.", Env: "SCALE_FACTOR"},
-		{Name: "warehouse-start", Config: "warehouseStart", Type: "int", Default: 1, Description: "First warehouse id to load."},
-		{Name: "load-items", Config: "loadItems", Type: "bool", DefaultDescription: "true when warehouse-start is 1; false otherwise"},
-		{Name: "load-workers", Config: "loadWorkers", Type: "int", Default: 8, Description: "Parallel loaders."},
-		{Name: "duration", Config: "duration", Scope: "run", Type: "duration", Default: "0s", Description: "Workload duration; 0 = until iterations end."},
-		{Name: "vus", Config: "vus", Scope: "run", Type: "int", Default: 1, Description: "Virtual users."},
+	schema := workload.Segment()
+	var variants map[string]*schemapb.Schema
+	var runFields []*schemapb.Schema_Field
+	for _, f := range schema.GetFields() {
+		if f.GetName() == "workload" {
+			variants = f.GetOneOf().GetVariants()
+		}
+		if f.GetName() == "run" {
+			runFields = f.GetObject().GetSchema().GetFields()
+		}
 	}
-	tpcbSteps := []StroppyStep{
-		{ID: "drop_schema", Phase: "bootstrap"},
-		{ID: "create_schema", Phase: "bootstrap"},
-		{ID: "load_data", Phase: "bootstrap"},
-		{ID: "workload_tx", Title: "TPC-B transaction", Phase: "workload"},
+	for i := range scripts {
+		sc := &scripts[i]
+		for _, name := range workload.Steps(sc.ID) {
+			phase := "bootstrap"
+			if name == "workload" {
+				phase = "workload"
+			}
+			sc.Steps = append(sc.Steps, StroppyStep{ID: name, Phase: phase})
+		}
+		for _, f := range variants[sc.ID].GetFields() {
+			if f.GetName() != "script" {
+				sc.Params = append(sc.Params, schemaParam(f, "workload"))
+			}
+		}
+		for _, f := range runFields {
+			sc.Params = append(sc.Params, schemaParam(f, "run"))
+		}
 	}
-	tpcbParams := []StroppyParam{
-		{Name: "scale-factor", Config: "scaleFactor", Type: "int", Default: 1, Description: "Branches (×100 000 accounts)."},
-		{Name: "duration", Config: "duration", Scope: "run", Type: "duration", Default: "0s"},
-		{Name: "vus", Config: "vus", Scope: "run", Type: "int", Default: 1},
+	return StroppyCatalog{Source: "static", Versions: []StroppyVersion{{Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Default: true, Baseline: true, Protocols: all, Scripts: scripts}}}
+}
+
+func schemaParam(f *schemapb.Schema_Field, scope string) StroppyParam {
+	parts := strings.Split(f.GetName(), "_")
+	for i := 1; i < len(parts); i++ {
+		parts[i] = strings.ToUpper(parts[i][:1]) + parts[i][1:]
 	}
-	return StroppyCatalog{
-		Source: "static",
-		Versions: []StroppyVersion{{
-			Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Default: true, Baseline: true, Protocols: all,
-			Scripts: []StroppyScript{
-				{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Description: "TPC-C with every transaction issued as client-side SQL.", Protocols: all, Steps: tpccSteps, Params: tpccParams},
-				{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Description: "TPC-C with the transaction logic in server-side procedures.", Protocols: procs, Steps: tpccSteps, Params: tpccParams},
-				{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all, Steps: tpcbSteps, Params: tpcbParams},
-				{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs, Steps: tpcbSteps, Params: tpcbParams},
-				{
-					ID: "tpch/tx", Title: "TPC-H", Description: "Relational load of eight tables plus the 22-query suite.", Protocols: sql,
-					Steps: []StroppyStep{{ID: "drop_schema", Phase: "bootstrap"}, {ID: "create_schema", Phase: "bootstrap"}, {ID: "load_data", Phase: "bootstrap"}, {ID: "workload_queries", Title: "Query suite", Phase: "workload"}},
-					Params: []StroppyParam{
-						{Name: "scale-factor", Config: "scaleFactor", Type: "float64", Default: 1.0, Description: "TPC-H scale factor (1 ≈ 1 GB)."},
-						{Name: "streams", Config: "streams", Type: "int", Default: 1, Description: "Query streams."},
-						{Name: "query-seed", Config: "querySeed", Type: "int64", Default: 19620718},
-					},
-				},
-				{
-					ID: "tpcds", Title: "TPC-DS", Protocols: sql,
-					Steps:  []StroppyStep{{ID: "drop_schema", Phase: "bootstrap"}, {ID: "create_schema", Phase: "bootstrap"}, {ID: "load_data", Phase: "bootstrap"}, {ID: "workload_queries", Phase: "workload"}},
-					Params: []StroppyParam{{Name: "scale-factor", Config: "scaleFactor", Type: "float64", Default: 1.0}},
-				},
-				{
-					ID: "simple", Title: "Simple key-value", Description: "Point reads and writes on one table.", Protocols: all,
-					Steps:  []StroppyStep{{ID: "drop_schema", Phase: "bootstrap"}, {ID: "create_schema", Phase: "bootstrap"}, {ID: "load_data", Phase: "bootstrap"}, {ID: "workload_mixed", Phase: "workload"}},
-					Params: []StroppyParam{{Name: "scale-factor", Config: "scaleFactor", Type: "int", Default: 1}, {Name: "vus", Config: "vus", Scope: "run", Type: "int", Default: 1}, {Name: "duration", Config: "duration", Scope: "run", Type: "duration", Default: "0s"}},
-				},
-				{
-					ID: "execute_sql", Title: "Execute SQL", Description: "Run supplied SQL statements. The noop driver measures client execution overhead without a database.", Protocols: all,
-					Steps:  []StroppyStep{{ID: "execute", Title: "Execute", Phase: "workload"}},
-					Params: []StroppyParam{{Name: "sql-file", Config: "sqlFile", Type: "string", Description: "File shipped next to the config."}},
-				},
-			},
-		}},
+	p := StroppyParam{Name: strings.ReplaceAll(f.GetName(), "_", "-"), Config: strings.Join(parts, ""), Scope: scope, Description: f.GetDescription(), Env: strings.ToUpper(f.GetName())}
+	switch {
+	case f.GetInt64() != nil:
+		p.Type = "int64"
+		if v := f.GetInt64().Default; v != nil {
+			p.Default = *v
+		}
+	case f.GetDouble() != nil:
+		p.Type = "float64"
+		if v := f.GetDouble().Default; v != nil {
+			p.Default = *v
+		}
+	case f.GetBool() != nil:
+		p.Type = "bool"
+		if v := f.GetBool().Default; v != nil {
+			p.Default = *v
+		}
+	case f.GetDuration() != nil:
+		p.Type = "duration"
+		if v := f.GetDuration().GetDefault(); v != nil {
+			p.Default = v.AsDuration().String()
+		}
+	case f.GetChoice() != nil:
+		p.Type = "string"
+		if v := f.GetChoice().GetDefault(); v != nil {
+			p.Default = v.GetStringValue()
+		}
+	default:
+		p.Type = "string"
+		if v := f.GetString_().Default; v != nil {
+			p.Default = *v
+		}
 	}
+	if f.GetNullable() {
+		p.DefaultDescription = f.GetDescription()
+	}
+	return p
 }

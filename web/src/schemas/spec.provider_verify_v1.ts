@@ -12,4 +12,3 @@ export interface SpecProviderVerify1 {
   /** Dry run. Only read the account (identity, permissions); do not create a probe resource. */
   dry_run?: boolean;
 }
-

@@ -21,6 +21,7 @@ import (
 
 	"github.com/graphene-ci/pipeline/pkg/machine"
 	"github.com/graphene-ci/pipeline/pkg/obs"
+	"github.com/graphene-ci/pipeline/pkg/workerapi"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/stroppycfg"
@@ -43,7 +44,9 @@ const (
 
 // RunSegmentRequest runs one workload segment on the runner machine.
 type RunSegmentRequest struct {
-	RunID string `json:"run_id"`
+	// FileBlobs are artifact locations resolved in the workflow; bytes stay on the agent.
+	FileBlobs map[string]string `json:"file_blobs,omitempty"`
+	RunID     string            `json:"run_id"`
 	// Segment is the decoded workload.segment value.
 	Segment spec.Segment `json:"segment"`
 	// Index orders the segment inside the workload (directory name).
@@ -86,7 +89,7 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
-	cfgPath, err := writeSegmentInputs(dir, req)
+	cfgPath, err := writeSegmentInputsContext(ctx, dir, req)
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
@@ -308,7 +311,10 @@ func shortID(id string) string {
 
 // writeSegmentInputs writes stroppy-config.json, the CA certificate and the
 // segment files; returns the config path.
-func writeSegmentInputs(dir string, req RunSegmentRequest) (string, error) {
+func writeSegmentInputsContext(ctx context.Context, dir string, req RunSegmentRequest) (string, error) {
+	if err := writeSegmentFiles(ctx, dir, req.Segment.Files, req.FileBlobs, workerapi.GetBlob); err != nil {
+		return "", err
+	}
 	cfg, err := stroppycfg.MarshalConfig(stroppycfg.Input{
 		RunID: req.RunID, Segment: req.Segment, Workload: req.Workload, URL: req.URL,
 		OTLPEndpoint: req.OTLPEndpoint, OTLPHeaders: req.OTLPHeaders, Labels: req.Labels,
@@ -324,18 +330,6 @@ func writeSegmentInputs(dir string, req RunSegmentRequest) (string, error) {
 	}
 	if req.Workload.CACert != "" {
 		if err := os.WriteFile(filepath.Join(dir, stroppycfg.CACertFile), []byte(req.Workload.CACert), 0o600); err != nil {
-			return "", err
-		}
-	}
-	for _, f := range req.Segment.Files {
-		if f.Content == "" {
-			continue
-		}
-		name := filepath.Base(f.Name)
-		if name == "" || name == "." || name == ".." {
-			return "", fmt.Errorf("segment file: bad name %q", f.Name)
-		}
-		if err := os.WriteFile(filepath.Join(dir, name), []byte(f.Content), 0o644); err != nil { //nolint:gosec // workload SQL/data for the stroppy container
 			return "", err
 		}
 	}

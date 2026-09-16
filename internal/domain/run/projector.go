@@ -202,17 +202,23 @@ func terminalOf(s string) (Status, bool) {
 
 // finish stores the result of a finished run and tells the webhooks.
 func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reason string) {
-	if status == StatusCompleted {
+	// Failed/cancelled runs may also carry partial native reports. Keep the raw
+	// envelope so explicit zeroes and opaque report extensions survive storage.
+	var raw json.RawMessage
+	if err := p.graphene.RunResult(sctx, r.GrapheneID(), &raw); err != nil {
+		p.log.Warn("projector: result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+	} else {
 		var res spec.Result
-		if err := p.graphene.RunResult(sctx, r.GrapheneID(), &res); err != nil {
-			p.log.Warn("projector: result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		if err := json.Unmarshal(raw, &res); err != nil {
+			p.log.Warn("projector: decode result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
 		} else {
-			raw, _ := json.Marshal(res) //nolint:errcheck // spec types marshal
 			summary := r.Summary
-			summary.ProgressPct = 100
+			if status == StatusCompleted {
+				summary.ProgressPct = 100
+			}
 			summary.Headline = headlineOf(res)
 			var tps *float64
-			if res.Summary.TPS > 0 {
+			if status == StatusCompleted && res.Summary.TPS > 0 {
 				v := res.Summary.TPS
 				tps = &v
 			}
@@ -220,11 +226,12 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 				p.log.Warn("projector: store result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
 			}
 		}
-		if r.Keep > 0 {
-			until := time.Now().UTC().Add(r.Keep)
-			_ = p.repo.SetKeep(ctx, r.ID, true, &until) //nolint:errcheck // best-effort
-		}
 	}
+	if status == StatusCompleted && r.Keep > 0 {
+		until := time.Now().UTC().Add(r.Keep)
+		_ = p.repo.SetKeep(ctx, r.ID, true, &until) //nolint:errcheck // best-effort
+	}
+
 	if p.publisher == nil {
 		return
 	}

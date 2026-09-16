@@ -27,8 +27,9 @@ func TestAwsSettings(t *testing.T) {
 	}
 
 	schematest.Run(t, AwsSettings(), schematest.Cases{
-		Valid: []map[string]any{minimal, full},
+		Valid: []map[string]any{minimal},
 		Invalid: []schematest.Invalid{
+			{Value: full, Code: "RULE_VIOLATED", Path: "network-create-only"},
 			{Value: map[string]any{
 				"region":  "us-gov-west-1",
 				"network": map[string]any{"kind": "create"},

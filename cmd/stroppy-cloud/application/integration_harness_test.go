@@ -107,12 +107,17 @@ func (f *fakeGraphene) milestone(runID, name string, payload map[string]any) {
 
 // finish ends a run with a terminal kind and result.
 func (f *fakeGraphene) finish(runID, kind, status string, result any) {
+	f.mu.Lock()
+	if r := f.runs[runID]; r != nil {
+		r.status = status
+		r.result, _ = json.Marshal(result)
+	}
+	f.mu.Unlock()
 	f.emit(runID, kind, "", nil)
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	if r := f.runs[runID]; r != nil {
-		r.status, r.done = status, true
-		r.result, _ = json.Marshal(result)
+		r.done = true
 	}
 	f.cond.Broadcast()
 }

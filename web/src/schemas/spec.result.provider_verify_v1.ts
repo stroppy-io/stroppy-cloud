@@ -22,4 +22,3 @@ export interface SpecResultProviderVerify1 {
   /** Error. Provider error text when ok is false; shown as the profile status reason. */
   error?: string;
 }
-

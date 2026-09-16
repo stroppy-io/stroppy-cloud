@@ -1,0 +1,18 @@
+package main
+
+import (
+ "fmt"
+ "os"
+ "syscall"
+ "time"
+)
+
+func main() {
+ f,err:=os.OpenFile("/var/lib/dpkg/lock-frontend",os.O_CREATE|os.O_RDWR,0600)
+ if err!=nil { panic(err) }
+ defer f.Close()
+ lock:=syscall.Flock_t{Type:syscall.F_WRLCK,Whence:0,Start:0,Len:0}
+ if err:=syscall.FcntlFlock(f.Fd(),syscall.F_SETLK,&lock);err!=nil { panic(err) }
+ fmt.Println("locked")
+ time.Sleep(3*time.Second)
+}

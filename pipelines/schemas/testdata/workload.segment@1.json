@@ -25,6 +25,90 @@
       "oneOf": {
         "discriminator": "script",
         "variants": {
+          "baseline": {
+            "fields": [
+              {
+                "name": "script",
+                "required": true,
+                "string": {}
+              },
+              {
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "20",
+                  "gte": "0",
+                  "lte": "1024"
+                },
+                "group": "Load",
+                "title": "Load workers"
+              },
+              {
+                "name": "rows",
+                "description": "Rows loaded into the baseline probe table (rows).",
+                "int64": {
+                  "default": "250000",
+                  "gte": "1"
+                },
+                "group": "Data",
+                "title": "Rows"
+              },
+              {
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
+                    {
+                      "value": {
+                        "stringValue": "read_uncommitted"
+                      },
+                      "label": "Read uncommitted"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "read_committed"
+                      },
+                      "label": "Read committed"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "repeatable_read"
+                      },
+                      "label": "Repeatable read"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "serializable"
+                      },
+                      "label": "Serializable"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "db_default"
+                      },
+                      "label": "Database default"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "conn"
+                      },
+                      "label": "Connection-level"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "none"
+                      },
+                      "label": "None (no BEGIN)"
+                    }
+                  ]
+                },
+                "group": "Transactions",
+                "title": "Transaction isolation"
+              }
+            ],
+            "strict": true
+          },
           "execute_sql": {
             "fields": [
               {
@@ -619,11 +703,10 @@
               },
               {
                 "name": "query_stream",
-                "description": "Which query stream to generate (queryStream).",
+                "description": "Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.",
+                "nullable": true,
                 "int64": {
-                  "default": "0",
-                  "gte": "0",
-                  "lte": "63"
+                  "gte": "0"
                 },
                 "group": "Queries",
                 "title": "Query stream"
@@ -632,8 +715,7 @@
                 "name": "query_seed",
                 "description": "Query generator seed (querySeed).",
                 "int64": {
-                  "default": "19620718",
-                  "gte": "0"
+                  "default": "19620718"
                 },
                 "group": "Queries",
                 "title": "Query seed"
@@ -857,6 +939,16 @@
               "id": "constant-vus-needs-duration"
             },
             {
+              "expr": "this.executor != \"constant-vus\" || !(\"iterations\" in this) || this.iterations == null",
+              "message": "iterations applies only to shared-iterations",
+              "id": "iterations-executor"
+            },
+            {
+              "expr": "this.executor != \"shared-iterations\" || !(\"duration\" in this) || this.duration == null",
+              "message": "duration applies only to constant-vus",
+              "id": "duration-executor"
+            },
+            {
               "expr": "this.executor != \"shared-iterations\" || (\"iterations\" in this && this.iterations != null)",
               "message": "shared-iterations needs an iteration count",
               "id": "shared-iterations-needs-count"
@@ -944,7 +1036,7 @@
                     "string": {
                       "minLen": "1",
                       "maxLen": "128",
-                      "pattern": "^[A-Za-z0-9._/-]+$"
+                      "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$"
                     },
                     "title": "File name"
                   },
@@ -988,10 +1080,11 @@
                   },
                   {
                     "name": "ref",
-                    "description": "Artifact/object reference to fetch instead of inline content.",
+                    "description": "Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.",
                     "string": {
                       "minLen": "1",
-                      "maxLen": "512"
+                      "maxLen": "512",
+                      "pattern": "^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$"
                     },
                     "title": "Reference"
                   }
@@ -1046,6 +1139,27 @@
       "title": "Thresholds"
     },
     {
+      "name": "seed",
+      "description": "Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.",
+      "nullable": true,
+      "uint64": {
+        "gte": "0"
+      },
+      "group": "Scenario",
+      "title": "Random seed"
+    },
+    {
+      "name": "timeout",
+      "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.",
+      "nullable": true,
+      "duration": {
+        "gt": "0s",
+        "lte": "604800s"
+      },
+      "group": "Scenario",
+      "title": "Segment timeout"
+    },
+    {
       "name": "warmup",
       "description": "Idle wait before the segment starts, letting caches and replicas settle.",
       "duration": {
@@ -1096,12 +1210,22 @@
   ],
   "rules": [
     {
-      "expr": "!(\"steps\" in root) || !(\"no_steps\" in root) || size(root.steps) == 0 || size(root.no_steps) == 0",
+      "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) && (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) && (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
+      "message": "step must be an executable Stroppy step of the selected workload",
+      "id": "known-workload-steps"
+    },
+    {
+      "expr": "[this == null ? root : this].all(s, !(\"files\" in s) || s.files.all(f, s.files.filter(x, x.name == f.name).size() == 1 && s.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + \"/\") && !f.name.startsWith(x.name + \"/\"))) && [\"stroppy-config.json\", \"ca.pem\", \"stroppy.log\"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + \"/\"))))",
+      "message": "file names must be unique and cannot overwrite runtime files",
+      "id": "segment-file-names"
+    },
+    {
+      "expr": "[this == null ? root : this].all(s, !(\"steps\" in s) || !(\"no_steps\" in s) || size(s.steps) == 0 || size(s.no_steps) == 0)",
       "message": "stroppy rejects --steps together with --no-steps",
       "id": "steps-mutually-exclusive"
     },
     {
-      "expr": "!(\"workload\" in root) || root.workload.script != \"execute_sql\" || ((\"sql_body\" in root.workload && root.workload.sql_body != null) != (\"sql_file\" in root.workload && root.workload.sql_file != null))",
+      "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload && s.workload.sql_body != null) != (\"sql_file\" in s.workload && s.workload.sql_file != null)))",
       "message": "execute_sql needs exactly one of sql_body or sql_file",
       "id": "execute-sql-source"
     }

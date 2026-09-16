@@ -20,6 +20,9 @@ func sizesFrom(in oas.OptRoleSizes) map[string]library.RoleSize {
 	out := map[string]library.RoleSize{}
 	for role, item := range v {
 		rs := library.RoleSize{Size: string(item.Size)}
+		if v, ok := item.Machine.Get(); ok {
+			rs.Machine = rawOf(v)
+		}
 		if d, ok := item.Disk.Get(); ok {
 			rs.DiskType = d.Type.Or("")
 			rs.DiskGB = d.GB.Or(0)
@@ -33,6 +36,9 @@ func sizesTo(in map[string]library.RoleSize) oas.RoleSizes {
 	out := oas.RoleSizes{}
 	for role, rs := range in {
 		item := oas.RoleSizesItem{Size: oas.Size(rs.Size)}
+		if len(rs.Machine) > 0 {
+			item.Machine = oas.NewOptSchemaValue(schemaValueOf(rs.Machine))
+		}
 		if rs.DiskType != "" || rs.DiskGB > 0 {
 			d := oas.RoleSizesItemDisk{}
 			if rs.DiskType != "" {
@@ -67,6 +73,9 @@ func keepFrom(s oas.OptString) (*time.Duration, error) {
 // testSpecFrom builds the spec of a create/validate body.
 func testSpecFrom(req *oas.TestWrite) (library.TestSpec, error) {
 	spec := library.TestSpec{Sizes: sizesFrom(req.Sizes), RatingTenant: true}
+	if v, ok := req.Execution.Get(); ok {
+		spec.Execution = rawOf(v)
+	}
 	if db, ok := req.Database.Get(); ok {
 		switch db.Type {
 		case oas.TestWriteDatabase0TestWriteDatabase:
@@ -108,6 +117,7 @@ func (h *Handler) fitOf(fit library.Fit) oas.Fit {
 	out := oas.Fit{Fits: fit.Fits, Issues: make([]oas.FitIssuesItem, 0, len(fit.Issues))}
 	for _, i := range fit.Issues {
 		item := oas.FitIssuesItem{Path: i.Path, Code: i.Code, Severity: oas.FitIssuesItemSeverity(i.Severity)}
+		item.Scope = oas.NewOptValidationScope(validationScope(i.Scope))
 		if i.Message != "" {
 			item.Message = oas.NewOptString(i.Message)
 		}
@@ -162,6 +172,9 @@ func (h *Handler) testOf(t library.Test, fit library.Fit, res library.Resolved) 
 		Rating:     oas.NewOptRatingFlags(oas.RatingFlags{Tenant: oas.NewOptBool(t.Spec.RatingTenant), Global: oas.NewOptBool(t.Spec.RatingGlobal)}),
 		Validation: oas.NewOptFit(h.fitOf(fit)), Requirements: oas.NewOptRequirements(requirementsOf(res.Requirements)),
 		Resolved: oas.NewOptTestResolved(h.resolvedOf(res)),
+	}
+	if len(t.Spec.Execution) > 0 {
+		out.Execution = oas.NewOptSchemaValue(schemaValueOf(t.Spec.Execution))
 	}
 	switch {
 	case t.Spec.DatabaseRef != nil:
@@ -289,6 +302,9 @@ func (h *Handler) PatchTest(ctx context.Context, req *oas.TestPatch, params oas.
 		return nil, err
 	}
 	p := library.TestPatch{Sizes: sizesFrom(req.Sizes)}
+	if v, ok := req.Execution.Get(); ok {
+		p.Execution = rawOf(v)
+	}
 	if v, ok := req.Name.Get(); ok {
 		p.Name = &v
 	}

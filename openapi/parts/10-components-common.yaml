@@ -78,7 +78,7 @@ components:
           $ref: '#/components/schemas/ValidationResult'
     ValidationResult:
       type: object
-      description: schemapb `ValidationResult` in protoJSON.
+      description: Schema and execution diagnostics. Warnings are nonblocking; branch on code and severity, never message.
       properties:
         errors:
           type: array
@@ -87,6 +87,7 @@ components:
       type: object
       required: [path, code]
       properties:
+        scope: { $ref: '#/components/schemas/ValidationScope' }
         path: { type: string, example: 'params.replicas' }
         code: { type: string, example: GTE_VIOLATED }
         constraint: { type: string }
@@ -95,12 +96,18 @@ components:
         rule_id: { type: string }
         expected: {}
         actual: {}
+    ValidationScope:
+      type: string
+      enum: [input, run_spec]
+      description: Path refers to the submitted form (input, also the default if absent) or the compiled RunSpec (run_spec).
     SchemaValue:
       type: object
       description: |
         A schemapb value (plain JSON object). The concrete schema is named by
         the enclosing property's `x-schema`; validate via
         `/catalog/schemas/{id}:validate`.
+        Integers outside the JavaScript safe range are returned as exact decimal
+        strings. Send these strings back unchanged; never convert them to Number.
       additionalProperties: true
     BakedValue:
       type: object
@@ -196,6 +203,10 @@ components:
         required: [size]
         properties:
           size: { $ref: '#/components/schemas/Size' }
+          machine:
+            allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
+            x-schema: test.machine@1
+            description: Explicit VM settings over the selected preset.
           disk:
             type: object
             properties:
@@ -212,6 +223,7 @@ components:
             type: object
             required: [path, code, severity]
             properties:
+              scope: { $ref: '#/components/schemas/ValidationScope' }
               path: { type: string }
               code: { type: string }
               severity: { type: string, enum: [ERROR, WARNING] }

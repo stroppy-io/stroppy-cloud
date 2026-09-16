@@ -1,0 +1,3 @@
+package main
+import("fmt";"github.com/minio/minio-go/v7")
+func main(){n,p,last,e:=minio.OptimalPartInfo(-1,0);fmt.Println(n,p,p/(1<<20),last,e)}

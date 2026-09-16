@@ -1,0 +1,3 @@
+package main
+import("os";"fmt";"encoding/json";"github.com/prometheus/common/expfmt";"github.com/prometheus/common/model")
+func main(){for _, path := range os.Args[1:] {f,e:=os.Open(path);if e!=nil{panic(e)};parser:=expfmt.NewTextParser(model.UTF8Validation);families,e:=parser.TextToMetricFamilies(f);f.Close();counts:=map[string]int{};samples:=map[string]int{};for _,mf:=range families{counts[mf.GetType().String()]++;samples[mf.GetType().String()]+=len(mf.GetMetric())};json.NewEncoder(os.Stdout).Encode(map[string]any{"file":path,"error":fmt.Sprint(e),"families":counts,"series":samples})}}

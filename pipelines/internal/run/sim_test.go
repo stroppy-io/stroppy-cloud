@@ -30,11 +30,13 @@ import (
 // No cloud, no docker daemon, no Temporal server.
 
 const (
-	ycInstanceKind = "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance"
-	ycNetworkKind  = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network"
-	ycSubnetKind   = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet"
-	ycSGKind       = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup"
-	ycDiskKind     = "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk"
+	ycInstanceKind   = "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance"
+	ycGatewayKind    = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Gateway"
+	ycRouteTableKind = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.RouteTable"
+	ycNetworkKind    = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network"
+	ycSubnetKind     = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet"
+	ycSGKind         = "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup"
+	ycDiskKind       = "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk"
 )
 
 // simRun is the RunSpec of the simulated run: postgres single on yandex.
@@ -42,13 +44,15 @@ func simRun() spec.Run {
 	return spec.Run{
 		RunID: "8f1c3f2a-0000-4000-8000-000000000001", Tenant: "acme",
 		Provider: spec.Provider{
-			Kind: spec.ProviderYandex, Settings: json.RawMessage(`{"folder_id":"b1gfolder","zone":"ru-central1-d"}`),
+			Kind: spec.ProviderYandex, Settings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-d","network":{"kind":"create"}}`),
 			CredentialsSecret: "yc-sa-key", ProviderConfigName: "t-acme",
 		},
 		Network: spec.Network{CIDR: "10.130.0.0/24"},
 		Machines: []spec.Machine{
-			{Name: "db-1", Role: "db", CPU: 4, MemoryGB: 8, Image: "ubuntu-2404-lts", Location: "ru-central1-d", InstanceType: "standard-v3",
-				Disks: []spec.Disk{{Name: "data", GB: 50, Type: "network-ssd", Mount: "/data"}}},
+			{
+				Name: "db-1", Role: "db", CPU: 4, MemoryGB: 8, Image: "ubuntu-2404-lts", Location: "ru-central1-d", InstanceType: "standard-v3",
+				Disks: []spec.Disk{{Name: "data", GB: 50, Type: "network-ssd", Mount: "/data"}},
+			},
 			{Name: "runner-1", Role: "runner", CPU: 2, MemoryGB: 4, Image: "ubuntu-2404-lts", Location: "ru-central1-d", InstanceType: "standard-v3"},
 		},
 		Containers: []spec.Container{{
@@ -94,6 +98,8 @@ func newSim(t *testing.T) *sim {
 	w := pipelinetest.Install(t, suite.NewTestWorkflowEnvironment())
 	s := &sim{w: w, objects: k8stest.Install(w)}
 	dockertest.Install(w, "28.5.2")
+	// Automatic disk preparation is infrastructure plumbing; explicit host steps
+	// remain separately matched by individual deployment tests.
 	// Run-queue contracts of the pipeline itself.
 	pipelinetest.Handle1(w, activities.NameResolveYandexImages, func(_ workflow.Context, req activities.ResolveYandexImagesRequest) (activities.ResolveYandexImagesResult, error) {
 		images := make(map[string]string, len(req.Images))
@@ -143,10 +149,17 @@ func xpReadyStatus(extra map[string]any) map[string]any {
 func (s *sim) converge(t *testing.T, run spec.Run, ips map[string]string) {
 	t.Helper()
 	names := provision.NewNames(run.Tenant, run.RunID)
+	if spec.NeedsPrivateEgress(run) {
+		require.NoError(t, s.objects.After(3*time.Second, ref.OwnerRef(ycGatewayKind+"/"+names.Gateway()), xpReadyStatus(map[string]any{"id": "nat"})))
+		require.NoError(t, s.objects.After(4*time.Second, ref.OwnerRef(ycRouteTableKind+"/"+names.RouteTable()), xpReadyStatus(map[string]any{"id": "routes"})))
+	}
 	require.NoError(t, s.objects.After(2*time.Second, ref.OwnerRef(ycNetworkKind+"/"+names.Network()), xpReadyStatus(map[string]any{"id": "enp-net"})))
 	require.NoError(t, s.objects.After(4*time.Second, ref.OwnerRef(ycSubnetKind+"/"+names.Subnet()), xpReadyStatus(map[string]any{"id": "e9b-subnet"})))
 	require.NoError(t, s.objects.After(5*time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(map[string]any{"id": "enp-sg"})))
 	for _, m := range run.Machines {
+		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameHostPrep, mock.Anything, mock.MatchedBy(func(req activities.HostPrepRequest) bool {
+			return req.Kind == spec.HostPrepScript && strings.Contains(req.Content, "/dev/disk/by-id/virtio-")
+		})).Return(activities.HostPrepResult{}, nil).Maybe()
 		for _, d := range m.Disks {
 			require.NoError(t, s.objects.After(6*time.Second, ref.OwnerRef(ycDiskKind+"/"+names.Disk(m.Name, d.Name)), xpReadyStatus(map[string]any{"id": "fhm-disk-" + m.Name})))
 		}

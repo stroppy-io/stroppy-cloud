@@ -18,4 +18,3 @@ export interface DbMariadbParams1 {
   /** Init SQL. SQL executed on the primary (or the first Galera node) once the server is up, before the workload. */
   init_sql?: string;
 }
-

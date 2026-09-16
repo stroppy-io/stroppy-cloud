@@ -604,6 +604,10 @@ components:
       type: object
       required: [kind, version, params]
       properties:
+        runtime:
+          allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
+          x-schema: test.runtime@1
+          description: Advanced deployment overrides, including complete config file content.
         kind: { $ref: '#/components/schemas/DatabaseKind' }
         version: { type: string }
         image: { type: string, description: Docker image override (custom builds; registry creds via provider secret). }
@@ -655,6 +659,9 @@ components:
         - $ref: '#/components/schemas/EntityPatch'
         - type: object
           properties:
+            runtime:
+              allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
+              x-schema: test.runtime@1
             version: { type: string }
             image: { type: string }
             params: { $ref: '#/components/schemas/SchemaValue' }
@@ -788,6 +795,10 @@ components:
     TestSpec:
       type: object
       properties:
+        execution:
+          allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
+          x-schema: test.runtime@1
+          description: Final deployment overrides applied after database defaults.
         database:
           oneOf:
             - type: object

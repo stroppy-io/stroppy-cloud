@@ -20,4 +20,3 @@ export interface DbOrioledbParams1 {
   /** Init SQL. SQL executed on the master once the container is healthy, before the workload. */
   init_sql?: string;
 }
-

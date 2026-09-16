@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/17/single/tpcb-tx/native-otlp-20s-2vus",
+  "database": "postgres",
+  "version": "17",
+  "topology": "single",
+  "workload": "tpcb/tx",
+  "preset": "native-otlp-20s-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "native-exports-74979a8a-tpcb",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/native-exports-74979a8a-tpcb"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/native-export-check.json",
+    "pointer": "/cells/1"
+  },
+  "legacy_row": {
+    "database": "postgres",
+    "version": "17",
+    "topology": "single",
+    "provider": "yandex",
+    "zone": "ru-central1-a",
+    "workload": "tpcb/tx",
+    "database_actual_version": "",
+    "started_at": "",
+    "finished_at": "",
+    "preset": "native-otlp-20s-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "pending",
+    "artifacts": "pending",
+    "replication": "pending",
+    "pipeline_traces": "passed",
+    "native_tps": "passed",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "native-exports-74979a8a-tpcb",
+    "iterations": "11274",
+    "input": "suite-native-exports.json",
+    "evidence": "native-export-check.json",
+    "checked_at": "2026-09-14T21:23:35.136852+00:00",
+    "note": "segment=tpcb-tx",
+    "component_log_observations": "not_checked",
+    "retry_attempts": "",
+    "local_cluster": "",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-native-exports.json",
+    "pointer": "/cells/0/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "simple",
+      "script": "simple",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "simple"
+      }
+    },
+    {
+      "name": "tpcb-tx",
+      "script": "tpcb/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/tx",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    },
+    {
+      "name": "tpcb-procs",
+      "script": "tpcb/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/procs",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

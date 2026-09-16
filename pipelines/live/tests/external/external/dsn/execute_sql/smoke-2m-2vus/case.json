@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "id": "tests/external/external/dsn/execute_sql/smoke-2m-2vus",
+  "database": "external",
+  "version": "external",
+  "topology": "dsn",
+  "workload": "execute_sql",
+  "preset": "smoke-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "external-dsn-7383cd13",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/external-dsn-7383cd13"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/catalog-functional-check.json",
+    "pointer": "/native_cells/125"
+  },
+  "legacy_row": {
+    "database": "external",
+    "version": "external",
+    "topology": "dsn",
+    "provider": "yandex",
+    "zone": "ru-central1-d",
+    "workload": "execute_sql",
+    "database_actual_version": "",
+    "started_at": "2026-09-15T20:51:17.528424006Z",
+    "finished_at": "2026-09-15T20:53:21.403949029Z",
+    "preset": "smoke-2m-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "not_applicable",
+    "pipeline_traces": "passed",
+    "native_tps": "not_applicable",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "external-dsn-7383cd13",
+    "iterations": "",
+    "input": "external-dsn-input.json",
+    "evidence": "catalog-functional-check.json",
+    "checked_at": "2026-09-15T20:54:58.106473+00:00",
+    "note": "Read-only execute_sql against an owned PostgreSQL fixture; runner-only provisioning, native OTLP, runner telemetry, artifacts and cleanup verified. Fixture resources and canary survived runner cleanup; fixture then removed separately. See external-dsn-lifecycle-check.json. Other external protocols compile but are not live-verified by this run.",
+    "component_log_observations": "{}",
+    "retry_attempts": "",
+    "local_cluster": "not_applicable",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/external/external/dsn/execute_sql/native-otlp-2m-2vus/history/external-dsn-input.json",
+    "pointer": ""
+  },
+  "actual_segments": [
+    {
+      "name": "external-canary",
+      "script": "execute_sql",
+      "run": {
+        "duration": "2m",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "execute_sql",
+        "sql_body": "--= fixture_canary\nSELECT 1 / CASE WHEN COUNT(*)=1 AND MIN(id)=197 AND NOT has_table_privilege(current_user, 'external_fixture_canary', 'INSERT,UPDATE,DELETE,TRUNCATE') THEN 1 ELSE 0 END FROM external_fixture_canary;"
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

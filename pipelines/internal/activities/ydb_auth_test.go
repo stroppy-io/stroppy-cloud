@@ -2,11 +2,12 @@ package activities
 
 import (
 	"encoding/json"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 
 	"github.com/stretchr/testify/require"
 )
@@ -14,7 +15,7 @@ import (
 func TestYDBRuntimeCredentialDoesNotEnterArtifact(t *testing.T) {
 	dir := t.TempDir()
 	config := filepath.Join(dir, "stroppy-config.json")
-	_, err := writeSegmentInputs(dir, RunSegmentRequest{
+	_, err := writeSegmentInputsContext(t.Context(), dir, RunSegmentRequest{
 		RunID: "test-run", URL: "grpcs://test",
 		Workload: spec.Workload{DriverType: "ydb", URL: "grpcs://test"},
 		Segment:  spec.Segment{Name: "simple", Workload: spec.WorkloadParams{Script: "simple"}, Run: spec.RunParams{Executor: spec.ExecutorConstantVUs, VUs: 1, Duration: spec.Duration(time.Second)}},
@@ -34,7 +35,7 @@ func TestYDBRuntimeCredentialDoesNotEnterArtifact(t *testing.T) {
 	runtimeFile := filepath.Join(dir, filepath.Base(args[2]))
 	stat, err := os.Stat(runtimeFile)
 	require.NoError(t, err)
-	require.Equal(t, os.FileMode(0600), stat.Mode().Perm())
+	require.Equal(t, os.FileMode(0o600), stat.Mode().Perm())
 	raw, err := os.ReadFile(runtimeFile)
 	require.NoError(t, err)
 	var decoded struct {

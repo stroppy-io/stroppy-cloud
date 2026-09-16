@@ -1,0 +1,21 @@
+package main
+import (
+ "context"
+ "fmt"
+ "os"
+ "time"
+ "github.com/graphene-ci/pipeline/pkg/cliconfig"
+ api "github.com/graphene-ci/pipeline/pkg/proto/workerplane/v1"
+ "google.golang.org/grpc"
+ "google.golang.org/grpc/credentials"
+ "google.golang.org/grpc/metadata"
+)
+func main(){
+ cc,_,err:=cliconfig.Resolve("");if err!=nil{panic(err)}
+ b,err:=os.ReadFile(os.Args[1]);if err!=nil{panic(err)}
+ conn,err:=grpc.NewClient(cc.Server,grpc.WithTransportCredentials(credentials.NewTLS(nil)));if err!=nil{panic(err)};defer conn.Close()
+ ctx,cancel:=context.WithTimeout(context.Background(),30*time.Second);defer cancel()
+ ctx=metadata.NewOutgoingContext(ctx,metadata.Pairs("authorization","Bearer "+cc.Token,"x-graphene-namespace",cc.Namespace))
+ _,err=api.NewManifestAPIClient(conn).PublishManifest(ctx,&api.PublishManifestRequest{Manifest:b,Image:os.Args[2]});if err!=nil{panic(err)}
+ fmt.Println("published",cc.Namespace,os.Args[2])
+}

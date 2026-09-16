@@ -620,8 +620,8 @@ func (q *Queries) ExpireInvites(ctx context.Context) (int64, error) {
 	return tag.RowsAffected(), err
 }
 
-const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`
+const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`
 
 type InsertDatabaseParams struct {
 	ID          uuid.UUID
@@ -635,15 +635,16 @@ type InsertDatabaseParams struct {
 	Image       string
 	Params      json.RawMessage
 	Configs     json.RawMessage
+	Runtime     json.RawMessage
 	External    json.RawMessage
 }
 
 func (q *Queries) InsertDatabase(ctx context.Context, arg InsertDatabaseParams) error {
-	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.External)
+	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.External)
 	return err
 }
 
-const databaseByIDSQL = `SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external, created_at, updated_at
+const databaseByIDSQL = `SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
 FROM databases WHERE id = $1 AND deleted_at IS NULL;`
 
 type DatabaseByIDRow struct {
@@ -658,6 +659,7 @@ type DatabaseByIDRow struct {
 	Image       string
 	Params      json.RawMessage
 	Configs     json.RawMessage
+	Runtime     json.RawMessage
 	External    json.RawMessage
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -666,7 +668,7 @@ type DatabaseByIDRow struct {
 func (q *Queries) DatabaseByID(ctx context.Context, id uuid.UUID) (DatabaseByIDRow, error) {
 	row := q.db.QueryRow(ctx, databaseByIDSQL, id)
 	var i DatabaseByIDRow
-	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.Kind, &i.Version, &i.Image, &i.Params, &i.Configs, &i.External, &i.CreatedAt, &i.UpdatedAt)
+	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.Kind, &i.Version, &i.Image, &i.Params, &i.Configs, &i.Runtime, &i.External, &i.CreatedAt, &i.UpdatedAt)
 	return i, err
 }
 
@@ -678,8 +680,9 @@ SET name        = COALESCE($1::text, name),
     image       = COALESCE($5::text, image),
     params      = COALESCE($6::jsonb, params),
     configs     = COALESCE($7::jsonb, configs),
+    runtime     = COALESCE($8::jsonb, runtime),
     updated_at  = now()
-WHERE id = $8 AND deleted_at IS NULL;`
+WHERE id = $9 AND deleted_at IS NULL;`
 
 type UpdateDatabaseParams struct {
 	Name        *string
@@ -689,11 +692,12 @@ type UpdateDatabaseParams struct {
 	Image       *string
 	Params      json.RawMessage
 	Configs     json.RawMessage
+	Runtime     json.RawMessage
 	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateDatabase(ctx context.Context, arg UpdateDatabaseParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.ID)
+	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.ID)
 	return tag.RowsAffected(), err
 }
 
@@ -781,9 +785,9 @@ func (q *Queries) SoftDeleteWorkload(ctx context.Context, id uuid.UUID) (int64, 
 }
 
 const insertTestSQL = `INSERT INTO tests (id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,
-                   sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at)
+                   sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-        $11, $12, $13, $14, $15, $16, $17);`
+        $11, $12, $13, $14, $15, $16, $17, $18);`
 
 type InsertTestParams struct {
 	ID                uuid.UUID
@@ -797,6 +801,7 @@ type InsertTestParams struct {
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
+	Execution         json.RawMessage
 	ProviderProfileID *uuid.UUID
 	Keep              string
 	RatingTenant      bool
@@ -806,12 +811,12 @@ type InsertTestParams struct {
 }
 
 func (q *Queries) InsertTest(ctx context.Context, arg InsertTestParams) error {
-	_, err := q.db.Exec(ctx, insertTestSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.DatabaseID, arg.DatabaseInline, arg.WorkloadID, arg.WorkloadInline, arg.Sizes, arg.ProviderProfileID, arg.Keep, arg.RatingTenant, arg.RatingGlobal, arg.Status, arg.ValidatedAt)
+	_, err := q.db.Exec(ctx, insertTestSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.DatabaseID, arg.DatabaseInline, arg.WorkloadID, arg.WorkloadInline, arg.Sizes, arg.Execution, arg.ProviderProfileID, arg.Keep, arg.RatingTenant, arg.RatingGlobal, arg.Status, arg.ValidatedAt)
 	return err
 }
 
 const testByIDSQL = `SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,
-       sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
+       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at
 FROM tests WHERE id = $1 AND deleted_at IS NULL;`
 
 type TestByIDRow struct {
@@ -826,6 +831,7 @@ type TestByIDRow struct {
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
+	Execution         json.RawMessage
 	ProviderProfileID *uuid.UUID
 	Keep              string
 	RatingTenant      bool
@@ -839,7 +845,7 @@ type TestByIDRow struct {
 func (q *Queries) TestByID(ctx context.Context, id uuid.UUID) (TestByIDRow, error) {
 	row := q.db.QueryRow(ctx, testByIDSQL, id)
 	var i TestByIDRow
-	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.DatabaseID, &i.DatabaseInline, &i.WorkloadID, &i.WorkloadInline, &i.Sizes, &i.ProviderProfileID, &i.Keep, &i.RatingTenant, &i.RatingGlobal, &i.Status, &i.ValidatedAt, &i.CreatedAt, &i.UpdatedAt)
+	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.DatabaseID, &i.DatabaseInline, &i.WorkloadID, &i.WorkloadInline, &i.Sizes, &i.Execution, &i.ProviderProfileID, &i.Keep, &i.RatingTenant, &i.RatingGlobal, &i.Status, &i.ValidatedAt, &i.CreatedAt, &i.UpdatedAt)
 	return i, err
 }
 
@@ -853,14 +859,15 @@ SET name                = COALESCE($1::text, name),
     workload_id         = CASE WHEN $7::boolean THEN $8::uuid ELSE workload_id END,
     workload_inline     = CASE WHEN $7::boolean THEN $9::jsonb ELSE workload_inline END,
     sizes               = COALESCE($10::jsonb, sizes),
-    provider_profile_id = CASE WHEN $11::boolean THEN $12::uuid ELSE provider_profile_id END,
-    keep                = COALESCE($13::text, keep),
-    rating_tenant       = COALESCE($14::boolean, rating_tenant),
-    rating_global       = COALESCE($15::boolean, rating_global),
-    status              = $16,
-    validated_at        = $17,
+    execution           = COALESCE($11::jsonb, execution),
+    provider_profile_id = CASE WHEN $12::boolean THEN $13::uuid ELSE provider_profile_id END,
+    keep                = COALESCE($14::text, keep),
+    rating_tenant       = COALESCE($15::boolean, rating_tenant),
+    rating_global       = COALESCE($16::boolean, rating_global),
+    status              = $17,
+    validated_at        = $18,
     updated_at          = now()
-WHERE id = $18 AND deleted_at IS NULL;`
+WHERE id = $19 AND deleted_at IS NULL;`
 
 type UpdateTestParams struct {
 	Name              *string
@@ -873,6 +880,7 @@ type UpdateTestParams struct {
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
+	Execution         json.RawMessage
 	SetProvider       *bool
 	ProviderProfileID *uuid.UUID
 	Keep              *string
@@ -884,7 +892,7 @@ type UpdateTestParams struct {
 }
 
 func (q *Queries) UpdateTest(ctx context.Context, arg UpdateTestParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, updateTestSQL, arg.Name, arg.Description, arg.Tags, arg.SetDatabase, arg.DatabaseID, arg.DatabaseInline, arg.SetWorkload, arg.WorkloadID, arg.WorkloadInline, arg.Sizes, arg.SetProvider, arg.ProviderProfileID, arg.Keep, arg.RatingTenant, arg.RatingGlobal, arg.Status, arg.ValidatedAt, arg.ID)
+	tag, err := q.db.Exec(ctx, updateTestSQL, arg.Name, arg.Description, arg.Tags, arg.SetDatabase, arg.DatabaseID, arg.DatabaseInline, arg.SetWorkload, arg.WorkloadID, arg.WorkloadInline, arg.Sizes, arg.Execution, arg.SetProvider, arg.ProviderProfileID, arg.Keep, arg.RatingTenant, arg.RatingGlobal, arg.Status, arg.ValidatedAt, arg.ID)
 	return tag.RowsAffected(), err
 }
 
@@ -3994,6 +4002,7 @@ type DatabasesOfTenantRow struct {
 	Image       string
 	Params      json.RawMessage
 	Configs     json.RawMessage
+	Runtime     json.RawMessage
 	External    json.RawMessage
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -4003,7 +4012,7 @@ func (q *Queries) DatabasesOfTenant(ctx context.Context, arg DatabasesOfTenantPa
 	var b strings.Builder
 	var args []any
 	var conds []string
-	b.WriteString("-- Filters are optional; sort is decided by the caller through sort_key/desc.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, external, created_at, updated_at\nFROM databases")
+	b.WriteString("-- Filters are optional; sort is decided by the caller through sort_key/desc.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases")
 	args = append(args, arg.TenantID)
 	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
 	args = append(args, arg.Search)
@@ -4032,7 +4041,7 @@ func (q *Queries) DatabasesOfTenant(ctx context.Context, arg DatabasesOfTenantPa
 	var items []DatabasesOfTenantRow
 	for rows.Next() {
 		var i DatabasesOfTenantRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.Kind, &i.Version, &i.Image, &i.Params, &i.Configs, &i.External, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.Kind, &i.Version, &i.Image, &i.Params, &i.Configs, &i.Runtime, &i.External, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -4139,6 +4148,7 @@ type TestsOfTenantRow struct {
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
+	Execution         json.RawMessage
 	ProviderProfileID *uuid.UUID
 	Keep              string
 	RatingTenant      bool
@@ -4153,7 +4163,7 @@ func (q *Queries) TestsOfTenant(ctx context.Context, arg TestsOfTenantParams) ([
 	var b strings.Builder
 	var args []any
 	var conds []string
-	b.WriteString("SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,\n       sizes, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at\nFROM tests")
+	b.WriteString("SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,\n       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at\nFROM tests")
 	args = append(args, arg.TenantID)
 	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
 	args = append(args, arg.Search)
@@ -4182,7 +4192,7 @@ func (q *Queries) TestsOfTenant(ctx context.Context, arg TestsOfTenantParams) ([
 	var items []TestsOfTenantRow
 	for rows.Next() {
 		var i TestsOfTenantRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.DatabaseID, &i.DatabaseInline, &i.WorkloadID, &i.WorkloadInline, &i.Sizes, &i.ProviderProfileID, &i.Keep, &i.RatingTenant, &i.RatingGlobal, &i.Status, &i.ValidatedAt, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.DatabaseID, &i.DatabaseInline, &i.WorkloadID, &i.WorkloadInline, &i.Sizes, &i.Execution, &i.ProviderProfileID, &i.Keep, &i.RatingTenant, &i.RatingGlobal, &i.Status, &i.ValidatedAt, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

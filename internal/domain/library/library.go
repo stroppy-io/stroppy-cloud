@@ -55,6 +55,7 @@ type DatabaseSpec struct {
 	Params  json.RawMessage      `json:"params"`
 	// Configs: role → config schema id → deviations from the schema defaults.
 	Configs map[string]map[string]json.RawMessage `json:"configs,omitempty"`
+	Runtime json.RawMessage                       `json:"runtime,omitempty"`
 	// ExternalDSN is set for kind external only (write-only on the API).
 	ExternalDSN string `json:"external_dsn,omitempty"`
 }
@@ -108,13 +109,15 @@ type SegmentSummary struct {
 
 // RoleSize is the size choice of one role.
 type RoleSize struct {
-	Size     string `json:"size"`
-	DiskType string `json:"disk_type,omitempty"`
-	DiskGB   int    `json:"disk_gb,omitempty"`
+	Machine  json.RawMessage `json:"machine,omitempty"`
+	Size     string          `json:"size"`
+	DiskType string          `json:"disk_type,omitempty"`
+	DiskGB   int             `json:"disk_gb,omitempty"`
 }
 
 // TestSpec is the launchable combination.
 type TestSpec struct {
+	Execution         json.RawMessage     `json:"execution,omitempty"`
 	DatabaseRef       *uuid.UUID          `json:"database_ref,omitempty"`
 	DatabaseInline    *DatabaseSpec       `json:"database_inline,omitempty"`
 	WorkloadRef       *uuid.UUID          `json:"workload_ref,omitempty"`
@@ -146,6 +149,7 @@ type Test struct {
 
 // Issue is one fit finding.
 type Issue struct {
+	Scope     string // input (default) | run_spec
 	Path      string
 	Code      string
 	Severity  string // ERROR | WARNING
@@ -236,6 +240,7 @@ type Repository interface {
 // TestPatch is a partial update of a test; nil = keep. Database/Workload
 // switch reference↔inline together.
 type TestPatch struct {
+	Execution json.RawMessage
 	EntityPatch
 	SetDatabase       bool
 	DatabaseRef       *uuid.UUID

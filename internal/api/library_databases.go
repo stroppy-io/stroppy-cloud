@@ -30,7 +30,11 @@ func databaseSpecOf(s oas.DatabaseSpec) library.DatabaseSpec {
 	if ext, ok := s.External.Get(); ok {
 		dsn = ext.Dsn
 	}
-	return databaseSpecFrom(s.Kind, s.Version, s.Image, s.Params, configs, dsn)
+	out := databaseSpecFrom(s.Kind, s.Version, s.Image, s.Params, configs, dsn)
+	if v, ok := s.Runtime.Get(); ok {
+		out.Runtime = rawOf(v)
+	}
+	return out
 }
 
 func databaseWriteSpec(w *oas.DatabaseWrite) library.DatabaseSpec {
@@ -45,11 +49,18 @@ func databaseWriteSpec(w *oas.DatabaseWrite) library.DatabaseSpec {
 	if ext, ok := w.External.Get(); ok {
 		dsn = ext.Dsn
 	}
-	return databaseSpecFrom(w.Kind, w.Version, w.Image, w.Params, configs, dsn)
+	out := databaseSpecFrom(w.Kind, w.Version, w.Image, w.Params, configs, dsn)
+	if v, ok := w.Runtime.Get(); ok {
+		out.Runtime = rawOf(v)
+	}
+	return out
 }
 
 func specToWire(spec library.DatabaseSpec) oas.DatabaseSpec {
 	out := oas.DatabaseSpec{Kind: oas.DatabaseKind(spec.Kind), Version: spec.Version, Params: schemaValueOf(spec.Params)}
+	if len(spec.Runtime) > 0 {
+		out.Runtime = oas.NewOptSchemaValue(schemaValueOf(spec.Runtime))
+	}
 	if spec.Image != "" {
 		out.Image = oas.NewOptString(spec.Image)
 	}
@@ -75,7 +86,7 @@ func (h *Handler) databaseOf(d library.Database, derived library.DatabaseDerived
 	spec := specToWire(d.Spec)
 	out := &oas.Database{
 		ID: hd.id, Name: hd.name, Description: hd.description, Tags: oas.NewOptDatabaseTags(tagsOf(d.Tags)), Author: hd.author, CreatedAt: hd.created, UpdatedAt: hd.updated,
-		Kind: spec.Kind, Version: spec.Version, Image: spec.Image, Params: spec.Params, Schema: spec.Schema, Usages: usagesOf(usages),
+		Runtime: spec.Runtime, Kind: spec.Kind, Version: spec.Version, Image: spec.Image, Params: spec.Params, Schema: spec.Schema, Usages: usagesOf(usages),
 	}
 	if c, ok := spec.Configs.Get(); ok {
 		dc := oas.DatabaseConfigs{}
@@ -197,8 +208,11 @@ func (h *Handler) PatchDatabase(ctx context.Context, req *oas.DatabasePatch, par
 		p.Tags = v
 	}
 	var spec *library.DatabaseSpec
-	if req.Version.Set || req.Image.Set || req.Params.Set || req.Configs.Set {
+	if req.Version.Set || req.Image.Set || req.Params.Set || req.Configs.Set || req.Runtime.Set {
 		spec = &library.DatabaseSpec{Version: req.Version.Or(""), Image: req.Image.Or("")}
+		if v, ok := req.Runtime.Get(); ok {
+			spec.Runtime = rawOf(v)
+		}
 		if v, ok := req.Params.Get(); ok {
 			spec.Params = rawOf(v)
 		}

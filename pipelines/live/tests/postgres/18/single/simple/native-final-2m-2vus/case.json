@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/18/single/simple/native-final-2m-2vus",
+  "database": "postgres",
+  "version": "18",
+  "topology": "single",
+  "workload": "simple",
+  "preset": "native-final-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "selected_run": null,
+  "execution": {
+    "status": "not_started",
+    "observed_at": null
+  },
+  "checks": "checks.json",
+  "runs": [],
+  "input": "input.json",
+  "input_status": "draft",
+  "source": {
+    "path": "tests/platform/suites/suite-pg-native-final.json",
+    "pointer": "/cells/0/run_spec"
+  },
+  "acceptance_scope": "draft; requires replanning before launch"
+}

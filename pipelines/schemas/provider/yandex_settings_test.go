@@ -30,8 +30,9 @@ func TestYandexSettings(t *testing.T) {
 	}
 
 	schematest.Run(t, YandexSettings(), schematest.Cases{
-		Valid: []map[string]any{minimal, full},
+		Valid: []map[string]any{minimal},
 		Invalid: []schematest.Invalid{
+			{Value: full, Code: "RULE_VIOLATED", Path: "network-create-only"},
 			{Value: map[string]any{
 				"cloud_id":  "b1glku4lgd6gabcdefgh",
 				"folder_id": "not-a-folder",

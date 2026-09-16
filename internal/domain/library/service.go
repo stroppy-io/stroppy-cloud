@@ -9,6 +9,8 @@ import (
 
 	"github.com/google/uuid"
 
+	pipelinespec "github.com/stroppy-io/stroppy-cloud/pipelines/spec"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -18,13 +20,14 @@ import (
 
 // Service is the library use cases.
 type Service struct {
-	repo     Repository
-	validate Validator
-	catalog  *catalog.Catalog
-	access   Access
-	profiles Profiles
-	limits   Limits
-	audit    *audit.Service
+	preflight func(context.Context, DatabaseSpec, WorkloadSpec, Resolved, TestSpec) ([]Issue, error)
+	repo      Repository
+	validate  Validator
+	catalog   *catalog.Catalog
+	access    Access
+	profiles  Profiles
+	limits    Limits
+	audit     *audit.Service
 	// testUsers reports who references a test beyond the library (suites,
 	// schedules); nil = nobody.
 	testUsers TestUsers
@@ -94,6 +97,11 @@ func (s *Service) owned(tenantID uuid.UUID, e Entity, what string) error {
 // the params comes back as a validation error (CodeValidation) when they
 // do not fit.
 func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (DatabaseSpec, DatabaseDerived, error) {
+	runtime, runtimeErr := pipelinespec.NormalizeRuntime(spec.Runtime)
+	if runtimeErr != nil {
+		return DatabaseSpec{}, DatabaseDerived{}, pipelinespec.WithValidationPath(runtimeErr, "runtime")
+	}
+	spec.Runtime = runtime
 	kind, ok := s.catalog.Database(spec.Kind)
 	if !ok {
 		return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("unknown database kind %q", spec.Kind))
@@ -263,6 +271,9 @@ func (s *Service) UpdateDatabase(ctx context.Context, actor auth.Actor, tenantID
 		}
 		if specPatch.Params != nil {
 			merged.Params = specPatch.Params
+		}
+		if specPatch.Runtime != nil {
+			merged.Runtime = specPatch.Runtime
 		}
 		if specPatch.Configs != nil {
 			merged.Configs = specPatch.Configs
@@ -568,4 +579,10 @@ func intOf(v any) int {
 		return int(n)
 	}
 	return 0
+}
+
+// SetPreflight connects recipe compilation to the library fit calculation. It is
+// registered during application assembly; the callback must not launch resources.
+func (s *Service) SetPreflight(fn func(context.Context, DatabaseSpec, WorkloadSpec, Resolved, TestSpec) ([]Issue, error)) {
+	s.preflight = fn
 }

@@ -169,6 +169,7 @@ type Databases struct {
 	Image       string
 	Params      json.RawMessage
 	Configs     json.RawMessage
+	Runtime     json.RawMessage
 	External    json.RawMessage
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -202,6 +203,7 @@ type Tests struct {
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
+	Execution         json.RawMessage
 	ProviderProfileID *uuid.UUID
 	Keep              string
 	RatingTenant      bool

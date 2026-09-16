@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "id": "tests/ydb_managed/managed/dedicated-medium/simple/native-otlp-2m-2vus",
+  "database": "ydb_managed",
+  "version": "managed",
+  "topology": "dedicated-medium",
+  "workload": "simple",
+  "preset": "native-otlp-2m-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a",
+    "ru-central1-b",
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/catalog-functional-check.json",
+    "pointer": "/native_cells/42"
+  },
+  "legacy_row": {
+    "database": "ydb_managed",
+    "version": "managed",
+    "topology": "dedicated-medium",
+    "provider": "yandex",
+    "zone": "ru-central1-a,ru-central1-b,ru-central1-d",
+    "workload": "simple",
+    "database_actual_version": "",
+    "started_at": "2026-09-15T18:22:08.166104683Z",
+    "finished_at": "2026-09-15T18:24:13.654598417Z",
+    "preset": "native-otlp-2m-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "pending",
+    "database_metric_distributions": "pending",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "not_applicable",
+    "pipeline_traces": "passed",
+    "native_tps": "not_applicable",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium",
+    "iterations": "4467.0",
+    "input": "suite-ydb-populationretry.json",
+    "evidence": "catalog-functional-check.json",
+    "checked_at": "2026-09-15T18:31:49.146766+00:00",
+    "note": "segment=simple; All configured native workloads completed without terminal errors. Persisted native OTLP, scalar component metrics, logs, traces, artifact downloads and removal of owned YC resources verified. Database histogram/summary export remains pending.",
+    "component_log_observations": "{}",
+    "retry_attempts": "0.0",
+    "local_cluster": "",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "normalized_public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-ydb-populationretry.json",
+    "pointer": "/cells/1/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "simple",
+      "script": "simple",
+      "run": {
+        "executor": "constant-vus",
+        "vus": 2,
+        "duration": "2m"
+      },
+      "params": {
+        "script": "simple"
+      }
+    },
+    {
+      "name": "tpcb-tx",
+      "script": "tpcb/tx",
+      "run": {
+        "executor": "constant-vus",
+        "vus": 2,
+        "duration": "20s"
+      },
+      "params": {
+        "script": "tpcb/tx",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    },
+    {
+      "name": "tpcc-tx",
+      "script": "tpcc/tx",
+      "run": {
+        "executor": "constant-vus",
+        "vus": 2,
+        "duration": "20s"
+      },
+      "params": {
+        "script": "tpcc/tx",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence.",
+  "input_transformations": [
+    {
+      "path": "/observability/headers",
+      "old_value": {},
+      "action": "remove",
+      "reason": "Empty historical sanitization field is not part of spec.run@1. Original retained in input_source and runs/<run-id>/input.json."
+    }
+  ]
+}

@@ -31,8 +31,10 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 				raw, _ := json.Marshal(map[string]any{"image_tag": version.Version, "replicas": replicas})
 				major := strings.Split(version.Version, "pg")[1]
 				conf := json.RawMessage(`{"pg_stat_statements_max":10000,"pg_stat_statements_track":"all"}`)
-				input := library.DatabaseSpec{Kind: catalog.OrioleDB, Version: version.Version, Params: raw,
-					Configs: map[string]map[string]json.RawMessage{"db": {"cfg.orioledb.postgresql.conf@" + major: conf}, "db-replica": {"cfg.orioledb.postgresql.conf@" + major: conf}}}
+				input := library.DatabaseSpec{
+					Kind: catalog.OrioleDB, Version: version.Version, Params: raw,
+					Configs: map[string]map[string]json.RawMessage{"db": {"cfg.orioledb.postgresql.conf@" + major: conf}, "db-replica": {"cfg.orioledb.postgresql.conf@" + major: conf}},
+				}
 				if replicas == 0 {
 					delete(input.Configs, "db-replica")
 				}
@@ -40,8 +42,10 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg,
-					Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{
+					StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg,
+					Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)},
+				})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -49,9 +53,11 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 				for _, n := range derived.Plan.Nodes {
 					sizes[n.Role] = library.RoleSize{Size: "S"}
 				}
-				out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan,
+				out, err := compile.Compile(ctx, reg, compile.Input{
+					RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan,
 					EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider,
-					ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+					ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat,
+				})
 				if err != nil {
 					t.Fatal(err)
 				}

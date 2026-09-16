@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous",
+  "case_paths": [
+    "tests/ydb/26.1/mirror-3-dc/simple/smoke-2m-2vus",
+    "tests/ydb/26.1/mirror-3-dc/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.1/mirror-3-dc/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.1/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-ydb-autonomous.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

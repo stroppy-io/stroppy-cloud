@@ -114,4 +114,3 @@ export interface SpecResultRun1 {
   /** Summary. The headline numbers the run list, rating and compare sort on. */
   summary?: SpecResultRun1Summary;
 }
-

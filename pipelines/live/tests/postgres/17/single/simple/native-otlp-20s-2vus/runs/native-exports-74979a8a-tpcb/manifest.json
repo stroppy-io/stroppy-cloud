@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "native-exports-74979a8a-tpcb",
+  "case_paths": [
+    "tests/postgres/17/single/simple/native-otlp-20s-2vus",
+    "tests/postgres/17/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/postgres/17/single/tpcb-procs/native-otlp-20s-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-native-exports.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

@@ -14,4 +14,3 @@ export interface SystemLimits1 {
   /** Run retention. Ceiling for the tenant's own run_retention_days setting. [days] */
   run_retention_max_days: number | string;
 }
-

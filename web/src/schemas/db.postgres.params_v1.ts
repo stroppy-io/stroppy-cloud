@@ -26,4 +26,3 @@ export interface DbPostgresParams1 {
   /** Init SQL. SQL executed on the primary once the cluster is up, before the workload (schema tweaks, roles, GUC overrides). */
   init_sql?: string;
 }
-

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
@@ -11,12 +12,14 @@ import (
 
 	"github.com/go-faster/jx"
 	"github.com/google/uuid"
+	schemapb "github.com/gopherex/schemapb/go/schemapb"
 	"gopkg.in/yaml.v3"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 /*
@@ -169,14 +172,16 @@ func validationErrOf(v any) oas.OptValidationResult {
 	if v == nil {
 		return oas.OptValidationResult{}
 	}
-	if e, ok := v.(*errs.Error); ok {
-		if vr, ok := e.Validation.(interface{ GetErrors() []any }); ok {
-			_ = vr
-		}
-	}
-	// A derived validation failure is rendered as one error entry with the
-	// detail; schema results carry their own entries through Problem.
 	if err, ok := v.(error); ok {
+		var pipelineValidation *spec.ValidationError
+		if errors.As(err, &pipelineValidation) {
+			return oas.NewOptValidationResult(resourceValidationOf(pipelineValidation.Issues))
+		}
+		if domain, ok := errs.AsValidation(err); ok {
+			if vr, ok := domain.Validation.(*schemapb.ValidationResult); ok {
+				return oas.NewOptValidationResult(validationOf(vr))
+			}
+		}
 		return oas.NewOptValidationResult(oas.ValidationResult{Errors: []oas.ValidationError{{Path: "", Code: "INVALID", Message: oas.NewOptString(err.Error())}}})
 	}
 	return oas.OptValidationResult{}
@@ -195,7 +200,7 @@ func exportDocumentOf(d library.Document) *oas.ExportDocument {
 	}
 	out.Metadata = oas.NewOptExportDocumentMetadata(meta)
 	var m map[string]json.RawMessage
-	_ = json.Unmarshal(d.Spec, &m) //nolint:errcheck // built by us
+	_ = json.Unmarshal(browserSchemaJSON(d.Spec), &m) //nolint:errcheck // built by us
 	for k, v := range m {
 		out.Spec[k] = jx.Raw(v)
 	}
@@ -221,8 +226,8 @@ func yamlDocument(d library.Document) (io.Reader, error) {
 	if err != nil {
 		return nil, err
 	}
-	var generic map[string]any
-	if err := json.Unmarshal(raw, &generic); err != nil {
+	generic, err := spec.DecodeObject(raw)
+	if err != nil {
 		return nil, err
 	}
 	out, err := yaml.Marshal(generic)
@@ -302,6 +307,7 @@ func wantsYAML(ctx context.Context) bool {
 // representation (exports).
 func AcceptMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Stroppy-Contract-Version", spec.ContractVersion)
 		next.ServeHTTP(w, r.WithContext(WithAccept(r.Context(), r.Header.Get("Accept"))))
 	})
 }

@@ -1,1111 +1,1235 @@
 {
-  "id":  {
-    "namespace":  "workload",
-    "name":  "segment",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "workload",
+    "name": "segment",
+    "version": "v1.0.0"
   },
-  "description":  "One stroppy load segment: workload, typed parameters, scenario, steps and files.",
-  "fields":  [
+  "description": "One stroppy load segment: workload, typed parameters, scenario, steps and files.",
+  "fields": [
     {
-      "name":  "name",
-      "description":  "Segment id inside the workload; used as the phase label of the run and as a metric label.",
-      "required":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "64",
-        "pattern":  "^[a-z][a-z0-9_-]*$"
+      "name": "name",
+      "description": "Segment id inside the workload; used as the phase label of the run and as a metric label.",
+      "required": true,
+      "string": {
+        "minLen": "1",
+        "maxLen": "64",
+        "pattern": "^[a-z][a-z0-9_-]*$"
       },
-      "group":  "Segment",
-      "title":  "Name"
+      "group": "Segment",
+      "title": "Name"
     },
     {
-      "name":  "workload",
-      "description":  "Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`.",
-      "required":  true,
-      "oneOf":  {
-        "discriminator":  "script",
-        "variants":  {
-          "execute_sql":  {
-            "fields":  [
+      "name": "workload",
+      "description": "Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`.",
+      "required": true,
+      "oneOf": {
+        "discriminator": "script",
+        "variants": {
+          "baseline": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "sql_body",
-                "description":  "SQL text to execute (sqlBody); may start with a `--= name` marker to name the query.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "1048576"
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "20",
+                  "gte": "0",
+                  "lte": "1024"
                 },
-                "group":  "SQL",
-                "title":  "Inline SQL"
+                "group": "Load",
+                "title": "Load workers"
               },
               {
-                "name":  "sql_file",
-                "description":  "SQL file to execute (sqlFile): a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "rows",
+                "description": "Rows loaded into the baseline probe table (rows).",
+                "int64": {
+                  "default": "250000",
+                  "gte": "1"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
-              }
-            ],
-            "strict":  true
-          },
-          "simple":  {
-            "fields":  [
-              {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
-              }
-            ],
-            "strict":  true
-          },
-          "tpcb/procs":  {
-            "fields":  [
-              {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "group": "Data",
+                "title": "Rows"
               },
               {
-                "name":  "scale_factor",
-                "description":  "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
-                },
-                "group":  "Data",
-                "title":  "Scale factor"
-              },
-              {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers).",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "0",
-                  "lte":  "1024"
-                },
-                "group":  "Load",
-                "title":  "Load workers"
-              },
-              {
-                "name":  "retry_attempts",
-                "description":  "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
-                "int64":  {
-                  "default":  "3",
-                  "gte":  "1",
-                  "lte":  "100"
-                },
-                "group":  "Transactions",
-                "title":  "Retry attempts"
-              },
-              {
-                "name":  "tx_isolation",
-                "description":  "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                "nullable":  true,
-                "choice":  {
-                  "options":  [
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "read_uncommitted"
+                      "value": {
+                        "stringValue": "read_uncommitted"
                       },
-                      "label":  "Read uncommitted"
+                      "label": "Read uncommitted"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "read_committed"
+                      "value": {
+                        "stringValue": "read_committed"
                       },
-                      "label":  "Read committed"
+                      "label": "Read committed"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "repeatable_read"
+                      "value": {
+                        "stringValue": "repeatable_read"
                       },
-                      "label":  "Repeatable read"
+                      "label": "Repeatable read"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "serializable"
+                      "value": {
+                        "stringValue": "serializable"
                       },
-                      "label":  "Serializable"
+                      "label": "Serializable"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "db_default"
+                      "value": {
+                        "stringValue": "db_default"
                       },
-                      "label":  "Database default"
+                      "label": "Database default"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "conn"
+                      "value": {
+                        "stringValue": "conn"
                       },
-                      "label":  "Connection-level"
+                      "label": "Connection-level"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "none"
+                      "value": {
+                        "stringValue": "none"
                       },
-                      "label":  "None (no BEGIN)"
+                      "label": "None (no BEGIN)"
                     }
                   ]
                 },
-                "group":  "Transactions",
-                "title":  "Transaction isolation"
-              },
-              {
-                "name":  "sql_file",
-                "description":  "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
-                },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "Transactions",
+                "title": "Transaction isolation"
               }
             ],
-            "strict":  true
+            "strict": true
           },
-          "tpcb/tx":  {
-            "fields":  [
+          "execute_sql": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "scale_factor",
-                "description":  "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
+                "name": "sql_body",
+                "description": "SQL text to execute (sqlBody); may start with a `--= name` marker to name the query.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "1048576"
                 },
-                "group":  "Data",
-                "title":  "Scale factor"
+                "group": "SQL",
+                "title": "Inline SQL"
               },
               {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers).",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "0",
-                  "lte":  "1024"
+                "name": "sql_file",
+                "description": "SQL file to execute (sqlFile): a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "Load",
-                "title":  "Load workers"
+                "group": "SQL",
+                "title": "SQL file"
+              }
+            ],
+            "strict": true
+          },
+          "simple": {
+            "fields": [
+              {
+                "name": "script",
+                "required": true,
+                "string": {}
+              }
+            ],
+            "strict": true
+          },
+          "tpcb/procs": {
+            "fields": [
+              {
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "retry_attempts",
-                "description":  "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
-                "int64":  {
-                  "default":  "3",
-                  "gte":  "1",
-                  "lte":  "100"
+                "name": "scale_factor",
+                "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Transactions",
-                "title":  "Retry attempts"
+                "group": "Data",
+                "title": "Scale factor"
               },
               {
-                "name":  "tx_isolation",
-                "description":  "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                "nullable":  true,
-                "choice":  {
-                  "options":  [
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "1",
+                  "gte": "0",
+                  "lte": "1024"
+                },
+                "group": "Load",
+                "title": "Load workers"
+              },
+              {
+                "name": "retry_attempts",
+                "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                "int64": {
+                  "default": "3",
+                  "gte": "1",
+                  "lte": "100"
+                },
+                "group": "Transactions",
+                "title": "Retry attempts"
+              },
+              {
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "read_uncommitted"
+                      "value": {
+                        "stringValue": "read_uncommitted"
                       },
-                      "label":  "Read uncommitted"
+                      "label": "Read uncommitted"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "read_committed"
+                      "value": {
+                        "stringValue": "read_committed"
                       },
-                      "label":  "Read committed"
+                      "label": "Read committed"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "repeatable_read"
+                      "value": {
+                        "stringValue": "repeatable_read"
                       },
-                      "label":  "Repeatable read"
+                      "label": "Repeatable read"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "serializable"
+                      "value": {
+                        "stringValue": "serializable"
                       },
-                      "label":  "Serializable"
+                      "label": "Serializable"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "db_default"
+                      "value": {
+                        "stringValue": "db_default"
                       },
-                      "label":  "Database default"
+                      "label": "Database default"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "conn"
+                      "value": {
+                        "stringValue": "conn"
                       },
-                      "label":  "Connection-level"
+                      "label": "Connection-level"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "none"
+                      "value": {
+                        "stringValue": "none"
                       },
-                      "label":  "None (no BEGIN)"
+                      "label": "None (no BEGIN)"
                     }
                   ]
                 },
-                "group":  "Transactions",
-                "title":  "Transaction isolation"
+                "group": "Transactions",
+                "title": "Transaction isolation"
               },
               {
-                "name":  "sql_file",
-                "description":  "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "sql_file",
+                "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "SQL",
+                "title": "SQL file"
               }
             ],
-            "strict":  true
+            "strict": true
           },
-          "tpcc/procs":  {
-            "fields":  [
+          "tpcb/tx": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "scale_factor",
-                "description":  "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
+                "name": "scale_factor",
+                "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Data",
-                "title":  "Warehouses"
+                "group": "Data",
+                "title": "Scale factor"
               },
               {
-                "name":  "warehouse_start",
-                "description":  "First warehouse id (warehouseStart); lets several runners share one database.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "1",
+                  "gte": "0",
+                  "lte": "1024"
                 },
-                "group":  "Data",
-                "title":  "First warehouse"
+                "group": "Load",
+                "title": "Load workers"
               },
               {
-                "name":  "load_items",
-                "description":  "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
-                "nullable":  true,
-                "bool":  {},
-                "group":  "Load",
-                "title":  "Load items"
-              },
-              {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers).",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "0",
-                  "lte":  "1024"
+                "name": "retry_attempts",
+                "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                "int64": {
+                  "default": "3",
+                  "gte": "1",
+                  "lte": "100"
                 },
-                "group":  "Load",
-                "title":  "Load workers"
+                "group": "Transactions",
+                "title": "Retry attempts"
               },
               {
-                "name":  "pg_unlogged",
-                "description":  "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
-                "bool":  {
-                  "default":  false
-                },
-                "group":  "Load",
-                "title":  "Unlogged tables while loading"
-              },
-              {
-                "name":  "pacing",
-                "description":  "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
-                "bool":  {
-                  "default":  false
-                },
-                "group":  "Transactions",
-                "title":  "Pacing"
-              },
-              {
-                "name":  "retry_attempts",
-                "description":  "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
-                "int64":  {
-                  "default":  "3",
-                  "gte":  "1",
-                  "lte":  "100"
-                },
-                "group":  "Transactions",
-                "title":  "Retry attempts"
-              },
-              {
-                "name":  "tx_isolation",
-                "description":  "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                "nullable":  true,
-                "choice":  {
-                  "options":  [
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "read_uncommitted"
+                      "value": {
+                        "stringValue": "read_uncommitted"
                       },
-                      "label":  "Read uncommitted"
+                      "label": "Read uncommitted"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "read_committed"
+                      "value": {
+                        "stringValue": "read_committed"
                       },
-                      "label":  "Read committed"
+                      "label": "Read committed"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "repeatable_read"
+                      "value": {
+                        "stringValue": "repeatable_read"
                       },
-                      "label":  "Repeatable read"
+                      "label": "Repeatable read"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "serializable"
+                      "value": {
+                        "stringValue": "serializable"
                       },
-                      "label":  "Serializable"
+                      "label": "Serializable"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "db_default"
+                      "value": {
+                        "stringValue": "db_default"
                       },
-                      "label":  "Database default"
+                      "label": "Database default"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "conn"
+                      "value": {
+                        "stringValue": "conn"
                       },
-                      "label":  "Connection-level"
+                      "label": "Connection-level"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "none"
+                      "value": {
+                        "stringValue": "none"
                       },
-                      "label":  "None (no BEGIN)"
+                      "label": "None (no BEGIN)"
                     }
                   ]
                 },
-                "group":  "Transactions",
-                "title":  "Transaction isolation"
+                "group": "Transactions",
+                "title": "Transaction isolation"
               },
               {
-                "name":  "sql_file",
-                "description":  "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "sql_file",
+                "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "SQL",
+                "title": "SQL file"
               }
             ],
-            "strict":  true
+            "strict": true
           },
-          "tpcc/tx":  {
-            "fields":  [
+          "tpcc/procs": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "scale_factor",
-                "description":  "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
+                "name": "scale_factor",
+                "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Data",
-                "title":  "Warehouses"
+                "group": "Data",
+                "title": "Warehouses"
               },
               {
-                "name":  "warehouse_start",
-                "description":  "First warehouse id (warehouseStart); lets several runners share one database.",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "100000"
+                "name": "warehouse_start",
+                "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Data",
-                "title":  "First warehouse"
+                "group": "Data",
+                "title": "First warehouse"
               },
               {
-                "name":  "load_items",
-                "description":  "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
-                "nullable":  true,
-                "bool":  {},
-                "group":  "Load",
-                "title":  "Load items"
+                "name": "load_items",
+                "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
+                "nullable": true,
+                "bool": {},
+                "group": "Load",
+                "title": "Load items"
               },
               {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers).",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "0",
-                  "lte":  "1024"
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "1",
+                  "gte": "0",
+                  "lte": "1024"
                 },
-                "group":  "Load",
-                "title":  "Load workers"
+                "group": "Load",
+                "title": "Load workers"
               },
               {
-                "name":  "pg_unlogged",
-                "description":  "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
-                "bool":  {
-                  "default":  false
+                "name": "pg_unlogged",
+                "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                "bool": {
+                  "default": false
                 },
-                "group":  "Load",
-                "title":  "Unlogged tables while loading"
+                "group": "Load",
+                "title": "Unlogged tables while loading"
               },
               {
-                "name":  "pacing",
-                "description":  "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
-                "bool":  {
-                  "default":  false
+                "name": "pacing",
+                "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
+                "bool": {
+                  "default": false
                 },
-                "group":  "Transactions",
-                "title":  "Pacing"
+                "group": "Transactions",
+                "title": "Pacing"
               },
               {
-                "name":  "retry_attempts",
-                "description":  "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
-                "int64":  {
-                  "default":  "3",
-                  "gte":  "1",
-                  "lte":  "100"
+                "name": "retry_attempts",
+                "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                "int64": {
+                  "default": "3",
+                  "gte": "1",
+                  "lte": "100"
                 },
-                "group":  "Transactions",
-                "title":  "Retry attempts"
+                "group": "Transactions",
+                "title": "Retry attempts"
               },
               {
-                "name":  "tx_isolation",
-                "description":  "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                "nullable":  true,
-                "choice":  {
-                  "options":  [
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "read_uncommitted"
+                      "value": {
+                        "stringValue": "read_uncommitted"
                       },
-                      "label":  "Read uncommitted"
+                      "label": "Read uncommitted"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "read_committed"
+                      "value": {
+                        "stringValue": "read_committed"
                       },
-                      "label":  "Read committed"
+                      "label": "Read committed"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "repeatable_read"
+                      "value": {
+                        "stringValue": "repeatable_read"
                       },
-                      "label":  "Repeatable read"
+                      "label": "Repeatable read"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "serializable"
+                      "value": {
+                        "stringValue": "serializable"
                       },
-                      "label":  "Serializable"
+                      "label": "Serializable"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "db_default"
+                      "value": {
+                        "stringValue": "db_default"
                       },
-                      "label":  "Database default"
+                      "label": "Database default"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "conn"
+                      "value": {
+                        "stringValue": "conn"
                       },
-                      "label":  "Connection-level"
+                      "label": "Connection-level"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "none"
+                      "value": {
+                        "stringValue": "none"
                       },
-                      "label":  "None (no BEGIN)"
+                      "label": "None (no BEGIN)"
                     }
                   ]
                 },
-                "group":  "Transactions",
-                "title":  "Transaction isolation"
+                "group": "Transactions",
+                "title": "Transaction isolation"
               },
               {
-                "name":  "sql_file",
-                "description":  "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "sql_file",
+                "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "SQL",
+                "title": "SQL file"
               }
             ],
-            "strict":  true
+            "strict": true
           },
-          "tpcds":  {
-            "fields":  [
+          "tpcc/tx": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "scale_factor",
-                "description":  "TPC-DS scale factor (scaleFactor); fractional allowed. Static dimensions (~1.9M customer_demographics rows) do not shrink.",
-                "double":  {
-                  "default":  1,
-                  "gt":  0,
-                  "lte":  10000
+                "name": "scale_factor",
+                "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Data",
-                "title":  "Scale factor"
+                "group": "Data",
+                "title": "Warehouses"
               },
               {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers); 0 = automatic.",
-                "int64":  {
-                  "default":  "0",
-                  "gte":  "0",
-                  "lte":  "1024"
+                "name": "warehouse_start",
+                "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "100000"
                 },
-                "group":  "Load",
-                "title":  "Load workers"
+                "group": "Data",
+                "title": "First warehouse"
               },
               {
-                "name":  "pg_unlogged",
-                "description":  "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
-                "bool":  {
-                  "default":  false
+                "name": "load_items",
+                "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
+                "nullable": true,
+                "bool": {},
+                "group": "Load",
+                "title": "Load items"
+              },
+              {
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers).",
+                "int64": {
+                  "default": "1",
+                  "gte": "0",
+                  "lte": "1024"
                 },
-                "group":  "Load",
-                "title":  "Unlogged tables while loading"
+                "group": "Load",
+                "title": "Load workers"
               },
               {
-                "name":  "streams",
-                "description":  "Number of query streams (streams).",
-                "int64":  {
-                  "default":  "1",
-                  "gte":  "1",
-                  "lte":  "64"
+                "name": "pg_unlogged",
+                "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                "bool": {
+                  "default": false
                 },
-                "group":  "Queries",
-                "title":  "Query streams"
+                "group": "Load",
+                "title": "Unlogged tables while loading"
               },
               {
-                "name":  "query_stream",
-                "description":  "Which query stream to generate (queryStream).",
-                "int64":  {
-                  "default":  "0",
-                  "gte":  "0",
-                  "lte":  "63"
+                "name": "pacing",
+                "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
+                "bool": {
+                  "default": false
                 },
-                "group":  "Queries",
-                "title":  "Query stream"
+                "group": "Transactions",
+                "title": "Pacing"
               },
               {
-                "name":  "query_seed",
-                "description":  "Query generator seed (querySeed).",
-                "int64":  {
-                  "default":  "19620718",
-                  "gte":  "0"
+                "name": "retry_attempts",
+                "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                "int64": {
+                  "default": "3",
+                  "gte": "1",
+                  "lte": "100"
                 },
-                "group":  "Queries",
-                "title":  "Query seed"
+                "group": "Transactions",
+                "title": "Retry attempts"
               },
               {
-                "name":  "validate_force",
-                "description":  "Compare answers even when the scale factor is not 1 (validateForce).",
-                "bool":  {
-                  "default":  false
-                },
-                "group":  "Queries",
-                "title":  "Validate outside SF=1"
-              },
-              {
-                "name":  "ydb_store_mode",
-                "description":  "YDB table store mode (ydbStoreMode); ignored by other drivers.",
-                "choice":  {
-                  "options":  [
+                "name": "tx_isolation",
+                "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                "nullable": true,
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "column"
+                      "value": {
+                        "stringValue": "read_uncommitted"
                       },
-                      "label":  "Column store"
+                      "label": "Read uncommitted"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "row"
+                      "value": {
+                        "stringValue": "read_committed"
                       },
-                      "label":  "Row store"
+                      "label": "Read committed"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "repeatable_read"
+                      },
+                      "label": "Repeatable read"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "serializable"
+                      },
+                      "label": "Serializable"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "db_default"
+                      },
+                      "label": "Database default"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "conn"
+                      },
+                      "label": "Connection-level"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "none"
+                      },
+                      "label": "None (no BEGIN)"
+                    }
+                  ]
+                },
+                "group": "Transactions",
+                "title": "Transaction isolation"
+              },
+              {
+                "name": "sql_file",
+                "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
+                },
+                "group": "SQL",
+                "title": "SQL file"
+              }
+            ],
+            "strict": true
+          },
+          "tpcds": {
+            "fields": [
+              {
+                "name": "script",
+                "required": true,
+                "string": {}
+              },
+              {
+                "name": "scale_factor",
+                "description": "TPC-DS scale factor (scaleFactor); fractional allowed. Static dimensions (~1.9M customer_demographics rows) do not shrink.",
+                "double": {
+                  "default": 1,
+                  "gt": 0,
+                  "lte": 10000
+                },
+                "group": "Data",
+                "title": "Scale factor"
+              },
+              {
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                "int64": {
+                  "default": "0",
+                  "gte": "0",
+                  "lte": "1024"
+                },
+                "group": "Load",
+                "title": "Load workers"
+              },
+              {
+                "name": "pg_unlogged",
+                "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                "bool": {
+                  "default": false
+                },
+                "group": "Load",
+                "title": "Unlogged tables while loading"
+              },
+              {
+                "name": "streams",
+                "description": "Number of query streams (streams).",
+                "int64": {
+                  "default": "1",
+                  "gte": "1",
+                  "lte": "64"
+                },
+                "group": "Queries",
+                "title": "Query streams"
+              },
+              {
+                "name": "query_stream",
+                "description": "Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.",
+                "nullable": true,
+                "int64": {
+                  "gte": "0"
+                },
+                "group": "Queries",
+                "title": "Query stream"
+              },
+              {
+                "name": "query_seed",
+                "description": "Query generator seed (querySeed).",
+                "int64": {
+                  "default": "19620718"
+                },
+                "group": "Queries",
+                "title": "Query seed"
+              },
+              {
+                "name": "validate_force",
+                "description": "Compare answers even when the scale factor is not 1 (validateForce).",
+                "bool": {
+                  "default": false
+                },
+                "group": "Queries",
+                "title": "Validate outside SF=1"
+              },
+              {
+                "name": "ydb_store_mode",
+                "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
+                "choice": {
+                  "options": [
+                    {
+                      "value": {
+                        "stringValue": "column"
+                      },
+                      "label": "Column store"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "row"
+                      },
+                      "label": "Row store"
                     }
                   ],
-                  "default":  {
-                    "stringValue":  "column"
+                  "default": {
+                    "stringValue": "column"
                   }
                 },
-                "group":  "Load",
-                "title":  "YDB store mode"
+                "group": "Load",
+                "title": "YDB store mode"
               },
               {
-                "name":  "schema_file",
-                "description":  "Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "schema_file",
+                "description": "Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "Schema file"
+                "group": "SQL",
+                "title": "Schema file"
               },
               {
-                "name":  "sql_file",
-                "description":  "Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "sql_file",
+                "description": "Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "SQL",
+                "title": "SQL file"
               }
             ],
-            "strict":  true
+            "strict": true
           },
-          "tpch/tx":  {
-            "fields":  [
+          "tpch/tx": {
+            "fields": [
               {
-                "name":  "script",
-                "required":  true,
-                "string":  {}
+                "name": "script",
+                "required": true,
+                "string": {}
               },
               {
-                "name":  "scale_factor",
-                "description":  "TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data.",
-                "double":  {
-                  "default":  1,
-                  "gt":  0,
-                  "lte":  10000
+                "name": "scale_factor",
+                "description": "TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data.",
+                "double": {
+                  "default": 1,
+                  "gt": 0,
+                  "lte": 10000
                 },
-                "group":  "Data",
-                "title":  "Scale factor"
+                "group": "Data",
+                "title": "Scale factor"
               },
               {
-                "name":  "load_workers",
-                "description":  "Workers used to load each table (loadWorkers); 0 = automatic.",
-                "int64":  {
-                  "default":  "0",
-                  "gte":  "0",
-                  "lte":  "1024"
+                "name": "load_workers",
+                "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                "int64": {
+                  "default": "0",
+                  "gte": "0",
+                  "lte": "1024"
                 },
-                "group":  "Load",
-                "title":  "Load workers"
+                "group": "Load",
+                "title": "Load workers"
               },
               {
-                "name":  "pg_unlogged",
-                "description":  "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
-                "bool":  {
-                  "default":  false
+                "name": "pg_unlogged",
+                "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                "bool": {
+                  "default": false
                 },
-                "group":  "Load",
-                "title":  "Unlogged tables while loading"
+                "group": "Load",
+                "title": "Unlogged tables while loading"
               },
               {
-                "name":  "ydb_store_mode",
-                "description":  "YDB table store mode (ydbStoreMode); ignored by other drivers.",
-                "choice":  {
-                  "options":  [
+                "name": "ydb_store_mode",
+                "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
+                "choice": {
+                  "options": [
                     {
-                      "value":  {
-                        "stringValue":  "column"
+                      "value": {
+                        "stringValue": "column"
                       },
-                      "label":  "Column store"
+                      "label": "Column store"
                     },
                     {
-                      "value":  {
-                        "stringValue":  "row"
+                      "value": {
+                        "stringValue": "row"
                       },
-                      "label":  "Row store"
+                      "label": "Row store"
                     }
                   ],
-                  "default":  {
-                    "stringValue":  "column"
+                  "default": {
+                    "stringValue": "column"
                   }
                 },
-                "group":  "Load",
-                "title":  "YDB store mode"
+                "group": "Load",
+                "title": "YDB store mode"
               },
               {
-                "name":  "sql_file",
-                "description":  "Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files.",
-                "nullable":  true,
-                "string":  {
-                  "maxLen":  "256",
-                  "pattern":  "^[A-Za-z0-9._/-]+$"
+                "name": "sql_file",
+                "description": "Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files.",
+                "nullable": true,
+                "string": {
+                  "maxLen": "256",
+                  "pattern": "^[A-Za-z0-9._/-]+$"
                 },
-                "group":  "SQL",
-                "title":  "SQL file"
+                "group": "SQL",
+                "title": "SQL file"
               }
             ],
-            "strict":  true
+            "strict": true
           }
         }
       },
-      "group":  "Workload",
-      "title":  "Workload"
+      "group": "Workload",
+      "title": "Workload"
     },
     {
-      "name":  "run",
-      "description":  "Load shape of the segment.",
-      "required":  true,
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "run",
+      "description": "Load shape of the segment.",
+      "required": true,
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "executor",
-              "description":  "Scenario executor: constant-vus runs for a duration, shared-iterations shares N iterations between VUs.",
-              "choice":  {
-                "options":  [
+              "name": "executor",
+              "description": "Scenario executor: constant-vus runs for a duration, shared-iterations shares N iterations between VUs.",
+              "choice": {
+                "options": [
                   {
-                    "value":  {
-                      "stringValue":  "constant-vus"
+                    "value": {
+                      "stringValue": "constant-vus"
                     },
-                    "label":  "Constant VUs for a duration"
+                    "label": "Constant VUs for a duration"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "shared-iterations"
+                    "value": {
+                      "stringValue": "shared-iterations"
                     },
-                    "label":  "Shared iterations"
+                    "label": "Shared iterations"
                   }
                 ],
-                "default":  {
-                  "stringValue":  "constant-vus"
+                "default": {
+                  "stringValue": "constant-vus"
                 }
               },
-              "title":  "Executor"
+              "title": "Executor"
             },
             {
-              "name":  "vus",
-              "description":  "Concurrent virtual users (vus); sizes the runner machine and the pool.",
-              "int64":  {
-                "default":  "1",
-                "gte":  "1",
-                "lte":  "100000"
+              "name": "vus",
+              "description": "Concurrent virtual users (vus); sizes the runner machine and the pool.",
+              "int64": {
+                "default": "1",
+                "gte": "1",
+                "lte": "100000"
               },
-              "title":  "Virtual users"
+              "title": "Virtual users"
             },
             {
-              "name":  "duration",
-              "description":  "Wall-clock length of a constant-vus scenario (duration).",
-              "nullable":  true,
-              "duration":  {
-                "gt":  "0s",
-                "lte":  "86400s"
+              "name": "duration",
+              "description": "Wall-clock length of a constant-vus scenario (duration).",
+              "nullable": true,
+              "duration": {
+                "gt": "0s",
+                "lte": "86400s"
               },
-              "title":  "Duration"
+              "title": "Duration"
             },
             {
-              "name":  "iterations",
-              "description":  "Total iterations of a shared-iterations scenario (iterations).",
-              "nullable":  true,
-              "int64":  {
-                "gte":  "1"
+              "name": "iterations",
+              "description": "Total iterations of a shared-iterations scenario (iterations).",
+              "nullable": true,
+              "int64": {
+                "gte": "1"
               },
-              "title":  "Iterations"
+              "title": "Iterations"
             },
             {
-              "name":  "query_timeout",
-              "description":  "Per-statement deadline (queryTimeout); 0 disables it.",
-              "duration":  {
-                "default":  "0s",
-                "gte":  "0s",
-                "lte":  "3600s"
+              "name": "query_timeout",
+              "description": "Per-statement deadline (queryTimeout); 0 disables it.",
+              "duration": {
+                "default": "0s",
+                "gte": "0s",
+                "lte": "3600s"
               },
-              "title":  "Query timeout"
+              "title": "Query timeout"
             }
           ],
-          "rules":  [
+          "rules": [
             {
-              "expr":  "this.executor != \"constant-vus\" || (\"duration\" in this && this.duration != null)",
-              "message":  "constant-vus needs a duration",
-              "id":  "constant-vus-needs-duration"
+              "expr": "this.executor != \"constant-vus\" || (\"duration\" in this && this.duration != null)",
+              "message": "constant-vus needs a duration",
+              "id": "constant-vus-needs-duration"
             },
             {
-              "expr":  "this.executor != \"shared-iterations\" || (\"iterations\" in this && this.iterations != null)",
-              "message":  "shared-iterations needs an iteration count",
-              "id":  "shared-iterations-needs-count"
+              "expr": "this.executor != \"constant-vus\" || !(\"iterations\" in this) || this.iterations == null",
+              "message": "iterations applies only to shared-iterations",
+              "id": "iterations-executor"
+            },
+            {
+              "expr": "this.executor != \"shared-iterations\" || !(\"duration\" in this) || this.duration == null",
+              "message": "duration applies only to constant-vus",
+              "id": "duration-executor"
+            },
+            {
+              "expr": "this.executor != \"shared-iterations\" || (\"iterations\" in this && this.iterations != null)",
+              "message": "shared-iterations needs an iteration count",
+              "id": "shared-iterations-needs-count"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Scenario",
-      "title":  "Scenario"
+      "group": "Scenario",
+      "title": "Scenario"
     },
     {
-      "name":  "steps",
-      "description":  "Run only the listed stroppy steps (--steps); empty = all steps.",
-      "list":  {
-        "items":  [
+      "name": "steps",
+      "description": "Run only the listed stroppy steps (--steps); empty = all steps.",
+      "list": {
+        "items": [
           {
-            "string":  {
-              "minLen":  "1",
-              "maxLen":  "64",
-              "pattern":  "^[a-z][a-z0-9_]*$"
+            "string": {
+              "minLen": "1",
+              "maxLen": "64",
+              "pattern": "^[a-z][a-z0-9_]*$"
             }
           }
         ],
-        "maxItems":  "32",
-        "unique":  true
+        "maxItems": "32",
+        "unique": true
       },
-      "group":  "Steps",
-      "title":  "Only these steps"
+      "group": "Steps",
+      "title": "Only these steps"
     },
     {
-      "name":  "no_steps",
-      "description":  "Skip the listed stroppy steps (--no-steps); stroppy rejects it together with steps.",
-      "list":  {
-        "items":  [
+      "name": "no_steps",
+      "description": "Skip the listed stroppy steps (--no-steps); stroppy rejects it together with steps.",
+      "list": {
+        "items": [
           {
-            "string":  {
-              "minLen":  "1",
-              "maxLen":  "64",
-              "pattern":  "^[a-z][a-z0-9_]*$"
+            "string": {
+              "minLen": "1",
+              "maxLen": "64",
+              "pattern": "^[a-z][a-z0-9_]*$"
             }
           }
         ],
-        "maxItems":  "32",
-        "unique":  true
+        "maxItems": "32",
+        "unique": true
       },
-      "group":  "Steps",
-      "title":  "Skip these steps"
+      "group": "Steps",
+      "title": "Skip these steps"
     },
     {
-      "name":  "extra_params",
-      "description":  "Typed stroppy flags this form does not model, by flag name without dashes (load-workers); values are parsed by stroppy.",
-      "rules":  [
+      "name": "extra_params",
+      "description": "Typed stroppy flags this form does not model, by flag name without dashes (load-workers); values are parsed by stroppy.",
+      "rules": [
         {
-          "expr":  "this.all(k, k.matches(\"^[a-z][a-z0-9-]*$\"))",
-          "message":  "extra parameter keys must be stroppy flag names (lower-kebab)",
-          "id":  "extra-param-key-shape"
+          "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9-]*$\"))",
+          "message": "extra parameter keys must be stroppy flag names (lower-kebab)",
+          "id": "extra-param-key-shape"
         }
       ],
-      "map":  {
-        "maxEntries":  "64",
-        "valueField":  {
-          "name":  "value",
-          "string":  {
-            "maxLen":  "4096"
+      "map": {
+        "maxEntries": "64",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "maxLen": "4096"
           }
         }
       },
-      "group":  "Workload",
-      "title":  "Extra parameters"
+      "group": "Workload",
+      "title": "Extra parameters"
     },
     {
-      "name":  "files",
-      "description":  "Extra files (SQL dialects, schemas, data) shipped with the segment.",
-      "list":  {
-        "items":  [
+      "name": "files",
+      "description": "Extra files (SQL dialects, schemas, data) shipped with the segment.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "description":  "Name the file gets in the segment workspace; reference it from sql_file/schema_file.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "128",
-                      "pattern":  "^[A-Za-z0-9._/-]+$"
+                    "name": "name",
+                    "description": "Name the file gets in the segment workspace; reference it from sql_file/schema_file.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "128",
+                      "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$"
                     },
-                    "title":  "File name"
+                    "title": "File name"
                   },
                   {
-                    "name":  "kind",
-                    "description":  "What the file is: a schema/DDL file, a config, or a data file.",
-                    "choice":  {
-                      "options":  [
+                    "name": "kind",
+                    "description": "What the file is: a schema/DDL file, a config, or a data file.",
+                    "choice": {
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "sql"
+                          "value": {
+                            "stringValue": "sql"
                           },
-                          "label":  "SQL / DDL"
+                          "label": "SQL / DDL"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "conf"
+                          "value": {
+                            "stringValue": "conf"
                           },
-                          "label":  "Config"
+                          "label": "Config"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "data"
+                          "value": {
+                            "stringValue": "data"
                           },
-                          "label":  "Data"
+                          "label": "Data"
                         }
                       ],
-                      "default":  {
-                        "stringValue":  "sql"
+                      "default": {
+                        "stringValue": "sql"
                       }
                     },
-                    "title":  "Kind"
+                    "title": "Kind"
                   },
                   {
-                    "name":  "content",
-                    "description":  "Inline file body, at most 1 MiB.",
-                    "string":  {
-                      "maxLen":  "1048576"
+                    "name": "content",
+                    "description": "Inline file body, at most 1 MiB.",
+                    "string": {
+                      "maxLen": "1048576"
                     },
-                    "title":  "Content"
+                    "title": "Content"
                   },
                   {
-                    "name":  "ref",
-                    "description":  "Artifact/object reference to fetch instead of inline content.",
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "512"
+                    "name": "ref",
+                    "description": "Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.",
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "512",
+                      "pattern": "^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$"
                     },
-                    "title":  "Reference"
+                    "title": "Reference"
                   }
                 ],
-                "rules":  [
+                "rules": [
                   {
-                    "expr":  "(\"content\" in this) != (\"ref\" in this)",
-                    "message":  "a file needs exactly one of content or ref",
-                    "id":  "file-content-xor-ref"
+                    "expr": "(\"content\" in this) != (\"ref\" in this)",
+                    "message": "a file needs exactly one of content or ref",
+                    "id": "file-content-xor-ref"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "32"
+        "maxItems": "32"
       },
-      "group":  "Files",
-      "title":  "Files"
+      "group": "Files",
+      "title": "Files"
     },
     {
-      "name":  "thresholds",
-      "description":  "Pass/fail bounds the pipeline applies to the segment summary.",
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "thresholds",
+      "description": "Pass/fail bounds the pipeline applies to the segment summary.",
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "p99_ms",
-              "description":  "Fail the segment when iteration_duration p99 exceeds this.",
-              "double":  {
-                "gt":  0
+              "name": "p99_ms",
+              "description": "Fail the segment when iteration_duration p99 exceeds this.",
+              "double": {
+                "gt": 0
               },
-              "unit":  "ms",
-              "title":  "p99 latency"
+              "unit": "ms",
+              "title": "p99 latency"
             },
             {
-              "name":  "error_rate",
-              "description":  "Fail the segment when failed_iterations / iterations exceeds this (0..1).",
-              "double":  {
-                "gte":  0,
-                "lte":  1
+              "name": "error_rate",
+              "description": "Fail the segment when failed_iterations / iterations exceeds this (0..1).",
+              "double": {
+                "gte": 0,
+                "lte": 1
               },
-              "unit":  "ratio",
-              "title":  "Error rate"
+              "unit": "ratio",
+              "title": "Error rate"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Thresholds",
-      "title":  "Thresholds"
+      "group": "Thresholds",
+      "title": "Thresholds"
     },
     {
-      "name":  "warmup",
-      "description":  "Idle wait before the segment starts, letting caches and replicas settle.",
-      "duration":  {
-        "default":  "0s",
-        "gte":  "0s",
-        "lte":  "3600s"
+      "name": "seed",
+      "description": "Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.",
+      "nullable": true,
+      "uint64": {
+        "gte": "0"
       },
-      "group":  "Scenario",
-      "title":  "Warm-up"
+      "group": "Scenario",
+      "title": "Random seed"
     },
     {
-      "name":  "log_level",
-      "description":  "Minimum stroppy log level (--log-level); debug traces parameter resolution.",
-      "choice":  {
-        "options":  [
+      "name": "timeout",
+      "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.",
+      "nullable": true,
+      "duration": {
+        "gt": "0s",
+        "lte": "604800s"
+      },
+      "group": "Scenario",
+      "title": "Segment timeout"
+    },
+    {
+      "name": "warmup",
+      "description": "Idle wait before the segment starts, letting caches and replicas settle.",
+      "duration": {
+        "default": "0s",
+        "gte": "0s",
+        "lte": "3600s"
+      },
+      "group": "Scenario",
+      "title": "Warm-up"
+    },
+    {
+      "name": "log_level",
+      "description": "Minimum stroppy log level (--log-level); debug traces parameter resolution.",
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "debug"
+            "value": {
+              "stringValue": "debug"
             },
-            "label":  "debug"
+            "label": "debug"
           },
           {
-            "value":  {
-              "stringValue":  "info"
+            "value": {
+              "stringValue": "info"
             },
-            "label":  "info"
+            "label": "info"
           },
           {
-            "value":  {
-              "stringValue":  "warn"
+            "value": {
+              "stringValue": "warn"
             },
-            "label":  "warn"
+            "label": "warn"
           },
           {
-            "value":  {
-              "stringValue":  "error"
+            "value": {
+              "stringValue": "error"
             },
-            "label":  "error"
+            "label": "error"
           }
         ],
-        "default":  {
-          "stringValue":  "info"
+        "default": {
+          "stringValue": "info"
         }
       },
-      "group":  "Segment",
-      "title":  "Log level"
+      "group": "Segment",
+      "title": "Log level"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "!(\"steps\" in root) || !(\"no_steps\" in root) || size(root.steps) == 0 || size(root.no_steps) == 0",
-      "message":  "stroppy rejects --steps together with --no-steps",
-      "id":  "steps-mutually-exclusive"
+      "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) && (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) && (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
+      "message": "step must be an executable Stroppy step of the selected workload",
+      "id": "known-workload-steps"
     },
     {
-      "expr":  "!(\"workload\" in root) || root.workload.script != \"execute_sql\" || ((\"sql_body\" in root.workload && root.workload.sql_body != null) != (\"sql_file\" in root.workload && root.workload.sql_file != null))",
-      "message":  "execute_sql needs exactly one of sql_body or sql_file",
-      "id":  "execute-sql-source"
+      "expr": "[this == null ? root : this].all(s, !(\"files\" in s) || s.files.all(f, s.files.filter(x, x.name == f.name).size() == 1 && s.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + \"/\") && !f.name.startsWith(x.name + \"/\"))) && [\"stroppy-config.json\", \"ca.pem\", \"stroppy.log\"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + \"/\"))))",
+      "message": "file names must be unique and cannot overwrite runtime files",
+      "id": "segment-file-names"
+    },
+    {
+      "expr": "[this == null ? root : this].all(s, !(\"steps\" in s) || !(\"no_steps\" in s) || size(s.steps) == 0 || size(s.no_steps) == 0)",
+      "message": "stroppy rejects --steps together with --no-steps",
+      "id": "steps-mutually-exclusive"
+    },
+    {
+      "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload && s.workload.sql_body != null) != (\"sql_file\" in s.workload && s.workload.sql_file != null)))",
+      "message": "execute_sql needs exactly one of sql_body or sql_file",
+      "id": "execute-sql-source"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

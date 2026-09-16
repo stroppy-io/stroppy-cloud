@@ -69,6 +69,7 @@ const (
 // Snapshot is what the run was launched from — self-contained, so a
 // deleted library entry or profile does not change history.
 type Snapshot struct {
+	Execution       json.RawMessage             `json:"execution,omitempty"`
 	Database        library.DatabaseSpec        `json:"database"`
 	DatabaseName    string                      `json:"database_name,omitempty"`
 	Workload        library.WorkloadSpec        `json:"workload"`
@@ -335,6 +336,7 @@ type Publisher interface {
 // CompileRequest is what the compiler needs to turn a resolved test into a
 // RunSpec.
 type CompileRequest struct {
+	Execution json.RawMessage
 	RunID     uuid.UUID
 	Tenant    string
 	Namespace string

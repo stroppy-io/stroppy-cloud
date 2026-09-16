@@ -64,4 +64,3 @@ export interface CfgExporterMysqld1 {
   /** Target flags. --mysqld.address, emitted only once topology filled it in. */
   readonly target_flags?: string;
 }
-

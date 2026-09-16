@@ -14,4 +14,3 @@ export interface TenantWebhook1 {
   /** Description. What this hook is for, for whoever finds it later. */
   description?: string;
 }
-

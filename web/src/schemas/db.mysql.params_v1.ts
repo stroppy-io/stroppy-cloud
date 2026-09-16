@@ -18,4 +18,3 @@ export interface DbMysqlParams1 {
   /** Init SQL. SQL executed on the primary once the server is up, before the workload. */
   init_sql?: string;
 }
-

@@ -3,7 +3,10 @@ package compile
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+
+	"github.com/google/uuid"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
@@ -27,7 +30,11 @@ type Service struct {
 
 // NewService wires the compiler.
 func NewService(r Renderer, cat *catalog.Catalog, lib *library.Service) *Service {
-	return &Service{renderer: r, catalog: cat, library: lib}
+	s := &Service{renderer: r, catalog: cat, library: lib}
+	if lib != nil {
+		lib.SetPreflight(s.preflight)
+	}
+	return s
 }
 
 // Compile implements run.Compiler.
@@ -44,7 +51,7 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	obs.Labels = map[string]string{"stroppy_run_id": req.RunID.String(), "stroppy_tenant": req.Tenant}
 	out, err := Compile(ctx, s.renderer, Input{
 		RunID: req.RunID, Tenant: req.Tenant, Database: req.Database, Plan: req.Derived.Plan, EffectiveConfigs: req.Derived.EffectiveConfigs,
-		Workload: req.Workload, WorkloadBaked: baked, Sizes: req.Sizes, Provider: prov, ProviderKind: string(req.Profile.Kind),
+		Workload: req.Workload, WorkloadBaked: baked, Sizes: req.Sizes, Execution: req.Execution, Provider: prov, ProviderKind: string(req.Profile.Kind),
 		ProviderSettings: req.Profile.Settings, CredentialsSecret: provider.CredentialsSecret(req.Profile.ID), ProviderConfigName: req.Namespace,
 		StroppyImage: s.StroppyImage, Keep: req.Keep, Observability: obs, Catalog: s.catalog, Labels: req.Labels,
 	})
@@ -60,4 +67,28 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 		return run.Compiled{}, err
 	}
 	return run.Compiled{Spec: bakedSpec, Machines: out.Machines}, nil
+}
+
+func (s *Service) preflight(ctx context.Context, db library.DatabaseSpec, wl library.WorkloadSpec, res library.Resolved, test library.TestSpec) ([]library.Issue, error) {
+	compiled, err := s.Compile(ctx, run.CompileRequest{RunID: uuid.MustParse("00000000-0000-4000-8000-000000000001"), Tenant: "preflight", Namespace: "t-preflight", Database: db, Derived: *res.DatabaseDerived, Workload: wl, Sizes: test.Sizes, Execution: test.Execution, Profile: *res.Profile, Keep: test.Keep})
+	if err != nil {
+		var v *spec.ValidationError
+		if errors.As(err, &v) {
+			return preflightIssues(v.Issues), nil
+		}
+		return nil, err
+	}
+	var r spec.Run
+	if err := json.Unmarshal(compiled.Spec, &r); err != nil {
+		return nil, err
+	}
+	return preflightIssues(spec.CheckResources(r)), nil
+}
+
+func preflightIssues(findings []spec.ResourceIssue) []library.Issue {
+	var issues []library.Issue
+	for _, i := range findings {
+		issues = append(issues, library.Issue{Scope: i.Scope, Path: i.Path, Code: i.Code, Severity: i.Severity, Message: i.Message})
+	}
+	return issues
 }

@@ -34,4 +34,3 @@ export interface DbPicodataParams1 {
   /** PostgreSQL protocol. Expose the PostgreSQL wire-protocol listener; stroppy drives Picodata through it. */
   pgproto?: boolean;
 }
-

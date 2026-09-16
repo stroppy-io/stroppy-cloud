@@ -22,7 +22,7 @@ func segment() spec.Segment {
 		Steps:       []string{"create_schema", "load_data"},
 		ExtraParams: map[string]string{"warehouse-start": "3"},
 		Files:       []spec.SegmentFile{{Name: "custom.sql", Content: "--+ create_schema\n"}},
-		Thresholds:  spec.Thresholds{P99Ms: 50, ErrorRate: 0.01},
+		Thresholds:  spec.Thresholds{P99Ms: 50, ErrorRate: func() *float64 { v := 0.01; return &v }()},
 		LogLevel:    "debug",
 	}
 }
@@ -32,7 +32,7 @@ func workload() spec.Workload {
 		StroppyImage: "ghcr.io/stroppy-io/stroppy:v6.0.0.62",
 		DriverType:   "postgres",
 		URL:          "postgres://stroppy:x@${ip:role:db}:5432/bench?sslmode=disable",
-		Driver:       map[string]any{"bulkSize": float64(5000), "pool": map[string]any{"maxConns": float64(64)}, "url": "ignored"},
+		Driver:       map[string]any{"bulkSize": float64(5000), "pool": map[string]any{"maxConns": float64(64)}},
 		CACert:       "-----BEGIN CERTIFICATE-----\n",
 	}
 }

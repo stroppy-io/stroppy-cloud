@@ -47,6 +47,8 @@ func (Yandex) Scheme() k8slib.ClientOption {
 func (y Yandex) Record(ctx pipeline.Context, k8s *k8slib.Client) {
 	k8slib.Resource(ctx, k8s, "record-ydb-serverless", &ydb.DatabaseServerless{}, k8slib.WithReady(yandexServerlessReady))
 	k8slib.Resource(ctx, k8s, "record-ydb-dedicated", &ydb.DatabaseDedicated{}, k8slib.WithReady(yandexDedicatedReady))
+	k8slib.Resource(ctx, k8s, "record-nat", &vpc.Gateway{}, k8slib.WithReady(yandexGatewayReady))
+	k8slib.Resource(ctx, k8s, "record-routes", &vpc.RouteTable{}, k8slib.WithReady(yandexRouteTableReady))
 	k8slib.Resource(ctx, k8s, "record-net", &vpc.Network{}, k8slib.WithReady(yandexNetworkReady))
 	k8slib.Resource(ctx, k8s, "record-subnet", &vpc.Subnet{}, k8slib.WithReady(yandexSubnetReady))
 	k8slib.Resource(ctx, k8s, "record-sg", &vpc.SecurityGroup{}, k8slib.WithReady(yandexSGReady))
@@ -71,7 +73,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 	if err != nil {
 		return Infra{}, err
 	}
-	public := run.Network.AllowPublicIPs || st.PublicIPs
+	public := run.Network.AllowPublicIPs
 
 	// Network → security group → zonal subnets → VMs/disks. Ownership keeps
 	// every subnet until its VMs are gone and the shared group until all
@@ -105,6 +107,17 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 	byZone := map[string]pipeline.Handle{}
 	var subnetWaiters []func(pipeline.Context) error
 	var parent pipeline.Handle = sg
+	var routeID *string
+	if spec.NeedsPrivateEgress(run) {
+		gateway := k8slib.Resource(ctx, k8s, names.Gateway(), &vpc.Gateway{Spec: vpc.GatewaySpec{ResourceSpec: providerRef(pc), ForProvider: vpc.GatewayParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Gateway()), SharedEgressGateway: []vpc.SharedEgressGatewayParameters{{}}}}}, k8slib.WithReady(yandexGatewayReady), k8slib.WithResourceOption[vpc.Gateway](pipeline.Parent(sg)))
+		routes := k8slib.Resource(ctx, k8s, names.RouteTable(), &vpc.RouteTable{Spec: vpc.RouteTableSpec{ResourceSpec: providerRef(pc), ForProvider: vpc.RouteTableParameters{FolderID: ptr(st.FolderID), Name: ptr(names.RouteTable()), NetworkIDRef: &xpv1.Reference{Name: names.Network()}, StaticRoute: []vpc.StaticRouteParameters{{DestinationPrefix: ptr("0.0.0.0/0"), GatewayIDRef: &xpv1.Reference{Name: names.Gateway()}}}}}}, k8slib.WithReady(yandexRouteTableReady), k8slib.WithResourceOption[vpc.RouteTable](pipeline.Parent(gateway)))
+		parent = routes
+		live, err := routes.TryReady(ctx)
+		if err != nil {
+			return Infra{}, err
+		}
+		routeID = live.Status.AtProvider.ID
+	}
 	for _, placement := range subnets {
 		sub := k8slib.Resource(ctx, k8s, placement.Name, &vpc.Subnet{
 			Spec: vpc.SubnetSpec{
@@ -115,6 +128,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 					NetworkIDRef: &xpv1.Reference{Name: names.Network()},
 					Zone:         ptr(placement.Zone),
 					V4CidrBlocks: strPtrs(placement.CIDR),
+					RouteTableID: routeID,
 				},
 			},
 		}, k8slib.WithReady(yandexSubnetReady), k8slib.WithResourceOption[vpc.Subnet](pipeline.Parent(parent)))
@@ -154,12 +168,13 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				Spec: compute.DiskSpec{
 					ResourceSpec: providerRef(pc),
 					ForProvider: compute.DiskParameters{
-						FolderID: ptr(st.FolderID),
-						Name:     ptr(diskName),
-						Zone:     ptr(zone),
-						Size:     ptr(float64(d.GB)),
-						Type:     ptr(d.Type),
-						Labels:   labels(run, m.Labels),
+						FolderID:  ptr(st.FolderID),
+						Name:      ptr(diskName),
+						Zone:      ptr(zone),
+						Size:      ptr(float64(d.GB)),
+						BlockSize: ptr(float64(spec.DiskBlockSize(d.GB, d.BlockSize))),
+						Type:      ptr(d.Type),
+						Labels:    labels(run, m.Labels),
 					},
 				},
 			}, k8slib.WithReady(yandexDiskReady), k8slib.WithResourceOption[compute.Disk](pipeline.Parent(sub)))
@@ -169,6 +184,23 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				DiskIDRef:  &xpv1.Reference{Name: diskName},
 				AutoDelete: ptr(false), // the disk record deletes it; two deleters race
 			})
+		}
+		bootGB, bootType := yandexBootDiskGB, "network-ssd"
+		bootBlock := 0
+		if m.BootDisk != nil {
+			bootGB, bootType = m.BootDisk.GB, m.BootDisk.Type
+			bootBlock = m.BootDisk.BlockSize
+		}
+		coreFraction := m.CoreFraction
+		if coreFraction == 0 {
+			coreFraction = 100
+		}
+		vmPublic, preemptible := public, st.Preemptible
+		if m.PublicIP != nil {
+			vmPublic = *m.PublicIP
+		}
+		if m.Preemptible != nil {
+			preemptible = *m.Preemptible
 		}
 		vmName := names.Machine(m.Name)
 		children := append([]pipeline.Handle{agent}, diskHandles...)
@@ -182,24 +214,26 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 					Zone:       ptr(zone),
 					PlatformID: ptr(m.InstanceType),
 					Resources: []compute.ResourcesParameters{{
-						Cores:  ptr(float64(m.CPU)),
-						Memory: ptr(float64(m.MemoryGB)),
+						Cores:        ptr(float64(m.CPU)),
+						CoreFraction: ptr(float64(coreFraction)),
+						Memory:       ptr(float64(m.MemoryGB)),
 					}},
 					BootDisk: []compute.BootDiskParameters{{
 						AutoDelete: ptr(true),
 						InitializeParams: []compute.InitializeParamsParameters{{
-							ImageID: ptr(m.Image),
-							Size:    ptr(float64(yandexBootDiskGB)),
-							Type:    ptr("network-ssd"),
+							ImageID:   ptr(m.Image),
+							Size:      ptr(float64(bootGB)),
+							BlockSize: ptr(float64(spec.DiskBlockSize(bootGB, bootBlock))),
+							Type:      ptr(bootType),
 						}},
 					}},
 					SecondaryDisk: secondary,
 					NetworkInterface: []compute.NetworkInterfaceParameters{{
 						SubnetIDRef:          &xpv1.Reference{Name: subnetName},
 						SecurityGroupIdsRefs: []xpv1.Reference{{Name: names.SecurityGroup()}},
-						NAT:                  ptr(public),
+						NAT:                  ptr(vmPublic),
 					}},
-					SchedulingPolicy: []compute.SchedulingPolicyParameters{{Preemptible: ptr(st.Preemptible)}},
+					SchedulingPolicy: []compute.SchedulingPolicyParameters{{Preemptible: ptr(preemptible)}},
 					Metadata: map[string]*string{
 						"user-data":          ptr(agent.CloudInit()),
 						"serial-port-enable": ptr("1"),
@@ -323,4 +357,12 @@ func yandexDiskReady(live *compute.Disk) bool {
 func yandexInstanceReady(live *compute.Instance) bool {
 	return xpReady(live.Status.GetCondition(xpv1.TypeReady)) &&
 		live.Status.AtProvider.Status != nil && *live.Status.AtProvider.Status == "running"
+}
+
+func yandexGatewayReady(live *vpc.Gateway) bool {
+	return live != nil && live.Status.AtProvider.ID != nil && xpReady(live.Status.GetCondition(xpv1.TypeReady))
+}
+
+func yandexRouteTableReady(live *vpc.RouteTable) bool {
+	return live != nil && live.Status.AtProvider.ID != nil && xpReady(live.Status.GetCondition(xpv1.TypeReady))
 }

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "run_id": "native-tpcc-77fa0211-tpcc",
+  "case_paths": [
+    "tests/postgres/17/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/postgres/17/single/tpcc-procs/native-otlp-20s-2vus-retry50"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-native-tpcc-retry.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

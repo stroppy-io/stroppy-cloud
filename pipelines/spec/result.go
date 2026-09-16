@@ -89,7 +89,7 @@ type Suite struct {
 	Tenant      string        `json:"tenant"`
 	Cells       []SuiteCell   `json:"cells"`
 	Concurrency int           `json:"concurrency,omitempty"`
-	Defaults    SuiteDefaults `json:"defaults,omitempty,omitzero"`
+	Defaults    SuiteDefaults `json:"defaults"`
 }
 
 // SuiteCell is one run of a suite.
@@ -101,7 +101,7 @@ type SuiteCell struct {
 // SuiteDefaults apply to the whole fan-out.
 type SuiteDefaults struct {
 	// ContinueOnFailure keeps starting cells after one fails.
-	ContinueOnFailure bool `json:"continue_on_failure,omitempty"`
+	ContinueOnFailure bool `json:"continue_on_failure"`
 	// Labels are stamped on every child run.
 	Labels map[string]string `json:"labels,omitempty"`
 }

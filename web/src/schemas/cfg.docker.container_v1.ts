@@ -60,4 +60,3 @@ export interface CfgDockerContainer1 {
   /** Rendered --log-* flags. */
   readonly log_flags?: string;
 }
-

@@ -10,4 +10,3 @@ export interface ProviderRegistryCredentials1 {
   /** Password / token. Registry password or access token. */
   password: string;
 }
-

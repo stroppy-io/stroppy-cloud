@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "id": "tests/orioledb/beta17-pg18/single/tpcb-tx/native-otlp-20s-2vus",
+  "database": "orioledb",
+  "version": "beta17-pg18",
+  "topology": "single",
+  "workload": "tpcb/tx",
+  "preset": "native-otlp-20s-2vus",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-a"
+  ],
+  "acceptance_scope": "functional smoke and recorded telemetry checks; not full performance or fault readiness",
+  "selected_run": "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/matrix-oriole-0d49e1e2-managed-orioledb-single-pg18"
+  ],
+  "source": {
+    "path": "tests/platform/catalog/catalog-functional-check.json",
+    "pointer": "/native_cells/0"
+  },
+  "legacy_row": {
+    "database": "orioledb",
+    "version": "beta17-pg18",
+    "topology": "single",
+    "provider": "yandex",
+    "zone": "ru-central1-a",
+    "workload": "tpcb/tx",
+    "database_actual_version": "PostgreSQL 18.6 OrioleDB beta 17 PGTAG=patches18_2 alpine:3.21+clang build:2026-09-04T21:10:49+00:00 18.6 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+    "started_at": "2026-09-15T13:28:08.356068587Z",
+    "finished_at": "2026-09-15T13:28:31.372724314Z",
+    "preset": "native-otlp-20s-2vus",
+    "compile": "passed",
+    "smoke": "passed",
+    "full_workloads": "pending",
+    "baseline_matrix": "pending",
+    "segment_matrix": "pending",
+    "component_metrics": "passed",
+    "managed_database_metrics": "not_applicable",
+    "database_metric_distributions": "pending",
+    "component_logs": "passed",
+    "artifacts": "passed",
+    "replication": "not_applicable",
+    "pipeline_traces": "passed",
+    "native_tps": "passed",
+    "native_otlp_metrics": "passed",
+    "fault_campaign": "pending",
+    "cleanup": "passed",
+    "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18",
+    "iterations": "8373.0",
+    "input": "suite-orioledb.json",
+    "evidence": "catalog-functional-check.json",
+    "checked_at": "2026-09-15T13:39:17.098573+00:00",
+    "note": "segment=tpcb-tx; Native workload, durable telemetry and downloaded artifacts verified; actual Oriole table method and UTF8 checked by SQL on every member. Transaction conflict and expected TPC-C rollback log observations retained. Cleanup here proves resource removal, not graceful database shutdown.",
+    "component_log_observations": "{\"postgres_transaction_conflict\": 489, \"diagnostic_probe_query_error\": 2}",
+    "retry_attempts": "0.0",
+    "local_cluster": "",
+    "recheck_run_id": "",
+    "recheck_phase": "",
+    "recheck_stage": "",
+    "recheck_verification": "",
+    "run_phase": "Completed",
+    "run_status_checked_at": "2026-09-15T23:36:40.846351+00:00",
+    "run_stage": "",
+    "run_stage_checked_at": "",
+    "infrastructure_provisioning": "not_recorded",
+    "infrastructure_recovery": "",
+    "recovery_evidence": ""
+  },
+  "input_status": "public_snapshot",
+  "input": "input.json",
+  "input_source": {
+    "path": "tests/platform/suites/suite-orioledb.json",
+    "pointer": "/cells/0/run_spec"
+  },
+  "actual_segments": [
+    {
+      "name": "simple",
+      "script": "simple",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 2
+      },
+      "params": {
+        "script": "simple"
+      }
+    },
+    {
+      "name": "tpcb-tx",
+      "script": "tpcb/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/tx",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    },
+    {
+      "name": "tpcb-procs",
+      "script": "tpcb/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcb/procs",
+        "scale_factor": 1,
+        "load_workers": 2
+      }
+    },
+    {
+      "name": "tpcc-tx",
+      "script": "tpcc/tx",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcc/tx",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    },
+    {
+      "name": "tpcc-procs",
+      "script": "tpcc/procs",
+      "run": {
+        "duration": "20s",
+        "executor": "constant-vus",
+        "vus": 2
+      },
+      "params": {
+        "script": "tpcc/procs",
+        "scale_factor": 1,
+        "load_workers": 2,
+        "retry_attempts": 50
+      }
+    }
+  ],
+  "input_note": "Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence."
+}

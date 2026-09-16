@@ -123,6 +123,10 @@ import systemStroppyCatalog1Schema from './system.stroppy_catalog_v1.json';
 import type { SystemStroppyCatalog1 } from './system.stroppy_catalog_v1';
 import tenantWebhook1Schema from './tenant.webhook_v1.json';
 import type { TenantWebhook1 } from './tenant.webhook_v1';
+import testMachine1Schema from './test.machine_v1.json';
+import type { TestMachine1 } from './test.machine_v1';
+import testRuntime1Schema from './test.runtime_v1.json';
+import type { TestRuntime1 } from './test.runtime_v1';
 import testSizes1Schema from './test.sizes_v1.json';
 import type { TestSizes1 } from './test.sizes_v1';
 import workloadSegment1Schema from './workload.segment_v1.json';
@@ -192,6 +196,8 @@ export const schemaIds = [
   "system.sizes@1",
   "system.stroppy_catalog@1",
   "tenant.webhook@1",
+  "test.machine@1",
+  "test.runtime@1",
   "test.sizes@1",
   "workload.segment@1",
   "workload.stroppy@1",
@@ -261,6 +267,8 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "system.sizes@1" ? SystemSizes1 :
   Id extends "system.stroppy_catalog@1" ? SystemStroppyCatalog1 :
   Id extends "tenant.webhook@1" ? TenantWebhook1 :
+  Id extends "test.machine@1" ? TestMachine1 :
+  Id extends "test.runtime@1" ? TestRuntime1 :
   Id extends "test.sizes@1" ? TestSizes1 :
   Id extends "workload.segment@1" ? WorkloadSegment1 :
   Id extends "workload.stroppy@1" ? WorkloadStroppy1 : never;
@@ -328,6 +336,8 @@ export const schemas: Record<SchemaId, unknown> = {
   "system.sizes@1": systemSizes1Schema,
   "system.stroppy_catalog@1": systemStroppyCatalog1Schema,
   "tenant.webhook@1": tenantWebhook1Schema,
+  "test.machine@1": testMachine1Schema,
+  "test.runtime@1": testRuntime1Schema,
   "test.sizes@1": testSizes1Schema,
   "workload.segment@1": workloadSegment1Schema,
   "workload.stroppy@1": workloadStroppy1Schema,
@@ -395,6 +405,8 @@ export type {
   SystemSizes1,
   SystemStroppyCatalog1,
   TenantWebhook1,
+  TestMachine1,
+  TestRuntime1,
   TestSizes1,
   WorkloadSegment1,
   WorkloadStroppy1,

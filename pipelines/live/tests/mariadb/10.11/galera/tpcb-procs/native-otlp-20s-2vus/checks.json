@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011",
+  "checked_at": "2026-09-15T12:27:00.803617+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "unknown",
+      "reason": "No explicit retained verification for this check.",
+      "evidence": null,
+      "legacy_status": "not_recorded"
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "Not verified in the retained report.",
+      "evidence": null,
+      "legacy_status": "pending"
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Not applicable to this database/topology; inherited scope is preserved.",
+      "evidence": null,
+      "legacy_status": "not_applicable"
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Imported accepted observation; see source record.",
+      "evidence": {
+        "path": "tests/platform/catalog/mysql-clusters-check.json",
+        "pointer": "/native_cells/17"
+      },
+      "legacy_status": "passed"
+    }
+  ]
+}

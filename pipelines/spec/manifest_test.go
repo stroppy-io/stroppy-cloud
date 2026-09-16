@@ -3,6 +3,7 @@ package spec
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"time"
@@ -10,6 +11,25 @@ import (
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
 	"github.com/graphene-ci/pipeline/pkg/manifest"
 )
+
+// liveFixturePath keeps historical fixture identities while their files live
+// beside the corresponding database cases or shared platform checks.
+func liveFixturePath(t *testing.T, name string) string {
+	t.Helper()
+	raw, err := os.ReadFile("../live/tests/platform/migration/paths.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	var paths map[string]string
+	if err := json.Unmarshal(raw, &paths); err != nil {
+		t.Fatal(err)
+	}
+	path, ok := paths[name]
+	if !ok || !filepath.IsLocal(path) {
+		t.Fatalf("invalid live fixture mapping: %s -> %s", name, path)
+	}
+	return filepath.Join("../live", path)
+}
 
 // The Graphene door validates the reflected manifest, not our product schema.
 // JSON values emitted by the server must pass both, including omitted zeros.
@@ -128,7 +148,7 @@ func TestLiveFixturesFitProductSchemas(t *testing.T) {
 		{"run-yandex-missing-credentials.json", "spec.run@1"},
 	} {
 		t.Run(tc.file, func(t *testing.T) {
-			raw, err := os.ReadFile("../live/" + tc.file)
+			raw, err := os.ReadFile(liveFixturePath(t, tc.file))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -137,6 +157,31 @@ func TestLiveFixturesFitProductSchemas(t *testing.T) {
 				t.Fatal(err)
 			}
 			bake(t, tc.schema, value)
+		})
+	}
+}
+
+// TestStructuredLiveInputsFitProductSchema checks extracted public run inputs
+// and unlaunched drafts after moving them alongside their test cases.
+func TestStructuredLiveInputsFitProductSchema(t *testing.T) {
+	files, err := filepath.Glob("../live/tests/*/*/*/*/*/input.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(files) == 0 {
+		t.Fatal("no structured live inputs found")
+	}
+	for _, file := range files {
+		t.Run(file, func(t *testing.T) {
+			raw, err := os.ReadFile(file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var value map[string]any
+			if err := json.Unmarshal(raw, &value); err != nil {
+				t.Fatal(err)
+			}
+			bake(t, "spec.run@1", value)
 		})
 	}
 }
@@ -164,7 +209,7 @@ func TestLiveSuiteResultFitsGrapheneManifest(t *testing.T) {
 		"suite-yandex-postgres-parallel-dockerhub.result.json",
 	} {
 		t.Run(name, func(t *testing.T) {
-			raw, err := os.ReadFile("../live/" + name)
+			raw, err := os.ReadFile(liveFixturePath(t, name))
 			if err != nil {
 				t.Fatal(err)
 			}

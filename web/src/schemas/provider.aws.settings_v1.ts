@@ -36,4 +36,3 @@ export interface ProviderAwsSettings1 {
   /** Spot instances. Use Spot capacity: much cheaper, but interruptible with a two-minute notice — do not use for a measurement that must complete. */
   spot?: boolean;
 }
-

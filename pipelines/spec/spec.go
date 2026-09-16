@@ -41,8 +41,8 @@ type Run struct {
 	HostPrep []HostPrep `json:"host_prep,omitempty"`
 	// Scrapes are agent-side Prometheus scrapes of exporters.
 	Scrapes []Scrape `json:"scrapes,omitempty"`
-	// Flows are the allowed traffic edges between roles; they drive security
-	// groups and the topology view.
+	// Flows describe role relationships in the topology view; ingress openings
+	// are controlled by Network.Ingress.
 	Flows         []Flow        `json:"flows,omitempty"`
 	Workload      Workload      `json:"workload"`
 	Observability Observability `json:"observability,omitempty,omitzero"`
@@ -70,7 +70,7 @@ type Provider struct {
 // Network is the network every machine of the run joins.
 type Network struct {
 	CIDR           string    `json:"cidr,omitempty"`
-	AllowPublicIPs bool      `json:"allow_public_ips,omitempty"`
+	AllowPublicIPs bool      `json:"allow_public_ips"`
 	Ingress        []Ingress `json:"ingress,omitempty"`
 }
 
@@ -87,6 +87,10 @@ type Machine struct {
 	Role         string            `json:"role"`
 	CPU          int               `json:"cpu"`
 	MemoryGB     int               `json:"memory_gb"`
+	BootDisk     *BootDisk         `json:"boot_disk,omitempty"`
+	CoreFraction int               `json:"core_fraction,omitempty"`
+	Preemptible  *bool             `json:"preemptible,omitempty"`
+	PublicIP     *bool             `json:"public_ip,omitempty"`
 	Disks        []Disk            `json:"disks,omitempty"`
 	Image        string            `json:"image"`
 	Location     string            `json:"location"`
@@ -94,12 +98,22 @@ type Machine struct {
 	Labels       map[string]string `json:"labels,omitempty"`
 }
 
+// BootDisk configures the disposable OS disk. Omission uses 40 GiB SSD.
+type BootDisk struct {
+	BlockSize int    `json:"block_size,omitempty"`
+	GB        int    `json:"gb"`
+	Type      string `json:"type"`
+}
+
 // Disk is a secondary disk beyond the boot disk.
 type Disk struct {
-	Name  string `json:"name"`
-	GB    int    `json:"gb"`
-	Type  string `json:"type"`
-	Mount string `json:"mount,omitempty"`
+	Filesystem   string   `json:"filesystem,omitempty"`
+	MountOptions []string `json:"mount_options,omitempty"`
+	BlockSize    int      `json:"block_size,omitempty"`
+	Name         string   `json:"name"`
+	GB           int      `json:"gb"`
+	Type         string   `json:"type"`
+	Mount        string   `json:"mount,omitempty"`
 }
 
 // Container is one container on a machine.
@@ -122,7 +136,7 @@ type Container struct {
 	Ulimits     map[string]int64  `json:"ulimits,omitempty"`
 }
 
-// Port maps a container port to a host port.
+// Port declares a host-network port; Container and Host must be equal.
 type Port struct {
 	Container int `json:"container"`
 	Host      int `json:"host"`
@@ -162,6 +176,7 @@ const (
 // HostPrep is one pre-deploy step on every machine of a role.
 type HostPrep struct {
 	Role    string       `json:"role"`
+	Machine string       `json:"machine,omitempty"`
 	Kind    HostPrepKind `json:"kind"`
 	Content string       `json:"content"`
 }

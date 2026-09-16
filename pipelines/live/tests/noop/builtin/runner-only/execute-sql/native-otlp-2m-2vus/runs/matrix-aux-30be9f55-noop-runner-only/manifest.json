@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "run_id": "matrix-aux-30be9f55-noop-runner-only",
+  "case_paths": [
+    "tests/noop/builtin/runner-only/execute_sql/smoke-2m-2vus",
+    "tests/noop/builtin/runner-only/execute-sql/native-otlp-2m-2vus"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-15T23:36:40.846351+00:00"
+  },
+  "input_status": "public_snapshot",
+  "note": "Public snapshot may omit private OTLP credentials. No credentials are restored during migration.",
+  "input_source": {
+    "path": "tests/platform/suites/suite-auxiliary.json",
+    "pointer": "/cells/0/run_spec"
+  }
+}

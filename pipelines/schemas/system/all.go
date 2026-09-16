@@ -9,6 +9,8 @@ func All() []*schemapb.Schema {
 		Sizes(),
 		StroppyCatalog(),
 		RoleSizes(),
+		Machine(),
+		Runtime(),
 		TenantWebhook(),
 	}
 }

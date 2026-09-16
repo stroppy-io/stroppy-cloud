@@ -19,12 +19,13 @@ import (
 func RoleSizes() *schemapb.Schema {
 	return schemapb.NewSchema(ids.Test("sizes", 1)).
 		Descr("Per-role machine sizing of a test: a T-shirt size and an optional disk override.").
-		Strict().Coerce().
+		Strict().Coerce().DefSchema("machine", Machine()).
 		Fields(
 			schemapb.Map("roles",
 				sizeChoice("size").Title("Size").
 					Desc("T-shirt size; the platform size table turns it into a machine.").
 					Required(),
+				schemapb.Ref("machine", "machine").Title("Machine").Group("Sizing").Desc("Override any hardware field from the selected preset; explicit disks replace the preset disk list."),
 				schemapb.Object("disk",
 					schemapb.Str("type").Title("Disk type").
 						Desc("Provider disk type id; empty keeps the size table's default.").

@@ -1,1329 +1,4180 @@
 {
-  "id":  {
-    "namespace":  "spec",
-    "name":  "run",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "spec",
+    "name": "run",
+    "version": "v1.0.0"
   },
-  "description":  "RunSpec: the resolved description of one benchmark run handed to stroppy-run.",
-  "fields":  [
+  "description": "RunSpec: the resolved description of one benchmark run handed to stroppy-run.",
+  "fields": [
     {
-      "name":  "run_id",
-      "description":  "Run id minted by the server; also the Graphene run id.",
-      "required":  true,
-      "string":  {
-        "format":  "uuid"
+      "name": "run_id",
+      "description": "Run id minted by the server; also the Graphene run id.",
+      "required": true,
+      "string": {
+        "format": "uuid"
       },
-      "group":  "Identity",
-      "title":  "Run id"
+      "group": "Identity",
+      "title": "Run id"
     },
     {
-      "name":  "tenant",
-      "description":  "Tenant slug; the Graphene namespace is t-<tenant>.",
-      "required":  true,
-      "string":  {
-        "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+      "name": "tenant",
+      "description": "Tenant slug; the Graphene namespace is t-<tenant>.",
+      "required": true,
+      "string": {
+        "pattern": "^[a-z][a-z0-9-]{0,62}$"
       },
-      "group":  "Identity",
-      "title":  "Tenant"
+      "group": "Identity",
+      "title": "Tenant"
     },
     {
-      "name":  "provider",
-      "description":  "Where the run is created and with which credentials.",
-      "required":  true,
-      "object":  {
-        "schema":  {
-          "fields":  [
-            {
-              "name":  "kind",
-              "description":  "Cloud the run is created in.",
-              "required":  true,
-              "choice":  {
-                "options":  [
-                  {
-                    "value":  {
-                      "stringValue":  "yandex"
-                    },
-                    "label":  "Yandex Cloud"
-                  },
-                  {
-                    "value":  {
-                      "stringValue":  "aws"
-                    },
-                    "label":  "AWS"
-                  }
-                ]
+      "name": "provider",
+      "description": "Cloud placement and named credentials; settings use the existing provider schemas.",
+      "required": true,
+      "oneOf": {
+        "discriminator": "kind",
+        "variants": {
+          "aws": {
+            "fields": [
+              {
+                "name": "settings",
+                "description": "Baked provider placement settings.",
+                "required": true,
+                "ref": {
+                  "name": "aws_settings"
+                },
+                "group": "Provider",
+                "title": "Settings"
               },
-              "title":  "Provider"
-            },
-            {
-              "name":  "settings",
-              "description":  "Baked provider.<kind>.settings value; non-secret placement settings.",
-              "required":  true,
-              "json":  {},
-              "title":  "Settings"
-            },
-            {
-              "name":  "credentials_secret",
-              "description":  "Name of the Graphene secret holding the provider credentials — never the value.",
-              "required":  true,
-              "string":  {
-                "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
+              {
+                "name": "credentials_secret",
+                "description": "Graphene secret name, never a credential value.",
+                "required": true,
+                "string": {
+                  "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "Credentials secret"
               },
-              "title":  "Credentials secret"
-            },
-            {
-              "name":  "provider_config_name",
-              "description":  "Crossplane ProviderConfig the managed resources reference (t-<tenant>).",
-              "required":  true,
-              "string":  {
-                "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+              {
+                "name": "provider_config_name",
+                "description": "Crossplane ProviderConfig used by the run.",
+                "required": true,
+                "string": {
+                  "pattern": "^[a-z][a-z0-9-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "ProviderConfig"
               },
-              "title":  "ProviderConfig"
-            },
-            {
-              "name":  "registry_secret",
-              "description":  "Name of the Graphene secret with a private docker registry login, when images need one.",
-              "string":  {
-                "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
+              {
+                "name": "registry_secret",
+                "description": "Optional Graphene secret with registry credentials.",
+                "string": {
+                  "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "Registry secret"
+              }
+            ]
+          },
+          "yandex": {
+            "fields": [
+              {
+                "name": "settings",
+                "description": "Baked provider placement settings.",
+                "required": true,
+                "ref": {
+                  "name": "yandex_settings"
+                },
+                "group": "Provider",
+                "title": "Settings"
               },
-              "title":  "Registry secret"
-            }
-          ],
-          "strict":  true
+              {
+                "name": "credentials_secret",
+                "description": "Graphene secret name, never a credential value.",
+                "required": true,
+                "string": {
+                  "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "Credentials secret"
+              },
+              {
+                "name": "provider_config_name",
+                "description": "Crossplane ProviderConfig used by the run.",
+                "required": true,
+                "string": {
+                  "pattern": "^[a-z][a-z0-9-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "ProviderConfig"
+              },
+              {
+                "name": "registry_secret",
+                "description": "Optional Graphene secret with registry credentials.",
+                "string": {
+                  "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+                },
+                "group": "Provider",
+                "title": "Registry secret"
+              }
+            ]
+          }
         }
       },
-      "group":  "Provider",
-      "title":  "Provider"
+      "group": "Provider",
+      "title": "Provider"
     },
     {
-      "name":  "network",
-      "description":  "The network every machine of the run joins.",
-      "required":  true,
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "network",
+      "description": "The network every machine of the run joins.",
+      "required": true,
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "cidr",
-              "description":  "IPv4 range of the run network.",
-              "string":  {
-                "default":  "10.130.0.0/24",
-                "pattern":  "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+              "name": "cidr",
+              "description": "IPv4 range of the run network.",
+              "string": {
+                "default": "10.130.0.0/24",
+                "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
               },
-              "title":  "CIDR"
+              "title": "CIDR"
             },
             {
-              "name":  "allow_public_ips",
-              "description":  "Machines get a public address (needed when the agent has no private route out).",
-              "bool":  {
-                "default":  true
+              "name": "allow_public_ips",
+              "description": "Machines get a public address (needed when the agent has no private route out).",
+              "bool": {
+                "default": true
               },
-              "title":  "Public IPs"
+              "title": "Public IPs"
             },
             {
-              "name":  "ingress",
-              "description":  "Security group openings beyond the intra-network traffic.",
-              "list":  {
-                "items":  [
+              "name": "ingress",
+              "description": "Security group openings beyond the intra-network traffic.",
+              "list": {
+                "items": [
                   {
-                    "object":  {
-                      "schema":  {
-                        "fields":  [
+                    "object": {
+                      "schema": {
+                        "fields": [
                           {
-                            "name":  "port",
-                            "required":  true,
-                            "int64":  {
-                              "gte":  "1",
-                              "lte":  "65535"
+                            "name": "port",
+                            "required": true,
+                            "int64": {
+                              "gte": "1",
+                              "lte": "65535"
                             },
-                            "title":  "Port"
+                            "title": "Port"
                           },
                           {
-                            "name":  "proto",
-                            "choice":  {
-                              "options":  [
+                            "name": "proto",
+                            "choice": {
+                              "options": [
                                 {
-                                  "value":  {
-                                    "stringValue":  "tcp"
+                                  "value": {
+                                    "stringValue": "tcp"
                                   },
-                                  "label":  "TCP"
+                                  "label": "TCP"
                                 },
                                 {
-                                  "value":  {
-                                    "stringValue":  "udp"
+                                  "value": {
+                                    "stringValue": "udp"
                                   },
-                                  "label":  "UDP"
+                                  "label": "UDP"
                                 }
                               ],
-                              "default":  {
-                                "stringValue":  "tcp"
+                              "default": {
+                                "stringValue": "tcp"
                               }
                             },
-                            "title":  "Protocol"
+                            "title": "Protocol"
                           },
                           {
-                            "name":  "cidr",
-                            "description":  "Who may reach the port.",
-                            "required":  true,
-                            "string":  {
-                              "pattern":  "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+                            "name": "cidr",
+                            "description": "Who may reach the port.",
+                            "required": true,
+                            "string": {
+                              "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
                             },
-                            "title":  "Source CIDR"
+                            "title": "Source CIDR"
                           }
                         ],
-                        "strict":  true
+                        "strict": true
                       }
                     }
                   }
                 ],
-                "maxItems":  "64"
+                "maxItems": "64"
               },
-              "title":  "Ingress"
+              "title": "Ingress"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Network",
-      "title":  "Network"
+      "group": "Network",
+      "title": "Network"
     },
     {
-      "name":  "managed_ydb",
-      "description":  "YC database created and deleted with this run; no existing database is adopted.",
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "managed_ydb",
+      "description": "YC database created and deleted with this run; no existing database is adopted.",
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "type",
-              "description":  "Owned YC database type.",
-              "required":  true,
-              "choice":  {
-                "options":  [
+              "name": "type",
+              "description": "Owned YC database type.",
+              "required": true,
+              "choice": {
+                "options": [
                   {
-                    "value":  {
-                      "stringValue":  "dedicated"
+                    "value": {
+                      "stringValue": "dedicated"
                     },
-                    "label":  "Dedicated"
+                    "label": "Dedicated"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "serverless"
+                    "value": {
+                      "stringValue": "serverless"
                     },
-                    "label":  "Serverless"
+                    "label": "Serverless"
                   }
                 ]
               },
-              "group":  "Managed YDB",
-              "title":  "Database type"
+              "group": "Managed YDB",
+              "title": "Database type"
             },
             {
-              "name":  "zones",
-              "description":  "Dedicated database subnet zones.",
-              "list":  {
-                "items":  [
+              "name": "zones",
+              "description": "Dedicated database subnet zones.",
+              "list": {
+                "items": [
                   {
-                    "string":  {
-                      "pattern":  "^ru-central1-[abde]$"
+                    "string": {
+                      "pattern": "^ru-central1-[abde]$"
                     }
                   }
                 ],
-                "minItems":  "3",
-                "maxItems":  "3",
-                "unique":  true
+                "minItems": "3",
+                "maxItems": "3",
+                "unique": true
               },
-              "group":  "Managed YDB",
-              "title":  "Physical zones"
+              "group": "Managed YDB",
+              "title": "Physical zones"
             },
             {
-              "name":  "location_id",
-              "description":  "YC region or location identifier.",
-              "required":  true,
-              "string":  {
-                "pattern":  "^[a-z0-9-]{1,32}$"
+              "name": "location_id",
+              "description": "YC region or location identifier.",
+              "required": true,
+              "string": {
+                "pattern": "^[a-z0-9-]{1,32}$"
               },
-              "group":  "Managed YDB",
-              "title":  "Location"
+              "group": "Managed YDB",
+              "title": "Location"
             },
             {
-              "name":  "resource_preset_id",
-              "description":  "Dedicated node resource preset.",
-              "string":  {
-                "pattern":  "^[a-z0-9-]{1,64}$"
+              "name": "resource_preset_id",
+              "description": "Dedicated node resource preset.",
+              "string": {
+                "pattern": "^[a-z0-9-]{1,64}$"
               },
-              "group":  "Managed YDB",
-              "title":  "Compute preset"
+              "group": "Managed YDB",
+              "title": "Compute preset"
             },
             {
-              "name":  "node_count",
-              "description":  "Dedicated fixed-scale node count.",
-              "int64":  {
-                "gte":  "1",
-                "lte":  "64"
+              "name": "node_count",
+              "description": "Dedicated fixed-scale node count.",
+              "int64": {
+                "gte": "1",
+                "lte": "64"
               },
-              "group":  "Managed YDB",
-              "title":  "Nodes"
+              "group": "Managed YDB",
+              "title": "Nodes"
             },
             {
-              "name":  "storage_groups",
-              "description":  "Dedicated storage group count.",
-              "int64":  {
-                "gte":  "1",
-                "lte":  "1024"
+              "name": "storage_groups",
+              "description": "Dedicated storage group count.",
+              "int64": {
+                "gte": "1",
+                "lte": "1024"
               },
-              "group":  "Managed YDB",
-              "title":  "Storage groups"
+              "group": "Managed YDB",
+              "title": "Storage groups"
             },
             {
-              "name":  "storage_type",
-              "description":  "Dedicated storage type identifier.",
-              "string":  {
-                "pattern":  "^[a-z0-9-]{1,64}$"
+              "name": "storage_type",
+              "description": "Dedicated storage type identifier.",
+              "string": {
+                "pattern": "^[a-z0-9-]{1,64}$"
               },
-              "group":  "Managed YDB",
-              "title":  "Storage type"
+              "group": "Managed YDB",
+              "title": "Storage type"
             },
             {
-              "name":  "assign_public_ips",
-              "description":  "Whether dedicated database nodes receive public addresses.",
-              "bool":  {},
-              "group":  "Managed YDB",
-              "title":  "Public addresses"
+              "name": "assign_public_ips",
+              "description": "Whether dedicated database nodes receive public addresses.",
+              "bool": {},
+              "group": "Managed YDB",
+              "title": "Public addresses"
             },
             {
-              "name":  "throttling_rcu_limit",
-              "description":  "Serverless request units per second ceiling; zero disables throttling.",
-              "int64":  {
-                "gte":  "0",
-                "lte":  "1000000"
+              "name": "throttling_rcu_limit",
+              "description": "Serverless request units per second ceiling; zero disables throttling.",
+              "int64": {
+                "gte": "0",
+                "lte": "1000000"
               },
-              "group":  "Managed YDB",
-              "title":  "Request ceiling"
+              "group": "Managed YDB",
+              "title": "Request ceiling"
             },
             {
-              "name":  "provisioned_rcu_limit",
-              "description":  "Serverless reserved request units per second.",
-              "int64":  {
-                "gte":  "0",
-                "lte":  "1000000"
+              "name": "provisioned_rcu_limit",
+              "description": "Serverless reserved request units per second.",
+              "int64": {
+                "gte": "0",
+                "lte": "1000000"
               },
-              "group":  "Managed YDB",
-              "title":  "Provisioned capacity"
+              "group": "Managed YDB",
+              "title": "Provisioned capacity"
             },
             {
-              "name":  "storage_size_limit_gb",
-              "description":  "Serverless storage limit in GiB.",
-              "int64":  {
-                "gte":  "1",
-                "lte":  "10000"
+              "name": "storage_size_limit_gb",
+              "description": "Serverless storage limit in GiB.",
+              "int64": {
+                "gte": "1",
+                "lte": "10000"
               },
-              "group":  "Managed YDB",
-              "title":  "Storage ceiling"
+              "group": "Managed YDB",
+              "title": "Storage ceiling"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Managed YDB",
-      "title":  "Managed YDB"
+      "group": "Managed YDB",
+      "title": "Managed YDB"
     },
     {
-      "name":  "machines",
-      "description":  "Every VM of the run; the pipeline creates one agent per machine.",
-      "required":  true,
-      "list":  {
-        "items":  [
+      "name": "machines",
+      "description": "Every VM of the run; the pipeline creates one agent per machine.",
+      "required": true,
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                    "name": "name",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9-]{0,62}$"
                     },
-                    "title":  "Name"
+                    "title": "Name"
                   },
                   {
-                    "name":  "role",
-                    "description":  "Topology role; scrapes, containers and flows select on it.",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "role",
+                    "description": "Topology role; scrapes, containers and flows select on it.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "Role"
+                    "title": "Role"
                   },
                   {
-                    "name":  "cpu",
-                    "required":  true,
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "288"
+                    "name": "cpu",
+                    "required": true,
+                    "int64": {
+                      "gte": "1",
+                      "lte": "288"
                     },
-                    "title":  "vCPU"
+                    "title": "vCPU"
                   },
                   {
-                    "name":  "memory_gb",
-                    "required":  true,
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "4096"
+                    "name": "memory_gb",
+                    "required": true,
+                    "int64": {
+                      "gte": "1",
+                      "lte": "4096"
                     },
-                    "unit":  "GB",
-                    "title":  "Memory"
+                    "unit": "GB",
+                    "title": "Memory"
                   },
                   {
-                    "name":  "disks",
-                    "description":  "Secondary disks beyond the boot disk.",
-                    "list":  {
-                      "items":  [
+                    "name": "boot_disk",
+                    "description": "Omit for a 40 GiB SSD OS disk.",
+                    "object": {
+                      "schema": {
+                        "fields": [
+                          {
+                            "name": "block_size",
+                            "description": "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
+                            "int64": {
+                              "gte": "4096",
+                              "lte": "131072"
+                            },
+                            "group": "Storage",
+                            "unit": "bytes",
+                            "title": "Physical block size"
+                          },
+                          {
+                            "name": "gb",
+                            "description": "OS disk size in GiB; must fit the selected image.",
+                            "required": true,
+                            "int64": {
+                              "gte": "10",
+                              "lte": "262144"
+                            },
+                            "group": "Storage",
+                            "unit": "GiB",
+                            "title": "Size"
+                          },
+                          {
+                            "name": "type",
+                            "description": "Cloud disk type.",
+                            "required": true,
+                            "string": {
+                              "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+                            },
+                            "group": "Storage",
+                            "title": "Type"
+                          }
+                        ],
+                        "strict": true
+                      }
+                    },
+                    "group": "Storage",
+                    "title": "Boot disk"
+                  },
+                  {
+                    "name": "core_fraction",
+                    "description": "YC guaranteed CPU percentage; omission means 100. Unsupported on AWS.",
+                    "int64": {
+                      "gte": "5",
+                      "lte": "100"
+                    },
+                    "group": "Compute",
+                    "unit": "%",
+                    "title": "Guaranteed CPU"
+                  },
+                  {
+                    "name": "preemptible",
+                    "description": "Override the provider profile's preemptible/spot setting; explicit false is preserved.",
+                    "bool": {},
+                    "group": "Compute",
+                    "title": "Preemptible"
+                  },
+                  {
+                    "name": "public_ip",
+                    "description": "Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls.",
+                    "bool": {},
+                    "group": "Network",
+                    "title": "Public IP"
+                  },
+                  {
+                    "name": "disks",
+                    "description": "Secondary disks beyond the boot disk.",
+                    "list": {
+                      "items": [
                         {
-                          "object":  {
-                            "schema":  {
-                              "fields":  [
+                          "object": {
+                            "schema": {
+                              "fields": [
                                 {
-                                  "name":  "name",
-                                  "required":  true,
-                                  "string":  {
-                                    "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                                  "name": "block_size",
+                                  "description": "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
+                                  "int64": {
+                                    "gte": "4096",
+                                    "lte": "131072"
                                   },
-                                  "title":  "Device name"
+                                  "group": "Storage",
+                                  "unit": "bytes",
+                                  "title": "Physical block size"
                                 },
                                 {
-                                  "name":  "gb",
-                                  "required":  true,
-                                  "int64":  {
-                                    "gte":  "1",
-                                    "lte":  "262144"
+                                  "name": "name",
+                                  "required": true,
+                                  "string": {
+                                    "pattern": "^[a-z][a-z0-9-]{0,62}$"
                                   },
-                                  "unit":  "GB",
-                                  "title":  "Size"
+                                  "title": "Device name"
                                 },
                                 {
-                                  "name":  "type",
-                                  "description":  "Provider disk type id, e.g. network-ssd (yandex) or gp3 (aws).",
-                                  "required":  true,
-                                  "string":  {
-                                    "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                                  "name": "gb",
+                                  "required": true,
+                                  "int64": {
+                                    "gte": "1",
+                                    "lte": "262144"
                                   },
-                                  "title":  "Disk type"
+                                  "unit": "GB",
+                                  "title": "Size"
                                 },
                                 {
-                                  "name":  "mount",
-                                  "description":  "Absolute path host_prep mounts the disk at; empty leaves it raw.",
-                                  "string":  {
-                                    "pattern":  "^/[A-Za-z0-9._/-]*$"
+                                  "name": "type",
+                                  "description": "Provider disk type id, e.g. network-ssd (yandex) or gp3 (aws).",
+                                  "required": true,
+                                  "string": {
+                                    "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                                   },
-                                  "title":  "Mount point"
+                                  "title": "Disk type"
+                                },
+                                {
+                                  "name": "filesystem",
+                                  "description": "Automatic filesystem for mounted YC disks; omit for ext4. No mount means a raw block device.",
+                                  "choice": {
+                                    "options": [
+                                      {
+                                        "value": {
+                                          "stringValue": "ext4"
+                                        },
+                                        "label": "ext4"
+                                      },
+                                      {
+                                        "value": {
+                                          "stringValue": "xfs"
+                                        },
+                                        "label": "XFS"
+                                      }
+                                    ]
+                                  },
+                                  "group": "Storage",
+                                  "title": "Filesystem"
+                                },
+                                {
+                                  "name": "mount_options",
+                                  "description": "mount/fstab options, e.g. noatime; omission uses defaults.",
+                                  "list": {
+                                    "items": [
+                                      {
+                                        "string": {
+                                          "maxLen": "128",
+                                          "pattern": "^[A-Za-z0-9_=.-]+$"
+                                        }
+                                      }
+                                    ],
+                                    "maxItems": "32"
+                                  },
+                                  "group": "Storage",
+                                  "title": "Mount options"
+                                },
+                                {
+                                  "name": "mount",
+                                  "description": "Absolute path host_prep mounts the disk at; empty leaves it raw.",
+                                  "string": {
+                                    "pattern": "^/[A-Za-z0-9._/-]*$"
+                                  },
+                                  "title": "Mount point"
                                 }
                               ],
-                              "strict":  true
+                              "strict": true
                             }
                           }
                         }
                       ],
-                      "maxItems":  "16"
+                      "maxItems": "16"
                     },
-                    "title":  "Extra disks"
+                    "title": "Extra disks"
                   },
                   {
-                    "name":  "image",
-                    "description":  "Resolved boot image (family id, image id or AMI id).",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "256"
+                    "name": "image",
+                    "description": "Resolved boot image (family id, image id or AMI id).",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "256"
                     },
-                    "title":  "Image"
+                    "title": "Image"
                   },
                   {
-                    "name":  "location",
-                    "description":  "Zone (yandex) or availability zone (aws) the machine is created in.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "64"
+                    "name": "location",
+                    "description": "Zone (yandex) or availability zone (aws) the machine is created in.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "64"
                     },
-                    "title":  "Location"
+                    "title": "Location"
                   },
                   {
-                    "name":  "instance_type",
-                    "description":  "Platform id (yandex) or EC2 instance type (aws) from the size table.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "64"
+                    "name": "instance_type",
+                    "description": "Platform id (yandex) or EC2 instance type (aws) from the size table.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "64"
                     },
-                    "title":  "Instance type"
+                    "title": "Instance type"
                   },
                   {
-                    "name":  "labels",
-                    "description":  "Provider labels; the run and role labels are added by the pipeline.",
-                    "map":  {
-                      "maxEntries":  "32",
-                      "valueField":  {
-                        "name":  "value",
-                        "string":  {
-                          "maxLen":  "255"
+                    "name": "labels",
+                    "description": "Provider labels; the run and role labels are added by the pipeline.",
+                    "map": {
+                      "maxEntries": "32",
+                      "valueField": {
+                        "name": "value",
+                        "string": {
+                          "maxLen": "255"
                         }
                       }
                     },
-                    "title":  "Labels"
+                    "title": "Labels"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "minItems":  "1",
-        "maxItems":  "64"
+        "minItems": "1",
+        "maxItems": "64"
       },
-      "group":  "Machines",
-      "title":  "Machines"
+      "group": "Machines",
+      "title": "Machines"
     },
     {
-      "name":  "containers",
-      "description":  "Everything that runs on the machines: databases, proxies, exporters.",
-      "list":  {
-        "items":  [
+      "name": "containers",
+      "description": "Everything that runs on the machines: databases, proxies, exporters.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                    "name": "name",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9-]{0,62}$"
                     },
-                    "title":  "Name"
+                    "title": "Name"
                   },
                   {
-                    "name":  "role",
-                    "description":  "Role the container belongs to; used for logs, metrics and flows.",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "role",
+                    "description": "Role the container belongs to; used for logs, metrics and flows.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "Role"
+                    "title": "Role"
                   },
                   {
-                    "name":  "machine",
-                    "description":  "Name of the machine the container runs on.",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                    "name": "machine",
+                    "description": "Name of the machine the container runs on.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9-]{0,62}$"
                     },
-                    "title":  "Machine"
+                    "title": "Machine"
                   },
                   {
-                    "name":  "image",
-                    "description":  "Fully qualified docker image; every database is a container, no host packages.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "512"
+                    "name": "image",
+                    "description": "Fully qualified docker image; every database is a container, no host packages.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "512"
                     },
-                    "title":  "Image"
+                    "title": "Image"
                   },
                   {
-                    "name":  "cmd",
-                    "description":  "Argv replacing the image command.",
-                    "list":  {
-                      "items":  [
+                    "name": "cmd",
+                    "description": "Argv replacing the image command.",
+                    "list": {
+                      "items": [
                         {
-                          "string":  {
-                            "maxLen":  "1024"
+                          "string": {
+                            "maxLen": "1024"
                           }
                         }
                       ],
-                      "maxItems":  "64"
+                      "maxItems": "64"
                     },
-                    "title":  "Command"
+                    "title": "Command"
                   },
                   {
-                    "name":  "entrypoint",
-                    "description":  "Executable and arguments replacing the image entrypoint; omit to use the upstream image entrypoint.",
-                    "list":  {
-                      "items":  [
+                    "name": "entrypoint",
+                    "description": "Executable and arguments replacing the image entrypoint; omit to use the upstream image entrypoint.",
+                    "list": {
+                      "items": [
                         {
-                          "string":  {
-                            "minLen":  "1",
-                            "maxLen":  "1024"
+                          "string": {
+                            "minLen": "1",
+                            "maxLen": "1024"
                           }
                         }
                       ],
-                      "maxItems":  "64"
+                      "maxItems": "64"
                     },
-                    "group":  "Process",
-                    "title":  "Entrypoint"
+                    "group": "Process",
+                    "title": "Entrypoint"
                   },
                   {
-                    "name":  "env",
-                    "map":  {
-                      "maxEntries":  "128",
-                      "valueField":  {
-                        "name":  "value",
-                        "string":  {
-                          "maxLen":  "4096"
+                    "name": "env",
+                    "map": {
+                      "maxEntries": "128",
+                      "valueField": {
+                        "name": "value",
+                        "string": {
+                          "maxLen": "4096"
                         }
                       }
                     },
-                    "title":  "Environment"
+                    "title": "Environment"
                   },
                   {
-                    "name":  "ports",
-                    "list":  {
-                      "items":  [
+                    "name": "ports",
+                    "list": {
+                      "items": [
                         {
-                          "object":  {
-                            "schema":  {
-                              "fields":  [
+                          "object": {
+                            "schema": {
+                              "fields": [
                                 {
-                                  "name":  "container",
-                                  "required":  true,
-                                  "int64":  {
-                                    "gte":  "1",
-                                    "lte":  "65535"
+                                  "name": "container",
+                                  "required": true,
+                                  "int64": {
+                                    "gte": "1",
+                                    "lte": "65535"
                                   },
-                                  "title":  "Container port"
+                                  "title": "Container port"
                                 },
                                 {
-                                  "name":  "host",
-                                  "required":  true,
-                                  "int64":  {
-                                    "gte":  "1",
-                                    "lte":  "65535"
+                                  "name": "host",
+                                  "description": "Host-network port; remapping is not supported.",
+                                  "required": true,
+                                  "int64": {
+                                    "gte": "1",
+                                    "lte": "65535"
                                   },
-                                  "title":  "Host port"
+                                  "title": "Host port"
                                 }
                               ],
-                              "strict":  true
+                              "rules": [
+                                {
+                                  "expr": "this.host == this.container",
+                                  "message": "host networking requires equal host and container ports",
+                                  "id": "host-network-ports"
+                                }
+                              ],
+                              "strict": true
                             }
                           }
                         }
                       ],
-                      "maxItems":  "32"
+                      "maxItems": "32"
                     },
-                    "title":  "Ports"
+                    "title": "Ports"
                   },
                   {
-                    "name":  "mounts",
-                    "list":  {
-                      "items":  [
+                    "name": "mounts",
+                    "list": {
+                      "items": [
                         {
-                          "object":  {
-                            "schema":  {
-                              "fields":  [
+                          "object": {
+                            "schema": {
+                              "fields": [
                                 {
-                                  "name":  "source",
-                                  "required":  true,
-                                  "string":  {
-                                    "pattern":  "^/[A-Za-z0-9._/-]*$"
+                                  "name": "source",
+                                  "required": true,
+                                  "string": {
+                                    "pattern": "^/[A-Za-z0-9._/-]*$"
                                   },
-                                  "title":  "Host path"
+                                  "title": "Host path"
                                 },
                                 {
-                                  "name":  "target",
-                                  "required":  true,
-                                  "string":  {
-                                    "pattern":  "^/[A-Za-z0-9._/-]*$"
+                                  "name": "target",
+                                  "required": true,
+                                  "string": {
+                                    "pattern": "^/[A-Za-z0-9._/-]*$"
                                   },
-                                  "title":  "Container path"
+                                  "title": "Container path"
                                 },
                                 {
-                                  "name":  "ro",
-                                  "bool":  {
-                                    "default":  false
+                                  "name": "ro",
+                                  "bool": {
+                                    "default": false
                                   },
-                                  "title":  "Read-only"
+                                  "title": "Read-only"
                                 }
                               ],
-                              "strict":  true
+                              "strict": true
                             }
                           }
                         }
                       ],
-                      "maxItems":  "32"
+                      "maxItems": "32"
                     },
-                    "title":  "Mounts"
+                    "title": "Mounts"
                   },
                   {
-                    "name":  "files",
-                    "description":  "Configs rendered by the server and injected at start.",
-                    "list":  {
-                      "items":  [
+                    "name": "files",
+                    "description": "Configs rendered by the server and injected at start.",
+                    "list": {
+                      "items": [
                         {
-                          "object":  {
-                            "schema":  {
-                              "fields":  [
+                          "object": {
+                            "schema": {
+                              "fields": [
                                 {
-                                  "name":  "path",
-                                  "description":  "Absolute path inside the container.",
-                                  "required":  true,
-                                  "string":  {
-                                    "pattern":  "^/[A-Za-z0-9._/-]*$"
+                                  "name": "path",
+                                  "description": "Absolute path inside the container.",
+                                  "required": true,
+                                  "string": {
+                                    "pattern": "^/[A-Za-z0-9._/-]*$"
                                   },
-                                  "title":  "Path"
+                                  "title": "Path"
                                 },
                                 {
-                                  "name":  "content",
-                                  "description":  "Rendered config text (cfg.* schema Render output).",
-                                  "required":  true,
-                                  "string":  {
-                                    "maxLen":  "1048576"
+                                  "name": "content",
+                                  "description": "Rendered config text (cfg.* schema Render output).",
+                                  "required": true,
+                                  "string": {
+                                    "maxLen": "1048576"
                                   },
-                                  "title":  "Content"
+                                  "title": "Content"
                                 },
                                 {
-                                  "name":  "mode",
-                                  "description":  "Octal file mode.",
-                                  "string":  {
-                                    "default":  "0644",
-                                    "pattern":  "^0[0-7]{3}$"
+                                  "name": "mode",
+                                  "description": "Octal file mode.",
+                                  "string": {
+                                    "default": "0644",
+                                    "pattern": "^0[0-7]{3}$"
                                   },
-                                  "title":  "Mode"
+                                  "title": "Mode"
                                 }
                               ],
-                              "strict":  true
+                              "strict": true
                             }
                           }
                         }
                       ],
-                      "maxItems":  "32"
+                      "maxItems": "32"
                     },
-                    "title":  "Files"
+                    "title": "Files"
                   },
                   {
-                    "name":  "scrape",
-                    "description":  "Prometheus metrics path on the container, e.g. /metrics; empty = not scraped.",
-                    "string":  {
-                      "pattern":  "^/[A-Za-z0-9._/-]*$"
+                    "name": "scrape",
+                    "description": "Prometheus metrics path on the container, e.g. /metrics; empty = not scraped.",
+                    "string": {
+                      "pattern": "^/[A-Za-z0-9._/-]*$"
                     },
-                    "title":  "Scrape path"
+                    "title": "Scrape path"
                   },
                   {
-                    "name":  "scrape_port",
-                    "description":  "HTTP port for the scrape path; when omitted, uses the first container port for compatibility.",
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "65535"
+                    "name": "scrape_port",
+                    "description": "HTTP port for the scrape path; when omitted, uses the first container port for compatibility.",
+                    "int64": {
+                      "gte": "1",
+                      "lte": "65535"
                     },
-                    "group":  "Observability",
-                    "title":  "Metrics port"
+                    "group": "Observability",
+                    "title": "Metrics port"
                   },
                   {
-                    "name":  "depends_on",
-                    "description":  "Container names started before this one.",
-                    "list":  {
-                      "items":  [
+                    "name": "depends_on",
+                    "description": "Container names started before this one.",
+                    "list": {
+                      "items": [
                         {
-                          "string":  {
-                            "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                          "string": {
+                            "pattern": "^[a-z][a-z0-9-]{0,62}$"
                           }
                         }
                       ],
-                      "maxItems":  "16",
-                      "unique":  true
+                      "maxItems": "16",
+                      "unique": true
                     },
-                    "title":  "Depends on"
+                    "title": "Depends on"
                   },
                   {
-                    "name":  "healthcheck",
-                    "object":  {
-                      "schema":  {
-                        "fields":  [
+                    "name": "healthcheck",
+                    "object": {
+                      "schema": {
+                        "fields": [
                           {
-                            "name":  "cmd",
-                            "required":  true,
-                            "list":  {
-                              "items":  [
+                            "name": "cmd",
+                            "required": true,
+                            "list": {
+                              "items": [
                                 {
-                                  "string":  {
-                                    "maxLen":  "1024"
+                                  "string": {
+                                    "maxLen": "1024"
                                   }
                                 }
                               ],
-                              "minItems":  "1",
-                              "maxItems":  "16"
+                              "minItems": "1",
+                              "maxItems": "16"
                             },
-                            "title":  "Command"
+                            "title": "Command"
                           },
                           {
-                            "name":  "interval",
-                            "duration":  {
-                              "default":  "5s",
-                              "gte":  "1s",
-                              "lte":  "3600s"
+                            "name": "interval",
+                            "duration": {
+                              "default": "5s",
+                              "gte": "1s",
+                              "lte": "3600s"
                             },
-                            "title":  "Interval"
+                            "title": "Interval"
                           },
                           {
-                            "name":  "retries",
-                            "int64":  {
-                              "default":  "30",
-                              "gte":  "1",
-                              "lte":  "100"
+                            "name": "retries",
+                            "int64": {
+                              "default": "30",
+                              "gte": "1",
+                              "lte": "100"
                             },
-                            "title":  "Retries"
+                            "title": "Retries"
                           }
                         ],
-                        "strict":  true
+                        "strict": true
                       }
                     },
-                    "title":  "Health check"
+                    "title": "Health check"
                   },
                   {
-                    "name":  "restart",
-                    "choice":  {
-                      "options":  [
+                    "name": "restart",
+                    "choice": {
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "no"
+                          "value": {
+                            "stringValue": "no"
                           },
-                          "label":  "Never"
+                          "label": "Never"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "on-failure"
+                          "value": {
+                            "stringValue": "on-failure"
                           },
-                          "label":  "On failure"
+                          "label": "On failure"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "unless-stopped"
+                          "value": {
+                            "stringValue": "unless-stopped"
                           },
-                          "label":  "Unless stopped"
+                          "label": "Unless stopped"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "always"
+                          "value": {
+                            "stringValue": "always"
                           },
-                          "label":  "Always"
+                          "label": "Always"
                         }
                       ],
-                      "default":  {
-                        "stringValue":  "unless-stopped"
+                      "default": {
+                        "stringValue": "unless-stopped"
                       }
                     },
-                    "title":  "Restart policy"
+                    "title": "Restart policy"
                   },
                   {
-                    "name":  "ulimits",
-                    "description":  "Soft limits, e.g. nofile; -1 = unlimited.",
-                    "map":  {
-                      "maxEntries":  "16",
-                      "valueField":  {
-                        "name":  "value",
-                        "int64":  {
-                          "gte":  "-1"
+                    "name": "ulimits",
+                    "description": "Soft limits, e.g. nofile; -1 = unlimited.",
+                    "map": {
+                      "maxEntries": "16",
+                      "valueField": {
+                        "name": "value",
+                        "int64": {
+                          "gte": "-1"
                         }
                       }
                     },
-                    "title":  "Ulimits"
+                    "title": "Ulimits"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "256"
+        "maxItems": "256"
       },
-      "group":  "Containers",
-      "title":  "Containers"
+      "group": "Containers",
+      "title": "Containers"
     },
     {
-      "name":  "host_prep",
-      "description":  "Rare pre-deploy steps run on the machine itself (machine.Command).",
-      "list":  {
-        "items":  [
+      "name": "host_prep",
+      "description": "Pre-deploy steps, including automatic per-disk preparation, run on the machine itself.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "role",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "role",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "Role"
+                    "title": "Role"
                   },
                   {
-                    "name":  "kind",
-                    "description":  "What the step does before any container starts.",
-                    "required":  true,
-                    "choice":  {
-                      "options":  [
+                    "name": "machine",
+                    "description": "Optional exact machine in this role; omission selects the whole role.",
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9-]{0,62}$"
+                    },
+                    "group": "Machines",
+                    "title": "Machine"
+                  },
+                  {
+                    "name": "kind",
+                    "description": "What the step does before any container starts.",
+                    "required": true,
+                    "choice": {
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "sysctl"
+                          "value": {
+                            "stringValue": "sysctl"
                           },
-                          "label":  "Kernel parameters"
+                          "label": "Kernel parameters"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "disks"
+                          "value": {
+                            "stringValue": "disks"
                           },
-                          "label":  "Format and mount extra disks"
+                          "label": "Format and mount extra disks"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "script"
+                          "value": {
+                            "stringValue": "script"
                           },
-                          "label":  "Shell script"
+                          "label": "Shell script"
                         }
                       ]
                     },
-                    "title":  "Kind"
+                    "title": "Kind"
                   },
                   {
-                    "name":  "content",
-                    "description":  "sysctl lines, mount spec or shell script, per kind.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "65536"
+                    "name": "content",
+                    "description": "sysctl lines, mount spec or shell script, per kind.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "65536"
                     },
-                    "title":  "Content"
+                    "title": "Content"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "32"
+        "maxItems": "2048"
       },
-      "group":  "Machines",
-      "title":  "Host preparation"
+      "group": "Machines",
+      "title": "Host preparation"
     },
     {
-      "name":  "scrapes",
-      "description":  "Agent-side Prometheus scrapes of exporters.",
-      "list":  {
-        "items":  [
+      "name": "scrapes",
+      "description": "Agent-side Prometheus scrapes of exporters.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "role",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "role",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "Role"
+                    "title": "Role"
                   },
                   {
-                    "name":  "url",
-                    "description":  "Metrics endpoint on the machine, e.g. http://127.0.0.1:9187/metrics.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "512"
+                    "name": "url",
+                    "description": "Metrics endpoint on the machine, e.g. http://127.0.0.1:9187/metrics.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "512"
                     },
-                    "title":  "URL"
+                    "title": "URL"
                   },
                   {
-                    "name":  "job",
-                    "description":  "Prometheus job label the samples land under.",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "job",
+                    "description": "Name of the container to attach this scrape to; role must match its role.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "Job"
+                    "title": "Job"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "64"
+        "maxItems": "64"
       },
-      "group":  "Observability",
-      "title":  "Scrapes"
+      "group": "Observability",
+      "title": "Scrapes"
     },
     {
-      "name":  "flows",
-      "description":  "Allowed traffic between roles; drives security groups and the topology view.",
-      "list":  {
-        "items":  [
+      "name": "flows",
+      "description": "Traffic relationships for the topology view; cloud security groups allow intra-network traffic and use network.ingress for extra openings.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "from_role",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "from_role",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "From role"
+                    "title": "From role"
                   },
                   {
-                    "name":  "to_role",
-                    "description":  "Target role; set this or external, not both.",
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "name": "to_role",
+                    "description": "Target role; set this or external, not both.",
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "title":  "To role"
+                    "title": "To role"
                   },
                   {
-                    "name":  "external",
-                    "description":  "Host outside the run (registry, OTLP collector); set this or to_role.",
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "255"
+                    "name": "external",
+                    "description": "Host outside the run (registry, OTLP collector); set this or to_role.",
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "255"
                     },
-                    "title":  "External target"
+                    "title": "External target"
                   },
                   {
-                    "name":  "protocol",
-                    "required":  true,
-                    "choice":  {
-                      "options":  [
+                    "name": "protocol",
+                    "required": true,
+                    "choice": {
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "tcp"
+                          "value": {
+                            "stringValue": "tcp"
                           },
-                          "label":  "TCP"
+                          "label": "TCP"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "http"
+                          "value": {
+                            "stringValue": "http"
                           },
-                          "label":  "HTTP"
+                          "label": "HTTP"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "grpc"
+                          "value": {
+                            "stringValue": "grpc"
                           },
-                          "label":  "gRPC"
+                          "label": "gRPC"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "prometheus_pull"
+                          "value": {
+                            "stringValue": "prometheus_pull"
                           },
-                          "label":  "Prometheus pull"
+                          "label": "Prometheus pull"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "otlp"
+                          "value": {
+                            "stringValue": "otlp"
                           },
-                          "label":  "OTLP"
+                          "label": "OTLP"
                         }
                       ]
                     },
-                    "title":  "Protocol"
+                    "title": "Protocol"
                   },
                   {
-                    "name":  "port",
-                    "required":  true,
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "65535"
+                    "name": "port",
+                    "required": true,
+                    "int64": {
+                      "gte": "1",
+                      "lte": "65535"
                     },
-                    "title":  "Port"
+                    "title": "Port"
                   },
                   {
-                    "name":  "label",
-                    "description":  "Human label drawn on the topology view.",
-                    "string":  {
-                      "maxLen":  "64"
+                    "name": "label",
+                    "description": "Human label drawn on the topology view.",
+                    "string": {
+                      "maxLen": "64"
                     },
-                    "title":  "Label"
+                    "title": "Label"
                   }
                 ],
-                "rules":  [
+                "rules": [
                   {
-                    "expr":  "(\"to_role\" in this) != (\"external\" in this)",
-                    "message":  "a flow targets exactly one of to_role or external",
-                    "id":  "flow-target-xor"
+                    "expr": "(\"to_role\" in this) != (\"external\" in this)",
+                    "message": "a flow targets exactly one of to_role or external",
+                    "id": "flow-target-xor"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "128"
+        "maxItems": "128"
       },
-      "group":  "Network",
-      "title":  "Flows"
+      "group": "Network",
+      "title": "Flows"
     },
     {
-      "name":  "workload",
-      "description":  "What stroppy runs and where.",
-      "required":  true,
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "workload",
+      "description": "What stroppy runs and where.",
+      "required": true,
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "runner_role",
-              "description":  "Role of the machine stroppy runs on.",
-              "required":  true,
-              "string":  {
-                "default":  "runner",
-                "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+              "name": "runner_role",
+              "description": "Role of the machine stroppy runs on.",
+              "required": true,
+              "string": {
+                "default": "runner",
+                "pattern": "^[a-z][a-z0-9_-]{0,31}$"
               },
-              "title":  "Runner role"
+              "title": "Runner role"
             },
             {
-              "name":  "stroppy_image",
-              "description":  "Resolved stroppy image from the catalog for the chosen version (6.0.0+).",
-              "required":  true,
-              "string":  {
-                "minLen":  "1",
-                "maxLen":  "512"
+              "name": "stroppy_image",
+              "description": "Resolved stroppy image from the catalog for the chosen version (6.0.0+).",
+              "required": true,
+              "string": {
+                "minLen": "1",
+                "maxLen": "512"
               },
-              "title":  "Stroppy image"
+              "title": "Stroppy image"
             },
             {
-              "name":  "driver_type",
-              "description":  "stroppy driverType of drivers.0.",
-              "required":  true,
-              "choice":  {
-                "options":  [
+              "name": "driver_type",
+              "description": "stroppy driverType of drivers.0.",
+              "required": true,
+              "choice": {
+                "options": [
                   {
-                    "value":  {
-                      "stringValue":  "postgres"
+                    "value": {
+                      "stringValue": "postgres"
                     },
-                    "label":  "postgres"
+                    "label": "postgres"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "mysql"
+                    "value": {
+                      "stringValue": "mysql"
                     },
-                    "label":  "mysql"
+                    "label": "mysql"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "picodata"
+                    "value": {
+                      "stringValue": "picodata"
                     },
-                    "label":  "picodata"
+                    "label": "picodata"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "ydb"
+                    "value": {
+                      "stringValue": "ydb"
                     },
-                    "label":  "ydb"
+                    "label": "ydb"
                   },
                   {
-                    "value":  {
-                      "stringValue":  "noop"
+                    "value": {
+                      "stringValue": "noop"
                     },
-                    "label":  "noop"
+                    "label": "noop"
                   }
                 ]
               },
-              "title":  "Driver type"
+              "title": "Driver type"
             },
             {
-              "name":  "url",
-              "description":  "drivers.0.url; may carry ${ip:...} placeholders the pipeline expands after provisioning.",
-              "required":  true,
-              "string":  {
-                "minLen":  "1",
-                "maxLen":  "2048"
+              "name": "url",
+              "description": "drivers.0.url; may carry ${ip:...} placeholders the pipeline expands after provisioning.",
+              "required": true,
+              "string": {
+                "minLen": "1",
+                "maxLen": "2048"
               },
-              "title":  "Connection URL"
+              "title": "Connection URL"
             },
             {
-              "name":  "driver",
-              "description":  "Remaining drivers.0 keys of stroppy-config.json (bulkSize, pool, insertProgress, caCertFile, authToken…), already in stroppy's lowerCamel form.",
-              "json":  {},
-              "title":  "Driver options"
+              "name": "driver",
+              "description": "Remaining drivers.0 keys of stroppy-config.json (bulkSize, pool, insertProgress, caCertFile, authToken…), already in stroppy's lowerCamel form.",
+              "ref": {
+                "name": "driver"
+              },
+              "title": "Driver options"
             },
             {
-              "name":  "segments",
-              "description":  "Baked workload.segment@1 values in order; opaque to the pipeline beyond the fields it interprets.",
-              "required":  true,
-              "list":  {
-                "items":  [
+              "name": "segments",
+              "description": "Ordered workload.segment@1 values; validated with the same schema as library workloads.",
+              "required": true,
+              "list": {
+                "items": [
                   {
-                    "json":  {}
+                    "ref": {
+                      "name": "segment"
+                    }
                   }
                 ],
-                "minItems":  "1",
-                "maxItems":  "64"
+                "minItems": "1",
+                "maxItems": "64"
               },
-              "title":  "Segments"
+              "title": "Segments"
             },
             {
-              "name":  "baseline",
-              "description":  "Baked workload.stroppy@1 baseline object; absent or disabled = no machine self-check.",
-              "json":  {},
-              "title":  "Baseline"
+              "name": "baseline",
+              "description": "Baked workload.stroppy@1 baseline object; absent or disabled = no machine self-check.",
+              "ref": {
+                "name": "baseline"
+              },
+              "title": "Baseline"
             },
             {
-              "name":  "ydb_iam_credentials_secret",
-              "description":  "Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact.",
-              "string":  {
-                "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
+              "name": "ydb_iam_credentials_secret",
+              "description": "Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact.",
+              "string": {
+                "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
               },
-              "group":  "Workload",
-              "title":  "YDB credentials reference"
+              "group": "Workload",
+              "title": "YDB credentials reference"
             },
             {
-              "name":  "ca_cert",
-              "description":  "PEM the pipeline writes next to the config and points caCertFile at.",
-              "string":  {
-                "maxLen":  "65536"
+              "name": "ca_cert",
+              "description": "PEM the pipeline writes next to the config and points caCertFile at.",
+              "string": {
+                "maxLen": "65536"
               },
-              "title":  "CA certificate",
-              "secret":  true
+              "title": "CA certificate",
+              "secret": true
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Workload",
-      "title":  "Workload"
+      "group": "Workload",
+      "title": "Workload"
     },
     {
-      "name":  "observability",
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "name": "observability",
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "otlp_endpoint",
-              "description":  "Where agents forward stroppy metrics and logs.",
-              "string":  {
-                "minLen":  "1",
-                "maxLen":  "512"
+              "name": "otlp_endpoint",
+              "description": "Where agents forward stroppy metrics and logs.",
+              "string": {
+                "minLen": "1",
+                "maxLen": "512"
               },
-              "title":  "OTLP endpoint"
+              "title": "OTLP endpoint"
             },
             {
-              "name":  "otlp_headers",
-              "description":  "Comma-separated key=value headers stroppy sends with every export (otlpHeaders).",
-              "string":  {
-                "maxLen":  "4096"
+              "name": "otlp_headers",
+              "description": "Comma-separated key=value headers stroppy sends with every export (otlpHeaders).",
+              "string": {
+                "maxLen": "4096"
               },
-              "title":  "OTLP headers",
-              "secret":  true
+              "title": "OTLP headers",
+              "secret": true
             },
             {
-              "name":  "labels",
-              "description":  "Labels stamped on every metric and log line of the run.",
-              "map":  {
-                "maxEntries":  "32",
-                "valueField":  {
-                  "name":  "value",
-                  "string":  {
-                    "maxLen":  "255"
+              "name": "labels",
+              "description": "Labels stamped on every metric and log line of the run.",
+              "map": {
+                "maxEntries": "32",
+                "valueField": {
+                  "name": "value",
+                  "string": {
+                    "maxLen": "255"
                   }
                 }
               },
-              "title":  "Labels"
+              "title": "Labels"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Observability",
-      "title":  "Observability"
+      "group": "Observability",
+      "title": "Observability"
     },
     {
-      "name":  "keep",
-      "description":  "Keep machines alive after the run for this long; 0 tears everything down at once.",
-      "duration":  {
-        "default":  "0s",
-        "gte":  "0s",
-        "lte":  "2592000s"
+      "name": "keep",
+      "description": "Keep machines alive after the run for this long; 0 tears everything down at once.",
+      "duration": {
+        "default": "0s",
+        "gte": "0s",
+        "lte": "2592000s"
       },
-      "group":  "Lifecycle",
-      "title":  "Keep the stand"
+      "group": "Lifecycle",
+      "title": "Keep the stand"
     },
     {
-      "name":  "result_expectations",
-      "description":  "Metric keys the run must report; a missing key degrades the result.",
-      "list":  {
-        "items":  [
+      "name": "result_expectations",
+      "description": "Metric keys the run must report; a missing key degrades the result.",
+      "list": {
+        "items": [
           {
-            "string":  {
-              "maxLen":  "64",
-              "pattern":  "^[a-z][a-z0-9_]*$"
+            "string": {
+              "maxLen": "64",
+              "pattern": "^[a-z][a-z0-9_]*$"
             }
           }
         ],
-        "maxItems":  "64",
-        "unique":  true
+        "maxItems": "64",
+        "unique": true
       },
-      "group":  "Lifecycle",
-      "title":  "Expected metrics"
+      "group": "Lifecycle",
+      "title": "Expected metrics"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "!(\"managed_ydb\" in root) || \"ydb_iam_credentials_secret\" in root.workload",
-      "message":  "managed YDB requires named IAM credentials",
-      "id":  "managed-ydb-iam"
+      "expr": "[this == null ? root : this].all(r, r.workload.driver_type in [\"postgres\", \"mysql\", \"noop\"] || r.workload.segments.all(s, !(s.workload.script in [\"tpcc/procs\", \"tpcb/procs\"])))",
+      "message": "stored-procedure workloads require PostgreSQL, MySQL or noop driver",
+      "id": "stored-procedure-driver"
     },
     {
-      "expr":  "!(\"managed_ydb\" in root) || root.managed_ydb.type != \"dedicated\" || [\"zones\", \"resource_preset_id\", \"node_count\", \"storage_groups\", \"storage_type\"].all(k, k in root.managed_ydb)",
-      "message":  "dedicated YDB requires placement, compute and storage fields",
-      "id":  "managed-ydb-dedicated"
+      "expr": "[this == null ? root : this].all(r, r.workload.driver_type != \"ydb\" || r.workload.segments.all(s, s.workload.script != \"tpcds\" || ((! (\"query_stream\" in s.workload) || s.workload.query_stream == null) && (!(\"streams\" in s.workload) || s.workload.streams == 1))))",
+      "message": "YDB TPC-DS supports the baked query set only",
+      "id": "tpcds-ydb-baked"
     },
     {
-      "expr":  "!(\"managed_ydb\" in root) || root.managed_ydb.type != \"serverless\" || \"storage_size_limit_gb\" in root.managed_ydb",
-      "message":  "serverless YDB requires a storage limit",
-      "id":  "managed-ydb-serverless"
+      "expr": "[this == null ? root : this].all(r, r.workload.driver_type != \"picodata\" || r.workload.segments.all(s, s.workload.script != \"tpcds\" || (\"no_steps\" in s && \"workload\" in s.no_steps) || (\"steps\" in s && size(s.steps) > 0 && !(\"workload\" in s.steps))))",
+      "message": "Picodata TPC-DS supports loading only; exclude the workload step",
+      "id": "tpcds-picodata-load-only"
     },
     {
-      "expr":  "!(\"managed_ydb\" in root) || (root.provider.kind == \"yandex\" && root.workload.driver_type == \"ydb\")",
-      "message":  "managed YDB requires YC and the YDB driver",
-      "id":  "managed-ydb-provider"
+      "expr": "[this == null ? root : this].all(r, !(\"driver\" in r.workload) || !(\"caCertFile\" in r.workload.driver) || !(\"ca_cert\" in r.workload))",
+      "message": "choose a CA file or inline CA certificate",
+      "id": "ca-source"
     },
     {
-      "expr":  "!(\"ydb_iam_credentials_secret\" in root.workload) || root.workload.driver_type == \"ydb\"",
-      "message":  "IAM credentials only apply to YDB",
-      "id":  "ydb-iam-driver"
+      "expr": "[this == null ? root : this].all(r, !(\"scrapes\" in r) || r.scrapes.all(s, \"containers\" in r && r.containers.exists(c, c.name == s.job && c.role == s.role)))",
+      "message": "each scrape must target a container by role and job=name",
+      "id": "scrape-container-exists"
     },
     {
-      "expr":  "!(\"machines\" in root) || root.machines.all(m, root.machines.filter(x, x.name == m.name).size() == 1)",
-      "message":  "machine names must be unique",
-      "id":  "machine-names-unique"
+      "expr": "[this == null ? root : this].all(r, !(\"scrapes\" in r) || r.scrapes.all(s, r.scrapes.filter(x, x.job == s.job && x.role == s.role).size() == 1))",
+      "message": "scrape targets must be unique",
+      "id": "scrape-targets-unique"
     },
     {
-      "expr":  "!(\"containers\" in root) || root.containers.all(c, root.containers.filter(x, x.name == c.name).size() == 1)",
-      "message":  "container names must be unique",
-      "id":  "container-names-unique"
+      "expr": "[this == null ? root : this].all(r, !(\"containers\" in r) || r.containers.all(c, !(\"scrape\" in c) || \"scrape_port\" in c || (\"ports\" in c && size(c.ports) > 0)))",
+      "message": "a container scrape path requires a metrics port",
+      "id": "scrape-port-required"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"containers\" in root) || root.containers.all(c, c.machine in root.machines.map(m, m.name))",
-      "message":  "every container must land on a declared machine",
-      "id":  "container-machine-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"containers\" in r) || r.containers.all(c, !(\"depends_on\" in c) || c.depends_on.all(d, d != c.name && d in r.containers.map(x, x.name))))",
+      "message": "container dependencies must name other declared containers",
+      "id": "container-dependencies-exist"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"flows\" in root) || root.flows.all(f, f.from_role in root.machines.map(m, m.role))",
-      "message":  "flow from_role must be a role of a declared machine",
-      "id":  "flow-from-role-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"managed_ydb\" in r) || \"ydb_iam_credentials_secret\" in r.workload)",
+      "message": "managed YDB requires named IAM credentials",
+      "id": "managed-ydb-iam"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"flows\" in root) || root.flows.all(f, !(\"to_role\" in f) || f.to_role in root.machines.map(m, m.role))",
-      "message":  "flow to_role must be a role of a declared machine",
-      "id":  "flow-to-role-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"managed_ydb\" in r) || r.managed_ydb.type != \"dedicated\" || [\"zones\", \"resource_preset_id\", \"node_count\", \"storage_groups\", \"storage_type\"].all(k, k in r.managed_ydb))",
+      "message": "dedicated YDB requires placement, compute and storage fields",
+      "id": "managed-ydb-dedicated"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"scrapes\" in root) || root.scrapes.all(s, s.role in root.machines.map(m, m.role))",
-      "message":  "scrape role must be a role of a declared machine",
-      "id":  "scrape-role-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"managed_ydb\" in r) || r.managed_ydb.type != \"serverless\" || \"storage_size_limit_gb\" in r.managed_ydb)",
+      "message": "serverless YDB requires a storage limit",
+      "id": "managed-ydb-serverless"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"host_prep\" in root) || root.host_prep.all(h, h.role in root.machines.map(m, m.role))",
-      "message":  "host_prep role must be a role of a declared machine",
-      "id":  "host-prep-role-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"managed_ydb\" in r) || (r.provider.kind == \"yandex\" && r.workload.driver_type == \"ydb\"))",
+      "message": "managed YDB requires YC and the YDB driver",
+      "id": "managed-ydb-provider"
     },
     {
-      "expr":  "!(\"machines\" in root) || !(\"workload\" in root) || root.workload.runner_role in root.machines.map(m, m.role)",
-      "message":  "the workload runner role must be a role of a declared machine",
-      "id":  "runner-role-exists"
+      "expr": "[this == null ? root : this].all(r, !(\"ydb_iam_credentials_secret\" in r.workload) || r.workload.driver_type == \"ydb\")",
+      "message": "IAM credentials only apply to YDB",
+      "id": "ydb-iam-driver"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || r.machines.all(m, r.machines.filter(x, x.name == m.name).size() == 1))",
+      "message": "machine names must be unique",
+      "id": "machine-names-unique"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"containers\" in r) || r.containers.all(c, r.containers.filter(x, x.name == c.name).size() == 1))",
+      "message": "container names must be unique",
+      "id": "container-names-unique"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"containers\" in r) || r.containers.all(c, c.machine in r.machines.map(m, m.name)))",
+      "message": "every container must land on a declared machine",
+      "id": "container-machine-exists"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"flows\" in r) || r.flows.all(f, f.from_role in r.machines.map(m, m.role)))",
+      "message": "flow from_role must be a role of a declared machine",
+      "id": "flow-from-role-exists"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"flows\" in r) || r.flows.all(f, !(\"to_role\" in f) || f.to_role in r.machines.map(m, m.role)))",
+      "message": "flow to_role must be a role of a declared machine",
+      "id": "flow-to-role-exists"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"scrapes\" in r) || r.scrapes.all(s, s.role in r.machines.map(m, m.role)))",
+      "message": "scrape role must be a role of a declared machine",
+      "id": "scrape-role-exists"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"host_prep\" in r) || r.host_prep.all(h, h.role in r.machines.map(m, m.role)))",
+      "message": "host_prep role must be a role of a declared machine",
+      "id": "host-prep-role-exists"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || !(\"workload\" in r) || r.machines.filter(m, m.role == r.workload.runner_role).size() == 1)",
+      "message": "the workload requires exactly one runner machine; distributed runners are not implemented",
+      "id": "runner-role-exists"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true,
+  "defs": {
+    "aws_settings": {
+      "id": {
+        "namespace": "provider",
+        "name": "aws.settings",
+        "version": "v1.0.0"
+      },
+      "description": "AWS placement settings of a tenant provider profile (no secrets).",
+      "fields": [
+        {
+          "name": "region",
+          "description": "AWS commercial region the run is created in; opt-in regions must be enabled on the account.",
+          "required": true,
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "us-east-1"
+                },
+                "label": "us-east-1"
+              },
+              {
+                "value": {
+                  "stringValue": "us-east-2"
+                },
+                "label": "us-east-2"
+              },
+              {
+                "value": {
+                  "stringValue": "us-west-1"
+                },
+                "label": "us-west-1"
+              },
+              {
+                "value": {
+                  "stringValue": "us-west-2"
+                },
+                "label": "us-west-2"
+              },
+              {
+                "value": {
+                  "stringValue": "af-south-1"
+                },
+                "label": "af-south-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-east-1"
+                },
+                "label": "ap-east-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-east-2"
+                },
+                "label": "ap-east-2"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-south-1"
+                },
+                "label": "ap-south-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-south-2"
+                },
+                "label": "ap-south-2"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-northeast-1"
+                },
+                "label": "ap-northeast-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-northeast-2"
+                },
+                "label": "ap-northeast-2"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-northeast-3"
+                },
+                "label": "ap-northeast-3"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-1"
+                },
+                "label": "ap-southeast-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-2"
+                },
+                "label": "ap-southeast-2"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-3"
+                },
+                "label": "ap-southeast-3"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-4"
+                },
+                "label": "ap-southeast-4"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-5"
+                },
+                "label": "ap-southeast-5"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-6"
+                },
+                "label": "ap-southeast-6"
+              },
+              {
+                "value": {
+                  "stringValue": "ap-southeast-7"
+                },
+                "label": "ap-southeast-7"
+              },
+              {
+                "value": {
+                  "stringValue": "ca-central-1"
+                },
+                "label": "ca-central-1"
+              },
+              {
+                "value": {
+                  "stringValue": "ca-west-1"
+                },
+                "label": "ca-west-1"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-central-1"
+                },
+                "label": "eu-central-1"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-central-2"
+                },
+                "label": "eu-central-2"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-west-1"
+                },
+                "label": "eu-west-1"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-west-2"
+                },
+                "label": "eu-west-2"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-west-3"
+                },
+                "label": "eu-west-3"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-north-1"
+                },
+                "label": "eu-north-1"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-south-1"
+                },
+                "label": "eu-south-1"
+              },
+              {
+                "value": {
+                  "stringValue": "eu-south-2"
+                },
+                "label": "eu-south-2"
+              },
+              {
+                "value": {
+                  "stringValue": "il-central-1"
+                },
+                "label": "il-central-1"
+              },
+              {
+                "value": {
+                  "stringValue": "mx-central-1"
+                },
+                "label": "mx-central-1"
+              },
+              {
+                "value": {
+                  "stringValue": "me-south-1"
+                },
+                "label": "me-south-1"
+              },
+              {
+                "value": {
+                  "stringValue": "me-central-1"
+                },
+                "label": "me-central-1"
+              },
+              {
+                "value": {
+                  "stringValue": "sa-east-1"
+                },
+                "label": "sa-east-1"
+              }
+            ],
+            "default": {
+              "stringValue": "eu-central-1"
+            }
+          },
+          "group": "Placement",
+          "title": "Region"
+        },
+        {
+          "name": "availability_zone",
+          "description": "Availability zone inside the region; empty lets AWS pick one.",
+          "string": {
+            "maxLen": "24",
+            "pattern": "^[a-z]{2}(-[a-z]+)+-\\d[a-z]$"
+          },
+          "group": "Placement",
+          "title": "Availability zone",
+          "examples": [
+            {
+              "stringValue": "eu-central-1a"
+            }
+          ]
+        },
+        {
+          "name": "network",
+          "description": "Create a throwaway VPC for every run, or place runs into an existing one.",
+          "oneOf": {
+            "discriminator": "kind",
+            "variants": {
+              "create": {
+                "fields": [
+                  {
+                    "name": "cidr",
+                    "description": "IPv4 range of the VPC created for the run.",
+                    "string": {
+                      "default": "10.130.0.0/16",
+                      "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+                    },
+                    "title": "VPC CIDR"
+                  }
+                ]
+              },
+              "existing": {
+                "fields": [
+                  {
+                    "name": "vpc_id",
+                    "description": "Existing VPC the machines join.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^vpc-[0-9a-f]{8}([0-9a-f]{9})?$"
+                    },
+                    "title": "VPC id"
+                  },
+                  {
+                    "name": "subnet_id",
+                    "description": "Existing subnet in the chosen availability zone.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^subnet-[0-9a-f]{8}([0-9a-f]{9})?$"
+                    },
+                    "title": "Subnet id"
+                  },
+                  {
+                    "name": "security_group_id",
+                    "description": "Existing security group applied to every machine.",
+                    "string": {
+                      "pattern": "^sg-[0-9a-f]{8}([0-9a-f]{9})?$"
+                    },
+                    "title": "Security group id"
+                  }
+                ]
+              }
+            }
+          },
+          "group": "Network",
+          "title": "Network"
+        },
+        {
+          "name": "instance_family",
+          "description": "EC2 family the size table resolves instance types in.",
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "m6i"
+                },
+                "label": "m6i — general purpose, Ice Lake"
+              },
+              {
+                "value": {
+                  "stringValue": "m7i"
+                },
+                "label": "m7i — general purpose, Sapphire Rapids"
+              },
+              {
+                "value": {
+                  "stringValue": "m6a"
+                },
+                "label": "m6a — general purpose, AMD Milan"
+              },
+              {
+                "value": {
+                  "stringValue": "m7a"
+                },
+                "label": "m7a — general purpose, AMD Genoa"
+              },
+              {
+                "value": {
+                  "stringValue": "c6i"
+                },
+                "label": "c6i — compute optimized, Ice Lake"
+              },
+              {
+                "value": {
+                  "stringValue": "c7i"
+                },
+                "label": "c7i — compute optimized, Sapphire Rapids"
+              },
+              {
+                "value": {
+                  "stringValue": "r6i"
+                },
+                "label": "r6i — memory optimized, Ice Lake"
+              },
+              {
+                "value": {
+                  "stringValue": "r7i"
+                },
+                "label": "r7i — memory optimized, Sapphire Rapids"
+              }
+            ],
+            "default": {
+              "stringValue": "m7i"
+            }
+          },
+          "group": "Placement",
+          "title": "Instance family"
+        },
+        {
+          "name": "ami_family",
+          "description": "Boot image family; the concrete AMI id is resolved per region at launch.",
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "ubuntu-24.04"
+                },
+                "label": "Ubuntu 24.04 LTS (noble)"
+              },
+              {
+                "value": {
+                  "stringValue": "ubuntu-22.04"
+                },
+                "label": "Ubuntu 22.04 LTS (jammy)"
+              },
+              {
+                "value": {
+                  "stringValue": "al2023"
+                },
+                "label": "Amazon Linux 2023"
+              }
+            ],
+            "default": {
+              "stringValue": "ubuntu-24.04"
+            }
+          },
+          "group": "Placement",
+          "title": "AMI family"
+        },
+        {
+          "name": "public_ips",
+          "description": "Give every machine a public IPv4 address.",
+          "bool": {
+            "default": true
+          },
+          "group": "Network",
+          "title": "Public IPs"
+        },
+        {
+          "name": "spot",
+          "description": "Use Spot capacity: much cheaper, but interruptible with a two-minute notice — do not use for a measurement that must complete.",
+          "bool": {
+            "default": false
+          },
+          "group": "Placement",
+          "title": "Spot instances"
+        }
+      ],
+      "rules": [
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"network\" in s) || s.network.kind == \"create\")",
+          "message": "existing networks are not implemented by the pipeline; use a run-owned network",
+          "id": "network-create-only"
+        }
+      ],
+      "strict": true,
+      "coerce": true
+    },
+    "baseline": {
+      "fields": [
+        {
+          "name": "enabled",
+          "description": "Run `stroppy baseline` on the runner machine before the segments: the stroppy ceiling a database run can never exceed.",
+          "bool": {
+            "default": false
+          },
+          "title": "Measure the runner"
+        },
+        {
+          "name": "tiers",
+          "description": "Which tiers to run (--tiers); unset = both.",
+          "list": {
+            "items": [
+              {
+                "choice": {
+                  "options": [
+                    {
+                      "value": {
+                        "stringValue": "noop"
+                      },
+                      "label": "noop driver (framework cost)"
+                    },
+                    {
+                      "value": {
+                        "stringValue": "wire"
+                      },
+                      "label": "pg-wire against pg-noop on loopback"
+                    }
+                  ]
+                }
+              }
+            ],
+            "minItems": "1",
+            "maxItems": "2",
+            "unique": true
+          },
+          "title": "Tiers"
+        },
+        {
+          "name": "quick",
+          "description": "Shorter phases and a smaller load (--quick).",
+          "bool": {
+            "default": false
+          },
+          "title": "Quick"
+        },
+        {
+          "name": "vus",
+          "description": "VU count of the parallel tx phase (--vus); unset = 20.",
+          "nullable": true,
+          "int64": {
+            "gte": "1",
+            "lte": "4096"
+          },
+          "title": "Parallel VUs"
+        },
+        {
+          "name": "rows",
+          "description": "Rows loaded into the probe table (--rows); unset = 250000.",
+          "nullable": true,
+          "int64": {
+            "gte": "1000",
+            "lte": "100000000"
+          },
+          "title": "Load rows"
+        },
+        {
+          "name": "duration",
+          "description": "Duration of each tx phase (--duration); unset = 3s.",
+          "nullable": true,
+          "duration": {
+            "gt": "0s",
+            "lte": "600s"
+          },
+          "title": "Tx phase duration"
+        }
+      ],
+      "strict": true
+    },
+    "driver": {
+      "fields": [
+        {
+          "name": "defaultInsertMethod",
+          "description": "Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves.",
+          "nullable": true,
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "native"
+                },
+                "label": "Native (COPY / BulkUpsert)"
+              },
+              {
+                "value": {
+                  "stringValue": "columnar"
+                },
+                "label": "Columnar"
+              },
+              {
+                "value": {
+                  "stringValue": "plain_bulk"
+                },
+                "label": "Plain bulk INSERT"
+              },
+              {
+                "value": {
+                  "stringValue": "plain_query"
+                },
+                "label": "Plain single-row INSERT"
+              }
+            ]
+          },
+          "title": "Insert method"
+        },
+        {
+          "name": "bulkSize",
+          "description": "Rows per bulk INSERT statement (bulkSize).",
+          "int64": {
+            "default": "2500",
+            "gte": "1",
+            "lte": "1000000"
+          },
+          "unit": "rows",
+          "title": "Bulk size"
+        },
+        {
+          "name": "pool",
+          "description": "Native Stroppy pool options; explicit driver settings take precedence over pool aliases.",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "maxConns",
+                  "description": "Stroppy max_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max connections"
+                },
+                {
+                  "name": "minConns",
+                  "description": "Stroppy min_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Min connections"
+                },
+                {
+                  "name": "minIdleConns",
+                  "description": "Stroppy min_idle_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Min idle connections"
+                },
+                {
+                  "name": "maxConnLifetime",
+                  "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max lifetime"
+                },
+                {
+                  "name": "maxConnIdleTime",
+                  "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle time"
+                },
+                {
+                  "name": "descriptionCacheCapacity",
+                  "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Description cache"
+                },
+                {
+                  "name": "statementCacheCapacity",
+                  "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Statement cache"
+                },
+                {
+                  "name": "traceLogLevel",
+                  "description": "pgx tracer log level (traceLogLevel).",
+                  "nullable": true,
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "trace"
+                        },
+                        "label": "Trace"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "debug"
+                        },
+                        "label": "Debug"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "info"
+                        },
+                        "label": "Info"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "warn"
+                        },
+                        "label": "Warn"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "error"
+                        },
+                        "label": "Error"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "none"
+                        },
+                        "label": "None"
+                      }
+                    ]
+                  },
+                  "group": "Logging",
+                  "title": "Driver log level"
+                },
+                {
+                  "name": "defaultQueryExecMode",
+                  "description": "pgx defaultQueryExecMode.",
+                  "nullable": true,
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "cache_statement"
+                        },
+                        "label": "Cache statements"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "cache_describe"
+                        },
+                        "label": "Cache descriptions"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "describe_exec"
+                        },
+                        "label": "Describe and execute"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "exec"
+                        },
+                        "label": "Execute"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "simple_protocol"
+                        },
+                        "label": "Simple protocol"
+                      }
+                    ]
+                  },
+                  "group": "Driver",
+                  "title": "Query execution mode"
+                },
+                {
+                  "name": "maxOpenConns",
+                  "description": "Stroppy max_open_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max open connections"
+                },
+                {
+                  "name": "maxIdleConns",
+                  "description": "Stroppy max_idle_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle connections"
+                },
+                {
+                  "name": "connMaxLifetime",
+                  "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max lifetime"
+                },
+                {
+                  "name": "connMaxIdleTime",
+                  "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle time"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "group": "Driver",
+          "title": "Connection pool"
+        },
+        {
+          "name": "postgres",
+          "description": "Native Stroppy postgres options; explicit driver settings take precedence over pool aliases.",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "maxConns",
+                  "description": "Stroppy max_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max connections"
+                },
+                {
+                  "name": "minConns",
+                  "description": "Stroppy min_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Min connections"
+                },
+                {
+                  "name": "minIdleConns",
+                  "description": "Stroppy min_idle_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Min idle connections"
+                },
+                {
+                  "name": "maxConnLifetime",
+                  "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max lifetime"
+                },
+                {
+                  "name": "maxConnIdleTime",
+                  "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle time"
+                },
+                {
+                  "name": "descriptionCacheCapacity",
+                  "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Description cache"
+                },
+                {
+                  "name": "statementCacheCapacity",
+                  "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Statement cache"
+                },
+                {
+                  "name": "traceLogLevel",
+                  "description": "pgx tracer log level (traceLogLevel).",
+                  "nullable": true,
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "trace"
+                        },
+                        "label": "Trace"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "debug"
+                        },
+                        "label": "Debug"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "info"
+                        },
+                        "label": "Info"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "warn"
+                        },
+                        "label": "Warn"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "error"
+                        },
+                        "label": "Error"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "none"
+                        },
+                        "label": "None"
+                      }
+                    ]
+                  },
+                  "group": "Logging",
+                  "title": "Driver log level"
+                },
+                {
+                  "name": "defaultQueryExecMode",
+                  "description": "pgx defaultQueryExecMode.",
+                  "nullable": true,
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "cache_statement"
+                        },
+                        "label": "Cache statements"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "cache_describe"
+                        },
+                        "label": "Cache descriptions"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "describe_exec"
+                        },
+                        "label": "Describe and execute"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "exec"
+                        },
+                        "label": "Execute"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "simple_protocol"
+                        },
+                        "label": "Simple protocol"
+                      }
+                    ]
+                  },
+                  "group": "Driver",
+                  "title": "Query execution mode"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "group": "Driver",
+          "title": "PostgreSQL driver"
+        },
+        {
+          "name": "sql",
+          "description": "Native Stroppy sql options; explicit driver settings take precedence over pool aliases.",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "maxOpenConns",
+                  "description": "Stroppy max_open_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max open connections"
+                },
+                {
+                  "name": "maxIdleConns",
+                  "description": "Stroppy max_idle_conns; unset preserves the driver default.",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "0",
+                    "lte": "65535"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle connections"
+                },
+                {
+                  "name": "connMaxLifetime",
+                  "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max lifetime"
+                },
+                {
+                  "name": "connMaxIdleTime",
+                  "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
+                  "nullable": true,
+                  "duration": {
+                    "gte": "0s",
+                    "lte": "86400s"
+                  },
+                  "group": "Pool",
+                  "title": "Max idle time"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "group": "Driver",
+          "title": "SQL driver"
+        },
+        {
+          "name": "insertProgress",
+          "description": "insertProgress.* — load progress reporting.",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "enabled",
+                  "description": "Explicit insertProgress.enabled override; unset uses the mode.",
+                  "nullable": true,
+                  "bool": {},
+                  "title": "Enabled"
+                },
+                {
+                  "name": "mode",
+                  "description": "insertProgress.mode: where load progress goes.",
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "off"
+                        },
+                        "label": "Off"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "log"
+                        },
+                        "label": "Log"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "metrics"
+                        },
+                        "label": "Metrics"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "both"
+                        },
+                        "label": "Log and metrics"
+                      }
+                    ],
+                    "default": {
+                      "stringValue": "both"
+                    }
+                  },
+                  "title": "Mode"
+                },
+                {
+                  "name": "interval",
+                  "description": "insertProgress.interval — progress cadence.",
+                  "duration": {
+                    "default": "10s",
+                    "gt": "0s",
+                    "lte": "3600s"
+                  },
+                  "title": "Interval"
+                },
+                {
+                  "name": "stallAfter",
+                  "description": "insertProgress.stallAfter — warn when no rows moved for this long.",
+                  "duration": {
+                    "default": "60s",
+                    "gt": "0s",
+                    "lte": "86400s"
+                  },
+                  "title": "Stall after"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "title": "Load progress"
+        },
+        {
+          "name": "authToken",
+          "description": "IAM token passed as authToken.",
+          "nullable": true,
+          "string": {
+            "maxLen": "4096"
+          },
+          "title": "Auth token",
+          "secret": true
+        },
+        {
+          "name": "authUser",
+          "description": "Static credentials user (authUser).",
+          "nullable": true,
+          "string": {
+            "maxLen": "128"
+          },
+          "title": "User"
+        },
+        {
+          "name": "authPassword",
+          "description": "Static credentials password (authPassword).",
+          "nullable": true,
+          "string": {
+            "maxLen": "256"
+          },
+          "title": "Password",
+          "secret": true
+        },
+        {
+          "name": "tlsInsecureSkipVerify",
+          "description": "tlsInsecureSkipVerify — testing only.",
+          "bool": {
+            "default": false
+          },
+          "title": "Skip TLS verification"
+        },
+        {
+          "name": "caCertFile",
+          "description": "Path inside the Stroppy container; use a shipped file or workload.ca_cert for inline PEM, not both.",
+          "string": {
+            "minLen": "1",
+            "maxLen": "512"
+          },
+          "group": "Driver",
+          "title": "CA file"
+        }
+      ],
+      "strict": true
+    },
+    "segment": {
+      "id": {
+        "namespace": "workload",
+        "name": "segment",
+        "version": "v1.0.0"
+      },
+      "description": "One stroppy load segment: workload, typed parameters, scenario, steps and files.",
+      "fields": [
+        {
+          "name": "name",
+          "description": "Segment id inside the workload; used as the phase label of the run and as a metric label.",
+          "required": true,
+          "string": {
+            "minLen": "1",
+            "maxLen": "64",
+            "pattern": "^[a-z][a-z0-9_-]*$"
+          },
+          "group": "Segment",
+          "title": "Name"
+        },
+        {
+          "name": "workload",
+          "description": "Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`.",
+          "required": true,
+          "oneOf": {
+            "discriminator": "script",
+            "variants": {
+              "baseline": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers).",
+                    "int64": {
+                      "default": "20",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "rows",
+                    "description": "Rows loaded into the baseline probe table (rows).",
+                    "int64": {
+                      "default": "250000",
+                      "gte": "1"
+                    },
+                    "group": "Data",
+                    "title": "Rows"
+                  },
+                  {
+                    "name": "tx_isolation",
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "nullable": true,
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          },
+                          "label": "Read uncommitted"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "read_committed"
+                          },
+                          "label": "Read committed"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          },
+                          "label": "Repeatable read"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "serializable"
+                          },
+                          "label": "Serializable"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "db_default"
+                          },
+                          "label": "Database default"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "conn"
+                          },
+                          "label": "Connection-level"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "none"
+                          },
+                          "label": "None (no BEGIN)"
+                        }
+                      ]
+                    },
+                    "group": "Transactions",
+                    "title": "Transaction isolation"
+                  }
+                ],
+                "strict": true
+              },
+              "execute_sql": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "sql_body",
+                    "description": "SQL text to execute (sqlBody); may start with a `--= name` marker to name the query.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "1048576"
+                    },
+                    "group": "SQL",
+                    "title": "Inline SQL"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "SQL file to execute (sqlFile): a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "simple": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  }
+                ],
+                "strict": true
+              },
+              "tpcb/procs": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "Scale factor"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "retry_attempts",
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "group": "Transactions",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "name": "tx_isolation",
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "nullable": true,
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          },
+                          "label": "Read uncommitted"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "read_committed"
+                          },
+                          "label": "Read committed"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          },
+                          "label": "Repeatable read"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "serializable"
+                          },
+                          "label": "Serializable"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "db_default"
+                          },
+                          "label": "Database default"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "conn"
+                          },
+                          "label": "Connection-level"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "none"
+                          },
+                          "label": "None (no BEGIN)"
+                        }
+                      ]
+                    },
+                    "group": "Transactions",
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "tpcb/tx": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "Scale factor"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "retry_attempts",
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "group": "Transactions",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "name": "tx_isolation",
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "nullable": true,
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          },
+                          "label": "Read uncommitted"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "read_committed"
+                          },
+                          "label": "Read committed"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          },
+                          "label": "Repeatable read"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "serializable"
+                          },
+                          "label": "Serializable"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "db_default"
+                          },
+                          "label": "Database default"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "conn"
+                          },
+                          "label": "Connection-level"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "none"
+                          },
+                          "label": "None (no BEGIN)"
+                        }
+                      ]
+                    },
+                    "group": "Transactions",
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "tpcc/procs": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "Warehouses"
+                  },
+                  {
+                    "name": "warehouse_start",
+                    "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "First warehouse"
+                  },
+                  {
+                    "name": "load_items",
+                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
+                    "nullable": true,
+                    "bool": {},
+                    "group": "Load",
+                    "title": "Load items"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "pg_unlogged",
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Load",
+                    "title": "Unlogged tables while loading"
+                  },
+                  {
+                    "name": "pacing",
+                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Transactions",
+                    "title": "Pacing"
+                  },
+                  {
+                    "name": "retry_attempts",
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "group": "Transactions",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "name": "tx_isolation",
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "nullable": true,
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          },
+                          "label": "Read uncommitted"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "read_committed"
+                          },
+                          "label": "Read committed"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          },
+                          "label": "Repeatable read"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "serializable"
+                          },
+                          "label": "Serializable"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "db_default"
+                          },
+                          "label": "Database default"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "conn"
+                          },
+                          "label": "Connection-level"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "none"
+                          },
+                          "label": "None (no BEGIN)"
+                        }
+                      ]
+                    },
+                    "group": "Transactions",
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "tpcc/tx": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "Warehouses"
+                  },
+                  {
+                    "name": "warehouse_start",
+                    "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "100000"
+                    },
+                    "group": "Data",
+                    "title": "First warehouse"
+                  },
+                  {
+                    "name": "load_items",
+                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
+                    "nullable": true,
+                    "bool": {},
+                    "group": "Load",
+                    "title": "Load items"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "pg_unlogged",
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Load",
+                    "title": "Unlogged tables while loading"
+                  },
+                  {
+                    "name": "pacing",
+                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Transactions",
+                    "title": "Pacing"
+                  },
+                  {
+                    "name": "retry_attempts",
+                    "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "int64": {
+                      "default": "3",
+                      "gte": "1",
+                      "lte": "100"
+                    },
+                    "group": "Transactions",
+                    "title": "Retry attempts"
+                  },
+                  {
+                    "name": "tx_isolation",
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
+                    "nullable": true,
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "read_uncommitted"
+                          },
+                          "label": "Read uncommitted"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "read_committed"
+                          },
+                          "label": "Read committed"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "repeatable_read"
+                          },
+                          "label": "Repeatable read"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "serializable"
+                          },
+                          "label": "Serializable"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "db_default"
+                          },
+                          "label": "Database default"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "conn"
+                          },
+                          "label": "Connection-level"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "none"
+                          },
+                          "label": "None (no BEGIN)"
+                        }
+                      ]
+                    },
+                    "group": "Transactions",
+                    "title": "Transaction isolation"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "tpcds": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "TPC-DS scale factor (scaleFactor); fractional allowed. Static dimensions (~1.9M customer_demographics rows) do not shrink.",
+                    "double": {
+                      "default": 1,
+                      "gt": 0,
+                      "lte": 10000
+                    },
+                    "group": "Data",
+                    "title": "Scale factor"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                    "int64": {
+                      "default": "0",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "pg_unlogged",
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Load",
+                    "title": "Unlogged tables while loading"
+                  },
+                  {
+                    "name": "streams",
+                    "description": "Number of query streams (streams).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "64"
+                    },
+                    "group": "Queries",
+                    "title": "Query streams"
+                  },
+                  {
+                    "name": "query_stream",
+                    "description": "Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.",
+                    "nullable": true,
+                    "int64": {
+                      "gte": "0"
+                    },
+                    "group": "Queries",
+                    "title": "Query stream"
+                  },
+                  {
+                    "name": "query_seed",
+                    "description": "Query generator seed (querySeed).",
+                    "int64": {
+                      "default": "19620718"
+                    },
+                    "group": "Queries",
+                    "title": "Query seed"
+                  },
+                  {
+                    "name": "validate_force",
+                    "description": "Compare answers even when the scale factor is not 1 (validateForce).",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Queries",
+                    "title": "Validate outside SF=1"
+                  },
+                  {
+                    "name": "ydb_store_mode",
+                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "column"
+                          },
+                          "label": "Column store"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "row"
+                          },
+                          "label": "Row store"
+                        }
+                      ],
+                      "default": {
+                        "stringValue": "column"
+                      }
+                    },
+                    "group": "Load",
+                    "title": "YDB store mode"
+                  },
+                  {
+                    "name": "schema_file",
+                    "description": "Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "Schema file"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              },
+              "tpch/tx": {
+                "fields": [
+                  {
+                    "name": "script",
+                    "required": true,
+                    "string": {}
+                  },
+                  {
+                    "name": "scale_factor",
+                    "description": "TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data.",
+                    "double": {
+                      "default": 1,
+                      "gt": 0,
+                      "lte": 10000
+                    },
+                    "group": "Data",
+                    "title": "Scale factor"
+                  },
+                  {
+                    "name": "load_workers",
+                    "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                    "int64": {
+                      "default": "0",
+                      "gte": "0",
+                      "lte": "1024"
+                    },
+                    "group": "Load",
+                    "title": "Load workers"
+                  },
+                  {
+                    "name": "pg_unlogged",
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
+                    "bool": {
+                      "default": false
+                    },
+                    "group": "Load",
+                    "title": "Unlogged tables while loading"
+                  },
+                  {
+                    "name": "ydb_store_mode",
+                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
+                    "choice": {
+                      "options": [
+                        {
+                          "value": {
+                            "stringValue": "column"
+                          },
+                          "label": "Column store"
+                        },
+                        {
+                          "value": {
+                            "stringValue": "row"
+                          },
+                          "label": "Row store"
+                        }
+                      ],
+                      "default": {
+                        "stringValue": "column"
+                      }
+                    },
+                    "group": "Load",
+                    "title": "YDB store mode"
+                  },
+                  {
+                    "name": "sql_file",
+                    "description": "Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files.",
+                    "nullable": true,
+                    "string": {
+                      "maxLen": "256",
+                      "pattern": "^[A-Za-z0-9._/-]+$"
+                    },
+                    "group": "SQL",
+                    "title": "SQL file"
+                  }
+                ],
+                "strict": true
+              }
+            }
+          },
+          "group": "Workload",
+          "title": "Workload"
+        },
+        {
+          "name": "run",
+          "description": "Load shape of the segment.",
+          "required": true,
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "executor",
+                  "description": "Scenario executor: constant-vus runs for a duration, shared-iterations shares N iterations between VUs.",
+                  "choice": {
+                    "options": [
+                      {
+                        "value": {
+                          "stringValue": "constant-vus"
+                        },
+                        "label": "Constant VUs for a duration"
+                      },
+                      {
+                        "value": {
+                          "stringValue": "shared-iterations"
+                        },
+                        "label": "Shared iterations"
+                      }
+                    ],
+                    "default": {
+                      "stringValue": "constant-vus"
+                    }
+                  },
+                  "title": "Executor"
+                },
+                {
+                  "name": "vus",
+                  "description": "Concurrent virtual users (vus); sizes the runner machine and the pool.",
+                  "int64": {
+                    "default": "1",
+                    "gte": "1",
+                    "lte": "100000"
+                  },
+                  "title": "Virtual users"
+                },
+                {
+                  "name": "duration",
+                  "description": "Wall-clock length of a constant-vus scenario (duration).",
+                  "nullable": true,
+                  "duration": {
+                    "gt": "0s",
+                    "lte": "86400s"
+                  },
+                  "title": "Duration"
+                },
+                {
+                  "name": "iterations",
+                  "description": "Total iterations of a shared-iterations scenario (iterations).",
+                  "nullable": true,
+                  "int64": {
+                    "gte": "1"
+                  },
+                  "title": "Iterations"
+                },
+                {
+                  "name": "query_timeout",
+                  "description": "Per-statement deadline (queryTimeout); 0 disables it.",
+                  "duration": {
+                    "default": "0s",
+                    "gte": "0s",
+                    "lte": "3600s"
+                  },
+                  "title": "Query timeout"
+                }
+              ],
+              "rules": [
+                {
+                  "expr": "this.executor != \"constant-vus\" || (\"duration\" in this && this.duration != null)",
+                  "message": "constant-vus needs a duration",
+                  "id": "constant-vus-needs-duration"
+                },
+                {
+                  "expr": "this.executor != \"constant-vus\" || !(\"iterations\" in this) || this.iterations == null",
+                  "message": "iterations applies only to shared-iterations",
+                  "id": "iterations-executor"
+                },
+                {
+                  "expr": "this.executor != \"shared-iterations\" || !(\"duration\" in this) || this.duration == null",
+                  "message": "duration applies only to constant-vus",
+                  "id": "duration-executor"
+                },
+                {
+                  "expr": "this.executor != \"shared-iterations\" || (\"iterations\" in this && this.iterations != null)",
+                  "message": "shared-iterations needs an iteration count",
+                  "id": "shared-iterations-needs-count"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "group": "Scenario",
+          "title": "Scenario"
+        },
+        {
+          "name": "steps",
+          "description": "Run only the listed stroppy steps (--steps); empty = all steps.",
+          "list": {
+            "items": [
+              {
+                "string": {
+                  "minLen": "1",
+                  "maxLen": "64",
+                  "pattern": "^[a-z][a-z0-9_]*$"
+                }
+              }
+            ],
+            "maxItems": "32",
+            "unique": true
+          },
+          "group": "Steps",
+          "title": "Only these steps"
+        },
+        {
+          "name": "no_steps",
+          "description": "Skip the listed stroppy steps (--no-steps); stroppy rejects it together with steps.",
+          "list": {
+            "items": [
+              {
+                "string": {
+                  "minLen": "1",
+                  "maxLen": "64",
+                  "pattern": "^[a-z][a-z0-9_]*$"
+                }
+              }
+            ],
+            "maxItems": "32",
+            "unique": true
+          },
+          "group": "Steps",
+          "title": "Skip these steps"
+        },
+        {
+          "name": "extra_params",
+          "description": "Typed stroppy flags this form does not model, by flag name without dashes (load-workers); values are parsed by stroppy.",
+          "rules": [
+            {
+              "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9-]*$\"))",
+              "message": "extra parameter keys must be stroppy flag names (lower-kebab)",
+              "id": "extra-param-key-shape"
+            }
+          ],
+          "map": {
+            "maxEntries": "64",
+            "valueField": {
+              "name": "value",
+              "string": {
+                "maxLen": "4096"
+              }
+            }
+          },
+          "group": "Workload",
+          "title": "Extra parameters"
+        },
+        {
+          "name": "files",
+          "description": "Extra files (SQL dialects, schemas, data) shipped with the segment.",
+          "list": {
+            "items": [
+              {
+                "object": {
+                  "schema": {
+                    "fields": [
+                      {
+                        "name": "name",
+                        "description": "Name the file gets in the segment workspace; reference it from sql_file/schema_file.",
+                        "required": true,
+                        "string": {
+                          "minLen": "1",
+                          "maxLen": "128",
+                          "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$"
+                        },
+                        "title": "File name"
+                      },
+                      {
+                        "name": "kind",
+                        "description": "What the file is: a schema/DDL file, a config, or a data file.",
+                        "choice": {
+                          "options": [
+                            {
+                              "value": {
+                                "stringValue": "sql"
+                              },
+                              "label": "SQL / DDL"
+                            },
+                            {
+                              "value": {
+                                "stringValue": "conf"
+                              },
+                              "label": "Config"
+                            },
+                            {
+                              "value": {
+                                "stringValue": "data"
+                              },
+                              "label": "Data"
+                            }
+                          ],
+                          "default": {
+                            "stringValue": "sql"
+                          }
+                        },
+                        "title": "Kind"
+                      },
+                      {
+                        "name": "content",
+                        "description": "Inline file body, at most 1 MiB.",
+                        "string": {
+                          "maxLen": "1048576"
+                        },
+                        "title": "Content"
+                      },
+                      {
+                        "name": "ref",
+                        "description": "Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.",
+                        "string": {
+                          "minLen": "1",
+                          "maxLen": "512",
+                          "pattern": "^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$"
+                        },
+                        "title": "Reference"
+                      }
+                    ],
+                    "rules": [
+                      {
+                        "expr": "(\"content\" in this) != (\"ref\" in this)",
+                        "message": "a file needs exactly one of content or ref",
+                        "id": "file-content-xor-ref"
+                      }
+                    ],
+                    "strict": true
+                  }
+                }
+              }
+            ],
+            "maxItems": "32"
+          },
+          "group": "Files",
+          "title": "Files"
+        },
+        {
+          "name": "thresholds",
+          "description": "Pass/fail bounds the pipeline applies to the segment summary.",
+          "object": {
+            "schema": {
+              "fields": [
+                {
+                  "name": "p99_ms",
+                  "description": "Fail the segment when iteration_duration p99 exceeds this.",
+                  "double": {
+                    "gt": 0
+                  },
+                  "unit": "ms",
+                  "title": "p99 latency"
+                },
+                {
+                  "name": "error_rate",
+                  "description": "Fail the segment when failed_iterations / iterations exceeds this (0..1).",
+                  "double": {
+                    "gte": 0,
+                    "lte": 1
+                  },
+                  "unit": "ratio",
+                  "title": "Error rate"
+                }
+              ],
+              "strict": true
+            }
+          },
+          "group": "Thresholds",
+          "title": "Thresholds"
+        },
+        {
+          "name": "seed",
+          "description": "Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.",
+          "nullable": true,
+          "uint64": {
+            "gte": "0"
+          },
+          "group": "Scenario",
+          "title": "Random seed"
+        },
+        {
+          "name": "timeout",
+          "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.",
+          "nullable": true,
+          "duration": {
+            "gt": "0s",
+            "lte": "604800s"
+          },
+          "group": "Scenario",
+          "title": "Segment timeout"
+        },
+        {
+          "name": "warmup",
+          "description": "Idle wait before the segment starts, letting caches and replicas settle.",
+          "duration": {
+            "default": "0s",
+            "gte": "0s",
+            "lte": "3600s"
+          },
+          "group": "Scenario",
+          "title": "Warm-up"
+        },
+        {
+          "name": "log_level",
+          "description": "Minimum stroppy log level (--log-level); debug traces parameter resolution.",
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "debug"
+                },
+                "label": "debug"
+              },
+              {
+                "value": {
+                  "stringValue": "info"
+                },
+                "label": "info"
+              },
+              {
+                "value": {
+                  "stringValue": "warn"
+                },
+                "label": "warn"
+              },
+              {
+                "value": {
+                  "stringValue": "error"
+                },
+                "label": "error"
+              }
+            ],
+            "default": {
+              "stringValue": "info"
+            }
+          },
+          "group": "Segment",
+          "title": "Log level"
+        }
+      ],
+      "rules": [
+        {
+          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) && (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) && (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
+          "message": "step must be an executable Stroppy step of the selected workload",
+          "id": "known-workload-steps"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"files\" in s) || s.files.all(f, s.files.filter(x, x.name == f.name).size() == 1 && s.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + \"/\") && !f.name.startsWith(x.name + \"/\"))) && [\"stroppy-config.json\", \"ca.pem\", \"stroppy.log\"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + \"/\"))))",
+          "message": "file names must be unique and cannot overwrite runtime files",
+          "id": "segment-file-names"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"steps\" in s) || !(\"no_steps\" in s) || size(s.steps) == 0 || size(s.no_steps) == 0)",
+          "message": "stroppy rejects --steps together with --no-steps",
+          "id": "steps-mutually-exclusive"
+        },
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload && s.workload.sql_body != null) != (\"sql_file\" in s.workload && s.workload.sql_file != null)))",
+          "message": "execute_sql needs exactly one of sql_body or sql_file",
+          "id": "execute-sql-source"
+        }
+      ],
+      "strict": true,
+      "coerce": true
+    },
+    "yandex_settings": {
+      "id": {
+        "namespace": "provider",
+        "name": "yandex.settings",
+        "version": "v1.0.0"
+      },
+      "description": "Yandex Cloud placement settings of a tenant provider profile (no secrets).",
+      "fields": [
+        {
+          "name": "cloud_id",
+          "description": "Yandex Cloud cloud id owning the folder.",
+          "required": true,
+          "string": {
+            "pattern": "^[a-z0-9]{20}$"
+          },
+          "group": "Account",
+          "title": "Cloud id",
+          "examples": [
+            {
+              "stringValue": "b1glku4lgd6gabcdefgh"
+            }
+          ]
+        },
+        {
+          "name": "folder_id",
+          "description": "Folder every VM, disk and network of a run is created in.",
+          "required": true,
+          "string": {
+            "pattern": "^[a-z0-9]{20}$"
+          },
+          "group": "Account",
+          "title": "Folder id",
+          "examples": [
+            {
+              "stringValue": "b1gia87mbaomkfvsleds"
+            }
+          ]
+        },
+        {
+          "name": "zone",
+          "description": "Availability zone of ru-central1 the run is placed in.",
+          "required": true,
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "ru-central1-a"
+                },
+                "label": "ru-central1-a"
+              },
+              {
+                "value": {
+                  "stringValue": "ru-central1-b"
+                },
+                "label": "ru-central1-b"
+              },
+              {
+                "value": {
+                  "stringValue": "ru-central1-d"
+                },
+                "label": "ru-central1-d (recommended)"
+              },
+              {
+                "value": {
+                  "stringValue": "ru-central1-e"
+                },
+                "label": "ru-central1-e"
+              }
+            ],
+            "default": {
+              "stringValue": "ru-central1-d"
+            }
+          },
+          "group": "Placement",
+          "title": "Zone"
+        },
+        {
+          "name": "zones",
+          "description": "Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.",
+          "list": {
+            "items": [
+              {
+                "string": {
+                  "pattern": "^ru-central1-[abde]$"
+                }
+              }
+            ],
+            "minItems": "3",
+            "maxItems": "3",
+            "unique": true
+          },
+          "group": "Placement",
+          "title": "Distributed topology zones"
+        },
+        {
+          "name": "platform_id",
+          "description": "Compute platform (CPU generation) the machines are created on.",
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "standard-v1"
+                },
+                "label": "Intel Broadwell (standard-v1)"
+              },
+              {
+                "value": {
+                  "stringValue": "standard-v2"
+                },
+                "label": "Intel Cascade Lake (standard-v2)"
+              },
+              {
+                "value": {
+                  "stringValue": "standard-v3"
+                },
+                "label": "Intel Ice Lake (standard-v3)"
+              },
+              {
+                "value": {
+                  "stringValue": "standard-v4a"
+                },
+                "label": "AMD Zen 4 (standard-v4a)"
+              },
+              {
+                "value": {
+                  "stringValue": "amd-v1"
+                },
+                "label": "AMD Zen 3 (amd-v1)"
+              },
+              {
+                "value": {
+                  "stringValue": "highfreq-v3"
+                },
+                "label": "Intel Ice Lake compute-optimized (highfreq-v3)"
+              },
+              {
+                "value": {
+                  "stringValue": "highfreq-v4a"
+                },
+                "label": "AMD Zen 4 compute-optimized (highfreq-v4a)"
+              }
+            ],
+            "default": {
+              "stringValue": "standard-v3"
+            }
+          },
+          "group": "Placement",
+          "title": "Platform"
+        },
+        {
+          "name": "network",
+          "description": "Create a throwaway network for every run, or place runs into an existing one.",
+          "oneOf": {
+            "discriminator": "kind",
+            "variants": {
+              "create": {
+                "fields": [
+                  {
+                    "name": "subnet_cidr",
+                    "description": "IPv4 range of the subnet created for the run.",
+                    "string": {
+                      "default": "10.130.0.0/24",
+                      "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+                    },
+                    "title": "Subnet CIDR"
+                  }
+                ]
+              },
+              "existing": {
+                "fields": [
+                  {
+                    "name": "network_id",
+                    "description": "Existing VPC network the machines join.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z0-9]{20}$"
+                    },
+                    "title": "Network id"
+                  },
+                  {
+                    "name": "subnet_id",
+                    "description": "Existing subnet in the chosen zone.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z0-9]{20}$"
+                    },
+                    "title": "Subnet id"
+                  },
+                  {
+                    "name": "security_group_id",
+                    "description": "Existing security group applied to every machine.",
+                    "string": {
+                      "pattern": "^[a-z0-9]{20}$"
+                    },
+                    "title": "Security group id"
+                  }
+                ]
+              }
+            }
+          },
+          "group": "Network",
+          "title": "Network"
+        },
+        {
+          "name": "public_ips",
+          "description": "Assign a one-to-one NAT public address to every machine.",
+          "bool": {
+            "default": true
+          },
+          "group": "Network",
+          "title": "Public IPs"
+        },
+        {
+          "name": "image_family",
+          "description": "Boot image family from the standard-images folder.",
+          "choice": {
+            "options": [
+              {
+                "value": {
+                  "stringValue": "ubuntu-2404-lts"
+                },
+                "label": "Ubuntu 24.04 LTS"
+              },
+              {
+                "value": {
+                  "stringValue": "ubuntu-2204-lts"
+                },
+                "label": "Ubuntu 22.04 LTS"
+              },
+              {
+                "value": {
+                  "stringValue": "ubuntu-2004-lts"
+                },
+                "label": "Ubuntu 20.04 LTS"
+              },
+              {
+                "value": {
+                  "stringValue": "debian-12"
+                },
+                "label": "Debian 12"
+              },
+              {
+                "value": {
+                  "stringValue": "centos-stream-9-oslogin"
+                },
+                "label": "CentOS Stream 9"
+              }
+            ],
+            "default": {
+              "stringValue": "ubuntu-2404-lts"
+            }
+          },
+          "group": "Placement",
+          "title": "Image family"
+        },
+        {
+          "name": "preemptible",
+          "description": "Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete.",
+          "bool": {
+            "default": false
+          },
+          "group": "Placement",
+          "title": "Preemptible"
+        }
+      ],
+      "rules": [
+        {
+          "expr": "[this == null ? root : this].all(s, !(\"network\" in s) || s.network.kind == \"create\")",
+          "message": "existing networks are not implemented by the pipeline; use a run-owned network",
+          "id": "network-create-only"
+        }
+      ],
+      "strict": true,
+      "coerce": true
+    }
+  }
 }

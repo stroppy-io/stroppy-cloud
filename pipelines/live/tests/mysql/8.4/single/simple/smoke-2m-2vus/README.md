@@ -1,0 +1,40 @@
+# mysql 8.4 / single / simple / smoke-2m-2vus
+
+Область проверки: functional smoke and recorded telemetry checks; not full performance or fault readiness
+
+Состояние исполнения: `completed`. Наблюдалось: `2026-09-15T23:36:40.846351+00:00`.
+
+[Паспорт случая](case.json) · [Проверки](checks.json)
+
+[Вход](input.json) — Full original run input, potentially containing multiple workloads. Preset is the historical label; actual segment parameters take precedence.
+
+| Проверка | Статус | Основание |
+|---|---|---|
+| compile | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| smoke | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| native_tps | not_applicable | No logical transactions for this workload. |
+| native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| component_metrics | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| component_logs | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| pipeline_traces | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| database_metric_distributions | not_run | Not verified in the retained report. |
+| managed_database_metrics | not_applicable | Not applicable to this database/topology; inherited scope is preserved. |
+| artifacts | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+| replication | not_applicable | Not applicable to this database/topology; inherited scope is preserved. |
+| cleanup | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/0`) |
+
+Прогоны:
+
+- [runs/matrix-mysql84-fixed-fc2399ff-mysql84-single](runs/matrix-mysql84-fixed-fc2399ff-mysql84-single/manifest.json)
+
+Предыдущие материалы (не текущее подтверждение):
+
+- [mysql84-single-initial.artifacts.json](history/mysql84-single-initial.artifacts.json)
+- [mysql84-single-initial.logs.json](history/mysql84-single-initial.logs.json)
+- [mysql84-single-initial.metrics.json](history/mysql84-single-initial.metrics.json)
+- [mysql84-single-initial.native.json](history/mysql84-single-initial.native.json)
+- [mysql84-single-initial.result.json](history/mysql84-single-initial.result.json)
+- [mysql84-single-initial.traces.json](history/mysql84-single-initial.traces.json)
+
+[Единая таблица](../../../../../progress.csv)

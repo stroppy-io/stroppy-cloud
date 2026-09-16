@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
@@ -52,7 +53,7 @@ func TestCompileMySQLClusters(t *testing.T) {
 						sizes[n.Role] = library.RoleSize{Size: "S"}
 					}
 					runID := uuid.New()
-					out, err := compile.Compile(ctx, reg, compile.Input{RunID: runID, Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+					out, err := compile.Compile(ctx, reg, compile.Input{RunID: runID, Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat})
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -189,7 +190,7 @@ func TestGaleraProxyReaderOverride(t *testing.T) {
 			for _, node := range derived.Plan.Nodes {
 				sizes[node.Role] = library.RoleSize{Size: "S"}
 			}
-			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+			out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-a","network":{"kind":"create"}}`), CredentialsSecret: "yc", Catalog: cat})
 			if err != nil {
 				t.Fatal(err)
 			}

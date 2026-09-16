@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"maps"
 	"path"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -83,6 +84,9 @@ func Config(in Input) (map[string]any, error) {
 		"runId":  in.RunID,
 		"logger": map[string]any{"logLevel": logLevel(seg), "logMode": logModeProduction},
 	}
+	if seg.Seed != nil {
+		global["seed"] = *seg.Seed
+	}
 	labels := maps.Clone(in.Labels)
 	if labels == nil {
 		labels = map[string]string{}
@@ -111,6 +115,8 @@ func Config(in Input) (map[string]any, error) {
 	return cfg, nil
 }
 
+var sqlSectionMarker = regexp.MustCompile(`(?m)^\s*--=\s+\S+`)
+
 // Params renders the typed workload parameters: snake_case schema keys
 // become stroppy's lowerCamel config keys, nulls are dropped (unset =
 // declared default), file references are resolved against the workspace.
@@ -135,6 +141,14 @@ func Params(seg spec.Segment) (map[string]any, error) {
 		}
 		key := lowerCamel(k)
 		switch key {
+		case "sqlBody":
+			body, ok := v.(string)
+			if !ok {
+				return nil, fmt.Errorf("segment %s: sql_body must be a string", seg.Name)
+			}
+			if !sqlSectionMarker.MatchString(body) {
+				v = "--= inline\n" + body
+			}
 		case "sqlFile", "schemaFile":
 			s, ok := v.(string)
 			if !ok {
@@ -156,7 +170,7 @@ func Params(seg spec.Segment) (map[string]any, error) {
 func FilePath(seg spec.Segment, name string) string {
 	for _, f := range seg.Files {
 		if f.Name == name {
-			return path.Join(ContainerWorkspace, path.Base(name))
+			return path.Join(ContainerWorkspace, name)
 		}
 	}
 	return name
@@ -213,8 +227,12 @@ func Driver(in Input) (map[string]any, error) {
 	out := map[string]any{"driverType": w.DriverType, "url": url}
 	for k, v := range w.Driver {
 		switch k {
-		case "driverType", "url", "caCertFile":
-			continue
+		case "driverType", "url":
+			return nil, fmt.Errorf("workload.driver.%s must be set through workload.driver_type or workload.url", k)
+		case "caCertFile":
+			if w.CACert != "" {
+				return nil, fmt.Errorf("set workload.ca_cert or driver.caCertFile, not both")
+			}
 		}
 		out[k] = v
 	}
@@ -292,6 +310,9 @@ func BaselineArgs(b spec.Baseline) []string {
 // headroom, or a fixed ceiling for iteration-bounded scenarios whose wall
 // time stroppy cannot know.
 func Bound(seg spec.Segment, margin, iterationsCeiling time.Duration) time.Duration {
+	if seg.Timeout > 0 {
+		return seg.Timeout.Std()
+	}
 	if seg.Run.Executor == spec.ExecutorSharedIterations {
 		return iterationsCeiling + seg.Warmup.Std()
 	}

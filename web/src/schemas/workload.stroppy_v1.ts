@@ -1,6 +1,17 @@
 // GENERATED from schemapb schema workload.stroppy@1 — do not edit.
 // A stroppy workload: build, protocol, load segments, driver options and baseline.
 
+/** variant baseline of workload */
+export interface WorkloadStroppy1SegmentWorkloadBaseline {
+  script: "baseline";
+  /** Load workers. Workers used to load each table (loadWorkers). */
+  load_workers?: number | string;
+  /** Rows. Rows loaded into the baseline probe table (rows). */
+  rows?: number | string;
+  /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
+  tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
+}
+
 /** variant execute_sql of workload */
 export interface WorkloadStroppy1SegmentWorkloadExecuteSql {
   script: "execute_sql";
@@ -102,8 +113,8 @@ export interface WorkloadStroppy1SegmentWorkloadTpcds {
   pg_unlogged?: boolean;
   /** Query streams. Number of query streams (streams). */
   streams?: number | string;
-  /** Query stream. Which query stream to generate (queryStream). */
-  query_stream?: number | string;
+  /** Query stream. Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0. */
+  query_stream?: number | string | null;
   /** Query seed. Query generator seed (querySeed). */
   query_seed?: number | string;
   /** Validate outside SF=1. Compare answers even when the scale factor is not 1 (validateForce). */
@@ -153,7 +164,7 @@ export interface WorkloadStroppy1SegmentItem {
   kind?: "sql" | "conf" | "data";
   /** Content. Inline file body, at most 1 MiB. */
   content?: string;
-  /** Reference. Artifact/object reference to fetch instead of inline content. */
+  /** Reference. Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner. */
   ref?: string;
 }
 
@@ -170,7 +181,7 @@ export interface WorkloadStroppy1Segment {
   /** Name. Segment id inside the workload; used as the phase label of the run and as a metric label. */
   name: string;
   /** Workload. Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`. */
-  workload: WorkloadStroppy1SegmentWorkloadExecuteSql | WorkloadStroppy1SegmentWorkloadSimple | WorkloadStroppy1SegmentWorkloadTpcbProcs | WorkloadStroppy1SegmentWorkloadTpcbTx | WorkloadStroppy1SegmentWorkloadTpccProcs | WorkloadStroppy1SegmentWorkloadTpccTx | WorkloadStroppy1SegmentWorkloadTpcds | WorkloadStroppy1SegmentWorkloadTpchTx;
+  workload: WorkloadStroppy1SegmentWorkloadBaseline | WorkloadStroppy1SegmentWorkloadExecuteSql | WorkloadStroppy1SegmentWorkloadSimple | WorkloadStroppy1SegmentWorkloadTpcbProcs | WorkloadStroppy1SegmentWorkloadTpcbTx | WorkloadStroppy1SegmentWorkloadTpccProcs | WorkloadStroppy1SegmentWorkloadTpccTx | WorkloadStroppy1SegmentWorkloadTpcds | WorkloadStroppy1SegmentWorkloadTpchTx;
   /** Scenario. Load shape of the segment. */
   run: WorkloadStroppy1SegmentRun;
   /** Only these steps. Run only the listed stroppy steps (--steps); empty = all steps. */
@@ -183,6 +194,10 @@ export interface WorkloadStroppy1Segment {
   files?: Array<WorkloadStroppy1SegmentItem>;
   /** Thresholds. Pass/fail bounds the pipeline applies to the segment summary. */
   thresholds?: WorkloadStroppy1SegmentThresholds;
+  /** Random seed. Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible. */
+  seed?: number | string | null;
+  /** Segment timeout. Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations. */
+  timeout?: string | null;
   /** Warm-up. Idle wait before the segment starts, letting caches and replicas settle. */
   warmup?: string;
   /** Log level. Minimum stroppy log level (--log-level); debug traces parameter resolution. */
@@ -191,18 +206,72 @@ export interface WorkloadStroppy1Segment {
 
 /** object pool */
 export interface WorkloadStroppy1DriverPool {
-  /** Max connections. pool.maxConns; should cover the VUs of the busiest segment. */
+  /** Max connections. Stroppy max_conns; unset preserves the driver default. */
   max_conns?: number | string | null;
-  /** Min connections. pool.minConns; warm connections opened up front. */
+  /** Min connections. Stroppy min_conns; unset preserves the driver default. */
   min_conns?: number | string | null;
-  /** Max connection lifetime. pool.maxConnLifetime. */
+  /** Min idle connections. Stroppy min_idle_conns; unset preserves the driver default. */
+  min_idle_conns?: number | string | null;
+  /** Max lifetime. Stroppy max_conn_lifetime; zero disables the lifetime limit. */
   max_conn_lifetime?: string | null;
-  /** Max idle time. pool.maxConnIdleTime. */
+  /** Max idle time. Stroppy max_conn_idle_time; zero disables the lifetime limit. */
   max_conn_idle_time?: string | null;
+  /** Description cache. Stroppy description_cache_capacity; unset preserves the driver default. */
+  description_cache_capacity?: number | string | null;
+  /** Statement cache. Stroppy statement_cache_capacity; unset preserves the driver default. */
+  statement_cache_capacity?: number | string | null;
+  /** Driver log level. pgx tracer log level (traceLogLevel). */
+  trace_log_level?: "trace" | "debug" | "info" | "warn" | "error" | "none" | null;
+  /** Query execution mode. pgx defaultQueryExecMode. */
+  default_query_exec_mode?: "cache_statement" | "cache_describe" | "describe_exec" | "exec" | "simple_protocol" | null;
+  /** Max open connections. Stroppy max_open_conns; unset preserves the driver default. */
+  max_open_conns?: number | string | null;
+  /** Max idle connections. Stroppy max_idle_conns; unset preserves the driver default. */
+  max_idle_conns?: number | string | null;
+  /** Max lifetime. Stroppy conn_max_lifetime; zero disables the lifetime limit. */
+  conn_max_lifetime?: string | null;
+  /** Max idle time. Stroppy conn_max_idle_time; zero disables the lifetime limit. */
+  conn_max_idle_time?: string | null;
+}
+
+/** object postgres */
+export interface WorkloadStroppy1DriverPostgres {
+  /** Max connections. Stroppy max_conns; unset preserves the driver default. */
+  max_conns?: number | string | null;
+  /** Min connections. Stroppy min_conns; unset preserves the driver default. */
+  min_conns?: number | string | null;
+  /** Min idle connections. Stroppy min_idle_conns; unset preserves the driver default. */
+  min_idle_conns?: number | string | null;
+  /** Max lifetime. Stroppy max_conn_lifetime; zero disables the lifetime limit. */
+  max_conn_lifetime?: string | null;
+  /** Max idle time. Stroppy max_conn_idle_time; zero disables the lifetime limit. */
+  max_conn_idle_time?: string | null;
+  /** Description cache. Stroppy description_cache_capacity; unset preserves the driver default. */
+  description_cache_capacity?: number | string | null;
+  /** Statement cache. Stroppy statement_cache_capacity; unset preserves the driver default. */
+  statement_cache_capacity?: number | string | null;
+  /** Driver log level. pgx tracer log level (traceLogLevel). */
+  trace_log_level?: "trace" | "debug" | "info" | "warn" | "error" | "none" | null;
+  /** Query execution mode. pgx defaultQueryExecMode. */
+  default_query_exec_mode?: "cache_statement" | "cache_describe" | "describe_exec" | "exec" | "simple_protocol" | null;
+}
+
+/** object sql */
+export interface WorkloadStroppy1DriverSql {
+  /** Max open connections. Stroppy max_open_conns; unset preserves the driver default. */
+  max_open_conns?: number | string | null;
+  /** Max idle connections. Stroppy max_idle_conns; unset preserves the driver default. */
+  max_idle_conns?: number | string | null;
+  /** Max lifetime. Stroppy conn_max_lifetime; zero disables the lifetime limit. */
+  conn_max_lifetime?: string | null;
+  /** Max idle time. Stroppy conn_max_idle_time; zero disables the lifetime limit. */
+  conn_max_idle_time?: string | null;
 }
 
 /** object insert_progress */
 export interface WorkloadStroppy1DriverInsertProgress {
+  /** Enabled. Explicit insertProgress.enabled override; unset uses the mode. */
+  enabled?: boolean | null;
   /** Mode. insertProgress.mode: where load progress goes. */
   mode?: "off" | "log" | "metrics" | "both";
   /** Interval. insertProgress.interval — progress cadence. */
@@ -217,8 +286,12 @@ export interface WorkloadStroppy1Driver {
   default_insert_method?: "native" | "columnar" | "plain_bulk" | "plain_query" | null;
   /** Bulk size. Rows per bulk INSERT statement (bulkSize). [rows] */
   bulk_size?: number | string;
-  /** Connection pool. pool.* sugar mapped onto the driver's own pool config. */
+  /** Connection pool. Native Stroppy pool options; explicit driver settings take precedence over pool aliases. */
   pool?: WorkloadStroppy1DriverPool;
+  /** PostgreSQL driver. Native Stroppy postgres options; explicit driver settings take precedence over pool aliases. */
+  postgres?: WorkloadStroppy1DriverPostgres;
+  /** SQL driver. Native Stroppy sql options; explicit driver settings take precedence over pool aliases. */
+  sql?: WorkloadStroppy1DriverSql;
   /** Load progress. insertProgress.* — load progress reporting. */
   insert_progress?: WorkloadStroppy1DriverInsertProgress;
 }
@@ -254,14 +327,14 @@ export interface WorkloadStroppy1ConnectionPg {
   /** Application name. application_name reported to postgres; shows up in pg_stat_activity. */
   application_name?: string;
   /** Query exec mode. pgx query execution mode (postgres.defaultQueryExecMode). */
-  query_exec_mode?: "cache_statement" | "cache_describe" | "describe_exec" | "exec" | "simple_protocol";
+  query_exec_mode?: "cache_statement" | "cache_describe" | "describe_exec" | "exec" | "simple_protocol" | null;
 }
 
 /** variant picodata of connection */
 export interface WorkloadStroppy1ConnectionPicodata {
   kind: "picodata";
   /** Query execution mode. pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1. */
-  query_exec_mode?: "exec" | "cache_statement" | "cache_describe" | "describe_exec";
+  query_exec_mode?: "exec" | "cache_statement" | "cache_describe" | "describe_exec" | null;
 }
 
 /** variant ydb of connection */
@@ -310,4 +383,3 @@ export interface WorkloadStroppy1 {
   /** Baseline. Machine self-check with `stroppy baseline`; its JSON report lands in the run result. */
   baseline?: WorkloadStroppy1Baseline;
 }
-
