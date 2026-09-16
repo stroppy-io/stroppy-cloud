@@ -1,0 +1,2342 @@
+{
+  "metrics": {
+    "simple.failed_iterations_total": {
+      "value": 0
+    },
+    "simple.failed_queries_total": {
+      "value": 0
+    },
+    "simple.insert_duration_avg": {
+      "value": 26.225,
+      "unit": "ms"
+    },
+    "simple.insert_duration_count": {
+      "value": 1
+    },
+    "simple.insert_duration_p50": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "simple.insert_duration_p90": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "simple.insert_duration_p95": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "simple.insert_duration_p99": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "simple.insert_operations_total": {
+      "value": 1
+    },
+    "simple.insert_progress_rows_per_second": {
+      "value": 3807.316
+    },
+    "simple.insert_progress_rows_total": {
+      "value": 100
+    },
+    "simple.insert_rows_total": {
+      "value": 100
+    },
+    "simple.iteration_duration_avg": {
+      "value": 2.833,
+      "unit": "ms"
+    },
+    "simple.iteration_duration_count": {
+      "value": 84670
+    },
+    "simple.iteration_duration_p50": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "simple.iteration_duration_p90": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "simple.iteration_duration_p95": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "simple.iteration_duration_p99": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "simple.iterations_per_second": {
+      "value": 705.574,
+      "unit": "iterations/s"
+    },
+    "simple.iterations_total": {
+      "value": 84670
+    },
+    "simple.measurement_seconds": {
+      "value": 120.002,
+      "unit": "s"
+    },
+    "simple.queries_per_second": {
+      "value": 2822.295,
+      "unit": "queries/s"
+    },
+    "simple.retry_attempts_total": {
+      "value": 0
+    },
+    "simple.run_query_duration_avg": {
+      "value": 0.698,
+      "unit": "ms"
+    },
+    "simple.run_query_duration_count": {
+      "value": 338683
+    },
+    "simple.run_query_duration_p50": {
+      "value": 1,
+      "unit": "ms"
+    },
+    "simple.run_query_duration_p90": {
+      "value": 1,
+      "unit": "ms"
+    },
+    "simple.run_query_duration_p95": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "simple.run_query_duration_p99": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "simple.run_query_operations_total": {
+      "value": 338683
+    },
+    "simple.terminal_errors_total": {
+      "value": 0
+    },
+    "tpcb-procs.failed_iterations_total": {
+      "value": 0
+    },
+    "tpcb-procs.failed_queries_total": {
+      "value": 0
+    },
+    "tpcb-procs.insert_duration_avg": {
+      "value": 1553.368,
+      "unit": "ms"
+    },
+    "tpcb-procs.insert_duration_count": {
+      "value": 3
+    },
+    "tpcb-procs.insert_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-procs.insert_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-procs.insert_duration_p95": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-procs.insert_duration_p99": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-procs.insert_operations_total": {
+      "value": 3
+    },
+    "tpcb-procs.insert_progress_rows_per_second": {
+      "value": 22326.976
+    },
+    "tpcb-procs.insert_progress_rows_total": {
+      "value": 100011
+    },
+    "tpcb-procs.insert_rows_total": {
+      "value": 100011
+    },
+    "tpcb-procs.iteration_duration_avg": {
+      "value": 71.43,
+      "unit": "ms"
+    },
+    "tpcb-procs.iteration_duration_count": {
+      "value": 561
+    },
+    "tpcb-procs.iteration_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-procs.iteration_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-procs.iteration_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcb-procs.iteration_duration_p99": {
+      "value": 500,
+      "unit": "ms"
+    },
+    "tpcb-procs.iterations_per_second": {
+      "value": 27.979,
+      "unit": "iterations/s"
+    },
+    "tpcb-procs.iterations_total": {
+      "value": 561
+    },
+    "tpcb-procs.measurement_seconds": {
+      "value": 20.05,
+      "unit": "s"
+    },
+    "tpcb-procs.queries_per_second": {
+      "value": 27.979,
+      "unit": "queries/s"
+    },
+    "tpcb-procs.retry_attempts_total": {
+      "value": 0
+    },
+    "tpcb-procs.run_query_duration_avg": {
+      "value": 86.482,
+      "unit": "ms"
+    },
+    "tpcb-procs.run_query_duration_count": {
+      "value": 582
+    },
+    "tpcb-procs.run_query_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-procs.run_query_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcb-procs.run_query_duration_p95": {
+      "value": 500,
+      "unit": "ms"
+    },
+    "tpcb-procs.run_query_duration_p99": {
+      "value": 1000,
+      "unit": "ms"
+    },
+    "tpcb-procs.run_query_operations_total": {
+      "value": 582
+    },
+    "tpcb-procs.successful_transactions_total": {
+      "value": 561
+    },
+    "tpcb-procs.terminal_errors_total": {
+      "value": 0
+    },
+    "tpcb-procs.tps": {
+      "value": 27.979,
+      "unit": "transactions/s"
+    },
+    "tpcb-tx.failed_iterations_total": {
+      "value": 0
+    },
+    "tpcb-tx.failed_queries_total": {
+      "value": 0
+    },
+    "tpcb-tx.insert_duration_avg": {
+      "value": 1467.82,
+      "unit": "ms"
+    },
+    "tpcb-tx.insert_duration_count": {
+      "value": 3
+    },
+    "tpcb-tx.insert_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-tx.insert_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-tx.insert_duration_p95": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-tx.insert_duration_p99": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcb-tx.insert_operations_total": {
+      "value": 3
+    },
+    "tpcb-tx.insert_progress_rows_per_second": {
+      "value": 23502.64
+    },
+    "tpcb-tx.insert_progress_rows_total": {
+      "value": 100011
+    },
+    "tpcb-tx.insert_rows_total": {
+      "value": 100011
+    },
+    "tpcb-tx.iteration_duration_avg": {
+      "value": 65.12,
+      "unit": "ms"
+    },
+    "tpcb-tx.iteration_duration_count": {
+      "value": 615
+    },
+    "tpcb-tx.iteration_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.iteration_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.iteration_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.iteration_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcb-tx.iterations_per_second": {
+      "value": 30.69,
+      "unit": "iterations/s"
+    },
+    "tpcb-tx.iterations_total": {
+      "value": 615
+    },
+    "tpcb-tx.measurement_seconds": {
+      "value": 20.039,
+      "unit": "s"
+    },
+    "tpcb-tx.queries_per_second": {
+      "value": 153.45,
+      "unit": "queries/s"
+    },
+    "tpcb-tx.retry_attempts_total": {
+      "value": 0
+    },
+    "tpcb-tx.run_query_duration_avg": {
+      "value": 13.074,
+      "unit": "ms"
+    },
+    "tpcb-tx.run_query_duration_count": {
+      "value": 3095
+    },
+    "tpcb-tx.run_query_duration_p50": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "tpcb-tx.run_query_duration_p90": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcb-tx.run_query_duration_p95": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcb-tx.run_query_duration_p99": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.run_query_operations_total": {
+      "value": 3095
+    },
+    "tpcb-tx.successful_transactions_total": {
+      "value": 615
+    },
+    "tpcb-tx.terminal_errors_total": {
+      "value": 0
+    },
+    "tpcb-tx.tps": {
+      "value": 30.69,
+      "unit": "transactions/s"
+    },
+    "tpcb-tx.transactions_total": {
+      "value": 615
+    },
+    "tpcb-tx.tx_commits_total": {
+      "value": 615
+    },
+    "tpcb-tx.tx_queries_per_tx_avg": {
+      "value": 5,
+      "unit": "queries/transaction"
+    },
+    "tpcb-tx.tx_queries_per_tx_count": {
+      "value": 615
+    },
+    "tpcb-tx.tx_queries_per_tx_p50": {
+      "value": 5,
+      "unit": "queries/transaction"
+    },
+    "tpcb-tx.tx_queries_per_tx_p90": {
+      "value": 5,
+      "unit": "queries/transaction"
+    },
+    "tpcb-tx.tx_queries_per_tx_p95": {
+      "value": 5,
+      "unit": "queries/transaction"
+    },
+    "tpcb-tx.tx_queries_per_tx_p99": {
+      "value": 5,
+      "unit": "queries/transaction"
+    },
+    "tpcb-tx.tx_total_duration_avg": {
+      "value": 64.7,
+      "unit": "ms"
+    },
+    "tpcb-tx.tx_total_duration_count": {
+      "value": 615
+    },
+    "tpcb-tx.tx_total_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.tx_total_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.tx_total_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcb-tx.tx_total_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.failed_iterations_total": {
+      "value": 0
+    },
+    "tpcc-procs.failed_queries_total": {
+      "value": 0
+    },
+    "tpcc-procs.insert_duration_avg": {
+      "value": 2365.455,
+      "unit": "ms"
+    },
+    "tpcc-procs.insert_duration_count": {
+      "value": 8
+    },
+    "tpcc-procs.insert_duration_p50": {
+      "value": 2500,
+      "unit": "ms"
+    },
+    "tpcc-procs.insert_duration_p90": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-procs.insert_duration_p95": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-procs.insert_duration_p99": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-procs.insert_operations_total": {
+      "value": 8
+    },
+    "tpcc-procs.insert_progress_rows_per_second": {
+      "value": 148659.514
+    },
+    "tpcc-procs.insert_progress_rows_total": {
+      "value": 569011
+    },
+    "tpcc-procs.insert_rows_total": {
+      "value": 569011
+    },
+    "tpcc-procs.iteration_duration_avg": {
+      "value": 66.856,
+      "unit": "ms"
+    },
+    "tpcc-procs.iteration_duration_count": {
+      "value": 601
+    },
+    "tpcc-procs.iteration_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-procs.iteration_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.iteration_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.iteration_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.iterations_per_second": {
+      "value": 29.905,
+      "unit": "iterations/s"
+    },
+    "tpcc-procs.iterations_total": {
+      "value": 601
+    },
+    "tpcc-procs.measurement_seconds": {
+      "value": 20.097,
+      "unit": "s"
+    },
+    "tpcc-procs.queries_per_second": {
+      "value": 29.656,
+      "unit": "queries/s"
+    },
+    "tpcc-procs.retry_attempts_total": {
+      "value": 0
+    },
+    "tpcc-procs.run_query_duration_avg": {
+      "value": 77.284,
+      "unit": "ms"
+    },
+    "tpcc-procs.run_query_duration_count": {
+      "value": 651
+    },
+    "tpcc-procs.run_query_duration_p50": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-procs.run_query_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.run_query_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.run_query_duration_p99": {
+      "value": 1000,
+      "unit": "ms"
+    },
+    "tpcc-procs.run_query_errors_total": {
+      "value": 5
+    },
+    "tpcc-procs.run_query_operations_total": {
+      "value": 656
+    },
+    "tpcc-procs.successful_transactions_total": {
+      "value": 601
+    },
+    "tpcc-procs.terminal_errors_total": {
+      "value": 0
+    },
+    "tpcc-procs.tpcc_delivery_duration_avg": {
+      "value": 157.136,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_delivery_duration_count": {
+      "value": 22
+    },
+    "tpcc-procs.tpcc_delivery_duration_p50": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_delivery_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_delivery_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_delivery_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_delivery_total": {
+      "value": 22
+    },
+    "tpcc-procs.tpcc_new_order_duration_avg": {
+      "value": 107.343,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_new_order_duration_count": {
+      "value": 271
+    },
+    "tpcc-procs.tpcc_new_order_duration_p50": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_new_order_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_new_order_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_new_order_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_new_order_total": {
+      "value": 271
+    },
+    "tpcc-procs.tpcc_order_status_byname": {
+      "value": 11
+    },
+    "tpcc-procs.tpcc_order_status_duration_avg": {
+      "value": 12.333,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_order_status_duration_count": {
+      "value": 24
+    },
+    "tpcc-procs.tpcc_order_status_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_order_status_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_order_status_duration_p95": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_order_status_duration_p99": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_order_status_total": {
+      "value": 24
+    },
+    "tpcc-procs.tpcc_payment_byname": {
+      "value": 157
+    },
+    "tpcc-procs.tpcc_payment_duration_avg": {
+      "value": 25.754,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_payment_duration_count": {
+      "value": 264
+    },
+    "tpcc-procs.tpcc_payment_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_payment_duration_p90": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_payment_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_payment_duration_p99": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_payment_total": {
+      "value": 264
+    },
+    "tpcc-procs.tpcc_rollback_decided": {
+      "value": 5
+    },
+    "tpcc-procs.tpcc_rollback_done": {
+      "value": 5
+    },
+    "tpcc-procs.tpcc_stock_level_duration_avg": {
+      "value": 11.75,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_stock_level_duration_count": {
+      "value": 20
+    },
+    "tpcc-procs.tpcc_stock_level_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_stock_level_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_stock_level_duration_p95": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_stock_level_duration_p99": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-procs.tpcc_stock_level_total": {
+      "value": 20
+    },
+    "tpcc-procs.tps": {
+      "value": 29.905,
+      "unit": "transactions/s"
+    },
+    "tpcc-procs.transactions_total": {
+      "value": 601
+    },
+    "tpcc-procs.tx_commits_total": {
+      "value": 596
+    },
+    "tpcc-procs.tx_errors_total": {
+      "value": 5
+    },
+    "tpcc-procs.tx_queries_per_tx_avg": {
+      "value": 1,
+      "unit": "queries/transaction"
+    },
+    "tpcc-procs.tx_queries_per_tx_count": {
+      "value": 601
+    },
+    "tpcc-procs.tx_queries_per_tx_p50": {
+      "value": 1,
+      "unit": "queries/transaction"
+    },
+    "tpcc-procs.tx_queries_per_tx_p90": {
+      "value": 1,
+      "unit": "queries/transaction"
+    },
+    "tpcc-procs.tx_queries_per_tx_p95": {
+      "value": 1,
+      "unit": "queries/transaction"
+    },
+    "tpcc-procs.tx_queries_per_tx_p99": {
+      "value": 1,
+      "unit": "queries/transaction"
+    },
+    "tpcc-procs.tx_total_duration_avg": {
+      "value": 66.299,
+      "unit": "ms"
+    },
+    "tpcc-procs.tx_total_duration_count": {
+      "value": 601
+    },
+    "tpcc-procs.tx_total_duration_p50": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-procs.tx_total_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tx_total_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-procs.tx_total_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.failed_iterations_total": {
+      "value": 0
+    },
+    "tpcc-tx.failed_queries_total": {
+      "value": 0
+    },
+    "tpcc-tx.insert_duration_avg": {
+      "value": 2593.39,
+      "unit": "ms"
+    },
+    "tpcc-tx.insert_duration_count": {
+      "value": 8
+    },
+    "tpcc-tx.insert_duration_p50": {
+      "value": 1000,
+      "unit": "ms"
+    },
+    "tpcc-tx.insert_duration_p90": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-tx.insert_duration_p95": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-tx.insert_duration_p99": {
+      "value": 5000,
+      "unit": "ms"
+    },
+    "tpcc-tx.insert_operations_total": {
+      "value": 8
+    },
+    "tpcc-tx.insert_progress_rows_per_second": {
+      "value": 139694.271
+    },
+    "tpcc-tx.insert_progress_rows_total": {
+      "value": 569011
+    },
+    "tpcc-tx.insert_rows_total": {
+      "value": 569011
+    },
+    "tpcc-tx.iteration_duration_avg": {
+      "value": 33.103,
+      "unit": "ms"
+    },
+    "tpcc-tx.iteration_duration_count": {
+      "value": 1209
+    },
+    "tpcc-tx.iteration_duration_p50": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.iteration_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.iteration_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.iteration_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.iterations_per_second": {
+      "value": 60.376,
+      "unit": "iterations/s"
+    },
+    "tpcc-tx.iterations_total": {
+      "value": 1209
+    },
+    "tpcc-tx.measurement_seconds": {
+      "value": 20.024,
+      "unit": "s"
+    },
+    "tpcc-tx.queries_per_second": {
+      "value": 1069.541,
+      "unit": "queries/s"
+    },
+    "tpcc-tx.retry_attempts_total": {
+      "value": 0
+    },
+    "tpcc-tx.run_query_duration_avg": {
+      "value": 2.137,
+      "unit": "ms"
+    },
+    "tpcc-tx.run_query_duration_count": {
+      "value": 21467
+    },
+    "tpcc-tx.run_query_duration_p50": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "tpcc-tx.run_query_duration_p90": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "tpcc-tx.run_query_duration_p95": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "tpcc-tx.run_query_duration_p99": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-tx.run_query_operations_total": {
+      "value": 21467
+    },
+    "tpcc-tx.successful_transactions_total": {
+      "value": 1209
+    },
+    "tpcc-tx.terminal_errors_total": {
+      "value": 0
+    },
+    "tpcc-tx.tpcc_delivery_duration_avg": {
+      "value": 116.125,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_delivery_duration_count": {
+      "value": 48
+    },
+    "tpcc-tx.tpcc_delivery_duration_p50": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_delivery_duration_p90": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_delivery_duration_p95": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_delivery_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_delivery_total": {
+      "value": 48
+    },
+    "tpcc-tx.tpcc_new_order_duration_avg": {
+      "value": 45.384,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_new_order_duration_count": {
+      "value": 536
+    },
+    "tpcc-tx.tpcc_new_order_duration_p50": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_new_order_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_new_order_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_new_order_duration_p99": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_new_order_total": {
+      "value": 536
+    },
+    "tpcc-tx.tpcc_order_status_byname": {
+      "value": 23
+    },
+    "tpcc-tx.tpcc_order_status_duration_avg": {
+      "value": 5.533,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_order_status_duration_count": {
+      "value": 45
+    },
+    "tpcc-tx.tpcc_order_status_duration_p50": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_order_status_duration_p90": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_order_status_duration_p95": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_order_status_duration_p99": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_order_status_total": {
+      "value": 45
+    },
+    "tpcc-tx.tpcc_payment_bc": {
+      "value": 55
+    },
+    "tpcc-tx.tpcc_payment_byname": {
+      "value": 321
+    },
+    "tpcc-tx.tpcc_payment_duration_avg": {
+      "value": 15.8,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_payment_duration_count": {
+      "value": 534
+    },
+    "tpcc-tx.tpcc_payment_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_payment_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_payment_duration_p95": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_payment_duration_p99": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_payment_total": {
+      "value": 534
+    },
+    "tpcc-tx.tpcc_remote_line_total": {
+      "value": 5344
+    },
+    "tpcc-tx.tpcc_rollback_decided": {
+      "value": 8
+    },
+    "tpcc-tx.tpcc_rollback_done": {
+      "value": 8
+    },
+    "tpcc-tx.tpcc_stock_level_duration_avg": {
+      "value": 17.391,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_stock_level_duration_count": {
+      "value": 46
+    },
+    "tpcc-tx.tpcc_stock_level_duration_p50": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_stock_level_duration_p90": {
+      "value": 25,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_stock_level_duration_p95": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_stock_level_duration_p99": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tpcc_stock_level_total": {
+      "value": 46
+    },
+    "tpcc-tx.tps": {
+      "value": 60.376,
+      "unit": "transactions/s"
+    },
+    "tpcc-tx.transactions_total": {
+      "value": 1209
+    },
+    "tpcc-tx.tx_commits_total": {
+      "value": 1201
+    },
+    "tpcc-tx.tx_errors_total": {
+      "value": 8
+    },
+    "tpcc-tx.tx_queries_per_tx_avg": {
+      "value": 17.715,
+      "unit": "queries/transaction"
+    },
+    "tpcc-tx.tx_queries_per_tx_count": {
+      "value": 1209
+    },
+    "tpcc-tx.tx_queries_per_tx_p50": {
+      "value": 10,
+      "unit": "queries/transaction"
+    },
+    "tpcc-tx.tx_queries_per_tx_p90": {
+      "value": 50,
+      "unit": "queries/transaction"
+    },
+    "tpcc-tx.tx_queries_per_tx_p95": {
+      "value": 50,
+      "unit": "queries/transaction"
+    },
+    "tpcc-tx.tx_queries_per_tx_p99": {
+      "value": 100,
+      "unit": "queries/transaction"
+    },
+    "tpcc-tx.tx_total_duration_avg": {
+      "value": 32.447,
+      "unit": "ms"
+    },
+    "tpcc-tx.tx_total_duration_count": {
+      "value": 1209
+    },
+    "tpcc-tx.tx_total_duration_p50": {
+      "value": 50,
+      "unit": "ms"
+    },
+    "tpcc-tx.tx_total_duration_p90": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.tx_total_duration_p95": {
+      "value": 100,
+      "unit": "ms"
+    },
+    "tpcc-tx.tx_total_duration_p99": {
+      "value": 250,
+      "unit": "ms"
+    }
+  },
+  "segments": [
+    {
+      "name": "simple",
+      "status": "completed",
+      "started_at": "2026-09-15T17:38:02.760055482Z",
+      "finished_at": "2026-09-15T17:40:08.313099232Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 26.225,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 1
+        },
+        "insert_duration_p50": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 1
+        },
+        "insert_progress_rows_per_second": {
+          "value": 3807.316
+        },
+        "insert_progress_rows_total": {
+          "value": 100
+        },
+        "insert_rows_total": {
+          "value": 100
+        },
+        "iteration_duration_avg": {
+          "value": 2.833,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 84670
+        },
+        "iteration_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 705.574,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 84670
+        },
+        "measurement_seconds": {
+          "value": 120.002,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 2822.295,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 0.698,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 338683
+        },
+        "run_query_duration_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 338683
+        },
+        "terminal_errors_total": {
+          "value": 0
+        }
+      },
+      "exit_code": 0
+    },
+    {
+      "name": "tpcb-tx",
+      "status": "completed",
+      "started_at": "2026-09-15T17:40:08.512758399Z",
+      "finished_at": "2026-09-15T17:40:40.718351865Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 1467.82,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 3
+        },
+        "insert_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 3
+        },
+        "insert_progress_rows_per_second": {
+          "value": 23502.64
+        },
+        "insert_progress_rows_total": {
+          "value": 100011
+        },
+        "insert_rows_total": {
+          "value": 100011
+        },
+        "iteration_duration_avg": {
+          "value": 65.12,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 615
+        },
+        "iteration_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 30.69,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 615
+        },
+        "measurement_seconds": {
+          "value": 20.039,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 153.45,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 13.074,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 3095
+        },
+        "run_query_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 3095
+        },
+        "successful_transactions_total": {
+          "value": 615
+        },
+        "terminal_errors_total": {
+          "value": 0
+        },
+        "tps": {
+          "value": 30.69,
+          "unit": "transactions/s"
+        },
+        "transactions_total": {
+          "value": 615
+        },
+        "tx_commits_total": {
+          "value": 615
+        },
+        "tx_queries_per_tx_avg": {
+          "value": 5,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_count": {
+          "value": 615
+        },
+        "tx_queries_per_tx_p50": {
+          "value": 5,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p90": {
+          "value": 5,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p95": {
+          "value": 5,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p99": {
+          "value": 5,
+          "unit": "queries/transaction"
+        },
+        "tx_total_duration_avg": {
+          "value": 64.7,
+          "unit": "ms"
+        },
+        "tx_total_duration_count": {
+          "value": 615
+        },
+        "tx_total_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        }
+      },
+      "exit_code": 0
+    },
+    {
+      "name": "tpcb-procs",
+      "status": "completed",
+      "started_at": "2026-09-15T17:40:40.907893414Z",
+      "finished_at": "2026-09-15T17:41:17.512821284Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 1553.368,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 3
+        },
+        "insert_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 3
+        },
+        "insert_progress_rows_per_second": {
+          "value": 22326.976
+        },
+        "insert_progress_rows_total": {
+          "value": 100011
+        },
+        "insert_rows_total": {
+          "value": 100011
+        },
+        "iteration_duration_avg": {
+          "value": 71.43,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 561
+        },
+        "iteration_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 500,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 27.979,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 561
+        },
+        "measurement_seconds": {
+          "value": 20.05,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 27.979,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 86.482,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 582
+        },
+        "run_query_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 500,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 582
+        },
+        "successful_transactions_total": {
+          "value": 561
+        },
+        "terminal_errors_total": {
+          "value": 0
+        },
+        "tps": {
+          "value": 27.979,
+          "unit": "transactions/s"
+        }
+      },
+      "exit_code": 0
+    },
+    {
+      "name": "tpcc-tx",
+      "status": "completed",
+      "started_at": "2026-09-15T17:41:17.718134519Z",
+      "finished_at": "2026-09-15T17:42:11.810584107Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 2593.39,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 8
+        },
+        "insert_duration_p50": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 8
+        },
+        "insert_progress_rows_per_second": {
+          "value": 139694.271
+        },
+        "insert_progress_rows_total": {
+          "value": 569011
+        },
+        "insert_rows_total": {
+          "value": 569011
+        },
+        "iteration_duration_avg": {
+          "value": 33.103,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 1209
+        },
+        "iteration_duration_p50": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 60.376,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 1209
+        },
+        "measurement_seconds": {
+          "value": 20.024,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 1069.541,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 2.137,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 21467
+        },
+        "run_query_duration_p50": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 21467
+        },
+        "successful_transactions_total": {
+          "value": 1209
+        },
+        "terminal_errors_total": {
+          "value": 0
+        },
+        "tpcc_delivery_duration_avg": {
+          "value": 116.125,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_count": {
+          "value": 48
+        },
+        "tpcc_delivery_duration_p50": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_total": {
+          "value": 48
+        },
+        "tpcc_new_order_duration_avg": {
+          "value": 45.384,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_count": {
+          "value": 536
+        },
+        "tpcc_new_order_duration_p50": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p99": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcc_new_order_total": {
+          "value": 536
+        },
+        "tpcc_order_status_byname": {
+          "value": 23
+        },
+        "tpcc_order_status_duration_avg": {
+          "value": 5.533,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_count": {
+          "value": 45
+        },
+        "tpcc_order_status_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_order_status_total": {
+          "value": 45
+        },
+        "tpcc_payment_bc": {
+          "value": 55
+        },
+        "tpcc_payment_byname": {
+          "value": 321
+        },
+        "tpcc_payment_duration_avg": {
+          "value": 15.8,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_count": {
+          "value": 534
+        },
+        "tpcc_payment_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p99": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_payment_total": {
+          "value": 534
+        },
+        "tpcc_remote_line_total": {
+          "value": 5344
+        },
+        "tpcc_rollback_decided": {
+          "value": 8
+        },
+        "tpcc_rollback_done": {
+          "value": 8
+        },
+        "tpcc_stock_level_duration_avg": {
+          "value": 17.391,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_count": {
+          "value": 46
+        },
+        "tpcc_stock_level_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p99": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_total": {
+          "value": 46
+        },
+        "tps": {
+          "value": 60.376,
+          "unit": "transactions/s"
+        },
+        "transactions_total": {
+          "value": 1209
+        },
+        "tx_commits_total": {
+          "value": 1201
+        },
+        "tx_errors_total": {
+          "value": 8
+        },
+        "tx_queries_per_tx_avg": {
+          "value": 17.715,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_count": {
+          "value": 1209
+        },
+        "tx_queries_per_tx_p50": {
+          "value": 10,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p90": {
+          "value": 50,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p95": {
+          "value": 50,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p99": {
+          "value": 100,
+          "unit": "queries/transaction"
+        },
+        "tx_total_duration_avg": {
+          "value": 32.447,
+          "unit": "ms"
+        },
+        "tx_total_duration_count": {
+          "value": 1209
+        },
+        "tx_total_duration_p50": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tx_total_duration_p90": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        }
+      },
+      "exit_code": 0,
+      "compliance": {
+        "workload": "tpcc/tx",
+        "paced": false,
+        "compliance_applicable": false,
+        "elapsed_seconds": 20.025058943,
+        "tpm_c": 1605.987782185376,
+        "mix_compliant": null,
+        "response_compliant": null,
+        "mix_tolerance_pct": 1,
+        "transactions": [
+          {
+            "name": "new_order",
+            "count": 536,
+            "mix_percent": 44.334160463192724,
+            "throughput_per_sec": 26.76646303642293,
+            "p50_ms": 50,
+            "p90_ms": 100,
+            "p95_ms": 100,
+            "p99_ms": 100,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "payment",
+            "count": 534,
+            "mix_percent": 44.168734491315135,
+            "throughput_per_sec": 26.666588174346728,
+            "p50_ms": 25,
+            "p90_ms": 25,
+            "p95_ms": 50,
+            "p99_ms": 50,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "order_status",
+            "count": 45,
+            "mix_percent": 3.722084367245657,
+            "throughput_per_sec": 2.2471843967146117,
+            "p50_ms": 10,
+            "p90_ms": 10,
+            "p95_ms": 10,
+            "p99_ms": 10,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "delivery",
+            "count": 48,
+            "mix_percent": 3.970223325062035,
+            "throughput_per_sec": 2.3969966898289194,
+            "p50_ms": 250,
+            "p90_ms": 250,
+            "p95_ms": 250,
+            "p99_ms": 250,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "stock_level",
+            "count": 46,
+            "mix_percent": 3.80479735318445,
+            "throughput_per_sec": 2.297121827752714,
+            "p50_ms": 25,
+            "p90_ms": 25,
+            "p95_ms": 50,
+            "p99_ms": 50,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          }
+        ],
+        "statistical": {
+          "total_measurements": 1209,
+          "new_orders": 536,
+          "sufficient": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "steadiness": {
+          "status": "not_assessed",
+          "cv": 0,
+          "mean_new_orders_per_sec": 0,
+          "sigma_new_orders_per_sec": 0,
+          "buckets": 0,
+          "truncated": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "note": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+      }
+    },
+    {
+      "name": "tpcc-procs",
+      "status": "completed",
+      "started_at": "2026-09-15T17:42:12.009360371Z",
+      "finished_at": "2026-09-15T17:43:06.494644056Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 2365.455,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 8
+        },
+        "insert_duration_p50": {
+          "value": 2500,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 5000,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 8
+        },
+        "insert_progress_rows_per_second": {
+          "value": 148659.514
+        },
+        "insert_progress_rows_total": {
+          "value": 569011
+        },
+        "insert_rows_total": {
+          "value": 569011
+        },
+        "iteration_duration_avg": {
+          "value": 66.856,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 601
+        },
+        "iteration_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 29.905,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 601
+        },
+        "measurement_seconds": {
+          "value": 20.097,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 29.656,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 77.284,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 651
+        },
+        "run_query_duration_p50": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "run_query_errors_total": {
+          "value": 5
+        },
+        "run_query_operations_total": {
+          "value": 656
+        },
+        "successful_transactions_total": {
+          "value": 601
+        },
+        "terminal_errors_total": {
+          "value": 0
+        },
+        "tpcc_delivery_duration_avg": {
+          "value": 157.136,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_count": {
+          "value": 22
+        },
+        "tpcc_delivery_duration_p50": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_delivery_total": {
+          "value": 22
+        },
+        "tpcc_new_order_duration_avg": {
+          "value": 107.343,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_count": {
+          "value": 271
+        },
+        "tpcc_new_order_duration_p50": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcc_new_order_total": {
+          "value": 271
+        },
+        "tpcc_order_status_byname": {
+          "value": 11
+        },
+        "tpcc_order_status_duration_avg": {
+          "value": 12.333,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_count": {
+          "value": 24
+        },
+        "tpcc_order_status_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_order_status_total": {
+          "value": 24
+        },
+        "tpcc_payment_byname": {
+          "value": 157
+        },
+        "tpcc_payment_duration_avg": {
+          "value": 25.754,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_count": {
+          "value": 264
+        },
+        "tpcc_payment_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p90": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p95": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p99": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcc_payment_total": {
+          "value": 264
+        },
+        "tpcc_rollback_decided": {
+          "value": 5
+        },
+        "tpcc_rollback_done": {
+          "value": 5
+        },
+        "tpcc_stock_level_duration_avg": {
+          "value": 11.75,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_count": {
+          "value": 20
+        },
+        "tpcc_stock_level_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_total": {
+          "value": 20
+        },
+        "tps": {
+          "value": 29.905,
+          "unit": "transactions/s"
+        },
+        "transactions_total": {
+          "value": 601
+        },
+        "tx_commits_total": {
+          "value": 596
+        },
+        "tx_errors_total": {
+          "value": 5
+        },
+        "tx_queries_per_tx_avg": {
+          "value": 1,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_count": {
+          "value": 601
+        },
+        "tx_queries_per_tx_p50": {
+          "value": 1,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p90": {
+          "value": 1,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p95": {
+          "value": 1,
+          "unit": "queries/transaction"
+        },
+        "tx_queries_per_tx_p99": {
+          "value": 1,
+          "unit": "queries/transaction"
+        },
+        "tx_total_duration_avg": {
+          "value": 66.299,
+          "unit": "ms"
+        },
+        "tx_total_duration_count": {
+          "value": 601
+        },
+        "tx_total_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tx_total_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tx_total_duration_p99": {
+          "value": 250,
+          "unit": "ms"
+        }
+      },
+      "exit_code": 0,
+      "compliance": {
+        "workload": "tpcc/procs",
+        "paced": false,
+        "compliance_applicable": false,
+        "elapsed_seconds": 20.097626153,
+        "tpm_c": 809.0507742663352,
+        "mix_compliant": null,
+        "response_compliant": null,
+        "mix_tolerance_pct": 1,
+        "transactions": [
+          {
+            "name": "new_order",
+            "count": 271,
+            "mix_percent": 45.09151414309484,
+            "throughput_per_sec": 13.484179571105589,
+            "p50_ms": 250,
+            "p90_ms": 250,
+            "p95_ms": 250,
+            "p99_ms": 250,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "payment",
+            "count": 264,
+            "mix_percent": 43.92678868552412,
+            "throughput_per_sec": 13.135879729785518,
+            "p50_ms": 25,
+            "p90_ms": 50,
+            "p95_ms": 100,
+            "p99_ms": 100,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "order_status",
+            "count": 24,
+            "mix_percent": 3.9933444259567388,
+            "throughput_per_sec": 1.1941708845259562,
+            "p50_ms": 25,
+            "p90_ms": 25,
+            "p95_ms": 25,
+            "p99_ms": 25,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "delivery",
+            "count": 22,
+            "mix_percent": 3.6605657237936775,
+            "throughput_per_sec": 1.094656644148793,
+            "p50_ms": 250,
+            "p90_ms": 250,
+            "p95_ms": 250,
+            "p99_ms": 250,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "stock_level",
+            "count": 20,
+            "mix_percent": 3.3277870216306153,
+            "throughput_per_sec": 0.9951424037716301,
+            "p50_ms": 25,
+            "p90_ms": 25,
+            "p95_ms": 25,
+            "p99_ms": 25,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          }
+        ],
+        "statistical": {
+          "total_measurements": 601,
+          "new_orders": 271,
+          "sufficient": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "steadiness": {
+          "status": "not_assessed",
+          "cv": 0,
+          "mean_new_orders_per_sec": 0,
+          "sigma_new_orders_per_sec": 0,
+          "buckets": 0,
+          "truncated": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "note": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+      }
+    }
+  ],
+  "artifacts": [
+    "artifact/37044ada-stroppy-simple-config",
+    "artifact/37044ada-stroppy-simple-log",
+    "artifact/37044ada-stroppy-tpcb-tx-config",
+    "artifact/37044ada-stroppy-tpcb-tx-log",
+    "artifact/37044ada-stroppy-tpcb-procs-config",
+    "artifact/37044ada-stroppy-tpcb-procs-log",
+    "artifact/37044ada-stroppy-tpcc-tx-config",
+    "artifact/37044ada-stroppy-tpcc-tx-log",
+    "artifact/37044ada-stroppy-tpcc-procs-config",
+    "artifact/37044ada-stroppy-tpcc-procs-log"
+  ],
+  "summary": {
+    "tps": 29.905,
+    "latency_p50_ms": 100,
+    "latency_p95_ms": 250,
+    "latency_p99_ms": 250,
+    "duration": "54.485283685s"
+  }
+}

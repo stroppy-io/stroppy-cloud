@@ -1,0 +1,33 @@
+{
+  "server_version": "0.2.8",
+  "agent_version": "0.2.1",
+  "commit": "2399405db8356dd083489fce39420af1348f7768",
+  "tag": "v0.2.8",
+  "ci": {
+    "run": 34862807586,
+    "conclusion": "success"
+  },
+  "release": {
+    "run": 34863100792,
+    "conclusion": "success",
+    "url": "https://github.com/graphene-ci/graphene/releases/tag/v0.2.8"
+  },
+  "image_digest": "sha256:f5d9b9adbfe14d5008152999679b110aa4a0ab624718fc422aa322ac6945e1a0",
+  "mirror_digest_matches": true,
+  "infra_commit": "b1a171c66c949a27f871ea86c5634018bddf7c18",
+  "ingress_commit": "f455dddf1fcdc2dfa6e1026044560c79e25c50f4",
+  "local_checks": [
+    "make test",
+    "make lint",
+    "go test -race ./internal/agents -count=10",
+    "helm lint graphene",
+    "helm lint traefik",
+    "rendered websecure readTimeout=0s"
+  ],
+  "deployed_pod": "graphene-server-774d5b485b-xjc5x",
+  "deployed_image_digest_verified": true,
+  "argo": "Synced/Healthy",
+  "cli_archive_sha256": "5e5374fac0b3477213b3b3e23709971db341349723199f71169ec70c9b5cb5f8",
+  "cli_checksum_verified": true,
+  "cli_version_verified": "graphenectl version 0.2.8"
+}

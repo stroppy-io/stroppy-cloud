@@ -1,0 +1,19 @@
+{
+  "status": "failed",
+  "checked_at": "2026-09-15T19:22:08.624797+00:00",
+  "run_id": "matrix-ydb-02736dbb-ydb-single-25.4",
+  "workloads": "simple, tpcb-tx, tpcc-tx completed with zero terminal errors",
+  "native_stroppy_otlp": "passed",
+  "component_metrics": "failed",
+  "expected_exporters": 5,
+  "observed_exporters": 1,
+  "observed_agent": "a26d2bee-runner-1",
+  "failure": "OTLP metrics export rejected by server gRPC 4 MiB receive limit",
+  "db_observed_request_bytes": [
+    8319426,
+    8352772,
+    8866848
+  ],
+  "receiver_limit_bytes": 4194304,
+  "campaign_action": "remaining self-hosted YDB suite canceled with normal teardown; all versions require new runs after fix"
+}

@@ -6,6 +6,7 @@ package catalog
 func stroppy() StroppyCatalog {
 	all := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoCockroach, ProtoNoop}
 	sql := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoCockroach}
+	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach}
 	tpccSteps := []StroppyStep{
 		{ID: "drop_schema", Title: "Drop schema", Phase: "bootstrap"},
 		{ID: "create_schema", Title: "Create schema", Phase: "bootstrap"},
@@ -42,9 +43,9 @@ func stroppy() StroppyCatalog {
 			Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Default: true, Baseline: true, Protocols: all,
 			Scripts: []StroppyScript{
 				{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Description: "TPC-C with every transaction issued as client-side SQL.", Protocols: all, Steps: tpccSteps, Params: tpccParams},
-				{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Description: "TPC-C with the transaction logic in server-side procedures.", Protocols: sql, Steps: tpccSteps, Params: tpccParams},
+				{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Description: "TPC-C with the transaction logic in server-side procedures.", Protocols: procs, Steps: tpccSteps, Params: tpccParams},
 				{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all, Steps: tpcbSteps, Params: tpcbParams},
-				{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: sql, Steps: tpcbSteps, Params: tpcbParams},
+				{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs, Steps: tpcbSteps, Params: tpcbParams},
 				{
 					ID: "tpch/tx", Title: "TPC-H", Description: "Relational load of eight tables plus the 22-query suite.", Protocols: sql,
 					Steps: []StroppyStep{{ID: "drop_schema", Phase: "bootstrap"}, {ID: "create_schema", Phase: "bootstrap"}, {ID: "load_data", Phase: "bootstrap"}, {ID: "workload_queries", Title: "Query suite", Phase: "workload"}},
@@ -65,7 +66,7 @@ func stroppy() StroppyCatalog {
 					Params: []StroppyParam{{Name: "scale-factor", Config: "scaleFactor", Type: "int", Default: 1}, {Name: "vus", Config: "vus", Scope: "run", Type: "int", Default: 1}, {Name: "duration", Config: "duration", Scope: "run", Type: "duration", Default: "0s"}},
 				},
 				{
-					ID: "execute_sql", Title: "Execute SQL file", Description: "Run the statements of a file you provide.", Protocols: sql,
+					ID: "execute_sql", Title: "Execute SQL", Description: "Run supplied SQL statements. The noop driver measures client execution overhead without a database.", Protocols: all,
 					Steps:  []StroppyStep{{ID: "execute", Title: "Execute", Phase: "workload"}},
 					Params: []StroppyParam{{Name: "sql-file", Config: "sqlFile", Type: "string", Description: "File shipped next to the config."}},
 				},

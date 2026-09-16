@@ -1,0 +1,212 @@
+{
+  "status": "passed",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011",
+  "checked_at": "2026-09-15T12:09:39.014395+00:00",
+  "source": "persistent VictoriaMetrics raw export with original sample timestamps; no range-query lookback or resampling",
+  "query_range": {
+    "start": "2026-09-15T12:06:20Z",
+    "end": "2026-09-15T12:09:32.440157+00:00"
+  },
+  "nodes": {
+    "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "95de34be-b0fd-11f1-afea-22dcb92a4f8d",
+      "replication_latency": "present"
+    },
+    "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "95de34be-b0fd-11f1-afea-22dcb92a4f8d",
+      "replication_latency": "present"
+    },
+    "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "95de34be-b0fd-11f1-afea-22dcb92a4f8d",
+      "replication_latency": "present"
+    }
+  },
+  "proxy": {
+    "series": 312,
+    "backend_queries_observed": true,
+    "access_denied": 0
+  },
+  "scope": "in-flight observation; final workload verification remains required",
+  "collectors": [
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.156,
+      "last_at": 1789474164.156
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.155,
+      "last_at": 1789474164.158
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13,
+      "first_at": 1789473984.263,
+      "last_at": 1789474164.261
+    }
+  ]
+}

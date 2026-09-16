@@ -1,0 +1,27 @@
+{
+  "status": "fix_pending_live_verification",
+  "run_id": "matrix-ydbretry-578bcce5-ydb-managed-dedicated-medium",
+  "tcp_connectivity": {
+    "status": "passed",
+    "address": "10.130.0.146:2135",
+    "attempts": 1
+  },
+  "workload_started": false,
+  "error": "Primary discovery timed out. Adding internal YC CA in fallback reached authentication, but fallback replaced the explicit IAM token with unavailable instance metadata credentials.",
+  "fix": "Load internal CA for grpcs dedicated YC endpoints before first dial; never replace explicit token/static credentials with metadata authentication. TLS verification remains enabled.",
+  "artifact": "artifact/ca84e05c-stroppy-simple-log",
+  "downloaded_log_sha256": "cf23f4076c55142952917d6087b00769ffe75d4daa369208b8b90f4f9152c8bd",
+  "source_image_evidence": "ydbretry-native-image.json",
+  "checked_at": "2026-09-15T17:56:25.966788+00:00",
+  "live_fix_validation": {
+    "status": "passed",
+    "run_id": "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium",
+    "native_proof": "ydb-managed-dedicated-medium.native.json",
+    "workloads": [
+      "simple",
+      "tpcb-tx",
+      "tpcc-tx"
+    ],
+    "terminal_errors": 0
+  }
+}

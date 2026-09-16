@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "failed_run": "matrix-aux-30be9f55-pg-noop-single",
+  "failure": "PGNOOP_WORKERS=0 panics: Worker threads cannot be set to 0",
+  "contract": "catalog workers=0 means automatic CPU count; omit PGNOOP_WORKERS for zero, preserve positive counts",
+  "local_proof": "pg-noop-local-check.json",
+  "new_input": "pg-noop-inputs-auto/pg_noop-single-0.1.2-execute_sql.json",
+  "yc_validation": {
+    "run_id": "matrix-pgnoop-f4eb20b2-pg-noop-single",
+    "status": "passed",
+    "native_metrics": "pg-noop-single.native.json",
+    "artifacts": "pg-noop-single.artifacts.json",
+    "cleanup": "all owned YC resources removed"
+  }
+}

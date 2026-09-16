@@ -1,0 +1,67 @@
+{
+  "pod": "graphene-server-d97bbbd49-g6sxg",
+  "restart_count": 1,
+  "last_termination": {
+    "terminated": {
+      "containerID": "containerd://e995a80c8ca22f9a4d7e9e7b51f1cbd90154abb094de63b77eac33afa12c9073",
+      "exitCode": 137,
+      "finishedAt": "2026-09-14T13:23:21Z",
+      "reason": "OOMKilled",
+      "startedAt": "2026-09-14T12:19:28Z"
+    }
+  },
+  "memory_limit": "1Gi",
+  "mitigation": "GOMEMLIMIT=768MiB retained; S3 allocation root cause fixed in 0.2.7",
+  "infra_commit": "3862d8b",
+  "suite": "matrix-pg-versions-ed460e6f",
+  "second_oom": {
+    "pod": "graphene-server-7c59cc6cdb-w97m2",
+    "at": "2026-09-14T13:56:36Z",
+    "reason": "OOMKilled",
+    "gomemlimit": "768MiB"
+  },
+  "root_cause": {
+    "path": "internal/infrastructure/s3/s3.go Store.Put",
+    "sdk": "minio-go/v7 v7.3.0",
+    "size_passed": -1,
+    "default_buffer_bytes": 553648128,
+    "default_buffer_mib": 528,
+    "trigger": "concurrent artifact uploads after workload completion"
+  },
+  "fix": {
+    "version": "0.2.7",
+    "commit": "8a45ddc8a3e05d9ba916989f665fc2c985f17a09",
+    "behavior": "Use remaining reader size; spool non-seekable readers to temporary files with cleanup",
+    "tiny_artifact_test_allocated_bytes": [
+      248240,
+      209696,
+      234328
+    ],
+    "live_verification": {
+      "concurrent_s3_uploads": "passed",
+      "evidence": "graphene-s3-concurrent-check.json",
+      "restart_count_after_check": 0
+    },
+    "infra_commit": "0733a55b1ff766bccf3ba584036566ea260fce52",
+    "image_digest": "sha256:1bff24934bbdc7fc1ab8ca2caa6895b83a1b0d53c3f00edb14fb78f3382dabf8",
+    "pod": "graphene-server-6bb464d84f-pxk8l",
+    "ci_run": 34852947903,
+    "release_run": 34852993544,
+    "ci": "success",
+    "release": "success",
+    "cli_archive_sha256_verified": "87834c080cdc3f441851f6457afdf6195d16dbc1874471f70e2a1f133e098dc7",
+    "cli_version_verified": "graphenectl version 0.2.7"
+  },
+  "final_observation": {
+    "checked_at": "2026-09-14T14:54:09.270747+00:00",
+    "pod": "graphene-server-6bb464d84f-pxk8l",
+    "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.7",
+    "image_id": "docker.stroppy.io/graphene-ci/graphene-server@sha256:1bff24934bbdc7fc1ab8ca2caa6895b83a1b0d53c3f00edb14fb78f3382dabf8",
+    "restart_count": 0,
+    "started_at": "2026-09-14T14:07:24Z",
+    "working_set_max_observed_bytes": 89112576.0,
+    "working_set_sample_count": 182,
+    "sampling_note": "roughly 30-second observations; this is not an absolute peak bound",
+    "final_suite_completed_cells": 6
+  }
+}

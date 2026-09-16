@@ -1,0 +1,130 @@
+{
+  "status": "explained_startup_telemetry_delay",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011",
+  "workload_start": "2026-09-15T12:05:14.389886462Z",
+  "workload_end": "2026-09-15T12:09:12.844741815Z",
+  "events": [
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mariadb",
+      "source_timestamp": "2026-09-15T12:05:09+00:00",
+      "observed_at": "2026-09-15T12:05:27.818317328Z",
+      "message": "2026-09-15 12:05:09 0 [Note] WSREP: Member 2.0 (db-3) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mariadb",
+      "source_timestamp": "2026-09-15T12:05:08+00:00",
+      "observed_at": "2026-09-15T12:05:27.818309632Z",
+      "message": "2026-09-15 12:05:08 0 [Note] WSREP: Member 0.0 (db-1) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mariadb",
+      "source_timestamp": "2026-09-15T12:05:09+00:00",
+      "observed_at": "2026-09-15T12:05:20.090571645Z",
+      "message": "2026-09-15 12:05:09 2 [Note] WSREP: Server db-3 synced with group"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mariadb",
+      "source_timestamp": "2026-09-15T12:05:09+00:00",
+      "observed_at": "2026-09-15T12:05:20.090495406Z",
+      "message": "2026-09-15 12:05:09 0 [Note] WSREP: Shifting JOINED -> SYNCED (TO: 3)"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mariadb",
+      "source_timestamp": "2026-09-15T12:05:09+00:00",
+      "observed_at": "2026-09-15T12:05:20.090391248Z",
+      "message": "2026-09-15 12:05:09 0 [Note] WSREP: Member 2.0 (db-3) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mariadb",
+      "source_timestamp": "2026-09-15T12:05:08+00:00",
+      "observed_at": "2026-09-15T12:05:20.089529767Z",
+      "message": "2026-09-15 12:05:08 0 [Note] WSREP: Member 0.0 (db-1) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-3-mariadb",
+      "source_timestamp": "2026-09-15T12:04:57+00:00",
+      "observed_at": "2026-09-15T12:05:20.088855129Z",
+      "message": "2026-09-15 12:04:57 0 [Note] WSREP: New COMPONENT: primary = yes, bootstrap = no, my_idx = 2, memb_num = 3"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mariadb",
+      "source_timestamp": "2026-09-15T12:05:09+00:00",
+      "observed_at": "2026-09-15T12:05:14.849180569Z",
+      "message": "2026-09-15 12:05:09 0 [Note] WSREP: Member 2.0 (db-3) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mariadb",
+      "source_timestamp": "2026-09-15T12:05:08+00:00",
+      "observed_at": "2026-09-15T12:05:14.849109006Z",
+      "message": "2026-09-15 12:05:08 2 [Note] WSREP: Server db-1 synced with group"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mariadb",
+      "source_timestamp": "2026-09-15T12:05:08+00:00",
+      "observed_at": "2026-09-15T12:05:14.849092868Z",
+      "message": "2026-09-15 12:05:08 0 [Note] WSREP: Shifting JOINED -> SYNCED (TO: 3)"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mariadb",
+      "source_timestamp": "2026-09-15T12:05:08+00:00",
+      "observed_at": "2026-09-15T12:05:14.849071048Z",
+      "message": "2026-09-15 12:05:08 0 [Note] WSREP: Member 0.0 (db-1) synced with group."
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mariadb",
+      "source_timestamp": "2026-09-15T12:04:57+00:00",
+      "observed_at": "2026-09-15T12:05:14.848219002Z",
+      "message": "2026-09-15 12:04:57 0 [Note] WSREP: New COMPONENT: primary = yes, bootstrap = no, my_idx = 0, memb_num = 3"
+    },
+    {
+      "entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-2-mariadb",
+      "source_timestamp": "2026-09-15T12:04:57+00:00",
+      "observed_at": "2026-09-15T12:04:57.727735705Z",
+      "message": "2026-09-15 12:04:57 0 [Note] WSREP: New COMPONENT: primary = yes, bootstrap = no, my_idx = 1, memb_num = 3"
+    }
+  ],
+  "full_window_nonideal_series": [
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "81be7649-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/81be7649-d744-47a8-8e91-ceda6d8d174c-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 2.0,
+      "max": 3.0,
+      "last": 3.0,
+      "samples": 17,
+      "first_at": 1789473924.156,
+      "last_at": 1789474164.155
+    }
+  ],
+  "sql_evidence": "mariadb-galera-1011.replication.json",
+  "sdk_experiment": {
+    "collections": 2,
+    "conclusion": "unchanged last gauge value is re-exported with each collection timestamp",
+    "first_collection": "2026-09-15T15:21:41.28029803+03:00",
+    "recorded_at": "2026-09-15T15:21:41.280286505+03:00",
+    "records": 1,
+    "second_collection": "2026-09-15T15:21:41.2803036+03:00",
+    "status": "passed",
+    "value": 2,
+    "source_file": "otel-gauge-timestamp.go.txt",
+    "source_sha256": "ac4fde9110f54b20e2eb52fb67103ae3b040ef7e9e1c89399c578cb7f655edef",
+    "sdk_version": "1.46.0",
+    "reproduction": "copy source to a .go file and go run it from a module pinned to go.opentelemetry.io/otel/sdk/metric v1.46.0"
+  },
+  "scrape_beat_seconds": 30,
+  "otel_collection_seconds": 15,
+  "limitation": "Raw OTLP timestamps are collection timestamps; exporter scrape timestamps are not preserved. Startup state is supported by DB source log timestamps and SQL readiness, not by continuous metrics. Stable cluster metric gate starts at workload+45s; full window data remains retained."
+}

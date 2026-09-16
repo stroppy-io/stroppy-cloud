@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -102,12 +101,13 @@ func (r *ProviderRepo) SetStatus(ctx context.Context, id uuid.UUID, status provi
 	return nil
 }
 
-func (r *ProviderRepo) SetQuotas(ctx context.Context, id uuid.UUID, quotas []provider.Quota, observedAt time.Time) error {
-	if quotas == nil {
+func (r *ProviderRepo) SetQuotas(ctx context.Context, id uuid.UUID, result provider.QuotasResult) error {
+	quotas := result.Quotas
+	if quotas == nil || result.UnavailableReason != "" {
 		quotas = []provider.Quota{}
 	}
 	raw, _ := json.Marshal(quotas) //nolint:errcheck // always marshals
-	if _, err := r.q.SetProviderQuotas(ctx, db.SetProviderQuotasParams{ID: id, Quotas: raw, ObservedAt: &observedAt}); err != nil {
+	if _, err := r.q.SetProviderQuotas(ctx, db.SetProviderQuotasParams{ID: id, Quotas: raw, ObservedAt: &result.ObservedAt, UnavailableReason: result.UnavailableReason, Scope: result.Scope}); err != nil {
 		return infraf("provider: set quotas: %v", err)
 	}
 	return nil
@@ -128,6 +128,7 @@ func profileOf(row db.ProviderProfileByIDRow) provider.Profile {
 	p := provider.Profile{
 		ID: row.ID, TenantID: row.TenantID, Name: row.Name, Kind: provider.Kind(row.Kind), Settings: row.Settings,
 		Status: provider.Status(row.Status), StatusReason: row.StatusReason, VerifiedAt: row.VerifiedAt,
+		QuotasUnavailableReason: row.QuotasUnavailableReason, QuotasScope: row.QuotasScope,
 		VerifyRunID: row.VerifyRunID, QuotasObservedAt: row.QuotasObservedAt, CreatedBy: row.CreatedBy,
 		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt, SecretNames: []string{},
 	}

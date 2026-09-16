@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "source_image": "ydbplatform/local-ydb:26.1.1.22",
+  "source_digest": "sha256:c3e49c078a560d4957ff492ed7025864ee33a405d03a02c4fdb30c20e7c42925",
+  "pinned": "docker.stroppy.io/stroppy-io/ydb-local@sha256:c3e49c078a560d4957ff492ed7025864ee33a405d03a02c4fdb30c20e7c42925",
+  "same_image_config_and_layers": true,
+  "platform": "linux/amd64",
+  "reason": "Existing Nexus upstream proxy returns HTTP 500 for GET of a required blob despite HEAD 200. Unmodified upstream image copied to the owned hosted registry; no global registry settings changed.",
+  "checked_at": "2026-09-15T17:53:30.484245+00:00",
+  "image_id": "sha256:c3e49c078a560d4957ff492ed7025864ee33a405d03a02c4fdb30c20e7c42925",
+  "same_manifest_digest": true,
+  "required_blob_download": {
+    "bytes": 272307622,
+    "sha256": "600d3ddf7ce26a191d1724cf6855f19ed133c4060e76515597495f1b06c2df50",
+    "status": "passed",
+    "method": "complete byte coverage via checked HTTP ranges; each response length and Content-Range validated"
+  }
+}

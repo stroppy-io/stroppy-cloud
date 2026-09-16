@@ -1,0 +1,228 @@
+{
+  "status": "passed",
+  "scope": "isolated local containers; fresh datadirs, database queries and real mysqld-exporter; cloud checks separate",
+  "cells": [
+    {
+      "cell": "mariadb-galera-118",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-galera-11.8-simple.json",
+      "started_at": "2026-09-15T11:38:11.545069+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "11.8.9-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-2-mariadb",
+          "version": "11.8.9-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-3-mariadb",
+          "version": "11.8.9-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:39:01.468732+00:00"
+    },
+    {
+      "cell": "mariadb-galera-114",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-galera-11.4-simple.json",
+      "started_at": "2026-09-15T11:36:05.137321+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-2-mariadb",
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-3-mariadb",
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:36:59.688134+00:00"
+    },
+    {
+      "cell": "mariadb-galera-1011",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-galera-10.11-simple.json",
+      "started_at": "2026-09-15T11:37:23.734336+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "10.11.19-MariaDB-ubu2204-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-2-mariadb",
+          "version": "10.11.19-MariaDB-ubu2204-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        },
+        {
+          "node": "db-3-mariadb",
+          "version": "10.11.19-MariaDB-ubu2204-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:38:11.511731+00:00"
+    },
+    {
+      "cell": "mariadb-single-118",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-single-11.8-simple.json",
+      "started_at": "2026-09-15T11:39:14.124247+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "11.8.9-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:39:21.563357+00:00"
+    },
+    {
+      "cell": "mariadb-single-114",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-single-11.4-simple.json",
+      "started_at": "2026-09-15T11:39:06.695539+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:39:14.091160+00:00"
+    },
+    {
+      "cell": "mariadb-single-1011",
+      "status": "passed",
+      "input": "/tmp/stroppy-clusters-r1gx3otm/maria-inputs-v6/mariadb-single-10.11-simple.json",
+      "started_at": "2026-09-15T11:39:01.502886+00:00",
+      "immediate_proxy_reads": 10,
+      "nodes": [
+        {
+          "node": "db-1-mariadb",
+          "version": "10.11.19-MariaDB-ubu2204-log",
+          "replicated_value": "101",
+          "exporter_collectors": [
+            "mysql_exporter_collector_success{collector=\"collect.global_status\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.global_variables\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmp\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.innodb_cmpmem\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.info_schema.query_response_time\"} 1",
+            "mysql_exporter_collector_success{collector=\"collect.slave_status\"} 1"
+          ]
+        }
+      ],
+      "proxy_write": true,
+      "finished_at": "2026-09-15T11:39:06.661811+00:00"
+    }
+  ]
+}

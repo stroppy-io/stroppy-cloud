@@ -90,13 +90,18 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
+	args, cleanup, err := ydbRuntimeArgs(ctx, cfgPath, req.Workload.YDBIAMCredentialsSecret, stroppycfg.Args(seg))
+	if err != nil {
+		return RunSegmentResult{}, err
+	}
+	defer cleanup()
 	started := time.Now().UTC()
 	out, err := runStroppy(ctx, stroppyContainer{
 		Name:           "stroppy-" + segmentSlug(req.Index, seg.Name),
 		Image:          req.Workload.StroppyImage,
 		RegistrySecret: req.RegistrySecret,
 		Dir:            dir,
-		Args:           stroppycfg.Args(seg),
+		Args:           args,
 		Labels:         map[string]string{"stroppy-run": req.RunID, "stroppy-segment": seg.Name},
 		LogName:        seg.Name,
 	})
@@ -137,10 +142,15 @@ func segmentOutcome(ctx context.Context, seg *spec.Segment, out *stroppyOutput, 
 		if canceled {
 			return spec.SegmentCancelled, text
 		}
-		return spec.SegmentFailed, fmt.Sprintf("stroppy %s: %s", text, tail(lastLines(out.LogPath, errTailLines), errTailBytes))
+		for _, line := range strings.Split(string(out.Log), "\n") {
+			if strings.HasPrefix(strings.TrimSpace(line), "Error:") {
+				return spec.SegmentFailed, fmt.Sprintf("stroppy %s: %s", text, tail(strings.TrimSpace(line), errTailBytes))
+			}
+		}
+		return spec.SegmentFailed, fmt.Sprintf("stroppy %s: %s", text, tail(lastLines(out.LogPath), errTailBytes))
 	}
 	if !summary.Found {
-		return spec.SegmentFailed, "stroppy exited 0 without a bench summary: " + tail(lastLines(out.LogPath, errTailLines), errTailBytes)
+		return spec.SegmentFailed, "stroppy exited 0 without a bench summary: " + tail(lastLines(out.LogPath), errTailBytes)
 	}
 	if v := stroppycfg.ThresholdViolation(seg.Thresholds, summary); v != "" {
 		return spec.SegmentFailed, "threshold: " + v
@@ -191,7 +201,7 @@ func RunBaseline(ctx context.Context, req RunBaselineRequest) (RunBaselineResult
 		return RunBaselineResult{}, out.StreamErr
 	case out.ExitCode != 0:
 		_, text := stroppycfg.ExitStatus(out.ExitCode)
-		res.Result = spec.BaselineResult{Error: fmt.Sprintf("stroppy baseline %s: %s", text, tail(lastLines(out.LogPath, errTailLines), errTailBytes))}
+		res.Result = spec.BaselineResult{Error: fmt.Sprintf("stroppy baseline %s: %s", text, tail(lastLines(out.LogPath), errTailBytes))}
 		return res, nil
 	}
 	parsed, err := stroppycfg.ParseBaseline(out.Stdout)
@@ -256,6 +266,9 @@ func runStroppy(ctx context.Context, c stroppyContainer) (stroppyOutput, error) 
 		return stroppyOutput{}, fmt.Errorf("start stroppy container: %w", err)
 	}
 	obs.Info(ctx, "stroppy started", obs.Str("name", c.LogName), obs.Str("args", strings.Join(c.Args, " ")))
+	if activity.IsActivity(ctx) {
+		activity.RecordHeartbeat(ctx, c.LogName+": running workload")
+	}
 
 	out := stroppyOutput{LogPath: filepath.Join(c.Dir, "stroppy.log")}
 	out.ExitCode, out.Log, out.Stdout, out.StreamErr = streamAndWait(ctx, cli, created.ID, out.LogPath, c.LogName)
@@ -403,7 +416,8 @@ func (l *limitedWriter) Write(p []byte) (int, error) {
 	return len(p), nil
 }
 
-func lastLines(path string, n int) string {
+func lastLines(path string) string {
+	const n = errTailLines
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return ""

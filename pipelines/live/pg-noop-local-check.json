@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "local packaged pg-noop 0.1.2 with automatic CPU-based worker count, real pgwire and native Stroppy execute_sql; YC rerun pending",
+  "measurements": {
+    "iterations_total": 412255.0,
+    "run_query_operations_total": 412255.0,
+    "terminal_errors_total": 0.0,
+    "failed_queries_total": 0.0,
+    "queries_per_second": 82447.859
+  },
+  "binary_sha256": "2e24dafc84b127d1446eaf8a1f68be46a266ae31cb0de242aa62f845829a1b99",
+  "release_archive_sha256": "1bc328a8b484694aeba0cc4d988887acb6e58c6848addc6f242655358ca8d893",
+  "native_log_sha256": "9c04ad832e29daa4e8875e0162685e50bd8f4c47e0b20e9d1fd2e8279e7d122e",
+  "tps": "not applicable: protocol-only blackhole"
+}

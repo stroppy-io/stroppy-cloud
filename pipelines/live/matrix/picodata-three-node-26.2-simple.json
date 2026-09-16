@@ -1,0 +1,494 @@
+{
+  "run_id": "a33441ab-5dea-43aa-9c6a-b28a60afe2e3",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-d",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.130.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "db-1",
+      "role": "db",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "picodata",
+        "stroppy.io/role": "db"
+      }
+    },
+    {
+      "name": "db-2",
+      "role": "db",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "picodata",
+        "stroppy.io/role": "db"
+      }
+    },
+    {
+      "name": "db-3",
+      "role": "db",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "picodata",
+        "stroppy.io/role": "db"
+      }
+    },
+    {
+      "name": "proxy-1",
+      "role": "proxy",
+      "cpu": 2,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "haproxy",
+        "stroppy.io/role": "proxy"
+      }
+    },
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 4,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      }
+    }
+  ],
+  "containers": [
+    {
+      "name": "db-1-node-exporter",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-1-picodata",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.binary.picodata.io/picodata:26.2",
+      "cmd": [
+        "picodata",
+        "run",
+        "--config",
+        "/etc/stroppy/picodata.yaml"
+      ],
+      "env": {
+        "PICODATA_ADMIN_PASSWORD": "T0psecret"
+      },
+      "ports": [
+        {
+          "container": 3301,
+          "host": 3301
+        },
+        {
+          "container": 4327,
+          "host": 4327
+        },
+        {
+          "container": 8081,
+          "host": 8081
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/picodata",
+          "target": "/var/lib/picodata"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/picodata.yaml",
+          "content": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: stroppy\n  default_replication_factor: 1\n  default_bucket_count: 3000\n  shredding: false\n  tier:\n    default:\n      replication_factor: 3\n      can_vote: true\n      bucket_count: 3000\n      replication_mode: async\n      wal_mode: write\ninstance:\n  name: db-1\n  tier: default\n  instance_dir: /var/lib/picodata\n  wal_dir: /var/lib/picodata\n  backup_dir: /var/lib/picodata/backup\n  iproto:\n    listen: 0.0.0.0:3301\n    advertise: ${ip:db-1}:3301\n  peer: [\"${ip:db-1}:3301\", \"${ip:db-2}:3301\", \"${ip:db-3}:3301\"]\n  http:\n    listen: 0.0.0.0:8081\n  pgproto:\n    listen: 0.0.0.0:4327\n    advertise: ${ip:db-1}:4327\n    tls:\n      enabled: false\n  admin_socket: /var/run/picodata/admin.sock\n  boot_timeout: 7200\n  memtx:\n    memory: 2048M\n    system_memory: 256M\n    max_tuple_size: 1M\n  vinyl:\n    memory: 128M\n    cache: 128M\n    read_threads: 1\n    write_threads: 4\n  log:\n    level: info\n    format: plain\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "nc -z 127.0.0.1 3301"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-2-node-exporter",
+      "role": "db",
+      "machine": "db-2",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-2-picodata",
+      "role": "db",
+      "machine": "db-2",
+      "image": "docker.binary.picodata.io/picodata:26.2",
+      "cmd": [
+        "picodata",
+        "run",
+        "--config",
+        "/etc/stroppy/picodata.yaml"
+      ],
+      "env": {
+        "PICODATA_ADMIN_PASSWORD": "T0psecret"
+      },
+      "ports": [
+        {
+          "container": 3301,
+          "host": 3301
+        },
+        {
+          "container": 4327,
+          "host": 4327
+        },
+        {
+          "container": 8081,
+          "host": 8081
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/picodata",
+          "target": "/var/lib/picodata"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/picodata.yaml",
+          "content": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: stroppy\n  default_replication_factor: 1\n  default_bucket_count: 3000\n  shredding: false\n  tier:\n    default:\n      replication_factor: 3\n      can_vote: true\n      bucket_count: 3000\n      replication_mode: async\n      wal_mode: write\ninstance:\n  name: db-2\n  tier: default\n  instance_dir: /var/lib/picodata\n  wal_dir: /var/lib/picodata\n  backup_dir: /var/lib/picodata/backup\n  iproto:\n    listen: 0.0.0.0:3301\n    advertise: ${ip:db-2}:3301\n  peer: [\"${ip:db-1}:3301\", \"${ip:db-2}:3301\", \"${ip:db-3}:3301\"]\n  http:\n    listen: 0.0.0.0:8081\n  pgproto:\n    listen: 0.0.0.0:4327\n    advertise: ${ip:db-2}:4327\n    tls:\n      enabled: false\n  admin_socket: /var/run/picodata/admin.sock\n  boot_timeout: 7200\n  memtx:\n    memory: 2048M\n    system_memory: 256M\n    max_tuple_size: 1M\n  vinyl:\n    memory: 128M\n    cache: 128M\n    read_threads: 1\n    write_threads: 4\n  log:\n    level: info\n    format: plain\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "nc -z 127.0.0.1 3301"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-3-node-exporter",
+      "role": "db",
+      "machine": "db-3",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-3-picodata",
+      "role": "db",
+      "machine": "db-3",
+      "image": "docker.binary.picodata.io/picodata:26.2",
+      "cmd": [
+        "picodata",
+        "run",
+        "--config",
+        "/etc/stroppy/picodata.yaml"
+      ],
+      "env": {
+        "PICODATA_ADMIN_PASSWORD": "T0psecret"
+      },
+      "ports": [
+        {
+          "container": 3301,
+          "host": 3301
+        },
+        {
+          "container": 4327,
+          "host": 4327
+        },
+        {
+          "container": 8081,
+          "host": 8081
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/picodata",
+          "target": "/var/lib/picodata"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/picodata.yaml",
+          "content": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: stroppy\n  default_replication_factor: 1\n  default_bucket_count: 3000\n  shredding: false\n  tier:\n    default:\n      replication_factor: 3\n      can_vote: true\n      bucket_count: 3000\n      replication_mode: async\n      wal_mode: write\ninstance:\n  name: db-3\n  tier: default\n  instance_dir: /var/lib/picodata\n  wal_dir: /var/lib/picodata\n  backup_dir: /var/lib/picodata/backup\n  iproto:\n    listen: 0.0.0.0:3301\n    advertise: ${ip:db-3}:3301\n  peer: [\"${ip:db-1}:3301\", \"${ip:db-2}:3301\", \"${ip:db-3}:3301\"]\n  http:\n    listen: 0.0.0.0:8081\n  pgproto:\n    listen: 0.0.0.0:4327\n    advertise: ${ip:db-3}:4327\n    tls:\n      enabled: false\n  admin_socket: /var/run/picodata/admin.sock\n  boot_timeout: 7200\n  memtx:\n    memory: 2048M\n    system_memory: 256M\n    max_tuple_size: 1M\n  vinyl:\n    memory: 128M\n    cache: 128M\n    read_threads: 1\n    write_threads: 4\n  log:\n    level: info\n    format: plain\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "nc -z 127.0.0.1 3301"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "proxy-1-haproxy",
+      "role": "proxy",
+      "machine": "proxy-1",
+      "image": "docker.stroppy.io/library/haproxy:2.9",
+      "ports": [
+        {
+          "container": 5000,
+          "host": 5000
+        }
+      ],
+      "files": [
+        {
+          "path": "/usr/local/etc/haproxy/haproxy.cfg",
+          "content": "# managed by stroppy-cloud — cfg.haproxy.cfg@2\nglobal\n    maxconn 20000\n    log /dev/log local0 info\n    stats socket /var/run/haproxy.sock mode 660 level admin\n\ndefaults\n    mode tcp\n    retries 2\n    timeout connect 4s\n    timeout client 1800s\n    timeout server 1800s\n    timeout check 5s\n    log global\n    option tcplog\n\nlisten sql\n    bind *:5000\n    mode tcp\n    balance leastconn\n    option tcp-check\n    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n    server db-1 ${ip:db-1}:4327 check port 4327 weight 100\n    server db-2 ${ip:db-2}:4327 check port 4327 weight 100\n    server db-3 ${ip:db-3}:4327 check port 4327 weight 100\n\nlisten stats\n    bind *:8404\n    mode http\n    stats enable\n    stats uri /stats\n    stats refresh 5s\n"
+        }
+      ],
+      "depends_on": [
+        "db-1-picodata",
+        "db-2-picodata",
+        "db-3-picodata"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg \u0026\u0026 nc -z 127.0.0.1 5000"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "proxy-1-node-exporter",
+      "role": "proxy",
+      "machine": "proxy-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "runner-1-node-exporter",
+      "role": "runner",
+      "machine": "runner-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    }
+  ],
+  "host_prep": [
+    {
+      "role": "db",
+      "kind": "script",
+      "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice=/dev/disk/by-id/virtio-data\ntarget=/data\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" \u003e\u00262\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" \u003e\u00262\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" \u003e\u00262\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" \u003e\u00262\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '') mkfs.ext4 \"$device\" ;;\n    ext4) ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" \u003e\u00262; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk '$2 == \"/data\" { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s /data %s defaults 0 2\\n' \"$uuid\" \"$fstype\" \u003e\u003e /etc/fstab\nfi\nfindmnt --target \"$target\"\n"
+    }
+  ],
+  "flows": [
+    {
+      "from_role": "db",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 3301,
+      "label": "picodata-raft"
+    },
+    {
+      "from_role": "proxy",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 4327,
+      "label": "pg"
+    },
+    {
+      "from_role": "runner",
+      "to_role": "proxy",
+      "protocol": "tcp",
+      "port": 5000,
+      "label": "pg"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "picodata",
+    "url": "postgres://admin:T0psecret@${ip:role:proxy}:5000?sslmode=disable",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "smoke",
+        "run": {
+          "duration": "30s",
+          "executor": "constant-vus",
+          "query_timeout": "0s",
+          "vus": 2
+        },
+        "warmup": "0s",
+        "workload": {
+          "script": "simple"
+        }
+      }
+    ]
+  },
+  "result_expectations": [
+    "iterations_total"
+  ]
+}

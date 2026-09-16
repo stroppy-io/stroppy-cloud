@@ -77,6 +77,11 @@ func Picodata() *schemapb.Schema {
 				Desc("instance.memtx.memory per instance; Picodata's own default of 64 MB only fits a smoke test.").
 				Unit("MB").Gte(32).Lte(1048576).Default(2048),
 
+			// doc: https://docs.picodata.io/picodata/26.2/reference/settings/#sql_vdbe_opcode_max
+			schemapb.Int64("sql_vdbe_opcode_max").Title("SQL instruction limit").Group("SQL runtime").
+				Desc("Maximum VDBE instructions per local SQL plan. Picodata defaults to 45000; full-scan workload validation can require a higher explicit limit.").
+				Gte(1).Lte(1000000000).Default(45000),
+
 			// doc: https://www.haproxy.org/download/2.9/doc/configuration.txt
 			schemapb.Int64("haproxy").Title("HAProxy nodes").Group("Routing").
 				Desc("HAProxy instances spreading pgproto clients over the instances of the default tier.").
@@ -96,6 +101,8 @@ func Picodata() *schemapb.Schema {
 				"a tier's instances must divide evenly into replicasets of replication_factor").ID("tier-replicasets-whole"),
 			schemapb.Rule(`root.tiers.exists(t, t.can_vote)`,
 				"at least one tier must be able to vote, otherwise the cluster raft never elects a leader").ID("some-tier-votes"),
+			schemapb.Rule(`root.version == "26.2" || root.tiers.all(t, t.replication_mode == "async")`,
+				"synchronous tier replication requires Picodata 26.2").ID("sync-requires-26-2"),
 			schemapb.Rule(`int(root.haproxy) == 0 || root.pgproto`,
 				"HAProxy fronts the pgproto listener, so pgproto must be on").ID("haproxy-needs-pgproto"),
 		).

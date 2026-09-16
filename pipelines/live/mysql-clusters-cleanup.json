@@ -1,0 +1,273 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:54:45.134913+00:00",
+  "scope": "exact infrastructure IDs of all three cluster attempts, including the MariaDB single regression reruns, including VM boot and secondary disks",
+  "resources": {
+    "vm": {
+      "deleted_ids": [
+        "fhm0j4tq6lfgeo8jstt1",
+        "fhm0r3jdp9ihmmpu5aof",
+        "fhm0srcbjhqos8jed2u4",
+        "fhm1rkjcqapu4sp6rata",
+        "fhm3itfi7q8p5nq3nq6s",
+        "fhm43acklf91qhb5c8r7",
+        "fhm43b7vc3f31h802b59",
+        "fhm53hi4lit98d52sscs",
+        "fhm5dju1skf7t1cmo6os",
+        "fhm5r4tgknk0jendhjnf",
+        "fhm73i194q8vlh8udjlk",
+        "fhm7a82r0ngg5c69d2oi",
+        "fhm7ksib6b15qepelr5e",
+        "fhm839uktl2b92n2rmcr",
+        "fhm8kvdlb0v9rftih3mq",
+        "fhm9bsnredrgv1u9h082",
+        "fhm9muu6vg86lklpe2kf",
+        "fhma2jmqjvl8ghk94ls5",
+        "fhma5la8m1melf2g256g",
+        "fhmb1aevv4ccklgba11p",
+        "fhmb5edfjnpl014aqsq3",
+        "fhmb783bkrme0cd8eqti",
+        "fhmcnu8nm8jfi51886v1",
+        "fhmd2d8d9evo4n6hsn3r",
+        "fhmd31936s8r9lhvk7sh",
+        "fhmf44gbgpb1c9vm73is",
+        "fhmgf0amluvrrp4d0h1j",
+        "fhmgpc048t7iajirj6d6",
+        "fhmh5gdeo37oaid84qm8",
+        "fhmi0ivugkllusb9g8k6",
+        "fhmk5did1buauefg089f",
+        "fhmkdma42ln5sceaavph",
+        "fhmkqjelql9olastl68d",
+        "fhmlmd9gq60ie1rga80u",
+        "fhmmepa8cqopo3fov32k",
+        "fhmmlhnu1gp1r6g59042",
+        "fhmn50l53hsuq4a528ml",
+        "fhmnn4ruel8qbd7ohj3o",
+        "fhmns1ui633nhi9pa7ln",
+        "fhmo1q6jheofavik52rr",
+        "fhmo89d3ht805lb0fqrf",
+        "fhmqrso4m8i6ks4irokc",
+        "fhms9dhvp84h6e21bmdu",
+        "fhmsm3ohn77aj7vui1eo",
+        "fhmtqk9p6fbipfpemble",
+        "fhmtrqvprq36o53eo5b1",
+        "fhmu1djpj2q4586204r8",
+        "fhmuodm62sum3rrobh7u",
+        "fhmur2kc5eee5h9eudoj",
+        "fhmutqgkqoih8sfa8jsp",
+        "fhmvracsn6cgh0vs747h"
+      ],
+      "baseline_preserved": 12,
+      "current_count": 12,
+      "unrelated_new_ids": []
+    },
+    "disk": {
+      "deleted_ids": [
+        "fhm02ra1ptfdt6c1oapj",
+        "fhm0ltsgb052ad25ud02",
+        "fhm0vdd7r0tmhoofv0k0",
+        "fhm14kkuolgiviiltb5a",
+        "fhm1an1vohaqfhfm0qna",
+        "fhm1k4117eke1orml5uf",
+        "fhm21ttlrnshh6hr9kq9",
+        "fhm2g2aut09h9qv3iail",
+        "fhm2pilcj0gn09h7oq96",
+        "fhm3qt1tgor3gdksskpv",
+        "fhm3t870pile0lsdcb4q",
+        "fhm40j3ee3kj01pta95c",
+        "fhm49f2oi2m4rale70f5",
+        "fhm4jnmoca7un1ibk36s",
+        "fhm587q6e6vg3b1amr2u",
+        "fhm5o9ii33gk8q7lr19r",
+        "fhm661f8lfpsiue2j7iq",
+        "fhm6bmgf46dehus6nkrd",
+        "fhm6i8jbkgqqu4dichgf",
+        "fhm6rk9a9eku9jpbrsmq",
+        "fhm7a8lggb1kbv46t49f",
+        "fhm7m49dqrvtprfs22bi",
+        "fhm7v9llhn5uckidig4h",
+        "fhm8sp10c7q9llc4us9t",
+        "fhm976nrvfs77k9br55o",
+        "fhm9clfhrv3npa6vs35n",
+        "fhm9fhlbtdd4mbsp1jpn",
+        "fhmaa9rg9urp7flfjk31",
+        "fhmacs2fbk1ladeohbu2",
+        "fhmai5kqsratgs7cco2p",
+        "fhmb117ss8j0hieq1r2r",
+        "fhmbtga7b21hq1f3pn1t",
+        "fhmc7qrd85oplossr47f",
+        "fhme8khgnttfeac1nel3",
+        "fhmen587kktoji0ioc5k",
+        "fhmfef0jte1h0uvb8ko8",
+        "fhmfon3fnthj24rlegtm",
+        "fhmh6sism1unnargv656",
+        "fhmh9dpfatvn32g8742n",
+        "fhmha5r3nr27h0sft5ku",
+        "fhmhb0heg0fjff6ij9eu",
+        "fhmhb2b2489kfi9h3a1m",
+        "fhmhiuqeubb0iq247j8j",
+        "fhmhkpgiv9767s584gos",
+        "fhmi8jpuirq7nrljjj9s",
+        "fhmj5a5buv4bo8vvt0v7",
+        "fhmjdclh2ju2f8f68flv",
+        "fhmjmmblnhe037d5ormq",
+        "fhmjqj8qd4n91fgo6mt6",
+        "fhmjt88lnjv202vdogrn",
+        "fhmk2jup8jp4iofgl34t",
+        "fhmk88muegejdn3tj3u0",
+        "fhmkjr0uo6v71bd4o0mj",
+        "fhmkva3vc9t0r0pkfdpu",
+        "fhml0cst1ho4nk1mecdr",
+        "fhmlc0a202npmetpli1n",
+        "fhmlgnek4d97e4jrgj2b",
+        "fhmlmgaau9q90vovpbja",
+        "fhmmcvcq7ukorocjg57o",
+        "fhmno9esbo1krtfm8pc9",
+        "fhmo615iggpfsn0qti53",
+        "fhmoa8oeb65vkveu64sm",
+        "fhmoi3b1gufb88l8mfuu",
+        "fhmokqj6406d4uag8hat",
+        "fhmoudsmpvk59726aofu",
+        "fhmpc3osjlv5gn7foih5",
+        "fhmqd6d8b9dk3hij3atk",
+        "fhmqqlnkffecfcch63i9",
+        "fhmqs6ss9srvkm5vkj2a",
+        "fhmr091rjt053nv6pglv",
+        "fhmrh259v1vocug4na8m",
+        "fhmrih3tlguc3iptd8pd",
+        "fhmrsrrve3tqonkc39u7",
+        "fhms4glbmsb0pdmo6r79",
+        "fhmsbttfeii7ckvr1ub7",
+        "fhmt08ncic4ar3c26jhi",
+        "fhmt5a75jtnp1qq87npb",
+        "fhmuastmd620uph9noc8",
+        "fhmub180tnivjklm21tp",
+        "fhmup8ur7cc123aqfrnd",
+        "fhmvgbjinuu3f3bltmal"
+      ],
+      "baseline_preserved": 20,
+      "current_count": 20,
+      "unrelated_new_ids": []
+    },
+    "network": {
+      "deleted_ids": [
+        "enp0aqceeqo76a5c0o87",
+        "enp2qd0bn18ogvgnlet3",
+        "enp2tl7h3033ibu5c31p",
+        "enp6264kltb0ebvd8b55",
+        "enpbv8j9ufela6pf0ie8",
+        "enpdg30h3t0cdbeta97s",
+        "enpfuhf1l3edj515h4an",
+        "enpir0pkinkolh4kcuvi",
+        "enppji8jhns9cab7q2d7",
+        "enpqr9k4vsds6tvgb67f",
+        "enpsoadekdbne5cppfpm",
+        "enpv6r8lidlr9t37hvfq"
+      ],
+      "baseline_preserved": 3,
+      "current_count": 3,
+      "unrelated_new_ids": []
+    },
+    "subnet": {
+      "deleted_ids": [
+        "e9b0tfdsiev4mq0gnuqo",
+        "e9bcicu9nq72gkbho95l",
+        "e9bdni3b78mbfuo942ih",
+        "e9bg7rgchtoud9mvs9oj",
+        "e9bjiu64brgmed9cocag",
+        "e9bke5nv7q27pd3avm50",
+        "e9blocac1mqslaf04jg0",
+        "e9bluf9gafcem4v8hkh5",
+        "e9bq94s26q2f1mmjgnfn",
+        "e9bqft93458fqgq3n1to",
+        "e9br6nhq6ep5djkr27jc",
+        "e9br7cju36qk7m55scj2"
+      ],
+      "baseline_preserved": 4,
+      "current_count": 4,
+      "unrelated_new_ids": []
+    },
+    "sg": {
+      "deleted_ids": [
+        "enp32hafbn23rnesufa1",
+        "enp4fhf5g9b3au1nmgh7",
+        "enp4fue9576ukb0tjr8k",
+        "enp5jnfr318h32cbddvu",
+        "enp6ccocde2ej9ohv1ku",
+        "enp7h9iktf5e7l1qjfn9",
+        "enph9auj7p8o5a3g91va",
+        "enpl2gpgqouvpmrpv1o9",
+        "enpmvvnn5m6k76v4smn9",
+        "enptrs7j6ln739mh59u6",
+        "enpuir865e6667gd27k2",
+        "enpvpd6uu8sj234jgbfl"
+      ],
+      "baseline_preserved": 6,
+      "current_count": 6,
+      "unrelated_new_ids": []
+    }
+  },
+  "runs": [
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-single-1011",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-single-114",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-galera-114",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-monitor-e4a0fdb4-mariadb-galera-118",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-fixed-babb0afe-mariadb-galera-114",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-fixed-babb0afe-mariadb-galera-118",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-fixed-babb0afe",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-fixed-babb0afe-mysql-gr-80",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-fixed-babb0afe-mysql-gr-84",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-be4cb125-mysql-gr-84",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-be4cb125-mysql-gr-80",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-clusters-be4cb125",
+      "phase": "Canceled"
+    }
+  ],
+  "managed_workers_remaining": []
+}

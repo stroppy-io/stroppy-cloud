@@ -1,0 +1,103 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-26.1",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 3773,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-picodata-metrics-85175d12-picodata-three-node-26.1"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter": 57,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata": 931,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter": 57,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata": 695,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter": 57,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-picodata": 1002,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-haproxy": 3,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter": 57,
+    "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T16:57:07.877830781Z",
+    "end": "2026-09-15T17:00:14.557136469Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata",
+      "observed_at": "2026-09-15T16:57:18.168602068Z",
+      "source_time": "2026-09-15T16:56:59.965000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "ec0625a5faeb72b716766797e3e142988e101dc7ea1ec6520e218ddfc40548c9",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata",
+      "observed_at": "2026-09-15T16:57:18.168392373Z",
+      "source_time": "2026-09-15T16:56:59.959000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "7d50af56d7e1ddaf89aa600ba520a2263fa9f49899c36ac89b83745aa44540c1",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata",
+      "observed_at": "2026-09-15T16:57:18.167955532Z",
+      "source_time": "2026-09-15T16:56:49.782000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "525b5827b04264a2085fe2ca19d774232f4a4587a1a0cae77dac23e034f16111",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata",
+      "observed_at": "2026-09-15T16:57:11.320838147Z",
+      "source_time": "2026-09-15T16:56:59.962000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "eb66c0f3d082615e7d3dacc1186c01189033c7c28ec15329a63c8a56a56d1a1d",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata",
+      "observed_at": "2026-09-15T16:57:11.320810922Z",
+      "source_time": "2026-09-15T16:56:59.962000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "cd893da8dab29a417f1a873770ed1729d3a999cde0b7ce39c2c91cc1014eebab",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata",
+      "observed_at": "2026-09-15T16:57:11.320712546Z",
+      "source_time": "2026-09-15T16:56:59.958000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from the default UTC test container",
+      "message_sha256": "ac37360293b0a3cb1b26e2e7b8b6fe036961c77f61fbe3a079ec6b3b2ae9fca3",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:57:07.877830781Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; no blanket EOF exemption. Native workloads report zero terminal errors; each cluster member passed independent SQL membership checks."
+    }
+  ],
+  "observation_counts": {
+    "picodata_pre_workload_log_delivered_later": 6
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": [
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-init",
+      "status": "ready",
+      "stdout": "not emitted by quiet bootstrap command",
+      "evidence": "persisted container.ready workflow signal after marker healthcheck",
+      "command_sha256": "2adbe06aceb657d258078768467a47dfb00f864a5638647201783147fc56ab03"
+    }
+  ]
+}

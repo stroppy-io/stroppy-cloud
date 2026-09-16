@@ -51,12 +51,20 @@ func cockroachRecipe(c *compilation) error {
 		if len(nodes) == 1 {
 			cmd = []string{"start-single-node"}
 		}
-		cmd = append(cmd, strings.Fields(flags)...)
+		// The schema places --log last. Its YAML can contain spaces and
+		// newlines and must remain one argv element; other flags are scalar.
+		plain, logConfig, hasLog := strings.Cut(strings.TrimSpace(flags), " --log=")
+		cmd = append(cmd, strings.Fields(plain)...)
+		if hasLog {
+			cmd = append(cmd, "--log="+logConfig)
+		}
 		c.add(spec.Container{
 			Name: m + "-cockroach", Role: role, Machine: m, Image: image, Cmd: cmd,
+			Entrypoint:  []string{"/cockroach/cockroach"},
 			Mounts:      []spec.Mount{{Source: dataMount + "/cockroach", Target: crdbDataDir}},
 			Ports:       []spec.Port{{Container: crdbPort, Host: crdbPort}, {Container: crdbHTTPPort, Host: crdbHTTPPort}},
 			Scrape:      "/_status/vars",
+			ScrapePort:  crdbHTTPPort,
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("curl -sf http://127.0.0.1:%d/health", crdbHTTPPort)),
 			Restart:     "always",
 		})
@@ -68,7 +76,8 @@ func cockroachRecipe(c *compilation) error {
 	init := c.first(role)
 	var script strings.Builder
 	if len(nodes) > 1 {
-		fmt.Fprintf(&script, "until cockroach init --insecure --host=%s:%d || cockroach sql --insecure --host=%s:%d -e 'SELECT 1'; do sleep 3; done\n", ip(init), crdbPort, ip(init), crdbPort)
+		clusterName := strParam(c.effective(role, schemaID), "cluster_name", "stroppy")
+		fmt.Fprintf(&script, "until cockroach init --insecure --cluster-name=%s --host=%s:%d || cockroach sql --insecure --host=%s:%d -e 'SELECT 1'; do sleep 3; done\n", "'"+strings.ReplaceAll(clusterName, "'", "'\"'\"'")+"'", ip(init), crdbPort, ip(init), crdbPort)
 	}
 	fmt.Fprintf(&script, "until cockroach sql --insecure --host=%s:%d -e 'SELECT 1'; do sleep 3; done\n", ip(init), crdbPort)
 	if strings.TrimSpace(strings.Join(nonComment(settings), "\n")) != "" {
@@ -102,7 +111,8 @@ func nonComment(s string) []string {
 func (c *compilation) initSidecar(role, machine, image, script string, files []spec.File, deps []string) spec.Container {
 	return spec.Container{
 		Name: machine + "-init", Role: role, Machine: machine, Image: image,
-		Cmd:         []string{"/bin/sh", "-c", "set -e\n" + script + "touch /tmp/stroppy-init-done\nwhile true; do sleep 3600; done"},
+		Entrypoint:  []string{"/bin/sh"},
+		Cmd:         []string{"-c", "set -e\n" + script + "touch /tmp/stroppy-init-done\nwhile true; do sleep 3600; done"},
 		Files:       files,
 		Healthcheck: &spec.Healthcheck{Cmd: []string{"CMD-SHELL", "test -f /tmp/stroppy-init-done"}, Interval: spec.Duration(10e9), Retries: 100},
 		Restart:     "no",
@@ -132,6 +142,12 @@ func picodataRecipe(c *compilation) error {
 	schemaID := c.schemaFor(role, "cfg.picodata.yaml@")
 	p := c.params()
 	nodes := c.machinesOf(role)
+	// Upstream images run as picodata (uid/gid 1000); Docker creates bind
+	// mount directories as root unless the data disk is prepared first.
+	c.out.Spec.HostPrep = append(c.out.Spec.HostPrep, spec.HostPrep{
+		Role: role, Kind: spec.HostPrepScript,
+		Content: "install -d -m 0750 -o 1000 -g 1000 " + dataMount + "/picodata\n",
+	})
 	peers := make([]any, 0, len(nodes))
 	for _, m := range nodes {
 		peers = append(peers, fmt.Sprintf("%s:%d", ip(m), picoIprotoPort))
@@ -150,6 +166,12 @@ func picodataRecipe(c *compilation) error {
 			v := map[string]any{"name": strParam(m, "name", "default")}
 			for _, k := range []string{"replication_factor", "can_vote", "bucket_count", "replication_mode"} {
 				if x, ok := m[k]; ok {
+					if k == "replication_mode" && strParam(p, "version", "") != "26.2" {
+						if x != "async" {
+							return fmt.Errorf("picodata %s does not support replication_mode=%v", strParam(p, "version", ""), x)
+						}
+						continue
+					}
 					v[k] = x
 				}
 			}
@@ -173,6 +195,7 @@ func picodataRecipe(c *compilation) error {
 		overlay := map[string]any{
 			"cluster_name": "stroppy", "tiers": tierValues, "instance_name": m, "tier": tiers[ti].name, "peer": peers,
 			"instance_dir":  picoDataDir,
+			"admin_socket":  picoDataDir + "/admin.sock",
 			"iproto_listen": fmt.Sprintf("0.0.0.0:%d", picoIprotoPort), "iproto_advertise": fmt.Sprintf("%s:%d", ip(m), picoIprotoPort),
 			"http_listen": fmt.Sprintf("0.0.0.0:%d", picoHTTPPort),
 			"pg_listen":   fmt.Sprintf("0.0.0.0:%d", picoPgPort), "pg_advertise": fmt.Sprintf("%s:%d", ip(m), picoPgPort),
@@ -186,7 +209,7 @@ func picodataRecipe(c *compilation) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-picodata", Role: role, Machine: m, Image: image,
-			Cmd:    []string{"picodata", "run", "--config", confDir + "/picodata.yaml"},
+			Cmd:    []string{"run", "--config", confDir + "/picodata.yaml"},
 			Env:    map[string]string{"PICODATA_ADMIN_PASSWORD": picodataPassword},
 			Mounts: []spec.Mount{{Source: dataMount + "/picodata", Target: picoDataDir}},
 			Files:  []spec.File{{Path: confDir + "/picodata.yaml", Content: conf}},
@@ -194,10 +217,19 @@ func picodataRecipe(c *compilation) error {
 				{Container: picoIprotoPort, Host: picoIprotoPort}, {Container: picoPgPort, Host: picoPgPort}, {Container: picoHTTPPort, Host: picoHTTPPort},
 			},
 			Scrape:      "/metrics",
-			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", picoIprotoPort)),
+			ScrapePort:  picoHTTPPort,
+			Healthcheck: healthcheck("CMD-SHELL", `printf '%s\n' '\lua' 'return pico.instance_info().current_state.variant' | picodata admin `+picoDataDir+`/admin.sock | grep -qx -- '- Online'`),
 			Restart:     "always",
 		})
 	}
+	// Dynamic SQL settings are applied once after every instance is Online.
+	// Keeping them in params makes workload-specific limits reviewable.
+	first := nodes[0]
+	init := fmt.Sprintf(`printf '%%s\n' '\lua' 'pico.sql([[ALTER SYSTEM SET sql_vdbe_opcode_max = %d]]); return "STROPPY_SQL_CONFIGURED"' | picodata admin %s/admin.sock | grep -qx -- '- STROPPY_SQL_CONFIGURED'
+`, intParam(p, "sql_vdbe_opcode_max", 45000), picoDataDir)
+	sidecar := c.initSidecar(role, first, image, init, nil, c.dbContainers())
+	sidecar.Mounts = []spec.Mount{{Source: dataMount + "/picodata", Target: picoDataDir}}
+	c.add(sidecar)
 	if len(c.machinesOf(topology.RoleProxy)) > 0 {
 		port := picoIprotoPort
 		if boolParam(p, "pgproto") {
@@ -225,7 +257,6 @@ const (
 	ydbPdiskGB    = 40
 	ydbDataInner  = "/ydb_data"
 	ydbConfPath   = "/opt/ydb/cfg/config.yaml"
-	ydbCounters   = "ydb,auth,coordinator,dsproxy,grpc,interconnect,kqp,pdisks,processing,proxy,storage_pool_stat,tablets,utils,vdisks"
 )
 
 func ydbRecipe(c *compilation) error {
@@ -249,10 +280,9 @@ func ydbRecipe(c *compilation) error {
 		drives = append(drives, map[string]any{"path": fmt.Sprintf("%s/pdisk-%d.data", ydbDataInner, i), "type": "ssd"})
 	}
 	hosts := make([]any, 0, len(storage)+len(compute))
-	dcs := []string{"zone-a", "zone-b", "zone-c"}
 	for i, m := range storage {
 		hosts = append(hosts, map[string]any{
-			"host": ip(m), "node_id": i + 1, "host_config_id": 1, "port": ydbICPort, "data_center": dcs[i%len(dcs)], "rack": fmt.Sprintf("rack-%d", i+1),
+			"host": ip(m), "node_id": i + 1, "host_config_id": 1, "port": ydbICPort, "data_center": c.machineLocation(m), "rack": fmt.Sprintf("rack-%d", i+1),
 		})
 	}
 	stateNodes := make([]any, 0, len(storage))
@@ -270,9 +300,11 @@ func ydbRecipe(c *compilation) error {
 	}
 	serviceSet := ydbServiceSet(erasure, len(storage), pdisks)
 	base := map[string]any{
-		"drives": drives, "host_config_id": 1, "hosts": hosts, "state_storage_nodes": stateNodes, "state_storage_nto_select": nto,
+		"static_erasure": erasure,
+		"drives":         drives, "host_config_id": 1, "hosts": hosts, "state_storage_nodes": stateNodes, "state_storage_nto_select": nto,
 		"storage_pool_types":       []any{map[string]any{"kind": "ssd", "erasure_species": erasure, "pdisk_type": "SSD", "vdisk_kind": "Default", "box_id": 1}},
 		"blob_storage_service_set": serviceSet, "grpc_port": ydbGRPCPort, "interconnect_port": ydbICPort, "monitoring_port": ydbMonPort,
+		"spilling_root": ydbDataInner + "/spilling",
 	}
 	prep := &strings.Builder{}
 	fmt.Fprintf(prep, "mkdir -p %s/ydb\n", dataMount)
@@ -282,11 +314,6 @@ func ydbRecipe(c *compilation) error {
 	c.out.Spec.HostPrep = append(c.out.Spec.HostPrep, spec.HostPrep{Role: topology.RoleDB, Kind: spec.HostPrepScript, Content: prep.String()})
 
 	schemaID := c.schemaFor(topology.RoleDB, "cfg.ydb.config.yaml@")
-	// The YDB metrics path carries "=" which the container scrape path
-	// rejects, so every node gets a spec-level scrape by job name instead.
-	scrapeOf := func(role, name string) {
-		c.scrape(role, name, fmt.Sprintf("http://127.0.0.1:%d/counters/counters=%s/prometheus", ydbMonPort, ydbCounters))
-	}
 	for i, m := range storage {
 		overlay := cloneMap(base)
 		overlay["node_type"] = "STORAGE"
@@ -295,9 +322,11 @@ func ydbRecipe(c *compilation) error {
 			return err
 		}
 		c.add(spec.Container{
+			Scrape: "/counters/prometheus", ScrapePort: ydbMonPort,
 			Name: m + "-ydb", Role: topology.RoleDB, Machine: m, Image: image,
+			Entrypoint: []string{"/ydbd"},
 			Cmd: []string{
-				"/opt/ydb/bin/ydbd", "server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbStaticPort),
+				"server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbStaticPort),
 				"--ic-port", fmt.Sprint(ydbICPort), "--mon-port", fmt.Sprint(ydbMonPort), "--node", fmt.Sprint(i + 1),
 			},
 			Mounts: []spec.Mount{{Source: dataMount + "/ydb", Target: ydbDataInner}},
@@ -305,15 +334,14 @@ func ydbRecipe(c *compilation) error {
 			Ports: []spec.Port{
 				{Container: ydbStaticPort, Host: ydbStaticPort}, {Container: ydbICPort, Host: ydbICPort}, {Container: ydbMonPort, Host: ydbMonPort},
 			},
-			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", ydbStaticPort)),
+			Healthcheck: healthcheck("CMD", "bash", "-ec", fmt.Sprintf("exec 3<>/dev/tcp/127.0.0.1/%d", ydbStaticPort)),
 			Restart:     "always",
 		})
-		scrapeOf(topology.RoleDB, m+"-ydb")
 	}
 	first := storage[0]
 	groups := intParam(p, "storage_groups", 1)
-	init := fmt.Sprintf(`until /opt/ydb/bin/ydbd -s grpc://%s:%d admin blobstorage config init --yaml-file %s; do sleep 5; done
-until /opt/ydb/bin/ydbd -s grpc://%s:%d admin database %s create ssd:%d; do sleep 5; done
+	init := fmt.Sprintf(`until /ydbd -s grpc://%s:%d admin blobstorage config init --yaml-file %s; do sleep 5; done
+until /ydbd -s grpc://%s:%d admin database %s create ssd:%d; do sleep 5; done
 `, ip(first), ydbStaticPort, ydbConfPath, ip(first), ydbStaticPort, dbPath, groups)
 	initConf, err := c.render(topology.RoleDB, schemaID, "conf", func() map[string]any { o := cloneMap(base); o["node_type"] = "STORAGE"; return o }())
 	if err != nil {
@@ -321,8 +349,9 @@ until /opt/ydb/bin/ydbd -s grpc://%s:%d admin database %s create ssd:%d; do slee
 	}
 	c.add(c.initSidecar(topology.RoleDB, first, image, init, []spec.File{{Path: ydbConfPath, Content: initConf}}, c.dbContainers()))
 
+	c.out.Spec.HostPrep = append(c.out.Spec.HostPrep, spec.HostPrep{Role: topology.RoleDBCompute, Kind: spec.HostPrepScript, Content: "mkdir -p " + dataMount + "/ydb/spilling\n"})
 	computeSchema := c.schemaFor(topology.RoleDBCompute, "cfg.ydb.config.yaml@")
-	for i, m := range compute {
+	for _, m := range compute {
 		overlay := cloneMap(base)
 		overlay["node_type"] = "COMPUTE"
 		conf, err := c.render(topology.RoleDBCompute, computeSchema, "conf", overlay)
@@ -330,21 +359,24 @@ until /opt/ydb/bin/ydbd -s grpc://%s:%d admin database %s create ssd:%d; do slee
 			return err
 		}
 		c.add(spec.Container{
+			Scrape: "/counters/prometheus", ScrapePort: ydbMonPort,
 			Name: m + "-ydb", Role: topology.RoleDBCompute, Machine: m, Image: image,
+			Entrypoint: []string{"/ydbd"},
 			Cmd: []string{
-				"/opt/ydb/bin/ydbd", "server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbGRPCPort),
+				"server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbGRPCPort),
 				"--ic-port", fmt.Sprint(ydbICPort), "--mon-port", fmt.Sprint(ydbMonPort), "--tenant", dbPath,
-				"--node-broker", fmt.Sprintf("grpc://%s:%d", ip(first), ydbStaticPort), "--node", fmt.Sprint(len(storage) + i + 1),
+				"--node-broker", fmt.Sprintf("grpc://%s:%d", ip(first), ydbStaticPort),
+				"--data-center", c.machineLocation(m), "--rack", m,
 			},
-			Files: []spec.File{{Path: ydbConfPath, Content: conf}},
+			Files:  []spec.File{{Path: ydbConfPath, Content: conf}},
+			Mounts: []spec.Mount{{Source: dataMount + "/ydb", Target: ydbDataInner}},
 			Ports: []spec.Port{
 				{Container: ydbGRPCPort, Host: ydbGRPCPort}, {Container: ydbICPort, Host: ydbICPort}, {Container: ydbMonPort, Host: ydbMonPort},
 			},
-			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d && sleep 20", ydbGRPCPort)),
+			Healthcheck: healthcheck("CMD", "/ydb", "-e", fmt.Sprintf("grpc://127.0.0.1:%d", ydbGRPCPort), "-d", dbPath, "scheme", "ls", dbPath),
 			Restart:     "always",
 			DependsOn:   []string{first + "-init"},
 		})
-		scrapeOf(topology.RoleDBCompute, m+"-ydb")
 	}
 	if len(c.machinesOf(topology.RoleProxy)) > 0 {
 		return c.haproxy([]haproxyListener{{Name: "grpc", BindPort: ydbGRPCPort, Servers: c.servers(topology.RoleDBCompute, ydbGRPCPort)}})

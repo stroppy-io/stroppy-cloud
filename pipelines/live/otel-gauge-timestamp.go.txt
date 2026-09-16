@@ -1,0 +1,44 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	sdk "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"os"
+	"time"
+)
+
+func main() {
+	ctx := context.Background()
+	r := sdk.NewManualReader()
+	p := sdk.NewMeterProvider(sdk.WithReader(r))
+	defer p.Shutdown(ctx)
+	g, e := p.Meter("test").Float64Gauge("state")
+	if e != nil {
+		panic(e)
+	}
+	recorded := time.Now()
+	g.Record(ctx, 2)
+	var a, b metricdata.ResourceMetrics
+	if e = r.Collect(ctx, &a); e != nil {
+		panic(e)
+	}
+	if e = r.Collect(ctx, &b); e != nil {
+		panic(e)
+	}
+	x := a.ScopeMetrics[0].Metrics[0].Data.(metricdata.Gauge[float64]).DataPoints[0]
+	y := b.ScopeMetrics[0].Metrics[0].Data.(metricdata.Gauge[float64]).DataPoints[0]
+	if x.Value != 2 || y.Value != 2 || !y.Time.After(x.Time) {
+		panic("gauge did not retain value with collection timestamp")
+	}
+	out := map[string]any{"status": "passed", "recorded_at": recorded, "first_collection": x.Time, "second_collection": y.Time, "value": y.Value, "records": 1, "collections": 2, "conclusion": "unchanged last gauge value is re-exported with each collection timestamp"}
+	j, _ := json.MarshalIndent(out, "", "  ")
+	fmt.Println(string(j))
+	if len(os.Args) > 1 {
+		if e = os.WriteFile(os.Args[1], append(j, '\n'), 0600); e != nil {
+			panic(e)
+		}
+	}
+}

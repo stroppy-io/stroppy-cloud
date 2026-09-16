@@ -1,0 +1,123 @@
+{
+  "cells": [
+    {
+      "version": "25.4",
+      "topology": "single",
+      "status": "passed",
+      "scope": "Local Docker nodes only; SQL readiness and native workloads; no YC, HAProxy, or durable OTLP proof",
+      "checked_at": "2026-09-15T15:57:16.750518+00:00",
+      "input_sha256": "0aeae75ed65996cb3e872bbb6d9964cc2c04cdcdd941de8afa30d913cda70a16",
+      "workloads": [
+        "simple",
+        "tpcb/tx",
+        "tpcc/tx"
+      ],
+      "terminal_errors": 0,
+      "metrics_endpoints": [
+        {
+          "node": "db-compute-1-ydb",
+          "bytes": 3303593,
+          "metric_names": 8537,
+          "sha256": "a97e98f0fa29712fd6a6f477792c5385c0aca6d1982cc01b43e7f223c31d2f88"
+        },
+        {
+          "node": "db-1-ydb",
+          "bytes": 3265198,
+          "metric_names": 10595,
+          "sha256": "02a7e9f4bd51060f89a534ba2607a8690e2c325b3b232165c772c205df332465"
+        }
+      ],
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70"
+    },
+    {
+      "version": "26.2",
+      "topology": "single",
+      "status": "passed",
+      "scope": "Local Docker nodes only; SQL readiness and native workloads; no YC, HAProxy, or durable OTLP proof",
+      "checked_at": "2026-09-15T15:58:59.802204+00:00",
+      "input_sha256": "970592135102cfa8f29755311ea22e915d00b708f118b4d9a8c71d94b2fe62ab",
+      "workloads": [
+        "simple",
+        "tpcb/tx",
+        "tpcc/tx"
+      ],
+      "terminal_errors": 0,
+      "metrics_endpoints": [
+        {
+          "node": "db-compute-1-ydb",
+          "bytes": 3460512,
+          "metric_names": 9062,
+          "sha256": "b742edb778094e463a807382151c0f01ceb1ee4dd2eeeecd242e3d4935279740"
+        },
+        {
+          "node": "db-1-ydb",
+          "bytes": 3424061,
+          "metric_names": 11227,
+          "sha256": "83e1b1fcb47aa30b6eae267f5acfbdd2735922876b652748bd3bbaea53d8ad76"
+        }
+      ],
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70"
+    },
+    {
+      "version": "26.1",
+      "topology": "single",
+      "status": "passed",
+      "scope": "Local Docker only; no YC or durable OTLP proof. Image downloaded directly from Docker Hub because registry mirror returned HTTP 500.",
+      "upstream_image_digest": "sha256:c3e49c078a560d4957ff492ed7025864ee33a405d03a02c4fdb30c20e7c42925",
+      "checked_at": "2026-09-15T16:03:05.697063+00:00",
+      "input_sha256": "1da96bcd2ce1506337c382819ea5756f283b8931bb5f8eff5578d870c0b77213",
+      "workloads": [
+        "simple",
+        "tpcb/tx",
+        "tpcc/tx"
+      ],
+      "terminal_errors": 0,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70"
+    },
+    {
+      "version": "26.3",
+      "topology": "single",
+      "status": "passed",
+      "scope": "Local Docker nodes only; compiled scheme readiness and all three native workloads; no YC or durable OTLP proof",
+      "checked_at": "2026-09-15T17:04:54.183639+00:00",
+      "input_sha256": "fc31e601ec38e510e4eb2c75fc1a304f2172741623ea33af73fd529127ab2849",
+      "workloads": [
+        "simple",
+        "tpcb/tx",
+        "tpcc/tx"
+      ],
+      "native": {
+        "simple": {
+          "iterations_total": 7147.0,
+          "terminal_errors_total": 0.0
+        },
+        "tpcb/tx": {
+          "iterations_total": 1143.0,
+          "terminal_errors_total": 0.0,
+          "tps": 192.788
+        },
+        "tpcc/tx": {
+          "iterations_total": 323.0,
+          "terminal_errors_total": 0.0,
+          "tps": 57.819
+        }
+      },
+      "terminal_errors": 0,
+      "stroppy_binary_sha256": "58c580e31dced057a5da4714aa168a204ab7d318a599353143b20dcb5dfef39a",
+      "metrics_endpoints": [
+        {
+          "node": "db-compute-1-ydb",
+          "bytes": 3094482,
+          "metric_names": 9276,
+          "sha256": "42f717767c7fbdaf4b3a4b43da9676a8a9b6d8d005c3f9cb64842a5601f87916"
+        },
+        {
+          "node": "db-1-ydb",
+          "bytes": 3296104,
+          "metric_names": 11388,
+          "sha256": "fe8afa915d5b49062453f1450a0179ec0b56dde7f5dd30784ebb6459afe4431b"
+        }
+      ]
+    }
+  ]
+}

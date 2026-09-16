@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T09:45:03.180001+00:00",
+  "version": "0.2.11",
+  "commit": "6cb3b280636d069300970b5708de8076ce031f0f",
+  "gitops_commit": "a237dc0fafcc3225cf632ff9303398ec7431480e",
+  "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.11",
+  "image_id": "docker.stroppy.io/graphene-ci/graphene-server@sha256:69685f6163f4ae7d96dea4ab5a704f83faf7d93e1bf16006cccc370f5425dfae",
+  "pod": "graphene-server-54f89898bd-97bm7",
+  "argo_sync": "Synced",
+  "argo_health": "Healthy",
+  "ci": "https://github.com/graphene-ci/graphene/actions/runs/34953382359",
+  "release_ci": "https://github.com/graphene-ci/graphene/actions/runs/34953423472",
+  "release": "https://github.com/graphene-ci/graphene/releases/tag/v0.2.11",
+  "validation": [
+    "regressions failed before fix",
+    "make test including integration passed",
+    "make lint passed",
+    "managed package race tests passed",
+    "published image available through Nexus; live image digest verified",
+    "missing worker recovered and pending cancellation completed"
+  ],
+  "live_parallel_validation": "passed: two long sibling run IDs have distinct ready Deployments and matching worker identities",
+  "release_ci_status": "success",
+  "cli": {
+    "version": "graphenectl version 0.2.11",
+    "archive_sha256": "244cfa7723ef22fa9ba07c97a763b657bb106c1588e88efd8daf65a723b0a2f0",
+    "binary_sha256": "811b716cd31c86d22b0661ed9bf8c3d21259a0126b5911b9976673c46c105a3b",
+    "published_checksum_verified": true
+  },
+  "live_parallel_completed_runs": [
+    "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+    "matrix-mysql-family-19fb11ff-mysql80-semi-sync"
+  ],
+  "rechecked_at": "2026-09-15T10:12:14.766642+00:00",
+  "ready_pods": [
+    "graphene-server-54f89898bd-97bm7"
+  ]
+}

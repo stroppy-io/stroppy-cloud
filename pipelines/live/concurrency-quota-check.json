@@ -1,0 +1,226 @@
+{
+  "checked_at": "2026-09-15T19:09:15.561433+00:00",
+  "source": "live YC Quota Manager cloud scope",
+  "stand_limit": 3,
+  "previous_stand_limit": 2,
+  "includes_cleanup": true,
+  "limiting_quota": "vpc.networks.count",
+  "network_policy": "Three existing networks are preserved; every active or cleaning stand owns one additional network. No fourth stand.",
+  "conservative_additional_reserve": {
+    "compute.instances.count": 20,
+    "compute.disks.count": 33,
+    "compute.instanceCores.count": 80,
+    "compute.instanceMemory.size": 322122547200,
+    "compute.ssdDisks.size": 3221225472000,
+    "vpc.externalAddresses.count": 20,
+    "vpc.subnets.count": 5,
+    "vpc.securityGroups.count": 3
+  },
+  "quotas": [
+    {
+      "quota_id": "compute.dedicatedHosts.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.diskPlacementGroups.count",
+      "limit": 5,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.diskPools.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.disks.count",
+      "limit": 128,
+      "usage": 27
+    },
+    {
+      "quota_id": "compute.filesystems.count",
+      "limit": 100,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.hddDisks.size",
+      "limit": 536870912000,
+      "usage": 107374182400
+    },
+    {
+      "quota_id": "compute.hddFilesystems.size",
+      "limit": 549755813888,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.hostGroups.count",
+      "limit": 6,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.images.count",
+      "limit": 32,
+      "usage": 4
+    },
+    {
+      "quota_id": "compute.images.size",
+      "limit": 1099511627776,
+      "usage": 128081461248
+    },
+    {
+      "quota_id": "compute.instanceA100Gpus.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instanceCores.count",
+      "limit": 1024,
+      "usage": 56
+    },
+    {
+      "quota_id": "compute.instanceGpus.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instanceGroups.count",
+      "limit": 10,
+      "usage": 4
+    },
+    {
+      "quota_id": "compute.instanceHighFreqCores.count",
+      "limit": 1024,
+      "usage": 16
+    },
+    {
+      "quota_id": "compute.instanceMemory.size",
+      "limit": 4398046511104,
+      "usage": 161061273600
+    },
+    {
+      "quota_id": "compute.instanceT4Gpus.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instanceT4Gpus.count.ru-central1-d",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instanceT4IGpus.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instanceV3IGpus.count",
+      "limit": 0,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.instances.count",
+      "limit": 64,
+      "usage": 16
+    },
+    {
+      "quota_id": "compute.placementGroups.count",
+      "limit": 2,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.reservedInstancePools.count",
+      "limit": 1,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.snapshotSchedules.count",
+      "limit": 32,
+      "usage": 1
+    },
+    {
+      "quota_id": "compute.snapshots.count",
+      "limit": 32,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.snapshots.size",
+      "limit": 429496729600,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.ssdDisks.size",
+      "limit": 21474836480000,
+      "usage": 2735894167552
+    },
+    {
+      "quota_id": "compute.ssdFilesystems.size",
+      "limit": 549755813888,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.ssdIOM3Disks.size",
+      "limit": 107374182400000,
+      "usage": 0
+    },
+    {
+      "quota_id": "compute.ssdNonReplicatedDisks.size",
+      "limit": 107374182400000,
+      "usage": 0
+    },
+    {
+      "quota_id": "vpc.externalAddresses.count",
+      "limit": 64,
+      "usage": 17
+    },
+    {
+      "quota_id": "vpc.externalStaticAddresses.count",
+      "limit": 6,
+      "usage": 4
+    },
+    {
+      "quota_id": "vpc.gateways.count",
+      "limit": 8,
+      "usage": 1
+    },
+    {
+      "quota_id": "vpc.networks.count",
+      "limit": 6,
+      "usage": 5
+    },
+    {
+      "quota_id": "vpc.privateEndpoints.count",
+      "limit": 2,
+      "usage": 0
+    },
+    {
+      "quota_id": "vpc.routeTables.count",
+      "limit": 8,
+      "usage": 1
+    },
+    {
+      "quota_id": "vpc.securityGroups.count",
+      "limit": 32,
+      "usage": 5
+    },
+    {
+      "quota_id": "vpc.sharedEgressGateways.count",
+      "limit": 8,
+      "usage": 1
+    },
+    {
+      "quota_id": "vpc.staticRoutes.count",
+      "limit": 256,
+      "usage": 1
+    },
+    {
+      "quota_id": "vpc.subnets.count",
+      "limit": 32,
+      "usage": 6
+    }
+  ],
+  "reserved_scenarios": [
+    "YDB mirror-3-dc: 13 VMs",
+    "Cockroach three-node: 5 VMs",
+    "auxiliary: at most 2 VMs"
+  ]
+}

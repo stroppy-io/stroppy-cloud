@@ -1,0 +1,126 @@
+{
+  "status": "passed",
+  "scope": "Local Docker smoke of six compiled recipes; table engine, text index, physical replication and pg_stat_statements effective settings; does not prove YC workloads",
+  "checks": [
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:47.450992+00:00",
+      "input_sha256": "e31f2ea9821591f86f519ddb3e9e9543a773ec9970c2df038aa72448ab486cef",
+      "checks": {
+        "stroppy-oriole-c6113211-db-1-orioledb": [
+          "PostgreSQL 16.15 OrioleDB beta 17 PGTAG=patches16_48 alpine:3.21+clang build:2026-09-04T21:11:02+00:00 16.15 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ],
+        "stroppy-oriole-c6113211-db-replica-1-orioledb": [
+          "PostgreSQL 16.15 OrioleDB beta 17 PGTAG=patches16_48 alpine:3.21+clang build:2026-09-04T21:11:02+00:00 16.15 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "t",
+          "1"
+        ]
+      },
+      "input": "orioledb-primary-replica-beta17-pg16-simple.json"
+    },
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:47.415035+00:00",
+      "input_sha256": "cb7a6163fd0c3bf80b178adaf9366e3a916f8e6f6012d001bdbba96b9b21c205",
+      "checks": {
+        "stroppy-oriole-6b824dbe-db-1-orioledb": [
+          "PostgreSQL 17.11 OrioleDB beta 17 PGTAG=patches17_21 alpine:3.21+clang build:2026-09-04T21:10:45+00:00 17.11 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ],
+        "stroppy-oriole-6b824dbe-db-replica-1-orioledb": [
+          "PostgreSQL 17.11 OrioleDB beta 17 PGTAG=patches17_21 alpine:3.21+clang build:2026-09-04T21:10:45+00:00 17.11 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "t",
+          "1"
+        ]
+      },
+      "input": "orioledb-primary-replica-beta17-pg17-simple.json"
+    },
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:51.727502+00:00",
+      "input_sha256": "1ac8c0ec65d29613a653edbefe4996cb7dd3bc5c3ff04c4f59a2875f0787b6f3",
+      "checks": {
+        "stroppy-oriole-45cfaf1e-db-1-orioledb": [
+          "PostgreSQL 18.6 OrioleDB beta 17 PGTAG=patches18_2 alpine:3.21+clang build:2026-09-04T21:10:49+00:00 18.6 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ],
+        "stroppy-oriole-45cfaf1e-db-replica-1-orioledb": [
+          "PostgreSQL 18.6 OrioleDB beta 17 PGTAG=patches18_2 alpine:3.21+clang build:2026-09-04T21:10:49+00:00 18.6 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "t",
+          "1"
+        ]
+      },
+      "input": "orioledb-primary-replica-beta17-pg18-simple.json"
+    },
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:50.313516+00:00",
+      "input_sha256": "b36d0c837e3382c7b83d03119d852781ac9a94ad73d69dcbdce53768bd1e4ba5",
+      "checks": {
+        "stroppy-oriole-1e1e12ee-db-1-orioledb": [
+          "PostgreSQL 16.15 OrioleDB beta 17 PGTAG=patches16_48 alpine:3.21+clang build:2026-09-04T21:11:02+00:00 16.15 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ]
+      },
+      "input": "orioledb-single-beta17-pg16-simple.json"
+    },
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:52.512676+00:00",
+      "input_sha256": "9da24901e855200586c570ebc37aa598bb664671770466fa91ddf7cdf0c1a3bf",
+      "checks": {
+        "stroppy-oriole-7efd284c-db-1-orioledb": [
+          "PostgreSQL 17.11 OrioleDB beta 17 PGTAG=patches17_21 alpine:3.21+clang build:2026-09-04T21:10:45+00:00 17.11 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ]
+      },
+      "input": "orioledb-single-beta17-pg17-simple.json"
+    },
+    {
+      "status": "passed",
+      "checked_at": "2026-09-15T13:16:54.293042+00:00",
+      "input_sha256": "925a3017306808bf9ae94ae50401a5c6dfaf93cacf2a4fdbe43d5029cced3774",
+      "checks": {
+        "stroppy-oriole-f38ef70b-db-1-orioledb": [
+          "PostgreSQL 18.6 OrioleDB beta 17 PGTAG=patches18_2 alpine:3.21+clang build:2026-09-04T21:10:49+00:00 18.6 on x86_64-pc-linux-musl, compiled by Alpine clang version 19.1.4, 64-bit",
+          "1.9",
+          "/var/lib/postgresql/data",
+          "orioledb",
+          "f",
+          "1"
+        ]
+      },
+      "input": "orioledb-single-beta17-pg18-simple.json"
+    }
+  ]
+}

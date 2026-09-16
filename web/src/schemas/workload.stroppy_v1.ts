@@ -260,6 +260,8 @@ export interface WorkloadStroppy1ConnectionPg {
 /** variant picodata of connection */
 export interface WorkloadStroppy1ConnectionPicodata {
   kind: "picodata";
+  /** Query execution mode. pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1. */
+  query_exec_mode?: "exec" | "cache_statement" | "cache_describe" | "describe_exec";
 }
 
 /** variant ydb of connection */

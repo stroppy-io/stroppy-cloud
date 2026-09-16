@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T21:30:57.656898+00:00",
+  "concurrent_stands": 3,
+  "reservations": {
+    "compute.disks.count": {
+      "usage": 20,
+      "reserved": 75,
+      "projected": 95,
+      "limit": 128
+    },
+    "compute.instanceCores.count": {
+      "usage": 40,
+      "reserved": 156,
+      "projected": 196,
+      "limit": 1024
+    },
+    "compute.instanceMemory.size": {
+      "usage": 100931731456,
+      "reserved": 644245094400,
+      "projected": 745176825856,
+      "limit": 4398046511104
+    },
+    "compute.instances.count": {
+      "usage": 12,
+      "reserved": 39,
+      "projected": 51,
+      "limit": 64
+    },
+    "compute.ssdDisks.size": {
+      "usage": 2241972928512,
+      "reserved": 6700148981760,
+      "projected": 8942121910272,
+      "limit": 21474836480000
+    },
+    "vpc.externalAddresses.count": {
+      "usage": 13,
+      "reserved": 39,
+      "projected": 52,
+      "limit": 64
+    },
+    "vpc.networks.count": {
+      "usage": 3,
+      "reserved": 3,
+      "projected": 6,
+      "limit": 6
+    },
+    "vpc.securityGroups.count": {
+      "usage": 3,
+      "reserved": 3,
+      "projected": 6,
+      "limit": 32
+    },
+    "vpc.subnets.count": {
+      "usage": 4,
+      "reserved": 9,
+      "projected": 13,
+      "limit": 32
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "scope": "local native Stroppy noop; no cloud validation yet",
+  "measurements": {
+    "iterations_total": 6285525.0,
+    "terminal_errors_total": 0.0,
+    "run_query_operations_total": 6285525.0,
+    "failed_queries_total": 0.0,
+    "queries_per_second": 1257082.352
+  },
+  "log_sha256": "b899bb6450b949e7463d4d478fa4cd2c474276550cfd93db4a3772f12a8fcb38",
+  "tps": "not applicable: no logical database transactions"
+}

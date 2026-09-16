@@ -55,3 +55,16 @@ func TestSimulatedQuotas(t *testing.T) {
 	require.Len(t, res.Quotas, 1)
 	require.Equal(t, "eu-central-1a", res.Quotas[0].Zone)
 }
+
+func TestSimulatedQuotasUnavailable(t *testing.T) {
+	var suite testsuite.WorkflowTestSuite
+	w := pipelinetest.Install(t, suite.NewTestWorkflowEnvironment())
+	expected := spec.QuotasResult{ObservedAt: time.Now().UTC(), Quotas: []spec.Quota{}, Scope: "cloud:b1g", UnavailableReason: "permission_denied"}
+	pipelinetest.Handle1(w, nameQuotas, func(_ workflow.Context, _ spec.Quotas) (spec.QuotasResult, error) { return expected, nil })
+	w.Env.ExecuteWorkflow(pipelinetest.Workflow(w, QuotasPipelineID, Quotas), spec.Quotas{Provider: spec.ProviderYandex, CredentialsSecret: "yc-sa-key"})
+	require.NoError(t, w.Env.GetWorkflowError())
+	var res spec.QuotasResult
+	require.NoError(t, w.Env.GetWorkflowResult(&res))
+	require.Equal(t, expected, res)
+	require.Len(t, w.Calls(), 2, "one probe plus cleanup; permission denial is not retried")
+}

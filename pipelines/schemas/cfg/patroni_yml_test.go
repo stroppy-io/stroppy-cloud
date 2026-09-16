@@ -114,3 +114,11 @@ func TestPatroniYml3(t *testing.T) {
 		"  safety_margin: 5",
 	)
 }
+
+func TestPatroniYml4(t *testing.T) {
+	schematest.Run(t, PatroniYml4(), schematest.Cases{
+		Valid:   []map[string]any{{}, {"synchronous_mode": "on", "synchronous_mode_strict": "true", "synchronous_node_count": 1}},
+		Invalid: []schematest.Invalid{{Value: map[string]any{"ttl": 10}, Code: "GTE_VIOLATED", Path: "ttl"}},
+		Render:  "conf", Contains: []string{"Patroni 4.x", "postgresql:"},
+	})
+}

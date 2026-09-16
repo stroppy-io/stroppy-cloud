@@ -73,6 +73,7 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 	if err := c.machines(); err != nil {
 		return Output{}, err
 	}
+	c.prepareDataDisks()
 	c.network()
 	c.flows()
 	if err := recipe(c); err != nil {
@@ -90,7 +91,9 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 	}
 	c.out.Spec.Observability = in.Observability
 	c.out.Spec.Keep = spec.Duration(in.Keep)
-	c.out.Spec.ResultExpectations = []string{"tps"}
+	// Every measuring workload reports iterations. A generic TPS is not part
+	// of Stroppy 6's output contract and must not make every run degraded.
+	c.out.Spec.ResultExpectations = []string{"iterations_total"}
 	sort.SliceStable(c.out.Spec.Containers, func(i, j int) bool { return c.out.Spec.Containers[i].Name < c.out.Spec.Containers[j].Name })
 	return c.out, nil
 }
@@ -111,6 +114,10 @@ func (c *compilation) machines() error {
 	c.machinesByRole = map[string][]string{}
 	settings := map[string]any{}
 	_ = json.Unmarshal(c.in.ProviderSettings, &settings) //nolint:errcheck // baked upstream
+	zones, err := c.placementZones(settings)
+	if err != nil {
+		return err
+	}
 	for _, node := range c.in.Plan.Nodes {
 		if node.ColocatedWith != "" {
 			continue
@@ -131,6 +138,15 @@ func (c *compilation) machines() error {
 		if rs.DiskGB > 0 {
 			disk = rs.DiskGB
 		}
+		if c.in.Database.Kind == catalog.YDB && node.Role == topology.RoleDB {
+			minimum := intParam(c.params(), "pdisks_per_node", 1)*ydbPdiskGB + 20
+			if disk < minimum {
+				if rs.DiskGB > 0 {
+					return errs.Newf(errs.CodeInvalid, "sizes.%s.disk_gb: need at least %d GB for YDB pdisks and filesystem headroom", node.Role, minimum)
+				}
+				disk = minimum
+			}
+		}
 		diskType := cell.DiskType
 		if rs.DiskType != "" {
 			diskType = rs.DiskType
@@ -141,6 +157,9 @@ func (c *compilation) machines() error {
 				Name: name, Role: node.Role, CPU: cell.CPU, MemoryGB: cell.MemoryGB, InstanceType: cell.InstanceType,
 				Image: c.image(settings), Location: c.location(settings),
 				Labels: map[string]string{"stroppy.io/role": node.Role, "stroppy.io/engine": node.Engine},
+			}
+			if len(zones) > 1 && (node.Role == topology.RoleDB || node.Role == topology.RoleDBCompute) {
+				m.Location = zones[(i-1)%len(zones)]
 			}
 			if node.Role != topology.RoleRunner && node.Role != topology.RoleProxy {
 				m.Disks = []spec.Disk{{Name: "data", GB: disk, Type: diskType, Mount: "/data"}}
@@ -236,8 +255,20 @@ func (c *compilation) workload() error {
 	if err := json.Unmarshal(c.in.WorkloadBaked, &baked); err != nil {
 		return errs.Wrap(errs.CodeInvalid, "workload value", err)
 	}
+	if c.in.Workload.Protocol == catalog.ProtoCockroach {
+		for i, raw := range baked.Segments {
+			segment, err := cockroachSQL(raw, c.in.Database.Version)
+			if err != nil {
+				return errs.Wrap(errs.CodeInvalid, "cockroach workload segment", err)
+			}
+			baked.Segments[i] = segment
+		}
+	}
 	url, driverType := c.clientURL(baked.Connection)
 	driver := map[string]any{}
+	if c.in.Workload.Protocol == catalog.ProtoPicodata {
+		driver["postgres"] = map[string]any{"defaultQueryExecMode": "exec"}
+	}
 	for k, v := range baked.Driver {
 		if k == "pool" || k == "insert_progress" {
 			driver[camel(k)] = camelMap(v)
@@ -247,6 +278,10 @@ func (c *compilation) workload() error {
 	}
 	for k, v := range baked.Connection {
 		if k == "kind" {
+			continue
+		}
+		if k == "query_exec_mode" {
+			driver["postgres"] = map[string]any{"defaultQueryExecMode": v}
 			continue
 		}
 		driver[camel(k)] = v
@@ -273,6 +308,11 @@ func (c *compilation) workload() error {
 		}
 		w.Baseline = b
 	}
+	if c.out.Spec.ManagedYDB != nil {
+		w.YDBIAMCredentialsSecret = c.in.CredentialsSecret
+		w.URL = "grpcs://managed-ydb-pending:2135/?database=/pending"
+		url = w.URL
+	}
 	c.out.Spec.Workload = w
 	c.out.ClientURL = url
 	return nil
@@ -281,6 +321,9 @@ func (c *compilation) workload() error {
 // clientURL is the driver URL per protocol; the host is a placeholder the
 // pipeline resolves after provisioning.
 func (c *compilation) clientURL(conn map[string]any) (url, driverType string) {
+	if c.in.Database.Kind == catalog.External && c.in.Database.ExternalDSN != "" {
+		return c.in.Database.ExternalDSN, driverTypeOf(c.in.Workload.Protocol)
+	}
 	ep := c.in.Plan.Client
 	host := "127.0.0.1"
 	if ep.Role != "" {
@@ -295,15 +338,12 @@ func (c *compilation) clientURL(conn map[string]any) (url, driverType string) {
 	case catalog.ProtoPicodata:
 		return fmt.Sprintf("postgres://%s:%s@%s:%d?sslmode=disable", picodataUser, picodataPassword, host, ep.Port), "picodata"
 	case catalog.ProtoYDBGrpc:
-		return fmt.Sprintf("grpc://%s:%d%s", host, ep.Port, ydbDatabasePath), "ydb"
+		return fmt.Sprintf("grpc://%s:%d%s", host, ep.Port, strParam(c.params(), "database_path", ydbDatabasePath)), "ydb"
 	case catalog.ProtoYDBGrpcs:
-		return fmt.Sprintf("grpcs://%s:%d%s", host, ep.Port, ydbDatabasePath), "ydb"
+		return fmt.Sprintf("grpcs://%s:%d%s", host, ep.Port, strParam(c.params(), "database_path", ydbDatabasePath)), "ydb"
 	case catalog.ProtoCockroach:
 		return fmt.Sprintf("postgresql://root@%s:%d/%s?sslmode=disable", host, ep.Port, cockroachDatabase), "postgres"
 	default: // catalog.ProtoPg and anything external
-		if c.in.Database.Kind == catalog.External && c.in.Database.ExternalDSN != "" {
-			return c.in.Database.ExternalDSN, driverTypeOf(proto)
-		}
 		sslmode := "disable"
 		if v, ok := conn["sslmode"].(string); ok && v != "" {
 			sslmode = v
@@ -406,7 +446,7 @@ func (c *compilation) schemaFor(role, prefix string) string {
 		}
 		for _, id := range r.ConfigSchemas {
 			if strings.HasPrefix(id, prefix) {
-				return id
+				return kind.ConfigSchema(c.in.Database.Version, id)
 			}
 		}
 	}
@@ -423,10 +463,6 @@ func (c *compilation) add(containers ...spec.Container) {
 	c.out.Spec.Containers = append(c.out.Spec.Containers, containers...)
 }
 
-func (c *compilation) scrape(role, job, url string) {
-	c.out.Spec.Scrapes = append(c.out.Spec.Scrapes, spec.Scrape{Role: role, Job: job, URL: url})
-}
-
 // exporters adds node_exporter on every machine (the database exporters
 // live in the recipes).
 func (c *compilation) exporters() {
@@ -434,7 +470,10 @@ func (c *compilation) exporters() {
 		name := m.Name + "-node-exporter"
 		c.add(spec.Container{
 			Name: name, Role: m.Role, Machine: m.Name, Image: imageNodeExporter,
-			Cmd:     []string{"--path.rootfs=/host", fmt.Sprintf("--web.listen-address=:%d", nodeExporterPort)},
+			Cmd: []string{
+				"--path.rootfs=/host", "--path.procfs=/host/proc", "--path.sysfs=/host/sys",
+				"--path.udev.data=/host/run/udev/data", fmt.Sprintf("--web.listen-address=:%d", nodeExporterPort),
+			},
 			Mounts:  []spec.Mount{{Source: "/", Target: "/host", RO: true}},
 			Ports:   []spec.Port{{Container: nodeExporterPort, Host: nodeExporterPort}},
 			Scrape:  "/metrics",

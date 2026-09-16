@@ -1,0 +1,32 @@
+{
+  "run_id": "matrix-patroni-96794a09-pg15-patroni-ha",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 7210,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-patroni-96794a09-pg15-patroni-ha"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-1-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-1-postgres": 1590,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-1-postgres-exporter": 6,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-1-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-1-postgres": 99,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-1-postgres-exporter": 6,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-2-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-2-postgres": 421,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-db-replica-2-postgres-exporter": 7,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-1-etcd": 173,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-1-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-2-etcd": 2874,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-2-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-3-etcd": 178,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-etcd-3-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-proxy-1-haproxy": 13,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-proxy-1-node-exporter": 57,
+    "docker/4604db36-9572-4d2d-afe0-bfcfb95f3660-runner-1-node-exporter": 57
+  }
+}

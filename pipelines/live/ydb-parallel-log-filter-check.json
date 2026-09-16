@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T22:10:57.218682+00:00",
+  "scope": "Real saved candidate sets and negative mutations, isolated output; cleanup and full workflow acceptance are checked separately",
+  "classifier_sha256": "8724d5173f13edf63f781ba4aeaf13796a2854d30ac6a02d2af4c0ffe17367e3",
+  "schema_drop_cross_host_tolerance_seconds": 0.05,
+  "observed_26_3_source_after_client_step_ms": 26.869535446166992,
+  "clock_offset_measured": false,
+  "checks": [
+    {
+      "case": "positive-26.1",
+      "accepted": true,
+      "expected_acceptance": true
+    },
+    {
+      "case": "positive-26.2",
+      "accepted": true,
+      "expected_acceptance": true
+    },
+    {
+      "case": "positive-26.3",
+      "accepted": true,
+      "expected_acceptance": true
+    },
+    {
+      "case": "unknown-error",
+      "accepted": false,
+      "expected_acceptance": false
+    },
+    {
+      "case": "different-trace",
+      "accepted": false,
+      "expected_acceptance": false
+    },
+    {
+      "case": "different-session-actor",
+      "accepted": false,
+      "expected_acceptance": false
+    },
+    {
+      "case": "different-error-code",
+      "accepted": false,
+      "expected_acceptance": false
+    },
+    {
+      "case": "outside-drop-window",
+      "accepted": false,
+      "expected_acceptance": false
+    },
+    {
+      "case": "native-terminal-error",
+      "accepted": false,
+      "expected_acceptance": false
+    }
+  ]
+}

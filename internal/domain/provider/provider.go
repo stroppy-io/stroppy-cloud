@@ -36,21 +36,23 @@ const (
 
 // Profile is the record.
 type Profile struct {
-	ID               uuid.UUID
-	TenantID         uuid.UUID
-	Name             string
-	Kind             Kind
-	Settings         json.RawMessage
-	SecretNames      []string
-	Status           Status
-	StatusReason     string
-	VerifiedAt       *time.Time
-	VerifyRunID      string
-	Quotas           []Quota
-	QuotasObservedAt *time.Time
-	CreatedBy        *uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    Kind
+	Settings                json.RawMessage
+	SecretNames             []string
+	Status                  Status
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  []Quota
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
 }
 
 // Quota is one cached cloud limit.
@@ -73,7 +75,7 @@ type Repository interface {
 	Ready(ctx context.Context) ([]Profile, error)
 	Update(ctx context.Context, id uuid.UUID, name *string, settings json.RawMessage) error
 	SetStatus(ctx context.Context, id uuid.UUID, status Status, reason, runID string) error
-	SetQuotas(ctx context.Context, id uuid.UUID, quotas []Quota, observedAt time.Time) error
+	SetQuotas(ctx context.Context, id uuid.UUID, result QuotasResult) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
 }
 
@@ -100,8 +102,12 @@ type Permission struct {
 
 // QuotasResult is what the quota pipeline returns.
 type QuotasResult struct {
-	ObservedAt time.Time `json:"observed_at"`
-	Quotas     []Quota   `json:"quotas"`
+	// UnavailableReason is permission_denied when cloud quotas cannot be read.
+	// An unavailable snapshot has no quotas; provisioning still enforces limits.
+	UnavailableReason string    `json:"unavailable_reason,omitempty"`
+	Scope             string    `json:"scope,omitempty"`
+	ObservedAt        time.Time `json:"observed_at"`
+	Quotas            []Quota   `json:"quotas"`
 }
 
 // Pipelines runs the two probe pipelines in the tenant namespace and

@@ -1,0 +1,280 @@
+{
+  "suite_run_id": "ba8bf3ae-cafb-4fee-bebc-3644229972b2",
+  "tenant": "stroppy-live",
+  "concurrency": 1,
+  "defaults": {
+    "continue_on_failure": true
+  },
+  "cells": [
+    {
+      "id": "ydb-managed-serverless",
+      "run_spec": {
+        "run_id": "831948c0-6063-4e96-b60d-c7383d65b27a",
+        "tenant": "stroppy-live",
+        "provider": {
+          "kind": "yandex",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "zone": "ru-central1-a",
+            "platform_id": "standard-v3",
+            "public_ips": true,
+            "preemptible": false
+          },
+          "credentials_secret": "yc-sa-key",
+          "provider_config_name": "t-stroppy-live"
+        },
+        "network": {
+          "cidr": "10.130.0.0/24",
+          "allow_public_ips": true
+        },
+        "machines": [
+          {
+            "name": "runner-1",
+            "role": "runner",
+            "cpu": 4,
+            "memory_gb": 8,
+            "image": "ubuntu-2404-lts",
+            "location": "ru-central1-a",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            }
+          }
+        ],
+        "managed_ydb": {
+          "type": "serverless",
+          "location_id": "ru-central1",
+          "storage_size_limit_gb": 50
+        },
+        "containers": [
+          {
+            "name": "runner-1-node-exporter",
+            "role": "runner",
+            "machine": "runner-1",
+            "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "mounts": [
+              {
+                "source": "/",
+                "target": "/host",
+                "ro": true
+              }
+            ],
+            "scrape": "/metrics",
+            "restart": "always"
+          }
+        ],
+        "workload": {
+          "runner_role": "runner",
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:4d4716d5a28b80c3a912f93c0f3cb6f807664362b7b4639aa97860664f6438e9",
+          "driver_type": "ydb",
+          "url": "grpcs://managed-ydb-pending:2135/?database=/pending",
+          "segments": [
+            {
+              "name": "simple",
+              "workload": {
+                "script": "simple"
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "2m"
+              }
+            },
+            {
+              "name": "tpcb-tx",
+              "workload": {
+                "script": "tpcb/tx",
+                "scale_factor": 1,
+                "load_workers": 2,
+                "retry_attempts": 50
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "20s"
+              }
+            },
+            {
+              "name": "tpcc-tx",
+              "workload": {
+                "script": "tpcc/tx",
+                "scale_factor": 1,
+                "load_workers": 2,
+                "retry_attempts": 50
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "20s"
+              }
+            }
+          ],
+          "ydb_iam_credentials_secret": "yc-sa-key"
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "observability": {
+          "otlp_endpoint": "https://otel.stroppy.io",
+          "labels": {
+            "campaign": "native-tps-otlp"
+          }
+        }
+      }
+    },
+    {
+      "id": "ydb-managed-dedicated-medium",
+      "run_spec": {
+        "run_id": "15ed779b-4073-4b77-b50f-668816033258",
+        "tenant": "stroppy-live",
+        "provider": {
+          "kind": "yandex",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "zone": "ru-central1-a",
+            "platform_id": "standard-v3",
+            "public_ips": true,
+            "preemptible": false
+          },
+          "credentials_secret": "yc-sa-key",
+          "provider_config_name": "t-stroppy-live"
+        },
+        "network": {
+          "cidr": "10.130.0.0/24",
+          "allow_public_ips": true
+        },
+        "machines": [
+          {
+            "name": "runner-1",
+            "role": "runner",
+            "cpu": 4,
+            "memory_gb": 8,
+            "image": "ubuntu-2404-lts",
+            "location": "ru-central1-a",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            }
+          }
+        ],
+        "managed_ydb": {
+          "zones": [
+            "ru-central1-a",
+            "ru-central1-b",
+            "ru-central1-d"
+          ],
+          "type": "dedicated",
+          "location_id": "ru-central1",
+          "resource_preset_id": "medium",
+          "node_count": 3,
+          "storage_groups": 1,
+          "storage_type": "ssd"
+        },
+        "containers": [
+          {
+            "name": "runner-1-node-exporter",
+            "role": "runner",
+            "machine": "runner-1",
+            "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "mounts": [
+              {
+                "source": "/",
+                "target": "/host",
+                "ro": true
+              }
+            ],
+            "scrape": "/metrics",
+            "restart": "always"
+          }
+        ],
+        "workload": {
+          "runner_role": "runner",
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:4d4716d5a28b80c3a912f93c0f3cb6f807664362b7b4639aa97860664f6438e9",
+          "driver_type": "ydb",
+          "url": "grpcs://managed-ydb-pending:2135/?database=/pending",
+          "segments": [
+            {
+              "name": "simple",
+              "workload": {
+                "script": "simple"
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "2m"
+              }
+            },
+            {
+              "name": "tpcb-tx",
+              "workload": {
+                "script": "tpcb/tx",
+                "scale_factor": 1,
+                "load_workers": 2,
+                "retry_attempts": 50
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "20s"
+              }
+            },
+            {
+              "name": "tpcc-tx",
+              "workload": {
+                "script": "tpcc/tx",
+                "scale_factor": 1,
+                "load_workers": 2,
+                "retry_attempts": 50
+              },
+              "run": {
+                "executor": "constant-vus",
+                "vus": 2,
+                "duration": "20s"
+              }
+            }
+          ],
+          "ydb_iam_credentials_secret": "yc-sa-key"
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "observability": {
+          "otlp_endpoint": "https://otel.stroppy.io",
+          "labels": {
+            "campaign": "native-tps-otlp"
+          }
+        }
+      }
+    }
+  ]
+}

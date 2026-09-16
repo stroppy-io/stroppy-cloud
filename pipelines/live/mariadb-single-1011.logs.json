@@ -1,0 +1,26 @@
+{
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-single-1011",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 1046,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-maria-monitor-e4a0fdb4-mariadb-single-1011"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/5c5993e8-0e84-4300-8bf7-1762ae58968e-db-1-mariadb": 71,
+    "docker/5c5993e8-0e84-4300-8bf7-1762ae58968e-db-1-mysqld-exporter": 10,
+    "docker/5c5993e8-0e84-4300-8bf7-1762ae58968e-db-1-node-exporter": 57,
+    "docker/5c5993e8-0e84-4300-8bf7-1762ae58968e-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T12:21:18.600478025Z",
+    "end": "2026-09-15T12:25:06.222631023Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks"
+}

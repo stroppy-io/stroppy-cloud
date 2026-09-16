@@ -1,0 +1,23 @@
+{
+  "ok": true,
+  "account_id": "b1gt6m4l9gfhaobcgb81",
+  "scope": "folder:b1ghttqg66t14ldkvfcq",
+  "permissions": [
+    {
+      "name": "resource-manager.folders.get",
+      "granted": true
+    },
+    {
+      "name": "compute.instances.list",
+      "granted": true
+    },
+    {
+      "name": "vpc.networks.list",
+      "granted": true
+    },
+    {
+      "name": "compute.images.list",
+      "granted": true
+    }
+  ]
+}

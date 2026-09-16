@@ -1,0 +1,177 @@
+{
+  "run_id": "matrix-maria-3d24d9a0-maria114-single",
+  "source": "Graphene metrics API backed by the persistent metrics store",
+  "query_range": {
+    "start": "2026-09-15T08:20:27.506697+00:00",
+    "end": "2026-09-15T08:43:21.087759+00:00"
+  },
+  "series_count": 4282,
+  "exporter_runs_observed": [
+    "matrix-maria-3d24d9a0-maria114-single"
+  ],
+  "exporter_agents_observed": [
+    "c272ed1d-db-1",
+    "c272ed1d-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-mysqld-exporter": {
+      "metric_names": 813
+    },
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-mysqld-exporter": {
+      "mysql_up": {
+        "min": 1.0,
+        "max": 1.0
+      }
+    }
+  },
+  "replication": {},
+  "database_versions": {
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-mysqld-exporter": {
+      "version": "11.4.13-MariaDB-ubu2404-log",
+      "version_comment": "mariadb.org binary distribution"
+    }
+  },
+  "disk_info": [
+    {
+      "entity": "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fhm3rbornu7d6a6qligp",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fhm5n8ltskrruu8e1880",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "transfer_activity_attempts_observed": [
+    "1"
+  ]
+}

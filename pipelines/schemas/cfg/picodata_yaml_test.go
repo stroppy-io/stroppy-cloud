@@ -74,6 +74,18 @@ func TestPicodata25(t *testing.T) {
 	dontWantLines(t, out, "  iproto:\n", "pgproto", "system_memory", "wal_dir", "replication_mode")
 }
 
+func TestPicodata261(t *testing.T) {
+	schematest.Run(t, Picodata261(), schematest.Cases{
+		Valid: []map[string]any{{}, picodataFull()},
+		Invalid: append(picodataInvalid(), schematest.Invalid{
+			Value: map[string]any{"tiers": []any{map[string]any{"name": "default", "replication_mode": "sync"}}},
+			Code: "UNKNOWN_FIELD",
+		}),
+		Render: "conf", Contains: []string{"  iproto:\n", "  pgproto:\n", "    system_memory:"},
+	})
+	dontWantLines(t, renderDefaults(t, Picodata261()), "replication_mode:", "wal_mode:")
+}
+
 func TestPicodata26(t *testing.T) {
 	full := picodataFull()
 	full["memtx_system_memory"] = "512M"

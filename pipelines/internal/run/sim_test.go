@@ -2,6 +2,7 @@ package run
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -94,6 +95,13 @@ func newSim(t *testing.T) *sim {
 	s := &sim{w: w, objects: k8stest.Install(w)}
 	dockertest.Install(w, "28.5.2")
 	// Run-queue contracts of the pipeline itself.
+	pipelinetest.Handle1(w, activities.NameResolveYandexImages, func(_ workflow.Context, req activities.ResolveYandexImagesRequest) (activities.ResolveYandexImagesResult, error) {
+		images := make(map[string]string, len(req.Images))
+		for _, family := range req.Images {
+			images[family] = "fd8d6s0blceqbto92ss8"
+		}
+		return activities.ResolveYandexImagesResult{Images: images}, nil
+	})
 	pipelinetest.Handle1(w, activities.NameEnsureProviderConfig, func(_ workflow.Context, req activities.EnsureProviderConfigRequest) (activities.EnsureProviderConfigResult, error) {
 		s.configs = append(s.configs, req)
 		if s.configErr != nil {
@@ -171,9 +179,11 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 	s.w.OnAgentActivity(db, activities.NameWriteFiles, mock.Anything, mock.MatchedBy(func(req activities.WriteFilesRequest) bool {
 		return req.Dir == filesDir && len(req.Files) == 1 && req.Files[0].Path == "postgres/etc/postgresql/postgresql.conf"
 	})).Return(activities.WriteFilesResult{Paths: []string{"/ws/containers/postgres/etc/postgresql/postgresql.conf"}}, nil).Once()
-	s.w.OnAgentActivity(db, activities.NamePullImage, mock.Anything, activities.PullImageRequest{Image: "postgres:17"}).Return(activities.PullImageResult{Image: "postgres:17"}, nil).Once()
+	s.w.OnAgentActivity(db, activities.NamePullImage, mock.Anything, activities.PullImageRequest{Image: "postgres:17"}).
+		Run(func(mock.Arguments) { requireDockerReady(t, s.w, db) }).
+		Return(activities.PullImageResult{Image: "postgres:17"}, nil).Once()
 	s.w.OnAgentActivity(db, activities.NameWaitHealthy, mock.Anything, mock.MatchedBy(func(req activities.WaitHealthyRequest) bool {
-		return req.Container == "postgres" && req.Cmd[0] == "pg_isready"
+		return req.Container == run.RunID+"-postgres" && req.Cmd[0] == "pg_isready"
 	})).Return(activities.WaitHealthyResult{Attempts: 2}, nil).Once()
 
 	// runner machine: baseline then the segment, both one-shot.
@@ -187,7 +197,7 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 	s.w.OnAgentActivity(runner, activities.NameRunSegment, mock.Anything, mock.MatchedBy(func(req activities.RunSegmentRequest) bool {
 		segmentReq = req
 		return req.Segment.Name == "load"
-	})).Return(activities.RunSegmentResult{
+	})).Run(func(mock.Arguments) { requireDockerReady(t, s.w, runner) }).Return(activities.RunSegmentResult{
 		Result: spec.SegmentResult{
 			Name: "load", Status: spec.SegmentCompleted,
 			StartedAt: time.Date(2026, 9, 9, 12, 0, 0, 0, time.UTC), FinishedAt: time.Date(2026, 9, 9, 12, 0, 30, 0, time.UTC),
@@ -215,7 +225,7 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 	// Result: summary from the segment, baseline attached, artifacts uploaded.
 	require.Len(t, result.Segments, 1)
 	require.Equal(t, spec.SegmentCompleted, result.Segments[0].Status)
-	require.InDelta(t, 100, result.Summary.TPS, 0.01)
+	require.Zero(t, result.Summary.TPS, "iterations and activity time do not provide Stroppy TPS")
 	require.Equal(t, 12.5, result.Summary.LatencyP99Ms)
 	require.NotNil(t, result.Baseline)
 	require.True(t, result.Baseline.OK)
@@ -236,8 +246,35 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 		events.PhaseStarted, events.ResultPublished, events.PhaseFinished,
 	}, s.events)
 
-	// Everything the run created is gone: no keep, so the cascade ran.
+	// Infrastructure is gone; artifact records survive independently until TTL.
 	require.Equal(t, "success", s.w.Outcome(ref.OwnerRef("run/test-"+string(PipelineID))))
+	vm, _ := s.w.Resource(ref.OwnerRef(ycInstanceKind + "/" + provision.NewNames(run.Tenant, run.RunID).Machine("runner-1")))
+	require.Equal(t, "deleted", vm.Phase)
+	for _, name := range result.Artifacts {
+		a, ok := s.w.Resource(ref.OwnerRef(name))
+		require.True(t, ok)
+		require.Equal(t, "ready", a.Phase)
+		require.True(t, strings.HasPrefix(string(a.Owner), "stand/"))
+		if strings.HasSuffix(name, "-config") {
+			require.True(t, a.KeepUntil.IsZero())
+		} else {
+			require.True(t, s.w.Env.Now().Add(logArtifactRetention).Equal(a.KeepUntil))
+		}
+	}
+	s.w.Advance(logArtifactRetention - time.Hour)
+	for _, name := range result.Artifacts {
+		a, _ := s.w.Resource(ref.OwnerRef(name))
+		require.Equal(t, "ready", a.Phase)
+	}
+	s.w.Advance(2 * time.Hour)
+	for _, name := range result.Artifacts {
+		a, _ := s.w.Resource(ref.OwnerRef(name))
+		if strings.HasSuffix(name, "-config") {
+			require.Equal(t, "ready", a.Phase)
+		} else {
+			require.Equal(t, "deleted", a.Phase)
+		}
+	}
 	s.w.AssertNoLeaks(t)
 }
 
@@ -310,5 +347,31 @@ func TestSimulatedRunCancelDuringProvisioning(t *testing.T) {
 	s.w.Env.ExecuteWorkflow(wf, run)
 	require.Error(t, s.w.Env.GetWorkflowError())
 	require.Equal(t, "canceled", s.w.Outcome(ref.OwnerRef("run/test-"+string(PipelineID))))
+	s.w.AssertNoLeaks(t)
+}
+
+func requireDockerReady(t *testing.T, w *pipelinetest.World, agent id.AgentId) {
+	t.Helper()
+	for _, capability := range w.AgentState(agent).Capabilities {
+		if capability.Name == "docker" && capability.Ready {
+			return
+		}
+	}
+	t.Fatal("Docker must be ready before pulling images or running the workload")
+}
+
+func TestSimulatedRunDockerInstallFailureCleans(t *testing.T) {
+	s := newSim(t)
+	run := noopRun()
+	wf := pipelinetestWorkflow(s)
+	s.converge(t, run, map[string]string{"runner-1": "10.130.0.20"})
+	s.w.Handle("docker.install", func(workflow.Context, []any) (any, error) {
+		return nil, errors.New("package repository unavailable")
+	})
+	s.w.Env.ExecuteWorkflow(wf, run)
+	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "prepare docker")
+	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "package repository unavailable")
+	require.NotContains(t, s.events, events.SegmentStarted)
+	require.Contains(t, s.events, events.PhaseFailed)
 	s.w.AssertNoLeaks(t)
 }

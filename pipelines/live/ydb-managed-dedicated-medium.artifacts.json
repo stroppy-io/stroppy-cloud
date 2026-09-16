@@ -1,0 +1,50 @@
+[
+  {
+    "ref": "artifact/ae64fb8a-stroppy-simple-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:5b0bf1b3a4b1056e73627067c5fbc877df0389fefae0ff83bdbbf45222273484",
+    "location": "blobs/5b0bf1b3a4b1056e73627067c5fbc877df0389fefae0ff83bdbbf45222273484",
+    "size": 976
+  },
+  {
+    "ref": "artifact/ae64fb8a-stroppy-simple-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T18:25:16.743324973Z",
+    "digest": "sha256:f050b204e9ae7f6713aef1b76b3f7efd45ae5c30df4dd8547fba98b66793f960",
+    "location": "blobs/f050b204e9ae7f6713aef1b76b3f7efd45ae5c30df4dd8547fba98b66793f960",
+    "size": 2711
+  },
+  {
+    "ref": "artifact/ae64fb8a-stroppy-tpcb-tx-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:91d765f643f4479701e950f6cc553c08e3ce0364be93e5b4f446916533458626",
+    "location": "blobs/91d765f643f4479701e950f6cc553c08e3ce0364be93e5b4f446916533458626",
+    "size": 1064
+  },
+  {
+    "ref": "artifact/ae64fb8a-stroppy-tpcb-tx-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T18:25:19.522868871Z",
+    "digest": "sha256:88f77fb23a05c0301f85d5555eb8fcc2e55dced43284ef3dd60b4a568f47032e",
+    "location": "blobs/88f77fb23a05c0301f85d5555eb8fcc2e55dced43284ef3dd60b4a568f47032e",
+    "size": 5311
+  },
+  {
+    "ref": "artifact/ae64fb8a-stroppy-tpcc-tx-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:11c6d49659f714b8517e42f71535a09c5f97c696fab7b480b07b9e078c72809c",
+    "location": "blobs/11c6d49659f714b8517e42f71535a09c5f97c696fab7b480b07b9e078c72809c",
+    "size": 1064
+  },
+  {
+    "ref": "artifact/ae64fb8a-stroppy-tpcc-tx-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T18:25:22.259422166Z",
+    "digest": "sha256:da8f01cd36c9ace2530c6a7579c4c8df759e84d7a6583a1935629ffecd9994f1",
+    "location": "blobs/da8f01cd36c9ace2530c6a7579c4c8df759e84d7a6583a1935629ffecd9994f1",
+    "size": 12229
+  }
+]

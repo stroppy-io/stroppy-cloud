@@ -1,501 +1,501 @@
 {
-  "id":  {
-    "namespace":  "system",
-    "name":  "stroppy_catalog",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "system",
+    "name": "stroppy_catalog",
+    "version": "v1.0.0"
   },
-  "description":  "Platform catalog of stroppy versions, their images, protocols and workload scripts.",
-  "fields":  [
+  "description": "Platform catalog of stroppy versions, their images, protocols and workload scripts.",
+  "fields": [
     {
-      "name":  "source",
-      "description":  "Where the catalog came from: hand-written, read from a stroppy release, or probed.",
-      "choice":  {
-        "options":  [
+      "name": "source",
+      "description": "Where the catalog came from: hand-written, read from a stroppy release, or probed.",
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "static"
+            "value": {
+              "stringValue": "static"
             },
-            "label":  "Static (admin-edited)"
+            "label": "Static (admin-edited)"
           },
           {
-            "value":  {
-              "stringValue":  "release"
+            "value": {
+              "stringValue": "release"
             },
-            "label":  "Stroppy release"
+            "label": "Stroppy release"
           },
           {
-            "value":  {
-              "stringValue":  "probe"
+            "value": {
+              "stringValue": "probe"
             },
-            "label":  "Probed from a binary"
+            "label": "Probed from a binary"
           }
         ],
-        "default":  {
-          "stringValue":  "static"
+        "default": {
+          "stringValue": "static"
         }
       },
-      "group":  "Catalog",
-      "title":  "Source"
+      "group": "Catalog",
+      "title": "Source"
     },
     {
-      "name":  "versions",
-      "description":  "Every stroppy build the platform offers.",
-      "required":  true,
-      "list":  {
-        "items":  [
+      "name": "versions",
+      "description": "Every stroppy build the platform offers.",
+      "required": true,
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "version",
-                    "description":  "Stroppy build: a release (6.0.0) or a nightly of one commit (nightly-<sha>). 6.0.0 is the minimum.",
-                    "required":  true,
-                    "rules":  [
+                    "name": "version",
+                    "description": "Stroppy build: a release (6.0.0) or a nightly of one commit (nightly-<sha>). 6.0.0 is the minimum.",
+                    "required": true,
+                    "rules": [
                       {
-                        "expr":  "!this.matches(\"^[0-5]\\\\.\")",
-                        "message":  "stroppy releases before 6.0.0 are not supported",
-                        "id":  "min-v6"
+                        "expr": "!this.matches(\"^[0-5]\\\\.\")",
+                        "message": "stroppy releases before 6.0.0 are not supported",
+                        "id": "min-v6"
                       }
                     ],
-                    "string":  {
-                      "maxLen":  "64",
-                      "pattern":  "^(\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?|nightly-[0-9a-f]{7,40})$"
+                    "string": {
+                      "maxLen": "64",
+                      "pattern": "^(\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?|nightly-[0-9a-f]{7,40})$"
                     },
-                    "title":  "Version"
+                    "title": "Version"
                   },
                   {
-                    "name":  "image",
-                    "description":  "Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.0.0.62.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "512"
+                    "name": "image",
+                    "description": "Docker image of that build, e.g. ghcr.io/stroppy-io/stroppy:v6.0.0.62.",
+                    "required": true,
+                    "string": {
+                      "minLen": "1",
+                      "maxLen": "512"
                     },
-                    "title":  "Image"
+                    "title": "Image"
                   },
                   {
-                    "name":  "baseline",
-                    "description":  "The build ships `stroppy baseline` (6.0.0+); lets the workload form offer the runner self-check.",
-                    "bool":  {
-                      "default":  true
+                    "name": "baseline",
+                    "description": "The build ships `stroppy baseline` (6.0.0+); lets the workload form offer the runner self-check.",
+                    "bool": {
+                      "default": true
                     },
-                    "title":  "Has baseline"
+                    "title": "Has baseline"
                   },
                   {
-                    "name":  "default",
-                    "description":  "The version a new workload starts with; exactly one version carries it.",
-                    "bool":  {
-                      "default":  false
+                    "name": "default",
+                    "description": "The version a new workload starts with; exactly one version carries it.",
+                    "bool": {
+                      "default": false
                     },
-                    "title":  "Default"
+                    "title": "Default"
                   },
                   {
-                    "name":  "deprecated",
-                    "description":  "Still runnable, hidden from the picker for new workloads.",
-                    "bool":  {
-                      "default":  false
+                    "name": "deprecated",
+                    "description": "Still runnable, hidden from the picker for new workloads.",
+                    "bool": {
+                      "default": false
                     },
-                    "title":  "Deprecated"
+                    "title": "Deprecated"
                   },
                   {
-                    "name":  "protocols",
-                    "description":  "Database protocols this build has drivers for.",
-                    "required":  true,
-                    "list":  {
-                      "items":  [
+                    "name": "protocols",
+                    "description": "Database protocols this build has drivers for.",
+                    "required": true,
+                    "list": {
+                      "items": [
                         {
-                          "choice":  {
-                            "options":  [
+                          "choice": {
+                            "options": [
                               {
-                                "value":  {
-                                  "stringValue":  "pg"
+                                "value": {
+                                  "stringValue": "pg"
                                 },
-                                "label":  "PostgreSQL"
+                                "label": "PostgreSQL"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "mysql"
+                                "value": {
+                                  "stringValue": "mysql"
                                 },
-                                "label":  "MySQL / MariaDB"
+                                "label": "MySQL / MariaDB"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "picodata"
+                                "value": {
+                                  "stringValue": "picodata"
                                 },
-                                "label":  "Picodata (pgproto)"
+                                "label": "Picodata (pgproto)"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "ydb_grpc"
+                                "value": {
+                                  "stringValue": "ydb_grpc"
                                 },
-                                "label":  "YDB (grpc)"
+                                "label": "YDB (grpc)"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "ydb_grpcs"
+                                "value": {
+                                  "stringValue": "ydb_grpcs"
                                 },
-                                "label":  "YDB (grpcs, TLS)"
+                                "label": "YDB (grpcs, TLS)"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "cockroach"
+                                "value": {
+                                  "stringValue": "cockroach"
                                 },
-                                "label":  "CockroachDB (pgproto)"
+                                "label": "CockroachDB (pgproto)"
                               },
                               {
-                                "value":  {
-                                  "stringValue":  "noop"
+                                "value": {
+                                  "stringValue": "noop"
                                 },
-                                "label":  "Noop (framework ceiling)"
+                                "label": "Noop (framework ceiling)"
                               }
                             ]
                           }
                         }
                       ],
-                      "minItems":  "1",
-                      "maxItems":  "16",
-                      "unique":  true
+                      "minItems": "1",
+                      "maxItems": "16",
+                      "unique": true
                     },
-                    "title":  "Protocols"
+                    "title": "Protocols"
                   },
                   {
-                    "name":  "scripts",
-                    "description":  "Workload scripts this build ships.",
-                    "required":  true,
-                    "list":  {
-                      "items":  [
+                    "name": "scripts",
+                    "description": "Workload scripts this build ships.",
+                    "required": true,
+                    "list": {
+                      "items": [
                         {
-                          "object":  {
-                            "schema":  {
-                              "fields":  [
+                          "object": {
+                            "schema": {
+                              "fields": [
                                 {
-                                  "name":  "id",
-                                  "description":  "Workload script id as passed to `stroppy run`.",
-                                  "required":  true,
-                                  "string":  {
-                                    "maxLen":  "128",
-                                    "pattern":  "^[a-z0-9_]+(/[a-z0-9_]+)*$"
+                                  "name": "id",
+                                  "description": "Workload script id as passed to `stroppy run`.",
+                                  "required": true,
+                                  "string": {
+                                    "maxLen": "128",
+                                    "pattern": "^[a-z0-9_]+(/[a-z0-9_]+)*$"
                                   },
-                                  "title":  "Script id",
-                                  "examples":  [
+                                  "title": "Script id",
+                                  "examples": [
                                     {
-                                      "stringValue":  "tpcc/tx"
+                                      "stringValue": "tpcc/tx"
                                     },
                                     {
-                                      "stringValue":  "tpch/tx"
+                                      "stringValue": "tpch/tx"
                                     }
                                   ]
                                 },
                                 {
-                                  "name":  "title",
-                                  "required":  true,
-                                  "string":  {
-                                    "minLen":  "1",
-                                    "maxLen":  "128"
+                                  "name": "title",
+                                  "required": true,
+                                  "string": {
+                                    "minLen": "1",
+                                    "maxLen": "128"
                                   },
-                                  "title":  "Title"
+                                  "title": "Title"
                                 },
                                 {
-                                  "name":  "description",
-                                  "string":  {
-                                    "maxLen":  "2048"
+                                  "name": "description",
+                                  "string": {
+                                    "maxLen": "2048"
                                   },
-                                  "title":  "Description"
+                                  "title": "Description"
                                 },
                                 {
-                                  "name":  "protocols",
-                                  "description":  "Protocols this script runs on; procs variants are pg/mysql only.",
-                                  "list":  {
-                                    "items":  [
+                                  "name": "protocols",
+                                  "description": "Protocols this script runs on; procs variants are pg/mysql only.",
+                                  "list": {
+                                    "items": [
                                       {
-                                        "choice":  {
-                                          "options":  [
+                                        "choice": {
+                                          "options": [
                                             {
-                                              "value":  {
-                                                "stringValue":  "pg"
+                                              "value": {
+                                                "stringValue": "pg"
                                               },
-                                              "label":  "PostgreSQL"
+                                              "label": "PostgreSQL"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "mysql"
+                                              "value": {
+                                                "stringValue": "mysql"
                                               },
-                                              "label":  "MySQL / MariaDB"
+                                              "label": "MySQL / MariaDB"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "picodata"
+                                              "value": {
+                                                "stringValue": "picodata"
                                               },
-                                              "label":  "Picodata (pgproto)"
+                                              "label": "Picodata (pgproto)"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "ydb_grpc"
+                                              "value": {
+                                                "stringValue": "ydb_grpc"
                                               },
-                                              "label":  "YDB (grpc)"
+                                              "label": "YDB (grpc)"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "ydb_grpcs"
+                                              "value": {
+                                                "stringValue": "ydb_grpcs"
                                               },
-                                              "label":  "YDB (grpcs, TLS)"
+                                              "label": "YDB (grpcs, TLS)"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "cockroach"
+                                              "value": {
+                                                "stringValue": "cockroach"
                                               },
-                                              "label":  "CockroachDB (pgproto)"
+                                              "label": "CockroachDB (pgproto)"
                                             },
                                             {
-                                              "value":  {
-                                                "stringValue":  "noop"
+                                              "value": {
+                                                "stringValue": "noop"
                                               },
-                                              "label":  "Noop (framework ceiling)"
+                                              "label": "Noop (framework ceiling)"
                                             }
                                           ]
                                         }
                                       }
                                     ],
-                                    "maxItems":  "16",
-                                    "unique":  true
+                                    "maxItems": "16",
+                                    "unique": true
                                   },
-                                  "title":  "Protocols"
+                                  "title": "Protocols"
                                 },
                                 {
-                                  "name":  "steps",
-                                  "description":  "Steps the script declares; the segment form filters on them.",
-                                  "required":  true,
-                                  "list":  {
-                                    "items":  [
+                                  "name": "steps",
+                                  "description": "Steps the script declares; the segment form filters on them.",
+                                  "required": true,
+                                  "list": {
+                                    "items": [
                                       {
-                                        "object":  {
-                                          "schema":  {
-                                            "fields":  [
+                                        "object": {
+                                          "schema": {
+                                            "fields": [
                                               {
-                                                "name":  "id",
-                                                "required":  true,
-                                                "string":  {
-                                                  "maxLen":  "64",
-                                                  "pattern":  "^[a-z][a-z0-9_]*$"
+                                                "name": "id",
+                                                "required": true,
+                                                "string": {
+                                                  "maxLen": "64",
+                                                  "pattern": "^[a-z][a-z0-9_]*$"
                                                 },
-                                                "title":  "Step id"
+                                                "title": "Step id"
                                               },
                                               {
-                                                "name":  "title",
-                                                "string":  {
-                                                  "maxLen":  "128"
+                                                "name": "title",
+                                                "string": {
+                                                  "maxLen": "128"
                                                 },
-                                                "title":  "Title"
+                                                "title": "Title"
                                               },
                                               {
-                                                "name":  "phase",
-                                                "description":  "Where the step sits in a run: preparing, measuring, cleaning up.",
-                                                "choice":  {
-                                                  "options":  [
+                                                "name": "phase",
+                                                "description": "Where the step sits in a run: preparing, measuring, cleaning up.",
+                                                "choice": {
+                                                  "options": [
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "bootstrap"
+                                                      "value": {
+                                                        "stringValue": "bootstrap"
                                                       },
-                                                      "label":  "Bootstrap"
+                                                      "label": "Bootstrap"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "workload"
+                                                      "value": {
+                                                        "stringValue": "workload"
                                                       },
-                                                      "label":  "Workload"
+                                                      "label": "Workload"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "teardown"
+                                                      "value": {
+                                                        "stringValue": "teardown"
                                                       },
-                                                      "label":  "Teardown"
+                                                      "label": "Teardown"
                                                     }
                                                   ],
-                                                  "default":  {
-                                                    "stringValue":  "workload"
+                                                  "default": {
+                                                    "stringValue": "workload"
                                                   }
                                                 },
-                                                "title":  "Phase"
+                                                "title": "Phase"
                                               }
                                             ],
-                                            "strict":  true
+                                            "strict": true
                                           }
                                         }
                                       }
                                     ],
-                                    "maxItems":  "64"
+                                    "maxItems": "64"
                                   },
-                                  "title":  "Steps"
+                                  "title": "Steps"
                                 },
                                 {
-                                  "name":  "params",
-                                  "description":  "Typed parameters the script declares, as probed from the build; the segment form is generated from the known ones and passes the rest through extra_params.",
-                                  "list":  {
-                                    "items":  [
+                                  "name": "params",
+                                  "description": "Typed parameters the script declares, as probed from the build; the segment form is generated from the known ones and passes the rest through extra_params.",
+                                  "list": {
+                                    "items": [
                                       {
-                                        "object":  {
-                                          "schema":  {
-                                            "fields":  [
+                                        "object": {
+                                          "schema": {
+                                            "fields": [
                                               {
-                                                "name":  "name",
-                                                "description":  "Typed parameter flag without dashes (load-workers).",
-                                                "required":  true,
-                                                "string":  {
-                                                  "maxLen":  "64",
-                                                  "pattern":  "^[a-z][a-z0-9-]*$"
+                                                "name": "name",
+                                                "description": "Typed parameter flag without dashes (load-workers).",
+                                                "required": true,
+                                                "string": {
+                                                  "maxLen": "64",
+                                                  "pattern": "^[a-z][a-z0-9-]*$"
                                                 },
-                                                "title":  "Flag name"
+                                                "title": "Flag name"
                                               },
                                               {
-                                                "name":  "config",
-                                                "description":  "Key of the stroppy-config.json params object (loadWorkers).",
-                                                "required":  true,
-                                                "string":  {
-                                                  "maxLen":  "64",
-                                                  "pattern":  "^[a-z][A-Za-z0-9]*$"
+                                                "name": "config",
+                                                "description": "Key of the stroppy-config.json params object (loadWorkers).",
+                                                "required": true,
+                                                "string": {
+                                                  "maxLen": "64",
+                                                  "pattern": "^[a-z][A-Za-z0-9]*$"
                                                 },
-                                                "title":  "Config key"
+                                                "title": "Config key"
                                               },
                                               {
-                                                "name":  "scope",
-                                                "choice":  {
-                                                  "options":  [
+                                                "name": "scope",
+                                                "choice": {
+                                                  "options": [
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "run"
+                                                      "value": {
+                                                        "stringValue": "run"
                                                       },
-                                                      "label":  "Scenario (run)"
+                                                      "label": "Scenario (run)"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "workload"
+                                                      "value": {
+                                                        "stringValue": "workload"
                                                       },
-                                                      "label":  "Workload"
+                                                      "label": "Workload"
                                                     }
                                                   ],
-                                                  "default":  {
-                                                    "stringValue":  "workload"
+                                                  "default": {
+                                                    "stringValue": "workload"
                                                   }
                                                 },
-                                                "title":  "Scope"
+                                                "title": "Scope"
                                               },
                                               {
-                                                "name":  "type",
-                                                "required":  true,
-                                                "choice":  {
-                                                  "options":  [
+                                                "name": "type",
+                                                "required": true,
+                                                "choice": {
+                                                  "options": [
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "string"
+                                                      "value": {
+                                                        "stringValue": "string"
                                                       },
-                                                      "label":  "string"
+                                                      "label": "string"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "bool"
+                                                      "value": {
+                                                        "stringValue": "bool"
                                                       },
-                                                      "label":  "bool"
+                                                      "label": "bool"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "int"
+                                                      "value": {
+                                                        "stringValue": "int"
                                                       },
-                                                      "label":  "int"
+                                                      "label": "int"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "int64"
+                                                      "value": {
+                                                        "stringValue": "int64"
                                                       },
-                                                      "label":  "int64"
+                                                      "label": "int64"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "float64"
+                                                      "value": {
+                                                        "stringValue": "float64"
                                                       },
-                                                      "label":  "float64"
+                                                      "label": "float64"
                                                     },
                                                     {
-                                                      "value":  {
-                                                        "stringValue":  "duration"
+                                                      "value": {
+                                                        "stringValue": "duration"
                                                       },
-                                                      "label":  "duration"
+                                                      "label": "duration"
                                                     }
                                                   ]
                                                 },
-                                                "title":  "Type"
+                                                "title": "Type"
                                               },
                                               {
-                                                "name":  "description",
-                                                "string":  {
-                                                  "maxLen":  "1024"
+                                                "name": "description",
+                                                "string": {
+                                                  "maxLen": "1024"
                                                 },
-                                                "title":  "Description"
+                                                "title": "Description"
                                               },
                                               {
-                                                "name":  "default",
-                                                "description":  "Declared default as stroppy reports it; null when contextual.",
-                                                "nullable":  true,
-                                                "json":  {},
-                                                "title":  "Default"
+                                                "name": "default",
+                                                "description": "Declared default as stroppy reports it; null when contextual.",
+                                                "nullable": true,
+                                                "json": {},
+                                                "title": "Default"
                                               },
                                               {
-                                                "name":  "default_description",
-                                                "string":  {
-                                                  "maxLen":  "256"
+                                                "name": "default_description",
+                                                "string": {
+                                                  "maxLen": "256"
                                                 },
-                                                "title":  "Default rule"
+                                                "title": "Default rule"
                                               },
                                               {
-                                                "name":  "env",
-                                                "description":  "Legacy environment variable of the parameter.",
-                                                "string":  {
-                                                  "maxLen":  "64",
-                                                  "pattern":  "^[A-Z][A-Z0-9_]*$"
+                                                "name": "env",
+                                                "description": "Legacy environment variable of the parameter.",
+                                                "string": {
+                                                  "maxLen": "64",
+                                                  "pattern": "^[A-Z][A-Z0-9_]*$"
                                                 },
-                                                "title":  "Env name"
+                                                "title": "Env name"
                                               }
                                             ],
-                                            "strict":  true
+                                            "strict": true
                                           }
                                         }
                                       }
                                     ],
-                                    "maxItems":  "64"
+                                    "maxItems": "64"
                                   },
-                                  "title":  "Parameters"
+                                  "title": "Parameters"
                                 }
                               ],
-                              "strict":  true
+                              "strict": true
                             }
                           }
                         }
                       ],
-                      "minItems":  "1",
-                      "maxItems":  "128"
+                      "minItems": "1",
+                      "maxItems": "128"
                     },
-                    "title":  "Scripts"
+                    "title": "Scripts"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "minItems":  "1",
-        "maxItems":  "64"
+        "minItems": "1",
+        "maxItems": "64"
       },
-      "group":  "Catalog",
-      "title":  "Versions"
+      "group": "Catalog",
+      "title": "Versions"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "!(\"versions\" in root) || size(root.versions.filter(v, v.default)) == 1",
-      "message":  "exactly one version must be the default",
-      "id":  "exactly-one-default"
+      "expr": "!(\"versions\" in root) || size(root.versions.filter(v, v.default)) == 1",
+      "message": "exactly one version must be the default",
+      "id": "exactly-one-default"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

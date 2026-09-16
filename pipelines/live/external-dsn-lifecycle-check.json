@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "fixture_run_id": "external-fixture-d4c89905",
+  "run_id": "external-dsn-7383cd13",
+  "checked_at": "2026-09-15T20:54:58.087202+00:00",
+  "external_machines": 1,
+  "external_database_containers": 0,
+  "before": {
+    "agent": "d4c89905-db-1",
+    "source": "Read-only pgwire canary query through the owned fixture agent; no Docker or privilege escalation",
+    "probe_sha256": "921dd2085b863954b40906f62f89186ecb5c4dea3f7c2a530bc46cbad1a3f79f",
+    "checks": {
+      "probe": "external_canary",
+      "status": "passed",
+      "canary_rows": 1,
+      "canary_id": 197,
+      "database": "postgres",
+      "reader_select": true,
+      "reader_table_writes": false,
+      "source": "read-only PostgreSQL query over the owned fixture's loopback listener"
+    }
+  },
+  "after_runner_cleanup": {
+    "agent": "d4c89905-db-1",
+    "source": "Read-only pgwire canary query through the owned fixture agent; no Docker or privilege escalation",
+    "probe_sha256": "921dd2085b863954b40906f62f89186ecb5c4dea3f7c2a530bc46cbad1a3f79f",
+    "checks": {
+      "probe": "external_canary",
+      "status": "passed",
+      "canary_rows": 1,
+      "canary_id": 197,
+      "database": "postgres",
+      "reader_select": true,
+      "reader_table_writes": false,
+      "source": "read-only PostgreSQL query over the owned fixture's loopback listener"
+    }
+  },
+  "fixture_resources_unchanged": true,
+  "runner_cleanup": "all owned YC resource types absent",
+  "fixture_cleanup": "passed",
+  "telemetry_verification": "passed",
+  "scope": "Owned PostgreSQL fixture, read-only external workload, /32 ingress and independent data-preservation probe; no user databases accessed",
+  "native_measurement": {
+    "iterations_total": 857831,
+    "queries_per_second": 7148.562,
+    "terminal_errors_total": 0,
+    "source": "Stroppy native result, corroborated by persisted OTLP"
+  }
+}

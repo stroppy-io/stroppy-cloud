@@ -43,6 +43,10 @@ func YandexSettings() *schemapb.Schema {
 				Opt(schemapb.StrV("ru-central1-e"), "ru-central1-e").
 				Default(schemapb.StrV("ru-central1-d")).Required(),
 
+			// doc: https://yandex.cloud/en/docs/overview/concepts/geo-scope
+			schemapb.List("zones", schemapb.Str("").Pattern(`^ru-central1-[abde]$`)).Title("Distributed topology zones").Group("Placement").
+				Desc("Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.").MinItems(3).MaxItems(3).Unique(),
+
 			// doc: https://yandex.cloud/en/docs/compute/concepts/vm-platforms
 			schemapb.Choice("platform_id").Title("Platform").Group("Placement").
 				Desc("Compute platform (CPU generation) the machines are created on.").

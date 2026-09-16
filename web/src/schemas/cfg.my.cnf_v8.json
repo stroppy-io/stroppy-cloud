@@ -1,1365 +1,1406 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "my.cnf",
-    "version": "v8.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "my.cnf",
+    "version":  "v8.0.0"
   },
-  "description": "MySQL 8.0 server configuration rendered to /etc/mysql/my.cnf ([mysqld] section).",
-  "fields": [
+  "description":  "MySQL 8.0 server configuration rendered to /etc/mysql/my.cnf ([mysqld] section).",
+  "fields":  [
     {
-      "name": "innodb_buffer_pool_size",
-      "description": "InnoDB buffer pool; the single most important memory setting. Upstream default 128M.",
-      "int64": {
-        "default": "128",
-        "gte": "5",
-        "lte": "4194304"
+      "name":  "innodb_buffer_pool_size",
+      "description":  "InnoDB buffer pool; the single most important memory setting. Upstream default 128M.",
+      "int64":  {
+        "default":  "128",
+        "gte":  "5",
+        "lte":  "4194304"
       },
-      "group": "InnoDB",
-      "unit": "MB",
-      "title": "Buffer pool size"
+      "group":  "InnoDB",
+      "unit":  "MB",
+      "title":  "Buffer pool size"
     },
     {
-      "name": "innodb_buffer_pool_instances",
-      "description": "Number of buffer pool regions; only meaningful when the pool is larger than 1G.",
-      "int64": {
-        "default": "1",
-        "gte": "1",
-        "lte": "64"
+      "name":  "innodb_buffer_pool_instances",
+      "description":  "Number of buffer pool regions; only meaningful when the pool is larger than 1G.",
+      "int64":  {
+        "default":  "1",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "InnoDB",
-      "title": "Buffer pool instances"
+      "group":  "InnoDB",
+      "title":  "Buffer pool instances"
     },
     {
-      "name": "innodb_redo_log_capacity",
-      "description": "Total redo log size. Replaces the deprecated innodb_log_file_size/innodb_log_files_in_group.",
-      "int64": {
-        "default": "100",
-        "gte": "8",
-        "lte": "131072"
+      "name":  "innodb_redo_log_capacity",
+      "description":  "Total redo log size. Replaces the deprecated innodb_log_file_size/innodb_log_files_in_group.",
+      "int64":  {
+        "default":  "100",
+        "gte":  "8",
+        "lte":  "131072"
       },
-      "group": "InnoDB",
-      "unit": "MB",
-      "title": "Redo log capacity"
+      "group":  "InnoDB",
+      "unit":  "MB",
+      "title":  "Redo log capacity"
     },
     {
-      "name": "innodb_flush_log_at_trx_commit",
-      "description": "1 = ACID (flush+fsync on commit), 2 = flush on commit and fsync once a second, 0 = neither.",
-      "int64": {
-        "default": "1",
-        "in": [
+      "name":  "innodb_flush_log_at_trx_commit",
+      "description":  "1 = ACID (flush+fsync on commit), 2 = flush on commit and fsync once a second, 0 = neither.",
+      "int64":  {
+        "default":  "1",
+        "in":  [
           "0",
           "1",
           "2"
         ]
       },
-      "group": "InnoDB",
-      "title": "Flush log at commit"
+      "group":  "InnoDB",
+      "title":  "Flush log at commit"
     },
     {
-      "name": "innodb_flush_method",
-      "description": "Data/log flush method. Upstream default is fsync; stroppy defaults to O_DIRECT so the OS page cache does not double-buffer the pool during a benchmark.",
-      "choice": {
-        "options": [
+      "name":  "innodb_flush_method",
+      "description":  "Data/log flush method. Upstream default is fsync; stroppy defaults to O_DIRECT so the OS page cache does not double-buffer the pool during a benchmark.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "fsync"
+            "value":  {
+              "stringValue":  "fsync"
             },
-            "label": "fsync"
+            "label":  "fsync"
           },
           {
-            "value": {
-              "stringValue": "O_DIRECT"
+            "value":  {
+              "stringValue":  "O_DIRECT"
             },
-            "label": "O_DIRECT"
+            "label":  "O_DIRECT"
           },
           {
-            "value": {
-              "stringValue": "O_DIRECT_NO_FSYNC"
+            "value":  {
+              "stringValue":  "O_DIRECT_NO_FSYNC"
             },
-            "label": "O_DIRECT_NO_FSYNC"
+            "label":  "O_DIRECT_NO_FSYNC"
           },
           {
-            "value": {
-              "stringValue": "O_DSYNC"
+            "value":  {
+              "stringValue":  "O_DSYNC"
             },
-            "label": "O_DSYNC"
+            "label":  "O_DSYNC"
           }
         ],
-        "default": {
-          "stringValue": "O_DIRECT"
+        "default":  {
+          "stringValue":  "O_DIRECT"
         }
       },
-      "group": "InnoDB",
-      "title": "Flush method"
+      "group":  "InnoDB",
+      "title":  "Flush method"
     },
     {
-      "name": "innodb_io_capacity",
-      "description": "Background page-flush budget in IOPS. Upstream default 200 for 8.0.",
-      "int64": {
-        "default": "200",
-        "gte": "100",
-        "lte": "1000000"
+      "name":  "innodb_io_capacity",
+      "description":  "Background page-flush budget in IOPS. Upstream default 200 for 8.0.",
+      "int64":  {
+        "default":  "200",
+        "gte":  "100",
+        "lte":  "1000000"
       },
-      "group": "InnoDB",
-      "unit": "IOPS",
-      "title": "I/O capacity"
+      "group":  "InnoDB",
+      "unit":  "IOPS",
+      "title":  "I/O capacity"
     },
     {
-      "name": "innodb_io_capacity_max",
-      "description": "Upper flush budget when InnoDB has to catch up; must be >= innodb_io_capacity.",
-      "int64": {
-        "default": "2000",
-        "gte": "100",
-        "lte": "2000000"
+      "name":  "innodb_io_capacity_max",
+      "description":  "Upper flush budget when InnoDB has to catch up; must be >= innodb_io_capacity.",
+      "int64":  {
+        "default":  "2000",
+        "gte":  "100",
+        "lte":  "2000000"
       },
-      "group": "InnoDB",
-      "unit": "IOPS",
-      "title": "I/O capacity max"
+      "group":  "InnoDB",
+      "unit":  "IOPS",
+      "title":  "I/O capacity max"
     },
     {
-      "name": "innodb_read_io_threads",
-      "description": "Background read threads.",
-      "int64": {
-        "default": "4",
-        "gte": "1",
-        "lte": "64"
+      "name":  "innodb_read_io_threads",
+      "description":  "Background read threads.",
+      "int64":  {
+        "default":  "4",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "InnoDB",
-      "title": "Read I/O threads"
+      "group":  "InnoDB",
+      "title":  "Read I/O threads"
     },
     {
-      "name": "innodb_write_io_threads",
-      "description": "Background write threads.",
-      "int64": {
-        "default": "4",
-        "gte": "1",
-        "lte": "64"
+      "name":  "innodb_write_io_threads",
+      "description":  "Background write threads.",
+      "int64":  {
+        "default":  "4",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "InnoDB",
-      "title": "Write I/O threads"
+      "group":  "InnoDB",
+      "title":  "Write I/O threads"
     },
     {
-      "name": "innodb_thread_concurrency",
-      "description": "Cap on threads inside InnoDB; 0 = unlimited (the default).",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "1000"
+      "name":  "innodb_thread_concurrency",
+      "description":  "Cap on threads inside InnoDB; 0 = unlimited (the default).",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "1000"
       },
-      "group": "InnoDB",
-      "title": "Thread concurrency"
+      "group":  "InnoDB",
+      "title":  "Thread concurrency"
     },
     {
-      "name": "innodb_lock_wait_timeout",
-      "description": "How long a transaction waits for a row lock before it is rolled back.",
-      "int64": {
-        "default": "50",
-        "gte": "1",
-        "lte": "1073741824"
+      "name":  "innodb_lock_wait_timeout",
+      "description":  "How long a transaction waits for a row lock before it is rolled back.",
+      "int64":  {
+        "default":  "50",
+        "gte":  "1",
+        "lte":  "1073741824"
       },
-      "group": "InnoDB",
-      "unit": "s",
-      "title": "Lock wait timeout"
+      "group":  "InnoDB",
+      "unit":  "s",
+      "title":  "Lock wait timeout"
     },
     {
-      "name": "innodb_doublewrite",
-      "description": "Torn-page protection. OFF trades crash safety for write throughput.",
-      "choice": {
-        "options": [
+      "name":  "innodb_doublewrite",
+      "description":  "Torn-page protection. OFF trades crash safety for write throughput.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "InnoDB",
-      "title": "Doublewrite buffer"
+      "group":  "InnoDB",
+      "title":  "Doublewrite buffer"
     },
     {
-      "name": "innodb_file_per_table",
-      "description": "Store each table in its own .ibd tablespace.",
-      "choice": {
-        "options": [
+      "name":  "innodb_file_per_table",
+      "description":  "Store each table in its own .ibd tablespace.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "InnoDB",
-      "title": "File per table"
+      "group":  "InnoDB",
+      "title":  "File per table"
     },
     {
-      "name": "innodb_dedicated_server",
-      "description": "Let InnoDB size the buffer pool and redo log from the machine's RAM, ignoring the values above.",
-      "choice": {
-        "options": [
+      "name":  "innodb_dedicated_server",
+      "description":  "Let InnoDB size the buffer pool and redo log from the machine's RAM, ignoring the values above.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "InnoDB",
-      "title": "Dedicated server"
+      "group":  "InnoDB",
+      "title":  "Dedicated server"
     },
     {
-      "name": "log_bin",
-      "description": "Base name of the binary log files; binary logging is on by default since 8.0.",
-      "string": {
-        "default": "binlog",
-        "minLen": "1",
-        "maxLen": "200"
+      "name":  "log_bin",
+      "description":  "Base name of the binary log files; binary logging is on by default since 8.0.",
+      "string":  {
+        "default":  "binlog",
+        "minLen":  "1",
+        "maxLen":  "200"
       },
-      "group": "Binlog",
-      "title": "Binary log base name"
+      "group":  "Binlog",
+      "title":  "Binary log base name"
     },
     {
-      "name": "binlog_format",
-      "description": "Row-based logging is the default and the only format group replication accepts.",
-      "choice": {
-        "options": [
+      "name":  "binlog_format",
+      "description":  "Row-based logging is the default and the only format group replication accepts.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ROW"
+            "value":  {
+              "stringValue":  "ROW"
             },
-            "label": "ROW"
+            "label":  "ROW"
           },
           {
-            "value": {
-              "stringValue": "STATEMENT"
+            "value":  {
+              "stringValue":  "STATEMENT"
             },
-            "label": "STATEMENT (deprecated)"
+            "label":  "STATEMENT (deprecated)"
           },
           {
-            "value": {
-              "stringValue": "MIXED"
+            "value":  {
+              "stringValue":  "MIXED"
             },
-            "label": "MIXED (deprecated)"
+            "label":  "MIXED (deprecated)"
           }
         ],
-        "default": {
-          "stringValue": "ROW"
+        "default":  {
+          "stringValue":  "ROW"
         }
       },
-      "group": "Binlog",
-      "title": "Binlog format"
+      "group":  "Binlog",
+      "title":  "Binlog format"
     },
     {
-      "name": "binlog_row_image",
-      "description": "How much of each row goes into the binary log.",
-      "choice": {
-        "options": [
+      "name":  "binlog_row_image",
+      "description":  "How much of each row goes into the binary log.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "full"
+            "value":  {
+              "stringValue":  "full"
             },
-            "label": "full"
+            "label":  "full"
           },
           {
-            "value": {
-              "stringValue": "minimal"
+            "value":  {
+              "stringValue":  "minimal"
             },
-            "label": "minimal"
+            "label":  "minimal"
           },
           {
-            "value": {
-              "stringValue": "noblob"
+            "value":  {
+              "stringValue":  "noblob"
             },
-            "label": "noblob"
+            "label":  "noblob"
           }
         ],
-        "default": {
-          "stringValue": "full"
+        "default":  {
+          "stringValue":  "full"
         }
       },
-      "group": "Binlog",
-      "title": "Binlog row image"
+      "group":  "Binlog",
+      "title":  "Binlog row image"
     },
     {
-      "name": "sync_binlog",
-      "description": "fsync the binary log every N commit groups; 1 is the durable default, 0 leaves it to the OS.",
-      "int64": {
-        "default": "1",
-        "gte": "0",
-        "lte": "4294967295"
+      "name":  "sync_binlog",
+      "description":  "fsync the binary log every N commit groups; 1 is the durable default, 0 leaves it to the OS.",
+      "int64":  {
+        "default":  "1",
+        "gte":  "0",
+        "lte":  "4294967295"
       },
-      "group": "Binlog",
-      "title": "Sync binlog"
+      "group":  "Binlog",
+      "title":  "Sync binlog"
     },
     {
-      "name": "binlog_expire_logs_seconds",
-      "description": "Binary log purge age; 0 disables automatic purging. Upstream default 30 days.",
-      "int64": {
-        "default": "2592000",
-        "gte": "0",
-        "lte": "4294967295"
+      "name":  "binlog_expire_logs_seconds",
+      "description":  "Binary log purge age; 0 disables automatic purging. Upstream default 30 days.",
+      "int64":  {
+        "default":  "2592000",
+        "gte":  "0",
+        "lte":  "4294967295"
       },
-      "group": "Binlog",
-      "unit": "s",
-      "title": "Binlog retention"
+      "group":  "Binlog",
+      "unit":  "s",
+      "title":  "Binlog retention"
     },
     {
-      "name": "gtid_mode",
-      "description": "GTID-based replication. Group replication requires ON.",
-      "choice": {
-        "options": [
+      "name":  "gtid_mode",
+      "description":  "GTID-based replication. Group replication requires ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "OFF"
+            "label":  "OFF"
           },
           {
-            "value": {
-              "stringValue": "OFF_PERMISSIVE"
+            "value":  {
+              "stringValue":  "OFF_PERMISSIVE"
             },
-            "label": "OFF_PERMISSIVE"
+            "label":  "OFF_PERMISSIVE"
           },
           {
-            "value": {
-              "stringValue": "ON_PERMISSIVE"
+            "value":  {
+              "stringValue":  "ON_PERMISSIVE"
             },
-            "label": "ON_PERMISSIVE"
+            "label":  "ON_PERMISSIVE"
           },
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "ON"
+            "label":  "ON"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Binlog",
-      "title": "GTID mode"
+      "group":  "Binlog",
+      "title":  "GTID mode"
     },
     {
-      "name": "enforce_gtid_consistency",
-      "description": "Reject statements that cannot be logged transactionally; ON is required with gtid_mode=ON.",
-      "choice": {
-        "options": [
+      "name":  "enforce_gtid_consistency",
+      "description":  "Reject statements that cannot be logged transactionally; ON is required with gtid_mode=ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "OFF"
+            "label":  "OFF"
           },
           {
-            "value": {
-              "stringValue": "WARN"
+            "value":  {
+              "stringValue":  "WARN"
             },
-            "label": "WARN"
+            "label":  "WARN"
           },
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "ON"
+            "label":  "ON"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Binlog",
-      "title": "Enforce GTID consistency"
+      "group":  "Binlog",
+      "title":  "Enforce GTID consistency"
     },
     {
-      "name": "log_replica_updates",
-      "description": "Write replicated changes to this server's own binary log — required for chained replication and for group replication.",
-      "choice": {
-        "options": [
+      "name":  "log_replica_updates",
+      "description":  "Write replicated changes to this server's own binary log — required for chained replication and for group replication.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Binlog",
-      "title": "Log replica updates"
+      "group":  "Binlog",
+      "title":  "Log replica updates"
     },
     {
-      "name": "rpl_semi_sync_source_enabled",
-      "description": "Semisynchronous source side; loads semisync_source.so via plugin_load_add.",
-      "choice": {
-        "options": [
+      "name":  "rpl_semi_sync_source_enabled",
+      "description":  "Semisynchronous source side; loads semisync_source.so via plugin_load_add.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Replication",
-      "title": "Semisync source"
+      "group":  "Replication",
+      "title":  "Semisync source"
     },
     {
-      "name": "rpl_semi_sync_source_timeout",
-      "description": "How long the source waits for a replica ack before falling back to async.",
-      "int64": {
-        "default": "10000",
-        "gte": "0",
-        "lte": "4294967295"
+      "name":  "rpl_semi_sync_source_timeout",
+      "description":  "How long the source waits for a replica ack before falling back to async.",
+      "int64":  {
+        "default":  "10000",
+        "gte":  "0",
+        "lte":  "4294967295"
       },
-      "group": "Replication",
-      "unit": "ms",
-      "title": "Semisync timeout"
+      "group":  "Replication",
+      "unit":  "ms",
+      "title":  "Semisync timeout"
     },
     {
-      "name": "rpl_semi_sync_replica_enabled",
-      "description": "Semisynchronous replica side; loads semisync_replica.so via plugin_load_add.",
-      "choice": {
-        "options": [
+      "name":  "rpl_semi_sync_replica_enabled",
+      "description":  "Semisynchronous replica side; loads semisync_replica.so via plugin_load_add.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Replication",
-      "title": "Semisync replica"
+      "group":  "Replication",
+      "title":  "Semisync replica"
     },
     {
-      "name": "replica_parallel_workers",
-      "description": "Parallel applier threads on the replica; 0 = single-threaded.",
-      "int64": {
-        "default": "4",
-        "gte": "0",
-        "lte": "1024"
+      "name":  "replica_parallel_workers",
+      "description":  "Parallel applier threads on the replica; 0 = single-threaded.",
+      "int64":  {
+        "default":  "4",
+        "gte":  "0",
+        "lte":  "1024"
       },
-      "group": "Replication",
-      "title": "Applier workers"
+      "group":  "Replication",
+      "title":  "Applier workers"
     },
     {
-      "name": "replica_preserve_commit_order",
-      "description": "Commit in source order when applying in parallel.",
-      "choice": {
-        "options": [
+      "name":  "replica_preserve_commit_order",
+      "description":  "Commit in source order when applying in parallel.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Replication",
-      "title": "Preserve commit order"
+      "group":  "Replication",
+      "title":  "Preserve commit order"
     },
     {
-      "name": "read_only",
-      "description": "Reject writes from clients without CONNECTION_ADMIN — set on replicas.",
-      "choice": {
-        "options": [
+      "name":  "read_only",
+      "description":  "Reject writes from clients without CONNECTION_ADMIN — set on replicas.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Replication",
-      "title": "Read only"
+      "group":  "Replication",
+      "title":  "Read only"
     },
     {
-      "name": "super_read_only",
-      "description": "Reject writes from every account, administrators included; implies read_only.",
-      "choice": {
-        "options": [
+      "name":  "super_read_only",
+      "description":  "Reject writes from every account, administrators included; implies read_only.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Replication",
-      "title": "Super read only"
+      "group":  "Replication",
+      "title":  "Super read only"
     },
     {
-      "name": "group_replication",
-      "description": "Enable the group replication plugin; renders the whole group_replication_* block.",
-      "bool": {
-        "default": false
+      "name":  "group_replication",
+      "description":  "Enable the group replication plugin; renders the whole group_replication_* block.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Group replication",
-      "title": "Group replication"
+      "group":  "Group replication",
+      "title":  "Group replication"
     },
     {
-      "name": "group_replication_group_name",
-      "description": "UUID naming the group; identical on every member.",
-      "nullable": true,
-      "string": {
-        "format": "uuid"
+      "name":  "group_replication_group_name",
+      "description":  "UUID naming the group; identical on every member.",
+      "nullable":  true,
+      "string":  {
+        "format":  "uuid"
       },
-      "group": "Group replication",
-      "title": "Group name"
+      "group":  "Group replication",
+      "title":  "Group name"
     },
     {
-      "name": "group_replication_start_on_boot",
-      "description": "Join the group automatically at server start.",
-      "choice": {
-        "options": [
+      "name":  "group_replication_start_on_boot",
+      "description":  "Join the group automatically at server start.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Group replication",
-      "title": "Start on boot"
+      "group":  "Group replication",
+      "title":  "Start on boot"
     },
     {
-      "name": "group_replication_bootstrap_group",
-      "description": "Create the group instead of joining it — exactly one member, exactly once.",
-      "choice": {
-        "options": [
+      "name":  "group_replication_bootstrap_group",
+      "description":  "Create the group instead of joining it — exactly one member, exactly once.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Group replication",
-      "title": "Bootstrap group"
+      "group":  "Group replication",
+      "title":  "Bootstrap group"
     },
     {
-      "name": "group_replication_single_primary_mode",
-      "description": "One writable primary (ON) or multi-primary (OFF).",
-      "choice": {
-        "options": [
+      "name":  "group_replication_single_primary_mode",
+      "description":  "One writable primary (ON) or multi-primary (OFF).",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Group replication",
-      "title": "Single primary mode"
+      "group":  "Group replication",
+      "title":  "Single primary mode"
     },
     {
-      "name": "group_replication_enforce_update_everywhere_checks",
-      "description": "Multi-primary safety checks; must be OFF in single-primary mode.",
-      "choice": {
-        "options": [
+      "name":  "group_replication_enforce_update_everywhere_checks",
+      "description":  "Multi-primary safety checks; must be OFF in single-primary mode.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Group replication",
-      "title": "Update-everywhere checks"
+      "group":  "Group replication",
+      "title":  "Update-everywhere checks"
     },
     {
-      "name": "bind_address",
-      "description": "Addresses mysqld listens on; * or 0.0.0.0 for all IPv4.",
-      "string": {
-        "default": "0.0.0.0",
-        "minLen": "1",
-        "maxLen": "255"
-      },
-      "group": "Connections",
-      "title": "Bind address"
-    },
-    {
-      "name": "port",
-      "description": "TCP port for the classic MySQL protocol.",
-      "int64": {
-        "default": "3306",
-        "gte": "1",
-        "lte": "65535"
-      },
-      "group": "Connections",
-      "title": "Port"
-    },
-    {
-      "name": "max_connections",
-      "description": "Maximum simultaneous client connections.",
-      "int64": {
-        "default": "151",
-        "gte": "1",
-        "lte": "100000"
-      },
-      "group": "Connections",
-      "title": "Max connections"
-    },
-    {
-      "name": "max_connect_errors",
-      "description": "Interrupted handshakes from one host before it is blocked.",
-      "int64": {
-        "default": "100",
-        "gte": "1",
-        "lte": "4294967295"
-      },
-      "group": "Connections",
-      "title": "Max connect errors"
-    },
-    {
-      "name": "thread_cache_size",
-      "description": "Threads kept for reuse after a client disconnects.",
-      "int64": {
-        "default": "9",
-        "gte": "0",
-        "lte": "16384"
-      },
-      "group": "Connections",
-      "title": "Thread cache size"
-    },
-    {
-      "name": "wait_timeout",
-      "description": "Idle seconds before a non-interactive connection is closed.",
-      "int64": {
-        "default": "28800",
-        "gte": "1",
-        "lte": "31536000"
-      },
-      "group": "Connections",
-      "unit": "s",
-      "title": "Wait timeout"
-    },
-    {
-      "name": "interactive_timeout",
-      "description": "Idle seconds before an interactive connection is closed.",
-      "int64": {
-        "default": "28800",
-        "gte": "1",
-        "lte": "31536000"
-      },
-      "group": "Connections",
-      "unit": "s",
-      "title": "Interactive timeout"
-    },
-    {
-      "name": "max_allowed_packet",
-      "description": "Largest single packet or generated string.",
-      "int64": {
-        "default": "64",
-        "gte": "1",
-        "lte": "1024"
-      },
-      "group": "Connections",
-      "unit": "MB",
-      "title": "Max allowed packet"
-    },
-    {
-      "name": "table_open_cache",
-      "description": "Open table handles cached across all sessions.",
-      "int64": {
-        "default": "4000",
-        "gte": "1",
-        "lte": "1048576"
-      },
-      "group": "Tables",
-      "title": "Table open cache"
-    },
-    {
-      "name": "table_definition_cache",
-      "description": "Cached table definitions.",
-      "int64": {
-        "default": "2000",
-        "gte": "400",
-        "lte": "524288"
-      },
-      "group": "Tables",
-      "title": "Table definition cache"
-    },
-    {
-      "name": "tmp_table_size",
-      "description": "Largest in-memory internal temporary table before it spills to disk.",
-      "int64": {
-        "default": "16",
-        "gte": "1",
-        "lte": "65536"
-      },
-      "group": "Tables",
-      "unit": "MB",
-      "title": "Temp table size"
-    },
-    {
-      "name": "max_heap_table_size",
-      "description": "Largest user-created MEMORY table; caps tmp_table_size too.",
-      "int64": {
-        "default": "16",
-        "gte": "1",
-        "lte": "65536"
-      },
-      "group": "Tables",
-      "unit": "MB",
-      "title": "Max heap table size"
-    },
-    {
-      "name": "open_files_limit",
-      "description": "File descriptors mysqld asks the OS for.",
-      "int64": {
-        "default": "5000",
-        "gte": "1024",
-        "lte": "1048576"
-      },
-      "group": "Tables",
-      "title": "Open files limit"
-    },
-    {
-      "name": "sql_mode",
-      "description": "Comma-separated SQL modes; the value below is the 8.0/8.4 upstream default.",
-      "string": {
-        "default": "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
-        "maxLen": "1024"
-      },
-      "group": "SQL",
-      "title": "SQL mode"
-    },
-    {
-      "name": "character_set_server",
-      "description": "Default character set of the server.",
-      "choice": {
-        "options": [
+      "name":  "group_replication_consistency",
+      "description":  "Group synchronization before or after transactions. BEFORE waits for preceding transactions before reads, allowing read-after-write through replicas; this is separate from SQL transaction isolation.",
+      "nullable":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "utf8mb4"
+            "value":  {
+              "stringValue":  "EVENTUAL"
             },
-            "label": "utf8mb4"
+            "label":  "Eventual"
           },
           {
-            "value": {
-              "stringValue": "utf8mb3"
+            "value":  {
+              "stringValue":  "BEFORE_ON_PRIMARY_FAILOVER"
             },
-            "label": "utf8mb3"
+            "label":  "Before primary failover"
           },
           {
-            "value": {
-              "stringValue": "latin1"
+            "value":  {
+              "stringValue":  "BEFORE"
             },
-            "label": "latin1"
+            "label":  "Before transaction"
+          },
+          {
+            "value":  {
+              "stringValue":  "AFTER"
+            },
+            "label":  "After transaction"
+          },
+          {
+            "value":  {
+              "stringValue":  "BEFORE_AND_AFTER"
+            },
+            "label":  "Before and after"
+          }
+        ]
+      },
+      "group":  "Group replication",
+      "title":  "Transaction consistency"
+    },
+    {
+      "name":  "bind_address",
+      "description":  "Addresses mysqld listens on; * or 0.0.0.0 for all IPv4.",
+      "string":  {
+        "default":  "0.0.0.0",
+        "minLen":  "1",
+        "maxLen":  "255"
+      },
+      "group":  "Connections",
+      "title":  "Bind address"
+    },
+    {
+      "name":  "port",
+      "description":  "TCP port for the classic MySQL protocol.",
+      "int64":  {
+        "default":  "3306",
+        "gte":  "1",
+        "lte":  "65535"
+      },
+      "group":  "Connections",
+      "title":  "Port"
+    },
+    {
+      "name":  "max_connections",
+      "description":  "Maximum simultaneous client connections.",
+      "int64":  {
+        "default":  "151",
+        "gte":  "1",
+        "lte":  "100000"
+      },
+      "group":  "Connections",
+      "title":  "Max connections"
+    },
+    {
+      "name":  "max_connect_errors",
+      "description":  "Interrupted handshakes from one host before it is blocked.",
+      "int64":  {
+        "default":  "100",
+        "gte":  "1",
+        "lte":  "4294967295"
+      },
+      "group":  "Connections",
+      "title":  "Max connect errors"
+    },
+    {
+      "name":  "thread_cache_size",
+      "description":  "Threads kept for reuse after a client disconnects.",
+      "int64":  {
+        "default":  "9",
+        "gte":  "0",
+        "lte":  "16384"
+      },
+      "group":  "Connections",
+      "title":  "Thread cache size"
+    },
+    {
+      "name":  "wait_timeout",
+      "description":  "Idle seconds before a non-interactive connection is closed.",
+      "int64":  {
+        "default":  "28800",
+        "gte":  "1",
+        "lte":  "31536000"
+      },
+      "group":  "Connections",
+      "unit":  "s",
+      "title":  "Wait timeout"
+    },
+    {
+      "name":  "interactive_timeout",
+      "description":  "Idle seconds before an interactive connection is closed.",
+      "int64":  {
+        "default":  "28800",
+        "gte":  "1",
+        "lte":  "31536000"
+      },
+      "group":  "Connections",
+      "unit":  "s",
+      "title":  "Interactive timeout"
+    },
+    {
+      "name":  "max_allowed_packet",
+      "description":  "Largest single packet or generated string.",
+      "int64":  {
+        "default":  "64",
+        "gte":  "1",
+        "lte":  "1024"
+      },
+      "group":  "Connections",
+      "unit":  "MB",
+      "title":  "Max allowed packet"
+    },
+    {
+      "name":  "table_open_cache",
+      "description":  "Open table handles cached across all sessions.",
+      "int64":  {
+        "default":  "4000",
+        "gte":  "1",
+        "lte":  "1048576"
+      },
+      "group":  "Tables",
+      "title":  "Table open cache"
+    },
+    {
+      "name":  "table_definition_cache",
+      "description":  "Cached table definitions.",
+      "int64":  {
+        "default":  "2000",
+        "gte":  "400",
+        "lte":  "524288"
+      },
+      "group":  "Tables",
+      "title":  "Table definition cache"
+    },
+    {
+      "name":  "tmp_table_size",
+      "description":  "Largest in-memory internal temporary table before it spills to disk.",
+      "int64":  {
+        "default":  "16",
+        "gte":  "1",
+        "lte":  "65536"
+      },
+      "group":  "Tables",
+      "unit":  "MB",
+      "title":  "Temp table size"
+    },
+    {
+      "name":  "max_heap_table_size",
+      "description":  "Largest user-created MEMORY table; caps tmp_table_size too.",
+      "int64":  {
+        "default":  "16",
+        "gte":  "1",
+        "lte":  "65536"
+      },
+      "group":  "Tables",
+      "unit":  "MB",
+      "title":  "Max heap table size"
+    },
+    {
+      "name":  "open_files_limit",
+      "description":  "File descriptors mysqld asks the OS for.",
+      "int64":  {
+        "default":  "5000",
+        "gte":  "1024",
+        "lte":  "1048576"
+      },
+      "group":  "Tables",
+      "title":  "Open files limit"
+    },
+    {
+      "name":  "sql_mode",
+      "description":  "Comma-separated SQL modes; the value below is the 8.0/8.4 upstream default.",
+      "string":  {
+        "default":  "ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION",
+        "maxLen":  "1024"
+      },
+      "group":  "SQL",
+      "title":  "SQL mode"
+    },
+    {
+      "name":  "character_set_server",
+      "description":  "Default character set of the server.",
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "utf8mb4"
+            },
+            "label":  "utf8mb4"
+          },
+          {
+            "value":  {
+              "stringValue":  "utf8mb3"
+            },
+            "label":  "utf8mb3"
+          },
+          {
+            "value":  {
+              "stringValue":  "latin1"
+            },
+            "label":  "latin1"
           }
         ],
-        "default": {
-          "stringValue": "utf8mb4"
+        "default":  {
+          "stringValue":  "utf8mb4"
         }
       },
-      "group": "SQL",
-      "title": "Server character set"
+      "group":  "SQL",
+      "title":  "Server character set"
     },
     {
-      "name": "collation_server",
-      "description": "Default collation; must belong to character_set_server.",
-      "string": {
-        "default": "utf8mb4_0900_ai_ci",
-        "minLen": "1",
-        "maxLen": "64"
+      "name":  "collation_server",
+      "description":  "Default collation; must belong to character_set_server.",
+      "string":  {
+        "default":  "utf8mb4_0900_ai_ci",
+        "minLen":  "1",
+        "maxLen":  "64"
       },
-      "group": "SQL",
-      "title": "Server collation"
+      "group":  "SQL",
+      "title":  "Server collation"
     },
     {
-      "name": "default_time_zone",
-      "description": "Server time zone; a fixed offset keeps benchmark timestamps reproducible.",
-      "string": {
-        "default": "+00:00",
-        "minLen": "1",
-        "maxLen": "64"
+      "name":  "default_time_zone",
+      "description":  "Server time zone; a fixed offset keeps benchmark timestamps reproducible.",
+      "string":  {
+        "default":  "+00:00",
+        "minLen":  "1",
+        "maxLen":  "64"
       },
-      "group": "SQL",
-      "title": "Default time zone"
+      "group":  "SQL",
+      "title":  "Default time zone"
     },
     {
-      "name": "lower_case_table_names",
-      "description": "0 = case-sensitive names as stored, 1 = lowercased, 2 = stored as given, compared lowercase. Fixed at initialization.",
-      "int64": {
-        "default": "0",
-        "in": [
+      "name":  "lower_case_table_names",
+      "description":  "0 = case-sensitive names as stored, 1 = lowercased, 2 = stored as given, compared lowercase. Fixed at initialization.",
+      "int64":  {
+        "default":  "0",
+        "in":  [
           "0",
           "1",
           "2"
         ]
       },
-      "group": "SQL",
-      "title": "Lower case table names"
+      "group":  "SQL",
+      "title":  "Lower case table names"
     },
     {
-      "name": "transaction_isolation",
-      "description": "Default isolation level for new sessions.",
-      "choice": {
-        "options": [
+      "name":  "transaction_isolation",
+      "description":  "Default isolation level for new sessions.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "READ-UNCOMMITTED"
+            "value":  {
+              "stringValue":  "READ-UNCOMMITTED"
             },
-            "label": "READ UNCOMMITTED"
+            "label":  "READ UNCOMMITTED"
           },
           {
-            "value": {
-              "stringValue": "READ-COMMITTED"
+            "value":  {
+              "stringValue":  "READ-COMMITTED"
             },
-            "label": "READ COMMITTED"
+            "label":  "READ COMMITTED"
           },
           {
-            "value": {
-              "stringValue": "REPEATABLE-READ"
+            "value":  {
+              "stringValue":  "REPEATABLE-READ"
             },
-            "label": "REPEATABLE READ"
+            "label":  "REPEATABLE READ"
           },
           {
-            "value": {
-              "stringValue": "SERIALIZABLE"
+            "value":  {
+              "stringValue":  "SERIALIZABLE"
             },
-            "label": "SERIALIZABLE"
+            "label":  "SERIALIZABLE"
           }
         ],
-        "default": {
-          "stringValue": "REPEATABLE-READ"
+        "default":  {
+          "stringValue":  "REPEATABLE-READ"
         }
       },
-      "group": "SQL",
-      "title": "Transaction isolation"
+      "group":  "SQL",
+      "title":  "Transaction isolation"
     },
     {
-      "name": "performance_schema",
-      "description": "Instrumentation engine; needed by mysqld_exporter's perf_schema collectors.",
-      "choice": {
-        "options": [
+      "name":  "performance_schema",
+      "description":  "Instrumentation engine; needed by mysqld_exporter's perf_schema collectors.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Performance schema",
-      "title": "Performance schema"
+      "group":  "Performance schema",
+      "title":  "Performance schema"
     },
     {
-      "name": "performance_schema_max_digest_length",
-      "description": "Bytes kept per normalized statement digest.",
-      "int64": {
-        "default": "1024",
-        "gte": "0",
-        "lte": "1048576"
+      "name":  "performance_schema_max_digest_length",
+      "description":  "Bytes kept per normalized statement digest.",
+      "int64":  {
+        "default":  "1024",
+        "gte":  "0",
+        "lte":  "1048576"
       },
-      "group": "Performance schema",
-      "unit": "B",
-      "title": "Max digest length"
+      "group":  "Performance schema",
+      "unit":  "B",
+      "title":  "Max digest length"
     },
     {
-      "name": "general_log",
-      "description": "Log every statement — very expensive, off during load tests.",
-      "choice": {
-        "options": [
+      "name":  "general_log",
+      "description":  "Log every statement — very expensive, off during load tests.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Logging",
-      "title": "General log"
+      "group":  "Logging",
+      "title":  "General log"
     },
     {
-      "name": "slow_query_log",
-      "description": "Log statements slower than long_query_time.",
-      "choice": {
-        "options": [
+      "name":  "slow_query_log",
+      "description":  "Log statements slower than long_query_time.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Logging",
-      "title": "Slow query log"
+      "group":  "Logging",
+      "title":  "Slow query log"
     },
     {
-      "name": "long_query_time",
-      "description": "Slow-query threshold; fractional seconds are allowed.",
-      "double": {
-        "default": 10,
-        "gte": 0,
-        "lte": 31536000
+      "name":  "long_query_time",
+      "description":  "Slow-query threshold; fractional seconds are allowed.",
+      "double":  {
+        "default":  10,
+        "gte":  0,
+        "lte":  31536000
       },
-      "group": "Logging",
-      "unit": "s",
-      "title": "Long query time"
+      "group":  "Logging",
+      "unit":  "s",
+      "title":  "Long query time"
     },
     {
-      "name": "log_slow_extra",
-      "description": "Add per-statement counters to slow-log records.",
-      "choice": {
-        "options": [
+      "name":  "log_slow_extra",
+      "description":  "Add per-statement counters to slow-log records.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Logging",
-      "title": "Slow log extra fields"
+      "group":  "Logging",
+      "title":  "Slow log extra fields"
     },
     {
-      "name": "log_error_verbosity",
-      "description": "1 = errors, 2 = errors and warnings, 3 = adds notes.",
-      "int64": {
-        "default": "2",
-        "in": [
+      "name":  "log_error_verbosity",
+      "description":  "1 = errors, 2 = errors and warnings, 3 = adds notes.",
+      "int64":  {
+        "default":  "2",
+        "in":  [
           "1",
           "2",
           "3"
         ]
       },
-      "group": "Logging",
-      "title": "Error log verbosity"
+      "group":  "Logging",
+      "title":  "Error log verbosity"
     },
     {
-      "name": "replica_parallel_type",
-      "description": "How the applier partitions work. Removed in 8.4, where LOGICAL_CLOCK is always used.",
-      "choice": {
-        "options": [
+      "name":  "replica_parallel_type",
+      "description":  "How the applier partitions work. Removed in 8.4, where LOGICAL_CLOCK is always used.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "LOGICAL_CLOCK"
+            "value":  {
+              "stringValue":  "LOGICAL_CLOCK"
             },
-            "label": "LOGICAL_CLOCK"
+            "label":  "LOGICAL_CLOCK"
           },
           {
-            "value": {
-              "stringValue": "DATABASE"
+            "value":  {
+              "stringValue":  "DATABASE"
             },
-            "label": "DATABASE"
+            "label":  "DATABASE"
           }
         ],
-        "default": {
-          "stringValue": "LOGICAL_CLOCK"
+        "default":  {
+          "stringValue":  "LOGICAL_CLOCK"
         }
       },
-      "group": "Replication",
-      "title": "Applier parallel type"
+      "group":  "Replication",
+      "title":  "Applier parallel type"
     },
     {
-      "name": "transaction_write_set_extraction",
-      "description": "Write-set hashing algorithm; XXHASH64 is required by group replication. Removed in 8.4, where write sets are always extracted.",
-      "choice": {
-        "options": [
+      "name":  "transaction_write_set_extraction",
+      "description":  "Write-set hashing algorithm; XXHASH64 is required by group replication. Removed in 8.4, where write sets are always extracted.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "XXHASH64"
+            "value":  {
+              "stringValue":  "XXHASH64"
             },
-            "label": "XXHASH64"
+            "label":  "XXHASH64"
           },
           {
-            "value": {
-              "stringValue": "MURMUR32"
+            "value":  {
+              "stringValue":  "MURMUR32"
             },
-            "label": "MURMUR32"
+            "label":  "MURMUR32"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "OFF"
+            "label":  "OFF"
           }
         ],
-        "default": {
-          "stringValue": "XXHASH64"
+        "default":  {
+          "stringValue":  "XXHASH64"
         }
       },
-      "group": "Group replication",
-      "title": "Write set extraction"
+      "group":  "Group replication",
+      "title":  "Write set extraction"
     },
     {
-      "name": "binlog_transaction_dependency_tracking",
-      "description": "Source of the parallelization info written into the binary log. Removed in 8.4, where WRITESET is always used.",
-      "choice": {
-        "options": [
+      "name":  "binlog_transaction_dependency_tracking",
+      "description":  "Source of the parallelization info written into the binary log. Removed in 8.4, where WRITESET is always used.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "COMMIT_ORDER"
+            "value":  {
+              "stringValue":  "COMMIT_ORDER"
             },
-            "label": "COMMIT_ORDER"
+            "label":  "COMMIT_ORDER"
           },
           {
-            "value": {
-              "stringValue": "WRITESET"
+            "value":  {
+              "stringValue":  "WRITESET"
             },
-            "label": "WRITESET"
+            "label":  "WRITESET"
           },
           {
-            "value": {
-              "stringValue": "WRITESET_SESSION"
+            "value":  {
+              "stringValue":  "WRITESET_SESSION"
             },
-            "label": "WRITESET_SESSION"
+            "label":  "WRITESET_SESSION"
           }
         ],
-        "default": {
-          "stringValue": "WRITESET"
+        "default":  {
+          "stringValue":  "WRITESET"
         }
       },
-      "group": "Group replication",
-      "title": "Dependency tracking"
+      "group":  "Group replication",
+      "title":  "Dependency tracking"
     },
     {
-      "name": "default_authentication_plugin",
-      "description": "Authentication plugin for new accounts. Removed in 8.4 — use authentication_policy there.",
-      "choice": {
-        "options": [
+      "name":  "default_authentication_plugin",
+      "description":  "Authentication plugin for new accounts. Removed in 8.4 — use authentication_policy there.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "caching_sha2_password"
+            "value":  {
+              "stringValue":  "caching_sha2_password"
             },
-            "label": "caching_sha2_password"
+            "label":  "caching_sha2_password"
           },
           {
-            "value": {
-              "stringValue": "mysql_native_password"
+            "value":  {
+              "stringValue":  "mysql_native_password"
             },
-            "label": "mysql_native_password"
+            "label":  "mysql_native_password"
           },
           {
-            "value": {
-              "stringValue": "sha256_password"
+            "value":  {
+              "stringValue":  "sha256_password"
             },
-            "label": "sha256_password"
+            "label":  "sha256_password"
           }
         ],
-        "default": {
-          "stringValue": "caching_sha2_password"
+        "default":  {
+          "stringValue":  "caching_sha2_password"
         }
       },
-      "group": "SQL",
-      "title": "Default auth plugin"
+      "group":  "SQL",
+      "title":  "Default auth plugin"
     },
     {
-      "name": "server_id",
-      "description": "Unique replication id; filled by the server from topology.",
-      "nullable": true,
-      "int64": {
-        "gte": "1",
-        "lte": "4294967295"
+      "name":  "server_id",
+      "description":  "Unique replication id; filled by the server from topology.",
+      "nullable":  true,
+      "int64":  {
+        "gte":  "1",
+        "lte":  "4294967295"
       },
-      "group": "Cluster",
-      "title": "Server id"
+      "group":  "Cluster",
+      "title":  "Server id"
     },
     {
-      "name": "report_host",
-      "description": "Address this member reports to the source/group; filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "report_host",
+      "description":  "Address this member reports to the source/group; filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Cluster",
-      "title": "Report host"
+      "group":  "Cluster",
+      "title":  "Report host"
     },
     {
-      "name": "group_replication_local_address",
-      "description": "host:port of this member's group communication endpoint; filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "group_replication_local_address",
+      "description":  "host:port of this member's group communication endpoint; filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Cluster",
-      "title": "GR local address"
+      "group":  "Cluster",
+      "title":  "GR local address"
     },
     {
-      "name": "group_replication_group_seeds",
-      "description": "Comma-separated seed endpoints of the group; filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "4096"
+      "name":  "group_replication_group_seeds",
+      "description":  "Comma-separated seed endpoints of the group; filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "4096"
       },
-      "group": "Cluster",
-      "title": "GR group seeds"
+      "group":  "Cluster",
+      "title":  "GR group seeds"
     },
     {
-      "name": "custom",
-      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map": {
-        "maxEntries": "128",
-        "valueField": {
-          "name": "value",
-          "string": {}
+      "name":  "custom",
+      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "map":  {
+        "maxEntries":  "128",
+        "valueField":  {
+          "name":  "value",
+          "string":  {}
         }
       },
-      "group": "Custom",
-      "title": "Extra settings"
+      "group":  "Custom",
+      "title":  "Extra settings"
     },
     {
-      "name": "cluster_lines",
-      "description": "Rendered topology lines (server_id, report_host).",
-      "computed": {
-        "expr": "((\"server_id\" in root) ? \"server_id\" + \" = \" + string(root[\"server_id\"]) + \"\\n\" : \"\") +\n((\"report_host\" in root) ? \"report_host\" + \" = \" + string(root[\"report_host\"]) + \"\\n\" : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "cluster_lines",
+      "description":  "Rendered topology lines (server_id, report_host).",
+      "computed":  {
+        "expr":  "((\"server_id\" in root) ? \"server_id\" + \" = \" + string(root[\"server_id\"]) + \"\\n\" : \"\") +\n((\"report_host\" in root) ? \"report_host\" + \" = \" + string(root[\"report_host\"]) + \"\\n\" : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Cluster lines"
+      "group":  "Rendered",
+      "title":  "Cluster lines"
     },
     {
-      "name": "semisync_lines",
-      "description": "plugin_load_add and rpl_semi_sync_* lines, emitted only when semisync is on.",
-      "computed": {
-        "expr": "(((\"rpl_semi_sync_source_enabled\" in root) && root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nrpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) && root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nrpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "semisync_lines",
+      "description":  "plugin_load_add and rpl_semi_sync_* lines, emitted only when semisync is on.",
+      "computed":  {
+        "expr":  "(((\"rpl_semi_sync_source_enabled\" in root) && root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nloose-rpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"loose-rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) && root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nloose-rpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Semisync lines"
+      "group":  "Rendered",
+      "title":  "Semisync lines"
     },
     {
-      "name": "group_replication_lines",
-      "description": "The whole group_replication_* block, emitted only when group replication is on.",
-      "computed": {
-        "expr": "(((\"group_replication\" in root) && root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"transaction_write_set_extraction\" in root) ? \"transaction_write_set_extraction\" + \" = \" + string(root[\"transaction_write_set_extraction\"]) + \"\\n\" : \"\") +\n((\"binlog_transaction_dependency_tracking\" in root) ? \"binlog_transaction_dependency_tracking\" + \" = \" + string(root[\"binlog_transaction_dependency_tracking\"]) + \"\\n\" : \"\")) : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "group_replication_lines",
+      "description":  "The whole group_replication_* block, emitted only when group replication is on.",
+      "computed":  {
+        "expr":  "(((\"group_replication\" in root) && root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"loose-group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"loose-group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"loose-group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"loose-group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"loose-group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"loose-group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"loose-group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"group_replication_consistency\" in root) ? \"loose-group_replication_consistency\" + \" = \" + string(root[\"group_replication_consistency\"]) + \"\\n\" : \"\") +\n((\"transaction_write_set_extraction\" in root) ? \"transaction_write_set_extraction\" + \" = \" + string(root[\"transaction_write_set_extraction\"]) + \"\\n\" : \"\") +\n((\"binlog_transaction_dependency_tracking\" in root) ? \"binlog_transaction_dependency_tracking\" + \" = \" + string(root[\"binlog_transaction_dependency_tracking\"]) + \"\\n\" : \"\")) : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Group replication lines"
+      "group":  "Rendered",
+      "title":  "Group replication lines"
     },
     {
-      "name": "custom_rendered",
-      "description": "The `custom` map joined into config lines; the template prints it at the end of the file.",
-      "computed": {
-        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "custom_rendered",
+      "description":  "The `custom` map joined into config lines; the template prints it at the end of the file.",
+      "computed":  {
+        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Custom",
-      "title": "Rendered extra settings"
+      "group":  "Custom",
+      "title":  "Rendered extra settings"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"innodb_io_capacity\" in root) || !(\"innodb_io_capacity_max\" in root) || int(root.innodb_io_capacity_max) >= int(root.innodb_io_capacity)",
-      "message": "innodb_io_capacity_max must be >= innodb_io_capacity",
-      "id": "io-capacity-order"
+      "expr":  "!(\"innodb_io_capacity\" in root) || !(\"innodb_io_capacity_max\" in root) || int(root.innodb_io_capacity_max) >= int(root.innodb_io_capacity)",
+      "message":  "innodb_io_capacity_max must be >= innodb_io_capacity",
+      "id":  "io-capacity-order"
     },
     {
-      "expr": "!(\"group_replication\" in root) || !root.group_replication || ((\"gtid_mode\" in root) && root.gtid_mode == \"ON\")",
-      "message": "group replication requires gtid_mode = ON",
-      "id": "gr-gtid-mode"
+      "expr":  "!(\"group_replication\" in root) || !root.group_replication || ((\"gtid_mode\" in root) && root.gtid_mode == \"ON\")",
+      "message":  "group replication requires gtid_mode = ON",
+      "id":  "gr-gtid-mode"
     },
     {
-      "expr": "!(\"group_replication\" in root) || !root.group_replication || ((\"enforce_gtid_consistency\" in root) && root.enforce_gtid_consistency == \"ON\")",
-      "message": "group replication requires enforce_gtid_consistency = ON",
-      "id": "gr-gtid-consistency"
+      "expr":  "!(\"group_replication\" in root) || !root.group_replication || ((\"enforce_gtid_consistency\" in root) && root.enforce_gtid_consistency == \"ON\")",
+      "message":  "group replication requires enforce_gtid_consistency = ON",
+      "id":  "gr-gtid-consistency"
     },
     {
-      "expr": "!(\"group_replication\" in root) || !root.group_replication || (!(\"binlog_format\" in root) || root.binlog_format == \"ROW\")",
-      "message": "group replication requires binlog_format = ROW",
-      "id": "gr-binlog-format"
+      "expr":  "!(\"group_replication\" in root) || !root.group_replication || (!(\"binlog_format\" in root) || root.binlog_format == \"ROW\")",
+      "message":  "group replication requires binlog_format = ROW",
+      "id":  "gr-binlog-format"
     },
     {
-      "expr": "!(\"group_replication\" in root) || !root.group_replication || (!(\"log_replica_updates\" in root) || root.log_replica_updates == \"ON\")",
-      "message": "group replication requires log_replica_updates = ON",
-      "id": "gr-log-replica-updates"
+      "expr":  "!(\"group_replication\" in root) || !root.group_replication || (!(\"log_replica_updates\" in root) || root.log_replica_updates == \"ON\")",
+      "message":  "group replication requires log_replica_updates = ON",
+      "id":  "gr-log-replica-updates"
     },
     {
-      "expr": "!(\"group_replication_enforce_update_everywhere_checks\" in root) || root.group_replication_enforce_update_everywhere_checks == \"OFF\" || ((\"group_replication_single_primary_mode\" in root) && root.group_replication_single_primary_mode == \"OFF\")",
-      "message": "enforce_update_everywhere_checks must be OFF in single-primary mode",
-      "id": "gr-single-primary"
+      "expr":  "!(\"group_replication_enforce_update_everywhere_checks\" in root) || root.group_replication_enforce_update_everywhere_checks == \"OFF\" || ((\"group_replication_single_primary_mode\" in root) && root.group_replication_single_primary_mode == \"OFF\")",
+      "message":  "enforce_update_everywhere_checks must be OFF in single-primary mode",
+      "id":  "gr-single-primary"
     },
     {
-      "expr": "!(\"super_read_only\" in root) || root.super_read_only == \"OFF\" || ((\"read_only\" in root) && root.read_only == \"ON\")",
-      "message": "super_read_only = ON implies read_only = ON",
-      "id": "read-only-implies"
+      "expr":  "!(\"super_read_only\" in root) || root.super_read_only == \"OFF\" || ((\"read_only\" in root) && root.read_only == \"ON\")",
+      "message":  "super_read_only = ON implies read_only = ON",
+      "id":  "read-only-implies"
     },
     {
-      "expr": "!(\"max_heap_table_size\" in root) || !(\"tmp_table_size\" in root) || int(root.max_heap_table_size) >= int(root.tmp_table_size)",
-      "message": "max_heap_table_size must be >= tmp_table_size",
-      "id": "heap-ge-tmp"
+      "expr":  "!(\"max_heap_table_size\" in root) || !(\"tmp_table_size\" in root) || int(root.max_heap_table_size) >= int(root.tmp_table_size)",
+      "message":  "max_heap_table_size must be >= tmp_table_size",
+      "id":  "heap-ge-tmp"
     },
     {
-      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id": "custom-keys"
+      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
+      "id":  "custom-keys"
     },
     {
-      "expr": "!((\"group_replication\" in root) && root.group_replication) || (\"group_replication_group_name\" in root)",
-      "message": "group_replication_group_name is required when: (\"group_replication\" in root) && root.group_replication",
-      "id": "group_replication_group_name"
+      "expr":  "!((\"group_replication\" in root) && root.group_replication) || (\"group_replication_group_name\" in root)",
+      "message":  "group_replication_group_name is required when: (\"group_replication\" in root) && root.group_replication",
+      "id":  "group_replication_group_name"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# MySQL 8.0 — generated by stroppy, do not edit by hand\n[mysqld]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\ninnodb_buffer_pool_instances = {{{values.innodb_buffer_pool_instances}}}\ninnodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_flush_method = {{{values.innodb_flush_method}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_thread_concurrency = {{{values.innodb_thread_concurrency}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_dedicated_server = {{{values.innodb_dedicated_server}}}\n\n# Binary log and GTID\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\ngtid_mode = {{{values.gtid_mode}}}\nenforce_gtid_consistency = {{{values.enforce_gtid_consistency}}}\nlog_replica_updates = {{{values.log_replica_updates}}}\n{{{values.cluster_lines}}}\n# Replication\nreplica_parallel_workers = {{{values.replica_parallel_workers}}}\nreplica_preserve_commit_order = {{{values.replica_preserve_commit_order}}}\nreplica_parallel_type = {{{values.replica_parallel_type}}}\nread_only = {{{values.read_only}}}\nsuper_read_only = {{{values.super_read_only}}}\n{{{values.semisync_lines}}}\n{{{values.group_replication_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\ndefault_authentication_plugin = {{{values.default_authentication_plugin}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\nperformance_schema_max_digest_length = {{{values.performance_schema_max_digest_length}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nslow_query_log = {{{values.slow_query_log}}}\nlong_query_time = {{{values.long_query_time}}}\nlog_slow_extra = {{{values.log_slow_extra}}}\nlog_error_verbosity = {{{values.log_error_verbosity}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# MySQL 8.0 — generated by stroppy, do not edit by hand\n[mysqld]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\ninnodb_buffer_pool_instances = {{{values.innodb_buffer_pool_instances}}}\ninnodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_flush_method = {{{values.innodb_flush_method}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_thread_concurrency = {{{values.innodb_thread_concurrency}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_dedicated_server = {{{values.innodb_dedicated_server}}}\n\n# Binary log and GTID\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\ngtid_mode = {{{values.gtid_mode}}}\nenforce_gtid_consistency = {{{values.enforce_gtid_consistency}}}\nlog_replica_updates = {{{values.log_replica_updates}}}\n{{{values.cluster_lines}}}\n# Replication\nreplica_parallel_workers = {{{values.replica_parallel_workers}}}\nreplica_preserve_commit_order = {{{values.replica_preserve_commit_order}}}\nreplica_parallel_type = {{{values.replica_parallel_type}}}\nread_only = {{{values.read_only}}}\nsuper_read_only = {{{values.super_read_only}}}\n{{{values.semisync_lines}}}\n{{{values.group_replication_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\ndefault_authentication_plugin = {{{values.default_authentication_plugin}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\nperformance_schema_max_digest_length = {{{values.performance_schema_max_digest_length}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nslow_query_log = {{{values.slow_query_log}}}\nlong_query_time = {{{values.long_query_time}}}\nlog_slow_extra = {{{values.log_slow_extra}}}\nlog_error_verbosity = {{{values.log_error_verbosity}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
   }
 }

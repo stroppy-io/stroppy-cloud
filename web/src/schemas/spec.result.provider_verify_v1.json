@@ -1,90 +1,90 @@
 {
-  "id": {
-    "namespace": "spec",
-    "name": "result.provider_verify",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "spec",
+    "name":  "result.provider_verify",
+    "version":  "v1.0.0"
   },
-  "description": "Result of stroppy-provider-verify: whether the profile is usable, and why not.",
-  "fields": [
+  "description":  "Result of stroppy-provider-verify: whether the profile is usable, and why not.",
+  "fields":  [
     {
-      "name": "ok",
-      "description": "True when the credentials authenticate and carry the permissions a run needs.",
-      "required": true,
-      "bool": {},
-      "group": "Result",
-      "title": "Usable"
+      "name":  "ok",
+      "description":  "True when the credentials authenticate and carry the permissions a run needs.",
+      "required":  true,
+      "bool":  {},
+      "group":  "Result",
+      "title":  "Usable"
     },
     {
-      "name": "account_id",
-      "description": "Service account id (yandex) or IAM ARN / account id (aws) the credentials resolve to.",
-      "string": {
-        "maxLen": "256"
+      "name":  "account_id",
+      "description":  "Service account id (yandex) or IAM ARN / account id (aws) the credentials resolve to.",
+      "string":  {
+        "maxLen":  "256"
       },
-      "group": "Result",
-      "title": "Account"
+      "group":  "Result",
+      "title":  "Account"
     },
     {
-      "name": "scope",
-      "description": "Folder id (yandex) or region/project the check ran against.",
-      "string": {
-        "maxLen": "128"
+      "name":  "scope",
+      "description":  "Folder id (yandex) or region/project the check ran against.",
+      "string":  {
+        "maxLen":  "128"
       },
-      "group": "Result",
-      "title": "Scope"
+      "group":  "Result",
+      "title":  "Scope"
     },
     {
-      "name": "permissions",
-      "description": "Per-permission verdict; a missing one is why ok is false.",
-      "list": {
-        "items": [
+      "name":  "permissions",
+      "description":  "Per-permission verdict; a missing one is why ok is false.",
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "name",
-                    "description": "Provider permission or IAM action that was probed.",
-                    "required": true,
-                    "string": {
-                      "minLen": "1",
-                      "maxLen": "128"
+                    "name":  "name",
+                    "description":  "Provider permission or IAM action that was probed.",
+                    "required":  true,
+                    "string":  {
+                      "minLen":  "1",
+                      "maxLen":  "128"
                     },
-                    "title": "Permission"
+                    "title":  "Permission"
                   },
                   {
-                    "name": "granted",
-                    "required": true,
-                    "bool": {},
-                    "title": "Granted"
+                    "name":  "granted",
+                    "required":  true,
+                    "bool":  {},
+                    "title":  "Granted"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "64"
+        "maxItems":  "64"
       },
-      "group": "Result",
-      "title": "Permissions"
+      "group":  "Result",
+      "title":  "Permissions"
     },
     {
-      "name": "error",
-      "description": "Provider error text when ok is false; shown as the profile status reason.",
-      "string": {
-        "maxLen": "4096"
+      "name":  "error",
+      "description":  "Provider error text when ok is false; shown as the profile status reason.",
+      "string":  {
+        "maxLen":  "4096"
       },
-      "group": "Result",
-      "title": "Error"
+      "group":  "Result",
+      "title":  "Error"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"ok\" in root) || root.ok || (\"error\" in root)",
-      "message": "a failed verification must say why",
-      "id": "failure-has-reason"
+      "expr":  "!(\"ok\" in root) || root.ok || (\"error\" in root)",
+      "message":  "a failed verification must say why",
+      "id":  "failure-has-reason"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

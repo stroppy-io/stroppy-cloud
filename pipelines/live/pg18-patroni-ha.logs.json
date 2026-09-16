@@ -1,0 +1,32 @@
+{
+  "run_id": "matrix-patroni-96794a09-pg18-patroni-ha",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 5482,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-patroni-96794a09-pg18-patroni-ha"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-1-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-1-postgres": 822,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-1-postgres-exporter": 6,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-1-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-1-postgres": 557,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-1-postgres-exporter": 9,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-2-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-2-postgres": 911,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-db-replica-2-postgres-exporter": 6,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-1-etcd": 119,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-1-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-2-etcd": 1060,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-2-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-3-etcd": 125,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-etcd-3-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-proxy-1-haproxy": 6,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-proxy-1-node-exporter": 57,
+    "docker/bb7fe69c-734f-47bb-80d3-668fc964e36c-runner-1-node-exporter": 57
+  }
+}

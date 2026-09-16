@@ -1,0 +1,32 @@
+{
+  "run_id": "matrix-mysql-clusters-fixed-babb0afe-mysql-gr-80",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 2062,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-mysql-clusters-fixed-babb0afe-mysql-gr-80"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-1-mysql": 130,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-1-mysqld-exporter": 20,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-1-node-exporter": 57,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-1-mysql": 106,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-1-mysqld-exporter": 12,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-1-node-exporter": 57,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-2-mysql": 85,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-2-mysqld-exporter": 12,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-db-replica-2-node-exporter": 57,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-proxy-1-node-exporter": 57,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-proxy-1-proxysql": 264,
+    "docker/50b100a0-834a-4400-834a-668015ec2df8-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T11:14:20.375692663Z",
+    "end": "2026-09-15T11:18:30.334867558Z"
+  },
+  "workload_error_candidates": [],
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; candidates require source-timestamp review"
+}

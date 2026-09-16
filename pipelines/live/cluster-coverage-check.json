@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:28:32.691857+00:00",
+  "rejected": [
+    "full_startup_window",
+    "late_cluster_failure",
+    "unbounded_exclusion",
+    "shortened_end"
+  ],
+  "positive": "explicit bounded startup scope plus stable metrics"
+}

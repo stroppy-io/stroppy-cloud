@@ -1,563 +1,563 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "haproxy.cfg",
-    "version": "v2.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "haproxy.cfg",
+    "version":  "v2.0.0"
   },
-  "description": "HAProxy 2.9 TCP balancer in front of a replicated database.",
-  "fields": [
+  "description":  "HAProxy 2.9 TCP balancer in front of a replicated database.",
+  "fields":  [
     {
-      "name": "maxconn",
-      "description": "global maxconn: process-wide connection ceiling. Must exceed the total VU count of the workload.",
-      "int64": {
-        "default": "20000",
-        "gte": "64",
-        "lte": "2000000"
+      "name":  "maxconn",
+      "description":  "global maxconn: process-wide connection ceiling. Must exceed the total VU count of the workload.",
+      "int64":  {
+        "default":  "20000",
+        "gte":  "64",
+        "lte":  "2000000"
       },
-      "group": "Global",
-      "title": "Max connections"
+      "group":  "Global",
+      "title":  "Max connections"
     },
     {
-      "name": "log",
-      "description": "global log line, \"<address> <facility> [<level>]\". Empty disables logging.",
-      "string": {
-        "default": "/dev/log local0 info",
-        "maxLen": "256"
+      "name":  "log",
+      "description":  "global log line, \"<address> <facility> [<level>]\". Empty disables logging.",
+      "string":  {
+        "default":  "/dev/log local0 info",
+        "maxLen":  "256"
       },
-      "group": "Global",
-      "title": "Log target"
+      "group":  "Global",
+      "title":  "Log target"
     },
     {
-      "name": "nbthread",
-      "description": "global nbthread; 0 lets HAProxy bind one thread per available CPU.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "256"
+      "name":  "nbthread",
+      "description":  "global nbthread; 0 lets HAProxy bind one thread per available CPU.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "256"
       },
-      "group": "Global",
-      "title": "Threads"
+      "group":  "Global",
+      "title":  "Threads"
     },
     {
-      "name": "stats_socket",
-      "description": "global stats socket path used by the agent to read live counters. Empty disables it.",
-      "string": {
-        "default": "/var/run/haproxy.sock",
-        "maxLen": "256"
+      "name":  "stats_socket",
+      "description":  "global stats socket path used by the agent to read live counters. Empty disables it.",
+      "string":  {
+        "default":  "/var/run/haproxy.sock",
+        "maxLen":  "256"
       },
-      "group": "Global",
-      "title": "Stats socket"
+      "group":  "Global",
+      "title":  "Stats socket"
     },
     {
-      "name": "mode",
-      "description": "defaults mode. Database wire protocols are opaque to HAProxy, so this is always tcp.",
-      "choice": {
-        "options": [
+      "name":  "mode",
+      "description":  "defaults mode. Database wire protocols are opaque to HAProxy, so this is always tcp.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "tcp"
+            "value":  {
+              "stringValue":  "tcp"
             },
-            "label": "tcp"
+            "label":  "tcp"
           }
         ],
-        "default": {
-          "stringValue": "tcp"
+        "default":  {
+          "stringValue":  "tcp"
         }
       },
-      "immutable": true,
-      "group": "Defaults",
-      "title": "Mode"
+      "immutable":  true,
+      "group":  "Defaults",
+      "title":  "Mode"
     },
     {
-      "name": "timeout_connect",
-      "description": "How long a connection attempt to a backend server may take.",
-      "int64": {
-        "default": "4",
-        "gte": "1",
-        "lte": "60"
+      "name":  "timeout_connect",
+      "description":  "How long a connection attempt to a backend server may take.",
+      "int64":  {
+        "default":  "4",
+        "gte":  "1",
+        "lte":  "60"
       },
-      "group": "Defaults",
-      "unit": "s",
-      "title": "timeout connect"
+      "group":  "Defaults",
+      "unit":  "s",
+      "title":  "timeout connect"
     },
     {
-      "name": "timeout_client",
-      "description": "Inactivity allowed on the client side. Must outlast the longest workload segment or long queries are cut.",
-      "int64": {
-        "default": "1800",
-        "gte": "1",
-        "lte": "86400"
+      "name":  "timeout_client",
+      "description":  "Inactivity allowed on the client side. Must outlast the longest workload segment or long queries are cut.",
+      "int64":  {
+        "default":  "1800",
+        "gte":  "1",
+        "lte":  "86400"
       },
-      "group": "Defaults",
-      "unit": "s",
-      "title": "timeout client"
+      "group":  "Defaults",
+      "unit":  "s",
+      "title":  "timeout client"
     },
     {
-      "name": "timeout_server",
-      "description": "Inactivity allowed on the server side; mirror timeout client.",
-      "int64": {
-        "default": "1800",
-        "gte": "1",
-        "lte": "86400"
+      "name":  "timeout_server",
+      "description":  "Inactivity allowed on the server side; mirror timeout client.",
+      "int64":  {
+        "default":  "1800",
+        "gte":  "1",
+        "lte":  "86400"
       },
-      "group": "Defaults",
-      "unit": "s",
-      "title": "timeout server"
+      "group":  "Defaults",
+      "unit":  "s",
+      "title":  "timeout server"
     },
     {
-      "name": "timeout_check",
-      "description": "Timeout of one health check once the connection is established.",
-      "int64": {
-        "default": "5",
-        "gte": "1",
-        "lte": "60"
+      "name":  "timeout_check",
+      "description":  "Timeout of one health check once the connection is established.",
+      "int64":  {
+        "default":  "5",
+        "gte":  "1",
+        "lte":  "60"
       },
-      "group": "Defaults",
-      "unit": "s",
-      "title": "timeout check"
+      "group":  "Defaults",
+      "unit":  "s",
+      "title":  "timeout check"
     },
     {
-      "name": "retries",
-      "description": "Connection retries against a backend server before it is declared unreachable.",
-      "int64": {
-        "default": "2",
-        "gte": "0",
-        "lte": "10"
+      "name":  "retries",
+      "description":  "Connection retries against a backend server before it is declared unreachable.",
+      "int64":  {
+        "default":  "2",
+        "gte":  "0",
+        "lte":  "10"
       },
-      "group": "Defaults",
-      "title": "Retries"
+      "group":  "Defaults",
+      "title":  "Retries"
     },
     {
-      "name": "option_tcplog",
-      "description": "Log a line per TCP session (connection times, backend, termination state).",
-      "bool": {
-        "default": true
+      "name":  "option_tcplog",
+      "description":  "Log a line per TCP session (connection times, backend, termination state).",
+      "bool":  {
+        "default":  true
       },
-      "group": "Defaults",
-      "title": "option tcplog"
+      "group":  "Defaults",
+      "title":  "option tcplog"
     },
     {
-      "name": "log_format",
-      "description": "Custom log-format string; empty keeps the tcplog default format.",
-      "string": {
-        "default": "",
-        "maxLen": "512"
+      "name":  "log_format",
+      "description":  "Custom log-format string; empty keeps the tcplog default format.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "512"
       },
-      "group": "Defaults",
-      "title": "log-format"
+      "group":  "Defaults",
+      "title":  "log-format"
     },
     {
-      "name": "stats_enabled",
-      "description": "Serve the HTTP stats page on its own listener; the run detail links to it.",
-      "bool": {
-        "default": true
+      "name":  "stats_enabled",
+      "description":  "Serve the HTTP stats page on its own listener; the run detail links to it.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Stats",
-      "title": "Stats page"
+      "group":  "Stats",
+      "title":  "Stats page"
     },
     {
-      "name": "stats_port",
-      "description": "bind port of the stats listener.",
-      "int64": {
-        "default": "8404",
-        "gte": "1",
-        "lte": "65535"
+      "name":  "stats_port",
+      "description":  "bind port of the stats listener.",
+      "int64":  {
+        "default":  "8404",
+        "gte":  "1",
+        "lte":  "65535"
       },
-      "group": "Stats",
-      "title": "Stats port",
-      "when": "root.stats_enabled"
+      "group":  "Stats",
+      "title":  "Stats port",
+      "when":  "root.stats_enabled"
     },
     {
-      "name": "stats_uri",
-      "description": "stats uri path.",
-      "string": {
-        "default": "/stats",
-        "pattern": "^/[A-Za-z0-9._/-]*$"
+      "name":  "stats_uri",
+      "description":  "stats uri path.",
+      "string":  {
+        "default":  "/stats",
+        "pattern":  "^/[A-Za-z0-9._/-]*$"
       },
-      "group": "Stats",
-      "title": "Stats URI",
-      "when": "root.stats_enabled"
+      "group":  "Stats",
+      "title":  "Stats URI",
+      "when":  "root.stats_enabled"
     },
     {
-      "name": "stats_auth",
-      "description": "stats auth \"<user>:<password>\"; empty leaves the page unauthenticated inside the run network.",
-      "string": {
-        "default": "",
-        "maxLen": "128"
+      "name":  "stats_auth",
+      "description":  "stats auth \"<user>:<password>\"; empty leaves the page unauthenticated inside the run network.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "128"
       },
-      "group": "Stats",
-      "title": "Stats auth",
-      "secret": true
+      "group":  "Stats",
+      "title":  "Stats auth",
+      "secret":  true
     },
     {
-      "name": "listeners",
-      "description": "One frontend/backend pair per access path (rw, ro, ...). Filled by the server from topology.",
-      "list": {
-        "items": [
+      "name":  "listeners",
+      "description":  "One frontend/backend pair per access path (rw, ro, ...). Filled by the server from topology.",
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "name",
-                    "description": "Proxy name; also the log tag.",
-                    "required": true,
-                    "string": {
-                      "pattern": "^[A-Za-z0-9_-]+$"
+                    "name":  "name",
+                    "description":  "Proxy name; also the log tag.",
+                    "required":  true,
+                    "string":  {
+                      "pattern":  "^[A-Za-z0-9_-]+$"
                     },
-                    "group": "Listeners",
-                    "title": "Name"
+                    "group":  "Listeners",
+                    "title":  "Name"
                   },
                   {
-                    "name": "bind_port",
-                    "description": "Port this listener binds on all interfaces.",
-                    "required": true,
-                    "int64": {
-                      "gte": "1",
-                      "lte": "65535"
+                    "name":  "bind_port",
+                    "description":  "Port this listener binds on all interfaces.",
+                    "required":  true,
+                    "int64":  {
+                      "gte":  "1",
+                      "lte":  "65535"
                     },
-                    "group": "Listeners",
-                    "title": "Bind port"
+                    "group":  "Listeners",
+                    "title":  "Bind port"
                   },
                   {
-                    "name": "mode",
-                    "description": "Proxy mode; tcp for every database protocol.",
-                    "choice": {
-                      "options": [
+                    "name":  "mode",
+                    "description":  "Proxy mode; tcp for every database protocol.",
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "tcp"
+                          "value":  {
+                            "stringValue":  "tcp"
                           },
-                          "label": "tcp"
+                          "label":  "tcp"
                         }
                       ],
-                      "default": {
-                        "stringValue": "tcp"
+                      "default":  {
+                        "stringValue":  "tcp"
                       }
                     },
-                    "group": "Listeners",
-                    "title": "Mode"
+                    "group":  "Listeners",
+                    "title":  "Mode"
                   },
                   {
-                    "name": "balance",
-                    "description": "Load-balancing algorithm. leastconn suits long-lived database connections; roundrobin a read fan-out; source pins a client to one node.",
-                    "choice": {
-                      "options": [
+                    "name":  "balance",
+                    "description":  "Load-balancing algorithm. leastconn suits long-lived database connections; roundrobin a read fan-out; source pins a client to one node.",
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "roundrobin"
+                          "value":  {
+                            "stringValue":  "roundrobin"
                           },
-                          "label": "roundrobin"
+                          "label":  "roundrobin"
                         },
                         {
-                          "value": {
-                            "stringValue": "leastconn"
+                          "value":  {
+                            "stringValue":  "leastconn"
                           },
-                          "label": "leastconn"
+                          "label":  "leastconn"
                         },
                         {
-                          "value": {
-                            "stringValue": "source"
+                          "value":  {
+                            "stringValue":  "source"
                           },
-                          "label": "source"
+                          "label":  "source"
                         },
                         {
-                          "value": {
-                            "stringValue": "first"
+                          "value":  {
+                            "stringValue":  "first"
                           },
-                          "label": "first"
+                          "label":  "first"
                         }
                       ],
-                      "default": {
-                        "stringValue": "roundrobin"
+                      "default":  {
+                        "stringValue":  "roundrobin"
                       }
                     },
-                    "group": "Listeners",
-                    "title": "Balance"
+                    "group":  "Listeners",
+                    "title":  "Balance"
                   },
                   {
-                    "name": "check",
-                    "required": true,
-                    "object": {
-                      "schema": {
-                        "fields": [
+                    "name":  "check",
+                    "required":  true,
+                    "object":  {
+                      "schema":  {
+                        "fields":  [
                           {
-                            "name": "kind",
-                            "description": "tcp = a bare connect; httpchk = an HTTP request against the node's REST API (Patroni, and any other role-reporting endpoint).",
-                            "choice": {
-                              "options": [
+                            "name":  "kind",
+                            "description":  "tcp = a bare connect; httpchk = an HTTP request against the node's REST API (Patroni, and any other role-reporting endpoint).",
+                            "choice":  {
+                              "options":  [
                                 {
-                                  "value": {
-                                    "stringValue": "tcp"
+                                  "value":  {
+                                    "stringValue":  "tcp"
                                   },
-                                  "label": "TCP connect"
+                                  "label":  "TCP connect"
                                 },
                                 {
-                                  "value": {
-                                    "stringValue": "httpchk"
+                                  "value":  {
+                                    "stringValue":  "httpchk"
                                   },
-                                  "label": "HTTP check"
+                                  "label":  "HTTP check"
                                 }
                               ],
-                              "default": {
-                                "stringValue": "tcp"
+                              "default":  {
+                                "stringValue":  "tcp"
                               }
                             },
-                            "group": "Listeners",
-                            "title": "Check kind"
+                            "group":  "Listeners",
+                            "title":  "Check kind"
                           },
                           {
-                            "name": "method",
-                            "description": "http-check send meth.",
-                            "choice": {
-                              "options": [
+                            "name":  "method",
+                            "description":  "http-check send meth.",
+                            "choice":  {
+                              "options":  [
                                 {
-                                  "value": {
-                                    "stringValue": "GET"
+                                  "value":  {
+                                    "stringValue":  "GET"
                                   },
-                                  "label": "GET"
+                                  "label":  "GET"
                                 },
                                 {
-                                  "value": {
-                                    "stringValue": "OPTIONS"
+                                  "value":  {
+                                    "stringValue":  "OPTIONS"
                                   },
-                                  "label": "OPTIONS"
+                                  "label":  "OPTIONS"
                                 },
                                 {
-                                  "value": {
-                                    "stringValue": "HEAD"
+                                  "value":  {
+                                    "stringValue":  "HEAD"
                                   },
-                                  "label": "HEAD"
+                                  "label":  "HEAD"
                                 }
                               ],
-                              "default": {
-                                "stringValue": "GET"
+                              "default":  {
+                                "stringValue":  "GET"
                               }
                             },
-                            "group": "Listeners",
-                            "title": "Method"
+                            "group":  "Listeners",
+                            "title":  "Method"
                           },
                           {
-                            "name": "uri",
-                            "description": "http-check send uri. Patroni: /primary is 200 only on the leader, /replica only on a running replica (optionally /replica?lag=1MB).",
-                            "string": {
-                              "default": "/primary",
-                              "pattern": "^/[A-Za-z0-9._/?&=%-]*$"
+                            "name":  "uri",
+                            "description":  "http-check send uri. Patroni: /primary is 200 only on the leader, /replica only on a running replica (optionally /replica?lag=1MB).",
+                            "string":  {
+                              "default":  "/primary",
+                              "pattern":  "^/[A-Za-z0-9._/?&=%-]*$"
                             },
-                            "group": "Listeners",
-                            "title": "URI"
+                            "group":  "Listeners",
+                            "title":  "URI"
                           },
                           {
-                            "name": "expect_status",
-                            "description": "http-check expect status.",
-                            "int64": {
-                              "default": "200",
-                              "gte": "100",
-                              "lte": "599"
+                            "name":  "expect_status",
+                            "description":  "http-check expect status.",
+                            "int64":  {
+                              "default":  "200",
+                              "gte":  "100",
+                              "lte":  "599"
                             },
-                            "group": "Listeners",
-                            "title": "Expected status"
+                            "group":  "Listeners",
+                            "title":  "Expected status"
                           },
                           {
-                            "name": "port",
-                            "description": "server ... check port: the REST API port, not the database port. Patroni listens on 8008.",
-                            "int64": {
-                              "default": "8008",
-                              "gte": "1",
-                              "lte": "65535"
+                            "name":  "port",
+                            "description":  "server ... check port: the REST API port, not the database port. Patroni listens on 8008.",
+                            "int64":  {
+                              "default":  "8008",
+                              "gte":  "1",
+                              "lte":  "65535"
                             },
-                            "group": "Listeners",
-                            "title": "Check port"
+                            "group":  "Listeners",
+                            "title":  "Check port"
                           },
                           {
-                            "name": "inter",
-                            "description": "default-server inter: seconds between checks.",
-                            "int64": {
-                              "default": "3",
-                              "gte": "1",
-                              "lte": "60"
+                            "name":  "inter",
+                            "description":  "default-server inter: seconds between checks.",
+                            "int64":  {
+                              "default":  "3",
+                              "gte":  "1",
+                              "lte":  "60"
                             },
-                            "group": "Listeners",
-                            "unit": "s",
-                            "title": "Check interval"
+                            "group":  "Listeners",
+                            "unit":  "s",
+                            "title":  "Check interval"
                           },
                           {
-                            "name": "fall",
-                            "description": "default-server fall: failed checks before a server is taken out.",
-                            "int64": {
-                              "default": "3",
-                              "gte": "1",
-                              "lte": "20"
+                            "name":  "fall",
+                            "description":  "default-server fall: failed checks before a server is taken out.",
+                            "int64":  {
+                              "default":  "3",
+                              "gte":  "1",
+                              "lte":  "20"
                             },
-                            "group": "Listeners",
-                            "title": "Fall"
+                            "group":  "Listeners",
+                            "title":  "Fall"
                           },
                           {
-                            "name": "rise",
-                            "description": "default-server rise: successful checks before a server is put back.",
-                            "int64": {
-                              "default": "2",
-                              "gte": "1",
-                              "lte": "20"
+                            "name":  "rise",
+                            "description":  "default-server rise: successful checks before a server is put back.",
+                            "int64":  {
+                              "default":  "2",
+                              "gte":  "1",
+                              "lte":  "20"
                             },
-                            "group": "Listeners",
-                            "title": "Rise"
+                            "group":  "Listeners",
+                            "title":  "Rise"
                           }
                         ],
-                        "strict": true
+                        "strict":  true
                       }
                     },
-                    "group": "Listeners",
-                    "title": "Health check"
+                    "group":  "Listeners",
+                    "title":  "Health check"
                   },
                   {
-                    "name": "servers",
-                    "required": true,
-                    "list": {
-                      "items": [
+                    "name":  "servers",
+                    "required":  true,
+                    "list":  {
+                      "items":  [
                         {
-                          "object": {
-                            "schema": {
-                              "fields": [
+                          "object":  {
+                            "schema":  {
+                              "fields":  [
                                 {
-                                  "name": "name",
-                                  "description": "server name in the config and in the logs.",
-                                  "required": true,
-                                  "string": {
-                                    "pattern": "^[A-Za-z0-9_.-]+$"
+                                  "name":  "name",
+                                  "description":  "server name in the config and in the logs.",
+                                  "required":  true,
+                                  "string":  {
+                                    "pattern":  "^[A-Za-z0-9_.-]+$"
                                   },
-                                  "group": "Listeners",
-                                  "title": "Name"
+                                  "group":  "Listeners",
+                                  "title":  "Name"
                                 },
                                 {
-                                  "name": "address",
-                                  "description": "Backend address. Filled by the server from topology.",
-                                  "required": true,
-                                  "string": {
-                                    "minLen": "1",
-                                    "maxLen": "256"
+                                  "name":  "address",
+                                  "description":  "Backend address. Filled by the server from topology.",
+                                  "required":  true,
+                                  "string":  {
+                                    "minLen":  "1",
+                                    "maxLen":  "256"
                                   },
-                                  "group": "Listeners",
-                                  "title": "Address"
+                                  "group":  "Listeners",
+                                  "title":  "Address"
                                 },
                                 {
-                                  "name": "port",
-                                  "description": "Backend database port.",
-                                  "required": true,
-                                  "int64": {
-                                    "gte": "1",
-                                    "lte": "65535"
+                                  "name":  "port",
+                                  "description":  "Backend database port.",
+                                  "required":  true,
+                                  "int64":  {
+                                    "gte":  "1",
+                                    "lte":  "65535"
                                   },
-                                  "group": "Listeners",
-                                  "title": "Port"
+                                  "group":  "Listeners",
+                                  "title":  "Port"
                                 },
                                 {
-                                  "name": "weight",
-                                  "description": "server weight for the balancing algorithm.",
-                                  "int64": {
-                                    "default": "100",
-                                    "gte": "0",
-                                    "lte": "256"
+                                  "name":  "weight",
+                                  "description":  "server weight for the balancing algorithm.",
+                                  "int64":  {
+                                    "default":  "100",
+                                    "gte":  "0",
+                                    "lte":  "256"
                                   },
-                                  "group": "Listeners",
-                                  "title": "Weight"
+                                  "group":  "Listeners",
+                                  "title":  "Weight"
                                 },
                                 {
-                                  "name": "backup",
-                                  "description": "server backup: used only when every non-backup server is down.",
-                                  "bool": {
-                                    "default": false
+                                  "name":  "backup",
+                                  "description":  "server backup: used only when every non-backup server is down.",
+                                  "bool":  {
+                                    "default":  false
                                   },
-                                  "group": "Listeners",
-                                  "title": "Backup"
+                                  "group":  "Listeners",
+                                  "title":  "Backup"
                                 },
                                 {
-                                  "name": "maxconn",
-                                  "description": "server maxconn: per-backend connection ceiling; 0 leaves it unlimited.",
-                                  "int64": {
-                                    "default": "0",
-                                    "gte": "0",
-                                    "lte": "1000000"
+                                  "name":  "maxconn",
+                                  "description":  "server maxconn: per-backend connection ceiling; 0 leaves it unlimited.",
+                                  "int64":  {
+                                    "default":  "0",
+                                    "gte":  "0",
+                                    "lte":  "1000000"
                                   },
-                                  "group": "Listeners",
-                                  "title": "Max connections"
+                                  "group":  "Listeners",
+                                  "title":  "Max connections"
                                 }
                               ],
-                              "strict": true
+                              "strict":  true
                             }
                           }
                         }
                       ],
-                      "minItems": "1",
-                      "maxItems": "64"
+                      "minItems":  "1",
+                      "maxItems":  "64"
                     },
-                    "group": "Listeners",
-                    "title": "Servers"
+                    "group":  "Listeners",
+                    "title":  "Servers"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "16"
+        "maxItems":  "16"
       },
-      "group": "Cluster",
-      "title": "Listeners"
+      "group":  "Cluster",
+      "title":  "Listeners"
     },
     {
-      "name": "listener_blocks",
-      "description": "Derived: every listen block with its servers.",
-      "computed": {
-        "expr": "(\"listeners\" in root) ? root.listeners.map(l,\n\t\t\t\t\t\"listen \" + l.name + \"\\n\" +\n\t\t\t\t\t\"    bind *:\" + string(l.bind_port) + \"\\n\" +\n\t\t\t\t\t\"    mode \" + l.mode + \"\\n\" +\n\t\t\t\t\t\"    balance \" + l.balance + \"\\n\" +\n\t\t\t\t\t(l.check.kind == \"httpchk\"\n\t\t\t\t\t\t? \"    option httpchk\\n\" +\n\t\t\t\t\t\t  \"    http-check send meth \" + l.check.method + \" uri \" + l.check.uri + \"\\n\" +\n\t\t\t\t\t\t  \"    http-check expect status \" + string(l.check.expect_status) + \"\\n\"\n\t\t\t\t\t\t: \"    option tcp-check\\n\") +\n\t\t\t\t\t\"    default-server inter \" + string(l.check.inter) +\n\t\t\t\t\t\t\"s fall \" + string(l.check.fall) +\n\t\t\t\t\t\t\" rise \" + string(l.check.rise) +\n\t\t\t\t\t\t\" on-marked-down shutdown-sessions\\n\" +\n\t\t\t\t\tl.servers.map(s,\n\t\t\t\t\t\t\"    server \" + s.name + \" \" + s.address + \":\" + string(s.port) +\n\t\t\t\t\t\t\" check port \" + string(l.check.port) +\n\t\t\t\t\t\t\" weight \" + string(s.weight) +\n\t\t\t\t\t\t(s.maxconn > 0 ? \" maxconn \" + string(s.maxconn) : \"\") +\n\t\t\t\t\t\t(s.backup ? \" backup\" : \"\")\n\t\t\t\t\t).join(\"\\n\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "listener_blocks",
+      "description":  "Derived: every listen block with its servers.",
+      "computed":  {
+        "expr":  "(\"listeners\" in root) ? root.listeners.map(l,\n\t\t\t\t\t\"listen \" + l.name + \"\\n\" +\n\t\t\t\t\t\"    bind *:\" + string(l.bind_port) + \"\\n\" +\n\t\t\t\t\t\"    mode \" + l.mode + \"\\n\" +\n\t\t\t\t\t\"    balance \" + l.balance + \"\\n\" +\n\t\t\t\t\t(l.check.kind == \"httpchk\"\n\t\t\t\t\t\t? \"    option httpchk\\n\" +\n\t\t\t\t\t\t  \"    http-check send meth \" + l.check.method + \" uri \" + l.check.uri + \"\\n\" +\n\t\t\t\t\t\t  \"    http-check expect status \" + string(l.check.expect_status) + \"\\n\"\n\t\t\t\t\t\t: \"    option tcp-check\\n\") +\n\t\t\t\t\t\"    default-server inter \" + string(l.check.inter) +\n\t\t\t\t\t\t\"s fall \" + string(l.check.fall) +\n\t\t\t\t\t\t\" rise \" + string(l.check.rise) +\n\t\t\t\t\t\t\" on-marked-down shutdown-sessions\\n\" +\n\t\t\t\t\tl.servers.map(s,\n\t\t\t\t\t\t\"    server \" + s.name + \" \" + s.address + \":\" + string(s.port) +\n\t\t\t\t\t\t\" check port \" + string(l.check.port) +\n\t\t\t\t\t\t\" weight \" + string(s.weight) +\n\t\t\t\t\t\t(s.maxconn > 0 ? \" maxconn \" + string(s.maxconn) : \"\") +\n\t\t\t\t\t\t(s.backup ? \" backup\" : \"\")\n\t\t\t\t\t).join(\"\\n\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered proxy blocks"
+      "group":  "Cluster",
+      "title":  "Rendered proxy blocks"
     },
     {
-      "name": "stats_block",
-      "computed": {
-        "expr": "!root.stats_enabled ? \"\" :\n\t\t\t\t \"listen stats\\n\" +\n\t\t\t\t \"    bind *:\" + string(root.stats_port) + \"\\n\" +\n\t\t\t\t \"    mode http\\n\" +\n\t\t\t\t \"    stats enable\\n\" +\n\t\t\t\t \"    stats uri \" + root.stats_uri + \"\\n\" +\n\t\t\t\t \"    stats refresh 5s\" +\n\t\t\t\t (root.stats_auth == \"\" ? \"\" : \"\\n    stats auth \" + root.stats_auth)",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "stats_block",
+      "computed":  {
+        "expr":  "!root.stats_enabled ? \"\" :\n\t\t\t\t \"listen stats\\n\" +\n\t\t\t\t \"    bind *:\" + string(root.stats_port) + \"\\n\" +\n\t\t\t\t \"    mode http\\n\" +\n\t\t\t\t \"    stats enable\\n\" +\n\t\t\t\t \"    stats uri \" + root.stats_uri + \"\\n\" +\n\t\t\t\t \"    stats refresh 5s\" +\n\t\t\t\t (root.stats_auth == \"\" ? \"\" : \"\\n    stats auth \" + root.stats_auth)",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Stats",
-      "title": "Rendered stats block"
+      "group":  "Stats",
+      "title":  "Rendered stats block"
     },
     {
-      "name": "global_extra",
-      "computed": {
-        "expr": "(root.log == \"\" ? \"\" : \"    log \" + root.log + \"\\n\") +\n\t\t\t\t (root.nbthread == 0 ? \"\" : \"    nbthread \" + string(root.nbthread) + \"\\n\") +\n\t\t\t\t (root.stats_socket == \"\" ? \"\" : \"    stats socket \" + root.stats_socket + \" mode 660 level admin\\n\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "global_extra",
+      "computed":  {
+        "expr":  "(root.log == \"\" ? \"\" : \"    log \" + root.log + \"\\n\") +\n\t\t\t\t (root.nbthread == 0 ? \"\" : \"    nbthread \" + string(root.nbthread) + \"\\n\") +\n\t\t\t\t (root.stats_socket == \"\" ? \"\" : \"    stats socket \" + root.stats_socket + \" mode 660 level admin\\n\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Global",
-      "title": "Rendered optional global lines"
+      "group":  "Global",
+      "title":  "Rendered optional global lines"
     },
     {
-      "name": "defaults_extra",
-      "computed": {
-        "expr": "(root.log == \"\" ? \"\" : \"    log global\\n\") +\n\t\t\t\t (root.option_tcplog ? \"    option tcplog\\n\" : \"\") +\n\t\t\t\t (root.log_format == \"\" ? \"\" : \"    log-format \" + root.log_format + \"\\n\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "defaults_extra",
+      "computed":  {
+        "expr":  "(root.log == \"\" ? \"\" : \"    log global\\n\") +\n\t\t\t\t (root.option_tcplog ? \"    option tcplog\\n\" : \"\") +\n\t\t\t\t (root.log_format == \"\" ? \"\" : \"    log-format \" + root.log_format + \"\\n\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Defaults",
-      "title": "Rendered optional defaults lines"
+      "group":  "Defaults",
+      "title":  "Rendered optional defaults lines"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"listeners\" in root) || root.listeners.all(l, l.bind_port != root.stats_port) || !root.stats_enabled",
-      "message": "a listener cannot bind the stats port",
-      "id": "listener-vs-stats-port"
+      "expr":  "!(\"listeners\" in root) || root.listeners.all(l, l.bind_port != root.stats_port) || !root.stats_enabled",
+      "message":  "a listener cannot bind the stats port",
+      "id":  "listener-vs-stats-port"
     },
     {
-      "expr": "!(\"listeners\" in root) || root.listeners.all(l, size(l.servers) <= int(root.maxconn))",
-      "message": "global maxconn must cover at least one connection per backend server",
-      "id": "maxconn-covers-servers"
+      "expr":  "!(\"listeners\" in root) || root.listeners.all(l, size(l.servers) <= int(root.maxconn))",
+      "message":  "global maxconn must cover at least one connection per backend server",
+      "id":  "maxconn-covers-servers"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# managed by stroppy-cloud — cfg.haproxy.cfg@2\nglobal\n    maxconn {{{values.maxconn}}}\n{{{values.global_extra}}}\ndefaults\n    mode {{{values.mode}}}\n    retries {{{values.retries}}}\n    timeout connect {{{values.timeout_connect}}}s\n    timeout client {{{values.timeout_client}}}s\n    timeout server {{{values.timeout_server}}}s\n    timeout check {{{values.timeout_check}}}s\n{{{values.defaults_extra}}}\n{{{values.listener_blocks}}}\n\n{{{values.stats_block}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# managed by stroppy-cloud — cfg.haproxy.cfg@2\nglobal\n    maxconn {{{values.maxconn}}}\n{{{values.global_extra}}}\ndefaults\n    mode {{{values.mode}}}\n    retries {{{values.retries}}}\n    timeout connect {{{values.timeout_connect}}}s\n    timeout client {{{values.timeout_client}}}s\n    timeout server {{{values.timeout_server}}}s\n    timeout check {{{values.timeout_check}}}s\n{{{values.defaults_extra}}}\n{{{values.listener_blocks}}}\n\n{{{values.stats_block}}}\n"
   }
 }

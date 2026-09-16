@@ -1,0 +1,221 @@
+{
+  "scope": "Local Docker three-member clusters; native five-workload compatibility and SQL node membership. No HAProxy, YC or durable telemetry claim.",
+  "cells": [
+    {
+      "database": "cockroach",
+      "version": "24.1",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:09:17.624546+00:00",
+      "input_sha256": "bb3a58a89d3278aa6c1002500862f0f680a71581691083910f63ddcaa0f201dc",
+      "native_logs": {
+        "simple": {
+          "sha256": "0ded97f115f5c5983776de5b1c7e7a0ed40947a923a0818a1163892aa7255cf1",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "7a0ecfdd2c266de7c9b770c0e8258f92cad0f85945b52544f3d51a33b7fe4e04",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "ada6934c91c9918c4ab6b1eeb8728e6b3dcdcf7db382fafc8d2215f0589a5fea",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "110e97915de781d54fe9479cdf0ce59cd7e4a8d87fe0af6b13d80f19c1fba35c",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "a328f28671a6f13d14f453660afd8c2e8e4df0f25842ba848249aa15a011acf7",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "019fed26739d0b8a36d4ff015607730d724c5c16a6a096cce7eeeef606eda88f"
+      }
+    },
+    {
+      "database": "cockroach",
+      "version": "24.3",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:10:14.384793+00:00",
+      "input_sha256": "a838cbf6536a18fa721b6ff5f0361e4512c811ed620baac05a5e078aa5cf4239",
+      "native_logs": {
+        "simple": {
+          "sha256": "18fca632ad282c71f794a7f492c161ff1a150fe15aab799d11b47f61593580ff",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "90c424ab50daaaeb2e32300ab51bbd487053d5b6334ce7934800cac9df1373d6",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "0ac4e333b8ce0e926104c0539b24d3dde0789e804988f6b06036ecfab9dbf139",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "b757c03034279eefb29f605f02d95962a8e82e980df49e993acec78f4901a066",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "b9e2c265d80764d07b8e61a9ea1175896dbeca7dcfdc8030ea4d3a99c988dcda",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "13526a8d9ba56165fa57630968f00bcc8e6ea5d54cd2f50ada3cf3c7f102932a"
+      }
+    },
+    {
+      "database": "cockroach",
+      "version": "25.2",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:11:11.801707+00:00",
+      "input_sha256": "ec051d913a68b2a0e9fe2469c5a71bc07eedf3ff237e01ef0e7b346060ad9840",
+      "native_logs": {
+        "simple": {
+          "sha256": "3480bfacdb7c0fd04f1df2baeaba02eb62a44abcf79b03784349b3bff51a092a",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "45046b47248680a5938e54c662ec70ad58adcabaea97af5d520478d7d0be693c",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "2002faed86982c1b9e00912323c141a1c2d4fc99d57c1638d2fba9e0ebde333a",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "ef91019d4663bbf973c681913d591acf2e77f563f4f5f898df4fdf732ea7d5a2",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "0f8639938262bec188b92de7497d1bef37372f80fce29e0e9565535abc76772c",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "13526a8d9ba56165fa57630968f00bcc8e6ea5d54cd2f50ada3cf3c7f102932a"
+      }
+    },
+    {
+      "database": "cockroach",
+      "version": "25.4",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:12:08.309889+00:00",
+      "input_sha256": "0ac8f7fed5d1408ee6f1de289e49599497ac8d611caa122dcbfc75ab6c828fb5",
+      "native_logs": {
+        "simple": {
+          "sha256": "f9a46e3448a57a1995c51db263ea0804f8922a33688da1dca2ca0baeece19910",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "9d84c3cb2f1bb017404c0fb286efe8a4c82db8c39424c2ab50fc2914e3da2d38",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "bbc680c5e34a3350ff7d82a201d745ea89f4e11e8ce8bda1d49216e8e45b873d",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "88d712efd7d41bd03ecb8a1b46767d64b2d8a87aa26a613e738a1de0fe19e6be",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "2c72817c0172e335fab2339e6449bf1067a91516d15c0fca16a82df351ae3d10",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "13526a8d9ba56165fa57630968f00bcc8e6ea5d54cd2f50ada3cf3c7f102932a"
+      }
+    },
+    {
+      "database": "cockroach",
+      "version": "26.2",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:13:05.102641+00:00",
+      "input_sha256": "8e9844b2428958ad2d11cb711305baa8e2742f322e9842fb8498788a0419b334",
+      "native_logs": {
+        "simple": {
+          "sha256": "0c7fdc7510140093525c36f7cf05e9172a1d2bcacb5b035c4e0dd6080fb82333",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "41fa53e32289303831ac97996d190b4db4f2648db9de109f6d0c71fc2f089b28",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "c42746f9f2d5253c7600dae32a7de1e03872c1587666a34fb26d7b4098a8a4a0",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "b0392446dfec13fb083af7f5ba27e315db1cb3dcb8fc5c88152064c6dd01ef66",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "b01cc1af2628090c768bd5e7f2ee7823366265bdb0e0c3750785a4742cf9b179",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "13526a8d9ba56165fa57630968f00bcc8e6ea5d54cd2f50ada3cf3c7f102932a"
+      }
+    },
+    {
+      "database": "cockroach",
+      "version": "26.3",
+      "topology": "three-node",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:13:57.204341+00:00",
+      "input_sha256": "cd77a4131c548454b7397fca9256570d1d4a2ddbaaabc1051ba078ac03acc6f2",
+      "native_logs": {
+        "simple": {
+          "sha256": "8dfb0ada42347cf23ba9081c4801a432394d7b28519bddc4f2f7e5b1527ebd6b",
+          "terminal_errors": 0
+        },
+        "tpcb-tx": {
+          "sha256": "9722dd45f96c7f7e8a268901e252ddd3ef5f8d4bc6bbe5579dd4ae52335b6e83",
+          "terminal_errors": 0
+        },
+        "tpcb-procs": {
+          "sha256": "ce0b58cd0f1756cc2a2a3dda0c8d8e8d6b7429f2867bb6e1dbe3aef4c4f22c05",
+          "terminal_errors": 0
+        },
+        "tpcc-tx": {
+          "sha256": "eaf244c338eebb44d75e4dd6676b88ee3478092b9eb9d942b86bc501a25eafff",
+          "terminal_errors": 0
+        },
+        "tpcc-procs": {
+          "sha256": "2d449372ef1d36832293debdc9891c55fd4751db922a289104ec9cdec9300e48",
+          "terminal_errors": 0
+        }
+      },
+      "members_checked": 3,
+      "stroppy_binary_sha256": "7847e57607824494bdf279bfa5c58d6fa0a8ddaba2855c6b2fe3ebfff8bf0c70",
+      "sql_overrides": {
+        "tpcb": "873017a96e2010374ca1ee1f0c63fb58f2b0f257919496f526689fbc5bda8fd1",
+        "tpcc": "13526a8d9ba56165fa57630968f00bcc8e6ea5d54cd2f50ada3cf3c7f102932a"
+      }
+    }
+  ]
+}

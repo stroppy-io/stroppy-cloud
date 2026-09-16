@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/graphene-ci/pipeline/pkg/pipeline"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/provision"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -90,7 +91,7 @@ func TestContainerSpec(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if ds.Name != "postgres" || ds.Config.Image != "postgres:17" || string(ds.Host.NetworkMode) != "host" {
+	if ds.Name != run.RunID+"-postgres" || ds.Config.Image != "postgres:17" || string(ds.Host.NetworkMode) != "host" {
 		t.Errorf("spec = %+v", ds)
 	}
 	if strings.Join(ds.Config.Env, ",") != "PEER=10.0.0.20,PGDATA=/data" {
@@ -112,6 +113,31 @@ func TestContainerSpec(t *testing.T) {
 	}
 	if _, err := containerSpec(spec.Container{Env: map[string]string{"X": "${ip:nope}"}}, run, nil, a); err == nil {
 		t.Error("bad placeholder must fail")
+	}
+}
+
+func TestContainerEntrypoint(t *testing.T) {
+	r := sampleRun()
+	infra, infos := sampleInfra()
+	addrs := NewAddresses(infra, infos)
+	c := r.Containers[0]
+	c.Entrypoint = []string{"/bin/sh", "-c"}
+	c.Cmd = []string{"exec /ydbd server --host ${ip:db-1}"}
+	ds, err := containerSpec(c, r, nil, addrs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Join(ds.Config.Entrypoint, " ") != "/bin/sh -c" || ds.Config.Cmd[0] != "exec /ydbd server --host 10.0.0.11" {
+		t.Fatalf("process contract lost: %+v", ds.Config)
+	}
+	c.Entrypoint = []string{"${ip:missing}"}
+	if _, err = containerSpec(c, r, nil, addrs); err == nil {
+		t.Fatal("unknown entrypoint placeholder accepted")
+	}
+	c.Entrypoint = nil
+	ds, err = containerSpec(c, r, nil, addrs)
+	if err != nil || ds.Config.Entrypoint != nil {
+		t.Fatal("upstream image entrypoint overridden when omitted")
 	}
 }
 
@@ -167,5 +193,49 @@ func TestSegmentBound(t *testing.T) {
 	seg.Run = spec.RunParams{Executor: spec.ExecutorSharedIterations, Iterations: 10}
 	if segmentBound(seg) != segmentIterationsBound+10*time.Minute {
 		t.Error("iterations bound")
+	}
+}
+
+func TestContainerIdentitySeparatesRuns(t *testing.T) {
+	first := sampleRun()
+	second := sampleRun()
+	// Sharing the first eight UUID characters must not collapse two records.
+	second.RunID = "8f1c3f2a-0000-4000-8000-000000000002"
+	infra, infos := sampleInfra()
+	addrs := NewAddresses(infra, infos)
+	seen := map[string]bool{}
+	for _, run := range []spec.Run{first, second} {
+		for _, c := range run.Containers {
+			d, err := containerSpec(c, run, nil, addrs)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if seen[d.Name] {
+				t.Fatalf("two runs share container identity %q", d.Name)
+			}
+			seen[d.Name] = true
+			if d.Config.Labels["stroppy-container"] != c.Name {
+				t.Fatal("logical container label changed")
+			}
+		}
+	}
+}
+
+func TestContainerFlowsStayWithinRun(t *testing.T) {
+	run := sampleRun()
+	var options pipeline.ResourceOptions
+	for _, opt := range flowOptions(spec.Container{Name: "runner", Role: "runner"}, run) {
+		opt(&options)
+	}
+	if len(options.Flows) != 1 || options.Flows[0].To != "docker/"+run.RunID+"-postgres" {
+		t.Fatalf("flow must target the database of this run: %+v", options.Flows)
+	}
+}
+
+func TestValidateRejectsNestedWorkloadParamsBeforeProvisioning(t *testing.T) {
+	run := sampleRun()
+	run.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"tx","workload":{"script":"tpcb/tx","params":{"scale_factor":1}}}`)}
+	if err := validate(run); err == nil || !strings.Contains(err.Error(), "workload.params must be a scalar") {
+		t.Fatalf("validation = %v", err)
 	}
 }

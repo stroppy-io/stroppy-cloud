@@ -1,0 +1,956 @@
+{
+  "status": "passed",
+  "run_id": "matrix-mysql-clusters-fixed-babb0afe-mariadb-galera-114",
+  "checked_at": "2026-09-15T11:32:21.867364+00:00",
+  "source": "read-only SQL through ordinary agent shell on all three YC members",
+  "checks": {
+    "db-1": {
+      "agent": "1e5e059d-db-1",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "server_id": 1,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "wsrep": [
+        {
+          "Variable_name": "wsrep_local_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_protocol_version",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_application",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_protocol_replicator",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_gcs",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_last_committed",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_replicated",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_replicated_bytes",
+          "Value": "6296"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys",
+          "Value": "109"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys_bytes",
+          "Value": "944"
+        },
+        {
+          "Variable_name": "wsrep_repl_data_bytes",
+          "Value": "5152"
+        },
+        {
+          "Variable_name": "wsrep_repl_other_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_received",
+          "Value": "10"
+        },
+        {
+          "Variable_name": "wsrep_received_bytes",
+          "Value": "898"
+        },
+        {
+          "Variable_name": "wsrep_local_commits",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_cert_failures",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_replays",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_max",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_avg",
+          "Value": "0.2"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_max",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_avg",
+          "Value": "0.1"
+        },
+        {
+          "Variable_name": "wsrep_local_cached_downto",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused_ns",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_sent",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_recv",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_active",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_requested",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_cert_deps_distance",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_waits",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_state",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_local_state_comment",
+          "Value": "Synced"
+        },
+        {
+          "Variable_name": "wsrep_cert_index_size",
+          "Value": "103"
+        },
+        {
+          "Variable_name": "wsrep_causal_reads",
+          "Value": "19"
+        },
+        {
+          "Variable_name": "wsrep_cert_interval",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_transactions",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_connections",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_incoming_addresses",
+          "Value": "10.130.0.4:3306,10.130.0.9:3306,10.130.0.38:3306"
+        },
+        {
+          "Variable_name": "wsrep_cluster_weight",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_desync_count",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_evs_delayed",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_evict_list",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_repl_latency",
+          "Value": "0.00044685/0.000646134/0.000901297/0.000189688/3"
+        },
+        {
+          "Variable_name": "wsrep_evs_state",
+          "Value": "OPERATIONAL"
+        },
+        {
+          "Variable_name": "wsrep_gcomm_uuid",
+          "Value": "f12980f8-b0f8-11f1-a74d-a76f0e11e01f"
+        },
+        {
+          "Variable_name": "wsrep_gmcast_segment",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_checkpoint_position",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6"
+        },
+        {
+          "Variable_name": "wsrep_se_checkpoint",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6 0-1-7"
+        },
+        {
+          "Variable_name": "wsrep_applier_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_cluster_capabilities",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_cluster_conf_id",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_size",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_cluster_status",
+          "Value": "Primary"
+        },
+        {
+          "Variable_name": "wsrep_connected",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_local_bf_aborts",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_index",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_provider_capabilities",
+          "Value": ":MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO:"
+        },
+        {
+          "Variable_name": "wsrep_provider_name",
+          "Value": "Galera"
+        },
+        {
+          "Variable_name": "wsrep_provider_vendor",
+          "Value": "Codership Oy <info@codership.com>"
+        },
+        {
+          "Variable_name": "wsrep_provider_version",
+          "Value": "26.4.27(rf032a460)"
+        },
+        {
+          "Variable_name": "wsrep_ready",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_rollbacker_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_thread_count",
+          "Value": "2"
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    },
+    "db-2": {
+      "agent": "1e5e059d-db-2",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "server_id": 2,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "wsrep": [
+        {
+          "Variable_name": "wsrep_local_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_protocol_version",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_application",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_protocol_replicator",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_gcs",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_last_committed",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_replicated",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_replicated_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_data_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_other_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_received",
+          "Value": "7"
+        },
+        {
+          "Variable_name": "wsrep_received_bytes",
+          "Value": "6784"
+        },
+        {
+          "Variable_name": "wsrep_local_commits",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_cert_failures",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_replays",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_max",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_avg",
+          "Value": "0.333333"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_max",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_avg",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_cached_downto",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused_ns",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_sent",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_recv",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_active",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_requested",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_cert_deps_distance",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_waits",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_state",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_local_state_comment",
+          "Value": "Synced"
+        },
+        {
+          "Variable_name": "wsrep_cert_index_size",
+          "Value": "103"
+        },
+        {
+          "Variable_name": "wsrep_causal_reads",
+          "Value": "9658"
+        },
+        {
+          "Variable_name": "wsrep_cert_interval",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_transactions",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_connections",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_incoming_addresses",
+          "Value": "10.130.0.4:3306,10.130.0.9:3306,10.130.0.38:3306"
+        },
+        {
+          "Variable_name": "wsrep_cluster_weight",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_desync_count",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_evs_delayed",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_evict_list",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_repl_latency",
+          "Value": "0/0/0/0/0"
+        },
+        {
+          "Variable_name": "wsrep_evs_state",
+          "Value": "OPERATIONAL"
+        },
+        {
+          "Variable_name": "wsrep_gcomm_uuid",
+          "Value": "f90617c1-b0f8-11f1-b957-cb8c2afc2f89"
+        },
+        {
+          "Variable_name": "wsrep_gmcast_segment",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_checkpoint_position",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6"
+        },
+        {
+          "Variable_name": "wsrep_se_checkpoint",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6 0-1-7"
+        },
+        {
+          "Variable_name": "wsrep_applier_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_cluster_capabilities",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_cluster_conf_id",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_size",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_cluster_status",
+          "Value": "Primary"
+        },
+        {
+          "Variable_name": "wsrep_connected",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_local_bf_aborts",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_index",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_provider_capabilities",
+          "Value": ":MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO:"
+        },
+        {
+          "Variable_name": "wsrep_provider_name",
+          "Value": "Galera"
+        },
+        {
+          "Variable_name": "wsrep_provider_vendor",
+          "Value": "Codership Oy <info@codership.com>"
+        },
+        {
+          "Variable_name": "wsrep_provider_version",
+          "Value": "26.4.27(rf032a460)"
+        },
+        {
+          "Variable_name": "wsrep_ready",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_rollbacker_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_thread_count",
+          "Value": "2"
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    },
+    "db-3": {
+      "agent": "1e5e059d-db-3",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "11.4.13-MariaDB-ubu2404-log",
+          "server_id": 3,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "wsrep": [
+        {
+          "Variable_name": "wsrep_local_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_protocol_version",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_application",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_protocol_replicator",
+          "Value": "11"
+        },
+        {
+          "Variable_name": "wsrep_protocol_gcs",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_last_committed",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_replicated",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_replicated_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_keys_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_data_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_repl_other_bytes",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_received",
+          "Value": "6"
+        },
+        {
+          "Variable_name": "wsrep_received_bytes",
+          "Value": "6584"
+        },
+        {
+          "Variable_name": "wsrep_local_commits",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_cert_failures",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_replays",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_max",
+          "Value": "2"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_send_queue_avg",
+          "Value": "0.333333"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_max",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_min",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_recv_queue_avg",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_cached_downto",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused_ns",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_paused",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_sent",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_recv",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_active",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_flow_control_requested",
+          "Value": "false"
+        },
+        {
+          "Variable_name": "wsrep_cert_deps_distance",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_apply_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_apply_waits",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oooe",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_oool",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_commit_window",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_local_state",
+          "Value": "4"
+        },
+        {
+          "Variable_name": "wsrep_local_state_comment",
+          "Value": "Synced"
+        },
+        {
+          "Variable_name": "wsrep_cert_index_size",
+          "Value": "103"
+        },
+        {
+          "Variable_name": "wsrep_causal_reads",
+          "Value": "10960"
+        },
+        {
+          "Variable_name": "wsrep_cert_interval",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_transactions",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_open_connections",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_incoming_addresses",
+          "Value": "10.130.0.4:3306,10.130.0.9:3306,10.130.0.38:3306"
+        },
+        {
+          "Variable_name": "wsrep_cluster_weight",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_desync_count",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_evs_delayed",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_evict_list",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_evs_repl_latency",
+          "Value": "0.000280098/0.000630176/0.000991848/0.000295675/7"
+        },
+        {
+          "Variable_name": "wsrep_evs_state",
+          "Value": "OPERATIONAL"
+        },
+        {
+          "Variable_name": "wsrep_gcomm_uuid",
+          "Value": "08bcb21b-b0f9-11f1-88b0-fbacb181a685"
+        },
+        {
+          "Variable_name": "wsrep_gmcast_segment",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_checkpoint_position",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6"
+        },
+        {
+          "Variable_name": "wsrep_se_checkpoint",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f:6 0-1-7"
+        },
+        {
+          "Variable_name": "wsrep_applier_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_cluster_capabilities",
+          "Value": ""
+        },
+        {
+          "Variable_name": "wsrep_cluster_conf_id",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_size",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "wsrep_cluster_state_uuid",
+          "Value": "f12a709a-b0f8-11f1-abe5-4fdbc5c8f83f"
+        },
+        {
+          "Variable_name": "wsrep_cluster_status",
+          "Value": "Primary"
+        },
+        {
+          "Variable_name": "wsrep_connected",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_local_bf_aborts",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_local_index",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "wsrep_provider_capabilities",
+          "Value": ":MULTI_MASTER:CERTIFICATION:PARALLEL_APPLYING:TRX_REPLAY:ISOLATION:PAUSE:CAUSAL_READS:INCREMENTAL_WRITESET:UNORDERED:PREORDERED:STREAMING:NBO:"
+        },
+        {
+          "Variable_name": "wsrep_provider_name",
+          "Value": "Galera"
+        },
+        {
+          "Variable_name": "wsrep_provider_vendor",
+          "Value": "Codership Oy <info@codership.com>"
+        },
+        {
+          "Variable_name": "wsrep_provider_version",
+          "Value": "26.4.27(rf032a460)"
+        },
+        {
+          "Variable_name": "wsrep_ready",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "wsrep_rollbacker_thread_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "wsrep_thread_count",
+          "Value": "2"
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    }
+  }
+}

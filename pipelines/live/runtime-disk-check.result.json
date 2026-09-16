@@ -1,0 +1,98 @@
+{
+  "date": "2026-09-14",
+  "scope": "isolated YC runtime safety checks and completed real Graphene PostgreSQL pipeline with separate data disk",
+  "instance_id": "fv4v3fbk73udiqv6acvv",
+  "data_disk_id": "fv4r8anloac7v65fvjgd",
+  "boot_disk": "20 GiB, /dev/vda1 at /",
+  "data_disk": "10 GiB network-ssd, /dev/vdb ext4 at /data",
+  "postgres_image": "postgres:17@sha256:67f41722b7a8cbdb868a44a4995c846eddfdc2973bccb291ce937dce88ad5675",
+  "checks": {
+    "host_mount_visible": true,
+    "executor_file_api_sees_mount": true,
+    "postgres_rows_after_restart": 10000,
+    "repeat_prepare_preserves_data": true,
+    "remount_preserves_data": true,
+    "probe_failure_rejected": true,
+    "boot_disk_rejected": true
+  },
+  "cleanup": "VM and both disks confirmed deleted",
+  "graphene": {
+    "server": "0.2.4",
+    "agent": "0.2.1",
+    "pipeline_sdk": "0.2.4",
+    "docker_library": "0.2.1",
+    "infra_commit": "bbe541e84764af704a167385a6d610d85fe5490c",
+    "runtime_ci": "https://github.com/graphene-ci/agent/actions/runs/34839455794"
+  },
+  "pipeline_attempts": [
+    {
+      "run_id": "matrix-pg-disk-28a29dcb",
+      "status": "Canceled",
+      "disk_mounted": true,
+      "problem": "Docker healthcheck marker CMD-SHELL was passed as executable; fixed"
+    },
+    {
+      "run_id": "matrix-pg-disk-b12cb300",
+      "status": "Canceled",
+      "disk_mounted": true,
+      "problem": "upstream Docker installer stalled in child curl; bounded installer timeout added"
+    },
+    {
+      "run_id": "matrix-pg-disk-d34fab3a",
+      "status": "Canceled; cleanup completed",
+      "problem": "YC Create instance took about 8 minutes; cancellation requested while observed STARTING; operation completed before final status refresh",
+      "zone": "ru-central1-d"
+    }
+  ],
+  "remaining_observations": [
+    {
+      "component": "graphene transfer activity",
+      "observation": "server.resource.transfer retries with Heartbeat timeout while newly created VM resources are not ready; transferResource waits on entity command without heartbeatUntil",
+      "status": "not fixed"
+    },
+    {
+      "component": "node-exporter",
+      "observation": "diskstats reports unavailable /run/udev/data; device property collection disabled",
+      "status": "not fixed"
+    }
+  ],
+  "successful_pipeline": {
+    "run_id": "matrix-pg-disk-a-bcd2581e",
+    "status": "Completed",
+    "zone": "ru-central1-a",
+    "pipeline_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:f362b36acbe40414",
+    "input": "postgres-disk-zone-a.json",
+    "result": "postgres-disk-zone-a.result.json",
+    "database": "PostgreSQL 17",
+    "boot_disk": "40 GiB",
+    "data_disk": "100 GiB network-ssd, /dev/vdb ext4 at /data",
+    "iterations_total": 60516,
+    "segment_exit_code": 0,
+    "baseline_ok": true,
+    "baseline_warnings": [
+      {
+        "check": "noop vu scaling",
+        "status": "warn",
+        "detail": "scaling 43% below 60% — stroppy metric-pipeline contention or machine limits"
+      },
+      {
+        "check": "wire vu scaling",
+        "status": "warn",
+        "detail": "scaling 56% below 60% — stroppy metric-pipeline contention or machine limits"
+      },
+      {
+        "check": "loopback latency floor",
+        "status": "warn",
+        "detail": "wire p99 2.50ms above 1ms — VM steal, power saving, or a busy host"
+      }
+    ],
+    "artifacts": [
+      "artifact/bcd2581e-stroppy-baseline-log",
+      "artifact/bcd2581e-stroppy-smoke-config",
+      "artifact/bcd2581e-stroppy-smoke-log"
+    ],
+    "artifact_verification": "all three ready, verified=true, owned by stand/stroppy-run; config without TTL; log expiry 2026-10-14",
+    "cleanup": "Graphene run tree empty; YC instance, disk, network, subnet and security-group lists contain no resources matching any of the four pipeline attempts or two isolated test VMs",
+    "server_readiness": "Healthy"
+  }
+}

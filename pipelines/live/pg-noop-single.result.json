@@ -1,0 +1,177 @@
+{
+  "metrics": {
+    "execute-sql.failed_iterations_total": {
+      "value": 0
+    },
+    "execute-sql.failed_queries_total": {
+      "value": 0
+    },
+    "execute-sql.iteration_duration_avg": {
+      "value": 0.263,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_count": {
+      "value": 906537
+    },
+    "execute-sql.iteration_duration_p50": {
+      "value": 0.25,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p90": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p95": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p99": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.iterations_per_second": {
+      "value": 7554.459,
+      "unit": "iterations/s"
+    },
+    "execute-sql.iterations_total": {
+      "value": 906537
+    },
+    "execute-sql.measurement_seconds": {
+      "value": 120,
+      "unit": "s"
+    },
+    "execute-sql.queries_per_second": {
+      "value": 7554.459,
+      "unit": "queries/s"
+    },
+    "execute-sql.retry_attempts_total": {
+      "value": 0
+    },
+    "execute-sql.run_query_duration_avg": {
+      "value": 0.242,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_count": {
+      "value": 906537
+    },
+    "execute-sql.run_query_duration_p50": {
+      "value": 0.25,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p90": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p95": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p99": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_operations_total": {
+      "value": 906537
+    },
+    "execute-sql.terminal_errors_total": {
+      "value": 0
+    }
+  },
+  "segments": [
+    {
+      "name": "execute-sql",
+      "status": "completed",
+      "started_at": "2026-09-15T19:39:16.606319712Z",
+      "finished_at": "2026-09-15T19:41:21.252898436Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "iteration_duration_avg": {
+          "value": 0.263,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 906537
+        },
+        "iteration_duration_p50": {
+          "value": 0.25,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 7554.459,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 906537
+        },
+        "measurement_seconds": {
+          "value": 120,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 7554.459,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 0.242,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 906537
+        },
+        "run_query_duration_p50": {
+          "value": 0.25,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 906537
+        },
+        "terminal_errors_total": {
+          "value": 0
+        }
+      },
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    "artifact/7b66b6b6-stroppy-execute-sql-config",
+    "artifact/7b66b6b6-stroppy-execute-sql-log"
+  ],
+  "summary": {
+    "latency_p50_ms": 0.25,
+    "latency_p95_ms": 0.5,
+    "latency_p99_ms": 0.5,
+    "duration": "2m4.646578724s"
+  }
+}

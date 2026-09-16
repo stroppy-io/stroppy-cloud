@@ -1,0 +1,65 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-26.2",
+  "observations": [
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-1-picodata",
+      "observed_at": "2026-09-15T17:13:23.320074660Z",
+      "source_time": "2026-09-15T17:12:54.917000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "dd4ee62fc71ce0af8474ee142b9dab40d7a94f823235b01bc010c7ff9cb6a67b",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    },
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-1-picodata",
+      "observed_at": "2026-09-15T17:13:23.320668431Z",
+      "source_time": "2026-09-15T17:12:55.218000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "6b29fbd5e119f3ae0aaa0b45205a1451387d811e138962a7c6d3a4812c881b21",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    },
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-1-picodata",
+      "observed_at": "2026-09-15T17:13:23.320854808Z",
+      "source_time": "2026-09-15T17:12:55.224000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "d34457037b60639e445d11703871cd47dce871ae301c7070601f7ac366a29e0d",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    },
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-2-picodata",
+      "observed_at": "2026-09-15T17:13:20.440714532Z",
+      "source_time": "2026-09-15T17:12:55.223000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "305f99dc1b3b7a80342af16f0cfc1ccbc20c86472a7e42fd0c2d42fbdd97e103",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    },
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-2-picodata",
+      "observed_at": "2026-09-15T17:13:20.440769435Z",
+      "source_time": "2026-09-15T17:12:55.224000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "2ac862300c10d2566b86d112ed6dbe1255b0104eddc5f477b9ee6cadb5611aea",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    },
+    {
+      "entity": "docker/56d71524-2edd-4419-984d-3014f9e03a20-db-3-picodata",
+      "observed_at": "2026-09-15T17:13:22.244223132Z",
+      "source_time": "2026-09-15T17:12:54.918000+00:00",
+      "source_time_basis": "UTC Picodata log prefix from default UTC test container",
+      "message_sha256": "df2c042f9776d808366f345ccbc6cdaece57cf981b76eca79bbdb0a68b17b708",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T17:13:03.295416761Z",
+      "evidence": "Exact six startup reconnect messages predate workload start; all native error counters are zero and independent SQL checks cover every member. No general EOF exemption."
+    }
+  ]
+}

@@ -1,0 +1,1957 @@
+{
+  "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 21327,
+  "limit": null,
+  "read_mode": "stream_until_eof",
+  "runs_observed": [
+    "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-1-init": 9,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-1-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-1-ydb": 2218,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-2-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-2-ydb": 1206,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-3-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-3-ydb": 1821,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-4-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-4-ydb": 2209,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-5-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-5-ydb": 396,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-6-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-6-ydb": 969,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-7-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-7-ydb": 2000,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-8-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-8-ydb": 528,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-9-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-9-ydb": 1694,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb": 2004,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb": 391,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-node-exporter": 57,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb": 1995,
+    "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T23:04:47.727558582Z",
+    "end": "2026-09-15T23:07:59.693062294Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:05:10.260661591Z",
+      "message_sha256": "8a2ea5d8f543ce33d1b7ad569b407381dd2675043c1db925386f20f86a384fe4",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.850151+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:05:10.260689804Z",
+      "message_sha256": "6ad9d9a66305360bb4fdf5bcbfdbc87fcadc0ee3cd79591e00172d4d53edac3e",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.850503+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:05:10.26071852Z",
+      "message_sha256": "38528dca3faa4b23d10060619a21d13871504d0e8c54fdb98aac159e7af1a260",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:41.692314+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:07:41.783191688Z",
+      "message_sha256": "0ff8156a0e634214d692f39c22fbc096e3593e3edf862f6058a04b387a29d972",
+      "classification": "ydb_read_transaction_conflict",
+      "note": "Read was aborted because of a concurrent transaction; native retries and terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:39.119629+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:07:41.783200459Z",
+      "message_sha256": "d11417ba431e79ecf053520b44bf3c6e16ceb6512d876a5a2d2bda2e6dab1ecf",
+      "classification": "ydb_read_transaction_conflict",
+      "note": "Read was aborted because of a concurrent transaction; native retries and terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:39.119885+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:07:41.783218232Z",
+      "message_sha256": "d8c61a81b33f93802844c0fbe6060aded10bf57e7cd152a3a8e9bfef8f619d8a",
+      "classification": "ydb_read_transaction_conflict",
+      "note": "Read was aborted because of a concurrent transaction; native retries and terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:40.329245+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:07:41.783226862Z",
+      "message_sha256": "2fcfd19fc8e19eb177a2a355ad896a36df7c0a8bc52d5936024609d477811138",
+      "classification": "ydb_read_transaction_conflict",
+      "note": "Read was aborted because of a concurrent transaction; native retries and terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:40.329259+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393002207Z",
+      "message_sha256": "14451c70c24890d331fc191ea277521f3031f1ed30bb9cca52decdd042e0a156",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.807158+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393036209Z",
+      "message_sha256": "b6e7db69e91a9e4187faa3e26f04e6bb8196b8eb547ef4412e7380674d06d9bc",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.825179+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393062514Z",
+      "message_sha256": "198a027de2de94ecc78bc9c238c77aefdc13836d0957578bb66377ef2956304f",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.842811+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393086941Z",
+      "message_sha256": "1f08b9b92e66340f52c791ff90659cb98f75453c088a97e5b25256006334402e",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.860401+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.39314235Z",
+      "message_sha256": "bb40479061e0e732372ffadacec25d425bccac93dcf55c842f4c4820f03f2275",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.892078+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393564756Z",
+      "message_sha256": "8cddc8c470bd23dc90075332f3739ca1cd2b9d902b274744440ed513a88a2131",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.911362+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393604671Z",
+      "message_sha256": "3c05277a9090664aab4b495dec60823b461800f190e3938ebc5beb4b1ebd742c",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.925182+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.393652431Z",
+      "message_sha256": "6e4c0fee42e0d25d9b7334ee2f66715eb7667a2cda5e705668455dcb3dd71170",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.938825+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.39367724Z",
+      "message_sha256": "b049f1d19f19a42446d32c0eb6575b5e98ac77cda1cdbcb9bb9e05f081c8d2b5",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:07:18.952630+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.39604287Z",
+      "message_sha256": "d2d73d1d879ff8160747f4f96d60d6070e399f15b10e9a8f9fbf4a8a96bfc483",
+      "correlation": {
+        "read_conflict_hashes": [
+          "0ff8156a0e634214d692f39c22fbc096e3593e3edf862f6058a04b387a29d972",
+          "d11417ba431e79ecf053520b44bf3c6e16ceb6512d876a5a2d2bda2e6dab1ecf"
+        ],
+        "same_transaction_trace_session": true,
+        "cross_member": true,
+        "max_source_delay_seconds": -0.00099,
+        "allowed_delay_seconds": 1,
+        "cross_host_clock_tolerance_seconds": 0.025
+      },
+      "classification": "ydb_read_conflict_sibling_abort",
+      "note": "Correlated sibling cancellation: same transaction, trace and session as an explicit read-abort report (concurrent conflict or already finished transaction) on verified members, within one second. Pinned executor source propagates an ABORTED result to unfinished compute tasks. Native retries and zero terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:39.118639+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/kqp/executer_actor/kqp_executer_impl.h#L1094"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:07:41.396079768Z",
+      "message_sha256": "1f73b5779abb4ea7c492addb518e6dc721a37233d45475a5173956f13f43da92",
+      "correlation": {
+        "read_conflict_hashes": [
+          "d8c61a81b33f93802844c0fbe6060aded10bf57e7cd152a3a8e9bfef8f619d8a",
+          "2fcfd19fc8e19eb177a2a355ad896a36df7c0a8bc52d5936024609d477811138"
+        ],
+        "same_transaction_trace_session": true,
+        "cross_member": true,
+        "max_source_delay_seconds": -0.001341,
+        "allowed_delay_seconds": 1,
+        "cross_host_clock_tolerance_seconds": 0.025
+      },
+      "classification": "ydb_read_conflict_sibling_abort",
+      "note": "Correlated sibling cancellation: same transaction, trace and session as an explicit read-abort report (concurrent conflict or already finished transaction) on verified members, within one second. Pinned executor source propagates an ABORTED result to unfinished compute tasks. Native retries and zero terminal errors checked independently.",
+      "source_timestamp": "2026-09-15T23:07:40.327904+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/kqp/executer_actor/kqp_executer_impl.h#L1094"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.743855944Z",
+      "message_sha256": "17dfda756ac7138a68439a46709f30e2e67c98ec2ffb15c5ce8e8a2edc101a08",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:06:54.722340+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.743884669Z",
+      "message_sha256": "740e81aeb2fc13e8917e7bb696bf8499fed692facf00890181835b76200310e2",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:06:54.746865+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.744045187Z",
+      "message_sha256": "63b7438fe2ffc727cda711007fabdc62fe9cd8743794fde7e0944f6bf4d91559",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:06:54.770515+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.744076326Z",
+      "message_sha256": "36e7f23114a53ad866049fe06ea648cd3b891806952b6c689b241969eecb72af",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:06:54.793967+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:05:10.217767384Z",
+      "message_sha256": "e2dbca4a6a3dd922139c3d7a82f6944a2cf0aedf4fa8a9fe244dfd80e0ace82e",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.668171+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:05:10.217838853Z",
+      "message_sha256": "77e9f5f689eb3d0ca8f2d667be3e8960ae381d826806de28b7e54239a97b618b",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.668379+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-2-ydb",
+      "observed_at": "2026-09-15T23:05:10.218350128Z",
+      "message_sha256": "eb4276059f5d6a5bb65994920b32b6dc5492f12d8a6905a0d60c557eeb223779",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:41.564221+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745500223Z",
+      "message_sha256": "617b7bd95c756be799d9a073839f755bc97cff10dfbc4db2305f282960999e9d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.124931+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745510914Z",
+      "message_sha256": "6e3d6987dd76e036dba5ce86be4a53fa317b61f833e99324ffcd43bd1687a446",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.124977+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745555816Z",
+      "message_sha256": "bbccaf5c02e5495e96a68f476ef5ae83ff5dd63ab72ab9d36c1cc24c65b07bd8",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.125077+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745747839Z",
+      "message_sha256": "020b9ce16b789eb06946e857be2a5f895342e4264dff23235b6a9ef461aaf034",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.289903+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745778712Z",
+      "message_sha256": "2ffb440850073f3967f66a87e4da5565bed8bda922b666bfee683b0c7118e7a0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.289955+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745832757Z",
+      "message_sha256": "712da45dd5409252891de8b7877d96a6eb6c3e6e69531761701deb7080ba3866",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.449593+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745843365Z",
+      "message_sha256": "425d843f9ba79e2a1b5895cdcadb8d199b1dce272f1caef794a4b607ab49e2be",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.449620+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745885142Z",
+      "message_sha256": "909dca400e59bf642a631ba56a192af4ea5ba445f6c15174a16571a4b38f479c",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.449708+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.745937192Z",
+      "message_sha256": "19a1042e6635a3e8f8d6bbecd5671a756ead5cb6857637cedb58e5497d776779",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.613019+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74598462Z",
+      "message_sha256": "e6ce9c65efb8fb526ef57b85c977f9f08ced1e9ad0198152ef7291e8c4deef1f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.613066+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746015305Z",
+      "message_sha256": "10157a94ae064903839930b0f4a27c551913a3dadc544c44f8c9ffbe7332bf35",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.774984+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746034998Z",
+      "message_sha256": "70a95481a7215d4db88426bb980af2a3627614b214904ba4a1b2d8764c0e8d88",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.775017+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746077294Z",
+      "message_sha256": "79cc195ae92473912f6e5c1eb4bd47d840fbee5c97ba0582e3cf9c3639ccab8f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.775097+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746154633Z",
+      "message_sha256": "e10e56160b6e82119508dc9e27340572a3fd0791ce35418c5c3d3eb0167b4bb5",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.941907+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746175119Z",
+      "message_sha256": "e2149b96216a4bbf626e1ed1e5539fe22ed87827829736fc32e56f84d69dbf52",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.941930+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746212662Z",
+      "message_sha256": "4524b04a20a2742fae26a6cf941416aea8b435cbac4a3f0d1e1d18ba42580904",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:57.941997+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746261782Z",
+      "message_sha256": "f01a56bb37d3d4bbefbd2897f9d070c628c83f47e3659742a8a5247984663599",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.128856+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746292416Z",
+      "message_sha256": "df0b753b89992b5a8a26541dcda0d5c267892ec607c61970f983091c5a8317ee",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.128906+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746318778Z",
+      "message_sha256": "ebbf7e77c33841e2ddbce60c8b976ad6b8faffe292d362d408599063fcbe2416",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.449772+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746349729Z",
+      "message_sha256": "793747c17715aaccdfc17f514bf1b54f25dd656c37942ffbea45526b08debe41",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.449826+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746383025Z",
+      "message_sha256": "cae9cdbf6139c15f9d1621d121e981ca74f1b0c7ff7ed07c1b49d77907652447",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.619935+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74640075Z",
+      "message_sha256": "8baae93e883dfa40474f56b04a3390b08ad937b23031bbf0beed3d535e9d7e90",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.619958+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746443326Z",
+      "message_sha256": "280246f86c31005c01869d8d550f9d1f3adfbd6858f617edbcf96280bfc8d9d4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.620025+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746643992Z",
+      "message_sha256": "bd0ee736c0ac06a586fef9558d88b7c6b0a477c5edc422b34b5066b7a19ad3e6",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.776642+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746655945Z",
+      "message_sha256": "e512fb579d513c890486537c65b66dbc4e197465b09169f4034317b24b9a4ae4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.776661+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74670082Z",
+      "message_sha256": "9a41d32a79c8896db216c9f285e8d25aed31c7374fe239e97432ae050b9d6429",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.776725+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746775858Z",
+      "message_sha256": "c2f7801671e716b9b5b6ffa18129b23eb283fe3766d68200da389aa5ac2a4f70",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.925246+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746810413Z",
+      "message_sha256": "c571069d342103bcf0e9aa9274fd593db4776b5090e7cb9a03d673d562c52fa4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:58.925290+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746830593Z",
+      "message_sha256": "602fadc99d19e1c19c9e164baf7fe5df5d5ab57e76ec737be85eee5b4667e03a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.122457+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746863075Z",
+      "message_sha256": "175a85044703953c98c7031a85320c7ed6f163fc149bf797ef46e1b816e14b9c",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.122510+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746883771Z",
+      "message_sha256": "416075e0b52d11c5c935b361b78a49da1f566ae5d45b3096b764cbfb2f5a4320",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.430488+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746914176Z",
+      "message_sha256": "a912ab3581c11bbc49a580ca07dd61fc6d28ab7bf5149d15fa6dc0a517e3eae6",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.430535+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746945354Z",
+      "message_sha256": "4a885f5c1ac7a69f4f3cec63a3053e4d926a56833521985757f2fbc785605937",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.585057+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74695524Z",
+      "message_sha256": "2bf28583fc3faa486d2b8281a5d4d4dbc3f4500736eff0594c4cb2b565dafa02",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.585082+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.746994719Z",
+      "message_sha256": "93f7dfe35717f1a33da0beba084103cf57bba65c3e268cc27f3487f75402ebdf",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.585147+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74704338Z",
+      "message_sha256": "4d265d7768047a85b686bffe390ceb1e24f4b94f5a4b5594dd93ba0d88ed179d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.735472+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747075592Z",
+      "message_sha256": "29854500a81b015e177b2cec94e647156e53be6c312fdc1547c36dfc89e4cf68",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.735517+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747095533Z",
+      "message_sha256": "52c015dd10f1d071ad01268b480d661a9a5c559977b0c00db28fa8160a259c37",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.888805+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747123956Z",
+      "message_sha256": "d6d96ba31110b8a91233e0eec3af5df8e1490cf11d6135ad67edd2165d44c021",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:06:59.888844+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747144286Z",
+      "message_sha256": "4ebb6775ef4b8671f1448890bb0abdc7c511d7422bcaa8732e1881fffdb7c4c4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.044441+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747186754Z",
+      "message_sha256": "da0ae141aebe4227c68d8724672ee5a1a8b345ddc1df95f027d28076be80167a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.044499+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747205345Z",
+      "message_sha256": "5d6f896e180d276ca1ed599be4e23f1cc7b12741e8bd25dd375f9c2892d81d0a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.178708+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747236391Z",
+      "message_sha256": "420e19956a780f9991432d233a2bc5de7ef12ba3a69419d004bde6abcb0d813e",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.178764+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747255549Z",
+      "message_sha256": "4ffff5f7faccde9d16b9945d1efc2c7f871bfd8f8ad57a9de9e15cbfff3f60f8",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.385510+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74728337Z",
+      "message_sha256": "897178b15af7850015818e9f579a9e5ec31cf62cbe3cf80195d352f0988928ee",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.385551+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74731375Z",
+      "message_sha256": "9919a62b66dc50d041a41943878a5f15414d9da0886e91daef0e0d12c53a1bc0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.720327+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747341721Z",
+      "message_sha256": "e51cc02315b51171012ac66c085d47bd7fd4eb9812e27c9c68bf536e967a3123",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.720381+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74736186Z",
+      "message_sha256": "b430fb9913681cda47ba8528c4dfd092e3c11303bbbfe8b54087b855e093982f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.865460+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747400843Z",
+      "message_sha256": "2bf7bda5ee1a92550ebb139283552d6cabfd1ba76042c7aab57396dc3412aa89",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:00.865516+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747417612Z",
+      "message_sha256": "70f98f33b74125db53ee22a7b2870771f381acddcad27072419e28fab6f43693",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.026771+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747446013Z",
+      "message_sha256": "882ff2c3dc97ea0137336a5aa0aea3b0bbffc2122e489ba182ea0e485a875649",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.026824+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747467532Z",
+      "message_sha256": "bd20c807162ed8cdfc8198b90bf9d71636ebeddf05e9e33282d1e971a768b0a4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.190217+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747505146Z",
+      "message_sha256": "ccb79727009c3cb8d0247433a1ea01428b978eb5e46eb03f1106c8585fee20e2",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.190261+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747523554Z",
+      "message_sha256": "90fe12573827a533f7bcb4ba5a324bb692ba5edb505a65efa70c29eb06def6d9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.351965+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747553989Z",
+      "message_sha256": "731b8f1b5762029fd70dde4e983c0d891df0cc34c350c6dcf99d806d5cfdf403",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.352011+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747701574Z",
+      "message_sha256": "ebce96d6e3b7d4cfc79c60897f32f25d4352d089c0b29b010dcb144166162b54",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.505935+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747711379Z",
+      "message_sha256": "fe6099b5865bbeedbea4e826cef1791199366f255ee3fb022d3d4d2a0ba4aa4d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.505960+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747755335Z",
+      "message_sha256": "043e1dd6b2682c594213fa25aafae3175fa32e3b4401763a2705ba183804ddb0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.506023+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747814731Z",
+      "message_sha256": "9ffeef49be8ec98bb1a1fc8ba9963a24fcb8c7ccdbeebfaaf2cc4781f8b3a501",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.674267+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747884914Z",
+      "message_sha256": "999aef397cd753ad216fdb2372605f1eede5dbee733c78944d60646e6f251d37",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.674321+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747919062Z",
+      "message_sha256": "8e557974a7330a13c2443e1f44e81d8f7f25ec68b5915eb1fa41f7f7e9633d90",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.821689+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747972443Z",
+      "message_sha256": "f5ede9119be5ce5299691602e5bd547d4bf1b361a2c0ef08fb2ca64edc47f89a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.821731+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.747994717Z",
+      "message_sha256": "fc5ff46cef916cc13bccca55e135049f559e921c7240e1c9bcc1f327abc734e4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.980702+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748025952Z",
+      "message_sha256": "d1869f8cdcf84c4c45627904af75ce2a376fe30a720d8ed3f2d1a365d8a3e57d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:01.980747+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748046764Z",
+      "message_sha256": "825aea9c43d0d0f6d9e0c5e6b60af0d8e9e3e84219fd0d21b97d18e70c9e1a4c",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.132659+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74807762Z",
+      "message_sha256": "f750e29a38b5ee4be83f95b09faa0ed380ad41ade87a92f5773f644f57d90f59",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.132713+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74810418Z",
+      "message_sha256": "9b8dde69b90240a0dc03eece8e9e355d58d064047bd052589d89f08a78e3b721",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.298541+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748148883Z",
+      "message_sha256": "710a4d178874d81ab85b2c6dad745121d68912310dcde84b4ff4b3093da92e74",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.298587+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748191895Z",
+      "message_sha256": "e9277a0174643d2a9e79684f49b45e57b6874b4c0c469b4b8ff659ce43a241c2",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.448198+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748210713Z",
+      "message_sha256": "7a1f7c3fa069fdfbe7a0517ffe76b3e873abaf299204a3c71bf760435fe6cd79",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.448221+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748262316Z",
+      "message_sha256": "54d24b3c93da2a5b0ebfd14f68d547c3339ea04aeb7e30ec36a1c4c82a2f1fc3",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.448280+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748316755Z",
+      "message_sha256": "bf4cf5f05b2911c6fd8607f5847dd6ddbf2b42f0999997a1c1b99d44b769436e",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.628679+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74834202Z",
+      "message_sha256": "05d938840078a04ff9c9dc966122e2927c7c5d69bba9bba8e821a84434e0c5fa",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.628728+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748361675Z",
+      "message_sha256": "d5beed7df965a44cc11be1ea43b98916c5a91f5ed1ecdf3bfff6e629d18b0f76",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.958810+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748389598Z",
+      "message_sha256": "3c884b0f72730c5713a6b6738929028a2251cf3c08b16a289f119c55b4e0d9cf",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:02.958868+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748409788Z",
+      "message_sha256": "6ede66966ae5862b90212fd816a3e890d10c4a251c69dfff307b304346a66584",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.118776+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748450555Z",
+      "message_sha256": "1f06049ae4b7d153e987f128d0326b7889328166f2134bc0b899f6178175eddc",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.118817+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748480959Z",
+      "message_sha256": "398d1af36cd5b81f3cb38cb38dc2a961b9d04b912e799e2fb9ec29591855bff7",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.257179+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748519894Z",
+      "message_sha256": "c57da7a53a780315ef620e7a9520c1824d80458331e2248765010d0337e84327",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.257234+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74856003Z",
+      "message_sha256": "485a6badc770186f78cf3236bd8a38fb486ccd8da79382cc4a01a8ec6ab4cffb",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.441964+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748604611Z",
+      "message_sha256": "58ca517b8781a08f26e3b5caf71fe1202191856c79abf492989d07b82c6da51a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.442007+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748632462Z",
+      "message_sha256": "2da4fec6f80ff24e9848621a7bd683adc4796a795b7e5de42a144479c3a8d9db",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.766895+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748641622Z",
+      "message_sha256": "1479c94089f7ed232863b03faf926497575d2656a7ae52774adbdb61d15e5a96",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.766917+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748687552Z",
+      "message_sha256": "986a09e3c4958b16b1887bb9d5d79427737d480e2fec0c4e8b1808d08ca3ad3b",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:03.766973+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748743378Z",
+      "message_sha256": "ddef00807546a666423e0a44a754238d29d8802340e2954cc08716d3f357bae3",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:04.265977+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748869824Z",
+      "message_sha256": "c5aa8c9222757489b9554156354bd7afbb471e05232b43f944af22316b666467",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:04.266377+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74891352Z",
+      "message_sha256": "737f1946e684595118f2f9bc992023df57dca5023a7fe0fc4b7d0eaeba672b6c",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:05.314760+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.748928057Z",
+      "message_sha256": "f36f96da336570e3ec5b0a33e34e229fe7c84efdd183cbdc798a179621dd4b0a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:05.314790+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74897178Z",
+      "message_sha256": "c0879005dd05a7ca36b6f2ad1370755c578e9b14f1e16342d37455172ebc70f1",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:05.314863+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749019916Z",
+      "message_sha256": "a77949a8a4986273b590ec32ede975d5b2ae15ad15f3fc782b8250b51fb77c95",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:06.554563+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749048693Z",
+      "message_sha256": "b8ebb5515d5c6ddaed019b5c74145ebff7f5bb15a679caefbae1bd51efa662cd",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:06.554607+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749084344Z",
+      "message_sha256": "7350737489971cfe1453e9049ff53e84de951979441602f3b1d33e680de6bafd",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:07.647286+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749102074Z",
+      "message_sha256": "c0bd5e9ee944ca97061504979d489461233c65f070d146aa0a5f6013bd347687",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:07.647330+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749113064Z",
+      "message_sha256": "ccb26d55b2d23c91a2e11abad5055270b51fac7ba28aaf37d57f113d5db7519d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:08.882870+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749131599Z",
+      "message_sha256": "1b964027f520db99032612eed079a6b79c5a79be1ffabe365c8e6365481f9001",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:08.882915+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749143511Z",
+      "message_sha256": "5dfefd3c4532d73e5b6a238174bba988f40ebfbf1bd7ffe9dff93c12691558a1",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.007617+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749183668Z",
+      "message_sha256": "6eb5259439da7123a287fc72da2521e0ad5a2ff762135467f362d4dc6772e0a0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.007659+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749235261Z",
+      "message_sha256": "aad35a28bda93b85f95f389337fddb650e25ba8b8629812cb8e3a6a513f9fee0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.222222+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749246999Z",
+      "message_sha256": "9d1ea73f06b6ecc623de726efe1fa9ec4969b94add475da0966d576742a62f9f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.222249+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749285583Z",
+      "message_sha256": "f011a6a020f4771bd92609a5b3aaafa0477b89d24c12a1d532f09e899217fd4f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.222318+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749320809Z",
+      "message_sha256": "8b030cfa479b50155c9e907f80cc08055362679fb091d5a349e2a23ed6d84ba3",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.569124+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749338392Z",
+      "message_sha256": "96d59d573b089bdeea4ccb98a83f0ac7e631205b569722e7e597dd4627fb27c9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.569191+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749350243Z",
+      "message_sha256": "4964c72f12d31f0f16fbd96911d9fef529f6bbc4ba33a4b3a2e3f6b46e1914cd",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.719783+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749368513Z",
+      "message_sha256": "56417ae9e868e584a46d40c5e40849983fd4e5be3bd4b991f4ef7bcc47a890e9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.719836+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74938172Z",
+      "message_sha256": "49619c277fee749cfbbd0501147c160b5dbfa03f5982dff63e8e7c307c28c47f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.859420+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749423839Z",
+      "message_sha256": "3f1b3b7ef26f6a1e7bf7788b1ed89bf214dd66c13dbed7f2be9d258dfc88c0e7",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:09.859475+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749436581Z",
+      "message_sha256": "536626a08b4f9d3d37e5fed22c7837eef487222f69eb291791e17508768a0d5d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.062936+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749456931Z",
+      "message_sha256": "f5ead6674bdc9c281e7c561733a56f8b1911963c496e0885fd4432c6c51e94b4",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.062996+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749480878Z",
+      "message_sha256": "e056869efdbac832e5814af244e778b7d98fbf3fbf52bfa32553b09c867b80b0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.202003+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74951023Z",
+      "message_sha256": "1ad76bc20f298dee3e1d8e780a84d9ca62feee4b4433198f1b0d4539970804b0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.202056+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749530507Z",
+      "message_sha256": "5d8ee17913f40944b12209a59b5043b20df33493cf3024bd2437555f7b199df9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.330965+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749563223Z",
+      "message_sha256": "11f4de09f1d211eddb8f162e43d2d0966f9d9d4406d6bcff4ba3d4fc0c93bfba",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.331016+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749581252Z",
+      "message_sha256": "df7106eabc02a59f6ed35eb053d27947d7087669cf8721498b40f69469c730c9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.538364+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74960991Z",
+      "message_sha256": "703a538cb3dfeff018f15aba2fd2ce38de998ef7d6832e54d81c329cdcb6ca9b",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.538417+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749633173Z",
+      "message_sha256": "baa1f8a5ba1a10a4ddcd9d0562ae4fad5bc9d4f898fe2df2f6eb5e8a9e6c5f69",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.663340+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749657744Z",
+      "message_sha256": "66bb4f39fa701262b5cf195ee7452d43fc4cceee1ca437405f5ebdf6919e674e",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.663386+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749728406Z",
+      "message_sha256": "81380021018b911deb25df89a1090784906f0b3619c869d9c71dbaf619d84f8d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.880463+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749747768Z",
+      "message_sha256": "d9400bd7d6309ec93d7bc52033b6027fd4b52b0c9cedfdd658ddb6ee9419ef68",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:10.880503+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74975983Z",
+      "message_sha256": "f28c4ed9311a9fad80acb02115281b64e73f8631d42e800a1878dec87c69d99c",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.031665+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749778838Z",
+      "message_sha256": "67dfe97fc9847fe1b25c15e5609c364b4eb1b5027c424cf75a5dbcd268f57d45",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.031706+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749796139Z",
+      "message_sha256": "1175a0adc84f8729de194f0dde67683918370647c018f9f7971ecf11ec32647b",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.176328+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749825295Z",
+      "message_sha256": "a459fd40233f6b55564c55c5bea1f110c92f1d0e1e145c19f3e7bbf226fa0e37",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.176381+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749838921Z",
+      "message_sha256": "ac0af89d1b7d07f0dfdb8780604c3c2e3ed79aeb570358ac2886267ba1701680",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.299867+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.74986407Z",
+      "message_sha256": "416eed2c8f886b30033d2fde865d522a3c0bc2c3c5a47b6d12c37d30b73a6d89",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.299923+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749904013Z",
+      "message_sha256": "050ed092bd6a17c61f3342380e652c57762577223c9b81c303bc5d9db4762dd2",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.494435+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:11.749933145Z",
+      "message_sha256": "8fd3300c7fd7e39cb522a47a2f6e4e5771fc73d1d0c924b6fa321dd1b4801ed5",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.494476+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129639996Z",
+      "message_sha256": "758a2ee932431df2b2ddeb0c556f040b143978d10708c7e3fdf43ff9b4ed0338",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.843699+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129724815Z",
+      "message_sha256": "6ef63f434fea82cf204e6fe8231199e8d96f5c9920ee91c1f3c81c7517bca476",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:11.843755+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129745953Z",
+      "message_sha256": "0c370bd95f41805d0622532a7c8d67cd9077dd88c1829b9ae8ec7d4cdb4e3f27",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.370013+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129777279Z",
+      "message_sha256": "fa876d2e8723d3a92c4fc6a847b79f83c138fac5a2b5d3a3df7a62fb41263756",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.370064+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129796215Z",
+      "message_sha256": "b65ee3eb294e7a870f4fc1052e38599700f9a32d8e3bc7abc411cd1e7398f712",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.530992+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129827519Z",
+      "message_sha256": "fe8a20484f3b9219fa568700854adf18cf61ea42c18b7f0d6a9e26022e9396b0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.531039+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129858023Z",
+      "message_sha256": "88fdbb845ce56edd7b938eac41b56a5d4516092c2f260113040a85662f6af452",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.687452+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.129870036Z",
+      "message_sha256": "4c869c532dd4d7c34e859cc5a2e407c7952ffe6fd40d1ccef4bb6f73603e1a3a",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.687474+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.12995518Z",
+      "message_sha256": "6092764834bcd1db62069f03f050cd9da994aaf61cf1b67dbabeacf447c35e24",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.687560+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130007933Z",
+      "message_sha256": "30e25f90acaa4f5dfef6b53707376af18a6fb2265c9825e6d80943da3d801460",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.846641+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130039815Z",
+      "message_sha256": "183fcdbda6abeded2e08fc264b3a5b046519f34279e5165bce26f67ba0b4d0f3",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.846681+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130062845Z",
+      "message_sha256": "3b6cfc7963a27024d126b6b2e803f145b22a044c0b8b96b3846c8cdecd3ea4a5",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.996875+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130094209Z",
+      "message_sha256": "b74a4e808d9ea373b33b5ef3bfb70a80103f9a849157baa2f0e7068ee06d4d69",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:12.996921+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130116329Z",
+      "message_sha256": "6fd7284e87cfd99baa7563e89c41824d8ca8c02530aef7cab16b37a5ab21c43d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.150437+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130148373Z",
+      "message_sha256": "2d979e06c34f930c9d75c61c5a16b4348b186e4271684da09a1ad2bc208ad848",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.150485+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130183701Z",
+      "message_sha256": "e802794427ef245e8ff1ef5db4cc2153e38aeaeae3803659ffbc0a16b23db393",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.293677+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130216078Z",
+      "message_sha256": "d61c6e8beffc228d429eef3e219845011440f15517c2013625a949df73bb9805",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.293741+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130445432Z",
+      "message_sha256": "5d06dcac647395db1f98f7ed1239629472413e836ef6f3428d58a7c6b217da90",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.494416+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130493172Z",
+      "message_sha256": "d3bd60d0811dc52370aafc0d70b7f01655307fd42da634642687ff702efa39e3",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.494478+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130514631Z",
+      "message_sha256": "7d97f559bc9c834493c47cc39880d11a1af5e83cb1d55b30b6d1b64ce0c376af",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.839291+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130546457Z",
+      "message_sha256": "070d97e7ce9a2d8b3e25d165971c85b4128ac3f0671ac006016f957e8c129f5f",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.839346+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130567277Z",
+      "message_sha256": "b0e0680f4ff7d8fa20d60b799decc87b2cecc5172bdcdf1741fdcfa68d254941",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.996648+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130619025Z",
+      "message_sha256": "b070aa00dc1018a8ec6f59260295fbfacff2795663d48e870da35711327f44ba",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:13.996688+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130654204Z",
+      "message_sha256": "fdf692504b9621b86a0183eba2665b57a11b0f243378188b59693881cbdbc6ef",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.149344+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130699622Z",
+      "message_sha256": "5f8d35f904a2b975567e25b2ec0748d2d495152c7f153d0b8a337607a75ad53b",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.149397+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130720572Z",
+      "message_sha256": "7fd467bb5b733a0118708d629482a6a45d110da1f46864a433c31f17014cf0b0",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.315236+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130752227Z",
+      "message_sha256": "681d43ed913e2af2ce93cfae097ee1edf52bb6aa5e38313438c776bc314adb93",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.315291+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130777907Z",
+      "message_sha256": "eeec1b1f44693418c28eaf5b72d74dc206198df61af72ae5fd46782c123f63e8",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.463323+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.13081779Z",
+      "message_sha256": "7dfad87426d95ac93719e36be9d808ccac02b2791f8591ab1f8a4e6527ee1088",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.463362+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130839592Z",
+      "message_sha256": "b8e2984f37dc38867371af490f9b109e312d8f37eead69f231a14315d73d5fbe",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.615892+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130874609Z",
+      "message_sha256": "6bdcd5260e829518caa7635bcd95efc02ceee7be707c3dcd776422445c86e36d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.615947+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130894579Z",
+      "message_sha256": "544823cc4eafcd68df3fa61021d237f136c07549e4703db2aef9e7e28c059516",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.744291+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130926609Z",
+      "message_sha256": "edb1c96e23f5c4cc05b57467032f02e9be61a05b46264ff3e9998806a95c32ea",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.744331+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130946606Z",
+      "message_sha256": "c9cf2b5df0927a19d9b95ff664cf7ad587e07b69353a5a0e35d32dcd9064f487",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.929495+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130976793Z",
+      "message_sha256": "00e957a5a76f878283b5815e45b02eb20862b268fd5a81d85aa23b558254f310",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:14.929562+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.130998544Z",
+      "message_sha256": "8eebad42720a4c3705ffd319ab7178d21c34e855c6bce035733f978a0f326d47",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.235544+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131028619Z",
+      "message_sha256": "df549e9521040d82b483b32eda5562816a1874d1694070b1ea0382453efbf72e",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.235595+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131048932Z",
+      "message_sha256": "ad9ea9deaf6fba80233df7446e9ac04ca696da63a4c531b91dbd9a90ab251639",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.816320+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131184263Z",
+      "message_sha256": "a2d3ffee88b2a02ff992e356dd9be4a818eadc7a3cda83198fb0b6213b1a1205",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.816374+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131207078Z",
+      "message_sha256": "8221dd30c8a1904087662b4983b1672506b381e1c59b246ca60386bb66b0ecad",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.978542+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131237775Z",
+      "message_sha256": "5f41aead2fa71396caf9b5aa73c343920f271a48fd6e0ead21111541218cb3b7",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:15.978589+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131258786Z",
+      "message_sha256": "375827b1ca944ff876f3c7e3ea3371e06d80849efd04275b462e3290280a6db2",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.122310+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131289909Z",
+      "message_sha256": "67f367bd929c7945289e3a635a894bb4109c2864ae6392b150889b1685cafdac",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.122353+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131309923Z",
+      "message_sha256": "75966225f8a6a38215f7d6b5760f72c4e7bbde68334ff3c2a885442c69013909",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.284709+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131354031Z",
+      "message_sha256": "8caca2f23063ba054c38db0aa300dbc3b00ec232f1d011bb579873d8e4fa0d79",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.284751+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131374615Z",
+      "message_sha256": "936e5a718c9bc40b3022b7a06b6b988c03af1251c258672ef33f60926b1a1cab",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.417619+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131403738Z",
+      "message_sha256": "b8b454875e033794caa9e9c15d81dd001f8790ee2d38f272e4c97fb6652c910d",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.417670+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131423048Z",
+      "message_sha256": "3472b02e4c54d65829eddb2bdf1b0c7c56846182539c506cf61fab3e1f57d962",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.611589+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131451368Z",
+      "message_sha256": "d9192c00db165b082f53f51b3c48560543a8645a2e56cf4343f745670c775620",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.611636+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131480234Z",
+      "message_sha256": "f6f77488b2fe7652839e4449d391932cbff53ef926c384c16bd8c51fc079c439",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.930326+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.13148977Z",
+      "message_sha256": "5b6e9c898172f635d316af16f764b7d266c45d26d9ed423bc040603bcc65a23e",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.930353+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-3-ydb",
+      "observed_at": "2026-09-15T23:07:42.131528729Z",
+      "message_sha256": "14b36d9999c34f2b75e2c57dac44c5709755278cc6c1682c74966450c24df0b9",
+      "classification": "ydb_transaction_conflict",
+      "note": "Optimistic lock conflict; entire transaction must be retried. Native retry counters retained; terminal errors are checked independently.",
+      "source_timestamp": "2026-09-15T23:07:16.930434+00:00",
+      "reference": "https://ydb.tech/docs/en/reference/ydb-sdk/ydb-status-codes#400040-aborted"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:05:10.287600395Z",
+      "message_sha256": "166213afcd70f95b215062eebf7ac0b945ba7637cc22f48bb4bde75668177f22",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.821164+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:05:10.287633078Z",
+      "message_sha256": "eae224c6e192fbc814dc77231b53dd3449d69a7d8b92c8820af9a2a123749a5e",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:40.821530+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:05:10.28767145Z",
+      "message_sha256": "a09eb73566e3b99a41489980cf20e61befff622d3f3bacdb37dbc8086c76d8f1",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:41.740104+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-compute-1-ydb",
+      "observed_at": "2026-09-15T23:05:10.288143815Z",
+      "message_sha256": "4252d46e4807f1c3dcce20fc80499f47c2f32efd38f3abd1cd8b048ffb81ce0f",
+      "classification": "ydb_initial_drop_missing_table",
+      "note": "Exact missing-path status during successful DROP TABLE IF EXISTS setup; source timestamps matched to downloaded Stroppy step boundaries, 50ms cross-host tolerance; exact schema-drop counts are required.",
+      "source_timestamp": "2026-09-15T23:04:52.510226+00:00",
+      "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/tx/tx_proxy/schemereq.cpp#L570"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-5-ydb",
+      "observed_at": "2026-09-15T23:05:05.702883657Z",
+      "message_sha256": "c24707c685ef94e63d36044c35df3b35f0f25db80729555a9ca316674e90b4a9",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:36.094461+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-5-ydb",
+      "observed_at": "2026-09-15T23:05:05.702927955Z",
+      "message_sha256": "56cee44532e665713f3ed308e2753884fb669f7feb6020ac7d229c955fd4ee22",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:36.095090+00:00"
+    },
+    {
+      "entity": "docker/e2b133cc-171c-41ba-93d1-da1b370a03be-db-5-ydb",
+      "observed_at": "2026-09-15T23:05:05.703369843Z",
+      "message_sha256": "6b3854c49271a0de6436128cfaf786f924bc1ba81c037327432a5c2113d7c3c0",
+      "classification": "ydb_bootstrap_before_workload",
+      "note": "Container source timestamp precedes the first workload; ingested later. All expected members subsequently passed Green/RUNNING/storage HTTP checks. Bootstrap message retained.",
+      "source_timestamp": "2026-09-15T23:04:37.057942+00:00"
+    }
+  ],
+  "observation_counts": {
+    "ydb_bootstrap_before_workload": 12,
+    "ydb_read_transaction_conflict": 4,
+    "ydb_initial_drop_missing_table": 14,
+    "ydb_read_conflict_sibling_abort": 2,
+    "ydb_transaction_conflict": 178
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T09:45:41.424288+00:00",
+  "checks": [
+    {
+      "run_id": "matrix-mysql-family-19fb11ff-mysql80-semi-sync",
+      "deployment": "graphene-run-t-stroppy-live-matrix-mysql-famil-7c7884a3377c2250",
+      "ready_replicas": 1,
+      "worker_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:e2a556fc48662098"
+    },
+    {
+      "run_id": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+      "deployment": "graphene-run-t-stroppy-live-matrix-mysql-famil-fa89c1a47fd1280a",
+      "ready_replicas": 1,
+      "worker_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:e2a556fc48662098"
+    }
+  ]
+}

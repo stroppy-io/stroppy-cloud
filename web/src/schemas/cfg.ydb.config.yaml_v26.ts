@@ -41,6 +41,8 @@ export interface CfgYdbConfigYaml26Item3 {
 
 /** root */
 export interface CfgYdbConfigYaml26 {
+  /** Static group fault tolerance. static_erasure — erasure scheme of the static blob-storage group, filled by the server from topology. */
+  static_erasure?: "none" | "block-4-2" | "mirror-3-dc";
   /** Drives. The pdisks of one host configuration. Filled by the server from pdisks_per_storage_node. */
   drives?: Array<CfgYdbConfigYaml26Item>;
   /** Host config id. host_configs[].host_config_id — the id every host references. */
@@ -117,6 +119,8 @@ export interface CfgYdbConfigYaml26 {
   readonly storage_pool_block?: string;
   /** Rendered state_storage. */
   readonly state_storage_block?: string;
+  /** Rendered system tablet channels. Three channels for system tablet profile 0, derived from the first configured storage pool. */
+  readonly channel_profile_block?: string;
   /** Rendered feature_flags. */
   readonly feature_flag_block?: string;
   /** Rendered extra sections. */

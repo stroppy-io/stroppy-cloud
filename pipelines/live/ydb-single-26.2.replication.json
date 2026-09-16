@@ -1,0 +1,118 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-26.2",
+  "checked_at": "2026-09-15T20:04:32.557283+00:00",
+  "source": "Read-only HTTP node, tenant and storage state through ordinary agents on every YDB YC member; all catalog members healthy at expected version",
+  "checks": {
+    "db-1": {
+      "agent": "58f8a75b-db-1",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.2.1.14.1bd0f9c",
+            "state": "Green",
+            "roles": [
+              "StateStorageBoard",
+              "Bootstrapper",
+              "Storage",
+              "StateStorage",
+              "SchemeBoard"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 50000,
+            "version": "26.2.1.14.1bd0f9c",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "none",
+            "state": "Green",
+            "vdisk_nodes": [
+              1
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "none",
+            "state": "Green",
+            "vdisk_nodes": [
+              1
+            ]
+          }
+        ]
+      }
+    },
+    "db-compute-1": {
+      "agent": "58f8a75b-db-compute-1",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.2.1.14.1bd0f9c",
+            "state": "Green",
+            "roles": [
+              "StateStorageBoard",
+              "Bootstrapper",
+              "Storage",
+              "StateStorage",
+              "SchemeBoard"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 50000,
+            "version": "26.2.1.14.1bd0f9c",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "none",
+            "state": "Green",
+            "vdisk_nodes": [
+              1
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "none",
+            "state": "Green",
+            "vdisk_nodes": [
+              1
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

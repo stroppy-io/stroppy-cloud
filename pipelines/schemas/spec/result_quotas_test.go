@@ -9,6 +9,7 @@ import (
 func TestResultQuotas(t *testing.T) {
 	schematest.Run(t, ResultQuotas(), schematest.Cases{
 		Valid: []map[string]any{
+			{"observed_at": "2026-09-12T10:00:00Z", "unavailable_reason": "permission_denied", "scope": "cloud:b1g", "quotas": []any{}},
 			{
 				"observed_at": "2026-09-08T10:00:00Z",
 				"quotas": []any{

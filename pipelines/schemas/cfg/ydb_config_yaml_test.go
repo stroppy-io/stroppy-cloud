@@ -3,6 +3,9 @@ package cfg
 import (
 	"testing"
 
+	schemapb "github.com/gopherex/schemapb/go/schemapb"
+	"gopkg.in/yaml.v3"
+
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/internal/schematest"
 )
 
@@ -20,6 +23,7 @@ func ydbFull() map[string]any {
 	}
 
 	return map[string]any{
+		"static_erasure": "mirror-3-dc",
 		"host_config_id": int64(1),
 		"drives": []any{
 			map[string]any{"path": "/dev/disk/by-partlabel/ydb_disk_ssd_01", "type": "nvme"},
@@ -123,4 +127,56 @@ func TestYdb26(t *testing.T) {
 
 	out := renderDefaults(t, Ydb26())
 	dontWantLines(t, out, "metadata:", "kind: MainConfig")
+}
+
+func TestYdbDriveMediaRendering(t *testing.T) {
+	schematest.Run(t, Ydb26(), schematest.Cases{
+		Valid: []map[string]any{ydbFull()}, Render: "conf",
+		Contains: []string{"path: /dev/disk/by-partlabel/ydb_disk_ssd_01\n    type: NVME"},
+	})
+}
+
+// Profile zero is mandatory for system tablet startup in configuration V1.
+func TestYdbSystemTabletChannels(t *testing.T) {
+	for _, s := range []*schemapb.Schema{Ydb25(), Ydb26()} {
+		for _, tc := range []struct {
+			media    string
+			category int
+		}{{"ROT", 0}, {"SSD", 1}, {"NVME", 2}} {
+			input := ydbFull()
+			input["storage_pool_types"].([]any)[0].(map[string]any)["pdisk_type"] = tc.media
+			vals, result, err := s.Resolve(input)
+			if err != nil || result.Blocking() {
+				t.Fatalf("resolve: %v, %v", err, result)
+			}
+			out, err := s.Render("conf", vals)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var conf struct {
+				StaticErasure string `yaml:"static_erasure"`
+				Channels      struct {
+					Profiles []struct {
+						ID       int `yaml:"profile_id"`
+						Channels []struct {
+							Erasure  string `yaml:"erasure_species"`
+							Category int    `yaml:"pdisk_category"`
+							Kind     string `yaml:"storage_pool_kind"`
+						} `yaml:"channel"`
+					} `yaml:"profile"`
+				} `yaml:"channel_profile_config"`
+			}
+			if err := yaml.Unmarshal([]byte(out), &conf); err != nil {
+				t.Fatal(err)
+			}
+			if conf.StaticErasure != "mirror-3-dc" || len(conf.Channels.Profiles) != 1 || conf.Channels.Profiles[0].ID != 0 || len(conf.Channels.Profiles[0].Channels) != 3 {
+				t.Fatalf("invalid system channel profile: %+v", conf)
+			}
+			for _, c := range conf.Channels.Profiles[0].Channels {
+				if c.Erasure != "mirror-3-dc" || c.Category != tc.category || c.Kind != "ssd" {
+					t.Fatalf("channel does not match storage pool: %+v", c)
+				}
+			}
+		}
+	}
 }

@@ -36,15 +36,17 @@ func orioledbRecipe(c *compilation) error { return postgresFamily(c, true) }
 func postgresFamily(c *compilation, oriole bool) error {
 	p := c.params()
 	if strParam(p, "ha", "none") == "patroni" {
-		return errs.Newf(errs.CodeInvalid, "params.ha: patroni is not launchable yet")
+		return patroniRecipe(c)
 	}
 	image, err := c.imageOf()
 	if err != nil {
 		return err
 	}
 	confSchema := "cfg.postgresql.conf@"
+	locale := strParam(p, "locale", "C")
 	if oriole {
 		confSchema = "cfg.orioledb.postgresql.conf@"
+		locale = strParam(p, "initdb_locale", "C.UTF-8")
 	}
 	primary := c.first(topology.RoleDB)
 	initSQL := pgInitSQL(strParam(p, "init_sql", ""), boolParam(p, "default_table_access_method"))
@@ -63,7 +65,7 @@ func postgresFamily(c *compilation, oriole bool) error {
 				Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
 				Env: map[string]string{
 					"POSTGRES_USER": pgUser, "POSTGRES_PASSWORD": pgPassword, "POSTGRES_DB": pgDatabase, "PGDATA": pgDataInner,
-					"POSTGRES_HOST_AUTH_METHOD": "scram-sha-256", "POSTGRES_INITDB_ARGS": "--data-checksums --locale=" + strParam(p, "locale", "C"),
+					"POSTGRES_HOST_AUTH_METHOD": "scram-sha-256", "POSTGRES_INITDB_ARGS": "--data-checksums --locale=" + locale,
 				},
 				Mounts: []spec.Mount{{Source: pgDataDir, Target: pgDataInner}},
 				Files: []spec.File{
@@ -75,11 +77,6 @@ func postgresFamily(c *compilation, oriole bool) error {
 				Restart:     "always",
 			}
 			args := "postgres -c config_file=" + pgConfPath + " -c hba_file=" + pgHBAPath
-			if oriole {
-				// The image keeps its own postgresql.conf with the orioledb
-				// preload in /etc/postgresql; ours layers on top of it.
-				args = "postgres -D /etc/postgresql -c config_file=" + pgConfPath + " -c hba_file=" + pgHBAPath
-			}
 			if role == topology.RoleDB {
 				ct.Files = append(ct.Files, spec.File{Path: pgInitPath, Content: initSQL})
 				ct.Cmd = strings.Fields(args)
@@ -178,6 +175,7 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 	ini, err := c.render(role, schemaID, "conf", map[string]any{
 		"db_name": pgDatabase, "db_dbname": pgDatabase, "db_host": host, "db_port": port,
 		"listen_addr": "*", "listen_port": pgbPort, "auth_type": "scram-sha-256", "auth_file": "/etc/pgbouncer/userlist.txt",
+		"ignore_startup_parameters": "extra_float_digits",
 	})
 	if err != nil {
 		return err
@@ -199,6 +197,12 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("pg_isready -h 127.0.0.1 -p %d", pgbPort)),
 			Restart:     "always",
 			DependsOn:   deps,
+		})
+		c.add(spec.Container{
+			Name: m + "-pgbouncer-exporter", Role: role, Machine: m, Image: imagePgBouncerExport,
+			Cmd:   []string{"--pgBouncer.connectionString=" + fmt.Sprintf("postgresql://%s:%s@127.0.0.1:%d/pgbouncer?sslmode=disable", pgUser, pgPassword, pgbPort), "--web.listen-address=:9127"},
+			Ports: []spec.Port{{Container: 9127, Host: 9127}}, Scrape: "/metrics",
+			DependsOn: []string{m + "-pgbouncer"}, Restart: "always",
 		})
 	}
 	return nil
@@ -226,14 +230,20 @@ func pgNoopRecipe(c *compilation) error {
 		return err
 	}
 	p := c.params()
+	if numberOf(p["latency_ms"]) != 0 || numberOf(p["error_rate"]) != 0 {
+		return fmt.Errorf("pg-noop 0.1.2 does not implement latency or error injection")
+	}
 	port := intParam(p, "port", pgPort)
 	for _, m := range c.machinesOf(topology.RoleDB) {
+		env := map[string]string{"PGNOOP_HOST": "0.0.0.0", "PGNOOP_PORT": fmt.Sprint(port)}
+		// Zero means automatic sizing in the catalog. pg-noop's runtime
+		// rejects a literal zero, so let its default choose the worker count.
+		if workers := intParam(p, "workers", 0); workers > 0 {
+			env["PGNOOP_WORKERS"] = fmt.Sprint(workers)
+		}
 		c.add(spec.Container{
 			Name: m + "-pg-noop", Role: topology.RoleDB, Machine: m, Image: image,
-			Env: map[string]string{
-				"PGNOOP_HOST": "0.0.0.0", "PGNOOP_PORT": fmt.Sprint(port),
-				"PGNOOP_WORKERS": fmt.Sprint(intParam(p, "workers", 0)), "PGNOOP_LATENCY_MS": fmt.Sprint(intParam(p, "latency_ms", 0)),
-			},
+			Env:         env,
 			Ports:       []spec.Port{{Container: port, Host: port}},
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", port)),
 			Restart:     "always",

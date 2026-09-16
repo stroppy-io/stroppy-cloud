@@ -10,13 +10,17 @@ import (
 // started with (`picodata run --config`), in the 25.3 shape.
 //
 // doc: https://docs.picodata.io/picodata/25.3/reference/config/
-func Picodata25() *schemapb.Schema { return picodataYaml(25) }
+func Picodata25() *schemapb.Schema { return picodataYaml(25, 0) }
 
 // Picodata26 is cfg.picodata.yaml@26 — the 26.1/26.2 shape.
 //
 // doc: https://docs.picodata.io/picodata/26.1/reference/config/
 // doc: https://docs.picodata.io/picodata/26.2/reference/config/
-func Picodata26() *schemapb.Schema { return picodataYaml(26) }
+func Picodata26() *schemapb.Schema { return picodataYaml(26, 0) }
+
+// Picodata261 uses the 26.1 network layout without the tier modes introduced in 26.2.
+// doc: https://docs.picodata.io/picodata/26.1/reference/config/
+func Picodata261() *schemapb.Schema { return picodataYaml(26, 1) }
 
 // picodataYaml builds cfg.picodata.yaml@<major>. Picodata knows exactly two
 // top-level sections, cluster and instance; everything else is a CLI override.
@@ -38,7 +42,7 @@ func Picodata26() *schemapb.Schema { return picodataYaml(26) }
 //	new: instance.memtx.system_memory, instance.wal_dir, instance.backup_dir
 //
 //nolint:funlen,maintidx // one flat parameter table plus its template
-func picodataYaml(major uint64) *schemapb.Schema {
+func picodataYaml(major, minor uint64) *schemapb.Schema {
 	is26 := major >= 26
 
 	tierFields := []schemapb.FieldDef{
@@ -56,7 +60,7 @@ func picodataYaml(major uint64) *schemapb.Schema {
 			Gte(1).Lte(1000000).Default(3000),
 	}
 
-	if is26 {
+	if is26 && minor != 1 {
 		tierFields = append(tierFields,
 			// doc: 26.2 reference/config — cluster.tier.<name>.replication_mode, default async
 			schemapb.Choice("replication_mode").Title("Replication mode").Group("Cluster").
@@ -221,7 +225,7 @@ func picodataYaml(major uint64) *schemapb.Schema {
 	// containers: the Mustache context has one level, so they are folded into
 	// YAML blocks here.
 	fields = append(fields,
-		schemapb.Computed("tier_block", picodataTierBlock(is26)).
+		schemapb.Computed("tier_block", picodataTierBlock(is26 && minor != 1)).
 			Result(schemapb.ResultString).Group("Cluster").Title("Rendered cluster.tier"),
 		schemapb.Computed("peer_line",
 			`!("peer" in root) || size(root.peer) == 0 ? "" :
@@ -250,7 +254,11 @@ func picodataYaml(major uint64) *schemapb.Schema {
 		)
 	}
 
-	return schemapb.NewSchema(ids.Cfg("picodata.yaml", major)).
+	identity := ids.Cfg("picodata.yaml", major)
+	if minor != 0 {
+		identity = ids.CfgMinor("picodata.yaml", major, minor)
+	}
+	return schemapb.NewSchema(identity).
 		Descr(picodataDescr(is26)).
 		Strict().Coerce().
 		Fields(fields...).

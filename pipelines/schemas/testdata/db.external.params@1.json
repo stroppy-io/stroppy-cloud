@@ -1,119 +1,119 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "external.params",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "db",
+    "name": "external.params",
+    "version": "v1.0.0"
   },
-  "description":  "An already-running database addressed by DSN; the stand provisions and deploys nothing.",
-  "fields":  [
+  "description": "An already-running database addressed by DSN; the stand provisions and deploys nothing.",
+  "fields": [
     {
-      "name":  "protocol",
-      "description":  "Wire protocol stroppy speaks to this database.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "protocol",
+      "description": "Wire protocol stroppy speaks to this database.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "pg"
+            "value": {
+              "stringValue": "pg"
             },
-            "label":  "PostgreSQL wire protocol"
+            "label": "PostgreSQL wire protocol"
           },
           {
-            "value":  {
-              "stringValue":  "mysql"
+            "value": {
+              "stringValue": "mysql"
             },
-            "label":  "MySQL / MariaDB"
+            "label": "MySQL / MariaDB"
           },
           {
-            "value":  {
-              "stringValue":  "picodata"
+            "value": {
+              "stringValue": "picodata"
             },
-            "label":  "Picodata (pgproto)"
+            "label": "Picodata (pgproto)"
           },
           {
-            "value":  {
-              "stringValue":  "ydb_grpc"
+            "value": {
+              "stringValue": "ydb_grpc"
             },
-            "label":  "YDB (grpc://)"
+            "label": "YDB (grpc://)"
           },
           {
-            "value":  {
-              "stringValue":  "ydb_grpcs"
+            "value": {
+              "stringValue": "ydb_grpcs"
             },
-            "label":  "YDB (grpcs://, TLS)"
+            "label": "YDB (grpcs://, TLS)"
           },
           {
-            "value":  {
-              "stringValue":  "cockroach"
+            "value": {
+              "stringValue": "cockroach"
             },
-            "label":  "CockroachDB"
+            "label": "CockroachDB"
           }
         ],
-        "default":  {
-          "stringValue":  "pg"
+        "default": {
+          "stringValue": "pg"
         }
       },
-      "group":  "Connection",
-      "title":  "Protocol"
+      "group": "Connection",
+      "title": "Protocol"
     },
     {
-      "name":  "dsn",
-      "description":  "Full connection string including credentials; stored encrypted and never rendered into logs or artifacts.",
-      "required":  true,
-      "string":  {
-        "minLen":  "3",
-        "maxLen":  "4096"
+      "name": "dsn",
+      "description": "Full connection string including credentials; stored encrypted and never rendered into logs or artifacts.",
+      "required": true,
+      "string": {
+        "minLen": "3",
+        "maxLen": "4096"
       },
-      "group":  "Connection",
-      "title":  "DSN",
-      "examples":  [
+      "group": "Connection",
+      "title": "DSN",
+      "examples": [
         {
-          "stringValue":  "postgres://user:pass@db.internal:5432/stroppy?sslmode=require"
+          "stringValue": "postgres://user:pass@db.internal:5432/stroppy?sslmode=require"
         },
         {
-          "stringValue":  "grpcs://ydb.internal:2135/?database=/Root/stroppy"
+          "stringValue": "grpcs://ydb.internal:2135/?database=/Root/stroppy"
         }
       ],
-      "secret":  true
+      "secret": true
     },
     {
-      "name":  "tls_skip_verify",
-      "description":  "Accept the server certificate without checking the chain or hostname; needed for self-signed stands, never for a shared endpoint.",
-      "bool":  {
-        "default":  false
+      "name": "tls_skip_verify",
+      "description": "Accept the server certificate without checking the chain or hostname; needed for self-signed stands, never for a shared endpoint.",
+      "bool": {
+        "default": false
       },
-      "group":  "Connection",
-      "title":  "Skip TLS verification"
+      "group": "Connection",
+      "title": "Skip TLS verification"
     },
     {
-      "name":  "probe_query",
-      "description":  "Statement run once before the workload to prove the DSN works and the database answers.",
-      "string":  {
-        "default":  "SELECT 1",
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "name": "probe_query",
+      "description": "Statement run once before the workload to prove the DSN works and the database answers.",
+      "string": {
+        "default": "SELECT 1",
+        "minLen": "1",
+        "maxLen": "1024"
       },
-      "group":  "Health",
-      "title":  "Probe query"
+      "group": "Health",
+      "title": "Probe query"
     },
     {
-      "name":  "truncate_before_run",
-      "description":  "Let the workload drop and recreate its own tables. Off by default: this database is not ours to wipe.",
-      "bool":  {
-        "default":  false
+      "name": "truncate_before_run",
+      "description": "Let the workload drop and recreate its own tables. Off by default: this database is not ours to wipe.",
+      "bool": {
+        "default": false
       },
-      "group":  "Health",
-      "title":  "Clean before run"
+      "group": "Health",
+      "title": "Clean before run"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "root.protocol != \"ydb_grpcs\" || !root.tls_skip_verify",
-      "message":  "grpcs exists to verify the endpoint; skipping verification makes it grpc with extra cost",
-      "id":  "grpcs-verify",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "root.protocol != \"ydb_grpcs\" || !root.tls_skip_verify",
+      "message": "grpcs exists to verify the endpoint; skipping verification makes it grpc with extra cost",
+      "id": "grpcs-verify",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

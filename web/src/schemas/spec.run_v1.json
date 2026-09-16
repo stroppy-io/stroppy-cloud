@@ -187,6 +187,145 @@
       "title":  "Network"
     },
     {
+      "name":  "managed_ydb",
+      "description":  "YC database created and deleted with this run; no existing database is adopted.",
+      "object":  {
+        "schema":  {
+          "fields":  [
+            {
+              "name":  "type",
+              "description":  "Owned YC database type.",
+              "required":  true,
+              "choice":  {
+                "options":  [
+                  {
+                    "value":  {
+                      "stringValue":  "dedicated"
+                    },
+                    "label":  "Dedicated"
+                  },
+                  {
+                    "value":  {
+                      "stringValue":  "serverless"
+                    },
+                    "label":  "Serverless"
+                  }
+                ]
+              },
+              "group":  "Managed YDB",
+              "title":  "Database type"
+            },
+            {
+              "name":  "zones",
+              "description":  "Dedicated database subnet zones.",
+              "list":  {
+                "items":  [
+                  {
+                    "string":  {
+                      "pattern":  "^ru-central1-[abde]$"
+                    }
+                  }
+                ],
+                "minItems":  "3",
+                "maxItems":  "3",
+                "unique":  true
+              },
+              "group":  "Managed YDB",
+              "title":  "Physical zones"
+            },
+            {
+              "name":  "location_id",
+              "description":  "YC region or location identifier.",
+              "required":  true,
+              "string":  {
+                "pattern":  "^[a-z0-9-]{1,32}$"
+              },
+              "group":  "Managed YDB",
+              "title":  "Location"
+            },
+            {
+              "name":  "resource_preset_id",
+              "description":  "Dedicated node resource preset.",
+              "string":  {
+                "pattern":  "^[a-z0-9-]{1,64}$"
+              },
+              "group":  "Managed YDB",
+              "title":  "Compute preset"
+            },
+            {
+              "name":  "node_count",
+              "description":  "Dedicated fixed-scale node count.",
+              "int64":  {
+                "gte":  "1",
+                "lte":  "64"
+              },
+              "group":  "Managed YDB",
+              "title":  "Nodes"
+            },
+            {
+              "name":  "storage_groups",
+              "description":  "Dedicated storage group count.",
+              "int64":  {
+                "gte":  "1",
+                "lte":  "1024"
+              },
+              "group":  "Managed YDB",
+              "title":  "Storage groups"
+            },
+            {
+              "name":  "storage_type",
+              "description":  "Dedicated storage type identifier.",
+              "string":  {
+                "pattern":  "^[a-z0-9-]{1,64}$"
+              },
+              "group":  "Managed YDB",
+              "title":  "Storage type"
+            },
+            {
+              "name":  "assign_public_ips",
+              "description":  "Whether dedicated database nodes receive public addresses.",
+              "bool":  {},
+              "group":  "Managed YDB",
+              "title":  "Public addresses"
+            },
+            {
+              "name":  "throttling_rcu_limit",
+              "description":  "Serverless request units per second ceiling; zero disables throttling.",
+              "int64":  {
+                "gte":  "0",
+                "lte":  "1000000"
+              },
+              "group":  "Managed YDB",
+              "title":  "Request ceiling"
+            },
+            {
+              "name":  "provisioned_rcu_limit",
+              "description":  "Serverless reserved request units per second.",
+              "int64":  {
+                "gte":  "0",
+                "lte":  "1000000"
+              },
+              "group":  "Managed YDB",
+              "title":  "Provisioned capacity"
+            },
+            {
+              "name":  "storage_size_limit_gb",
+              "description":  "Serverless storage limit in GiB.",
+              "int64":  {
+                "gte":  "1",
+                "lte":  "10000"
+              },
+              "group":  "Managed YDB",
+              "title":  "Storage ceiling"
+            }
+          ],
+          "strict":  true
+        }
+      },
+      "group":  "Managed YDB",
+      "title":  "Managed YDB"
+    },
+    {
       "name":  "machines",
       "description":  "Every VM of the run; the pipeline creates one agent per machine.",
       "required":  true,
@@ -403,6 +542,23 @@
                     "title":  "Command"
                   },
                   {
+                    "name":  "entrypoint",
+                    "description":  "Executable and arguments replacing the image entrypoint; omit to use the upstream image entrypoint.",
+                    "list":  {
+                      "items":  [
+                        {
+                          "string":  {
+                            "minLen":  "1",
+                            "maxLen":  "1024"
+                          }
+                        }
+                      ],
+                      "maxItems":  "64"
+                    },
+                    "group":  "Process",
+                    "title":  "Entrypoint"
+                  },
+                  {
                     "name":  "env",
                     "map":  {
                       "maxEntries":  "128",
@@ -545,6 +701,16 @@
                       "pattern":  "^/[A-Za-z0-9._/-]*$"
                     },
                     "title":  "Scrape path"
+                  },
+                  {
+                    "name":  "scrape_port",
+                    "description":  "HTTP port for the scrape path; when omitted, uses the first container port for compatibility.",
+                    "int64":  {
+                      "gte":  "1",
+                      "lte":  "65535"
+                    },
+                    "group":  "Observability",
+                    "title":  "Metrics port"
                   },
                   {
                     "name":  "depends_on",
@@ -993,6 +1159,15 @@
               "title":  "Baseline"
             },
             {
+              "name":  "ydb_iam_credentials_secret",
+              "description":  "Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact.",
+              "string":  {
+                "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
+              },
+              "group":  "Workload",
+              "title":  "YDB credentials reference"
+            },
+            {
               "name":  "ca_cert",
               "description":  "PEM the pipeline writes next to the config and points caCertFile at.",
               "string":  {
@@ -1083,6 +1258,31 @@
     }
   ],
   "rules":  [
+    {
+      "expr":  "!(\"managed_ydb\" in root) || \"ydb_iam_credentials_secret\" in root.workload",
+      "message":  "managed YDB requires named IAM credentials",
+      "id":  "managed-ydb-iam"
+    },
+    {
+      "expr":  "!(\"managed_ydb\" in root) || root.managed_ydb.type != \"dedicated\" || [\"zones\", \"resource_preset_id\", \"node_count\", \"storage_groups\", \"storage_type\"].all(k, k in root.managed_ydb)",
+      "message":  "dedicated YDB requires placement, compute and storage fields",
+      "id":  "managed-ydb-dedicated"
+    },
+    {
+      "expr":  "!(\"managed_ydb\" in root) || root.managed_ydb.type != \"serverless\" || \"storage_size_limit_gb\" in root.managed_ydb",
+      "message":  "serverless YDB requires a storage limit",
+      "id":  "managed-ydb-serverless"
+    },
+    {
+      "expr":  "!(\"managed_ydb\" in root) || (root.provider.kind == \"yandex\" && root.workload.driver_type == \"ydb\")",
+      "message":  "managed YDB requires YC and the YDB driver",
+      "id":  "managed-ydb-provider"
+    },
+    {
+      "expr":  "!(\"ydb_iam_credentials_secret\" in root.workload) || root.workload.driver_type == \"ydb\"",
+      "message":  "IAM credentials only apply to YDB",
+      "id":  "ydb-iam-driver"
+    },
     {
       "expr":  "!(\"machines\" in root) || root.machines.all(m, root.machines.filter(x, x.name == m.name).size() == 1)",
       "message":  "machine names must be unique",

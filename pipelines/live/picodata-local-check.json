@@ -1,0 +1,337 @@
+{
+  "status": "passed",
+  "scope": "Local Docker, all 6 catalog Picodata versions/topologies. Compiled startup, strict Online health, every-member SQL membership, direct db-1 native simple/TPC-B/TPC-C. HAProxy and YC not covered by this local check.",
+  "query_execution_mode": "exec",
+  "tpcc_isolation": "none",
+  "tpcc_scale_factor": 2,
+  "vus": 2,
+  "duration": "5s",
+  "stroppy_version": "dev-native-a8c3cc145c58",
+  "stroppy_binary_sha256": "60cee1aeb5dfd4dc8a0a673b670753c2e0ec9ce90666359cb9806334d2a51e17",
+  "cells": [
+    {
+      "input": "picodata-single-25.3-simple.json",
+      "input_sha256": "f48a47700c5df8f625bebf9a936d37c12bb4f25b3c341022a3d3f1adf25dec9a",
+      "checked_at": "2026-09-15T15:05:40.656121+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-aa233a37-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "25.3.8"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "68e6d690ccec70055006f65dc97b0edf0d3a02d275cff7c35b421f9ddd9e7717"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "238934e0941104024141ed4be88060a643cf03c1a555d0bd347d65a01b67e966"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "40ab74afc5d9c44fb30d46ee7bc0d384e83c083ca010de75165220dad6c92a17"
+        }
+      ]
+    },
+    {
+      "input": "picodata-single-26.1-simple.json",
+      "input_sha256": "d4e9ec0fa9c26234b652df4a4acd60b2e31efb9c66ab55eb5b6a0b46372f51d2",
+      "checked_at": "2026-09-15T15:05:03.885786+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-b3a445a4-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "6dd72c34d197f8a51c7123d92c2bf494d83a7ecb39b63c1851d8708b0b5a85c1"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "aa9748f0ee7adbafb4cf321311afa333668b16ef52195215e7665010a6cfe00f"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "43901a1fbbcce0cb80afcc028dc7dcfdbbb8a5fba1389f9eb2717f920a5ee7c8"
+        }
+      ]
+    },
+    {
+      "input": "picodata-single-26.2-simple.json",
+      "input_sha256": "15191a057a84730d3ac5e40a78cd3b088b6ae7212e03d3adb562031648585c14",
+      "checked_at": "2026-09-15T15:08:02.628282+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-e5486161-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.2.1"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "3e845a457524e5aec17bbe005a8ded0516b778bf5f89be61db1a02c96fd3d5a6"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "6ed7d4d154140ca81001a54ef3ec3ef6ac616822becca0eed5c921b606a0e530"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "8b175b21f003a783e08d16b6512adf6ed0f402bd59b8c857a9f51a1d242bafd2"
+        }
+      ]
+    },
+    {
+      "input": "picodata-three-node-25.3-simple.json",
+      "input_sha256": "e1d6987319ee2284ba7216695b512cb63d948c6fa02e2b75cf5dc2212ec77fe9",
+      "checked_at": "2026-09-15T15:07:29.752883+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-ca599720-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "25.3.8"
+          ]
+        ],
+        "stroppy-pico-ca599720-db-2-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "25.3.8"
+          ]
+        ],
+        "stroppy-pico-ca599720-db-3-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "25.3.8"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "25.3.8"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "43218a3de79034c3e565671f84f451262d634168976ed2aac20dcb1f9a8b298b"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "2e74a617a11db8afb0e504c6536999d80c65612c1dd74b5f1a8ee3fb87171f75"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "e2c207869ffea5d5fb27de7de4c3c48626efd1817e107e91dab7805fbda6f652"
+        }
+      ]
+    },
+    {
+      "input": "picodata-three-node-26.1-simple.json",
+      "input_sha256": "3624e69d65de3b3bf6118fd82f6fe3503e681af4c085d8d6da055061f1e3d62e",
+      "checked_at": "2026-09-15T15:06:50.280103+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-cd646c06-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ],
+        "stroppy-pico-cd646c06-db-2-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ],
+        "stroppy-pico-cd646c06-db-3-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "59cd7aff3b459b08ddf35eafecbacc5c9851690ffb92b089539430aab3a3477a"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "8188ce8827e1b0d292128263eab19cda5cd47595f5c742e6d9648e65081cecc3"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "4292bc6bd290abf616c024620e393a3fc865abe360bd3ede4a8c3edaa36585f5"
+        }
+      ]
+    },
+    {
+      "input": "picodata-three-node-26.2-simple.json",
+      "input_sha256": "4731494a6d5e8bc627d362dce7ce9694693f368af64f78ce75a18ea3a00ee1ef",
+      "checked_at": "2026-09-15T15:08:39.265283+00:00",
+      "status": "passed",
+      "member_checks": {
+        "stroppy-pico-66296ef5-db-1-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.2.1"
+          ]
+        ],
+        "stroppy-pico-66296ef5-db-2-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.2.1"
+          ]
+        ],
+        "stroppy-pico-66296ef5-db-3-picodata": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.2.1"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.2.1"
+          ]
+        ]
+      },
+      "segments": [
+        {
+          "script": "simple",
+          "terminal_errors_total": 0,
+          "log_sha256": "dc6af3262cafb6314a73f9063fb4ff19f59a938422d67bf0201ebabf8254f9fa"
+        },
+        {
+          "script": "tpcb-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "249840dfb0e3eb7f3132000707c8e3cb0d2dba9eaeec8e3f1fe433f6caf8a897"
+        },
+        {
+          "script": "tpcc-tx",
+          "terminal_errors_total": 0,
+          "log_sha256": "98d2c3550c68e889d6f7345153c843a4afee19019d183b511ea1552c8a6f673d"
+        }
+      ]
+    }
+  ]
+}

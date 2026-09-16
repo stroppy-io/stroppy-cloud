@@ -1,0 +1,415 @@
+{
+  "cells": [
+    {
+      "id": "pg-1",
+      "run_id": "run/matrix-pg-mirror-df957f8d-pg-1",
+      "status": "completed",
+      "result": {
+        "metrics": {
+          "smoke.insert_duration_avg": {
+            "value": 3.355,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_count": {
+            "value": 1
+          },
+          "smoke.insert_duration_p50": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p90": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p95": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p99": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_operations_total": {
+            "value": 1
+          },
+          "smoke.insert_progress_rows_per_second": {
+            "value": 29461.885
+          },
+          "smoke.insert_progress_rows_total": {
+            "value": 100
+          },
+          "smoke.insert_rows_total": {
+            "value": 100
+          },
+          "smoke.iteration_duration_avg": {
+            "value": 0.98,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_count": {
+            "value": 244618
+          },
+          "smoke.iteration_duration_p50": {
+            "value": 1,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p90": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p95": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p99": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iterations_total": {
+            "value": 244618
+          },
+          "smoke.run_query_duration_avg": {
+            "value": 0.235,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_count": {
+            "value": 978475
+          },
+          "smoke.run_query_duration_p50": {
+            "value": 0.25,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p90": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p95": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p99": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_operations_total": {
+            "value": 978475
+          }
+        },
+        "segments": [
+          {
+            "name": "smoke",
+            "status": "completed",
+            "started_at": "2026-09-14T12:52:30.555375001Z",
+            "finished_at": "2026-09-14T12:54:33.473486455Z",
+            "metrics": {
+              "insert_duration_avg": {
+                "value": 3.355,
+                "unit": "ms"
+              },
+              "insert_duration_count": {
+                "value": 1
+              },
+              "insert_duration_p50": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p90": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p95": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p99": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_operations_total": {
+                "value": 1
+              },
+              "insert_progress_rows_per_second": {
+                "value": 29461.885
+              },
+              "insert_progress_rows_total": {
+                "value": 100
+              },
+              "insert_rows_total": {
+                "value": 100
+              },
+              "iteration_duration_avg": {
+                "value": 0.98,
+                "unit": "ms"
+              },
+              "iteration_duration_count": {
+                "value": 244618
+              },
+              "iteration_duration_p50": {
+                "value": 1,
+                "unit": "ms"
+              },
+              "iteration_duration_p90": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iteration_duration_p95": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iteration_duration_p99": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iterations_total": {
+                "value": 244618
+              },
+              "run_query_duration_avg": {
+                "value": 0.235,
+                "unit": "ms"
+              },
+              "run_query_duration_count": {
+                "value": 978475
+              },
+              "run_query_duration_p50": {
+                "value": 0.25,
+                "unit": "ms"
+              },
+              "run_query_duration_p90": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_duration_p95": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_duration_p99": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_operations_total": {
+                "value": 978475
+              }
+            },
+            "exit_code": 0
+          }
+        ],
+        "artifacts": [
+          "artifact/2bf3e915-stroppy-smoke-config",
+          "artifact/2bf3e915-stroppy-smoke-log"
+        ],
+        "summary": {
+          "latency_p50_ms": 1,
+          "latency_p95_ms": 2.5,
+          "latency_p99_ms": 2.5,
+          "duration": "2m2.918111454s"
+        }
+      }
+    },
+    {
+      "id": "pg-2",
+      "run_id": "run/matrix-pg-mirror-df957f8d-pg-2",
+      "status": "completed",
+      "result": {
+        "metrics": {
+          "smoke.insert_duration_avg": {
+            "value": 2.939,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_count": {
+            "value": 1
+          },
+          "smoke.insert_duration_p50": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p90": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p95": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_duration_p99": {
+            "value": 5,
+            "unit": "ms"
+          },
+          "smoke.insert_operations_total": {
+            "value": 1
+          },
+          "smoke.insert_progress_rows_per_second": {
+            "value": 33392.237
+          },
+          "smoke.insert_progress_rows_total": {
+            "value": 100
+          },
+          "smoke.insert_rows_total": {
+            "value": 100
+          },
+          "smoke.iteration_duration_avg": {
+            "value": 0.974,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_count": {
+            "value": 246176
+          },
+          "smoke.iteration_duration_p50": {
+            "value": 1,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p90": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p95": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iteration_duration_p99": {
+            "value": 2.5,
+            "unit": "ms"
+          },
+          "smoke.iterations_total": {
+            "value": 246176
+          },
+          "smoke.run_query_duration_avg": {
+            "value": 0.233,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_count": {
+            "value": 984707
+          },
+          "smoke.run_query_duration_p50": {
+            "value": 0.25,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p90": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p95": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_duration_p99": {
+            "value": 0.5,
+            "unit": "ms"
+          },
+          "smoke.run_query_operations_total": {
+            "value": 984707
+          }
+        },
+        "segments": [
+          {
+            "name": "smoke",
+            "status": "completed",
+            "started_at": "2026-09-14T12:52:35.589977828Z",
+            "finished_at": "2026-09-14T12:54:39.223661042Z",
+            "metrics": {
+              "insert_duration_avg": {
+                "value": 2.939,
+                "unit": "ms"
+              },
+              "insert_duration_count": {
+                "value": 1
+              },
+              "insert_duration_p50": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p90": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p95": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_duration_p99": {
+                "value": 5,
+                "unit": "ms"
+              },
+              "insert_operations_total": {
+                "value": 1
+              },
+              "insert_progress_rows_per_second": {
+                "value": 33392.237
+              },
+              "insert_progress_rows_total": {
+                "value": 100
+              },
+              "insert_rows_total": {
+                "value": 100
+              },
+              "iteration_duration_avg": {
+                "value": 0.974,
+                "unit": "ms"
+              },
+              "iteration_duration_count": {
+                "value": 246176
+              },
+              "iteration_duration_p50": {
+                "value": 1,
+                "unit": "ms"
+              },
+              "iteration_duration_p90": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iteration_duration_p95": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iteration_duration_p99": {
+                "value": 2.5,
+                "unit": "ms"
+              },
+              "iterations_total": {
+                "value": 246176
+              },
+              "run_query_duration_avg": {
+                "value": 0.233,
+                "unit": "ms"
+              },
+              "run_query_duration_count": {
+                "value": 984707
+              },
+              "run_query_duration_p50": {
+                "value": 0.25,
+                "unit": "ms"
+              },
+              "run_query_duration_p90": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_duration_p95": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_duration_p99": {
+                "value": 0.5,
+                "unit": "ms"
+              },
+              "run_query_operations_total": {
+                "value": 984707
+              }
+            },
+            "exit_code": 0
+          }
+        ],
+        "artifacts": [
+          "artifact/8d7f91db-stroppy-smoke-config",
+          "artifact/8d7f91db-stroppy-smoke-log"
+        ],
+        "summary": {
+          "latency_p50_ms": 1,
+          "latency_p95_ms": 2.5,
+          "latency_p99_ms": 2.5,
+          "duration": "2m3.633683214s"
+        }
+      }
+    }
+  ],
+  "total": 2,
+  "done": 2,
+  "failed": 0
+}

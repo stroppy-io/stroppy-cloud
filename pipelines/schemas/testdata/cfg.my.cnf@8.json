@@ -693,6 +693,47 @@
       "title":  "Update-everywhere checks"
     },
     {
+      "name":  "group_replication_consistency",
+      "description":  "Group synchronization before or after transactions. BEFORE waits for preceding transactions before reads, allowing read-after-write through replicas; this is separate from SQL transaction isolation.",
+      "nullable":  true,
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "EVENTUAL"
+            },
+            "label":  "Eventual"
+          },
+          {
+            "value":  {
+              "stringValue":  "BEFORE_ON_PRIMARY_FAILOVER"
+            },
+            "label":  "Before primary failover"
+          },
+          {
+            "value":  {
+              "stringValue":  "BEFORE"
+            },
+            "label":  "Before transaction"
+          },
+          {
+            "value":  {
+              "stringValue":  "AFTER"
+            },
+            "label":  "After transaction"
+          },
+          {
+            "value":  {
+              "stringValue":  "BEFORE_AND_AFTER"
+            },
+            "label":  "Before and after"
+          }
+        ]
+      },
+      "group":  "Group replication",
+      "title":  "Transaction consistency"
+    },
+    {
       "name":  "bind_address",
       "description":  "Addresses mysqld listens on; * or 0.0.0.0 for all IPv4.",
       "string":  {
@@ -1278,7 +1319,7 @@
       "name":  "semisync_lines",
       "description":  "plugin_load_add and rpl_semi_sync_* lines, emitted only when semisync is on.",
       "computed":  {
-        "expr":  "(((\"rpl_semi_sync_source_enabled\" in root) && root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nrpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) && root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nrpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
+        "expr":  "(((\"rpl_semi_sync_source_enabled\" in root) && root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nloose-rpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"loose-rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) && root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nloose-rpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Rendered",
@@ -1288,7 +1329,7 @@
       "name":  "group_replication_lines",
       "description":  "The whole group_replication_* block, emitted only when group replication is on.",
       "computed":  {
-        "expr":  "(((\"group_replication\" in root) && root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"transaction_write_set_extraction\" in root) ? \"transaction_write_set_extraction\" + \" = \" + string(root[\"transaction_write_set_extraction\"]) + \"\\n\" : \"\") +\n((\"binlog_transaction_dependency_tracking\" in root) ? \"binlog_transaction_dependency_tracking\" + \" = \" + string(root[\"binlog_transaction_dependency_tracking\"]) + \"\\n\" : \"\")) : \"\")",
+        "expr":  "(((\"group_replication\" in root) && root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"loose-group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"loose-group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"loose-group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"loose-group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"loose-group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"loose-group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"loose-group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"group_replication_consistency\" in root) ? \"loose-group_replication_consistency\" + \" = \" + string(root[\"group_replication_consistency\"]) + \"\\n\" : \"\") +\n((\"transaction_write_set_extraction\" in root) ? \"transaction_write_set_extraction\" + \" = \" + string(root[\"transaction_write_set_extraction\"]) + \"\\n\" : \"\") +\n((\"binlog_transaction_dependency_tracking\" in root) ? \"binlog_transaction_dependency_tracking\" + \" = \" + string(root[\"binlog_transaction_dependency_tracking\"]) + \"\\n\" : \"\")) : \"\")",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Rendered",

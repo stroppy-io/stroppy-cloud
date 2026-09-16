@@ -1,0 +1,72 @@
+{
+  "scope": "cloud:b1gt6m4l9gfhaobcgb81",
+  "observed_at": "2026-09-14T10:18:59.71428805Z",
+  "quotas": [
+    {
+      "name": "compute.disks.count",
+      "limit": 128,
+      "used": 20,
+      "unit": "disks"
+    },
+    {
+      "name": "compute.hddDisks.size",
+      "limit": 536870912000,
+      "used": 107374182400,
+      "unit": "bytes"
+    },
+    {
+      "name": "compute.instanceCores.count",
+      "limit": 1024,
+      "used": 40,
+      "unit": "cores"
+    },
+    {
+      "name": "compute.instanceMemory.size",
+      "limit": 4398046511104,
+      "used": 100931731456,
+      "unit": "bytes"
+    },
+    {
+      "name": "compute.instances.count",
+      "limit": 64,
+      "used": 12,
+      "unit": "instances"
+    },
+    {
+      "name": "compute.ssdDisks.size",
+      "limit": 21474836480000,
+      "used": 2241972928512,
+      "unit": "bytes"
+    },
+    {
+      "name": "compute.ssdNonReplicatedDisks.size",
+      "limit": 107374182400000,
+      "used": 0,
+      "unit": "bytes"
+    },
+    {
+      "name": "vpc.externalStaticAddresses.count",
+      "limit": 6,
+      "used": 4,
+      "unit": "addresses"
+    },
+    {
+      "name": "vpc.networks.count",
+      "limit": 6,
+      "used": 3,
+      "unit": "networks"
+    },
+    {
+      "name": "vpc.securityGroups.count",
+      "limit": 32,
+      "used": 3,
+      "unit": "security-groups"
+    },
+    {
+      "name": "vpc.subnets.count",
+      "limit": 32,
+      "used": 4,
+      "unit": "subnets"
+    }
+  ]
+}

@@ -52,6 +52,42 @@
       "title":  "Admin interfaces"
     },
     {
+      "name":  "restapi_enabled",
+      "description":  "Expose native Prometheus metrics through the REST API listener.",
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "true"
+            },
+            "label":  "true"
+          },
+          {
+            "value":  {
+              "stringValue":  "false"
+            },
+            "label":  "false"
+          }
+        ],
+        "default":  {
+          "stringValue":  "false"
+        }
+      },
+      "group":  "Admin",
+      "title":  "Metrics endpoint"
+    },
+    {
+      "name":  "restapi_port",
+      "description":  "REST API and Prometheus listener port.",
+      "int64":  {
+        "default":  "6070",
+        "gte":  "1",
+        "lte":  "65535"
+      },
+      "group":  "Admin",
+      "title":  "Metrics port"
+    },
+    {
       "name":  "interfaces",
       "description":  "host:port list the SQL proxy listens on; not changeable at runtime.",
       "string":  {
@@ -176,6 +212,17 @@
       },
       "group":  "MySQL",
       "title":  "Default charset"
+    },
+    {
+      "name":  "default_collation_connection",
+      "description":  "Client handshake collation; must match default_charset. The default matches Stroppy's utf8mb4 charset instead of the upstream utf8 collation.",
+      "string":  {
+        "default":  "utf8mb4_general_ci",
+        "minLen":  "1",
+        "maxLen":  "64"
+      },
+      "group":  "MySQL",
+      "title":  "Default collation"
     },
     {
       "name":  "sessions_sort",
@@ -381,7 +428,7 @@
     },
     {
       "name":  "topology",
-      "description":  "Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, or none (static hostgroups only).",
+      "description":  "Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, Galera, or none (static hostgroups only).",
       "choice":  {
         "options":  [
           {
@@ -395,6 +442,12 @@
               "stringValue":  "group_replication"
             },
             "label":  "group replication"
+          },
+          {
+            "value":  {
+              "stringValue":  "galera"
+            },
+            "label":  "Galera"
           },
           {
             "value":  {
@@ -434,7 +487,7 @@
     },
     {
       "name":  "backup_writer_hostgroup",
-      "description":  "Group replication only: members that could become primary.",
+      "description":  "Group Replication / Galera: members that could become primary.",
       "int64":  {
         "default":  "30",
         "gte":  "0",
@@ -445,7 +498,7 @@
     },
     {
       "name":  "offline_hostgroup",
-      "description":  "Group replication only: members that left or fell too far behind.",
+      "description":  "Group Replication / Galera: members that left or fell too far behind.",
       "int64":  {
         "default":  "40",
         "gte":  "0",
@@ -487,7 +540,7 @@
     },
     {
       "name":  "max_writers",
-      "description":  "Group replication only: how many members may sit in the writer hostgroup at once.",
+      "description":  "Group Replication / Galera: how many members may sit in the writer hostgroup at once.",
       "int64":  {
         "default":  "1",
         "gte":  "1",
@@ -512,7 +565,7 @@
     },
     {
       "name":  "max_transactions_behind",
-      "description":  "Group replication only: lag in transactions before a reader is shunned; 0 disables the check.",
+      "description":  "Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check.",
       "int64":  {
         "default":  "0",
         "gte":  "0",
@@ -587,6 +640,18 @@
                     "title":  "Hostgroup"
                   },
                   {
+                    "name":  "use_ssl",
+                    "description":  "Use TLS for backend connections; required for fresh caching_sha2_password authentication.",
+                    "int64":  {
+                      "default":  "0",
+                      "in":  [
+                        "0",
+                        "1"
+                      ]
+                    },
+                    "title":  "Backend TLS"
+                  },
+                  {
                     "name":  "weight",
                     "description":  "Relative share of traffic inside its hostgroup.",
                     "int64":  {
@@ -634,7 +699,7 @@
       "name":  "servers_block",
       "description":  "The backend list in libconfig record syntax.",
       "computed":  {
-        "expr":  "((\"mysql_servers\" in root) && size(root.mysql_servers) > 0) ? (\"mysql_servers =\\n(\\n\" + root.mysql_servers.map(s,\n\t\t\t\t\t\"    { address=\\\"\" + ((\"address\" in s) ? string(s.address) : \"\") + \"\\\", port=\" + ((\"port\" in s) ? string(s.port) : \"3306\") +\n\t\t\t\t\t\", hostgroup=\" + ((\"hostgroup\" in s) ? string(s.hostgroup) : \"0\") + \", weight=\" + ((\"weight\" in s) ? string(s.weight) : \"1\") +\n\t\t\t\t\t\", max_connections=\" + ((\"max_connections\" in s) ? string(s.max_connections) : \"1000\") + \" }\").join(\",\\n\") + \"\\n)\\n\") : \"\"",
+        "expr":  "((\"mysql_servers\" in root) && size(root.mysql_servers) > 0) ? (\"mysql_servers =\\n(\\n\" + root.mysql_servers.map(s,\n\t\t\t\t\t\"    { address=\\\"\" + ((\"address\" in s) ? string(s.address) : \"\") + \"\\\", port=\" + ((\"port\" in s) ? string(s.port) : \"3306\") +\n\t\t\t\t\t\", hostgroup=\" + ((\"hostgroup\" in s) ? string(s.hostgroup) : \"0\") + \", weight=\" + ((\"weight\" in s) ? string(s.weight) : \"1\") +\n\t\t\t\t\t\", max_connections=\" + ((\"max_connections\" in s) ? string(s.max_connections) : \"1000\") + \", use_ssl=\" + ((\"use_ssl\" in s) ? string(s.use_ssl) : \"0\") + \" }\").join(\",\\n\") + \"\\n)\\n\") : \"\"",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Rendered",
@@ -662,9 +727,9 @@
     },
     {
       "name":  "hostgroups_block",
-      "description":  "mysql_replication_hostgroups or mysql_group_replication_hostgroups, depending on topology.",
+      "description":  "Replication, Group Replication or Galera hostgroup manager, selected by topology.",
       "computed":  {
-        "expr":  "(root.topology == \"replication\") ? (\"mysql_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", check_type=\\\"\" + string(root.check_type) + \"\\\" }\\n)\\n\")\n\t\t\t\t: ((root.topology == \"group_replication\") ? (\"mysql_group_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", backup_writer_hostgroup=\" + string(root.backup_writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", offline_hostgroup=\" + string(root.offline_hostgroup) +\n\t\t\t\t\t\", active=1, max_writers=\" + string(root.max_writers) +\n\t\t\t\t\t\", writer_is_also_reader=\" + string(root.writer_is_also_reader) +\n\t\t\t\t\t\", max_transactions_behind=\" + string(root.max_transactions_behind) + \" }\\n)\\n\") : \"\")",
+        "expr":  "(root.topology == \"replication\") ? (\"mysql_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", check_type=\\\"\" + string(root.check_type) + \"\\\" }\\n)\\n\")\n\t\t\t\t: ((root.topology in [\"group_replication\", \"galera\"]) ? (\"mysql_\" + root.topology + \"_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", backup_writer_hostgroup=\" + string(root.backup_writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", offline_hostgroup=\" + string(root.offline_hostgroup) +\n\t\t\t\t\t\", active=1, max_writers=\" + string(root.max_writers) +\n\t\t\t\t\t\", writer_is_also_reader=\" + string(root.writer_is_also_reader) +\n\t\t\t\t\t\", max_transactions_behind=\" + string(root.max_transactions_behind) + \" }\\n)\\n\") : \"\")",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Rendered",
@@ -688,8 +753,8 @@
       "id":  "hostgroups-distinct"
     },
     {
-      "expr":  "!(\"topology\" in root) || root.topology != \"group_replication\" || (int(root.backup_writer_hostgroup) != int(root.writer_hostgroup) && int(root.offline_hostgroup) != int(root.writer_hostgroup))",
-      "message":  "group replication needs four distinct hostgroups",
+      "expr":  "!(root.topology in [\"group_replication\", \"galera\"]) || (root.backup_writer_hostgroup != root.writer_hostgroup && root.backup_writer_hostgroup != root.reader_hostgroup && root.backup_writer_hostgroup != root.offline_hostgroup && root.offline_hostgroup != root.writer_hostgroup && root.offline_hostgroup != root.reader_hostgroup && root.reader_hostgroup > 0)",
+      "message":  "Group Replication and Galera need four distinct hostgroups, with a positive reader hostgroup",
       "id":  "gr-hostgroups-distinct"
     },
     {
@@ -706,6 +771,6 @@
   "strict":  true,
   "coerce":  true,
   "templates":  {
-    "conf":  "# ProxySQL — generated by stroppy, do not edit by hand\n# Only parsed on a clean datadir or with --initial.\ndatadir=\"{{{values.datadir}}}\"\nerrorlog=\"{{{values.errorlog}}}\"\n\nadmin_variables=\n{\n    admin_credentials=\"{{{values.admin_credentials}}}\"\n    mysql_ifaces=\"{{{values.admin_mysql_ifaces}}}\"\n}\n\nmysql_variables=\n{\n    interfaces=\"{{{values.interfaces}}}\"\n    threads={{{values.threads}}}\n    max_connections={{{values.max_connections}}}\n    stacksize={{{values.stacksize}}}\n    poll_timeout={{{values.poll_timeout}}}\n    default_query_delay={{{values.default_query_delay}}}\n    default_query_timeout={{{values.default_query_timeout}}}\n    connect_timeout_server={{{values.connect_timeout_server}}}\n    server_version=\"{{{values.server_version}}}\"\n    default_schema=\"{{{values.default_schema}}}\"\n    default_charset=\"{{{values.default_charset}}}\"\n    sessions_sort={{{values.sessions_sort}}}\n    commands_stats={{{values.commands_stats}}}\n    monitor_username=\"{{{values.monitor_username}}}\"\n    monitor_password=\"{{{values.monitor_password}}}\"\n    monitor_history={{{values.monitor_history}}}\n    monitor_connect_interval={{{values.monitor_connect_interval}}}\n    monitor_ping_interval={{{values.monitor_ping_interval}}}\n    monitor_read_only_interval={{{values.monitor_read_only_interval}}}\n    monitor_read_only_timeout={{{values.monitor_read_only_timeout}}}\n    ping_interval_server_msec={{{values.ping_interval_server_msec}}}\n    ping_timeout_server={{{values.ping_timeout_server}}}\n{{{values.custom_rendered}}}\n}\n\n{{{values.servers_block}}}\n{{{values.users_block}}}\n{{{values.query_rules_block}}}\n{{{values.hostgroups_block}}}"
+    "conf":  "# ProxySQL — generated by stroppy, do not edit by hand\n# Only parsed on a clean datadir or with --initial.\ndatadir=\"{{{values.datadir}}}\"\nerrorlog=\"{{{values.errorlog}}}\"\n\nadmin_variables=\n{\n    admin_credentials=\"{{{values.admin_credentials}}}\"\n    mysql_ifaces=\"{{{values.admin_mysql_ifaces}}}\"\n    restapi_enabled={{{values.restapi_enabled}}}\n    restapi_port={{{values.restapi_port}}}\n}\n\nmysql_variables=\n{\n    interfaces=\"{{{values.interfaces}}}\"\n    threads={{{values.threads}}}\n    max_connections={{{values.max_connections}}}\n    stacksize={{{values.stacksize}}}\n    poll_timeout={{{values.poll_timeout}}}\n    default_query_delay={{{values.default_query_delay}}}\n    default_query_timeout={{{values.default_query_timeout}}}\n    connect_timeout_server={{{values.connect_timeout_server}}}\n    server_version=\"{{{values.server_version}}}\"\n    default_schema=\"{{{values.default_schema}}}\"\n    default_charset=\"{{{values.default_charset}}}\"\n    default_collation_connection=\"{{{values.default_collation_connection}}}\"\n    sessions_sort={{{values.sessions_sort}}}\n    commands_stats={{{values.commands_stats}}}\n    monitor_username=\"{{{values.monitor_username}}}\"\n    monitor_password=\"{{{values.monitor_password}}}\"\n    monitor_history={{{values.monitor_history}}}\n    monitor_connect_interval={{{values.monitor_connect_interval}}}\n    monitor_ping_interval={{{values.monitor_ping_interval}}}\n    monitor_read_only_interval={{{values.monitor_read_only_interval}}}\n    monitor_read_only_timeout={{{values.monitor_read_only_timeout}}}\n    ping_interval_server_msec={{{values.ping_interval_server_msec}}}\n    ping_timeout_server={{{values.ping_timeout_server}}}\n{{{values.custom_rendered}}}\n}\n\n{{{values.servers_block}}}\n{{{values.users_block}}}\n{{{values.query_rules_block}}}\n{{{values.hostgroups_block}}}"
   }
 }

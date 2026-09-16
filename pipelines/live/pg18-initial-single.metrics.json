@@ -1,0 +1,162 @@
+{
+  "run_id": "matrix-pg18-97b9ee5e-pg18-single",
+  "source": "Graphene metrics API backed by the persistent metrics store",
+  "series_count": 3534,
+  "exporter_runs_observed": [
+    "matrix-pg18-97b9ee5e-pg18-single"
+  ],
+  "exporter_agents_observed": [
+    "9ccad320-db-1",
+    "9ccad320-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-postgres-exporter": {
+      "metric_names": 371
+    },
+    "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "disk_info": [
+    {
+      "entity": "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmjildpqbk44qqrrp12",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmrdaiapiciohmtngo4",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [
+    [
+      "docker/9ccad320-a596-4dcd-8acd-f64afc77952d-db-1-postgres-exporter",
+      0.0
+    ]
+  ],
+  "transfer_activity_attempts_observed": [
+    "1"
+  ]
+}

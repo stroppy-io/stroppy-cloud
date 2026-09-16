@@ -1,0 +1,424 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-26.1",
+  "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+  "query_range": {
+    "start": "2026-09-15T16:01:14.072033+00:00",
+    "end": "2026-09-15T17:14:26.401954+00:00"
+  },
+  "series_count": 4529,
+  "database_distribution_scope": "Scalar series only: Graphene docker 0.2.2 drops histogram/summary families and counter types; see database-metric-coverage.json",
+  "queried_entities": [
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-picodata",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+    "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter"
+  ],
+  "exporter_runs_observed": [
+    "matrix-picodata-metrics-85175d12-picodata-three-node-26.1"
+  ],
+  "exporter_agents_observed": [
+    "58061896-db-1",
+    "58061896-db-2",
+    "58061896-db-3",
+    "58061896-proxy-1",
+    "58061896-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata": {
+      "metric_names": 30
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata": {
+      "metric_names": 32
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-picodata": {
+      "metric_names": 30
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter": {
+      "metric_names": 247
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-picodata": {
+      "picodata_online": {
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 21
+      },
+      "pico_raft_leader_id": {
+        "min": 0.0,
+        "max": 3.0,
+        "samples": 21
+      }
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-picodata": {
+      "picodata_online": {
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15
+      },
+      "pico_raft_leader_id": {
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15
+      }
+    },
+    "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-picodata": {
+      "picodata_online": {
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 28
+      },
+      "pico_raft_leader_id": {
+        "min": 0.0,
+        "max": 3.0,
+        "samples": 28
+      }
+    }
+  },
+  "replication": {},
+  "cluster_replication": [],
+  "proxy_metrics": [],
+  "database_versions": {},
+  "disk_info": [
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmjbjiqdq9o020uqm4f",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "device": "vda",
+      "serial": "fhm8ka0tm3uj34c5s6p2",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "device": "vda",
+      "serial": "fhmg2sgugea8hmh7lhq8",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "device": "vda",
+      "serial": "fhm0om5t6tvcj9t23qm9",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmiuscvotca6f75vq2o",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "mysql_exporter_collectors": [],
+  "transfer_activity_attempts_observed": [],
+  "health_scope_note": "Persisted component metrics; native workload verifies database operations. Independent membership checks recorded separately where applicable."
+}

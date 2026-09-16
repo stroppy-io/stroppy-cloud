@@ -1,0 +1,21 @@
+{
+  "run_id": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 1068,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-mysql-family-19fb11ff-mysql84-semi-sync"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysql": 71,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": 10,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter": 57,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysql": 59,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": 10,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter": 57,
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter": 57
+  }
+}

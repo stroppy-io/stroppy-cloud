@@ -46,6 +46,11 @@ func orioledbPostgresqlConf(major uint64) *schemapb.Schema {
 		Rules(append(pgConfRules(),
 			schemapb.Rule(`("extensions" in root) && ("orioledb" in root.extensions)`,
 				"shared_preload_libraries must include orioledb").ID("orioledb-preloaded"),
+			// beta17 reserves the pg_stat_statements prefix while loading OrioleDB.
+			// Load pg_stat_statements first so its configured GUCs are not discarded.
+			// doc: https://github.com/orioledb/orioledb/blob/main/src/orioledb.c
+			schemapb.Rule(`!("extensions" in root) || !("pg_stat_statements" in root.extensions) || root.extensions.filter(x, x == "orioledb" || x == "pg_stat_statements")[0] == "pg_stat_statements"`,
+				"pg_stat_statements must precede orioledb in preloaded libraries").ID("orioledb-statements-order"),
 		)...).
 		Template("conf", pgConfTemplate(major, orioledbExtra)).
 		MustBuild()
@@ -72,10 +77,10 @@ func orioledbExtra(add func(schemapb.FieldDef), l *pgLines) {
 	line("main_buffers", "MB")
 
 	add(schemapb.Int64("orioledb_undo_buffers").Title("orioledb.undo_buffers").Group("OrioleDB").Unit("MB").
-		// doc: configuration — orioledb.undo_buffers, default 1MB
-		Desc("Ring buffer holding older row and page versions (OrioleDB's undo log).").
-		Gte(1).Lte(1048576).Default(1))
-	line("undo_buffers", "MB")
+		// doc: configuration — orioledb.undo_buffers; beta17 src/orioledb.c _PG_init
+		Desc("Ring buffer holding older row and page versions. Leave unset for the engine default, which grows with the maximum process count; an explicit value must meet the engine's process-dependent minimum.").
+		Gte(1).Lte(1048576).Nullable())
+	l.f("{{#values.orioledb_undo_buffers}}orioledb.undo_buffers = {{{.}}}MB\n{{/values.orioledb_undo_buffers}}")
 
 	add(schemapb.Int64("orioledb_free_tree_buffers").Title("orioledb.free_tree_buffers").Group("OrioleDB").Unit("MB").
 		// doc: configuration — orioledb.free_tree_buffers, default 8MB

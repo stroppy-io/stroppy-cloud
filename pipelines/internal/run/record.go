@@ -5,6 +5,7 @@ import (
 
 	dockerlib "github.com/graphene-ci/library/docker"
 	k8slib "github.com/graphene-ci/library/k8s"
+	"github.com/graphene-ci/pipeline/pkg/activity"
 	"github.com/graphene-ci/pipeline/pkg/artifact"
 	"github.com/graphene-ci/pipeline/pkg/pipeline"
 
@@ -26,6 +27,9 @@ func recordingWalk(ctx pipeline.Context) {
 		p.Record(ctx, k8s)
 	}
 	agent := pipeline.NewAgent(ctx, "record-agent")
+	if _, err := activity.Activity(ctx, agent, dockerlib.Install()); err != nil {
+		panic(err)
+	}
 	dockerlib.Container(ctx, agent, dockerlib.Spec{Name: "record-container", Config: &container.Config{Image: "record"}})
 	pipeline.NewArtifact(ctx, "record-artifact", artifact.FromAgentFile(agent, "/record"))
 	pipeline.ToStand(ctx, agent)

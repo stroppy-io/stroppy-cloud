@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "pinned": "docker.stroppy.io/stroppy-io/pg-noop@sha256:c35aea48379fcefadb8f06cab4e6023257f28c23f3f27855680f97e468df4f3d",
+  "tag": "registry.stroppy.io/stroppy-io/pg-noop:0.1.2-r1",
+  "image_config_digest": "sha256:c35aea48379fcefadb8f06cab4e6023257f28c23f3f27855680f97e468df4f3d",
+  "same_image_config_and_layers": true,
+  "platform": "linux/amd64",
+  "source": "upstream v0.1.2 static binary; source unchanged",
+  "local_validation": "pg-noop-local-check.json",
+  "checked_at": "2026-09-15T18:43:43.010213+00:00"
+}

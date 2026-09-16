@@ -1,99 +1,99 @@
 {
-  "id": {
-    "namespace": "test",
-    "name": "sizes",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "test",
+    "name":  "sizes",
+    "version":  "v1.0.0"
   },
-  "description": "Per-role machine sizing of a test: a T-shirt size and an optional disk override.",
-  "fields": [
+  "description":  "Per-role machine sizing of a test: a T-shirt size and an optional disk override.",
+  "fields":  [
     {
-      "name": "roles",
-      "description": "Keys are topology roles (db, db-replica, proxy, runner, coordinator); the server validates them against the database topology.",
-      "required": true,
-      "map": {
-        "valueSchema": {
-          "fields": [
+      "name":  "roles",
+      "description":  "Keys are topology roles (db, db-replica, proxy, runner, coordinator); the server validates them against the database topology.",
+      "required":  true,
+      "map":  {
+        "valueSchema":  {
+          "fields":  [
             {
-              "name": "size",
-              "description": "T-shirt size; the platform size table turns it into a machine.",
-              "required": true,
-              "choice": {
-                "options": [
+              "name":  "size",
+              "description":  "T-shirt size; the platform size table turns it into a machine.",
+              "required":  true,
+              "choice":  {
+                "options":  [
                   {
-                    "value": {
-                      "stringValue": "XS"
+                    "value":  {
+                      "stringValue":  "XS"
                     },
-                    "label": "XS"
+                    "label":  "XS"
                   },
                   {
-                    "value": {
-                      "stringValue": "S"
+                    "value":  {
+                      "stringValue":  "S"
                     },
-                    "label": "S"
+                    "label":  "S"
                   },
                   {
-                    "value": {
-                      "stringValue": "M"
+                    "value":  {
+                      "stringValue":  "M"
                     },
-                    "label": "M"
+                    "label":  "M"
                   },
                   {
-                    "value": {
-                      "stringValue": "L"
+                    "value":  {
+                      "stringValue":  "L"
                     },
-                    "label": "L"
+                    "label":  "L"
                   },
                   {
-                    "value": {
-                      "stringValue": "XL"
+                    "value":  {
+                      "stringValue":  "XL"
                     },
-                    "label": "XL"
+                    "label":  "XL"
                   }
                 ]
               },
-              "title": "Size"
+              "title":  "Size"
             },
             {
-              "name": "disk",
-              "description": "Overrides the disk the size table would pick; absent means take the default.",
-              "nullable": true,
-              "object": {
-                "schema": {
-                  "fields": [
+              "name":  "disk",
+              "description":  "Overrides the disk the size table would pick; absent means take the default.",
+              "nullable":  true,
+              "object":  {
+                "schema":  {
+                  "fields":  [
                     {
-                      "name": "type",
-                      "description": "Provider disk type id; empty keeps the size table's default.",
-                      "string": {
-                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name":  "type",
+                      "description":  "Provider disk type id; empty keeps the size table's default.",
+                      "string":  {
+                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title": "Disk type"
+                      "title":  "Disk type"
                     },
                     {
-                      "name": "gb",
-                      "description": "Data disk size; empty keeps the size table's default.",
-                      "int64": {
-                        "gte": "10",
-                        "lte": "262144"
+                      "name":  "gb",
+                      "description":  "Data disk size; empty keeps the size table's default.",
+                      "int64":  {
+                        "gte":  "10",
+                        "lte":  "262144"
                       },
-                      "unit": "GB",
-                      "title": "Size"
+                      "unit":  "GB",
+                      "title":  "Size"
                     }
                   ],
-                  "strict": true
+                  "strict":  true
                 }
               },
-              "title": "Disk"
+              "title":  "Disk"
             }
           ],
-          "strict": true
+          "strict":  true
         },
-        "minEntries": "1",
-        "maxEntries": "16"
+        "minEntries":  "1",
+        "maxEntries":  "16"
       },
-      "group": "Sizing",
-      "title": "Roles"
+      "group":  "Sizing",
+      "title":  "Roles"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

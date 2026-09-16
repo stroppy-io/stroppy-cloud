@@ -1,362 +1,362 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "cockroach.flags",
-    "version": "v26.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "cockroach.flags",
+    "version":  "v26.0.0"
   },
-  "description": "CockroachDB 26.x node start flags and cluster settings.",
-  "fields": [
+  "description":  "CockroachDB 26.x node start flags and cluster settings.",
+  "fields":  [
     {
-      "name": "store_path",
-      "description": "--store path= : the data directory, on the mounted data disk.",
-      "string": {
-        "default": "/var/lib/cockroach/data",
-        "pattern": "^/[A-Za-z0-9._/-]*$"
+      "name":  "store_path",
+      "description":  "--store path= : the data directory, on the mounted data disk.",
+      "string":  {
+        "default":  "/var/lib/cockroach/data",
+        "pattern":  "^/[A-Za-z0-9._/-]*$"
       },
-      "group": "Store",
-      "title": "Store path"
+      "group":  "Store",
+      "title":  "Store path"
     },
     {
-      "name": "store_size",
-      "description": "--store size= : maximum store size as a percentage (25%) or a size (100GiB). Upstream default is 100%.",
-      "string": {
-        "default": "90%",
-        "pattern": "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "store_size",
+      "description":  "--store size= : maximum store size as a percentage (25%) or a size (100GiB). Upstream default is 100%.",
+      "string":  {
+        "default":  "90%",
+        "pattern":  "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Store",
-      "title": "Store size"
+      "group":  "Store",
+      "title":  "Store size"
     },
     {
-      "name": "ballast_size",
-      "description": "--store ballast-size= : a reserved file that can be deleted to recover a full disk; 0 disables it.",
-      "string": {
-        "default": "0",
-        "pattern": "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "ballast_size",
+      "description":  "--store ballast-size= : a reserved file that can be deleted to recover a full disk; 0 disables it.",
+      "string":  {
+        "default":  "0",
+        "pattern":  "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Store",
-      "title": "Ballast size"
+      "group":  "Store",
+      "title":  "Ballast size"
     },
     {
-      "name": "cache",
-      "description": "--cache : block cache, a percentage or a size. The upstream default (128MiB up to 24.x, 256MiB from 25.4) is far too small for a benchmark node.",
-      "string": {
-        "default": "25%",
-        "pattern": "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "cache",
+      "description":  "--cache : block cache, a percentage or a size. The upstream default (128MiB up to 24.x, 256MiB from 25.4) is far too small for a benchmark node.",
+      "string":  {
+        "default":  "25%",
+        "pattern":  "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Memory",
-      "title": "Cache"
+      "group":  "Memory",
+      "title":  "Cache"
     },
     {
-      "name": "max_sql_memory",
-      "description": "--max-sql-memory : budget for SQL execution (sorts, joins, results).",
-      "string": {
-        "default": "25%",
-        "pattern": "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "max_sql_memory",
+      "description":  "--max-sql-memory : budget for SQL execution (sorts, joins, results).",
+      "string":  {
+        "default":  "25%",
+        "pattern":  "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Memory",
-      "title": "Max SQL memory"
+      "group":  "Memory",
+      "title":  "Max SQL memory"
     },
     {
-      "name": "max_tsdb_memory",
-      "description": "--max-tsdb-memory : budget for the built-in time-series store that feeds the DB Console.",
-      "string": {
-        "default": "64MiB",
-        "pattern": "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "max_tsdb_memory",
+      "description":  "--max-tsdb-memory : budget for the built-in time-series store that feeds the DB Console.",
+      "string":  {
+        "default":  "64MiB",
+        "pattern":  "^([0-9]{1,3}%|0?\\.[0-9]+|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Memory",
-      "title": "Max TSDB memory"
+      "group":  "Memory",
+      "title":  "Max TSDB memory"
     },
     {
-      "name": "locality",
-      "description": "--locality : ordered \"key=value,key=value\" pairs describing where the node runs. Filled by the server from topology (region/zone of the machine).",
-      "nullable": true,
-      "string": {
-        "pattern": "^[a-z][a-z0-9_-]*=[A-Za-z0-9._-]+(,[a-z][a-z0-9_-]*=[A-Za-z0-9._-]+)*$"
+      "name":  "locality",
+      "description":  "--locality : ordered \"key=value,key=value\" pairs describing where the node runs. Filled by the server from topology (region/zone of the machine).",
+      "nullable":  true,
+      "string":  {
+        "pattern":  "^[a-z][a-z0-9_-]*=[A-Za-z0-9._-]+(,[a-z][a-z0-9_-]*=[A-Za-z0-9._-]+)*$"
       },
-      "group": "Cluster",
-      "title": "Locality",
-      "examples": [
+      "group":  "Cluster",
+      "title":  "Locality",
+      "examples":  [
         {
-          "stringValue": "region=ru-central1,zone=ru-central1-a"
+          "stringValue":  "region=ru-central1,zone=ru-central1-a"
         }
       ]
     },
     {
-      "name": "join",
-      "description": "--join : the addresses of the other nodes. Filled by the server from topology; identical on every node.",
-      "list": {
-        "items": [
+      "name":  "join",
+      "description":  "--join : the addresses of the other nodes. Filled by the server from topology; identical on every node.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "minLen": "1",
-              "maxLen": "256"
+            "string":  {
+              "minLen":  "1",
+              "maxLen":  "256"
             }
           }
         ],
-        "maxItems": "64",
-        "unique": true
+        "maxItems":  "64",
+        "unique":  true
       },
-      "group": "Cluster",
-      "title": "Join addresses"
+      "group":  "Cluster",
+      "title":  "Join addresses"
     },
     {
-      "name": "advertise_addr",
-      "description": "--advertise-addr : how other nodes and clients reach this one. Filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "256"
+      "name":  "advertise_addr",
+      "description":  "--advertise-addr : how other nodes and clients reach this one. Filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "256"
       },
-      "group": "Cluster",
-      "title": "Advertise address"
+      "group":  "Cluster",
+      "title":  "Advertise address"
     },
     {
-      "name": "listen_addr",
-      "description": "--listen-addr : interface and port for inter-node and SQL traffic.",
-      "string": {
-        "default": "0.0.0.0:26257",
-        "maxLen": "256"
+      "name":  "listen_addr",
+      "description":  "--listen-addr : interface and port for inter-node and SQL traffic.",
+      "string":  {
+        "default":  "0.0.0.0:26257",
+        "maxLen":  "256"
       },
-      "group": "Network",
-      "title": "Listen address"
+      "group":  "Network",
+      "title":  "Listen address"
     },
     {
-      "name": "http_addr",
-      "description": "--http-addr : DB Console and /_status/vars (the Prometheus endpoint the run scrapes).",
-      "string": {
-        "default": "0.0.0.0:8080",
-        "maxLen": "256"
+      "name":  "http_addr",
+      "description":  "--http-addr : DB Console and /_status/vars (the Prometheus endpoint the run scrapes).",
+      "string":  {
+        "default":  "0.0.0.0:8080",
+        "maxLen":  "256"
       },
-      "group": "Network",
-      "title": "HTTP address"
+      "group":  "Network",
+      "title":  "HTTP address"
     },
     {
-      "name": "sql_addr",
-      "description": "--sql-addr : a separate listener for client SQL; empty shares --listen-addr.",
-      "string": {
-        "default": "",
-        "maxLen": "256"
+      "name":  "sql_addr",
+      "description":  "--sql-addr : a separate listener for client SQL; empty shares --listen-addr.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "256"
       },
-      "group": "Network",
-      "title": "SQL address"
+      "group":  "Network",
+      "title":  "SQL address"
     },
     {
-      "name": "insecure",
-      "description": "--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live.",
-      "bool": {
-        "default": true
+      "name":  "insecure",
+      "description":  "--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Security",
-      "title": "Insecure"
+      "group":  "Security",
+      "title":  "Insecure"
     },
     {
-      "name": "certs_dir",
-      "description": "--certs-dir : node and CA certificates; read only in secure mode.",
-      "string": {
-        "default": "/etc/cockroach/certs",
-        "pattern": "^/[A-Za-z0-9._/-]*$"
+      "name":  "certs_dir",
+      "description":  "--certs-dir : node and CA certificates; read only in secure mode.",
+      "string":  {
+        "default":  "/etc/cockroach/certs",
+        "pattern":  "^/[A-Za-z0-9._/-]*$"
       },
-      "group": "Security",
-      "title": "Certificates directory",
-      "when": "!root.insecure"
+      "group":  "Security",
+      "title":  "Certificates directory",
+      "when":  "!root.insecure"
     },
     {
-      "name": "max_offset",
-      "description": "--max-offset : tolerated clock skew between nodes; a node that exceeds it kills itself. Must be identical on all nodes (upstream default 500ms).",
-      "duration": {
-        "default": "0.500s",
-        "gte": "0.050s",
-        "lte": "10s"
+      "name":  "max_offset",
+      "description":  "--max-offset : tolerated clock skew between nodes; a node that exceeds it kills itself. Must be identical on all nodes (upstream default 500ms).",
+      "duration":  {
+        "default":  "0.500s",
+        "gte":  "0.050s",
+        "lte":  "10s"
       },
-      "group": "Cluster settings",
-      "title": "Max clock offset"
+      "group":  "Cluster settings",
+      "title":  "Max clock offset"
     },
     {
-      "name": "cluster_name",
-      "description": "--cluster-name : guards against a node joining the wrong cluster; must match on every node.",
-      "string": {
-        "default": "stroppy",
-        "pattern": "^[a-z0-9][a-z0-9-]{0,62}$"
+      "name":  "cluster_name",
+      "description":  "--cluster-name : guards against a node joining the wrong cluster; must match on every node.",
+      "string":  {
+        "default":  "stroppy",
+        "pattern":  "^[a-z0-9][a-z0-9-]{0,62}$"
       },
-      "group": "Cluster settings",
-      "title": "Cluster name"
+      "group":  "Cluster settings",
+      "title":  "Cluster name"
     },
     {
-      "name": "log",
-      "description": "--log : the logging configuration as a YAML string. Empty leaves the built-in default (file logs under the store).",
-      "string": {
-        "default": "{sinks: {stderr: {channels: all, filter: WARNING, redact: false}}}",
-        "maxLen": "4096"
+      "name":  "log",
+      "description":  "--log : the logging configuration as a YAML string. Empty leaves the built-in default (file logs under the store).",
+      "string":  {
+        "default":  "{sinks: {stderr: {channels: all, filter: WARNING, redact: false}}}",
+        "maxLen":  "4096"
       },
-      "group": "Logging",
-      "title": "Log configuration"
+      "group":  "Logging",
+      "title":  "Log configuration"
     },
     {
-      "name": "cluster_settings",
-      "description": "SET CLUSTER SETTING <name> = <value>, applied once against the first node after the cluster is initialized.",
-      "rules": [
+      "name":  "cluster_settings",
+      "description":  "SET CLUSTER SETTING <name> = <value>, applied once against the first node after the cluster is initialized.",
+      "rules":  [
         {
-          "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9_]*([.][a-z0-9_]+)+$\"))",
-          "message": "cluster setting names look like kv.snapshot_rebalance.max_rate",
-          "id": "setting-name-shape"
+          "expr":  "this.all(k, k.matches(\"^[a-z][a-z0-9_]*([.][a-z0-9_]+)+$\"))",
+          "message":  "cluster setting names look like kv.snapshot_rebalance.max_rate",
+          "id":  "setting-name-shape"
         }
       ],
-      "map": {
-        "maxEntries": "64",
-        "valueField": {
-          "name": "value",
-          "string": {
-            "maxLen": "256"
+      "map":  {
+        "maxEntries":  "64",
+        "valueField":  {
+          "name":  "value",
+          "string":  {
+            "maxLen":  "256"
           }
         }
       },
-      "group": "Cluster settings",
-      "title": "Cluster settings"
+      "group":  "Cluster settings",
+      "title":  "Cluster settings"
     },
     {
-      "name": "wal_failover",
-      "description": "--wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node.",
-      "choice": {
-        "options": [
+      "name":  "wal_failover",
+      "description":  "--wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "disabled"
+            "value":  {
+              "stringValue":  "disabled"
             },
-            "label": "disabled"
+            "label":  "disabled"
           },
           {
-            "value": {
-              "stringValue": "among-stores"
+            "value":  {
+              "stringValue":  "among-stores"
             },
-            "label": "among-stores"
+            "label":  "among-stores"
           }
         ],
-        "default": {
-          "stringValue": "disabled"
+        "default":  {
+          "stringValue":  "disabled"
         }
       },
-      "group": "Store",
-      "title": "WAL failover"
+      "group":  "Store",
+      "title":  "WAL failover"
     },
     {
-      "name": "locality_advertise_addr",
-      "description": "--locality-advertise-addr : \"key=value@address\" pairs letting nodes in the same locality use a private address. Filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "512"
+      "name":  "locality_advertise_addr",
+      "description":  "--locality-advertise-addr : \"key=value@address\" pairs letting nodes in the same locality use a private address. Filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "512"
       },
-      "group": "Cluster",
-      "title": "Locality advertise address",
-      "examples": [
+      "group":  "Cluster",
+      "title":  "Locality advertise address",
+      "examples":  [
         {
-          "stringValue": "region=ru-central1@10.0.0.11:26257"
+          "stringValue":  "region=ru-central1@10.0.0.11:26257"
         }
       ]
     },
     {
-      "name": "max_disk_temp_storage",
-      "description": "--max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is taken out of the store, so it must fit inside --store size.",
-      "string": {
-        "default": "32GiB",
-        "pattern": "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      "name":  "max_disk_temp_storage",
+      "description":  "--max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is taken out of the store, so it must fit inside --store size.",
+      "string":  {
+        "default":  "32GiB",
+        "pattern":  "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
       },
-      "group": "Store",
-      "title": "Max disk temp storage"
+      "group":  "Store",
+      "title":  "Max disk temp storage"
     },
     {
-      "name": "join_flag",
-      "computed": {
-        "expr": "!(\"join\" in root) || size(root.join) == 0 ? \"\" : \" --join=\" + root.join.join(\",\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "join_flag",
+      "computed":  {
+        "expr":  "!(\"join\" in root) || size(root.join) == 0 ? \"\" : \" --join=\" + root.join.join(\",\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered --join"
+      "group":  "Cluster",
+      "title":  "Rendered --join"
     },
     {
-      "name": "locality_flag",
-      "computed": {
-        "expr": "(\"locality\" in root) ? \" --locality=\" + root.locality : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "locality_flag",
+      "computed":  {
+        "expr":  "(\"locality\" in root) ? \" --locality=\" + root.locality : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered --locality"
+      "group":  "Cluster",
+      "title":  "Rendered --locality"
     },
     {
-      "name": "advertise_flag",
-      "computed": {
-        "expr": "(\"advertise_addr\" in root) ? \" --advertise-addr=\" + root.advertise_addr : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "advertise_flag",
+      "computed":  {
+        "expr":  "(\"advertise_addr\" in root) ? \" --advertise-addr=\" + root.advertise_addr : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered --advertise-addr"
+      "group":  "Cluster",
+      "title":  "Rendered --advertise-addr"
     },
     {
-      "name": "sql_addr_flag",
-      "computed": {
-        "expr": "root.sql_addr == \"\" ? \"\" : \" --sql-addr=\" + root.sql_addr",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "sql_addr_flag",
+      "computed":  {
+        "expr":  "root.sql_addr == \"\" ? \"\" : \" --sql-addr=\" + root.sql_addr",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Network",
-      "title": "Rendered --sql-addr"
+      "group":  "Network",
+      "title":  "Rendered --sql-addr"
     },
     {
-      "name": "security_flag",
-      "computed": {
-        "expr": "root.insecure ? \" --insecure\" : \" --certs-dir=\" + root.certs_dir",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "security_flag",
+      "computed":  {
+        "expr":  "root.insecure ? \" --insecure\" : \" --certs-dir=\" + root.certs_dir",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Security",
-      "title": "Rendered security flag"
+      "group":  "Security",
+      "title":  "Rendered security flag"
     },
     {
-      "name": "store_flag",
-      "computed": {
-        "expr": "\" --store=path=\" + root.store_path + \",size=\" + root.store_size +\n\t\t\t\t (root.ballast_size == \"0\" ? \"\" : \",ballast-size=\" + root.ballast_size)",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "store_flag",
+      "computed":  {
+        "expr":  "\" --store=path=\" + root.store_path + \",size=\" + root.store_size +\n\t\t\t\t (root.ballast_size == \"0\" ? \"\" : \",ballast-size=\" + root.ballast_size)",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Store",
-      "title": "Rendered --store"
+      "group":  "Store",
+      "title":  "Rendered --store"
     },
     {
-      "name": "log_flag",
-      "computed": {
-        "expr": "root.log == \"\" ? \"\" : \" --log=\" + root.log",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "log_flag",
+      "computed":  {
+        "expr":  "root.log == \"\" ? \"\" : \" --log=\" + root.log",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Logging",
-      "title": "Rendered --log"
+      "group":  "Logging",
+      "title":  "Rendered --log"
     },
     {
-      "name": "settings_sql",
-      "description": "Derived: the SET CLUSTER SETTING block.",
-      "computed": {
-        "expr": "(\"cluster_settings\" in root)\n\t\t\t\t\t? root.cluster_settings.map(k, \"SET CLUSTER SETTING \" + k + \" = \" + string(root.cluster_settings[k]) + \";\").join(\"\\n\")\n\t\t\t\t\t: \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "settings_sql",
+      "description":  "Derived: the SET CLUSTER SETTING block.",
+      "computed":  {
+        "expr":  "(\"cluster_settings\" in root)\n\t\t\t\t\t? root.cluster_settings.map(k, \"SET CLUSTER SETTING \" + k + \" = \" + string(root.cluster_settings[k]) + \";\").join(\"\\n\")\n\t\t\t\t\t: \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster settings",
-      "title": "Rendered SQL"
+      "group":  "Cluster settings",
+      "title":  "Rendered SQL"
     },
     {
-      "name": "modern_flags",
-      "description": "Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr.",
-      "computed": {
-        "expr": "(root.wal_failover == \"disabled\" ? \"\" : \" --wal-failover=\" + root.wal_failover) +\n\t\t\t\t \" --max-disk-temp-storage=\" + root.max_disk_temp_storage +\n\t\t\t\t ((\"locality_advertise_addr\" in root) ? \" --locality-advertise-addr=\" + root.locality_advertise_addr : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "modern_flags",
+      "description":  "Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr.",
+      "computed":  {
+        "expr":  "(root.wal_failover == \"disabled\" ? \"\" : \" --wal-failover=\" + root.wal_failover) +\n\t\t\t\t \" --max-disk-temp-storage=\" + root.max_disk_temp_storage +\n\t\t\t\t ((\"locality_advertise_addr\" in root) ? \" --locality-advertise-addr=\" + root.locality_advertise_addr : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Store",
-      "title": "Rendered 25.x/26.x flags"
+      "group":  "Store",
+      "title":  "Rendered 25.x/26.x flags"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "root.insecure || root.certs_dir != \"\"",
-      "message": "secure mode needs a certificates directory",
-      "id": "secure-needs-certs"
+      "expr":  "root.insecure || root.certs_dir != \"\"",
+      "message":  "secure mode needs a certificates directory",
+      "id":  "secure-needs-certs"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "--listen-addr={{{values.listen_addr}}}{{{values.advertise_flag}}}{{{values.sql_addr_flag}}} --http-addr={{{values.http_addr}}}{{{values.store_flag}}} --cache={{{values.cache}}} --max-sql-memory={{{values.max_sql_memory}}} --max-tsdb-memory={{{values.max_tsdb_memory}}} --max-offset={{{values.max_offset}}} --cluster-name={{{values.cluster_name}}}{{{values.locality_flag}}}{{{values.join_flag}}}{{{values.security_flag}}}{{{values.modern_flags}}}{{{values.log_flag}}}\n",
-    "settings": "-- managed by stroppy-cloud — cfg.cockroach.flags@26\n{{{values.settings_sql}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "--listen-addr={{{values.listen_addr}}}{{{values.advertise_flag}}}{{{values.sql_addr_flag}}} --http-addr={{{values.http_addr}}}{{{values.store_flag}}} --cache={{{values.cache}}} --max-sql-memory={{{values.max_sql_memory}}} --max-tsdb-memory={{{values.max_tsdb_memory}}} --max-offset={{{values.max_offset}}} --cluster-name={{{values.cluster_name}}}{{{values.locality_flag}}}{{{values.join_flag}}}{{{values.security_flag}}}{{{values.modern_flags}}}{{{values.log_flag}}}\n",
+    "settings":  "-- managed by stroppy-cloud — cfg.cockroach.flags@26\n{{{values.settings_sql}}}\n"
   }
 }

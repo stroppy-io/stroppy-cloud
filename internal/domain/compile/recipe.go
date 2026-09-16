@@ -16,16 +16,17 @@ type recipe func(c *compilation) error
 // recipes by kind. A kind missing here cannot be launched (the test
 // validator reports it).
 var recipes = map[catalog.DatabaseKind]recipe{
-	catalog.Postgres:  postgresRecipe,
-	catalog.OrioleDB:  orioledbRecipe,
-	catalog.MySQL:     mysqlRecipe,
-	catalog.MariaDB:   mysqlRecipe,
-	catalog.Cockroach: cockroachRecipe,
-	catalog.Picodata:  picodataRecipe,
-	catalog.YDB:       ydbRecipe,
-	catalog.PgNoop:    pgNoopRecipe,
-	catalog.Noop:      noopRecipe,
-	catalog.External:  noopRecipe,
+	catalog.Postgres:   postgresRecipe,
+	catalog.OrioleDB:   orioledbRecipe,
+	catalog.MySQL:      mysqlRecipe,
+	catalog.MariaDB:    mysqlRecipe,
+	catalog.Cockroach:  cockroachRecipe,
+	catalog.Picodata:   picodataRecipe,
+	catalog.YDBManaged: managedYDBRecipe,
+	catalog.YDB:        ydbRecipe,
+	catalog.PgNoop:     pgNoopRecipe,
+	catalog.Noop:       noopRecipe,
+	catalog.External:   noopRecipe,
 }
 
 // Supported reports whether a kind has a recipe.
@@ -100,19 +101,22 @@ func (c *compilation) haproxy(listeners []haproxyListener) error {
 		item := map[string]any{"name": l.Name, "bind_port": l.BindPort, "mode": "tcp", "balance": "leastconn", "check": check, "servers": servers}
 		list = append(list, item)
 	}
-	cfg, err := c.render(role, schemaID, "conf", map[string]any{"listeners": list})
+	cfg, err := c.render(role, schemaID, "conf", map[string]any{"listeners": list, "stats_socket": "/tmp/haproxy.sock"})
 	if err != nil {
 		return err
 	}
+	// Native HAProxy metrics use a separate listener from the SQL frontends.
+	cfg += "\nlisten stroppy_metrics\n    bind 127.0.0.1:8405\n    mode http\n    http-request use-service prometheus-exporter if { path /metrics }\n"
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
-			Name: m + "-haproxy", Role: role, Machine: m, Image: "haproxy:2.9",
+			Name: m + "-haproxy", Role: role, Machine: m, Image: imageHAProxy,
 			Files:       []spec.File{{Path: "/usr/local/etc/haproxy/haproxy.cfg", Content: cfg}},
 			Ports:       portsOf(listeners),
-			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg && nc -z 127.0.0.1 %d", listeners[0].BindPort)),
+			Healthcheck: healthcheck("CMD", "bash", "-ec", fmt.Sprintf("haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg; exec 3<>/dev/tcp/127.0.0.1/%d", listeners[0].BindPort)),
 			Restart:     "always",
 			DependsOn:   c.dbContainers(),
 		})
+		c.out.Spec.Scrapes = append(c.out.Spec.Scrapes, spec.Scrape{Role: role, Job: m + "-haproxy", URL: "http://127.0.0.1:8405/metrics"})
 	}
 	return nil
 }

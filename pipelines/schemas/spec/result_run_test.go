@@ -1,6 +1,7 @@
 package spec
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -9,6 +10,12 @@ import (
 
 func TestResultRun(t *testing.T) {
 	minimal := map[string]any{}
+	// A full run retains config + log per segment and one baseline log.
+	artifacts := make([]any, 0, 129)
+	for i := range 64 {
+		artifacts = append(artifacts, fmt.Sprintf("artifact/segment-%d-config", i), fmt.Sprintf("artifact/segment-%d-log", i))
+	}
+	artifacts = append(artifacts, "artifact/baseline-log")
 
 	// The wire form: the pipeline posts JSON, so nested timestamps arrive as
 	// RFC3339 strings and nested durations as Go duration strings. Coercion
@@ -54,7 +61,7 @@ func TestResultRun(t *testing.T) {
 	}
 
 	schematest.Run(t, ResultRun(), schematest.Cases{
-		Valid: []map[string]any{minimal, full, native},
+		Valid: []map[string]any{minimal, full, native, {"artifacts": artifacts}},
 		Invalid: []schematest.Invalid{
 			{Value: map[string]any{
 				"segments": []any{map[string]any{"name": "load", "status": "exploded"}},

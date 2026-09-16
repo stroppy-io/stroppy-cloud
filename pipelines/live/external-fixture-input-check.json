@@ -1,0 +1,12 @@
+{
+  "status": "failed",
+  "run_id": "external-fixture-6eca7f5c",
+  "checked_at": "2026-09-15T20:34:38.106069+00:00",
+  "scope": "Owned external-test fixture input; external runner was not started.",
+  "failure": "The hand-prepared canary GRANT and DSN used stroppy while the compiled PostgreSQL container creates a different database. Initialization partially completed and the container restarted; pg_isready alone did not prove canary readiness.",
+  "artifacts_downloaded": true,
+  "correction": "Derive the canary database from POSTGRES_DB, validate initialization and use a SQL canary health check before workload.",
+  "cleanup": "passed",
+  "local_correction": "external-fixture-local-check.json",
+  "retry_run_id": "external-fixture-d4c89905"
+}

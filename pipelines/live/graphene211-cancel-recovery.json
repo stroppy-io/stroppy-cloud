@@ -1,0 +1,38 @@
+{
+  "events": [
+    "WorkflowExecutionStarted",
+    "WorkflowTaskScheduled",
+    "WorkflowExecutionCancelRequested",
+    "WorkflowTaskStarted",
+    "WorkflowTaskCompleted",
+    "ActivityTaskScheduled",
+    "ActivityTaskCancelRequested",
+    "ActivityTaskScheduled",
+    "ActivityTaskCancelRequested",
+    "ActivityTaskScheduled",
+    "ActivityTaskCancelRequested",
+    "ActivityTaskScheduled",
+    "ActivityTaskCanceled",
+    "ActivityTaskCanceled",
+    "ActivityTaskCanceled",
+    "WorkflowTaskScheduled",
+    "WorkflowTaskStarted",
+    "WorkflowTaskCompleted",
+    "ActivityTaskStarted",
+    "ActivityTaskCompleted",
+    "WorkflowTaskScheduled",
+    "WorkflowTaskStarted",
+    "WorkflowTaskCompleted",
+    "WorkflowExecutionCanceled"
+  ],
+  "execution_id": "01a0a463-d557-7770-85e1-86b27261b08f",
+  "initial_search_attribute_keys": [
+    "EntityOwner",
+    "EntityLabels",
+    "EntityKind"
+  ],
+  "pending_activities": 0,
+  "status": "Canceled",
+  "workflow_id": "run/matrix-mysql-family-1f79d4b3-mysql84-semi-sync",
+  "recovery": "Graphene 0.2.11 automatically restored the missing worker; it processed the existing cancellation and normal cleanup"
+}

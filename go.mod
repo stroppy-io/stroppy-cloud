@@ -22,7 +22,7 @@ require (
 	github.com/gopherex/xprobe v1.0.0
 	github.com/gopherex/xshutdown v1.0.0
 	github.com/gopherex/xtrace/contrib/sdk v1.0.2
-	github.com/graphene-ci/graphene v0.2.1
+	github.com/graphene-ci/graphene v0.2.3
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/ogen-go/ogen v1.20.3
 	github.com/robfig/cron/v3 v3.0.1
@@ -56,8 +56,8 @@ require (
 	github.com/magiconair/properties v1.8.10 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
 	github.com/moby/go-archive v0.2.0 // indirect
-	github.com/moby/moby/api v1.54.1 // indirect
-	github.com/moby/moby/client v0.4.0 // indirect
+	github.com/moby/moby/api v1.55.0 // indirect
+	github.com/moby/moby/client v0.5.1 // indirect
 	github.com/moby/patternmatcher v0.6.1 // indirect
 	github.com/moby/sys/sequential v0.6.0 // indirect
 	github.com/moby/sys/user v0.4.0 // indirect

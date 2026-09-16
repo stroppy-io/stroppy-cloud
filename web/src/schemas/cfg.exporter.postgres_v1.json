@@ -1,885 +1,885 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "exporter.postgres",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "exporter.postgres",
+    "version":  "v1.0.0"
   },
-  "description": "postgres_exporter flags and environment (prometheus-community/postgres_exporter v0.20.x).",
-  "fields": [
+  "description":  "postgres_exporter flags and environment (prometheus-community/postgres_exporter v0.20.x).",
+  "fields":  [
     {
-      "name": "data_source_name",
-      "description": "libpq connection string or URI the exporter scrapes, e.g. postgresql://exporter@10.0.0.11:5432/postgres?sslmode=disable. Filled by the server from the topology; it carries a password, so it is a secret.",
-      "nullable": true,
-      "string": {
-        "minLen": "1",
-        "maxLen": "2048"
+      "name":  "data_source_name",
+      "description":  "libpq connection string or URI the exporter scrapes, e.g. postgresql://exporter@10.0.0.11:5432/postgres?sslmode=disable. Filled by the server from the topology; it carries a password, so it is a secret.",
+      "nullable":  true,
+      "string":  {
+        "minLen":  "1",
+        "maxLen":  "2048"
       },
-      "group": "Cluster",
-      "title": "DATA_SOURCE_NAME",
-      "secret": true
+      "group":  "Cluster",
+      "title":  "DATA_SOURCE_NAME",
+      "secret":  true
     },
     {
-      "name": "web_listen_port",
-      "description": "Port the exporter serves /metrics on; rendered as --web.listen-address=:<port>.",
-      "int64": {
-        "default": "9187",
-        "gte": "1",
-        "lte": "65535"
+      "name":  "web_listen_port",
+      "description":  "Port the exporter serves /metrics on; rendered as --web.listen-address=:<port>.",
+      "int64":  {
+        "default":  "9187",
+        "gte":  "1",
+        "lte":  "65535"
       },
-      "group": "Web",
-      "title": "Listen port"
+      "group":  "Web",
+      "title":  "Listen port"
     },
     {
-      "name": "web_telemetry_path",
-      "description": "HTTP path the metrics are exposed under.",
-      "string": {
-        "default": "/metrics",
-        "pattern": "^/.*$"
+      "name":  "web_telemetry_path",
+      "description":  "HTTP path the metrics are exposed under.",
+      "string":  {
+        "default":  "/metrics",
+        "pattern":  "^/.*$"
       },
-      "group": "Web",
-      "title": "Telemetry path"
+      "group":  "Web",
+      "title":  "Telemetry path"
     },
     {
-      "name": "log_level",
-      "description": "Exporter log verbosity.",
-      "choice": {
-        "options": [
+      "name":  "log_level",
+      "description":  "Exporter log verbosity.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "debug"
+            "value":  {
+              "stringValue":  "debug"
             },
-            "label": "debug"
+            "label":  "debug"
           },
           {
-            "value": {
-              "stringValue": "info"
+            "value":  {
+              "stringValue":  "info"
             },
-            "label": "info"
+            "label":  "info"
           },
           {
-            "value": {
-              "stringValue": "warn"
+            "value":  {
+              "stringValue":  "warn"
             },
-            "label": "warn"
+            "label":  "warn"
           },
           {
-            "value": {
-              "stringValue": "error"
+            "value":  {
+              "stringValue":  "error"
             },
-            "label": "error"
+            "label":  "error"
           }
         ],
-        "default": {
-          "stringValue": "info"
+        "default":  {
+          "stringValue":  "info"
         }
       },
-      "group": "Logging",
-      "title": "Log level"
+      "group":  "Logging",
+      "title":  "Log level"
     },
     {
-      "name": "log_format",
-      "description": "Exporter log encoding.",
-      "choice": {
-        "options": [
+      "name":  "log_format",
+      "description":  "Exporter log encoding.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "logfmt"
+            "value":  {
+              "stringValue":  "logfmt"
             },
-            "label": "logfmt"
+            "label":  "logfmt"
           },
           {
-            "value": {
-              "stringValue": "json"
+            "value":  {
+              "stringValue":  "json"
             },
-            "label": "json"
+            "label":  "json"
           }
         ],
-        "default": {
-          "stringValue": "logfmt"
+        "default":  {
+          "stringValue":  "logfmt"
         }
       },
-      "group": "Logging",
-      "title": "Log format"
+      "group":  "Logging",
+      "title":  "Log format"
     },
     {
-      "name": "disable_default_metrics",
-      "description": "Drop every built-in metric and export only the custom queries.",
-      "choice": {
-        "options": [
+      "name":  "disable_default_metrics",
+      "description":  "Drop every built-in metric and export only the custom queries.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Metrics",
-      "title": "Disable default metrics"
+      "group":  "Metrics",
+      "title":  "Disable default metrics"
     },
     {
-      "name": "metric_prefix",
-      "description": "Prefix of every exported metric name.",
-      "string": {
-        "default": "pg",
-        "pattern": "^[a-z_][a-z0-9_]*$"
+      "name":  "metric_prefix",
+      "description":  "Prefix of every exported metric name.",
+      "string":  {
+        "default":  "pg",
+        "pattern":  "^[a-z_][a-z0-9_]*$"
       },
-      "group": "Metrics",
-      "title": "Metric prefix"
+      "group":  "Metrics",
+      "title":  "Metric prefix"
     },
     {
-      "name": "collection_timeout",
-      "description": "Timeout for one scrape, as a Go duration; a slow database is reported as a failed scrape instead of stalling Prometheus.",
-      "string": {
-        "default": "1m",
-        "pattern": "^[0-9]+(ms|s|m|h)$"
+      "name":  "collection_timeout",
+      "description":  "Timeout for one scrape, as a Go duration; a slow database is reported as a failed scrape instead of stalling Prometheus.",
+      "string":  {
+        "default":  "1m",
+        "pattern":  "^[0-9]+(ms|s|m|h)$"
       },
-      "group": "Metrics",
-      "title": "Collection timeout"
+      "group":  "Metrics",
+      "title":  "Collection timeout"
     },
     {
-      "name": "auto_discover_databases",
-      "description": "Scrape every database on the server, not just the one in DATA_SOURCE_NAME. Deprecated upstream.",
-      "choice": {
-        "options": [
+      "name":  "auto_discover_databases",
+      "description":  "Scrape every database on the server, not just the one in DATA_SOURCE_NAME. Deprecated upstream.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Discovery",
-      "title": "Auto-discover databases",
-      "deprecated": true
+      "group":  "Discovery",
+      "title":  "Auto-discover databases",
+      "deprecated":  true
     },
     {
-      "name": "exclude_databases",
-      "description": "Comma-separated databases to skip when auto-discovery is on. Deprecated upstream.",
-      "string": {
-        "default": "template0,template1",
-        "maxLen": "1024"
+      "name":  "exclude_databases",
+      "description":  "Comma-separated databases to skip when auto-discovery is on. Deprecated upstream.",
+      "string":  {
+        "default":  "template0,template1",
+        "maxLen":  "1024"
       },
-      "group": "Discovery",
-      "title": "Exclude databases",
-      "deprecated": true
+      "group":  "Discovery",
+      "title":  "Exclude databases",
+      "deprecated":  true
     },
     {
-      "name": "include_databases",
-      "description": "Comma-separated databases to restrict auto-discovery to. Deprecated upstream.",
-      "string": {
-        "default": "",
-        "maxLen": "1024"
+      "name":  "include_databases",
+      "description":  "Comma-separated databases to restrict auto-discovery to. Deprecated upstream.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "1024"
       },
-      "group": "Discovery",
-      "title": "Include databases",
-      "deprecated": true
+      "group":  "Discovery",
+      "title":  "Include databases",
+      "deprecated":  true
     },
     {
-      "name": "collector_database",
-      "description": "Per-database size and connection counts. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_database",
+      "description":  "Per-database size and connection counts. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.database"
+      "group":  "Collectors",
+      "title":  "collector.database"
     },
     {
-      "name": "collector_database_wraparound",
-      "description": "Transaction-id and multixact age per database. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_database_wraparound",
+      "description":  "Transaction-id and multixact age per database. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.database_wraparound"
+      "group":  "Collectors",
+      "title":  "collector.database_wraparound"
     },
     {
-      "name": "collector_locks",
-      "description": "Lock counts per database and lock mode. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_locks",
+      "description":  "Lock counts per database and lock mode. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.locks"
+      "group":  "Collectors",
+      "title":  "collector.locks"
     },
     {
-      "name": "collector_long_running_transactions",
-      "description": "Age and count of long-running transactions. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_long_running_transactions",
+      "description":  "Age and count of long-running transactions. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.long_running_transactions"
+      "group":  "Collectors",
+      "title":  "collector.long_running_transactions"
     },
     {
-      "name": "collector_postmaster",
-      "description": "Postmaster start time. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_postmaster",
+      "description":  "Postmaster start time. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.postmaster"
+      "group":  "Collectors",
+      "title":  "collector.postmaster"
     },
     {
-      "name": "collector_process_idle",
-      "description": "Histogram of idle backend times per application. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_process_idle",
+      "description":  "Histogram of idle backend times per application. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.process_idle"
+      "group":  "Collectors",
+      "title":  "collector.process_idle"
     },
     {
-      "name": "collector_replication",
-      "description": "Replication lag and is-replica flag. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_replication",
+      "description":  "Replication lag and is-replica flag. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.replication"
+      "group":  "Collectors",
+      "title":  "collector.replication"
     },
     {
-      "name": "collector_replication_slots",
-      "description": "Per-slot WAL retention and activity. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_replication_slots",
+      "description":  "Per-slot WAL retention and activity. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.replication_slots"
+      "group":  "Collectors",
+      "title":  "collector.replication_slots"
     },
     {
-      "name": "collector_roles",
-      "description": "Per-role connection limits. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_roles",
+      "description":  "Per-role connection limits. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.roles"
+      "group":  "Collectors",
+      "title":  "collector.roles"
     },
     {
-      "name": "collector_settings",
-      "description": "The server's pg_settings as metrics. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_settings",
+      "description":  "The server's pg_settings as metrics. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.settings"
+      "group":  "Collectors",
+      "title":  "collector.settings"
     },
     {
-      "name": "collector_stat_activity",
-      "description": "Backend counts by state, from pg_stat_activity. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_activity",
+      "description":  "Backend counts by state, from pg_stat_activity. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_activity"
+      "group":  "Collectors",
+      "title":  "collector.stat_activity"
     },
     {
-      "name": "collector_stat_activity_autovacuum",
-      "description": "Age of running autovacuum workers. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_activity_autovacuum",
+      "description":  "Age of running autovacuum workers. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_activity_autovacuum"
+      "group":  "Collectors",
+      "title":  "collector.stat_activity_autovacuum"
     },
     {
-      "name": "collector_stat_archiver",
-      "description": "WAL archiver successes and failures. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_archiver",
+      "description":  "WAL archiver successes and failures. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_archiver"
+      "group":  "Collectors",
+      "title":  "collector.stat_archiver"
     },
     {
-      "name": "collector_stat_bgwriter",
-      "description": "Background writer and checkpoint counters. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_bgwriter",
+      "description":  "Background writer and checkpoint counters. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_bgwriter"
+      "group":  "Collectors",
+      "title":  "collector.stat_bgwriter"
     },
     {
-      "name": "collector_stat_checkpointer",
-      "description": "pg_stat_checkpointer, the PostgreSQL 17+ split of the bgwriter view. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_checkpointer",
+      "description":  "pg_stat_checkpointer, the PostgreSQL 17+ split of the bgwriter view. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_checkpointer"
+      "group":  "Collectors",
+      "title":  "collector.stat_checkpointer"
     },
     {
-      "name": "collector_stat_database",
-      "description": "pg_stat_database: transactions, tuples, conflicts, deadlocks. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_database",
+      "description":  "pg_stat_database: transactions, tuples, conflicts, deadlocks. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_database"
+      "group":  "Collectors",
+      "title":  "collector.stat_database"
     },
     {
-      "name": "collector_stat_progress_vacuum",
-      "description": "Progress of running VACUUMs. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_progress_vacuum",
+      "description":  "Progress of running VACUUMs. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_progress_vacuum"
+      "group":  "Collectors",
+      "title":  "collector.stat_progress_vacuum"
     },
     {
-      "name": "collector_stat_replication",
-      "description": "Per-walsender byte positions and lag. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_replication",
+      "description":  "Per-walsender byte positions and lag. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_replication"
+      "group":  "Collectors",
+      "title":  "collector.stat_replication"
     },
     {
-      "name": "collector_stat_statements",
-      "description": "Per-statement time and call counts. Upstream default off; on in stroppy because the query dashboards read it (it needs pg_stat_statements preloaded). Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_statements",
+      "description":  "Per-statement time and call counts. Upstream default off; on in stroppy because the query dashboards read it (it needs pg_stat_statements preloaded). Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_statements"
+      "group":  "Collectors",
+      "title":  "collector.stat_statements"
     },
     {
-      "name": "collector_stat_user_tables",
-      "description": "Per-table scan, tuple and vacuum counters. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_user_tables",
+      "description":  "Per-table scan, tuple and vacuum counters. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_user_tables"
+      "group":  "Collectors",
+      "title":  "collector.stat_user_tables"
     },
     {
-      "name": "collector_stat_wal_receiver",
-      "description": "Standby-side WAL receiver state. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_stat_wal_receiver",
+      "description":  "Standby-side WAL receiver state. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.stat_wal_receiver"
+      "group":  "Collectors",
+      "title":  "collector.stat_wal_receiver"
     },
     {
-      "name": "collector_statio_user_indexes",
-      "description": "Per-index block read/hit counters. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_statio_user_indexes",
+      "description":  "Per-index block read/hit counters. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.statio_user_indexes"
+      "group":  "Collectors",
+      "title":  "collector.statio_user_indexes"
     },
     {
-      "name": "collector_statio_user_tables",
-      "description": "Per-table block read/hit counters. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_statio_user_tables",
+      "description":  "Per-table block read/hit counters. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.statio_user_tables"
+      "group":  "Collectors",
+      "title":  "collector.statio_user_tables"
     },
     {
-      "name": "collector_wal",
-      "description": "WAL segment count and size. Upstream default: on.",
-      "choice": {
-        "options": [
+      "name":  "collector_wal",
+      "description":  "WAL segment count and size. Upstream default: on.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "on"
+        "default":  {
+          "stringValue":  "on"
         }
       },
-      "group": "Collectors",
-      "title": "collector.wal"
+      "group":  "Collectors",
+      "title":  "collector.wal"
     },
     {
-      "name": "collector_xlog_location",
-      "description": "Current WAL LSN as a number. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_xlog_location",
+      "description":  "Current WAL LSN as a number. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.xlog_location"
+      "group":  "Collectors",
+      "title":  "collector.xlog_location"
     },
     {
-      "name": "collector_buffercache_summary",
-      "description": "pg_buffercache_summary; needs the pg_buffercache extension. Upstream default: off.",
-      "choice": {
-        "options": [
+      "name":  "collector_buffercache_summary",
+      "description":  "pg_buffercache_summary; needs the pg_buffercache extension. Upstream default: off.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "on"
+            "value":  {
+              "stringValue":  "on"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "off"
+            "value":  {
+              "stringValue":  "off"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "off"
+        "default":  {
+          "stringValue":  "off"
         }
       },
-      "group": "Collectors",
-      "title": "collector.buffercache_summary"
+      "group":  "Collectors",
+      "title":  "collector.buffercache_summary"
     },
     {
-      "name": "collector_flags",
-      "description": "Every collector rendered as --collector.<name> or --no-collector.<name>, in table order.",
-      "computed": {
-        "expr": "[(root.collector_database == \"on\" ? \"--collector.database\" : \"--no-collector.database\"),\n(root.collector_database_wraparound == \"on\" ? \"--collector.database_wraparound\" : \"--no-collector.database_wraparound\"),\n(root.collector_locks == \"on\" ? \"--collector.locks\" : \"--no-collector.locks\"),\n(root.collector_long_running_transactions == \"on\" ? \"--collector.long_running_transactions\" : \"--no-collector.long_running_transactions\"),\n(root.collector_postmaster == \"on\" ? \"--collector.postmaster\" : \"--no-collector.postmaster\"),\n(root.collector_process_idle == \"on\" ? \"--collector.process_idle\" : \"--no-collector.process_idle\"),\n(root.collector_replication == \"on\" ? \"--collector.replication\" : \"--no-collector.replication\"),\n(root.collector_replication_slots == \"on\" ? \"--collector.replication_slots\" : \"--no-collector.replication_slots\"),\n(root.collector_roles == \"on\" ? \"--collector.roles\" : \"--no-collector.roles\"),\n(root.collector_settings == \"on\" ? \"--collector.settings\" : \"--no-collector.settings\"),\n(root.collector_stat_activity == \"on\" ? \"--collector.stat_activity\" : \"--no-collector.stat_activity\"),\n(root.collector_stat_activity_autovacuum == \"on\" ? \"--collector.stat_activity_autovacuum\" : \"--no-collector.stat_activity_autovacuum\"),\n(root.collector_stat_archiver == \"on\" ? \"--collector.stat_archiver\" : \"--no-collector.stat_archiver\"),\n(root.collector_stat_bgwriter == \"on\" ? \"--collector.stat_bgwriter\" : \"--no-collector.stat_bgwriter\"),\n(root.collector_stat_checkpointer == \"on\" ? \"--collector.stat_checkpointer\" : \"--no-collector.stat_checkpointer\"),\n(root.collector_stat_database == \"on\" ? \"--collector.stat_database\" : \"--no-collector.stat_database\"),\n(root.collector_stat_progress_vacuum == \"on\" ? \"--collector.stat_progress_vacuum\" : \"--no-collector.stat_progress_vacuum\"),\n(root.collector_stat_replication == \"on\" ? \"--collector.stat_replication\" : \"--no-collector.stat_replication\"),\n(root.collector_stat_statements == \"on\" ? \"--collector.stat_statements\" : \"--no-collector.stat_statements\"),\n(root.collector_stat_user_tables == \"on\" ? \"--collector.stat_user_tables\" : \"--no-collector.stat_user_tables\"),\n(root.collector_stat_wal_receiver == \"on\" ? \"--collector.stat_wal_receiver\" : \"--no-collector.stat_wal_receiver\"),\n(root.collector_statio_user_indexes == \"on\" ? \"--collector.statio_user_indexes\" : \"--no-collector.statio_user_indexes\"),\n(root.collector_statio_user_tables == \"on\" ? \"--collector.statio_user_tables\" : \"--no-collector.statio_user_tables\"),\n(root.collector_wal == \"on\" ? \"--collector.wal\" : \"--no-collector.wal\"),\n(root.collector_xlog_location == \"on\" ? \"--collector.xlog_location\" : \"--no-collector.xlog_location\"),\n(root.collector_buffercache_summary == \"on\" ? \"--collector.buffercache_summary\" : \"--no-collector.buffercache_summary\")].join(\" \")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "collector_flags",
+      "description":  "Every collector rendered as --collector.<name> or --no-collector.<name>, in table order.",
+      "computed":  {
+        "expr":  "[(root.collector_database == \"on\" ? \"--collector.database\" : \"--no-collector.database\"),\n(root.collector_database_wraparound == \"on\" ? \"--collector.database_wraparound\" : \"--no-collector.database_wraparound\"),\n(root.collector_locks == \"on\" ? \"--collector.locks\" : \"--no-collector.locks\"),\n(root.collector_long_running_transactions == \"on\" ? \"--collector.long_running_transactions\" : \"--no-collector.long_running_transactions\"),\n(root.collector_postmaster == \"on\" ? \"--collector.postmaster\" : \"--no-collector.postmaster\"),\n(root.collector_process_idle == \"on\" ? \"--collector.process_idle\" : \"--no-collector.process_idle\"),\n(root.collector_replication == \"on\" ? \"--collector.replication\" : \"--no-collector.replication\"),\n(root.collector_replication_slots == \"on\" ? \"--collector.replication_slots\" : \"--no-collector.replication_slots\"),\n(root.collector_roles == \"on\" ? \"--collector.roles\" : \"--no-collector.roles\"),\n(root.collector_settings == \"on\" ? \"--collector.settings\" : \"--no-collector.settings\"),\n(root.collector_stat_activity == \"on\" ? \"--collector.stat_activity\" : \"--no-collector.stat_activity\"),\n(root.collector_stat_activity_autovacuum == \"on\" ? \"--collector.stat_activity_autovacuum\" : \"--no-collector.stat_activity_autovacuum\"),\n(root.collector_stat_archiver == \"on\" ? \"--collector.stat_archiver\" : \"--no-collector.stat_archiver\"),\n(root.collector_stat_bgwriter == \"on\" ? \"--collector.stat_bgwriter\" : \"--no-collector.stat_bgwriter\"),\n(root.collector_stat_checkpointer == \"on\" ? \"--collector.stat_checkpointer\" : \"--no-collector.stat_checkpointer\"),\n(root.collector_stat_database == \"on\" ? \"--collector.stat_database\" : \"--no-collector.stat_database\"),\n(root.collector_stat_progress_vacuum == \"on\" ? \"--collector.stat_progress_vacuum\" : \"--no-collector.stat_progress_vacuum\"),\n(root.collector_stat_replication == \"on\" ? \"--collector.stat_replication\" : \"--no-collector.stat_replication\"),\n(root.collector_stat_statements == \"on\" ? \"--collector.stat_statements\" : \"--no-collector.stat_statements\"),\n(root.collector_stat_user_tables == \"on\" ? \"--collector.stat_user_tables\" : \"--no-collector.stat_user_tables\"),\n(root.collector_stat_wal_receiver == \"on\" ? \"--collector.stat_wal_receiver\" : \"--no-collector.stat_wal_receiver\"),\n(root.collector_statio_user_indexes == \"on\" ? \"--collector.statio_user_indexes\" : \"--no-collector.statio_user_indexes\"),\n(root.collector_statio_user_tables == \"on\" ? \"--collector.statio_user_tables\" : \"--no-collector.statio_user_tables\"),\n(root.collector_wal == \"on\" ? \"--collector.wal\" : \"--no-collector.wal\"),\n(root.collector_xlog_location == \"on\" ? \"--collector.xlog_location\" : \"--no-collector.xlog_location\"),\n(root.collector_buffercache_summary == \"on\" ? \"--collector.buffercache_summary\" : \"--no-collector.buffercache_summary\")].join(\" \")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Collectors",
-      "title": "Collector flags"
+      "group":  "Collectors",
+      "title":  "Collector flags"
     },
     {
-      "name": "opts",
-      "description": "The full postgres_exporter argument list.",
-      "computed": {
-        "expr": "\"--web.listen-address=:\" + string(root.web_listen_port) + \" --web.telemetry-path=\" + root.web_telemetry_path + \" --log.level=\" + root.log_level + \" --log.format=\" + root.log_format + \" --metric-prefix=\" + root.metric_prefix + \" --collection-timeout=\" + root.collection_timeout + (root.disable_default_metrics == \"on\" ? \" --disable-default-metrics\" : \"\") + (root.auto_discover_databases == \"on\" ? \" --auto-discover-databases\" : \"\") + (root.exclude_databases != \"\" ? \" --exclude-databases=\" + root.exclude_databases : \"\") + (root.include_databases != \"\" ? \" --include-databases=\" + root.include_databases : \"\") + \" \" + root.collector_flags",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "opts",
+      "description":  "The full postgres_exporter argument list.",
+      "computed":  {
+        "expr":  "\"--web.listen-address=:\" + string(root.web_listen_port) + \" --web.telemetry-path=\" + root.web_telemetry_path + \" --log.level=\" + root.log_level + \" --log.format=\" + root.log_format + \" --metric-prefix=\" + root.metric_prefix + \" --collection-timeout=\" + root.collection_timeout + (root.disable_default_metrics == \"on\" ? \" --disable-default-metrics\" : \"\") + (root.auto_discover_databases == \"on\" ? \" --auto-discover-databases\" : \"\") + (root.exclude_databases != \"\" ? \" --exclude-databases=\" + root.exclude_databases : \"\") + (root.include_databases != \"\" ? \" --include-databases=\" + root.include_databases : \"\") + \" \" + root.collector_flags",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Collectors",
-      "title": "Command line"
+      "group":  "Collectors",
+      "title":  "Command line"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "root.auto_discover_databases == \"on\" || root.include_databases == \"\"",
-      "message": "include_databases only applies when auto_discover_databases is on",
-      "id": "include-needs-discovery"
+      "expr":  "root.auto_discover_databases == \"on\" || root.include_databases == \"\"",
+      "message":  "include_databases only applies when auto_discover_databases is on",
+      "id":  "include-needs-discovery"
     },
     {
-      "expr": "root.collector_stat_statements == \"off\" || root.disable_default_metrics == \"off\"",
-      "message": "the stat_statements collector produces nothing with default metrics disabled",
-      "id": "stat-statements-needs-defaults"
+      "expr":  "root.collector_stat_statements == \"off\" || root.disable_default_metrics == \"off\"",
+      "message":  "the stat_statements collector produces nothing with default metrics disabled",
+      "id":  "stat-statements-needs-defaults"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# postgres_exporter environment — generated by stroppy.\n{{#values.data_source_name}}DATA_SOURCE_NAME={{{.}}}\n{{/values.data_source_name}}PG_EXPORTER_WEB_TELEMETRY_PATH={{{values.web_telemetry_path}}}\nPG_EXPORTER_METRIC_PREFIX={{{values.metric_prefix}}}\nPG_EXPORTER_COLLECTION_TIMEOUT={{{values.collection_timeout}}}\nPOSTGRES_EXPORTER_OPTS={{{values.opts}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# postgres_exporter environment — generated by stroppy.\n{{#values.data_source_name}}DATA_SOURCE_NAME={{{.}}}\n{{/values.data_source_name}}PG_EXPORTER_WEB_TELEMETRY_PATH={{{values.web_telemetry_path}}}\nPG_EXPORTER_METRIC_PREFIX={{{values.metric_prefix}}}\nPG_EXPORTER_COLLECTION_TIMEOUT={{{values.collection_timeout}}}\nPOSTGRES_EXPORTER_OPTS={{{values.opts}}}\n"
   }
 }

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T21:21:48.014920+00:00",
+  "run_id": "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4",
+  "checks": [
+    "latest retry replaces an unverified attempt in catalogue and native rows",
+    "no duplicate workload rows",
+    "stale counters and verification timestamps cleared",
+    "Completed remains verification_pending",
+    "previously accepted evidence preserved",
+    "actual cleanup stage shown for all four mirror 25.4 rows"
+  ]
+}

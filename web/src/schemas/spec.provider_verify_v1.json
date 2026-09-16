@@ -1,62 +1,62 @@
 {
-  "id": {
-    "namespace": "spec",
-    "name": "provider_verify",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "spec",
+    "name":  "provider_verify",
+    "version":  "v1.0.0"
   },
-  "description": "Params of stroppy-provider-verify: can these credentials create and destroy resources?",
-  "fields": [
+  "description":  "Params of stroppy-provider-verify: can these credentials create and destroy resources?",
+  "fields":  [
     {
-      "name": "provider",
-      "description": "Cloud the credentials belong to.",
-      "required": true,
-      "choice": {
-        "options": [
+      "name":  "provider",
+      "description":  "Cloud the credentials belong to.",
+      "required":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "yandex"
+            "value":  {
+              "stringValue":  "yandex"
             },
-            "label": "Yandex Cloud"
+            "label":  "Yandex Cloud"
           },
           {
-            "value": {
-              "stringValue": "aws"
+            "value":  {
+              "stringValue":  "aws"
             },
-            "label": "AWS"
+            "label":  "AWS"
           }
         ]
       },
-      "group": "Provider",
-      "title": "Provider"
+      "group":  "Provider",
+      "title":  "Provider"
     },
     {
-      "name": "settings",
-      "description": "Baked provider.<kind>.settings value being verified.",
-      "required": true,
-      "json": {},
-      "group": "Provider",
-      "title": "Settings"
+      "name":  "settings",
+      "description":  "Baked provider.<kind>.settings value being verified.",
+      "required":  true,
+      "json":  {},
+      "group":  "Provider",
+      "title":  "Settings"
     },
     {
-      "name": "credentials_secret",
-      "description": "Name of the Graphene secret holding the credentials — never the value.",
-      "required": true,
-      "string": {
-        "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+      "name":  "credentials_secret",
+      "description":  "Name of the Graphene secret holding the credentials — never the value.",
+      "required":  true,
+      "string":  {
+        "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
       },
-      "group": "Provider",
-      "title": "Credentials secret"
+      "group":  "Provider",
+      "title":  "Credentials secret"
     },
     {
-      "name": "dry_run",
-      "description": "Only read the account (identity, permissions); do not create a probe resource.",
-      "bool": {
-        "default": true
+      "name":  "dry_run",
+      "description":  "Only read the account (identity, permissions); do not create a probe resource.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Verification",
-      "title": "Dry run"
+      "group":  "Verification",
+      "title":  "Dry run"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

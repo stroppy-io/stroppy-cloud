@@ -16,6 +16,7 @@ package stroppycfg
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"path"
 	"sort"
 	"strings"
@@ -82,9 +83,12 @@ func Config(in Input) (map[string]any, error) {
 		"runId":  in.RunID,
 		"logger": map[string]any{"logLevel": logLevel(seg), "logMode": logModeProduction},
 	}
-	if len(in.Labels) > 0 {
-		global["metadata"] = in.Labels
+	labels := maps.Clone(in.Labels)
+	if labels == nil {
+		labels = map[string]string{}
 	}
+	labels["stroppy.segment"] = seg.Name
+	global["metadata"] = labels
 	if in.OTLPEndpoint != "" {
 		global["exporter"] = map[string]any{"name": "otlp", "otlpExport": OTLPExport(in.OTLPEndpoint, in.OTLPHeaders)}
 	}
@@ -114,9 +118,20 @@ func Config(in Input) (map[string]any, error) {
 // doc: `stroppy probe -o json` → params[].config.
 func Params(seg spec.Segment) (map[string]any, error) {
 	out := map[string]any{}
-	for k, v := range seg.Workload.Params {
+	keys := make([]string, 0, len(seg.Workload.Params))
+	for k := range seg.Workload.Params {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		v := seg.Workload.Params[k]
 		if v == nil {
 			continue
+		}
+		switch v.(type) {
+		case string, bool, float64, float32, int, int64, int32, uint, uint64, json.Number:
+		default:
+			return nil, fmt.Errorf("segment %s: workload.%s must be a scalar; workload parameters belong next to script", seg.Name, k)
 		}
 		key := lowerCamel(k)
 		switch key {

@@ -1,0 +1,85 @@
+{
+  "run_id": "a11e0005-0000-4000-8000-000000000005",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-d",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.131.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "db-1",
+      "role": "db",
+      "cpu": 2,
+      "memory_gb": 4,
+      "image": "fd8d6s0blceqbto92ss8",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3"
+    },
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 2,
+      "memory_gb": 4,
+      "image": "fd8d6s0blceqbto92ss8",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "postgres",
+    "url": "postgres://postgres@${ip:role:db}:5432/stroppy?sslmode=disable",
+    "segments": [
+      {
+        "name": "smoke",
+        "workload": {
+          "script": "simple"
+        },
+        "run": {
+          "executor": "constant-vus",
+          "vus": 2,
+          "duration": "15s"
+        }
+      }
+    ]
+  },
+  "keep": "0s",
+  "containers": [
+    {
+      "name": "postgres",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/library/postgres:17.6",
+      "env": {
+        "POSTGRES_HOST_AUTH_METHOD": "trust",
+        "POSTGRES_DB": "stroppy"
+      },
+      "healthcheck": {
+        "cmd": [
+          "pg_isready",
+          "-U",
+          "postgres",
+          "-d",
+          "stroppy"
+        ],
+        "interval": "2s",
+        "retries": 60
+      },
+      "restart": "unless-stopped"
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "ref": "artifact/c272ed1d-stroppy-simple-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:6532ae6f1e00dc03f9619d85788570212c70cd655b835f22338a510743cf78c7",
+    "location": "blobs/6532ae6f1e00dc03f9619d85788570212c70cd655b835f22338a510743cf78c7",
+    "size": 880
+  },
+  {
+    "ref": "artifact/c272ed1d-stroppy-simple-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T08:38:14.709311709Z",
+    "digest": "sha256:4e5c5b783d447ccf8d409db0a1e7dbf370796c74c98ed65c66acd2654ef98800",
+    "location": "blobs/4e5c5b783d447ccf8d409db0a1e7dbf370796c74c98ed65c66acd2654ef98800",
+    "size": 2693
+  }
+]

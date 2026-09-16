@@ -1,711 +1,776 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "proxysql.cnf",
-    "version": "v2.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "proxysql.cnf",
+    "version":  "v2.0.0"
   },
-  "description": "ProxySQL 2.6/2.7 configuration rendered to /etc/proxysql.cnf (only read on a clean datadir or with --initial).",
-  "fields": [
+  "description":  "ProxySQL 2.6/2.7 configuration rendered to /etc/proxysql.cnf (only read on a clean datadir or with --initial).",
+  "fields":  [
     {
-      "name": "datadir",
-      "description": "Where proxysql.db lives. If that database already exists this file is ignored beyond this key.",
-      "string": {
-        "default": "/var/lib/proxysql",
-        "minLen": "1",
-        "maxLen": "255"
+      "name":  "datadir",
+      "description":  "Where proxysql.db lives. If that database already exists this file is ignored beyond this key.",
+      "string":  {
+        "default":  "/var/lib/proxysql",
+        "minLen":  "1",
+        "maxLen":  "255"
       },
-      "group": "Files",
-      "title": "Data directory"
+      "group":  "Files",
+      "title":  "Data directory"
     },
     {
-      "name": "errorlog",
-      "description": "Path of the ProxySQL error log.",
-      "string": {
-        "default": "/var/lib/proxysql/proxysql.log",
-        "minLen": "1",
-        "maxLen": "255"
+      "name":  "errorlog",
+      "description":  "Path of the ProxySQL error log.",
+      "string":  {
+        "default":  "/var/lib/proxysql/proxysql.log",
+        "minLen":  "1",
+        "maxLen":  "255"
       },
-      "group": "Files",
-      "title": "Error log"
+      "group":  "Files",
+      "title":  "Error log"
     },
     {
-      "name": "admin_credentials",
-      "description": "user:password pairs for the admin interface (6032). Change it — the default admin:admin is only reachable from localhost.",
-      "string": {
-        "default": "admin:admin",
-        "minLen": "3",
-        "maxLen": "255"
+      "name":  "admin_credentials",
+      "description":  "user:password pairs for the admin interface (6032). Change it — the default admin:admin is only reachable from localhost.",
+      "string":  {
+        "default":  "admin:admin",
+        "minLen":  "3",
+        "maxLen":  "255"
       },
-      "group": "Admin",
-      "title": "Admin credentials",
-      "secret": true
+      "group":  "Admin",
+      "title":  "Admin credentials",
+      "secret":  true
     },
     {
-      "name": "admin_mysql_ifaces",
-      "description": "host:port list the admin interface listens on, semicolon-separated.",
-      "string": {
-        "default": "0.0.0.0:6032",
-        "minLen": "1",
-        "maxLen": "255"
+      "name":  "admin_mysql_ifaces",
+      "description":  "host:port list the admin interface listens on, semicolon-separated.",
+      "string":  {
+        "default":  "0.0.0.0:6032",
+        "minLen":  "1",
+        "maxLen":  "255"
       },
-      "group": "Admin",
-      "title": "Admin interfaces"
+      "group":  "Admin",
+      "title":  "Admin interfaces"
     },
     {
-      "name": "interfaces",
-      "description": "host:port list the SQL proxy listens on; not changeable at runtime.",
-      "string": {
-        "default": "0.0.0.0:6033",
-        "minLen": "1",
-        "maxLen": "255"
-      },
-      "group": "MySQL",
-      "title": "Client interfaces"
-    },
-    {
-      "name": "threads",
-      "description": "Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count.",
-      "int64": {
-        "default": "4",
-        "gte": "1",
-        "lte": "1024"
-      },
-      "group": "MySQL",
-      "title": "Worker threads"
-    },
-    {
-      "name": "max_connections",
-      "description": "Maximum client connections to the proxy (compiled default 10000, the shipped sample sets 2048).",
-      "int64": {
-        "default": "2048",
-        "gte": "1",
-        "lte": "1000000"
-      },
-      "group": "MySQL",
-      "title": "Max frontend connections"
-    },
-    {
-      "name": "default_query_delay",
-      "description": "Artificial delay before forwarding a query; a throttling knob, 0 in normal use.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "3600000"
-      },
-      "group": "MySQL",
-      "unit": "ms",
-      "title": "Default query delay"
-    },
-    {
-      "name": "default_query_timeout",
-      "description": "Timeout for a query with no rule-level timeout.",
-      "int64": {
-        "default": "36000000",
-        "gte": "1000",
-        "lte": "864000000"
-      },
-      "group": "MySQL",
-      "unit": "ms",
-      "title": "Default query timeout"
-    },
-    {
-      "name": "connect_timeout_server",
-      "description": "Timeout of a single connection attempt to a backend.",
-      "int64": {
-        "default": "3000",
-        "gte": "100",
-        "lte": "600000"
-      },
-      "group": "MySQL",
-      "unit": "ms",
-      "title": "Backend connect timeout"
-    },
-    {
-      "name": "poll_timeout",
-      "description": "Event-loop poll timeout.",
-      "int64": {
-        "default": "2000",
-        "gte": "10",
-        "lte": "60000"
-      },
-      "group": "MySQL",
-      "unit": "ms",
-      "title": "Poll timeout"
-    },
-    {
-      "name": "stacksize",
-      "description": "Stack size of each worker thread; not changeable at runtime.",
-      "int64": {
-        "default": "1048576",
-        "gte": "262144",
-        "lte": "67108864"
-      },
-      "group": "MySQL",
-      "unit": "B",
-      "title": "Thread stack size"
-    },
-    {
-      "name": "server_version",
-      "description": "Version string the proxy reports to clients; set it to the real backend version so drivers pick the right protocol.",
-      "string": {
-        "default": "8.0.36",
-        "minLen": "1",
-        "maxLen": "64"
-      },
-      "group": "MySQL",
-      "title": "Announced server version"
-    },
-    {
-      "name": "default_schema",
-      "description": "Schema used when a client connects without one.",
-      "string": {
-        "default": "information_schema",
-        "minLen": "1",
-        "maxLen": "64"
-      },
-      "group": "MySQL",
-      "title": "Default schema"
-    },
-    {
-      "name": "default_charset",
-      "description": "Character set assumed for clients that do not announce one.",
-      "string": {
-        "default": "utf8mb4",
-        "minLen": "1",
-        "maxLen": "32"
-      },
-      "group": "MySQL",
-      "title": "Default charset"
-    },
-    {
-      "name": "sessions_sort",
-      "description": "Sort sessions by connection id to improve cache locality across threads.",
-      "choice": {
-        "options": [
+      "name":  "restapi_enabled",
+      "description":  "Expose native Prometheus metrics through the REST API listener.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "true"
+            "value":  {
+              "stringValue":  "true"
             },
-            "label": "true"
+            "label":  "true"
           },
           {
-            "value": {
-              "stringValue": "false"
+            "value":  {
+              "stringValue":  "false"
             },
-            "label": "false"
+            "label":  "false"
           }
         ],
-        "default": {
-          "stringValue": "true"
+        "default":  {
+          "stringValue":  "false"
         }
       },
-      "group": "MySQL",
-      "title": "Sort sessions"
+      "group":  "Admin",
+      "title":  "Metrics endpoint"
     },
     {
-      "name": "commands_stats",
-      "description": "Collect per-command counters in stats_mysql_commands_counters.",
-      "choice": {
-        "options": [
+      "name":  "restapi_port",
+      "description":  "REST API and Prometheus listener port.",
+      "int64":  {
+        "default":  "6070",
+        "gte":  "1",
+        "lte":  "65535"
+      },
+      "group":  "Admin",
+      "title":  "Metrics port"
+    },
+    {
+      "name":  "interfaces",
+      "description":  "host:port list the SQL proxy listens on; not changeable at runtime.",
+      "string":  {
+        "default":  "0.0.0.0:6033",
+        "minLen":  "1",
+        "maxLen":  "255"
+      },
+      "group":  "MySQL",
+      "title":  "Client interfaces"
+    },
+    {
+      "name":  "threads",
+      "description":  "Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count.",
+      "int64":  {
+        "default":  "4",
+        "gte":  "1",
+        "lte":  "1024"
+      },
+      "group":  "MySQL",
+      "title":  "Worker threads"
+    },
+    {
+      "name":  "max_connections",
+      "description":  "Maximum client connections to the proxy (compiled default 10000, the shipped sample sets 2048).",
+      "int64":  {
+        "default":  "2048",
+        "gte":  "1",
+        "lte":  "1000000"
+      },
+      "group":  "MySQL",
+      "title":  "Max frontend connections"
+    },
+    {
+      "name":  "default_query_delay",
+      "description":  "Artificial delay before forwarding a query; a throttling knob, 0 in normal use.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "3600000"
+      },
+      "group":  "MySQL",
+      "unit":  "ms",
+      "title":  "Default query delay"
+    },
+    {
+      "name":  "default_query_timeout",
+      "description":  "Timeout for a query with no rule-level timeout.",
+      "int64":  {
+        "default":  "36000000",
+        "gte":  "1000",
+        "lte":  "864000000"
+      },
+      "group":  "MySQL",
+      "unit":  "ms",
+      "title":  "Default query timeout"
+    },
+    {
+      "name":  "connect_timeout_server",
+      "description":  "Timeout of a single connection attempt to a backend.",
+      "int64":  {
+        "default":  "3000",
+        "gte":  "100",
+        "lte":  "600000"
+      },
+      "group":  "MySQL",
+      "unit":  "ms",
+      "title":  "Backend connect timeout"
+    },
+    {
+      "name":  "poll_timeout",
+      "description":  "Event-loop poll timeout.",
+      "int64":  {
+        "default":  "2000",
+        "gte":  "10",
+        "lte":  "60000"
+      },
+      "group":  "MySQL",
+      "unit":  "ms",
+      "title":  "Poll timeout"
+    },
+    {
+      "name":  "stacksize",
+      "description":  "Stack size of each worker thread; not changeable at runtime.",
+      "int64":  {
+        "default":  "1048576",
+        "gte":  "262144",
+        "lte":  "67108864"
+      },
+      "group":  "MySQL",
+      "unit":  "B",
+      "title":  "Thread stack size"
+    },
+    {
+      "name":  "server_version",
+      "description":  "Version string the proxy reports to clients; set it to the real backend version so drivers pick the right protocol.",
+      "string":  {
+        "default":  "8.0.36",
+        "minLen":  "1",
+        "maxLen":  "64"
+      },
+      "group":  "MySQL",
+      "title":  "Announced server version"
+    },
+    {
+      "name":  "default_schema",
+      "description":  "Schema used when a client connects without one.",
+      "string":  {
+        "default":  "information_schema",
+        "minLen":  "1",
+        "maxLen":  "64"
+      },
+      "group":  "MySQL",
+      "title":  "Default schema"
+    },
+    {
+      "name":  "default_charset",
+      "description":  "Character set assumed for clients that do not announce one.",
+      "string":  {
+        "default":  "utf8mb4",
+        "minLen":  "1",
+        "maxLen":  "32"
+      },
+      "group":  "MySQL",
+      "title":  "Default charset"
+    },
+    {
+      "name":  "default_collation_connection",
+      "description":  "Client handshake collation; must match default_charset. The default matches Stroppy's utf8mb4 charset instead of the upstream utf8 collation.",
+      "string":  {
+        "default":  "utf8mb4_general_ci",
+        "minLen":  "1",
+        "maxLen":  "64"
+      },
+      "group":  "MySQL",
+      "title":  "Default collation"
+    },
+    {
+      "name":  "sessions_sort",
+      "description":  "Sort sessions by connection id to improve cache locality across threads.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "true"
+            "value":  {
+              "stringValue":  "true"
             },
-            "label": "true"
+            "label":  "true"
           },
           {
-            "value": {
-              "stringValue": "false"
+            "value":  {
+              "stringValue":  "false"
             },
-            "label": "false"
+            "label":  "false"
           }
         ],
-        "default": {
-          "stringValue": "true"
+        "default":  {
+          "stringValue":  "true"
         }
       },
-      "group": "MySQL",
-      "title": "Command statistics"
+      "group":  "MySQL",
+      "title":  "Sort sessions"
     },
     {
-      "name": "monitor_username",
-      "description": "Account the monitor module uses for its health checks; needs USAGE and REPLICATION CLIENT.",
-      "string": {
-        "default": "monitor",
-        "minLen": "1",
-        "maxLen": "64"
+      "name":  "commands_stats",
+      "description":  "Collect per-command counters in stats_mysql_commands_counters.",
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "true"
+            },
+            "label":  "true"
+          },
+          {
+            "value":  {
+              "stringValue":  "false"
+            },
+            "label":  "false"
+          }
+        ],
+        "default":  {
+          "stringValue":  "true"
+        }
       },
-      "group": "Monitor",
-      "title": "Monitor user"
+      "group":  "MySQL",
+      "title":  "Command statistics"
     },
     {
-      "name": "monitor_password",
-      "description": "Password of that account; filled by the server.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "monitor_username",
+      "description":  "Account the monitor module uses for its health checks; needs USAGE and REPLICATION CLIENT.",
+      "string":  {
+        "default":  "monitor",
+        "minLen":  "1",
+        "maxLen":  "64"
       },
-      "group": "Monitor",
-      "title": "Monitor password",
-      "secret": true
+      "group":  "Monitor",
+      "title":  "Monitor user"
     },
     {
-      "name": "monitor_history",
-      "description": "How long monitor check results are kept.",
-      "int64": {
-        "default": "600000",
-        "gte": "1000",
-        "lte": "86400000"
+      "name":  "monitor_password",
+      "description":  "Password of that account; filled by the server.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "Monitor history"
+      "group":  "Monitor",
+      "title":  "Monitor password",
+      "secret":  true
     },
     {
-      "name": "monitor_connect_interval",
-      "description": "How often the monitor opens a fresh connection to each backend.",
-      "int64": {
-        "default": "60000",
-        "gte": "100",
-        "lte": "3600000"
+      "name":  "monitor_history",
+      "description":  "How long monitor check results are kept.",
+      "int64":  {
+        "default":  "600000",
+        "gte":  "1000",
+        "lte":  "86400000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "Connect check interval"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "Monitor history"
     },
     {
-      "name": "monitor_ping_interval",
-      "description": "How often the monitor pings each backend.",
-      "int64": {
-        "default": "10000",
-        "gte": "100",
-        "lte": "3600000"
+      "name":  "monitor_connect_interval",
+      "description":  "How often the monitor opens a fresh connection to each backend.",
+      "int64":  {
+        "default":  "60000",
+        "gte":  "100",
+        "lte":  "3600000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "Ping interval"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "Connect check interval"
     },
     {
-      "name": "monitor_read_only_interval",
-      "description": "How often read_only is polled — this is what moves a server between the writer and reader hostgroups.",
-      "int64": {
-        "default": "1500",
-        "gte": "100",
-        "lte": "3600000"
+      "name":  "monitor_ping_interval",
+      "description":  "How often the monitor pings each backend.",
+      "int64":  {
+        "default":  "10000",
+        "gte":  "100",
+        "lte":  "3600000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "read_only check interval"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "Ping interval"
     },
     {
-      "name": "monitor_read_only_timeout",
-      "description": "Timeout of one read_only check.",
-      "int64": {
-        "default": "500",
-        "gte": "50",
-        "lte": "60000"
+      "name":  "monitor_read_only_interval",
+      "description":  "How often read_only is polled — this is what moves a server between the writer and reader hostgroups.",
+      "int64":  {
+        "default":  "1500",
+        "gte":  "100",
+        "lte":  "3600000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "read_only check timeout"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "read_only check interval"
     },
     {
-      "name": "ping_interval_server_msec",
-      "description": "How often idle pooled backend connections are pinged.",
-      "int64": {
-        "default": "120000",
-        "gte": "100",
-        "lte": "3600000"
+      "name":  "monitor_read_only_timeout",
+      "description":  "Timeout of one read_only check.",
+      "int64":  {
+        "default":  "500",
+        "gte":  "50",
+        "lte":  "60000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "Connection-pool ping interval"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "read_only check timeout"
     },
     {
-      "name": "ping_timeout_server",
-      "description": "Timeout of one such ping.",
-      "int64": {
-        "default": "500",
-        "gte": "50",
-        "lte": "60000"
+      "name":  "ping_interval_server_msec",
+      "description":  "How often idle pooled backend connections are pinged.",
+      "int64":  {
+        "default":  "120000",
+        "gte":  "100",
+        "lte":  "3600000"
       },
-      "group": "Monitor",
-      "unit": "ms",
-      "title": "Connection-pool ping timeout"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "Connection-pool ping interval"
     },
     {
-      "name": "username",
-      "description": "Frontend account clients authenticate with; must exist on the backends with the same password.",
-      "string": {
-        "default": "stroppy",
-        "minLen": "1",
-        "maxLen": "64"
+      "name":  "ping_timeout_server",
+      "description":  "Timeout of one such ping.",
+      "int64":  {
+        "default":  "500",
+        "gte":  "50",
+        "lte":  "60000"
       },
-      "group": "Users",
-      "title": "Application user"
+      "group":  "Monitor",
+      "unit":  "ms",
+      "title":  "Connection-pool ping timeout"
     },
     {
-      "name": "password",
-      "description": "Password of that account; filled by the server.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "username",
+      "description":  "Frontend account clients authenticate with; must exist on the backends with the same password.",
+      "string":  {
+        "default":  "stroppy",
+        "minLen":  "1",
+        "maxLen":  "64"
       },
-      "group": "Users",
-      "title": "Application password",
-      "secret": true
+      "group":  "Users",
+      "title":  "Application user"
     },
     {
-      "name": "user_max_connections",
-      "description": "Frontend connection limit for that user.",
-      "int64": {
-        "default": "10000",
-        "gte": "1",
-        "lte": "1000000"
+      "name":  "password",
+      "description":  "Password of that account; filled by the server.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Users",
-      "title": "Per-user max connections"
+      "group":  "Users",
+      "title":  "Application password",
+      "secret":  true
     },
     {
-      "name": "transaction_persistent",
-      "description": "1 pins a session to one hostgroup for the whole transaction — required for correctness with read/write split.",
-      "int64": {
-        "default": "1",
-        "in": [
+      "name":  "user_max_connections",
+      "description":  "Frontend connection limit for that user.",
+      "int64":  {
+        "default":  "10000",
+        "gte":  "1",
+        "lte":  "1000000"
+      },
+      "group":  "Users",
+      "title":  "Per-user max connections"
+    },
+    {
+      "name":  "transaction_persistent",
+      "description":  "1 pins a session to one hostgroup for the whole transaction — required for correctness with read/write split.",
+      "int64":  {
+        "default":  "1",
+        "in":  [
           "0",
           "1"
         ]
       },
-      "group": "Users",
-      "title": "Transaction persistent"
+      "group":  "Users",
+      "title":  "Transaction persistent"
     },
     {
-      "name": "topology",
-      "description": "Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, or none (static hostgroups only).",
-      "choice": {
-        "options": [
+      "name":  "topology",
+      "description":  "Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, Galera, or none (static hostgroups only).",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "replication"
+            "value":  {
+              "stringValue":  "replication"
             },
-            "label": "asynchronous / semisync replication"
+            "label":  "asynchronous / semisync replication"
           },
           {
-            "value": {
-              "stringValue": "group_replication"
+            "value":  {
+              "stringValue":  "group_replication"
             },
-            "label": "group replication"
+            "label":  "group replication"
           },
           {
-            "value": {
-              "stringValue": "none"
+            "value":  {
+              "stringValue":  "galera"
             },
-            "label": "static hostgroups"
+            "label":  "Galera"
+          },
+          {
+            "value":  {
+              "stringValue":  "none"
+            },
+            "label":  "static hostgroups"
           }
         ],
-        "default": {
-          "stringValue": "replication"
+        "default":  {
+          "stringValue":  "replication"
         }
       },
-      "group": "Hostgroups",
-      "title": "Backend topology"
+      "group":  "Hostgroups",
+      "title":  "Backend topology"
     },
     {
-      "name": "writer_hostgroup",
-      "description": "Hostgroup id receiving writes.",
-      "int64": {
-        "default": "10",
-        "gte": "0",
-        "lte": "1000000"
+      "name":  "writer_hostgroup",
+      "description":  "Hostgroup id receiving writes.",
+      "int64":  {
+        "default":  "10",
+        "gte":  "0",
+        "lte":  "1000000"
       },
-      "group": "Hostgroups",
-      "title": "Writer hostgroup"
+      "group":  "Hostgroups",
+      "title":  "Writer hostgroup"
     },
     {
-      "name": "reader_hostgroup",
-      "description": "Hostgroup id receiving reads.",
-      "int64": {
-        "default": "20",
-        "gte": "0",
-        "lte": "1000000"
+      "name":  "reader_hostgroup",
+      "description":  "Hostgroup id receiving reads.",
+      "int64":  {
+        "default":  "20",
+        "gte":  "0",
+        "lte":  "1000000"
       },
-      "group": "Hostgroups",
-      "title": "Reader hostgroup"
+      "group":  "Hostgroups",
+      "title":  "Reader hostgroup"
     },
     {
-      "name": "backup_writer_hostgroup",
-      "description": "Group replication only: members that could become primary.",
-      "int64": {
-        "default": "30",
-        "gte": "0",
-        "lte": "1000000"
+      "name":  "backup_writer_hostgroup",
+      "description":  "Group Replication / Galera: members that could become primary.",
+      "int64":  {
+        "default":  "30",
+        "gte":  "0",
+        "lte":  "1000000"
       },
-      "group": "Hostgroups",
-      "title": "Backup writer hostgroup"
+      "group":  "Hostgroups",
+      "title":  "Backup writer hostgroup"
     },
     {
-      "name": "offline_hostgroup",
-      "description": "Group replication only: members that left or fell too far behind.",
-      "int64": {
-        "default": "40",
-        "gte": "0",
-        "lte": "1000000"
+      "name":  "offline_hostgroup",
+      "description":  "Group Replication / Galera: members that left or fell too far behind.",
+      "int64":  {
+        "default":  "40",
+        "gte":  "0",
+        "lte":  "1000000"
       },
-      "group": "Hostgroups",
-      "title": "Offline hostgroup"
+      "group":  "Hostgroups",
+      "title":  "Offline hostgroup"
     },
     {
-      "name": "check_type",
-      "description": "Which read_only flavor decides writer vs reader. Only these three are settable from the config file — the combined forms need the admin interface.",
-      "choice": {
-        "options": [
+      "name":  "check_type",
+      "description":  "Which read_only flavor decides writer vs reader. Only these three are settable from the config file — the combined forms need the admin interface.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "read_only"
+            "value":  {
+              "stringValue":  "read_only"
             },
-            "label": "read_only"
+            "label":  "read_only"
           },
           {
-            "value": {
-              "stringValue": "innodb_read_only"
+            "value":  {
+              "stringValue":  "innodb_read_only"
             },
-            "label": "innodb_read_only"
+            "label":  "innodb_read_only"
           },
           {
-            "value": {
-              "stringValue": "super_read_only"
+            "value":  {
+              "stringValue":  "super_read_only"
             },
-            "label": "super_read_only"
+            "label":  "super_read_only"
           }
         ],
-        "default": {
-          "stringValue": "read_only"
+        "default":  {
+          "stringValue":  "read_only"
         }
       },
-      "group": "Hostgroups",
-      "title": "Replication check type"
+      "group":  "Hostgroups",
+      "title":  "Replication check type"
     },
     {
-      "name": "max_writers",
-      "description": "Group replication only: how many members may sit in the writer hostgroup at once.",
-      "int64": {
-        "default": "1",
-        "gte": "1",
-        "lte": "64"
+      "name":  "max_writers",
+      "description":  "Group Replication / Galera: how many members may sit in the writer hostgroup at once.",
+      "int64":  {
+        "default":  "1",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "Hostgroups",
-      "title": "Max writers"
+      "group":  "Hostgroups",
+      "title":  "Max writers"
     },
     {
-      "name": "writer_is_also_reader",
-      "description": "0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read.",
-      "int64": {
-        "default": "0",
-        "in": [
+      "name":  "writer_is_also_reader",
+      "description":  "0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read.",
+      "int64":  {
+        "default":  "0",
+        "in":  [
           "0",
           "1",
           "2"
         ]
       },
-      "group": "Hostgroups",
-      "title": "Writer is also reader"
+      "group":  "Hostgroups",
+      "title":  "Writer is also reader"
     },
     {
-      "name": "max_transactions_behind",
-      "description": "Group replication only: lag in transactions before a reader is shunned; 0 disables the check.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "1000000"
+      "name":  "max_transactions_behind",
+      "description":  "Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "1000000"
       },
-      "group": "Hostgroups",
-      "title": "Max transactions behind"
+      "group":  "Hostgroups",
+      "title":  "Max transactions behind"
     },
     {
-      "name": "read_write_split",
-      "description": "Render the two default rules: `SELECT ... FOR UPDATE` to the writer, every other `SELECT` to the reader.",
-      "choice": {
-        "options": [
+      "name":  "read_write_split",
+      "description":  "Render the two default rules: `SELECT ... FOR UPDATE` to the writer, every other `SELECT` to the reader.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "true"
+            "value":  {
+              "stringValue":  "true"
             },
-            "label": "true"
+            "label":  "true"
           },
           {
-            "value": {
-              "stringValue": "false"
+            "value":  {
+              "stringValue":  "false"
             },
-            "label": "false"
+            "label":  "false"
           }
         ],
-        "default": {
-          "stringValue": "true"
+        "default":  {
+          "stringValue":  "true"
         }
       },
-      "group": "Query rules",
-      "title": "Read/write split"
+      "group":  "Query rules",
+      "title":  "Read/write split"
     },
     {
-      "name": "mysql_servers",
-      "description": "The mysql_servers records; filled by the server from topology.",
-      "nullable": true,
-      "list": {
-        "items": [
+      "name":  "mysql_servers",
+      "description":  "The mysql_servers records; filled by the server from topology.",
+      "nullable":  true,
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "address",
-                    "description": "Backend host or IP.",
-                    "required": true,
-                    "string": {
-                      "minLen": "1",
-                      "maxLen": "255"
+                    "name":  "address",
+                    "description":  "Backend host or IP.",
+                    "required":  true,
+                    "string":  {
+                      "minLen":  "1",
+                      "maxLen":  "255"
                     },
-                    "title": "Address"
+                    "title":  "Address"
                   },
                   {
-                    "name": "port",
-                    "description": "Backend port.",
-                    "int64": {
-                      "default": "3306",
-                      "gte": "1",
-                      "lte": "65535"
+                    "name":  "port",
+                    "description":  "Backend port.",
+                    "int64":  {
+                      "default":  "3306",
+                      "gte":  "1",
+                      "lte":  "65535"
                     },
-                    "title": "Port"
+                    "title":  "Port"
                   },
                   {
-                    "name": "hostgroup",
-                    "description": "Initial hostgroup id — writer_hostgroup for the primary, reader_hostgroup for replicas.",
-                    "required": true,
-                    "int64": {
-                      "gte": "0",
-                      "lte": "1000000"
+                    "name":  "hostgroup",
+                    "description":  "Initial hostgroup id — writer_hostgroup for the primary, reader_hostgroup for replicas.",
+                    "required":  true,
+                    "int64":  {
+                      "gte":  "0",
+                      "lte":  "1000000"
                     },
-                    "title": "Hostgroup"
+                    "title":  "Hostgroup"
                   },
                   {
-                    "name": "weight",
-                    "description": "Relative share of traffic inside its hostgroup.",
-                    "int64": {
-                      "default": "1",
-                      "gte": "1",
-                      "lte": "10000000"
+                    "name":  "use_ssl",
+                    "description":  "Use TLS for backend connections; required for fresh caching_sha2_password authentication.",
+                    "int64":  {
+                      "default":  "0",
+                      "in":  [
+                        "0",
+                        "1"
+                      ]
                     },
-                    "title": "Weight"
+                    "title":  "Backend TLS"
                   },
                   {
-                    "name": "max_connections",
-                    "description": "Backend connection-pool limit for this server.",
-                    "int64": {
-                      "default": "1000",
-                      "gte": "1",
-                      "lte": "1000000"
+                    "name":  "weight",
+                    "description":  "Relative share of traffic inside its hostgroup.",
+                    "int64":  {
+                      "default":  "1",
+                      "gte":  "1",
+                      "lte":  "10000000"
                     },
-                    "title": "Max connections"
+                    "title":  "Weight"
+                  },
+                  {
+                    "name":  "max_connections",
+                    "description":  "Backend connection-pool limit for this server.",
+                    "int64":  {
+                      "default":  "1000",
+                      "gte":  "1",
+                      "lte":  "1000000"
+                    },
+                    "title":  "Max connections"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "64"
+        "maxItems":  "64"
       },
-      "group": "Cluster",
-      "title": "Backends"
+      "group":  "Cluster",
+      "title":  "Backends"
     },
     {
-      "name": "custom",
-      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map": {
-        "maxEntries": "64",
-        "valueField": {
-          "name": "value",
-          "string": {}
+      "name":  "custom",
+      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "map":  {
+        "maxEntries":  "64",
+        "valueField":  {
+          "name":  "value",
+          "string":  {}
         }
       },
-      "group": "Custom",
-      "title": "Extra settings"
+      "group":  "Custom",
+      "title":  "Extra settings"
     },
     {
-      "name": "servers_block",
-      "description": "The backend list in libconfig record syntax.",
-      "computed": {
-        "expr": "((\"mysql_servers\" in root) && size(root.mysql_servers) > 0) ? (\"mysql_servers =\\n(\\n\" + root.mysql_servers.map(s,\n\t\t\t\t\t\"    { address=\\\"\" + ((\"address\" in s) ? string(s.address) : \"\") + \"\\\", port=\" + ((\"port\" in s) ? string(s.port) : \"3306\") +\n\t\t\t\t\t\", hostgroup=\" + ((\"hostgroup\" in s) ? string(s.hostgroup) : \"0\") + \", weight=\" + ((\"weight\" in s) ? string(s.weight) : \"1\") +\n\t\t\t\t\t\", max_connections=\" + ((\"max_connections\" in s) ? string(s.max_connections) : \"1000\") + \" }\").join(\",\\n\") + \"\\n)\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "servers_block",
+      "description":  "The backend list in libconfig record syntax.",
+      "computed":  {
+        "expr":  "((\"mysql_servers\" in root) && size(root.mysql_servers) > 0) ? (\"mysql_servers =\\n(\\n\" + root.mysql_servers.map(s,\n\t\t\t\t\t\"    { address=\\\"\" + ((\"address\" in s) ? string(s.address) : \"\") + \"\\\", port=\" + ((\"port\" in s) ? string(s.port) : \"3306\") +\n\t\t\t\t\t\", hostgroup=\" + ((\"hostgroup\" in s) ? string(s.hostgroup) : \"0\") + \", weight=\" + ((\"weight\" in s) ? string(s.weight) : \"1\") +\n\t\t\t\t\t\", max_connections=\" + ((\"max_connections\" in s) ? string(s.max_connections) : \"1000\") + \", use_ssl=\" + ((\"use_ssl\" in s) ? string(s.use_ssl) : \"0\") + \" }\").join(\",\\n\") + \"\\n)\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "mysql_servers block"
+      "group":  "Rendered",
+      "title":  "mysql_servers block"
     },
     {
-      "name": "users_block",
-      "description": "The single application account, routed to the writer hostgroup by default.",
-      "computed": {
-        "expr": "\"mysql_users =\\n(\\n    { username=\\\"\" + string(root.username) + \"\\\", password=\\\"\" +\n\t\t\t\t\t((\"password\" in root) ? string(root.password) : \"\") +\n\t\t\t\t\t\"\\\", default_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", transaction_persistent=\" + string(root.transaction_persistent) +\n\t\t\t\t\t\", max_connections=\" + string(root.user_max_connections) + \", active=1 }\\n)\\n\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "users_block",
+      "description":  "The single application account, routed to the writer hostgroup by default.",
+      "computed":  {
+        "expr":  "\"mysql_users =\\n(\\n    { username=\\\"\" + string(root.username) + \"\\\", password=\\\"\" +\n\t\t\t\t\t((\"password\" in root) ? string(root.password) : \"\") +\n\t\t\t\t\t\"\\\", default_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", transaction_persistent=\" + string(root.transaction_persistent) +\n\t\t\t\t\t\", max_connections=\" + string(root.user_max_connections) + \", active=1 }\\n)\\n\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "mysql_users block"
+      "group":  "Rendered",
+      "title":  "mysql_users block"
     },
     {
-      "name": "query_rules_block",
-      "description": "The read/write split rules; order matters — FOR UPDATE has to be matched first.",
-      "computed": {
-        "expr": "(root.read_write_split == \"true\") ? (\"mysql_query_rules =\\n(\\n\" +\n\t\t\t\t\t\"    { rule_id=1, active=1, match_digest=\\\"^SELECT .* FOR UPDATE\\\", destination_hostgroup=\" + string(root.writer_hostgroup) + \", apply=1 },\\n\" +\n\t\t\t\t\t\"    { rule_id=2, active=1, match_digest=\\\"^SELECT\\\", destination_hostgroup=\" + string(root.reader_hostgroup) + \", apply=1 }\\n)\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "query_rules_block",
+      "description":  "The read/write split rules; order matters — FOR UPDATE has to be matched first.",
+      "computed":  {
+        "expr":  "(root.read_write_split == \"true\") ? (\"mysql_query_rules =\\n(\\n\" +\n\t\t\t\t\t\"    { rule_id=1, active=1, match_digest=\\\"^SELECT .* FOR UPDATE\\\", destination_hostgroup=\" + string(root.writer_hostgroup) + \", apply=1 },\\n\" +\n\t\t\t\t\t\"    { rule_id=2, active=1, match_digest=\\\"^SELECT\\\", destination_hostgroup=\" + string(root.reader_hostgroup) + \", apply=1 }\\n)\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "mysql_query_rules block"
+      "group":  "Rendered",
+      "title":  "mysql_query_rules block"
     },
     {
-      "name": "hostgroups_block",
-      "description": "mysql_replication_hostgroups or mysql_group_replication_hostgroups, depending on topology.",
-      "computed": {
-        "expr": "(root.topology == \"replication\") ? (\"mysql_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", check_type=\\\"\" + string(root.check_type) + \"\\\" }\\n)\\n\")\n\t\t\t\t: ((root.topology == \"group_replication\") ? (\"mysql_group_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", backup_writer_hostgroup=\" + string(root.backup_writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", offline_hostgroup=\" + string(root.offline_hostgroup) +\n\t\t\t\t\t\", active=1, max_writers=\" + string(root.max_writers) +\n\t\t\t\t\t\", writer_is_also_reader=\" + string(root.writer_is_also_reader) +\n\t\t\t\t\t\", max_transactions_behind=\" + string(root.max_transactions_behind) + \" }\\n)\\n\") : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "hostgroups_block",
+      "description":  "Replication, Group Replication or Galera hostgroup manager, selected by topology.",
+      "computed":  {
+        "expr":  "(root.topology == \"replication\") ? (\"mysql_replication_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", check_type=\\\"\" + string(root.check_type) + \"\\\" }\\n)\\n\")\n\t\t\t\t: ((root.topology in [\"group_replication\", \"galera\"]) ? (\"mysql_\" + root.topology + \"_hostgroups =\\n(\\n    { writer_hostgroup=\" + string(root.writer_hostgroup) +\n\t\t\t\t\t\", backup_writer_hostgroup=\" + string(root.backup_writer_hostgroup) +\n\t\t\t\t\t\", reader_hostgroup=\" + string(root.reader_hostgroup) +\n\t\t\t\t\t\", offline_hostgroup=\" + string(root.offline_hostgroup) +\n\t\t\t\t\t\", active=1, max_writers=\" + string(root.max_writers) +\n\t\t\t\t\t\", writer_is_also_reader=\" + string(root.writer_is_also_reader) +\n\t\t\t\t\t\", max_transactions_behind=\" + string(root.max_transactions_behind) + \" }\\n)\\n\") : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Hostgroup manager block"
+      "group":  "Rendered",
+      "title":  "Hostgroup manager block"
     },
     {
-      "name": "custom_rendered",
-      "description": "The `custom` map joined into extra keys inside the mysql_variables block; values must already carry libconfig quoting.",
-      "computed": {
-        "expr": "(\"custom\" in root) ? root.custom.map(k, \"    \" + k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "custom_rendered",
+      "description":  "The `custom` map joined into extra keys inside the mysql_variables block; values must already carry libconfig quoting.",
+      "computed":  {
+        "expr":  "(\"custom\" in root) ? root.custom.map(k, \"    \" + k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Custom",
-      "title": "Rendered extra mysql_variables"
+      "group":  "Custom",
+      "title":  "Rendered extra mysql_variables"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"writer_hostgroup\" in root) || !(\"reader_hostgroup\" in root) || int(root.writer_hostgroup) != int(root.reader_hostgroup)",
-      "message": "writer_hostgroup and reader_hostgroup must differ",
-      "id": "hostgroups-distinct"
+      "expr":  "!(\"writer_hostgroup\" in root) || !(\"reader_hostgroup\" in root) || int(root.writer_hostgroup) != int(root.reader_hostgroup)",
+      "message":  "writer_hostgroup and reader_hostgroup must differ",
+      "id":  "hostgroups-distinct"
     },
     {
-      "expr": "!(\"topology\" in root) || root.topology != \"group_replication\" || (int(root.backup_writer_hostgroup) != int(root.writer_hostgroup) && int(root.offline_hostgroup) != int(root.writer_hostgroup))",
-      "message": "group replication needs four distinct hostgroups",
-      "id": "gr-hostgroups-distinct"
+      "expr":  "!(root.topology in [\"group_replication\", \"galera\"]) || (root.backup_writer_hostgroup != root.writer_hostgroup && root.backup_writer_hostgroup != root.reader_hostgroup && root.backup_writer_hostgroup != root.offline_hostgroup && root.offline_hostgroup != root.writer_hostgroup && root.offline_hostgroup != root.reader_hostgroup && root.reader_hostgroup > 0)",
+      "message":  "Group Replication and Galera need four distinct hostgroups, with a positive reader hostgroup",
+      "id":  "gr-hostgroups-distinct"
     },
     {
-      "expr": "!(\"monitor_read_only_timeout\" in root) || !(\"monitor_read_only_interval\" in root) || int(root.monitor_read_only_timeout) < int(root.monitor_read_only_interval)",
-      "message": "monitor_read_only_timeout must be smaller than monitor_read_only_interval",
-      "id": "read-only-timeout"
+      "expr":  "!(\"monitor_read_only_timeout\" in root) || !(\"monitor_read_only_interval\" in root) || int(root.monitor_read_only_timeout) < int(root.monitor_read_only_interval)",
+      "message":  "monitor_read_only_timeout must be smaller than monitor_read_only_interval",
+      "id":  "read-only-timeout"
     },
     {
-      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id": "custom-keys"
+      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
+      "id":  "custom-keys"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# ProxySQL — generated by stroppy, do not edit by hand\n# Only parsed on a clean datadir or with --initial.\ndatadir=\"{{{values.datadir}}}\"\nerrorlog=\"{{{values.errorlog}}}\"\n\nadmin_variables=\n{\n    admin_credentials=\"{{{values.admin_credentials}}}\"\n    mysql_ifaces=\"{{{values.admin_mysql_ifaces}}}\"\n}\n\nmysql_variables=\n{\n    interfaces=\"{{{values.interfaces}}}\"\n    threads={{{values.threads}}}\n    max_connections={{{values.max_connections}}}\n    stacksize={{{values.stacksize}}}\n    poll_timeout={{{values.poll_timeout}}}\n    default_query_delay={{{values.default_query_delay}}}\n    default_query_timeout={{{values.default_query_timeout}}}\n    connect_timeout_server={{{values.connect_timeout_server}}}\n    server_version=\"{{{values.server_version}}}\"\n    default_schema=\"{{{values.default_schema}}}\"\n    default_charset=\"{{{values.default_charset}}}\"\n    sessions_sort={{{values.sessions_sort}}}\n    commands_stats={{{values.commands_stats}}}\n    monitor_username=\"{{{values.monitor_username}}}\"\n    monitor_password=\"{{{values.monitor_password}}}\"\n    monitor_history={{{values.monitor_history}}}\n    monitor_connect_interval={{{values.monitor_connect_interval}}}\n    monitor_ping_interval={{{values.monitor_ping_interval}}}\n    monitor_read_only_interval={{{values.monitor_read_only_interval}}}\n    monitor_read_only_timeout={{{values.monitor_read_only_timeout}}}\n    ping_interval_server_msec={{{values.ping_interval_server_msec}}}\n    ping_timeout_server={{{values.ping_timeout_server}}}\n{{{values.custom_rendered}}}\n}\n\n{{{values.servers_block}}}\n{{{values.users_block}}}\n{{{values.query_rules_block}}}\n{{{values.hostgroups_block}}}"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# ProxySQL — generated by stroppy, do not edit by hand\n# Only parsed on a clean datadir or with --initial.\ndatadir=\"{{{values.datadir}}}\"\nerrorlog=\"{{{values.errorlog}}}\"\n\nadmin_variables=\n{\n    admin_credentials=\"{{{values.admin_credentials}}}\"\n    mysql_ifaces=\"{{{values.admin_mysql_ifaces}}}\"\n    restapi_enabled={{{values.restapi_enabled}}}\n    restapi_port={{{values.restapi_port}}}\n}\n\nmysql_variables=\n{\n    interfaces=\"{{{values.interfaces}}}\"\n    threads={{{values.threads}}}\n    max_connections={{{values.max_connections}}}\n    stacksize={{{values.stacksize}}}\n    poll_timeout={{{values.poll_timeout}}}\n    default_query_delay={{{values.default_query_delay}}}\n    default_query_timeout={{{values.default_query_timeout}}}\n    connect_timeout_server={{{values.connect_timeout_server}}}\n    server_version=\"{{{values.server_version}}}\"\n    default_schema=\"{{{values.default_schema}}}\"\n    default_charset=\"{{{values.default_charset}}}\"\n    default_collation_connection=\"{{{values.default_collation_connection}}}\"\n    sessions_sort={{{values.sessions_sort}}}\n    commands_stats={{{values.commands_stats}}}\n    monitor_username=\"{{{values.monitor_username}}}\"\n    monitor_password=\"{{{values.monitor_password}}}\"\n    monitor_history={{{values.monitor_history}}}\n    monitor_connect_interval={{{values.monitor_connect_interval}}}\n    monitor_ping_interval={{{values.monitor_ping_interval}}}\n    monitor_read_only_interval={{{values.monitor_read_only_interval}}}\n    monitor_read_only_timeout={{{values.monitor_read_only_timeout}}}\n    ping_interval_server_msec={{{values.ping_interval_server_msec}}}\n    ping_timeout_server={{{values.ping_timeout_server}}}\n{{{values.custom_rendered}}}\n}\n\n{{{values.servers_block}}}\n{{{values.users_block}}}\n{{{values.query_rules_block}}}\n{{{values.hostgroups_block}}}"
   }
 }

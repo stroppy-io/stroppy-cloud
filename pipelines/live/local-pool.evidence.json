@@ -1,0 +1,20 @@
+{
+  "db-1-postgres": "running",
+  "proxy-1-haproxy": "running",
+  "proxy-1-pgbouncer": "running",
+  "proxy-1-pgbouncer-exporter": "running",
+  "query_through_pool": "42",
+  "8405": {
+    "metric_samples": 433,
+    "health_samples": []
+  },
+  "9127": {
+    "metric_samples": 75,
+    "health_samples": [
+      "pgbouncer_up 1"
+    ]
+  },
+  "haproxy_image": "docker.stroppy.io/library/haproxy:3.0",
+  "pgbouncer_exporter_image": "docker.stroppy.io/prometheuscommunity/pgbouncer-exporter:v0.12.1",
+  "scope": "Local real Docker containers, generated config; does not count as a YC matrix cell"
+}

@@ -27,6 +27,8 @@ export interface ProviderYandexSettings1 {
   folder_id: string;
   /** Zone. Availability zone of ru-central1 the run is placed in. */
   zone: "ru-central1-a" | "ru-central1-b" | "ru-central1-d" | "ru-central1-e";
+  /** Distributed topology zones. Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone. */
+  zones?: Array<string>;
   /** Platform. Compute platform (CPU generation) the machines are created on. */
   platform_id?: "standard-v1" | "standard-v2" | "standard-v3" | "standard-v4a" | "amd-v1" | "highfreq-v3" | "highfreq-v4a";
   /** Network. Create a throwaway network for every run, or place runs into an existing one. */

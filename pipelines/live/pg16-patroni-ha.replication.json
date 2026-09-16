@@ -1,0 +1,161 @@
+{
+  "run_id": "matrix-patroni-96794a09-pg16-patroni-ha",
+  "checked_at": "2026-09-14T16:30:57.333942+00:00",
+  "cluster": {
+    "members": [
+      {
+        "name": "db-1",
+        "role": "leader",
+        "state": "running",
+        "api_url": "http://10.130.0.34:8008/patroni",
+        "host": "10.130.0.34",
+        "port": 5432,
+        "timeline": 1
+      },
+      {
+        "name": "db-replica-1",
+        "role": "sync_standby",
+        "state": "streaming",
+        "api_url": "http://10.130.0.8:8008/patroni",
+        "host": "10.130.0.8",
+        "port": 5432,
+        "timeline": 1,
+        "receive_lag": 0,
+        "receive_lsn": "0/4026B98",
+        "replay_lag": 0,
+        "replay_lsn": "0/4026B98",
+        "lag": 0,
+        "lsn": "0/4026B98"
+      },
+      {
+        "name": "db-replica-2",
+        "role": "replica",
+        "state": "streaming",
+        "api_url": "http://10.130.0.7:8008/patroni",
+        "host": "10.130.0.7",
+        "port": 5432,
+        "timeline": 1,
+        "receive_lag": 0,
+        "receive_lsn": "0/4026B98",
+        "replay_lag": 0,
+        "replay_lsn": "0/4026B98",
+        "lag": 0,
+        "lsn": "0/4026B98"
+      }
+    ],
+    "scope": "stroppy-fef81f72-d60c-4db4-8f5b-7e13cfd50d1d"
+  },
+  "nodes": {
+    "db-1": [
+      {
+        "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+        "rows": [
+          [
+            "16.15 (Debian 16.15-1.pgdg13+2)",
+            "f",
+            "/var/lib/postgresql/data/pgdata"
+          ]
+        ]
+      },
+      {
+        "query": "CREATE TABLE IF NOT EXISTS public.stroppy_replication_probe (id integer primary key); INSERT INTO public.stroppy_replication_probe SELECT generate_series(1,100) ON CONFLICT DO NOTHING; SELECT count(*) FROM public.stroppy_replication_probe",
+        "rows": [
+          [
+            "100"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+        "rows": []
+      },
+      {
+        "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+        "rows": [
+          [
+            "streaming",
+            "sync",
+            "0/4033728",
+            "0/4033728"
+          ],
+          [
+            "streaming",
+            "async",
+            "0/4033728",
+            "0/4033728"
+          ]
+        ]
+      }
+    ],
+    "db-replica-1": [
+      {
+        "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+        "rows": [
+          [
+            "16.15 (Debian 16.15-1.pgdg13+2)",
+            "t",
+            "/var/lib/postgresql/data/pgdata"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT count(*) FROM public.stroppy_replication_probe",
+        "rows": [
+          [
+            "100"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+        "rows": [
+          [
+            "streaming",
+            "0/4033728",
+            "db_replica_1",
+            "10.130.0.34"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+        "rows": []
+      }
+    ],
+    "db-replica-2": [
+      {
+        "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+        "rows": [
+          [
+            "16.15 (Debian 16.15-1.pgdg13+2)",
+            "t",
+            "/var/lib/postgresql/data/pgdata"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT count(*) FROM public.stroppy_replication_probe",
+        "rows": [
+          [
+            "100"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+        "rows": [
+          [
+            "streaming",
+            "0/4033728",
+            "db_replica_2",
+            "10.130.0.34"
+          ]
+        ]
+      },
+      {
+        "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+        "rows": []
+      }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T23:36:10.474037+00:00",
+  "run_id": "matrix-ydbautonomous-73a81601",
+  "source": "Fresh YC folder lists intersected with campaign resource ledger, including all 39 boot disk IDs",
+  "resources": {
+    "vm": {
+      "recorded_created": 39,
+      "remaining_ids": []
+    },
+    "disk": {
+      "recorded_created": 36,
+      "remaining_ids": []
+    },
+    "network": {
+      "recorded_created": 3,
+      "remaining_ids": []
+    },
+    "subnet": {
+      "recorded_created": 9,
+      "remaining_ids": []
+    },
+    "sg": {
+      "recorded_created": 3,
+      "remaining_ids": []
+    },
+    "boot_disks": {
+      "recorded_created": 39,
+      "remaining_ids": []
+    }
+  },
+  "baseline_evidence": "preserved-resources-check.json"
+}

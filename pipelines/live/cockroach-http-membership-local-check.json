@@ -1,0 +1,237 @@
+{
+  "status": "passed",
+  "scope": "Read-only SQL and HTTP membership probes on three-node local clusters; no YC claim",
+  "checks": [
+    {
+      "version": "24.3",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:54:08.191639+00:00",
+      "input_sha256": "ff9c4fa88891707fc888866ab454723a8ea652e9dc82b1213271fa6115c5ffa4",
+      "checks": {
+        "stroppy-crdb-5b05d1f1-db-1-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v24.3.36 (x86_64-pc-linux-gnu, built 2026/08/24 19:02:50, go1.22.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v24.3.36"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-5b05d1f1-db-2-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v24.3.36 (x86_64-pc-linux-gnu, built 2026/08/24 19:02:50, go1.22.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v24.3.36"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-5b05d1f1-db-3-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v24.3.36 (x86_64-pc-linux-gnu, built 2026/08/24 19:02:50, go1.22.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v24.3.36"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v24.3.36"
+            }
+          ],
+          "local_node_ready": true
+        }
+      }
+    },
+    {
+      "version": "25.2",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:54:14.275483+00:00",
+      "input_sha256": "c1a4ffe76fb25cb8d84a911a4e465af29c12f37e0478cdb45eab1c807b741d53",
+      "checks": {
+        "stroppy-crdb-92c9a7d4-db-1-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.2.23 (x86_64-pc-linux-gnu, built 2026/08/24 17:35:19, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.2.23"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-92c9a7d4-db-2-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.2.23 (x86_64-pc-linux-gnu, built 2026/08/24 17:35:19, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.2.23"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-92c9a7d4-db-3-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.2.23 (x86_64-pc-linux-gnu, built 2026/08/24 17:35:19, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.2.23"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.2.23"
+            }
+          ],
+          "local_node_ready": true
+        }
+      }
+    },
+    {
+      "version": "25.4",
+      "status": "passed",
+      "checked_at": "2026-09-15T16:54:20.393306+00:00",
+      "input_sha256": "31b9bb60ffdd3d2df79fd9bbd96ce5479543e7b115cdd35e0bdd700e7117b40e",
+      "checks": {
+        "stroppy-crdb-37b8ce70-db-1-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.4.16 (x86_64-pc-linux-gnu, built 2026/09/02 15:29:39, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.4.16"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-37b8ce70-db-2-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.4.16 (x86_64-pc-linux-gnu, built 2026/09/02 15:29:39, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.4.16"
+            }
+          ],
+          "local_node_ready": true
+        },
+        "stroppy-crdb-37b8ce70-db-3-cockroach-pgwire": {
+          "probe": "cockroach",
+          "status": "passed",
+          "version": "CockroachDB CCL v25.4.16 (x86_64-pc-linux-gnu, built 2026/09/02 15:29:39, go1.23.12 X:nocoverageredesign)",
+          "members": [
+            {
+              "id": 1,
+              "address": "172.22.0.10:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 2,
+              "address": "172.22.0.11:26257",
+              "version": "v25.4.16"
+            },
+            {
+              "id": 3,
+              "address": "172.22.0.12:26257",
+              "version": "v25.4.16"
+            }
+          ],
+          "local_node_ready": true
+        }
+      }
+    }
+  ]
+}

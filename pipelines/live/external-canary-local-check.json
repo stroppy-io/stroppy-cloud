@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T20:06:47.535457+00:00",
+  "image": "docker.stroppy.io/library/postgres@sha256:67f41722b7a8cbdb868a44a4995c846eddfdc2973bccb291ce937dce88ad5675",
+  "scope": "Real local PostgreSQL canary/privilege probe only; YC external pipeline remains unverified.",
+  "cases": [
+    {
+      "case": "canary_and_restricted_reader",
+      "status": "passed",
+      "result": {
+        "probe": "external_canary",
+        "status": "passed",
+        "canary_rows": 1,
+        "canary_id": 197,
+        "reader_select": true,
+        "reader_table_writes": false,
+        "source": "read-only PostgreSQL query over the owned fixture's loopback listener"
+      }
+    },
+    {
+      "case": "changed_canary",
+      "status": "correctly_rejected"
+    },
+    {
+      "case": "writer_privilege",
+      "status": "correctly_rejected"
+    }
+  ],
+  "cleanup": "owned local container and volume removed"
+}

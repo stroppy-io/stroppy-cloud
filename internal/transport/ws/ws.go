@@ -258,7 +258,12 @@ func (s *session) fail(ctx context.Context, subID string, err error) {
 func (s *session) send(ctx context.Context, f Frame) {
 	s.wmu.Lock()
 	defer s.wmu.Unlock()
-	wctx, cancel := context.WithTimeout(ctx, writeTimeout)
+	if ctx.Err() != nil {
+		return
+	}
+	// Unsubscribing may cancel ctx during a write. The websocket library closes
+	// the entire connection on write cancellation, so use the session lifetime.
+	wctx, cancel := context.WithTimeout(s.ctx, writeTimeout)
 	defer cancel()
 	if err := wsjson.Write(wctx, s.conn, f); err != nil && s.h.log != nil {
 		s.h.log.Debug("ws: write", xlog.Error("error", err))

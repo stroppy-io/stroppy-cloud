@@ -1,0 +1,28 @@
+{
+  "version": "0.2.10",
+  "commit": "dd42bb8483f8e225b5ae7788fd51cf178e35c841",
+  "release_run_id": 34894900329,
+  "release_status": "success",
+  "infra_commit": "11e05cb27b911a2c85283d6f89ad7b7b61444dff",
+  "argo_sync": "Synced",
+  "argo_health": "Healthy",
+  "pods": [
+    {
+      "name": "graphene-server-64684cdcf9-8z8mz",
+      "containers": [
+        {
+          "name": "server",
+          "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.10",
+          "imageID": "docker.stroppy.io/graphene-ci/graphene-server@sha256:bf1a55a053dcfcc53b360ed265ae526773855db5265f172373aff0f4a3a6a2c3",
+          "ready": true
+        }
+      ]
+    }
+  ],
+  "cli_release": {
+    "archive": "graphenectl_0.2.10_linux_amd64.tar.gz",
+    "sha256": "f10e6bbe07de0b33e2f794c65997f4d47efe35a8639a92fa69d1c665fca1eecf",
+    "checksum_verified": true,
+    "version": "graphenectl version 0.2.10"
+  }
+}

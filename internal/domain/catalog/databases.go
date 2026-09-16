@@ -18,8 +18,8 @@ func databases() []Database {
 				{Version: "15", Image: "postgres:15"},
 			},
 			Roles: []Role{
-				{Role: "db", Title: "Primary", Engine: "postgres", ConfigSchemas: []string{"cfg.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.exporter.postgres@1"}, ConfigSeeds: map[string]map[string]any{"cfg.postgresql.conf@17": {"extensions": []any{"pg_stat_statements"}}}},
-				{Role: "db-replica", Title: "Replica", Engine: "postgres", ConfigSchemas: []string{"cfg.postgresql.conf@17", "cfg.pg_hba.conf@1"}, ConfigSeeds: map[string]map[string]any{"cfg.postgresql.conf@17": {"extensions": []any{"pg_stat_statements"}}}},
+				{Role: "db", Title: "Primary", Engine: "postgres", ConfigSchemas: []string{"cfg.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.patroni.yml@4", "cfg.exporter.postgres@1"}, ConfigSeeds: map[string]map[string]any{"cfg.postgresql.conf@17": {"extensions": []any{"pg_stat_statements"}}}},
+				{Role: "db-replica", Title: "Replica", Engine: "postgres", ConfigSchemas: []string{"cfg.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.patroni.yml@4"}, ConfigSeeds: map[string]map[string]any{"cfg.postgresql.conf@17": {"extensions": []any{"pg_stat_statements"}}}},
 				{Role: "etcd", Title: "etcd (Patroni DCS)", Engine: "etcd", ConfigSchemas: []string{"cfg.etcd@3"}},
 				{Role: "proxy", Title: "HAProxy / PgBouncer", Engine: "haproxy", ConfigSchemas: []string{"cfg.haproxy.cfg@2", "cfg.pgbouncer.ini@1"}},
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},
@@ -40,8 +40,8 @@ func databases() []Database {
 				{Version: "beta17-pg16", Image: "orioledb/orioledb:beta17-pg16"},
 			},
 			Roles: []Role{
-				{Role: "db", Title: "Primary", Engine: "orioledb", ConfigSchemas: []string{"cfg.orioledb.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.docker.container@1"}, ConfigSeeds: map[string]map[string]any{"cfg.orioledb.postgresql.conf@17": {"extensions": []any{"orioledb", "pg_stat_statements"}}}},
-				{Role: "db-replica", Title: "Replica", Engine: "orioledb", ConfigSchemas: []string{"cfg.orioledb.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.docker.container@1"}, ConfigSeeds: map[string]map[string]any{"cfg.orioledb.postgresql.conf@17": {"extensions": []any{"orioledb", "pg_stat_statements"}}}},
+				{Role: "db", Title: "Primary", Engine: "orioledb", ConfigSchemas: []string{"cfg.orioledb.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.docker.container@1"}, ConfigSeeds: map[string]map[string]any{"cfg.orioledb.postgresql.conf@17": {"extensions": []any{"pg_stat_statements", "orioledb"}}}},
+				{Role: "db-replica", Title: "Replica", Engine: "orioledb", ConfigSchemas: []string{"cfg.orioledb.postgresql.conf@17", "cfg.pg_hba.conf@1", "cfg.docker.container@1"}, ConfigSeeds: map[string]map[string]any{"cfg.orioledb.postgresql.conf@17": {"extensions": []any{"pg_stat_statements", "orioledb"}}}},
 				{Role: "proxy", Title: "HAProxy", Engine: "haproxy", ConfigSchemas: []string{"cfg.haproxy.cfg@2"}},
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},
 			},
@@ -94,7 +94,7 @@ func databases() []Database {
 			Versions: []Version{
 				{Version: "26.2", Image: "docker.binary.picodata.io/picodata:26.2"},
 				{Version: "26.1", Image: "docker.binary.picodata.io/picodata:26.1", Default: true},
-				{Version: "25.3", Image: "docker.binary.picodata.io/picodata:25.3", Deprecated: true},
+				{Version: "25.3", Image: "docker.binary.picodata.io/picodata:25.3.8", Deprecated: true},
 			},
 			Roles: []Role{
 				{Role: "db", Title: "Picodata instance", Engine: "picodata", ConfigSchemas: []string{"cfg.picodata.yaml@26"}},
@@ -110,10 +110,10 @@ func databases() []Database {
 		{
 			Kind: YDB, Title: "YDB", Description: "Self-hosted YDB: storage and database nodes, erasure modes, pdisks per node.",
 			Versions: []Version{
-				{Version: "26.3", Image: "ydbplatform/ydb:26.3"},
-				{Version: "26.2", Image: "ydbplatform/ydb:26.2", Default: true},
-				{Version: "26.1", Image: "ydbplatform/ydb:26.1"},
-				{Version: "25.4", Image: "ydbplatform/ydb:25.4"},
+				{Version: "26.3", Image: "ydbplatform/local-ydb:26.3.1.14"},
+				{Version: "26.2", Image: "ydbplatform/local-ydb:26.2.1.14", Default: true},
+				{Version: "26.1", Image: "ydbplatform/local-ydb:26.1.1.22"},
+				{Version: "25.4", Image: "ydbplatform/local-ydb:25.4.1.15"},
 			},
 			Roles: []Role{
 				{Role: "db", Title: "Storage node", Engine: "ydb", ConfigSchemas: []string{"cfg.ydb.config.yaml@26", "cfg.host.disks@1"}},
@@ -141,12 +141,12 @@ func databases() []Database {
 		{
 			Kind: Cockroach, Title: "CockroachDB", Description: "Multi-node cluster, insecure mode for benchmarks, HAProxy in front.",
 			Versions: []Version{
-				{Version: "26.3", Image: "cockroachdb/cockroach:v26.3"},
-				{Version: "26.2", Image: "cockroachdb/cockroach:v26.2"},
-				{Version: "25.4", Image: "cockroachdb/cockroach:v25.4", Default: true},
-				{Version: "25.2", Image: "cockroachdb/cockroach:v25.2"},
-				{Version: "24.3", Image: "cockroachdb/cockroach:v24.3"},
-				{Version: "24.1", Image: "cockroachdb/cockroach:v24.1", Deprecated: true},
+				{Version: "26.3", Image: "cockroachdb/cockroach:v26.3.1"},
+				{Version: "26.2", Image: "cockroachdb/cockroach:v26.2.6"},
+				{Version: "25.4", Image: "cockroachdb/cockroach:v25.4.16", Default: true},
+				{Version: "25.2", Image: "cockroachdb/cockroach:v25.2.23"},
+				{Version: "24.3", Image: "cockroachdb/cockroach:v24.3.36"},
+				{Version: "24.1", Image: "cockroachdb/cockroach:v24.1.33", Deprecated: true},
 			},
 			Roles: []Role{
 				{Role: "db", Title: "Cockroach node", Engine: "cockroach", ConfigSchemas: []string{"cfg.cockroach.flags@25"}},
@@ -161,7 +161,7 @@ func databases() []Database {
 		},
 		{
 			Kind: PgNoop, Title: "pg-noop", Description: "PostgreSQL-protocol server that acknowledges everything: the driver-side ceiling.",
-			Versions: []Version{{Version: "0.1.2", Image: "ghcr.io/stroppy-io/pg-noop:0.1.2", Default: true}},
+			Versions: []Version{{Version: "0.1.2", Image: "docker.stroppy.io/stroppy-io/pg-noop@sha256:c35aea48379fcefadb8f06cab4e6023257f28c23f3f27855680f97e468df4f3d", Default: true}},
 			Roles: []Role{
 				{Role: "db", Title: "pg-noop", Engine: "pg_noop"},
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},

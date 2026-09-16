@@ -1,0 +1,326 @@
+{
+  "metrics": {
+    "smoke.insert_duration_avg": {
+      "value": 3.968,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_count": {
+      "value": 1
+    },
+    "smoke.insert_duration_p50": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p90": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p95": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p99": {
+      "value": 5,
+      "unit": "ms"
+    },
+    "smoke.insert_operations_total": {
+      "value": 1
+    },
+    "smoke.insert_progress_rows_per_second": {
+      "value": 24944.411
+    },
+    "smoke.insert_progress_rows_total": {
+      "value": 100
+    },
+    "smoke.insert_rows_total": {
+      "value": 100
+    },
+    "smoke.iteration_duration_avg": {
+      "value": 0.937,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_count": {
+      "value": 63921
+    },
+    "smoke.iteration_duration_p50": {
+      "value": 1,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p90": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p95": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p99": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iterations_total": {
+      "value": 63921
+    },
+    "smoke.run_query_duration_avg": {
+      "value": 0.225,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_count": {
+      "value": 255687
+    },
+    "smoke.run_query_duration_p50": {
+      "value": 0.25,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p90": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p95": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p99": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_operations_total": {
+      "value": 255687
+    }
+  },
+  "segments": [
+    {
+      "name": "smoke",
+      "status": "completed",
+      "started_at": "2026-09-14T12:24:25.147706322Z",
+      "finished_at": "2026-09-14T12:24:56.154493205Z",
+      "metrics": {
+        "insert_duration_avg": {
+          "value": 3.968,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 1
+        },
+        "insert_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 1
+        },
+        "insert_progress_rows_per_second": {
+          "value": 24944.411
+        },
+        "insert_progress_rows_total": {
+          "value": 100
+        },
+        "insert_rows_total": {
+          "value": 100
+        },
+        "iteration_duration_avg": {
+          "value": 0.937,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 63921
+        },
+        "iteration_duration_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iterations_total": {
+          "value": 63921
+        },
+        "run_query_duration_avg": {
+          "value": 0.225,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 255687
+        },
+        "run_query_duration_p50": {
+          "value": 0.25,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 255687
+        }
+      },
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    "artifact/a240e0ec-stroppy-baseline-log",
+    "artifact/a240e0ec-stroppy-smoke-config",
+    "artifact/a240e0ec-stroppy-smoke-log"
+  ],
+  "baseline": {
+    "ok": true,
+    "verdicts": [
+      {
+        "check": "noop errors",
+        "status": "ok",
+        "detail": "no failed iterations"
+      },
+      {
+        "check": "noop vu scaling",
+        "status": "warn",
+        "detail": "scaling 43% below 60% — stroppy metric-pipeline contention or machine limits"
+      },
+      {
+        "check": "wire errors",
+        "status": "ok",
+        "detail": "no failed iterations"
+      },
+      {
+        "check": "wire vu scaling",
+        "status": "warn",
+        "detail": "scaling 57% below 60% — stroppy metric-pipeline contention or machine limits"
+      },
+      {
+        "check": "loopback latency floor",
+        "status": "warn",
+        "detail": "wire p99 2.50ms above 1ms — VM steal, power saving, or a busy host"
+      }
+    ],
+    "report": {
+      "schema": 1,
+      "stroppy_version": "v6.0.0",
+      "pg_noop_version": "v0.1.2",
+      "time": "2026-09-14T12:24:19.7921521Z",
+      "host": {
+        "os": "linux",
+        "arch": "amd64",
+        "go_version": "go1.26.4",
+        "cpus": 4,
+        "gomaxprocs": 4
+      },
+      "tiers": [
+        {
+          "name": "noop",
+          "load": {
+            "rows": 100000,
+            "rows_per_second": 2585782.961893368,
+            "duration_ms": 38.673006
+          },
+          "tx_single_vu": {
+            "iterations": 146216,
+            "failed_iterations": 0,
+            "tx_per_second": 146216,
+            "avg_ms": 0.0063762260901679725,
+            "p50_ms": 0.01,
+            "p90_ms": 0.01,
+            "p99_ms": 0.025
+          },
+          "tx_parallel": {
+            "iterations": 251193,
+            "failed_iterations": 0,
+            "tx_per_second": 251193,
+            "avg_ms": 0.01489467229580488,
+            "p50_ms": 0.025,
+            "p90_ms": 0.025,
+            "p99_ms": 0.05
+          },
+          "parallel_vus": 4
+        },
+        {
+          "name": "wire",
+          "load": {
+            "rows": 100000,
+            "rows_per_second": 1861125.8072842564,
+            "duration_ms": 53.730919
+          },
+          "tx_single_vu": {
+            "iterations": 2328,
+            "failed_iterations": 0,
+            "tx_per_second": 2328,
+            "avg_ms": 0.42866433290378037,
+            "p50_ms": 0.5,
+            "p90_ms": 0.5,
+            "p99_ms": 1
+          },
+          "tx_parallel": {
+            "iterations": 5315,
+            "failed_iterations": 0,
+            "tx_per_second": 5315,
+            "avg_ms": 0.7517774825964278,
+            "p50_ms": 1,
+            "p90_ms": 1,
+            "p99_ms": 2.5
+          },
+          "parallel_vus": 4
+        }
+      ],
+      "verdicts": [
+        {
+          "check": "noop errors",
+          "status": "ok",
+          "detail": "no failed iterations"
+        },
+        {
+          "check": "noop vu scaling",
+          "status": "warn",
+          "detail": "scaling 43% below 60% — stroppy metric-pipeline contention or machine limits"
+        },
+        {
+          "check": "wire errors",
+          "status": "ok",
+          "detail": "no failed iterations"
+        },
+        {
+          "check": "wire vu scaling",
+          "status": "warn",
+          "detail": "scaling 57% below 60% — stroppy metric-pipeline contention or machine limits"
+        },
+        {
+          "check": "loopback latency floor",
+          "status": "warn",
+          "detail": "wire p99 2.50ms above 1ms — VM steal, power saving, or a busy host"
+        }
+      ]
+    }
+  },
+  "summary": {
+    "latency_p50_ms": 1,
+    "latency_p95_ms": 2.5,
+    "latency_p99_ms": 2.5,
+    "duration": "31.006786883s"
+  }
+}

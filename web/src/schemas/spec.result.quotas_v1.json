@@ -1,85 +1,103 @@
 {
-  "id": {
-    "namespace": "spec",
-    "name": "result.quotas",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "spec",
+    "name":  "result.quotas",
+    "version":  "v1.0.0"
   },
-  "description": "Provider quota snapshot: limits and current usage, as observed at a point in time.",
-  "fields": [
+  "description":  "Provider quota snapshot: limits and current usage, as observed at a point in time.",
+  "fields":  [
     {
-      "name": "observed_at",
-      "description": "When the provider was read; the server treats a snapshot older than a minute as stale.",
-      "required": true,
-      "timestamp": {},
-      "group": "Result",
-      "title": "Observed at"
+      "name":  "unavailable_reason",
+      "description":  "permission_denied when cloud quotas cannot be read. Quotas are empty and launches rely on provider enforcement instead of the cloud precheck.",
+      "string":  {
+        "maxLen":  "64"
+      },
+      "group":  "Result",
+      "title":  "Unavailable reason"
     },
     {
-      "name": "quotas",
-      "description": "One entry per quota the provider reports for this profile.",
-      "required": true,
-      "list": {
-        "items": [
+      "name":  "scope",
+      "description":  "Scope of the quota snapshot or denied request, e.g. cloud:b1g... for Yandex Cloud. Cloud quotas cover all folders and zones.",
+      "string":  {
+        "maxLen":  "256"
+      },
+      "group":  "Result",
+      "title":  "Scope"
+    },
+    {
+      "name":  "observed_at",
+      "description":  "When the provider was read; the server treats a snapshot older than a minute as stale.",
+      "required":  true,
+      "timestamp":  {},
+      "group":  "Result",
+      "title":  "Observed at"
+    },
+    {
+      "name":  "quotas",
+      "description":  "One entry per quota the provider reports for this profile.",
+      "required":  true,
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "name",
-                    "description": "Provider quota id, e.g. compute.instanceCores.count.",
-                    "required": true,
-                    "string": {
-                      "minLen": "1",
-                      "maxLen": "128"
+                    "name":  "name",
+                    "description":  "Provider quota id, e.g. compute.instanceCores.count.",
+                    "required":  true,
+                    "string":  {
+                      "minLen":  "1",
+                      "maxLen":  "128"
                     },
-                    "title": "Quota"
+                    "title":  "Quota"
                   },
                   {
-                    "name": "limit",
-                    "description": "Upper bound the provider enforces.",
-                    "required": true,
-                    "double": {
-                      "gte": 0
+                    "name":  "limit",
+                    "description":  "Upper bound the provider enforces.",
+                    "required":  true,
+                    "double":  {
+                      "gte":  0
                     },
-                    "title": "Limit"
+                    "title":  "Limit"
                   },
                   {
-                    "name": "used",
-                    "description": "Consumption at observed_at, across everything in the folder or account.",
-                    "required": true,
-                    "double": {
-                      "gte": 0
+                    "name":  "used",
+                    "description":  "Consumption at observed_at across the quota scope: all folders in the cloud for Yandex Cloud, or the AWS account.",
+                    "required":  true,
+                    "double":  {
+                      "gte":  0
                     },
-                    "title": "Used"
+                    "title":  "Used"
                   },
                   {
-                    "name": "unit",
-                    "description": "Unit of limit and used: count, GB, GiB…",
-                    "string": {
-                      "maxLen": "32"
+                    "name":  "unit",
+                    "description":  "Unit of limit and used: count, GB, GiB…",
+                    "string":  {
+                      "maxLen":  "32"
                     },
-                    "title": "Unit"
+                    "title":  "Unit"
                   },
                   {
-                    "name": "zone",
-                    "description": "Set for a zone-scoped quota; empty when the quota is regional or global.",
-                    "string": {
-                      "maxLen": "64"
+                    "name":  "zone",
+                    "description":  "Set for a zone-scoped quota; empty when the quota is regional or global.",
+                    "string":  {
+                      "maxLen":  "64"
                     },
-                    "title": "Zone"
+                    "title":  "Zone"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "512"
+        "maxItems":  "512"
       },
-      "group": "Result",
-      "title": "Quotas"
+      "group":  "Result",
+      "title":  "Quotas"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

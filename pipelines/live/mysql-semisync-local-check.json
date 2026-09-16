@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T09:17:21.710863+00:00",
+  "source": "isolated local official MySQL containers, tmpfs datadirs, separate Docker network",
+  "versions": [
+    {
+      "version": "8.4",
+      "fresh_initialization": "passed",
+      "primary_readiness": "passed",
+      "replica_readiness": "passed",
+      "source_semisync_status": "ON",
+      "replica_semisync_status": "ON",
+      "replicated_insert": "passed",
+      "replica_read_only": 1,
+      "source_read_only": 0,
+      "read_only_readiness": "passed after entrypoint temporary-server restart"
+    },
+    {
+      "version": "8.0",
+      "fresh_initialization": "passed",
+      "primary_readiness": "passed",
+      "replica_readiness": "passed",
+      "source_semisync_status": "ON",
+      "replica_semisync_status": "ON",
+      "replicated_insert": "passed",
+      "replica_read_only": 1,
+      "source_read_only": 0,
+      "read_only_readiness": "passed after entrypoint temporary-server restart"
+    }
+  ]
+}

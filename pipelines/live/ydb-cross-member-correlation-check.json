@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4",
+  "positive_matches": 2,
+  "negative_cases": {
+    "different_trace": "rejected",
+    "different_session": "rejected",
+    "unverified_member": "rejected",
+    "outside_time_window": "rejected"
+  },
+  "scope": "Regression of the exact classifier expression using the observed distributed abort and altered correlation evidence",
+  "executor_source_sha256": "e93babc5fa3e12452099eb6cfccc6da642b0be338471f2579f2dc08883559cd9",
+  "reference": "https://github.com/ydb-platform/ydb/blob/stable-25-4-1/ydb/core/kqp/executer_actor/kqp_executer_impl.h#L1094"
+}

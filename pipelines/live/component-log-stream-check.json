@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-26.3",
+  "records": 3751,
+  "components": 6,
+  "candidate_hashes_preserved": 260,
+  "read_mode": "stream_until_eof",
+  "source": "actual persisted YDB logs; streaming output matches previously verified bounded result; strict namespace/run identity checked on every row",
+  "large_stream_regression": {
+    "status": "passed",
+    "checked_at": "2026-09-15T20:53:07.495474+00:00",
+    "scope": "local HTTP streaming backend fixture",
+    "records": 25001,
+    "unknown_error_at_record": 25001,
+    "unknown_errors_detected": 1,
+    "old_limit": 20000
+  },
+  "live_above_previous_limit": {
+    "status": "passed",
+    "run_id": "external-dsn-7383cd13",
+    "checked_at": "2026-09-15T20:54:58.106473+00:00",
+    "records": 21680,
+    "read_mode": "stream_until_eof",
+    "old_limit": 20000
+  }
+}

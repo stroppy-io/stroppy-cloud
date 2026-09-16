@@ -1,397 +1,397 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "docker.container",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "docker.container",
+    "version":  "v1.0.0"
   },
-  "description": "Common docker run knobs for the containers of one role.",
-  "fields": [
+  "description":  "Common docker run knobs for the containers of one role.",
+  "fields":  [
     {
-      "name": "restart_policy",
-      "description": "--restart. Benchmarks want a crash to be visible, not silently restarted: the default is no.",
-      "choice": {
-        "options": [
+      "name":  "restart_policy",
+      "description":  "--restart. Benchmarks want a crash to be visible, not silently restarted: the default is no.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "no"
+            "value":  {
+              "stringValue":  "no"
             },
-            "label": "no — never restart"
+            "label":  "no — never restart"
           },
           {
-            "value": {
-              "stringValue": "on-failure"
+            "value":  {
+              "stringValue":  "on-failure"
             },
-            "label": "on-failure"
+            "label":  "on-failure"
           },
           {
-            "value": {
-              "stringValue": "always"
+            "value":  {
+              "stringValue":  "always"
             },
-            "label": "always"
+            "label":  "always"
           },
           {
-            "value": {
-              "stringValue": "unless-stopped"
+            "value":  {
+              "stringValue":  "unless-stopped"
             },
-            "label": "unless-stopped"
+            "label":  "unless-stopped"
           }
         ],
-        "default": {
-          "stringValue": "no"
+        "default":  {
+          "stringValue":  "no"
         }
       },
-      "group": "Lifecycle",
-      "title": "Restart policy"
+      "group":  "Lifecycle",
+      "title":  "Restart policy"
     },
     {
-      "name": "restart_max_retries",
-      "description": "Retry count appended to on-failure (--restart on-failure:N). Ignored for other policies.",
-      "int64": {
-        "default": "3",
-        "gte": "1",
-        "lte": "100"
+      "name":  "restart_max_retries",
+      "description":  "Retry count appended to on-failure (--restart on-failure:N). Ignored for other policies.",
+      "int64":  {
+        "default":  "3",
+        "gte":  "1",
+        "lte":  "100"
       },
-      "group": "Lifecycle",
-      "title": "Restart retries",
-      "when": "root.restart_policy == \"on-failure\""
+      "group":  "Lifecycle",
+      "title":  "Restart retries",
+      "when":  "root.restart_policy == \"on-failure\""
     },
     {
-      "name": "log_driver",
-      "description": "--log-driver. json-file is what the agent tails to ship container logs.",
-      "choice": {
-        "options": [
+      "name":  "log_driver",
+      "description":  "--log-driver. json-file is what the agent tails to ship container logs.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "json-file"
+            "value":  {
+              "stringValue":  "json-file"
             },
-            "label": "json-file"
+            "label":  "json-file"
           },
           {
-            "value": {
-              "stringValue": "local"
+            "value":  {
+              "stringValue":  "local"
             },
-            "label": "local"
+            "label":  "local"
           },
           {
-            "value": {
-              "stringValue": "none"
+            "value":  {
+              "stringValue":  "none"
             },
-            "label": "none — drop logs"
+            "label":  "none — drop logs"
           }
         ],
-        "default": {
-          "stringValue": "json-file"
+        "default":  {
+          "stringValue":  "json-file"
         }
       },
-      "group": "Logging",
-      "title": "Log driver"
+      "group":  "Logging",
+      "title":  "Log driver"
     },
     {
-      "name": "log_max_size",
-      "description": "--log-opt max-size: rotate a log file at this size (k/m/g suffix).",
-      "string": {
-        "default": "50m",
-        "pattern": "^[0-9]+[kmg]$"
+      "name":  "log_max_size",
+      "description":  "--log-opt max-size: rotate a log file at this size (k/m/g suffix).",
+      "string":  {
+        "default":  "50m",
+        "pattern":  "^[0-9]+[kmg]$"
       },
-      "group": "Logging",
-      "title": "Log max size"
+      "group":  "Logging",
+      "title":  "Log max size"
     },
     {
-      "name": "log_max_file",
-      "description": "--log-opt max-file: number of rotated files kept.",
-      "int64": {
-        "default": "3",
-        "gte": "1",
-        "lte": "100"
+      "name":  "log_max_file",
+      "description":  "--log-opt max-file: number of rotated files kept.",
+      "int64":  {
+        "default":  "3",
+        "gte":  "1",
+        "lte":  "100"
       },
-      "group": "Logging",
-      "title": "Log files kept"
+      "group":  "Logging",
+      "title":  "Log files kept"
     },
     {
-      "name": "ulimit_nofile_soft",
-      "description": "--ulimit nofile soft limit: open file descriptors per process.",
-      "int64": {
-        "default": "1048576",
-        "gte": "1024",
-        "lte": "10485760"
+      "name":  "ulimit_nofile_soft",
+      "description":  "--ulimit nofile soft limit: open file descriptors per process.",
+      "int64":  {
+        "default":  "1048576",
+        "gte":  "1024",
+        "lte":  "10485760"
       },
-      "group": "Ulimits",
-      "title": "nofile (soft)"
+      "group":  "Ulimits",
+      "title":  "nofile (soft)"
     },
     {
-      "name": "ulimit_nofile_hard",
-      "description": "--ulimit nofile hard limit.",
-      "int64": {
-        "default": "1048576",
-        "gte": "1024",
-        "lte": "10485760"
+      "name":  "ulimit_nofile_hard",
+      "description":  "--ulimit nofile hard limit.",
+      "int64":  {
+        "default":  "1048576",
+        "gte":  "1024",
+        "lte":  "10485760"
       },
-      "group": "Ulimits",
-      "title": "nofile (hard)"
+      "group":  "Ulimits",
+      "title":  "nofile (hard)"
     },
     {
-      "name": "ulimit_nproc",
-      "description": "--ulimit nproc: max processes/threads. 0 leaves the daemon default.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "4194304"
+      "name":  "ulimit_nproc",
+      "description":  "--ulimit nproc: max processes/threads. 0 leaves the daemon default.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "4194304"
       },
-      "group": "Ulimits",
-      "title": "nproc"
+      "group":  "Ulimits",
+      "title":  "nproc"
     },
     {
-      "name": "ulimit_memlock",
-      "description": "--ulimit memlock in bytes; -1 = unlimited (needed when the engine locks its buffer pool).",
-      "int64": {
-        "default": "-1",
-        "gte": "-1",
-        "lte": "1099511627776"
+      "name":  "ulimit_memlock",
+      "description":  "--ulimit memlock in bytes; -1 = unlimited (needed when the engine locks its buffer pool).",
+      "int64":  {
+        "default":  "-1",
+        "gte":  "-1",
+        "lte":  "1099511627776"
       },
-      "group": "Ulimits",
-      "title": "memlock"
+      "group":  "Ulimits",
+      "title":  "memlock"
     },
     {
-      "name": "shm_size_mb",
-      "description": "--shm-size. PostgreSQL parallel query and pg_stat need more than the 64 MB default.",
-      "int64": {
-        "default": "1024",
-        "gte": "64",
-        "lte": "1048576"
+      "name":  "shm_size_mb",
+      "description":  "--shm-size. PostgreSQL parallel query and pg_stat need more than the 64 MB default.",
+      "int64":  {
+        "default":  "1024",
+        "gte":  "64",
+        "lte":  "1048576"
       },
-      "group": "Resources",
-      "unit": "MB",
-      "title": "/dev/shm size"
+      "group":  "Resources",
+      "unit":  "MB",
+      "title":  "/dev/shm size"
     },
     {
-      "name": "pids_limit",
-      "description": "--pids-limit; -1 = unlimited.",
-      "int64": {
-        "default": "-1",
-        "gte": "-1",
-        "lte": "4194304"
+      "name":  "pids_limit",
+      "description":  "--pids-limit; -1 = unlimited.",
+      "int64":  {
+        "default":  "-1",
+        "gte":  "-1",
+        "lte":  "4194304"
       },
-      "group": "Resources",
-      "title": "PID limit"
+      "group":  "Resources",
+      "title":  "PID limit"
     },
     {
-      "name": "limit_cpu",
-      "description": "Emit --cpus from the machine size chosen for this role instead of letting the container use the whole host.",
-      "bool": {
-        "default": false
+      "name":  "limit_cpu",
+      "description":  "Emit --cpus from the machine size chosen for this role instead of letting the container use the whole host.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Resources",
-      "title": "Limit CPU to the machine size"
+      "group":  "Resources",
+      "title":  "Limit CPU to the machine size"
     },
     {
-      "name": "limit_memory",
-      "description": "Emit --memory from the machine size chosen for this role.",
-      "bool": {
-        "default": false
+      "name":  "limit_memory",
+      "description":  "Emit --memory from the machine size chosen for this role.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Resources",
-      "title": "Limit memory to the machine size"
+      "group":  "Resources",
+      "title":  "Limit memory to the machine size"
     },
     {
-      "name": "cpus",
-      "description": "--cpus value. Filled by the server from the role's machine size when limit_cpu is on.",
-      "nullable": true,
-      "double": {
-        "gt": 0,
-        "lte": 1024
+      "name":  "cpus",
+      "description":  "--cpus value. Filled by the server from the role's machine size when limit_cpu is on.",
+      "nullable":  true,
+      "double":  {
+        "gt":  0,
+        "lte":  1024
       },
-      "group": "Cluster",
-      "title": "CPUs"
+      "group":  "Cluster",
+      "title":  "CPUs"
     },
     {
-      "name": "memory_mb",
-      "description": "--memory value. Filled by the server from the role's machine size when limit_memory is on.",
-      "nullable": true,
-      "int64": {
-        "gte": "64",
-        "lte": "16777216"
+      "name":  "memory_mb",
+      "description":  "--memory value. Filled by the server from the role's machine size when limit_memory is on.",
+      "nullable":  true,
+      "int64":  {
+        "gte":  "64",
+        "lte":  "16777216"
       },
-      "group": "Cluster",
-      "unit": "MB",
-      "title": "Memory limit"
+      "group":  "Cluster",
+      "unit":  "MB",
+      "title":  "Memory limit"
     },
     {
-      "name": "privileged",
-      "description": "--privileged. Needed only for engines that touch raw block devices (YDB pdisks).",
-      "bool": {
-        "default": false
+      "name":  "privileged",
+      "description":  "--privileged. Needed only for engines that touch raw block devices (YDB pdisks).",
+      "bool":  {
+        "default":  false
       },
-      "group": "Security",
-      "title": "Privileged"
+      "group":  "Security",
+      "title":  "Privileged"
     },
     {
-      "name": "network_mode",
-      "description": "--network. host removes the NAT hop and is what the product uses for database roles.",
-      "choice": {
-        "options": [
+      "name":  "network_mode",
+      "description":  "--network. host removes the NAT hop and is what the product uses for database roles.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "host"
+            "value":  {
+              "stringValue":  "host"
             },
-            "label": "host"
+            "label":  "host"
           },
           {
-            "value": {
-              "stringValue": "bridge"
+            "value":  {
+              "stringValue":  "bridge"
             },
-            "label": "bridge"
+            "label":  "bridge"
           }
         ],
-        "default": {
-          "stringValue": "host"
+        "default":  {
+          "stringValue":  "host"
         }
       },
-      "group": "Network",
-      "title": "Network mode"
+      "group":  "Network",
+      "title":  "Network mode"
     },
     {
-      "name": "extra_hosts",
-      "description": "--add-host entries \"name:ip\". Filled by the server from topology so peers resolve without DNS.",
-      "list": {
-        "items": [
+      "name":  "extra_hosts",
+      "description":  "--add-host entries \"name:ip\". Filled by the server from topology so peers resolve without DNS.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "pattern": "^[A-Za-z0-9_.-]+:[0-9A-Fa-f.:]+$"
+            "string":  {
+              "pattern":  "^[A-Za-z0-9_.-]+:[0-9A-Fa-f.:]+$"
             }
           }
         ],
-        "maxItems": "64"
+        "maxItems":  "64"
       },
-      "group": "Cluster",
-      "title": "Extra hosts"
+      "group":  "Cluster",
+      "title":  "Extra hosts"
     },
     {
-      "name": "sysctls",
-      "description": "--sysctl key=value, applied inside the container namespace (net.* only when network_mode is bridge).",
-      "rules": [
+      "name":  "sysctls",
+      "description":  "--sysctl key=value, applied inside the container namespace (net.* only when network_mode is bridge).",
+      "rules":  [
         {
-          "expr": "this.all(k, k.matches(\"^[a-z0-9_]+([.][a-z0-9_-]+)+$\"))",
-          "message": "sysctl keys look like net.core.somaxconn",
-          "id": "sysctl-key-shape"
+          "expr":  "this.all(k, k.matches(\"^[a-z0-9_]+([.][a-z0-9_-]+)+$\"))",
+          "message":  "sysctl keys look like net.core.somaxconn",
+          "id":  "sysctl-key-shape"
         }
       ],
-      "map": {
-        "maxEntries": "32",
-        "valueField": {
-          "name": "value",
-          "string": {
-            "maxLen": "128"
+      "map":  {
+        "maxEntries":  "32",
+        "valueField":  {
+          "name":  "value",
+          "string":  {
+            "maxLen":  "128"
           }
         }
       },
-      "group": "Security",
-      "title": "Container sysctls"
+      "group":  "Security",
+      "title":  "Container sysctls"
     },
     {
-      "name": "cap_add",
-      "description": "--cap-add. IPC_LOCK for engines that mlock memory, SYS_NICE for scheduler priority.",
-      "list": {
-        "items": [
+      "name":  "cap_add",
+      "description":  "--cap-add. IPC_LOCK for engines that mlock memory, SYS_NICE for scheduler priority.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "pattern": "^[A-Z_]+$"
+            "string":  {
+              "pattern":  "^[A-Z_]+$"
             }
           }
         ],
-        "maxItems": "32",
-        "unique": true
+        "maxItems":  "32",
+        "unique":  true
       },
-      "group": "Security",
-      "title": "Capabilities"
+      "group":  "Security",
+      "title":  "Capabilities"
     },
     {
-      "name": "extra_host_flags",
-      "computed": {
-        "expr": "(\"extra_hosts\" in root) ? root.extra_hosts.map(h, \" --add-host \" + h).join(\"\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "extra_host_flags",
+      "computed":  {
+        "expr":  "(\"extra_hosts\" in root) ? root.extra_hosts.map(h, \" --add-host \" + h).join(\"\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered --add-host flags"
+      "group":  "Cluster",
+      "title":  "Rendered --add-host flags"
     },
     {
-      "name": "sysctl_flags",
-      "computed": {
-        "expr": "(\"sysctls\" in root) ? root.sysctls.map(k, \" --sysctl \" + k + \"=\" + string(root.sysctls[k])).join(\"\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "sysctl_flags",
+      "computed":  {
+        "expr":  "(\"sysctls\" in root) ? root.sysctls.map(k, \" --sysctl \" + k + \"=\" + string(root.sysctls[k])).join(\"\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Security",
-      "title": "Rendered --sysctl flags"
+      "group":  "Security",
+      "title":  "Rendered --sysctl flags"
     },
     {
-      "name": "cap_add_flags",
-      "computed": {
-        "expr": "(\"cap_add\" in root) ? root.cap_add.map(c, \" --cap-add \" + c).join(\"\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "cap_add_flags",
+      "computed":  {
+        "expr":  "(\"cap_add\" in root) ? root.cap_add.map(c, \" --cap-add \" + c).join(\"\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Security",
-      "title": "Rendered --cap-add flags"
+      "group":  "Security",
+      "title":  "Rendered --cap-add flags"
     },
     {
-      "name": "restart_flag",
-      "computed": {
-        "expr": "root.restart_policy == \"on-failure\"\n\t\t\t\t\t? \"--restart on-failure:\" + string(root.restart_max_retries)\n\t\t\t\t\t: \"--restart \" + root.restart_policy",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "restart_flag",
+      "computed":  {
+        "expr":  "root.restart_policy == \"on-failure\"\n\t\t\t\t\t? \"--restart on-failure:\" + string(root.restart_max_retries)\n\t\t\t\t\t: \"--restart \" + root.restart_policy",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Lifecycle",
-      "title": "Rendered --restart flag"
+      "group":  "Lifecycle",
+      "title":  "Rendered --restart flag"
     },
     {
-      "name": "limit_flags",
-      "computed": {
-        "expr": "(root.limit_cpu && (\"cpus\" in root) ? \" --cpus \" + string(root.cpus) : \"\") +\n\t\t\t\t (root.limit_memory && (\"memory_mb\" in root) ? \" --memory \" + string(root.memory_mb) + \"m\" : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "limit_flags",
+      "computed":  {
+        "expr":  "(root.limit_cpu && (\"cpus\" in root) ? \" --cpus \" + string(root.cpus) : \"\") +\n\t\t\t\t (root.limit_memory && (\"memory_mb\" in root) ? \" --memory \" + string(root.memory_mb) + \"m\" : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Resources",
-      "title": "Rendered --cpus/--memory flags"
+      "group":  "Resources",
+      "title":  "Rendered --cpus/--memory flags"
     },
     {
-      "name": "ulimit_flags",
-      "computed": {
-        "expr": "\" --ulimit nofile=\" + string(root.ulimit_nofile_soft) + \":\" + string(root.ulimit_nofile_hard) +\n\t\t\t\t (root.ulimit_nproc > 0 ? \" --ulimit nproc=\" + string(root.ulimit_nproc) : \"\") +\n\t\t\t\t \" --ulimit memlock=\" + string(root.ulimit_memlock) + \":\" + string(root.ulimit_memlock)",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "ulimit_flags",
+      "computed":  {
+        "expr":  "\" --ulimit nofile=\" + string(root.ulimit_nofile_soft) + \":\" + string(root.ulimit_nofile_hard) +\n\t\t\t\t (root.ulimit_nproc > 0 ? \" --ulimit nproc=\" + string(root.ulimit_nproc) : \"\") +\n\t\t\t\t \" --ulimit memlock=\" + string(root.ulimit_memlock) + \":\" + string(root.ulimit_memlock)",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Ulimits",
-      "title": "Rendered --ulimit flags"
+      "group":  "Ulimits",
+      "title":  "Rendered --ulimit flags"
     },
     {
-      "name": "privileged_flag",
-      "computed": {
-        "expr": "root.privileged ? \" --privileged\" : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "privileged_flag",
+      "computed":  {
+        "expr":  "root.privileged ? \" --privileged\" : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Security",
-      "title": "Rendered --privileged flag"
+      "group":  "Security",
+      "title":  "Rendered --privileged flag"
     },
     {
-      "name": "log_flags",
-      "computed": {
-        "expr": "root.log_driver == \"none\"\n\t\t\t\t\t? \"--log-driver none\"\n\t\t\t\t\t: \"--log-driver \" + root.log_driver +\n\t\t\t\t\t  \" --log-opt max-size=\" + root.log_max_size +\n\t\t\t\t\t  \" --log-opt max-file=\" + string(root.log_max_file)",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "log_flags",
+      "computed":  {
+        "expr":  "root.log_driver == \"none\"\n\t\t\t\t\t? \"--log-driver none\"\n\t\t\t\t\t: \"--log-driver \" + root.log_driver +\n\t\t\t\t\t  \" --log-opt max-size=\" + root.log_max_size +\n\t\t\t\t\t  \" --log-opt max-file=\" + string(root.log_max_file)",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Logging",
-      "title": "Rendered --log-* flags"
+      "group":  "Logging",
+      "title":  "Rendered --log-* flags"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "int(root.ulimit_nofile_soft) <= int(root.ulimit_nofile_hard)",
-      "message": "nofile soft limit must be <= hard limit",
-      "id": "nofile-soft-le-hard"
+      "expr":  "int(root.ulimit_nofile_soft) <= int(root.ulimit_nofile_hard)",
+      "message":  "nofile soft limit must be <= hard limit",
+      "id":  "nofile-soft-le-hard"
     },
     {
-      "expr": "root.network_mode == \"bridge\" || !(\"sysctls\" in root) || root.sysctls.all(k, !k.startsWith(\"net.\"))",
-      "message": "net.* container sysctls require network_mode = bridge (host mode shares the host namespace)",
-      "id": "net-sysctl-needs-bridge"
+      "expr":  "root.network_mode == \"bridge\" || !(\"sysctls\" in root) || root.sysctls.all(k, !k.startsWith(\"net.\"))",
+      "message":  "net.* container sysctls require network_mode = bridge (host mode shares the host namespace)",
+      "id":  "net-sysctl-needs-bridge"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "{{{values.restart_flag}}} {{{values.log_flags}}}{{{values.ulimit_flags}}} --shm-size {{{values.shm_size_mb}}}m --pids-limit {{{values.pids_limit}}} --network {{{values.network_mode}}}{{{values.limit_flags}}}{{{values.privileged_flag}}}{{{values.extra_host_flags}}}{{{values.sysctl_flags}}}{{{values.cap_add_flags}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "{{{values.restart_flag}}} {{{values.log_flags}}}{{{values.ulimit_flags}}} --shm-size {{{values.shm_size_mb}}}m --pids-limit {{{values.pids_limit}}} --network {{{values.network_mode}}}{{{values.limit_flags}}}{{{values.privileged_flag}}}{{{values.extra_host_flags}}}{{{values.sysctl_flags}}}{{{values.cap_add_flags}}}\n"
   }
 }

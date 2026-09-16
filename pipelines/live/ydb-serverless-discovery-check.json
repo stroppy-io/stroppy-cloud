@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "run_id": "matrix-ydbpopulation-f4bd4b38-ydb-managed-serverless",
+  "stage": "simple driver initialization before measured workload",
+  "yc_database_id": "etn1s6lg5v0dpera09d4",
+  "failure": "YDB Discovery returned transport/NotFound: Database not found after YC provisioning and TCP-only readiness",
+  "native_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+  "log_sha256": "c3b02c763d19fa0fff385cd2da49dbf91e2d3bae47efe81a7c398728d55d51aa",
+  "fix": "Require an error-free Stroppy SELECT 1 with the workload image and identity before measured workloads; bounded retry for transient readiness failures",
+  "local_fix_validation": "ydb-managed-readiness-local-check.json",
+  "retry_input": "suite-ydb-queryready.json",
+  "retry_status": "passed; all 3 native workloads completed without terminal errors, readiness SELECT, persisted telemetry, artifact downloads and cleanup verified",
+  "retry_run_id": "matrix-ydbready-cd74e12d-ydb-managed-serverless"
+}

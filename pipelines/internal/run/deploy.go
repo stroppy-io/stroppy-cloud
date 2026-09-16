@@ -22,12 +22,13 @@ import (
 
 // Activity bounds of the deploy phase.
 const (
-	hostPrepTimeout   = 15 * time.Minute
-	writeFilesTimeout = 2 * time.Minute
-	pullImageTimeout  = 30 * time.Minute
-	healthExtra       = 2 * time.Minute
-	defaultHealthGap  = 5 * time.Second
-	defaultRetries    = 30
+	dockerInstallTimeout = 15 * time.Minute
+	hostPrepTimeout      = 15 * time.Minute
+	writeFilesTimeout    = 2 * time.Minute
+	pullImageTimeout     = 30 * time.Minute
+	healthExtra          = 2 * time.Minute
+	defaultHealthGap     = 5 * time.Second
+	defaultRetries       = 30
 	// filesDir is the workspace-relative directory of rendered configs.
 	filesDir = "containers"
 )
@@ -106,7 +107,7 @@ func deployContainers(ctx pipeline.Context, run spec.Run, infra provision.Infra,
 					return err
 				}
 				if c.Healthcheck != nil {
-					if err := waitHealthy(gctx, m.Agent, c); err != nil {
+					if err := waitHealthy(gctx, m.Agent, c, dspec.Name); err != nil {
 						return err
 					}
 				}
@@ -123,17 +124,19 @@ func deployContainers(ctx pipeline.Context, run spec.Run, infra provision.Infra,
 	return out, nil
 }
 
-// prepareMachines writes rendered files and pulls images on every machine
-// that hosts containers. Returns container → (spec path → absolute machine
+// prepareMachines ensures Docker on the workload runner and container hosts,
+// writes rendered files and pulls images. Returns container → (spec path → absolute machine
 // path) for the bind mounts.
 func prepareMachines(ctx pipeline.Context, run spec.Run, infra provision.Infra, addrs Addresses) (map[string]map[string]string, error) {
 	paths := map[string]map[string]string{}
 	var names []string
 	var fns []func(pipeline.Context) error
+	runners := infra.ByRole(run.Workload.RunnerRole)
 	for _, machineName := range infra.Order {
 		m := infra.Machines[machineName]
 		cs := run.ContainersOn(machineName)
-		if len(cs) == 0 {
+		isRunner := len(runners) > 0 && m == runners[0]
+		if len(cs) == 0 && !isRunner {
 			continue
 		}
 		// Files: one request per machine; the activity returns absolute paths
@@ -154,6 +157,10 @@ func prepareMachines(ctx pipeline.Context, run spec.Run, infra provision.Infra, 
 		mach := m
 		names = append(names, machineName)
 		fns = append(fns, func(gctx pipeline.Context) error {
+			if _, err := activity.Activity(gctx, mach.Agent, dockerlib.Install(),
+				activity.WithTimeout(dockerInstallTimeout), activity.WithHeartbeat(time.Minute)); err != nil {
+				return fmt.Errorf("prepare docker: %w", err)
+			}
 			if len(files) > 0 {
 				res, err := activity.Activity(gctx, mach.Agent,
 					activity.Fn(activities.NameWriteFiles, activities.WriteFiles, activities.WriteFilesRequest{Dir: filesDir, Files: files}),
@@ -213,10 +220,15 @@ func containerSpec(c spec.Container, run spec.Run, files map[string]string, addr
 	if err != nil {
 		return dockerlib.Spec{}, err
 	}
+	entrypoint, err := addrs.ExpandList(c.Entrypoint)
+	if err != nil {
+		return dockerlib.Spec{}, err
+	}
 	cfg := &container.Config{
-		Image: c.Image,
-		Cmd:   cmd,
-		Env:   envList(env),
+		Image:      c.Image,
+		Entrypoint: entrypoint,
+		Cmd:        cmd,
+		Env:        envList(env),
 		Labels: map[string]string{
 			"stroppy-run": run.RunID, "stroppy-role": c.Role, "stroppy-container": c.Name,
 		},
@@ -248,15 +260,19 @@ func containerSpec(c spec.Container, run spec.Run, files map[string]string, addr
 			host.Ulimits = append(host.Ulimits, &units.Ulimit{Name: k, Soft: c.Ulimits[k], Hard: c.Ulimits[k]})
 		}
 	}
-	return dockerlib.Spec{Name: c.Name, Config: cfg, Host: host, Scrape: scrapeURL(c, run)}, nil
+	return dockerlib.Spec{Name: containerName(run.RunID, c.Name), Config: cfg, Host: host, Scrape: scrapeURL(c, run)}, nil
 }
 
 // scrapeURL is the container's own metrics endpoint: its scrape path on
-// its first port (host networking → the port is on the machine), or the
+// its explicit metrics port (legacy: first port), or the
 // spec-level scrape whose job matches the container.
 func scrapeURL(c spec.Container, run spec.Run) string {
-	if c.Scrape != "" && len(c.Ports) > 0 {
-		return fmt.Sprintf("http://127.0.0.1:%d%s", c.Ports[0].Container, c.Scrape)
+	port := c.ScrapePort
+	if port == 0 && len(c.Ports) > 0 {
+		port = c.Ports[0].Container
+	}
+	if c.Scrape != "" && port > 0 {
+		return fmt.Sprintf("http://127.0.0.1:%d%s", port, c.Scrape)
 	}
 	for _, s := range run.Scrapes {
 		if s.Role == c.Role && s.Job == c.Name {
@@ -285,7 +301,7 @@ func flowOptions(c spec.Container, run spec.Run) []pipeline.ResourceOption {
 			opts = append(opts, pipeline.WithFlow(f.External, proto, label, pipeline.FlowPort(f.Port)))
 		case f.ToRole != "":
 			if target, ok := firstContainerOfRole(run, f.ToRole); ok && target != c.Name {
-				opts = append(opts, pipeline.WithFlow(string(dockerlib.ContainerKind)+"/"+target, proto, label, pipeline.FlowPort(f.Port)))
+				opts = append(opts, pipeline.WithFlow(string(dockerlib.ContainerKind)+"/"+containerName(run.RunID, target), proto, label, pipeline.FlowPort(f.Port)))
 			}
 		}
 	}
@@ -316,7 +332,7 @@ func flowProtocol(p string) pipeline.Protocol {
 	}
 }
 
-func waitHealthy(ctx pipeline.Context, agent pipeline.Agent, c spec.Container) error {
+func waitHealthy(ctx pipeline.Context, agent pipeline.Agent, c spec.Container, name string) error {
 	interval := c.Healthcheck.Interval.Std()
 	if interval <= 0 {
 		interval = defaultHealthGap
@@ -325,7 +341,7 @@ func waitHealthy(ctx pipeline.Context, agent pipeline.Agent, c spec.Container) e
 	if retries <= 0 {
 		retries = defaultRetries
 	}
-	req := activities.WaitHealthyRequest{Container: c.Name, Cmd: c.Healthcheck.Cmd, Interval: interval, Retries: retries}
+	req := activities.WaitHealthyRequest{Container: name, Cmd: c.Healthcheck.Cmd, Interval: interval, Retries: retries}
 	_, err := activity.Activity(ctx, agent, activity.Fn(activities.NameWaitHealthy, activities.WaitHealthy, req),
 		activity.WithTimeout(time.Duration(retries)*interval+healthExtra), activity.WithHeartbeat(interval*3+healthExtra))
 	if err != nil {
@@ -374,4 +390,10 @@ func restartPolicy(s string) container.RestartPolicyMode {
 	default:
 		return container.RestartPolicyUnlessStopped
 	}
+}
+
+// Container records share a Graphene namespace across all runs. The full run
+// UUID separates identical logical container names, including concurrent cells.
+func containerName(runID, logical string) string {
+	return runID + "-" + logical
 }

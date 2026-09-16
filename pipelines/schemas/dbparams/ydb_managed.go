@@ -99,13 +99,13 @@ func YdbManaged() *schemapb.Schema {
 
 			// doc: https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/ydb_database_serverless
 			schemapb.Int64("throttling_rcu_limit").Title("Throttling RCU limit").Group("Serverless").
-				Desc("serverless_database.throttling_rcu_limit — provisioned RU/s billed hourly; 0 disables hourly billing.").
+				Desc("serverless_database.throttling_rcu_limit — request units per second ceiling; 0 disables throttling.").
 				Unit("RU/s").Gte(0).Lte(1000000).Default(0).
 				When(`root.type == "serverless"`),
 
 			// doc: https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/ydb_database_serverless
 			schemapb.Int64("provisioned_rcu_limit").Title("Provisioned RCU limit").Group("Serverless").
-				Desc("serverless_database.provisioned_rcu_limit — the ceiling on consumed RU/s; 0 = no limit.").
+				Desc("serverless_database.provisioned_rcu_limit — reserved RU/s billed hourly; 0 disables provisioned capacity.").
 				Unit("RU/s").Gte(0).Lte(1000000).Default(0).
 				When(`root.type == "serverless"`),
 

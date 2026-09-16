@@ -1,0 +1,115 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:51:04.371808+00:00",
+  "version": "0.2.12",
+  "commit": "3450317edcae9a874acf33622bc07a88f7021728",
+  "release": "https://github.com/graphene-ci/graphene/releases/tag/v0.2.12",
+  "affected_run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-1011",
+  "stand": "stand/stroppy-run",
+  "failure": {
+    "payload_size": 2458311,
+    "payload_limit": 2097152,
+    "cause": "100 cached mutation responses copied the growing full holdings map across Continue-as-New",
+    "latest_errors": [
+      {
+        "ts": "2026-09-15T12:31:31.669317353Z",
+        "level": "warn",
+        "msg": "Workflow task postprocess error: [TMPRL1103] Attempted to upload payloads with size that exceeded the error limit.",
+        "service": "graphene-server",
+        "component": "temporal-sdk",
+        "Namespace": "t-stroppy-live",
+        "TaskQueue": "graphene-server",
+        "WorkerID": "1@graphene-server-54f89898bd-97bm7@",
+        "WorkflowType": "stand",
+        "WorkflowID": "stand/stroppy-run",
+        "RunID": "a9134a00-3444-4150-aad3-3f3c3b78be05",
+        "Attempt": 10,
+        "PayloadSize": 2458311,
+        "PayloadSizeLimit": 2097152
+      },
+      {
+        "ts": "2026-09-15T12:32:20.232764463Z",
+        "level": "error",
+        "msg": "Activity error.",
+        "service": "graphene-server",
+        "component": "temporal-sdk",
+        "Namespace": "t-stroppy-live",
+        "TaskQueue": "graphene-server",
+        "WorkerID": "1@graphene-server-54f89898bd-97bm7@",
+        "WorkflowID": "run/matrix-maria-monitor-e4a0fdb4-mariadb-single-1011",
+        "RunID": "01a0a4ff-d16d-75d4-9fa1-457b653703fd",
+        "ActivityType": "server.resource.transfer",
+        "Attempt": 12,
+        "Error": "failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state."
+      },
+      {
+        "ts": "2026-09-15T12:33:20.292058881Z",
+        "level": "error",
+        "msg": "Activity error.",
+        "service": "graphene-server",
+        "component": "temporal-sdk",
+        "Namespace": "t-stroppy-live",
+        "TaskQueue": "graphene-server",
+        "WorkerID": "1@graphene-server-54f89898bd-97bm7@",
+        "WorkflowID": "run/matrix-maria-monitor-e4a0fdb4-mariadb-single-1011",
+        "RunID": "01a0a4ff-d16d-75d4-9fa1-457b653703fd",
+        "ActivityType": "server.resource.transfer",
+        "Attempt": 13,
+        "Error": "failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state."
+      }
+    ]
+  },
+  "fix": "accept/extend/release return count; full holdings remain in describe; no retention changes",
+  "local_checks": [
+    "make test (includes integration)",
+    "make lint: 0 issues",
+    "400 transfers preserve holdings and TTL while each response stays below 32 bytes",
+    "replay of the stalled stand history"
+  ],
+  "replay": {
+    "events": 3722,
+    "history_sha256": "ce3dd4aa2df19d7477e37de7c9be6ca30af6a38a5a3500aa37c1d3a4f13a3bf2",
+    "fixture_location": "private diagnostic directory; no raw history published"
+  },
+  "gitops": "ArgoCD Synced/Healthy",
+  "recovery": {
+    "status": "passed",
+    "checked_at": "2026-09-15T12:50:20.826846+00:00",
+    "holdings_before": 254,
+    "holdings_after": 254,
+    "exact_initial_deadlines_preserved": 98,
+    "artifact_records_before": 255,
+    "artifact_records_after": 255,
+    "resume_payload_bytes": 41108,
+    "cached_responses": 100,
+    "cached_response_bytes": 6800,
+    "retention": "all original holdings, origin refs and retention modes preserved; exact initial deadlines unchanged",
+    "stand_phase": "ready"
+  },
+  "gitops_commit": "c3f14d65d87ddc191aa70351cdab009dadf31a07",
+  "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.12",
+  "image_index_digest": "sha256:9c649fa44fe32abe6c00505ea409940aff1e35e8672ea545b5668a7ed14ac00e",
+  "image_amd64_digest": "sha256:ee562fdbfc1750b65e9a032fd679de83df8124d3b374447c345caeb744b1c845",
+  "cli": {
+    "version": "graphenectl version 0.2.12",
+    "archive_sha256": "f2375c1ce81157d16ce6c37a3f3d8ff5cb1ebfd52df6ad15c08fe0bde61d5856",
+    "binary_sha256": "20df39ab59bfd69e3ee3f835749c1184a03a129c8daafdae7083f29eb8289afb"
+  },
+  "render": {
+    "status": "passed",
+    "changes": [
+      {
+        "path": "/8/spec/template/spec/containers/0/image",
+        "before": "docker.stroppy.io/graphene-ci/graphene-server:0.2.11",
+        "after": "docker.stroppy.io/graphene-ci/graphene-server:0.2.12"
+      }
+    ]
+  },
+  "ci": "https://github.com/graphene-ci/graphene/actions/runs/34970027858",
+  "release_ci": "https://github.com/graphene-ci/graphene/actions/runs/34970061534",
+  "pod_image_id": "docker.stroppy.io/graphene-ci/graphene-server@sha256:9c649fa44fe32abe6c00505ea409940aff1e35e8672ea545b5668a7ed14ac00e",
+  "release_ci_status": "success",
+  "recovered_run_progress": "Completed; full suite completed 6/6 runs and 30/30 workload segments; exact infrastructure cleanup passed",
+  "post_recovery_server_error_check": "no error-level server logs in the subsequent three-minute observation",
+  "cleanup_evidence": "mysql-clusters-cleanup.json"
+}

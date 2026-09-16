@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:05:51.180379+00:00",
+  "fixture": "mariadb-galera-118.bootstrap-samples.json",
+  "checks": [
+    "pre-workload bootstrap samples excluded by original timestamp",
+    "all real in-window samples retained and have cluster_size=3",
+    "synthetic in-window cluster_size=2 remains visible and fails the health condition"
+  ],
+  "scope": "checker boundary regression, not a synthetic workload result"
+}

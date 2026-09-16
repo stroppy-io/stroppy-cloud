@@ -1,0 +1,25 @@
+{
+  "run_id": "external-dsn-7383cd13",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 21680,
+  "limit": null,
+  "read_mode": "stream_until_eof",
+  "runs_observed": [
+    "external-dsn-7383cd13"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T20:51:17.528424006Z",
+    "end": "2026-09-15T20:53:21.403949029Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

@@ -1,0 +1,21 @@
+{
+  "blobs": [
+    {
+      "ref": "artifact/9f69e306-stroppy-smoke-config",
+      "location": "blobs/948a9159ae51fd9a094d93001520eaa6752417338624dedeee9084a62aa24ec1",
+      "digest": "sha256:948a9159ae51fd9a094d93001520eaa6752417338624dedeee9084a62aa24ec1",
+      "size": 451
+    },
+    {
+      "ref": "artifact/9f69e306-stroppy-smoke-log",
+      "location": "blobs/6ec76722b8fa55b2d86687e9e50d3f247501f559c099620c90158a9d2394dc3a",
+      "digest": "sha256:6ec76722b8fa55b2d86687e9e50d3f247501f559c099620c90158a9d2394dc3a",
+      "size": 2338
+    }
+  ],
+  "concurrent_uploads": 2,
+  "finished_at": "2026-09-14T14:25:39.229879699Z",
+  "identities_verified": true,
+  "same_existing_bytes": true,
+  "started_at": "2026-09-14T14:25:39.050716754Z"
+}

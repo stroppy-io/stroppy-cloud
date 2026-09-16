@@ -1,0 +1,24 @@
+{
+  "run_id": "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 314,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/ae64fb8a-65ba-4cac-a63f-c487a844a43a-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T18:22:08.166104683Z",
+    "end": "2026-09-15T18:25:13.767438858Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

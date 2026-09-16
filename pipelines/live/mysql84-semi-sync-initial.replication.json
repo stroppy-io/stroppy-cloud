@@ -1,0 +1,161 @@
+{
+  "status": "failed",
+  "run_id": "matrix-mysql-semisync-2c224f96-mysql84-semi-sync",
+  "checked_at": "2026-09-15T09:14:09.865655+00:00",
+  "source": "read-only SQL on both live YC nodes during simple workload",
+  "checks": {
+    "source": {
+      "agent": "1d02abe8-db-1",
+      "server": [
+        {
+          "version": "8.4.11",
+          "server_id": 1,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "plugins": [
+        {
+          "PLUGIN_NAME": "rpl_semi_sync_source",
+          "PLUGIN_STATUS": "ACTIVE"
+        }
+      ],
+      "semisync": [
+        {
+          "Variable_name": "Rpl_semi_sync_source_clients",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_net_avg_wait_time",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_net_wait_time",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_net_waits",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_no_times",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_no_tx",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_status",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_timefunc_failures",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_tx_avg_wait_time",
+          "Value": "545"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_tx_wait_time",
+          "Value": "1637"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_tx_waits",
+          "Value": "3"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_wait_pos_backtraverse",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_wait_sessions",
+          "Value": "0"
+        },
+        {
+          "Variable_name": "Rpl_semi_sync_source_yes_tx",
+          "Value": "3"
+        }
+      ],
+      "settings": [
+        {
+          "Variable_name": "rpl_semi_sync_source_enabled",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_source_timeout",
+          "Value": "10000"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_source_trace_level",
+          "Value": "32"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_source_wait_for_replica_count",
+          "Value": "1"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_source_wait_no_replica",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_source_wait_point",
+          "Value": "AFTER_SYNC"
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    },
+    "replica": {
+      "agent": "1d02abe8-db-replica-1",
+      "server": [
+        {
+          "version": "8.4.11",
+          "server_id": 2,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "plugins": [
+        {
+          "PLUGIN_NAME": "rpl_semi_sync_replica",
+          "PLUGIN_STATUS": "ACTIVE"
+        }
+      ],
+      "semisync": [
+        {
+          "Variable_name": "Rpl_semi_sync_replica_status",
+          "Value": "ON"
+        }
+      ],
+      "settings": [
+        {
+          "Variable_name": "rpl_semi_sync_replica_enabled",
+          "Value": "ON"
+        },
+        {
+          "Variable_name": "rpl_semi_sync_replica_trace_level",
+          "Value": "32"
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ],
+      "replication": {
+        "Replica_IO_Running": "Yes",
+        "Replica_SQL_Running": "Yes",
+        "Seconds_Behind_Source": 0,
+        "Last_IO_Errno": 0,
+        "Last_SQL_Errno": 0,
+        "Auto_Position": 1
+      }
+    }
+  },
+  "failure": "replica read_only reset to 0 after initdb temporary server restart"
+}

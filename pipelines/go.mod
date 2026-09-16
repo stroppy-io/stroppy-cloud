@@ -15,9 +15,9 @@ require (
 	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/gopherex/schemapb/go v0.0.0-20260910140503-8839ac99233d
-	github.com/graphene-ci/library/docker v0.2.0
+	github.com/graphene-ci/library/docker v0.2.3
 	github.com/graphene-ci/library/k8s v0.2.0
-	github.com/graphene-ci/pipeline v0.2.1
+	github.com/graphene-ci/pipeline v0.2.5
 	github.com/stretchr/testify v1.12.1
 	github.com/upbound/provider-aws/v2 v2.6.0
 	github.com/yandex-cloud/crossplane-provider-yc v0.14.0

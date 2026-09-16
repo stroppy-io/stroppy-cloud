@@ -1,157 +1,157 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "host.disks",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "host.disks",
+    "version":  "v1.0.0"
   },
-  "description": "Data disks of a machine: filesystem, mount point and ownership, or a raw block device.",
-  "fields": [
+  "description":  "Data disks of a machine: filesystem, mount point and ownership, or a raw block device.",
+  "fields":  [
     {
-      "name": "fstab",
-      "description": "Append an /etc/fstab entry for every non-raw mount so it survives a reboot of the stand.",
-      "bool": {
-        "default": true
+      "name":  "fstab",
+      "description":  "Append an /etc/fstab entry for every non-raw mount so it survives a reboot of the stand.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Mounts",
-      "title": "Persist in /etc/fstab"
+      "group":  "Mounts",
+      "title":  "Persist in /etc/fstab"
     },
     {
-      "name": "mounts",
-      "description": "One entry per data disk of this machine. Filled by the server from topology.",
-      "list": {
-        "items": [
+      "name":  "mounts",
+      "description":  "One entry per data disk of this machine. Filled by the server from topology.",
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "device",
-                    "description": "Block device path. Filled by the server from topology (the provisioned disk of this machine).",
-                    "required": true,
-                    "string": {
-                      "minLen": "1",
-                      "maxLen": "256"
+                    "name":  "device",
+                    "description":  "Block device path. Filled by the server from topology (the provisioned disk of this machine).",
+                    "required":  true,
+                    "string":  {
+                      "minLen":  "1",
+                      "maxLen":  "256"
                     },
-                    "group": "Cluster",
-                    "title": "Device",
-                    "examples": [
+                    "group":  "Cluster",
+                    "title":  "Device",
+                    "examples":  [
                       {
-                        "stringValue": "/dev/vdb"
+                        "stringValue":  "/dev/vdb"
                       },
                       {
-                        "stringValue": "/dev/disk/by-partlabel/ydb_disk_ssd_01"
+                        "stringValue":  "/dev/disk/by-partlabel/ydb_disk_ssd_01"
                       }
                     ]
                   },
                   {
-                    "name": "raw",
-                    "description": "No filesystem: the device is given to the engine as a raw block device (YDB pdisk). mount_point/fs/mkfs_options are ignored.",
-                    "bool": {
-                      "default": false
+                    "name":  "raw",
+                    "description":  "No filesystem: the device is given to the engine as a raw block device (YDB pdisk). mount_point/fs/mkfs_options are ignored.",
+                    "bool":  {
+                      "default":  false
                     },
-                    "group": "Mounts",
-                    "title": "Raw device"
+                    "group":  "Mounts",
+                    "title":  "Raw device"
                   },
                   {
-                    "name": "mount_point",
-                    "description": "Absolute directory the filesystem is mounted at.",
-                    "string": {
-                      "default": "/var/lib/stroppy",
-                      "pattern": "^/[A-Za-z0-9._/-]*$"
+                    "name":  "mount_point",
+                    "description":  "Absolute directory the filesystem is mounted at.",
+                    "string":  {
+                      "default":  "/var/lib/stroppy",
+                      "pattern":  "^/[A-Za-z0-9._/-]*$"
                     },
-                    "group": "Mounts",
-                    "title": "Mount point"
+                    "group":  "Mounts",
+                    "title":  "Mount point"
                   },
                   {
-                    "name": "fs",
-                    "description": "Filesystem created on the device. xfs is the default for database data volumes.",
-                    "choice": {
-                      "options": [
+                    "name":  "fs",
+                    "description":  "Filesystem created on the device. xfs is the default for database data volumes.",
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "xfs"
+                          "value":  {
+                            "stringValue":  "xfs"
                           },
-                          "label": "XFS"
+                          "label":  "XFS"
                         },
                         {
-                          "value": {
-                            "stringValue": "ext4"
+                          "value":  {
+                            "stringValue":  "ext4"
                           },
-                          "label": "ext4"
+                          "label":  "ext4"
                         }
                       ],
-                      "default": {
-                        "stringValue": "xfs"
+                      "default":  {
+                        "stringValue":  "xfs"
                       }
                     },
-                    "group": "Mounts",
-                    "title": "Filesystem"
+                    "group":  "Mounts",
+                    "title":  "Filesystem"
                   },
                   {
-                    "name": "mkfs_options",
-                    "description": "Extra flags passed to mkfs.<fs>. Empty means the distro defaults.",
-                    "string": {
-                      "default": "",
-                      "maxLen": "256"
+                    "name":  "mkfs_options",
+                    "description":  "Extra flags passed to mkfs.<fs>. Empty means the distro defaults.",
+                    "string":  {
+                      "default":  "",
+                      "maxLen":  "256"
                     },
-                    "group": "Mounts",
-                    "title": "mkfs options"
+                    "group":  "Mounts",
+                    "title":  "mkfs options"
                   },
                   {
-                    "name": "mount_options",
-                    "description": "Comma-separated mount(8) options. noatime/nodiratime remove a write per read.",
-                    "string": {
-                      "default": "noatime,nodiratime",
-                      "pattern": "^[A-Za-z0-9_,=.:-]*$"
+                    "name":  "mount_options",
+                    "description":  "Comma-separated mount(8) options. noatime/nodiratime remove a write per read.",
+                    "string":  {
+                      "default":  "noatime,nodiratime",
+                      "pattern":  "^[A-Za-z0-9_,=.:-]*$"
                     },
-                    "group": "Mounts",
-                    "title": "Mount options"
+                    "group":  "Mounts",
+                    "title":  "Mount options"
                   },
                   {
-                    "name": "owner",
-                    "description": "chown argument for the mount point, \"user:group\".",
-                    "string": {
-                      "default": "root:root",
-                      "pattern": "^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$"
+                    "name":  "owner",
+                    "description":  "chown argument for the mount point, \"user:group\".",
+                    "string":  {
+                      "default":  "root:root",
+                      "pattern":  "^[A-Za-z0-9_.-]+:[A-Za-z0-9_.-]+$"
                     },
-                    "group": "Mounts",
-                    "title": "Owner"
+                    "group":  "Mounts",
+                    "title":  "Owner"
                   },
                   {
-                    "name": "mode",
-                    "description": "Octal chmod mode for the mount point.",
-                    "string": {
-                      "default": "0755",
-                      "pattern": "^[0-7]{3,4}$"
+                    "name":  "mode",
+                    "description":  "Octal chmod mode for the mount point.",
+                    "string":  {
+                      "default":  "0755",
+                      "pattern":  "^[0-7]{3,4}$"
                     },
-                    "group": "Mounts",
-                    "title": "Mode"
+                    "group":  "Mounts",
+                    "title":  "Mode"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "16"
+        "maxItems":  "16"
       },
-      "group": "Mounts",
-      "title": "Disks"
+      "group":  "Mounts",
+      "title":  "Disks"
     },
     {
-      "name": "script",
-      "description": "Derived: the shell fragment that prepares every disk.",
-      "computed": {
-        "expr": "(\"mounts\" in root) ? root.mounts.map(m,\n\t\t\t\t\tm.raw\n\t\t\t\t\t\t? \"# raw device, no filesystem\\nblkdiscard -f \" + m.device + \" || true\"\n\t\t\t\t\t\t: \"mkfs.\" + m.fs + \" \" + m.mkfs_options + \" \" + m.device + \"\\n\" +\n\t\t\t\t\t\t  \"mkdir -p \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"mount -o \" + m.mount_options + \" \" + m.device + \" \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"chown \" + m.owner + \" \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"chmod \" + m.mode + \" \" + m.mount_point +\n\t\t\t\t\t\t  (root.fstab\n\t\t\t\t\t\t\t? \"\\necho \\\"\" + m.device + \" \" + m.mount_point + \" \" + m.fs + \" \" + m.mount_options + \" 0 2\\\" >> /etc/fstab\"\n\t\t\t\t\t\t\t: \"\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "script",
+      "description":  "Derived: the shell fragment that prepares every disk.",
+      "computed":  {
+        "expr":  "(\"mounts\" in root) ? root.mounts.map(m,\n\t\t\t\t\tm.raw\n\t\t\t\t\t\t? \"# raw device, no filesystem\\nblkdiscard -f \" + m.device + \" || true\"\n\t\t\t\t\t\t: \"mkfs.\" + m.fs + \" \" + m.mkfs_options + \" \" + m.device + \"\\n\" +\n\t\t\t\t\t\t  \"mkdir -p \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"mount -o \" + m.mount_options + \" \" + m.device + \" \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"chown \" + m.owner + \" \" + m.mount_point + \"\\n\" +\n\t\t\t\t\t\t  \"chmod \" + m.mode + \" \" + m.mount_point +\n\t\t\t\t\t\t  (root.fstab\n\t\t\t\t\t\t\t? \"\\necho \\\"\" + m.device + \" \" + m.mount_point + \" \" + m.fs + \" \" + m.mount_options + \" 0 2\\\" >> /etc/fstab\"\n\t\t\t\t\t\t\t: \"\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Mounts",
-      "title": "Provisioning script"
+      "group":  "Mounts",
+      "title":  "Provisioning script"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "#!/bin/sh\n# managed by stroppy-cloud — cfg.host.disks@1\nset -eu\n\n{{{values.script}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "#!/bin/sh\n# managed by stroppy-cloud — cfg.host.disks@1\nset -eu\n\n{{{values.script}}}\n"
   }
 }

@@ -25531,6 +25531,18 @@ func (s *QuotaReport) encodeFields(e *jx.Encoder) {
 		e.Bool(s.Stale)
 	}
 	{
+		if s.UnavailableReason.Set {
+			e.FieldStart("unavailable_reason")
+			s.UnavailableReason.Encode(e)
+		}
+	}
+	{
+		if s.Scope.Set {
+			e.FieldStart("scope")
+			s.Scope.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("quotas")
 		e.ArrStart()
 		for _, elem := range s.Quotas {
@@ -25540,10 +25552,12 @@ func (s *QuotaReport) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfQuotaReport = [3]string{
+var jsonFieldsNameOfQuotaReport = [5]string{
 	0: "observed_at",
 	1: "stale",
-	2: "quotas",
+	2: "unavailable_reason",
+	3: "scope",
+	4: "quotas",
 }
 
 // Decode decodes QuotaReport from json.
@@ -25577,8 +25591,28 @@ func (s *QuotaReport) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"stale\"")
 			}
+		case "unavailable_reason":
+			if err := func() error {
+				s.UnavailableReason.Reset()
+				if err := s.UnavailableReason.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"unavailable_reason\"")
+			}
+		case "scope":
+			if err := func() error {
+				s.Scope.Reset()
+				if err := s.Scope.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"scope\"")
+			}
 		case "quotas":
-			requiredBitSet[0] |= 1 << 2
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				s.Quotas = make([]QuotaReportQuotasItem, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -25605,7 +25639,7 @@ func (s *QuotaReport) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00010011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

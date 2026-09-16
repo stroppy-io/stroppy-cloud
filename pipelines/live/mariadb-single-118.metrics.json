@@ -1,0 +1,1168 @@
+{
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+  "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+  "query_range": {
+    "start": "2026-09-15T11:42:48.106969+00:00",
+    "end": "2026-09-15T12:14:48.475326+00:00"
+  },
+  "series_count": 2599,
+  "queried_entities": [
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter"
+  ],
+  "exporter_runs_observed": [
+    "matrix-maria-monitor-e4a0fdb4-mariadb-single-118"
+  ],
+  "exporter_agents_observed": [
+    "5395e553-db-1",
+    "5395e553-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+      "metric_names": 837
+    },
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+      "mysql_up": {
+        "min": 1.0,
+        "max": 1.0
+      }
+    }
+  },
+  "replication": {
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+      "mysql_global_status_rpl_semi_sync_master_clients": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_get_ack": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_net_avg_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_net_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_net_waits": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_no_times": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_no_tx": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_request_ack": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_status": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_timefunc_failures": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_tx_avg_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_tx_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_tx_waits": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_wait_pos_backtraverse": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_wait_sessions": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_master_yes_tx": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_slave_send_ack": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      },
+      "mysql_global_status_rpl_semi_sync_slave_status": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 22,
+        "first_at": 1789474005,
+        "last_at": 1789474320
+      }
+    }
+  },
+  "cluster_replication": [
+    {
+      "metric": {
+        "__name__": "mysql_galera_variables_info",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0",
+        "wsrep_cluster_name": "my_wsrep_cluster"
+      },
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_applier_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_conf_id",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": -1.0,
+      "max": -1.0,
+      "last": -1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_status",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_connected",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_bf_aborts",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_index",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 1.8446744073709548e+19,
+      "max": 1.8446744073709548e+19,
+      "last": 1.8446744073709548e+19,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_ready",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_rollbacker_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5395e553-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "graphene.namespace": "t-stroppy-live",
+        "graphene.role": "machine",
+        "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    }
+  ],
+  "proxy_metrics": [],
+  "database_versions": {
+    "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+      "version": "11.8.9-MariaDB-ubu2404-log",
+      "version_comment": "mariadb.org binary distribution"
+    }
+  },
+  "disk_info": [
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fhm14kkuolgiviiltb5a",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmoa8oeb65vkveu64sm",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "mysql_exporter_collectors": [
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 22,
+      "first_at": 1789474005,
+      "last_at": 1789474320
+    }
+  ],
+  "transfer_activity_attempts_observed": [],
+  "workload_observation": {
+    "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+    "source": "persistent VictoriaMetrics raw export with original sample timestamps; no range-query lookback or resampling",
+    "query_range": {
+      "start": "2026-09-15T12:06:07.023519297Z",
+      "end": "2026-09-15T12:10:10.574755+00:00"
+    },
+    "series_count": 1236,
+    "queried_entities": [
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter"
+    ],
+    "exporter_runs_observed": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-single-118"
+    ],
+    "exporter_agents_observed": [
+      "5395e553-db-1"
+    ],
+    "data_filesystems": [],
+    "exporters": {
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+        "metric_names": 837
+      }
+    },
+    "component_health": {
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+        "mysql_up": {
+          "min": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    "replication": {
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+        "mysql_global_status_rpl_semi_sync_master_wait_pos_backtraverse": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.766,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_slave_send_ack": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.763,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_yes_tx": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.766,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_get_ack": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.767,
+          "last_at": 1789474205.76
+        },
+        "mysql_global_status_rpl_semi_sync_master_wait_sessions": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.759,
+          "last_at": 1789474205.758
+        },
+        "mysql_global_status_rpl_semi_sync_master_tx_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.763,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_timefunc_failures": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.769,
+          "last_at": 1789474205.76
+        },
+        "mysql_global_status_rpl_semi_sync_master_request_ack": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.764,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_clients": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.759,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_net_waits": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.76,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_net_avg_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.759,
+          "last_at": 1789474205.758
+        },
+        "mysql_global_status_rpl_semi_sync_slave_status": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.765,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_tx_waits": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.762,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_status": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.767,
+          "last_at": 1789474205.76
+        },
+        "mysql_global_status_rpl_semi_sync_master_no_tx": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.764,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_net_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.767,
+          "last_at": 1789474205.76
+        },
+        "mysql_global_status_rpl_semi_sync_master_tx_avg_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.761,
+          "last_at": 1789474205.759
+        },
+        "mysql_global_status_rpl_semi_sync_master_no_times": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789473995.76,
+          "last_at": 1789474205.759
+        }
+      }
+    },
+    "cluster_replication": [
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_local_bf_aborts",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.764,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_cluster_conf_id",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": -1.0,
+        "max": -1.0,
+        "last": -1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_local_index",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 1.8446744073709548e+19,
+        "max": 1.8446744073709548e+19,
+        "last": 1.8446744073709548e+19,
+        "samples": 15,
+        "first_at": 1789473995.76,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_connected",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.76,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_galera_variables_info",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0",
+          "wsrep_cluster_name": "my_wsrep_cluster"
+        },
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.769,
+        "last_at": 1789474205.76
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_applier_thread_count",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.759,
+        "last_at": 1789474205.758
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_cluster_status",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.759,
+        "last_at": 1789474205.758
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_cluster_size",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.76,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_ready",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.763,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_thread_count",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "metric": {
+          "__name__": "mysql_global_status_wsrep_rollbacker_thread_count",
+          "graphene.activity": "docker.container.observe",
+          "graphene.agent": "5395e553-db-1",
+          "graphene.attempt": "1",
+          "graphene.entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+          "graphene.namespace": "t-stroppy-live",
+          "graphene.role": "machine",
+          "graphene.run": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0"
+        },
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 15,
+        "first_at": 1789473995.762,
+        "last_at": 1789474205.759
+      }
+    ],
+    "proxy_metrics": [],
+    "database_versions": {
+      "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter": {
+        "version": "11.8.9-MariaDB-ubu2404-log",
+        "version_comment": "mariadb.org binary distribution"
+      }
+    },
+    "disk_info": [],
+    "node_collectors_reporting_zero": [],
+    "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+    "postgres_exporter_scrape_error_max": [],
+    "mysql_exporter_scrape_error_max": [],
+    "mysql_exporter_collectors": [
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.global_status",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.global_variables",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.info_schema.innodb_cmp",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.info_schema.innodb_cmpmem",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.info_schema.query_response_time",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      },
+      {
+        "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+        "collector": "collect.slave_status",
+        "min": 1.0,
+        "max": 1.0,
+        "samples": 15,
+        "first_at": 1789473995.766,
+        "last_at": 1789474205.759
+      }
+    ],
+    "transfer_activity_attempts_observed": []
+  },
+  "health_scope_note": "Health assertions use finite raw OTLP collection samples from workload start through 15 seconds after its last segment. Collector first_at/last_at report collection coverage, not source scrape timestamps. SQL readiness separately gates all members before workload; continuous metric coverage is not implied. Full-run range-query samples also include bootstrap lookback and planned shutdown."
+}

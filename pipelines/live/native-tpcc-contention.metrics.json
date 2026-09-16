@@ -1,0 +1,1026 @@
+{
+  "status": "passed",
+  "run_id": "native-exports-74979a8a-tpcc",
+  "segments": [
+    {
+      "segment": "tpcc-tx",
+      "run_id": "native-exports-74979a8a-tpcc",
+      "source": "authenticated Graphene Metrics API / persistent VictoriaMetrics",
+      "series": 947,
+      "instance": "6a82e2c9-c192-41c0-b3c4-da6859132a9e",
+      "metric_names": [
+        "stroppy_failed_iterations_total",
+        "stroppy_failed_queries_total",
+        "stroppy_insert_duration_milliseconds_bucket",
+        "stroppy_insert_duration_milliseconds_count",
+        "stroppy_insert_duration_milliseconds_sum",
+        "stroppy_insert_operations_total",
+        "stroppy_insert_progress_rows_per_second",
+        "stroppy_insert_progress_rows_total",
+        "stroppy_insert_rows_total",
+        "stroppy_iteration_duration_milliseconds_bucket",
+        "stroppy_iteration_duration_milliseconds_count",
+        "stroppy_iteration_duration_milliseconds_sum",
+        "stroppy_iterations_per_second_per_second",
+        "stroppy_iterations_total",
+        "stroppy_measurement_seconds",
+        "stroppy_queries_per_second_per_second",
+        "stroppy_retry_attempts_total",
+        "stroppy_run_query_duration_milliseconds_bucket",
+        "stroppy_run_query_duration_milliseconds_count",
+        "stroppy_run_query_duration_milliseconds_sum",
+        "stroppy_run_query_errors_total",
+        "stroppy_run_query_operations_total",
+        "stroppy_successful_transactions_total",
+        "stroppy_terminal_errors_total",
+        "stroppy_tpcc_delivery_duration_milliseconds_bucket",
+        "stroppy_tpcc_delivery_duration_milliseconds_count",
+        "stroppy_tpcc_delivery_duration_milliseconds_sum",
+        "stroppy_tpcc_delivery_total",
+        "stroppy_tpcc_new_order_duration_milliseconds_bucket",
+        "stroppy_tpcc_new_order_duration_milliseconds_count",
+        "stroppy_tpcc_new_order_duration_milliseconds_sum",
+        "stroppy_tpcc_new_order_total",
+        "stroppy_tpcc_order_status_byname_total",
+        "stroppy_tpcc_order_status_duration_milliseconds_bucket",
+        "stroppy_tpcc_order_status_duration_milliseconds_count",
+        "stroppy_tpcc_order_status_duration_milliseconds_sum",
+        "stroppy_tpcc_order_status_total",
+        "stroppy_tpcc_payment_bc_total",
+        "stroppy_tpcc_payment_byname_total",
+        "stroppy_tpcc_payment_duration_milliseconds_bucket",
+        "stroppy_tpcc_payment_duration_milliseconds_count",
+        "stroppy_tpcc_payment_duration_milliseconds_sum",
+        "stroppy_tpcc_payment_total",
+        "stroppy_tpcc_remote_line_total",
+        "stroppy_tpcc_retry_attempts_total",
+        "stroppy_tpcc_rollback_decided_total",
+        "stroppy_tpcc_rollback_done_total",
+        "stroppy_tpcc_stock_level_duration_milliseconds_bucket",
+        "stroppy_tpcc_stock_level_duration_milliseconds_count",
+        "stroppy_tpcc_stock_level_duration_milliseconds_sum",
+        "stroppy_tpcc_stock_level_total",
+        "stroppy_tps_per_second",
+        "stroppy_transactions_total",
+        "stroppy_tx_commits_total",
+        "stroppy_tx_errors_total",
+        "stroppy_tx_queries_per_tx_bucket",
+        "stroppy_tx_queries_per_tx_count",
+        "stroppy_tx_queries_per_tx_sum",
+        "stroppy_tx_total_duration_milliseconds_bucket",
+        "stroppy_tx_total_duration_milliseconds_count",
+        "stroppy_tx_total_duration_milliseconds_sum",
+        "target_info"
+      ],
+      "measurements": {
+        "tps": 241.5141077174,
+        "iterations_per_second": 245.3627389869,
+        "queries_per_second": 4451.71678766,
+        "measurement_seconds": 20.007112817,
+        "successful_transactions_total": 4832.0,
+        "iterations_total": 4909.0,
+        "failed_iterations_total": 77.0,
+        "failed_queries_total": 0.0,
+        "terminal_errors_total": 77.0,
+        "retry_attempts_total": 689.0
+      },
+      "native_summary": {
+        "failed_iterations_total": {
+          "value": 77
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 375.033,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 8
+        },
+        "insert_duration_p50": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 8
+        },
+        "insert_progress_rows_per_second": {
+          "value": 1432201.89
+        },
+        "insert_progress_rows_total": {
+          "value": 569011
+        },
+        "insert_rows_total": {
+          "value": 569011
+        },
+        "iteration_duration_avg": {
+          "value": 8.148,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 4909
+        },
+        "iteration_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 245.363,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 4909
+        },
+        "measurement_seconds": {
+          "value": 20.007,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 4451.717,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 689
+        },
+        "run_query_duration_avg": {
+          "value": 0.312,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 89108
+        },
+        "run_query_duration_p50": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "run_query_errors_total": {
+          "value": 766
+        },
+        "run_query_operations_total": {
+          "value": 89874
+        },
+        "successful_transactions_total": {
+          "value": 4832
+        },
+        "terminal_errors_total": {
+          "value": 77
+        },
+        "tpcc_delivery_duration_avg": {
+          "value": 20.842,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_count": {
+          "value": 171
+        },
+        "tpcc_delivery_duration_p50": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p99": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tpcc_delivery_total": {
+          "value": 171
+        },
+        "tpcc_new_order_duration_avg": {
+          "value": 10.712,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_count": {
+          "value": 2302
+        },
+        "tpcc_new_order_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_new_order_total": {
+          "value": 2302
+        },
+        "tpcc_order_status_byname": {
+          "value": 96
+        },
+        "tpcc_order_status_duration_avg": {
+          "value": 1.073,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_count": {
+          "value": 178
+        },
+        "tpcc_order_status_duration_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p90": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p99": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_order_status_total": {
+          "value": 178
+        },
+        "tpcc_payment_bc": {
+          "value": 206
+        },
+        "tpcc_payment_byname": {
+          "value": 1241
+        },
+        "tpcc_payment_duration_avg": {
+          "value": 4.131,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_count": {
+          "value": 2038
+        },
+        "tpcc_payment_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tpcc_payment_total": {
+          "value": 2038
+        },
+        "tpcc_remote_line_total": {
+          "value": 23227
+        },
+        "tpcc_retry_attempts": {
+          "value": 689
+        },
+        "tpcc_rollback_decided": {
+          "value": 25
+        },
+        "tpcc_rollback_done": {
+          "value": 25
+        },
+        "tpcc_stock_level_duration_avg": {
+          "value": 2.982,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_count": {
+          "value": 220
+        },
+        "tpcc_stock_level_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p90": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p95": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p99": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_total": {
+          "value": 220
+        },
+        "tps": {
+          "value": 241.514,
+          "unit": "transactions/s"
+        },
+        "transactions_total": {
+          "value": 5598
+        },
+        "tx_commits_total": {
+          "value": 4807
+        },
+        "tx_errors_total": {
+          "value": 791
+        },
+        "tx_queries_per_tx_avg": {
+          "value": 16.047,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_count": {
+          "value": 5598
+        },
+        "tx_queries_per_tx_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p90": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p95": {
+          "value": 50,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p99": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tx_total_duration_avg": {
+          "value": 6.844,
+          "unit": "ms"
+        },
+        "tx_total_duration_count": {
+          "value": 5598
+        },
+        "tx_total_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tx_total_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tx_total_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "tx_total_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        }
+      },
+      "workload_without_terminal_errors": false,
+      "compliance": {
+        "workload": "tpcc/tx",
+        "paced": false,
+        "compliance_applicable": false,
+        "elapsed_seconds": 20.007489964,
+        "tpm_c": 6903.414683627128,
+        "mix_compliant": null,
+        "response_compliant": null,
+        "mix_tolerance_pct": 1,
+        "transactions": [
+          {
+            "name": "new_order",
+            "count": 2302,
+            "mix_percent": 46.89346099001833,
+            "throughput_per_sec": 115.05691139378546,
+            "p50_ms": 10,
+            "p90_ms": 25,
+            "p95_ms": 25,
+            "p99_ms": 25,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "payment",
+            "count": 2038,
+            "mix_percent": 41.51558362191892,
+            "throughput_per_sec": 101.861852919433,
+            "p50_ms": 5,
+            "p90_ms": 10,
+            "p95_ms": 25,
+            "p99_ms": 25,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "order_status",
+            "count": 178,
+            "mix_percent": 3.6259930739458137,
+            "throughput_per_sec": 8.896668213767946,
+            "p50_ms": 1,
+            "p90_ms": 1,
+            "p95_ms": 2.5,
+            "p99_ms": 5,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "delivery",
+            "count": 171,
+            "mix_percent": 3.483397840700754,
+            "throughput_per_sec": 8.546799239069207,
+            "p50_ms": 25,
+            "p90_ms": 25,
+            "p95_ms": 50,
+            "p99_ms": 50,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "stock_level",
+            "count": 220,
+            "mix_percent": 4.481564473416174,
+            "throughput_per_sec": 10.995882061960383,
+            "p50_ms": 5,
+            "p90_ms": 5,
+            "p95_ms": 5,
+            "p99_ms": 5,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          }
+        ],
+        "statistical": {
+          "total_measurements": 4909,
+          "new_orders": 2302,
+          "sufficient": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "steadiness": {
+          "status": "not_assessed",
+          "cv": 0,
+          "mean_new_orders_per_sec": 0,
+          "sigma_new_orders_per_sec": 0,
+          "buckets": 0,
+          "truncated": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "note": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+      },
+      "query_window": {
+        "start": "2026-09-14T20:57:50.920965+00:00",
+        "end": "2026-09-14T20:59:10.093068+00:00"
+      },
+      "status": "passed"
+    },
+    {
+      "segment": "tpcc-procs",
+      "run_id": "native-exports-74979a8a-tpcc",
+      "source": "authenticated Graphene Metrics API / persistent VictoriaMetrics",
+      "series": 973,
+      "instance": "f8fd715c-ac19-4700-9407-6e2363698fb5",
+      "metric_names": [
+        "stroppy_failed_iterations_total",
+        "stroppy_failed_queries_total",
+        "stroppy_insert_duration_milliseconds_bucket",
+        "stroppy_insert_duration_milliseconds_count",
+        "stroppy_insert_duration_milliseconds_sum",
+        "stroppy_insert_operations_total",
+        "stroppy_insert_progress_rows_per_second",
+        "stroppy_insert_progress_rows_total",
+        "stroppy_insert_rows_total",
+        "stroppy_iteration_duration_milliseconds_bucket",
+        "stroppy_iteration_duration_milliseconds_count",
+        "stroppy_iteration_duration_milliseconds_sum",
+        "stroppy_iterations_per_second_per_second",
+        "stroppy_iterations_total",
+        "stroppy_measurement_seconds",
+        "stroppy_queries_per_second_per_second",
+        "stroppy_retry_attempts_total",
+        "stroppy_run_query_duration_milliseconds_bucket",
+        "stroppy_run_query_duration_milliseconds_count",
+        "stroppy_run_query_duration_milliseconds_sum",
+        "stroppy_run_query_errors_total",
+        "stroppy_run_query_operations_total",
+        "stroppy_successful_transactions_total",
+        "stroppy_terminal_errors_total",
+        "stroppy_tpcc_delivery_duration_milliseconds_bucket",
+        "stroppy_tpcc_delivery_duration_milliseconds_count",
+        "stroppy_tpcc_delivery_duration_milliseconds_sum",
+        "stroppy_tpcc_delivery_total",
+        "stroppy_tpcc_new_order_duration_milliseconds_bucket",
+        "stroppy_tpcc_new_order_duration_milliseconds_count",
+        "stroppy_tpcc_new_order_duration_milliseconds_sum",
+        "stroppy_tpcc_new_order_total",
+        "stroppy_tpcc_order_status_byname_total",
+        "stroppy_tpcc_order_status_duration_milliseconds_bucket",
+        "stroppy_tpcc_order_status_duration_milliseconds_count",
+        "stroppy_tpcc_order_status_duration_milliseconds_sum",
+        "stroppy_tpcc_order_status_total",
+        "stroppy_tpcc_payment_byname_total",
+        "stroppy_tpcc_payment_duration_milliseconds_bucket",
+        "stroppy_tpcc_payment_duration_milliseconds_count",
+        "stroppy_tpcc_payment_duration_milliseconds_sum",
+        "stroppy_tpcc_payment_total",
+        "stroppy_tpcc_retry_attempts_total",
+        "stroppy_tpcc_rollback_decided_total",
+        "stroppy_tpcc_stock_level_duration_milliseconds_bucket",
+        "stroppy_tpcc_stock_level_duration_milliseconds_count",
+        "stroppy_tpcc_stock_level_duration_milliseconds_sum",
+        "stroppy_tpcc_stock_level_total",
+        "stroppy_tps_per_second",
+        "stroppy_transactions_total",
+        "stroppy_tx_commits_total",
+        "stroppy_tx_errors_total",
+        "stroppy_tx_queries_per_tx_bucket",
+        "stroppy_tx_queries_per_tx_count",
+        "stroppy_tx_queries_per_tx_sum",
+        "stroppy_tx_total_duration_milliseconds_bucket",
+        "stroppy_tx_total_duration_milliseconds_count",
+        "stroppy_tx_total_duration_milliseconds_sum",
+        "target_info"
+      ],
+      "measurements": {
+        "tps": 586.369701373,
+        "iterations_per_second": 606.5634921287,
+        "queries_per_second": 586.369701373,
+        "measurement_seconds": 20.006149657,
+        "successful_transactions_total": 11731.0,
+        "iterations_total": 12135.0,
+        "failed_iterations_total": 404.0,
+        "failed_queries_total": 0.0,
+        "terminal_errors_total": 404.0,
+        "retry_attempts_total": 2586.0
+      },
+      "native_summary": {
+        "failed_iterations_total": {
+          "value": 404
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "insert_duration_avg": {
+          "value": 381.961,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 8
+        },
+        "insert_duration_p50": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 1000,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 8
+        },
+        "insert_progress_rows_per_second": {
+          "value": 1418347.531
+        },
+        "insert_progress_rows_total": {
+          "value": 569011
+        },
+        "insert_rows_total": {
+          "value": 569011
+        },
+        "iteration_duration_avg": {
+          "value": 3.295,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 12135
+        },
+        "iteration_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 606.563,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 12135
+        },
+        "measurement_seconds": {
+          "value": 20.006,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 586.37,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 2586
+        },
+        "run_query_duration_avg": {
+          "value": 1.034,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 11778
+        },
+        "run_query_duration_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "run_query_errors_total": {
+          "value": 2990
+        },
+        "run_query_operations_total": {
+          "value": 14768
+        },
+        "successful_transactions_total": {
+          "value": 11731
+        },
+        "terminal_errors_total": {
+          "value": 404
+        },
+        "tpcc_delivery_duration_avg": {
+          "value": 3.936,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_count": {
+          "value": 421
+        },
+        "tpcc_delivery_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_delivery_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_delivery_total": {
+          "value": 421
+        },
+        "tpcc_new_order_duration_avg": {
+          "value": 2.899,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_count": {
+          "value": 5549
+        },
+        "tpcc_new_order_duration_p50": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p90": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_new_order_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_new_order_total": {
+          "value": 5549
+        },
+        "tpcc_order_status_byname": {
+          "value": 243
+        },
+        "tpcc_order_status_duration_avg": {
+          "value": 0.098,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_count": {
+          "value": 440
+        },
+        "tpcc_order_status_duration_p50": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p90": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p95": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tpcc_order_status_duration_p99": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tpcc_order_status_total": {
+          "value": 440
+        },
+        "tpcc_payment_byname": {
+          "value": 3167
+        },
+        "tpcc_payment_duration_avg": {
+          "value": 2.885,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_count": {
+          "value": 5214
+        },
+        "tpcc_payment_duration_p50": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_payment_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcc_payment_total": {
+          "value": 5214
+        },
+        "tpcc_retry_attempts": {
+          "value": 2586
+        },
+        "tpcc_rollback_decided": {
+          "value": 59
+        },
+        "tpcc_stock_level_duration_avg": {
+          "value": 1.558,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_count": {
+          "value": 511
+        },
+        "tpcc_stock_level_duration_p50": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p90": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_duration_p99": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tpcc_stock_level_total": {
+          "value": 511
+        },
+        "tps": {
+          "value": 586.37,
+          "unit": "transactions/s"
+        },
+        "transactions_total": {
+          "value": 14721
+        },
+        "tx_commits_total": {
+          "value": 11731
+        },
+        "tx_errors_total": {
+          "value": 2990
+        },
+        "tx_queries_per_tx_avg": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_count": {
+          "value": 14721
+        },
+        "tx_queries_per_tx_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p90": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p95": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tx_queries_per_tx_p99": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "tx_total_duration_avg": {
+          "value": 2.416,
+          "unit": "ms"
+        },
+        "tx_total_duration_count": {
+          "value": 14721
+        },
+        "tx_total_duration_p50": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "tx_total_duration_p90": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tx_total_duration_p95": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "tx_total_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        }
+      },
+      "workload_without_terminal_errors": false,
+      "compliance": {
+        "workload": "tpcc/procs",
+        "paced": false,
+        "compliance_applicable": false,
+        "elapsed_seconds": 20.006566894,
+        "tpm_c": 16641.53583990711,
+        "mix_compliant": null,
+        "response_compliant": null,
+        "mix_tolerance_pct": 1,
+        "transactions": [
+          {
+            "name": "new_order",
+            "count": 5549,
+            "mix_percent": 45.72723526988051,
+            "throughput_per_sec": 277.35893066511846,
+            "p50_ms": 2.5,
+            "p90_ms": 5,
+            "p95_ms": 10,
+            "p99_ms": 10,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "payment",
+            "count": 5214,
+            "mix_percent": 42.96662546353523,
+            "throughput_per_sec": 260.61442863361464,
+            "p50_ms": 2.5,
+            "p90_ms": 10,
+            "p95_ms": 10,
+            "p99_ms": 10,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "order_status",
+            "count": 440,
+            "mix_percent": 3.6258755665430575,
+            "throughput_per_sec": 21.992778787646806,
+            "p50_ms": 0.005,
+            "p90_ms": 0.005,
+            "p95_ms": 1,
+            "p99_ms": 1,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "delivery",
+            "count": 421,
+            "mix_percent": 3.4693036670786976,
+            "throughput_per_sec": 21.043090612725692,
+            "p50_ms": 5,
+            "p90_ms": 10,
+            "p95_ms": 10,
+            "p99_ms": 10,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          },
+          {
+            "name": "stock_level",
+            "count": 511,
+            "mix_percent": 4.210960032962506,
+            "throughput_per_sec": 25.54161354656254,
+            "p50_ms": 2.5,
+            "p90_ms": 2.5,
+            "p95_ms": 2.5,
+            "p99_ms": 2.5,
+            "ceiling_ms": null,
+            "mix_min_percent": null,
+            "mix_pass": null,
+            "response_pass": null
+          }
+        ],
+        "statistical": {
+          "total_measurements": 12135,
+          "new_orders": 5549,
+          "sufficient": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "steadiness": {
+          "status": "not_assessed",
+          "cv": 0,
+          "mean_new_orders_per_sec": 0,
+          "sigma_new_orders_per_sec": 0,
+          "buckets": 0,
+          "truncated": false,
+          "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+        },
+        "note": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+      },
+      "query_window": {
+        "start": "2026-09-14T20:58:20.285203+00:00",
+        "end": "2026-09-14T20:59:35.842230+00:00"
+      },
+      "status": "passed"
+    }
+  ]
+}

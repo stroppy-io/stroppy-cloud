@@ -1,0 +1,72 @@
+{
+  "primary": [
+    {
+      "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+      "rows": [
+        [
+          "16.15 (Debian 16.15-1.pgdg13+2)",
+          "f",
+          "/var/lib/postgresql/data"
+        ]
+      ]
+    },
+    {
+      "query": "CREATE TABLE IF NOT EXISTS public.stroppy_replication_probe (id integer primary key); INSERT INTO public.stroppy_replication_probe SELECT generate_series(1,100) ON CONFLICT DO NOTHING; SELECT count(*) FROM public.stroppy_replication_probe",
+      "rows": [
+        [
+          "100"
+        ]
+      ]
+    },
+    {
+      "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+      "rows": []
+    },
+    {
+      "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+      "rows": [
+        [
+          "streaming",
+          "async",
+          "0/307C5D8",
+          "0/3070258"
+        ]
+      ]
+    }
+  ],
+  "replica": [
+    {
+      "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+      "rows": [
+        [
+          "16.15 (Debian 16.15-1.pgdg13+2)",
+          "t",
+          "/var/lib/postgresql/data"
+        ]
+      ]
+    },
+    {
+      "query": "SELECT count(*) FROM public.stroppy_replication_probe",
+      "rows": [
+        [
+          "100"
+        ]
+      ]
+    },
+    {
+      "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+      "rows": [
+        [
+          "streaming",
+          "0/30840C0",
+          null,
+          "10.166.0.15"
+        ]
+      ]
+    },
+    {
+      "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+      "rows": []
+    }
+  ]
+}

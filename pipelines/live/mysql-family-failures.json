@@ -1,0 +1,105 @@
+{
+  "status": "passed",
+  "attempts": [
+    {
+      "run_id": "matrix-mysql84-6cf42333-single",
+      "issue": "Kubernetes test SA token expired after its eight-hour lifetime",
+      "stage": "provider config, before VM creation",
+      "error": "secret t-stroppy-live: Unauthorized",
+      "resolution": "Refreshed the same service account token without changing RBAC",
+      "live_retry": "matrix-mysql84-634139c4-single",
+      "validation": "passed"
+    },
+    {
+      "run_id": "matrix-mysql-4c2d4d7e-mysql80-single",
+      "issue": "MySQL 8.0 received MySQL 8.4 configuration",
+      "error": "unknown variable 'mysql_native_password=OFF'",
+      "action": "Canceled suite; normal cleanup",
+      "resolution": "Resolve MySQL and MariaDB config schema from the selected database version",
+      "live_retry": "matrix-mysql-fixed-2a83f8e4-mysql80-single",
+      "validation": "passed"
+    },
+    {
+      "run_id": "matrix-maria-3d24d9a0-maria118-single",
+      "issue": "MariaDB ER_CHECKREAD 1020 classified as unknown, so transaction retry policy was not applied",
+      "terminal_errors": {
+        "simple": 0,
+        "tpcb-tx": 0,
+        "tpcb-procs": 0,
+        "tpcc-tx": 205,
+        "tpcc-procs": 557
+      },
+      "resolution": "Native MySQL driver classifies ER_CHECKREAD as serialization; retry limit and isolation unchanged",
+      "live_retry": "matrix-mariadb-fixed-5ce18e32-mariadb118-single",
+      "validation": "passed; five workloads have zero terminal errors"
+    },
+    {
+      "issue": "Catalog semi-sync recipe did not enable plugins or requested acknowledgement count",
+      "resolution": "Enabled source/replica plugins and configured requested ack count; replica health waits for receiver/applier and initial schema",
+      "live_retry": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+      "validation": "passed on MySQL 8.4 and 8.0; live SQL plus persisted replication metrics"
+    },
+    {
+      "issue": "Native load progress counted the partial batch twice",
+      "evidence": "mysql-insert-progress-issue.json",
+      "resolution": "Remainder flush shares the original counter instead of copying it",
+      "validation": "passed on corrected image; persisted completed load-progress records match generated and confirmed row counts"
+    },
+    {
+      "run_id": "matrix-mysql-fixed-2a83f8e4-mysql84-semi-sync",
+      "issue": "mysqld --initialize ignores plugin_load_add, so strict plugin options abort fresh datadir initialization",
+      "error": "unknown variable 'rpl_semi_sync_source_enabled=ON'",
+      "resolution": "Render loose-rpl_semi_sync_* options; readiness explicitly requires the loaded/enabled plugin and replica receiver/applier status",
+      "action": "Canceled affected suite; recreate isolated test stand after cleanup",
+      "live_retry": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+      "validation": "passed on MySQL 8.4 and 8.0; live SQL plus persisted replication metrics"
+    },
+    {
+      "run_id": "matrix-mysql-semisync-2c224f96-mysql84-semi-sync",
+      "issue": "Replica read_only was set only on the initdb temporary server and reset on final startup",
+      "evidence": "mysql84-semi-sync-initial.replication.json",
+      "resolution": "Persist read_only=ON in the replica config and require it in the readiness query",
+      "live_retry": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+      "validation": "passed on MySQL 8.4 and 8.0; live SQL plus persisted replication metrics"
+    },
+    {
+      "issue": "Aggregate result schema capped all segment metrics at 256 and artifacts at 64",
+      "resolution": "Allow 64 x 256 aggregate metrics and 129 artifacts; retain per-segment bounds",
+      "validation": "Full pipelines tests and real multi-segment result fixtures pass"
+    },
+    {
+      "run_id": "matrix-mariadb-fixed-5ce18e32-mariadb1011-single",
+      "issue": "MariaDB 10.11 tx_isolation is a SQL variable name, not a supported startup option",
+      "error": "unknown variable 'tx_isolation=REPEATABLE-READ'",
+      "resolution": "Preserve the configuration input field and render transaction-isolation in the option file",
+      "live_retry": "matrix-mysql-family-19fb11ff-mariadb1011-single",
+      "validation": "passed; five workloads, native telemetry, artifacts and cleanup"
+    },
+    {
+      "run_id": "matrix-mysql-family-1f79d4b3",
+      "issue": "Graphene truncated long child-run IDs to the same Kubernetes Deployment name; AlreadyExists/Ensure accepted a different run worker",
+      "evidence": "graphene211-workers.json",
+      "resolution": "Hash complete namespace and run identity; discover existing workers by exact labels; reject name collisions with a different identity",
+      "status": "fixed and live parallel workers verified",
+      "commit": "6cb3b280636d069300970b5708de8076ce031f0f",
+      "release": "0.2.11",
+      "live_retry": "matrix-mysql-family-19fb11ff"
+    }
+  ],
+  "verification_fixes": [
+    {
+      "issue": "Run-wide component metrics can exceed the Graphene 8 MiB response limit",
+      "resolution": "Read every exporter resource separately; preserve all returned metric series"
+    },
+    {
+      "issue": "New MySQL exporter names replica/source status fields differently from legacy slave/master names",
+      "resolution": "Preserve all mysql_slave_status fields and validate both naming families"
+    },
+    {
+      "issue": "A full-run mysql_up minimum includes planned shutdown during cleanup",
+      "resolution": "Keep full-run observations, assert DB health and replication during the workload window plus one sampling interval"
+    }
+  ],
+  "completed_recheck": "matrix-mysql84-fixed-fc2399ff-mysql84-single",
+  "cleanup_evidence": "mysql-family-cleanup.json"
+}

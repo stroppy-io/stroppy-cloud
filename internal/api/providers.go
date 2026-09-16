@@ -179,6 +179,12 @@ func profileOf(p provider.Profile) oas.ProviderProfile {
 
 func quotaReportOf(p provider.Profile) *oas.QuotaReport {
 	out := &oas.QuotaReport{Quotas: make([]oas.QuotaReportQuotasItem, 0, len(p.Quotas)), Stale: true}
+	if p.QuotasUnavailableReason != "" {
+		out.UnavailableReason = oas.NewOptString(p.QuotasUnavailableReason)
+	}
+	if p.QuotasScope != "" {
+		out.Scope = oas.NewOptString(p.QuotasScope)
+	}
 	if p.QuotasObservedAt != nil {
 		out.ObservedAt = oas.NewNilDateTime(*p.QuotasObservedAt)
 		out.Stale = time.Since(*p.QuotasObservedAt) > provider.QuotaFreshness

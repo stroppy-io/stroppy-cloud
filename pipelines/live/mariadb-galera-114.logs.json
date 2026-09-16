@@ -1,0 +1,55 @@
+{
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 4353,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-1-mariadb": 656,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-1-mysqld-exporter": 10,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-1-node-exporter": 57,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-2-mariadb": 603,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-2-mysqld-exporter": 10,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-2-node-exporter": 57,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-3-mariadb": 623,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-3-mysqld-exporter": 16,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-db-3-node-exporter": 57,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-proxy-1-node-exporter": 57,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-proxy-1-proxysql": 1005,
+    "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T11:49:06.272739804Z",
+    "end": "2026-09-15T11:53:02.737056876Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-proxy-1-proxysql",
+      "observed_at": "2026-09-15T11:52:35.561366888Z",
+      "message_sha256": "6ebd5efd1c22c4c5439093c7ff2e48c6eec26cca340278fa5011acb84056828d",
+      "classification": "galera_monitor_timeout"
+    },
+    {
+      "entity": "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-proxy-1-proxysql",
+      "observed_at": "2026-09-15T11:52:35.561323313Z",
+      "message_sha256": "eddbb4399490be15acd2e2229293b5b294a6299c53fa1534b2fe7bf005dceffd",
+      "classification": "galera_monitor_timeout"
+    },
+    {
+      "entity": "docker/b21edee1-e5a9-4c5c-bff6-27490552335a-proxy-1-proxysql",
+      "observed_at": "2026-09-15T11:52:35.561297976Z",
+      "message_sha256": "cbdb6a52346d943641812a50f7339a57f5d1058ec6ddb45dad349d3faf6d8443",
+      "classification": "galera_monitor_timeout"
+    }
+  ],
+  "observation_counts": {
+    "galera_monitor_timeout": 3
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks"
+}

@@ -1,0 +1,53 @@
+{
+  "rows": {
+    "db-1": "f|100",
+    "db-replica-1": "t|100",
+    "db-replica-2": "t|100"
+  },
+  "cluster": {
+    "members": [
+      {
+        "name": "db-1",
+        "role": "leader",
+        "state": "running",
+        "api_url": "http://172.22.0.10:8008/patroni",
+        "host": "172.22.0.10",
+        "port": 5432,
+        "timeline": 1
+      },
+      {
+        "name": "db-replica-1",
+        "role": "sync_standby",
+        "state": "streaming",
+        "api_url": "http://172.22.0.11:8008/patroni",
+        "host": "172.22.0.11",
+        "port": 5432,
+        "timeline": 1,
+        "receive_lag": 0,
+        "receive_lsn": "0/5001138",
+        "replay_lag": 0,
+        "replay_lsn": "0/5001138",
+        "lag": 0,
+        "lsn": "0/5001138"
+      },
+      {
+        "name": "db-replica-2",
+        "role": "replica",
+        "state": "streaming",
+        "api_url": "http://172.22.0.12:8008/patroni",
+        "host": "172.22.0.12",
+        "port": 5432,
+        "timeline": 1,
+        "receive_lag": 0,
+        "receive_lsn": "0/5001138",
+        "replay_lag": 0,
+        "replay_lsn": "0/5001138",
+        "lag": 0,
+        "lsn": "0/5001138"
+      }
+    ],
+    "scope": "stroppy-4900e42e-9269-4d41-ae3f-f0e1ef2eb414"
+  },
+  "proxy_rw_recovery": false,
+  "proxy_ro_recovery": true
+}

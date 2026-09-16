@@ -1,0 +1,32 @@
+{
+  "run_id": "matrix-patroni-96794a09-pg16-patroni-ha",
+  "agent": "fef81f72-db-replica-2",
+  "external_installer_started_at": "2026-09-14T16:26:37.546353812Z",
+  "blocked_step": "download Docker apt repository signing key",
+  "fallback_packages": [
+    {
+      "time": "2026-09-14T16:29:50.363745746Z",
+      "message": "Setting up docker.io (29.1.3-0ubuntu3~24.04.2) ..."
+    }
+  ],
+  "docker_install_completed": true,
+  "container_deployment_started": true,
+  "manual_intervention": false,
+  "implementation": "library/docker v0.2.1: external installer timeout180s, then distribution package fallback",
+  "additional_runs": [
+    {
+      "run_id": "matrix-patroni-96794a09-pg15-patroni-ha",
+      "agent": "4604db36-proxy-1",
+      "external_installer_started_at": "2026-09-14T16:49:30.553142153Z",
+      "fallback_packages": [
+        {
+          "time": "2026-09-14T16:52:43.599550072Z",
+          "message": "Setting up docker.io (29.1.3-0ubuntu3~24.04.2) ..."
+        }
+      ],
+      "docker_install_completed": true,
+      "container_deployment_started": true,
+      "manual_intervention": false
+    }
+  ]
+}

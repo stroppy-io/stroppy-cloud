@@ -117,6 +117,7 @@ func TestSuiteFitsSchema(t *testing.T) {
 }
 
 func TestServicePipelinesFitSchema(t *testing.T) {
+	bake(t, "spec.result.quotas@1", QuotasResult{ObservedAt: time.Now().UTC(), UnavailableReason: "permission_denied", Scope: "cloud:b1g", Quotas: []Quota{}})
 	bake(t, "spec.provider_verify@1", ProviderVerify{Provider: ProviderAWS, Settings: json.RawMessage(`{"region":"eu-central-1"}`), CredentialsSecret: "aws-keys", DryRun: true})
 	bake(t, "spec.result.provider_verify@1", ProviderVerifyResult{OK: true, AccountID: "123", Scope: "folder", Permissions: []Permission{{Name: "compute.instances.create", Granted: true}}})
 	bake(t, "spec.quotas@1", Quotas{Provider: ProviderYandex, Settings: json.RawMessage(`{"folder_id":"b1gia87mbaomkfvsleds"}`), CredentialsSecret: "yc-sa-key", Location: "ru-central1-d"})

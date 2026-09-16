@@ -1,0 +1,18 @@
+{
+  "run_id": "matrix-mariadb-fixed-5ce18e32-mariadb114-single",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 763,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-mariadb-fixed-5ce18e32-mariadb114-single"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mariadb": 77,
+    "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter": 19,
+    "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-node-exporter": 57,
+    "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-runner-1-node-exporter": 57
+  }
+}

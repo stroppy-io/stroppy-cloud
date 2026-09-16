@@ -1,0 +1,97 @@
+{
+  "date": "2026-09-14",
+  "server_version": "0.2.5",
+  "server_commit": "3237aff52a8880cdd04e08a309ecb101556542cb",
+  "server_image_digest": "sha256:33ff2b734c29a6a3b7bcd43710a5abfa916fc46ca49ac4513ee356033d08c7b2",
+  "infra_commit": "b1d70665c43467465a1a4bde276b2f9a282d94cf",
+  "graphene_ci": "https://github.com/graphene-ci/graphene/actions/runs/34842394108",
+  "release_ci": "https://github.com/graphene-ci/graphene/actions/runs/34842419464",
+  "local_checks": [
+    "make test",
+    "make lint: 0 issues",
+    "go test -race ./internal/worker -run TestTransferResource -count=1",
+    "compiler tests",
+    "live fixture product schema validation",
+    "pipeline Go tests and lint after container identity and cancellation fixes",
+    "live suite results validated against reflected Graphene schema",
+    "mirror generator mapping tests and compiler checks"
+  ],
+  "pipeline_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:f362b36acbe40414",
+  "suite_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-suite:67c572c70558aeff",
+  "run_id": "matrix-pg-host-a240e0ec",
+  "status": "Completed",
+  "iterations_total": 63921,
+  "segment_exit_code": 0,
+  "baseline": "no failed iterations; warnings on VU scaling and latency",
+  "transfer_attempts": [
+    1
+  ],
+  "host_checks": {
+    "mount": "/dev/vdb ext4 /data",
+    "postgres_up": 1,
+    "postgres_scrape_error": 0,
+    "node_disk_path": "pci-0000:01:01.0",
+    "udev_serial_on_host": "data",
+    "node_exporter_1_9_1_serial": "empty: upstream does not fall back to ID_SERIAL"
+  },
+  "next_validation": "PostgreSQL versions/replication/pooling, then the remaining positive YC matrices; all catalog topologies remain in scope",
+  "canceled_parallel_attempt": {
+    "run_id": "matrix-pg-parallel-b7cc726c",
+    "parent_status": "Completed (bug: cancellation treated as two failed cells)",
+    "children_status": "Canceled",
+    "cancel_requested_at": "2026-09-14T12:29:58.209008785Z",
+    "children_cancel_requested_at": [
+      "2026-09-14T12:29:58.255044527Z",
+      "2026-09-14T12:29:58.264248489Z"
+    ],
+    "cancellation_cascade": "Graphene automatically canceled both children; Running persisted while their cleanup completed",
+    "container_collision": "static docker/<logical-name> identities across runs; fixed by full RunSpec UUID prefix",
+    "suite_fix": "return parent context cancellation regardless of continue_on_failure",
+    "input": "suite-yandex-postgres-parallel-canceled.json",
+    "result": "suite-yandex-postgres-parallel-canceled.result.json"
+  },
+  "cleanup_first_attempts": "YC instances, disks (including captured boot disk IDs), networks, subnets and security groups absent for a240e0ec/bf17490f/86099920",
+  "fixed_parallel_attempt": {
+    "run_id": "matrix-pg-parallel-2c103c2e",
+    "status": "Completed with done=1, failed=1; failing cell canceled because Docker Hub auth timed out",
+    "pipeline_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:5d4c94c13c882225",
+    "suite_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-suite:12dda73d52da1ea4",
+    "node_exporter": "1.12.1",
+    "input": "suite-yandex-postgres-parallel-dockerhub.json",
+    "successful_cell_iterations": 243175,
+    "result": "suite-yandex-postgres-parallel-dockerhub.result.json"
+  },
+  "mirror_retry": {
+    "run_id": "matrix-pg-mirror-df957f8d",
+    "input": "suite-yandex-postgres-parallel.json",
+    "status": "Completed",
+    "registry": "docker.stroppy.io",
+    "postgres_digest": "sha256:67f41722b7a8cbdb868a44a4995c846eddfdc2973bccb291ce937dce88ad5675",
+    "node_exporter_digest": "sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+    "total": 2,
+    "done": 2,
+    "failed": 0,
+    "result": "suite-yandex-postgres-parallel.result.json",
+    "pipeline_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:5d4c94c13c882225",
+    "suite_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-suite:12dda73d52da1ea4",
+    "iterations": [
+      244618,
+      246176
+    ],
+    "exit_codes": [
+      0,
+      0
+    ],
+    "metrics_files": [
+      "suite-yandex-postgres-parallel-pg-1.metrics.json",
+      "suite-yandex-postgres-parallel-pg-2.metrics.json"
+    ],
+    "evidence": "suite-yandex-postgres-parallel.evidence.json",
+    "cleanup": "suite-yandex-postgres-parallel.cleanup.json",
+    "workload_log_window_overlap_seconds": 114.26716213,
+    "telemetry_isolation": "Each metrics query contains only its own run, two own agents and three own exporter entities; pg scrape error 0; data serial present",
+    "cancellation_fix_validation": "Local Temporal simulation for both continue_on_failure values; not separately retested live on the new suite image",
+    "cleanup_verified": "All captured VM and boot/data disk IDs and all seven run prefixes absent from YC compute/VPC lists; both child Graphene trees empty",
+    "artifacts_after_cleanup": "All four ready/verified under stand/stroppy-run; config without TTL, logs until 2026-10-14"
+  }
+}

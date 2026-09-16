@@ -1,0 +1,50 @@
+[
+  {
+    "ref": "artifact/e2b133cc-stroppy-simple-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:ecc939fa8f673fdd28153505c140e43f5d10657570f14a0dfc63254e99f5a916",
+    "location": "blobs/ecc939fa8f673fdd28153505c140e43f5d10657570f14a0dfc63254e99f5a916",
+    "size": 889
+  },
+  {
+    "ref": "artifact/e2b133cc-stroppy-simple-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T23:08:02.899214333Z",
+    "digest": "sha256:dc75f82c0ae9ce1b85e862a04588a3dd94da0a125a8e9aa4b9133cebc01272ca",
+    "location": "blobs/dc75f82c0ae9ce1b85e862a04588a3dd94da0a125a8e9aa4b9133cebc01272ca",
+    "size": 2699
+  },
+  {
+    "ref": "artifact/e2b133cc-stroppy-tpcb-tx-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:a4ce20e023dbec8ebe993164f4e034bf898d9dd7265edcf8cd8d3a2722a7c4cc",
+    "location": "blobs/a4ce20e023dbec8ebe993164f4e034bf898d9dd7265edcf8cd8d3a2722a7c4cc",
+    "size": 977
+  },
+  {
+    "ref": "artifact/e2b133cc-stroppy-tpcb-tx-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T23:08:05.539287114Z",
+    "digest": "sha256:2086ef8ac22f318e381e297703768c10efbdd60bce88f30e7651efe2ac00d710",
+    "location": "blobs/2086ef8ac22f318e381e297703768c10efbdd60bce88f30e7651efe2ac00d710",
+    "size": 5304
+  },
+  {
+    "ref": "artifact/e2b133cc-stroppy-tpcc-tx-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:96c41e1c202b52e4a8baf34da7a8c14b39fd8373af8c45bacad673d32b17a26b",
+    "location": "blobs/96c41e1c202b52e4a8baf34da7a8c14b39fd8373af8c45bacad673d32b17a26b",
+    "size": 977
+  },
+  {
+    "ref": "artifact/e2b133cc-stroppy-tpcc-tx-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T23:08:08.537286938Z",
+    "digest": "sha256:234e9bf646a72ceb087488b210808ed33bbc71bac6e5ef5300f4ff1044224ffb",
+    "location": "blobs/234e9bf646a72ceb087488b210808ed33bbc71bac6e5ef5300f4ff1044224ffb",
+    "size": 12052
+  }
+]

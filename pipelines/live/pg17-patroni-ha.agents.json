@@ -1,0 +1,66 @@
+{
+  "2addd63f-db-1": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:18.764059+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 187.274364,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-db-replica-1": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:13.313505+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 192.724918,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-db-replica-2": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:17.529595+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 188.508828,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-etcd-1": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:16.194642+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 189.843781,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-etcd-2": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:10.500490+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 195.537933,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-etcd-3": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:46.876280+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 159.162143,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-proxy-1": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:07.254029+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 198.784394,
+    "connection_events": 1,
+    "disconnect_events": 0
+  },
+  "2addd63f-runner-1": {
+    "connected": true,
+    "first_connected_at": "2026-09-14T15:44:07.515979+00:00",
+    "checked_at": "2026-09-14T15:47:26.038423+00:00",
+    "observed_connection_seconds": 198.522444,
+    "connection_events": 1,
+    "disconnect_events": 0
+  }
+}

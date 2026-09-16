@@ -1,0 +1,243 @@
+{
+  "run_id": "53687f84-3f1a-42a8-b404-941e921c9b2a",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-d",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.130.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "db-1",
+      "role": "db",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "cockroach",
+        "stroppy.io/role": "db"
+      }
+    },
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 4,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      }
+    }
+  ],
+  "containers": [
+    {
+      "name": "db-1-cockroach",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/cockroachdb/cockroach:v26.2",
+      "cmd": [
+        "start-single-node",
+        "--listen-addr=0.0.0.0:26257",
+        "--advertise-addr=${ip:db-1}:26257",
+        "--http-addr=0.0.0.0:8080",
+        "--store=path=/cockroach/cockroach-data,size=90%",
+        "--cache=25%",
+        "--max-sql-memory=25%",
+        "--max-tsdb-memory=64MiB",
+        "--max-offset=500ms",
+        "--cluster-name=stroppy",
+        "--insecure",
+        "--max-disk-temp-storage=32GiB",
+        "--log={sinks:",
+        "{stderr:",
+        "{channels:",
+        "all,",
+        "filter:",
+        "WARNING,",
+        "redact:",
+        "false}}}"
+      ],
+      "ports": [
+        {
+          "container": 26257,
+          "host": 26257
+        },
+        {
+          "container": 8080,
+          "host": 8080
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/cockroach",
+          "target": "/cockroach/cockroach-data"
+        }
+      ],
+      "scrape": "/_status/vars",
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "curl -sf http://127.0.0.1:8080/health"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-1-init",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/cockroachdb/cockroach:v26.2",
+      "cmd": [
+        "/bin/sh",
+        "-c",
+        "set -e\nuntil cockroach sql --insecure --host=${ip:db-1}:26257 -e 'SELECT 1'; do sleep 3; done\ntouch /tmp/stroppy-init-done\nwhile true; do sleep 3600; done"
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/settings.sql",
+          "content": "-- managed by stroppy-cloud — cfg.cockroach.flags@25\n\n"
+        },
+        {
+          "path": "/etc/stroppy/init.sql",
+          "content": ""
+        }
+      ],
+      "depends_on": [
+        "db-1-cockroach"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "test -f /tmp/stroppy-init-done"
+        ],
+        "interval": "10s",
+        "retries": 100
+      },
+      "restart": "no"
+    },
+    {
+      "name": "db-1-node-exporter",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "runner-1-node-exporter",
+      "role": "runner",
+      "machine": "runner-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    }
+  ],
+  "host_prep": [
+    {
+      "role": "db",
+      "kind": "script",
+      "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice=/dev/disk/by-id/virtio-data\ntarget=/data\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" \u003e\u00262\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" \u003e\u00262\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" \u003e\u00262\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" \u003e\u00262\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '') mkfs.ext4 \"$device\" ;;\n    ext4) ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" \u003e\u00262; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk '$2 == \"/data\" { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s /data %s defaults 0 2\\n' \"$uuid\" \"$fstype\" \u003e\u003e /etc/fstab\nfi\nfindmnt --target \"$target\"\n"
+    }
+  ],
+  "flows": [
+    {
+      "from_role": "runner",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 26257,
+      "label": "cockroach"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "postgres",
+    "url": "postgresql://root@${ip:role:db}:26257/defaultdb?sslmode=disable",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "smoke",
+        "run": {
+          "duration": "30s",
+          "executor": "constant-vus",
+          "query_timeout": "0s",
+          "vus": 2
+        },
+        "warmup": "0s",
+        "workload": {
+          "script": "simple"
+        }
+      }
+    ]
+  },
+  "result_expectations": [
+    "iterations_total"
+  ]
+}

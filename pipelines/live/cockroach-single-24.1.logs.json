@@ -1,0 +1,27 @@
+{
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-single-24.1",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 734,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-cockroach-74ee56ed-cockroach-single-24.1"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/37044ada-ca43-4519-970c-2a4b26aabd8a-db-1-cockroach": 46,
+    "docker/37044ada-ca43-4519-970c-2a4b26aabd8a-db-1-init": 2,
+    "docker/37044ada-ca43-4519-970c-2a4b26aabd8a-db-1-node-exporter": 57,
+    "docker/37044ada-ca43-4519-970c-2a4b26aabd8a-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T17:38:02.760055482Z",
+    "end": "2026-09-15T17:43:06.494644056Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

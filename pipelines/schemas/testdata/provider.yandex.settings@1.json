@@ -1,251 +1,269 @@
 {
-  "id": {
-    "namespace": "provider",
-    "name": "yandex.settings",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "provider",
+    "name":  "yandex.settings",
+    "version":  "v1.0.0"
   },
-  "description": "Yandex Cloud placement settings of a tenant provider profile (no secrets).",
-  "fields": [
+  "description":  "Yandex Cloud placement settings of a tenant provider profile (no secrets).",
+  "fields":  [
     {
-      "name": "cloud_id",
-      "description": "Yandex Cloud cloud id owning the folder.",
-      "required": true,
-      "string": {
-        "pattern": "^[a-z0-9]{20}$"
+      "name":  "cloud_id",
+      "description":  "Yandex Cloud cloud id owning the folder.",
+      "required":  true,
+      "string":  {
+        "pattern":  "^[a-z0-9]{20}$"
       },
-      "group": "Account",
-      "title": "Cloud id",
-      "examples": [
+      "group":  "Account",
+      "title":  "Cloud id",
+      "examples":  [
         {
-          "stringValue": "b1glku4lgd6gabcdefgh"
+          "stringValue":  "b1glku4lgd6gabcdefgh"
         }
       ]
     },
     {
-      "name": "folder_id",
-      "description": "Folder every VM, disk and network of a run is created in.",
-      "required": true,
-      "string": {
-        "pattern": "^[a-z0-9]{20}$"
+      "name":  "folder_id",
+      "description":  "Folder every VM, disk and network of a run is created in.",
+      "required":  true,
+      "string":  {
+        "pattern":  "^[a-z0-9]{20}$"
       },
-      "group": "Account",
-      "title": "Folder id",
-      "examples": [
+      "group":  "Account",
+      "title":  "Folder id",
+      "examples":  [
         {
-          "stringValue": "b1gia87mbaomkfvsleds"
+          "stringValue":  "b1gia87mbaomkfvsleds"
         }
       ]
     },
     {
-      "name": "zone",
-      "description": "Availability zone of ru-central1 the run is placed in.",
-      "required": true,
-      "choice": {
-        "options": [
+      "name":  "zone",
+      "description":  "Availability zone of ru-central1 the run is placed in.",
+      "required":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ru-central1-a"
+            "value":  {
+              "stringValue":  "ru-central1-a"
             },
-            "label": "ru-central1-a"
+            "label":  "ru-central1-a"
           },
           {
-            "value": {
-              "stringValue": "ru-central1-b"
+            "value":  {
+              "stringValue":  "ru-central1-b"
             },
-            "label": "ru-central1-b"
+            "label":  "ru-central1-b"
           },
           {
-            "value": {
-              "stringValue": "ru-central1-d"
+            "value":  {
+              "stringValue":  "ru-central1-d"
             },
-            "label": "ru-central1-d (recommended)"
+            "label":  "ru-central1-d (recommended)"
           },
           {
-            "value": {
-              "stringValue": "ru-central1-e"
+            "value":  {
+              "stringValue":  "ru-central1-e"
             },
-            "label": "ru-central1-e"
+            "label":  "ru-central1-e"
           }
         ],
-        "default": {
-          "stringValue": "ru-central1-d"
+        "default":  {
+          "stringValue":  "ru-central1-d"
         }
       },
-      "group": "Placement",
-      "title": "Zone"
+      "group":  "Placement",
+      "title":  "Zone"
     },
     {
-      "name": "platform_id",
-      "description": "Compute platform (CPU generation) the machines are created on.",
-      "choice": {
-        "options": [
+      "name":  "zones",
+      "description":  "Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.",
+      "list":  {
+        "items":  [
           {
-            "value": {
-              "stringValue": "standard-v1"
-            },
-            "label": "Intel Broadwell (standard-v1)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v2"
-            },
-            "label": "Intel Cascade Lake (standard-v2)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v3"
-            },
-            "label": "Intel Ice Lake (standard-v3)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v4a"
-            },
-            "label": "AMD Zen 4 (standard-v4a)"
-          },
-          {
-            "value": {
-              "stringValue": "amd-v1"
-            },
-            "label": "AMD Zen 3 (amd-v1)"
-          },
-          {
-            "value": {
-              "stringValue": "highfreq-v3"
-            },
-            "label": "Intel Ice Lake compute-optimized (highfreq-v3)"
-          },
-          {
-            "value": {
-              "stringValue": "highfreq-v4a"
-            },
-            "label": "AMD Zen 4 compute-optimized (highfreq-v4a)"
+            "string":  {
+              "pattern":  "^ru-central1-[abde]$"
+            }
           }
         ],
-        "default": {
-          "stringValue": "standard-v3"
-        }
+        "minItems":  "3",
+        "maxItems":  "3",
+        "unique":  true
       },
-      "group": "Placement",
-      "title": "Platform"
+      "group":  "Placement",
+      "title":  "Distributed topology zones"
     },
     {
-      "name": "network",
-      "description": "Create a throwaway network for every run, or place runs into an existing one.",
-      "required": true,
-      "oneOf": {
-        "discriminator": "kind",
-        "variants": {
-          "create": {
-            "fields": [
+      "name":  "platform_id",
+      "description":  "Compute platform (CPU generation) the machines are created on.",
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "standard-v1"
+            },
+            "label":  "Intel Broadwell (standard-v1)"
+          },
+          {
+            "value":  {
+              "stringValue":  "standard-v2"
+            },
+            "label":  "Intel Cascade Lake (standard-v2)"
+          },
+          {
+            "value":  {
+              "stringValue":  "standard-v3"
+            },
+            "label":  "Intel Ice Lake (standard-v3)"
+          },
+          {
+            "value":  {
+              "stringValue":  "standard-v4a"
+            },
+            "label":  "AMD Zen 4 (standard-v4a)"
+          },
+          {
+            "value":  {
+              "stringValue":  "amd-v1"
+            },
+            "label":  "AMD Zen 3 (amd-v1)"
+          },
+          {
+            "value":  {
+              "stringValue":  "highfreq-v3"
+            },
+            "label":  "Intel Ice Lake compute-optimized (highfreq-v3)"
+          },
+          {
+            "value":  {
+              "stringValue":  "highfreq-v4a"
+            },
+            "label":  "AMD Zen 4 compute-optimized (highfreq-v4a)"
+          }
+        ],
+        "default":  {
+          "stringValue":  "standard-v3"
+        }
+      },
+      "group":  "Placement",
+      "title":  "Platform"
+    },
+    {
+      "name":  "network",
+      "description":  "Create a throwaway network for every run, or place runs into an existing one.",
+      "required":  true,
+      "oneOf":  {
+        "discriminator":  "kind",
+        "variants":  {
+          "create":  {
+            "fields":  [
               {
-                "name": "subnet_cidr",
-                "description": "IPv4 range of the subnet created for the run.",
-                "string": {
-                  "default": "10.130.0.0/24",
-                  "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+                "name":  "subnet_cidr",
+                "description":  "IPv4 range of the subnet created for the run.",
+                "string":  {
+                  "default":  "10.130.0.0/24",
+                  "pattern":  "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
                 },
-                "title": "Subnet CIDR"
+                "title":  "Subnet CIDR"
               }
             ]
           },
-          "existing": {
-            "fields": [
+          "existing":  {
+            "fields":  [
               {
-                "name": "network_id",
-                "description": "Existing VPC network the machines join.",
-                "required": true,
-                "string": {
-                  "pattern": "^[a-z0-9]{20}$"
+                "name":  "network_id",
+                "description":  "Existing VPC network the machines join.",
+                "required":  true,
+                "string":  {
+                  "pattern":  "^[a-z0-9]{20}$"
                 },
-                "title": "Network id"
+                "title":  "Network id"
               },
               {
-                "name": "subnet_id",
-                "description": "Existing subnet in the chosen zone.",
-                "required": true,
-                "string": {
-                  "pattern": "^[a-z0-9]{20}$"
+                "name":  "subnet_id",
+                "description":  "Existing subnet in the chosen zone.",
+                "required":  true,
+                "string":  {
+                  "pattern":  "^[a-z0-9]{20}$"
                 },
-                "title": "Subnet id"
+                "title":  "Subnet id"
               },
               {
-                "name": "security_group_id",
-                "description": "Existing security group applied to every machine.",
-                "string": {
-                  "pattern": "^[a-z0-9]{20}$"
+                "name":  "security_group_id",
+                "description":  "Existing security group applied to every machine.",
+                "string":  {
+                  "pattern":  "^[a-z0-9]{20}$"
                 },
-                "title": "Security group id"
+                "title":  "Security group id"
               }
             ]
           }
         }
       },
-      "group": "Network",
-      "title": "Network"
+      "group":  "Network",
+      "title":  "Network"
     },
     {
-      "name": "public_ips",
-      "description": "Assign a one-to-one NAT public address to every machine.",
-      "bool": {
-        "default": true
+      "name":  "public_ips",
+      "description":  "Assign a one-to-one NAT public address to every machine.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Network",
-      "title": "Public IPs"
+      "group":  "Network",
+      "title":  "Public IPs"
     },
     {
-      "name": "image_family",
-      "description": "Boot image family from the standard-images folder.",
-      "choice": {
-        "options": [
+      "name":  "image_family",
+      "description":  "Boot image family from the standard-images folder.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ubuntu-2404-lts"
+            "value":  {
+              "stringValue":  "ubuntu-2404-lts"
             },
-            "label": "Ubuntu 24.04 LTS"
+            "label":  "Ubuntu 24.04 LTS"
           },
           {
-            "value": {
-              "stringValue": "ubuntu-2204-lts"
+            "value":  {
+              "stringValue":  "ubuntu-2204-lts"
             },
-            "label": "Ubuntu 22.04 LTS"
+            "label":  "Ubuntu 22.04 LTS"
           },
           {
-            "value": {
-              "stringValue": "ubuntu-2004-lts"
+            "value":  {
+              "stringValue":  "ubuntu-2004-lts"
             },
-            "label": "Ubuntu 20.04 LTS"
+            "label":  "Ubuntu 20.04 LTS"
           },
           {
-            "value": {
-              "stringValue": "debian-12"
+            "value":  {
+              "stringValue":  "debian-12"
             },
-            "label": "Debian 12"
+            "label":  "Debian 12"
           },
           {
-            "value": {
-              "stringValue": "centos-stream-9-oslogin"
+            "value":  {
+              "stringValue":  "centos-stream-9-oslogin"
             },
-            "label": "CentOS Stream 9"
+            "label":  "CentOS Stream 9"
           }
         ],
-        "default": {
-          "stringValue": "ubuntu-2404-lts"
+        "default":  {
+          "stringValue":  "ubuntu-2404-lts"
         }
       },
-      "group": "Placement",
-      "title": "Image family"
+      "group":  "Placement",
+      "title":  "Image family"
     },
     {
-      "name": "preemptible",
-      "description": "Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete.",
-      "bool": {
-        "default": false
+      "name":  "preemptible",
+      "description":  "Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Placement",
-      "title": "Preemptible"
+      "group":  "Placement",
+      "title":  "Preemptible"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

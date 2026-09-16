@@ -85,6 +85,20 @@ func Run() *schemapb.Schema {
 			).Title("Network").Group("Network").
 				Desc("The network every machine of the run joins.").Strict().Required(),
 
+			schemapb.Object("managed_ydb",
+				schemapb.Choice("type").Title("Database type").Group("Managed YDB").Desc("Owned YC database type.").Opt(schemapb.StrV("dedicated"), "Dedicated").Opt(schemapb.StrV("serverless"), "Serverless").Required(),
+				schemapb.List("zones", schemapb.Str("").Pattern(`^ru-central1-[abde]$`)).Title("Physical zones").Group("Managed YDB").Desc("Dedicated database subnet zones.").MinItems(3).MaxItems(3).Unique(),
+				schemapb.Str("location_id").Title("Location").Group("Managed YDB").Desc("YC region or location identifier.").Pattern(`^[a-z0-9-]{1,32}$`).Required(),
+				schemapb.Str("resource_preset_id").Title("Compute preset").Group("Managed YDB").Desc("Dedicated node resource preset.").Pattern(`^[a-z0-9-]{1,64}$`),
+				schemapb.Int64("node_count").Title("Nodes").Group("Managed YDB").Desc("Dedicated fixed-scale node count.").Gte(1).Lte(64),
+				schemapb.Int64("storage_groups").Title("Storage groups").Group("Managed YDB").Desc("Dedicated storage group count.").Gte(1).Lte(1024),
+				schemapb.Str("storage_type").Title("Storage type").Group("Managed YDB").Desc("Dedicated storage type identifier.").Pattern(`^[a-z0-9-]{1,64}$`),
+				schemapb.Bool("assign_public_ips").Title("Public addresses").Group("Managed YDB").Desc("Whether dedicated database nodes receive public addresses."),
+				schemapb.Int64("throttling_rcu_limit").Title("Request ceiling").Group("Managed YDB").Desc("Serverless request units per second ceiling; zero disables throttling.").Gte(0).Lte(1000000),
+				schemapb.Int64("provisioned_rcu_limit").Title("Provisioned capacity").Group("Managed YDB").Desc("Serverless reserved request units per second.").Gte(0).Lte(1000000),
+				schemapb.Int64("storage_size_limit_gb").Title("Storage ceiling").Group("Managed YDB").Desc("Serverless storage limit in GiB.").Gte(1).Lte(10000),
+			).Title("Managed YDB").Group("Managed YDB").Desc("YC database created and deleted with this run; no existing database is adopted.").Strict(),
+
 			schemapb.List("machines",
 				schemapb.Object("",
 					schemapb.Str("name").Title("Name").Pattern(namePattern).Required(),
@@ -136,6 +150,8 @@ func Run() *schemapb.Schema {
 						MinLen(1).MaxLen(512).Required(),
 					schemapb.List("cmd", schemapb.Str("").MaxLen(1024)).
 						Title("Command").Desc("Argv replacing the image command.").MaxItems(64),
+					schemapb.List("entrypoint", schemapb.Str("").MinLen(1).MaxLen(1024)).
+						Title("Entrypoint").Group("Process").Desc("Executable and arguments replacing the image entrypoint; omit to use the upstream image entrypoint.").MaxItems(64),
 					schemapb.MapOf("env", schemapb.Str("value").MaxLen(4096)).
 						Title("Environment").MaxEntries(128),
 					schemapb.List("ports",
@@ -170,6 +186,9 @@ func Run() *schemapb.Schema {
 					schemapb.Str("scrape").Title("Scrape path").
 						Desc("Prometheus metrics path on the container, e.g. /metrics; empty = not scraped.").
 						Pattern(`^/[A-Za-z0-9._/-]*$`),
+					schemapb.Int64("scrape_port").Title("Metrics port").Group("Observability").
+						Desc("HTTP port for the scrape path; when omitted, uses the first container port for compatibility.").
+						Gte(1).Lte(65535),
 					schemapb.List("depends_on", schemapb.Str("").Pattern(namePattern)).
 						Title("Depends on").Desc("Container names started before this one.").
 						MaxItems(16).Unique(),
@@ -282,6 +301,8 @@ func Run() *schemapb.Schema {
 					MinItems(1).MaxItems(64).Required(),
 				schemapb.JSON("baseline").Title("Baseline").
 					Desc("Baked workload.stroppy@1 baseline object; absent or disabled = no machine self-check."),
+				schemapb.Str("ydb_iam_credentials_secret").Title("YDB credentials reference").Group("Workload").
+					Desc("Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact.").Pattern(secretNamePattern),
 				schemapb.Str("ca_cert").Title("CA certificate").
 					Desc("PEM the pipeline writes next to the config and points caCertFile at.").
 					MaxLen(1<<16).Secret(),
@@ -310,6 +331,11 @@ func Run() *schemapb.Schema {
 				MaxItems(64).Unique(),
 		).
 		Rules(
+			schemapb.Rule(`!("managed_ydb" in root) || "ydb_iam_credentials_secret" in root.workload`, "managed YDB requires named IAM credentials").ID("managed-ydb-iam"),
+			schemapb.Rule(`!("managed_ydb" in root) || root.managed_ydb.type != "dedicated" || ["zones", "resource_preset_id", "node_count", "storage_groups", "storage_type"].all(k, k in root.managed_ydb)`, "dedicated YDB requires placement, compute and storage fields").ID("managed-ydb-dedicated"),
+			schemapb.Rule(`!("managed_ydb" in root) || root.managed_ydb.type != "serverless" || "storage_size_limit_gb" in root.managed_ydb`, "serverless YDB requires a storage limit").ID("managed-ydb-serverless"),
+			schemapb.Rule(`!("managed_ydb" in root) || (root.provider.kind == "yandex" && root.workload.driver_type == "ydb")`, "managed YDB requires YC and the YDB driver").ID("managed-ydb-provider"),
+			schemapb.Rule(`!("ydb_iam_credentials_secret" in root.workload) || root.workload.driver_type == "ydb"`, "IAM credentials only apply to YDB").ID("ydb-iam-driver"),
 			schemapb.Rule(
 				`!("machines" in root) || root.machines.all(m, root.machines.filter(x, x.name == m.name).size() == 1)`,
 				"machine names must be unique",

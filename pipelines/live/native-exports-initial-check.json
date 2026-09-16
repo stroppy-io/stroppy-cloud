@@ -1,0 +1,89 @@
+{
+  "status": "cleaned",
+  "suite_run_id": "native-exports-484acaba",
+  "outcome": "failed and canceled",
+  "failures": [
+    "TPCB input mistakenly nested workload parameters; fixed fixture and early scalar validation",
+    "TPCC agent bootstrapped without runc after suppressed package installation failure; fixed required-runtime retries"
+  ],
+  "simple_segment": "completed; native metrics persisted",
+  "artifacts": [
+    {
+      "ref": "artifact/3e1f92ca-stroppy-simple-config",
+      "location": "blobs/c937cd64c00df847b3e061b9cb390d4c081b280198f83aa41aefa83892f96bad",
+      "digest": "sha256:c937cd64c00df847b3e061b9cb390d4c081b280198f83aa41aefa83892f96bad",
+      "size": 905,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/3e1f92ca-stroppy-simple-log",
+      "location": "blobs/a222af3bbf47d6841a3d2f1acb7691e11f3bf46ece268b6a82d61a0c3d314333",
+      "digest": "sha256:a222af3bbf47d6841a3d2f1acb7691e11f3bf46ece268b6a82d61a0c3d314333",
+      "size": 2688,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/3e1f92ca-stroppy-tpcb-tx-config",
+      "location": "blobs/baf039445b40390c3012aae38782a77bc4c963823d10e119f2c4f8ac3f904f1d",
+      "digest": "sha256:baf039445b40390c3012aae38782a77bc4c963823d10e119f2c4f8ac3f904f1d",
+      "size": 997,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/3e1f92ca-stroppy-tpcb-tx-log",
+      "location": "blobs/9dfb991b71a5eecd0dd5f74e5bad181f8afb898bc0e3ebcd7b555b08102f3104",
+      "digest": "sha256:9dfb991b71a5eecd0dd5f74e5bad181f8afb898bc0e3ebcd7b555b08102f3104",
+      "size": 1585,
+      "download_verified": true
+    }
+  ],
+  "cleanup": {
+    "vm": {
+      "checked_ids": [
+        "fhm10gkc13205feuu76i",
+        "fhm7b8tun0ruejvut3ab",
+        "fhmc0p0a881eg41tnubb",
+        "fhmvs2pkebe0jip4f1oq"
+      ],
+      "remaining": [],
+      "folder_count_after": 12
+    },
+    "disk": {
+      "checked_ids": [
+        "fhm07c2tp9ogu6f4o97j",
+        "fhm0gnd1f6q1p38a2rtu",
+        "fhm7opu4st5g7sq2n118",
+        "fhm8kod235ppaqtklrvi",
+        "fhmaeis3gnnadlikj0dn",
+        "fhmf0jkgafup2h5oi9ll"
+      ],
+      "remaining": [],
+      "folder_count_after": 20
+    },
+    "network": {
+      "checked_ids": [
+        "enp1b0d0lpdse5runk3l",
+        "enpl2mr69d3ijgjhr6d4"
+      ],
+      "remaining": [],
+      "folder_count_after": 3
+    },
+    "subnet": {
+      "checked_ids": [
+        "e9bp5el2pob1kq7bl8d4",
+        "e9bvnj4mnfvpkjh6nupt"
+      ],
+      "remaining": [],
+      "folder_count_after": 4
+    },
+    "sg": {
+      "checked_ids": [
+        "enpd8kbbbnifppmib4ch",
+        "enpn1rc7p8kkisj6qh8u"
+      ],
+      "remaining": [],
+      "folder_count_after": 6
+    }
+  },
+  "checked_at": "2026-09-14T20:39:36.944670+00:00"
+}

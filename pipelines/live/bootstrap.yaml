@@ -1,0 +1,71 @@
+# Dedicated identity for the kubeconfig secret in Graphene t-stroppy-live.
+# This does not change the identity or permissions of Graphene's run pods.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: stroppy-live
+  namespace: graphene
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: stroppy-live-yandex
+rules:
+  - apiGroups: [compute.yandex-cloud.jet.crossplane.io]
+    resources: [instances, disks]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [vpc.yandex-cloud.jet.crossplane.io]
+    resources: [networks, subnets, securitygroups]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [ydb.yandex-cloud.jet.crossplane.io]
+    resources: [databaseserverlesses, databasededicateds]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [yandex-cloud.jet.crossplane.io]
+    resources: [providerconfigs]
+    resourceNames: [t-stroppy-live]
+    verbs: [get, update, patch]
+  # Kubernetes cannot restrict create by resourceNames.
+  - apiGroups: [yandex-cloud.jet.crossplane.io]
+    resources: [providerconfigs]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: stroppy-live-yandex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: stroppy-live-yandex
+subjects:
+  - kind: ServiceAccount
+    name: stroppy-live
+    namespace: graphene
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: stroppy-live-credentials
+  namespace: crossplane-system
+rules:
+  - apiGroups: [""]
+    resources: [secrets]
+    resourceNames: [t-stroppy-live]
+    verbs: [get, update, patch]
+  - apiGroups: [""]
+    resources: [secrets]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: stroppy-live-credentials
+  namespace: crossplane-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: stroppy-live-credentials
+subjects:
+  - kind: ServiceAccount
+    name: stroppy-live
+    namespace: graphene

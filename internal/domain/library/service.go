@@ -117,8 +117,28 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 	}
 	effective := map[string]map[string]json.RawMessage{}
 	for _, role := range kind.Roles {
-		for _, schemaID := range role.ConfigSchemas {
-			seed := role.Seed(schemaID)
+		for id := range spec.Configs[role.Role] {
+			if resolved := kind.ConfigSchema(spec.Version, id); resolved != id {
+				return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("configs.%s.%s: version %s requires %s", role.Role, id, spec.Version, resolved))
+			}
+		}
+		for _, templateID := range role.ConfigSchemas {
+			schemaID := kind.ConfigSchema(spec.Version, templateID)
+			seed := role.Seed(templateID)
+			// Cluster presets read through replicas. Seed causal reads before
+			// user overrides, so explicit consistency experiments remain possible
+			// and the UI preview shows the same settings as the compiler.
+			if params["replication"] == "group" && strings.HasPrefix(schemaID, "cfg.my.cnf@") {
+				seed["group_replication_consistency"] = "BEFORE"
+			}
+			if params["replication"] == "galera" && strings.HasPrefix(schemaID, "cfg.mariadb.cnf@") {
+				seed["wsrep_sync_wait"] = 1
+			}
+			if params["replication"] == "galera" && strings.HasPrefix(schemaID, "cfg.proxysql.cnf@") {
+				// Galera has no read-only members: populate the reader pool
+				// from backup writers, while retaining explicit user overrides.
+				seed["writer_is_also_reader"] = 2
+			}
 			if rc, ok := spec.Configs[role.Role]; ok {
 				if v, ok := rc[schemaID]; ok && len(v) > 0 {
 					user := map[string]any{}

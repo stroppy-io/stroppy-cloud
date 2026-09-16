@@ -105,6 +105,9 @@ func (a Addresses) ExpandMap(m map[string]string) (map[string]string, error) {
 
 // ExpandList expands every element of a list.
 func (a Addresses) ExpandList(l []string) ([]string, error) {
+	if l == nil {
+		return nil, nil
+	}
 	out := make([]string, len(l))
 	for i, s := range l {
 		v, err := a.Expand(s)

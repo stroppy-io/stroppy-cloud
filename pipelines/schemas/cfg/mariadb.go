@@ -197,6 +197,10 @@ func mariadbCnf(major string) *schemapb.Schema {
 			Opt(schemapb.StrV("rsync"), "rsync").
 			Opt(schemapb.StrV("mysqldump"), "mysqldump").
 			Default(schemapb.StrV("mariabackup")),
+		// doc: https://mariadb.com/docs/galera-cluster/reference/galera-cluster-system-variables#wsrep_sst_auth
+		schemapb.Str("wsrep_sst_auth").Title("SST credentials").Group("Cluster").
+			Desc("user:password for backup SST; filled by the server from topology, unused by rsync.").
+			Secret().MaxLen(255).Nullable(),
 		// doc: galera-cluster-system-variables#wsrep_slave_threads
 		// (MariaDB keeps this name in both 10.11 and 11.4; wsrep_applier_threads is Percona XtraDB Cluster only)
 		schemapb.Int64("wsrep_slave_threads").Title("Galera applier threads").Group("Galera").
@@ -331,9 +335,9 @@ func mariadbCnf(major string) *schemapb.Schema {
 				Opt(schemapb.StrV("O_DIRECT_NO_FSYNC"), "O_DIRECT_NO_FSYNC").
 				Default(schemapb.StrV("O_DIRECT")),
 			// doc: server-system-variables#tx_isolation
-			// (transaction_isolation only exists from 11.1.1 — 10.11 must use tx_isolation)
+			// SQL uses tx_isolation in 10.11, but the startup option is transaction-isolation.
 			schemapb.Choice("tx_isolation").Title("Transaction isolation").Group("SQL").
-				Desc("Default isolation level. 10.11 has no transaction_isolation — that name arrives in 11.1.").
+				Desc("Default isolation level. SQL uses tx_isolation; the option file renders transaction-isolation.").
 				Opt(schemapb.StrV("READ-UNCOMMITTED"), "READ UNCOMMITTED").
 				Opt(schemapb.StrV("READ-COMMITTED"), "READ COMMITTED").
 				Opt(schemapb.StrV("REPEATABLE-READ"), "REPEATABLE READ").
@@ -483,6 +487,7 @@ func mariadbGaleraLines() string {
 		myEmit("wsrep_node_address", "wsrep_node_address"),
 		myEmit("wsrep_node_name", "wsrep_node_name"),
 		myEmit("wsrep_sst_method", "wsrep_sst_method"),
+		myEmit("wsrep_sst_auth", "wsrep_sst_auth"),
 		myEmit("wsrep_slave_threads", "wsrep_slave_threads"),
 		myEmit("wsrep_sync_wait", "wsrep_sync_wait"),
 	)
@@ -572,7 +577,7 @@ lower_case_table_names = {{{values.lower_case_table_names}}}
 `)
 
 	if is1011 {
-		b.WriteString("tx_isolation = {{{values.tx_isolation}}}\n")
+		b.WriteString("transaction-isolation = {{{values.tx_isolation}}}\n")
 	} else {
 		b.WriteString("transaction_isolation = {{{values.transaction_isolation}}}\n")
 	}

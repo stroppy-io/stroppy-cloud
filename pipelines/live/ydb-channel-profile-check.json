@@ -1,0 +1,53 @@
+{
+  "status": "all_catalog_versions_verified",
+  "checked_at": "2026-09-15T22:51:16.203589+00:00",
+  "failed_run_id": "matrix-ydbmetrics-4f28bec5-ydb-mirror-3-dc-25.4",
+  "cause": "YDB storage process rejected the V1 configuration because ChannelProfileConfig was absent",
+  "correction": "Render explicit static_erasure and profile 0 with three system tablet channels using the topology storage pool erasure and disk category",
+  "local_proof": "ydb-channel-local-check.json",
+  "regression_checks": "All root and pipeline module Go tests passed; root and pipeline golangci-lint passed; generated schema goldens and web exports refreshed",
+  "live_retry": "suite-ydb-channelretry.json",
+  "live_status": "25.4 fully verified; three remaining versions running in parallel",
+  "source": "https://ydb.tech/docs/en/devops/deployment-options/manual/initial-deployment/deployment-configuration-v1",
+  "failed_run_cleanup": "passed",
+  "live_run_id": "matrix-ydbchannels-09c363ed",
+  "started_at": "2026-09-15T20:58:09.450786+00:00",
+  "live_cluster_readiness": {
+    "status": "passed",
+    "run_id": "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4",
+    "database_members": 12,
+    "proof": "ydb-mirror-3-dc-25.4.replication.json"
+  },
+  "live_native_workloads": {
+    "status": "passed",
+    "source": "Completed Stroppy activity results corroborated by persisted native OTLP; final run acceptance waits for cleanup and all component checks",
+    "simple": {
+      "iterations": 5023,
+      "iterations_per_second": 41.853
+    },
+    "tpcb/tx": {
+      "transactions": 225,
+      "native_tps": 11.005,
+      "terminal_errors": 0,
+      "retries": 24
+    },
+    "tpcc/tx": {
+      "transactions": 52,
+      "native_tps": 2.353,
+      "terminal_errors": 0,
+      "retries": 13
+    }
+  },
+  "remaining_versions_input": "suite-ydb-parallel.json",
+  "live_acceptance": "ydb-mirror-3-dc-25.4.result.json",
+  "live_component_exporters": 25,
+  "live_series_count": 180516,
+  "live_data_filesystems": 12,
+  "mirror_versions_verified": [
+    "25.4",
+    "26.1",
+    "26.2",
+    "26.3"
+  ],
+  "manual_provisioning_recovery": "26.1-26.3 in matrix-ydbparallel; fresh automatic runs tracked separately"
+}

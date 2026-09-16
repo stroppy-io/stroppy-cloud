@@ -1,0 +1,131 @@
+{
+  "run_id": "matrix-pg-host-a240e0ec",
+  "source": "Graphene metrics API backed by the persistent metrics store",
+  "series_count": 3325,
+  "exporters": {
+    "docker/db-1-node-exporter": {
+      "metric_names": 246
+    },
+    "docker/db-1-postgres-exporter": {
+      "metric_names": 357
+    },
+    "docker/runner-1-node-exporter": {
+      "metric_names": 245
+    }
+  },
+  "disk_info": [
+    {
+      "entity": "docker/db-1-node-exporter",
+      "device": "vda",
+      "serial": "",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/db-1-node-exporter",
+      "device": "vdb",
+      "serial": "",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/runner-1-node-exporter",
+      "device": "vda",
+      "serial": "",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [
+    [
+      "docker/db-1-postgres-exporter",
+      0.0
+    ]
+  ],
+  "transfer_activity_attempts_observed": [
+    "1"
+  ]
+}

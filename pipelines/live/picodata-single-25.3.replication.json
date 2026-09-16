@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-25.3",
+  "checked_at": "2026-09-15T16:18:41.594523+00:00",
+  "source": "Read-only pgwire SQL through ordinary agent on each YC member",
+  "checks": {
+    "db-1": {
+      "agent": "4f582301-db-1",
+      "source": "Read-only pgwire SQL through ordinary agent, no Docker or privilege escalation",
+      "probe_sha256": "5768a260fba30689d33b3545ecc05309efeb2ab3b1f583b3864aa4b862857da4",
+      "checks": {
+        "probe": "picodata",
+        "status": "passed",
+        "members": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "25.3.8"
+          ]
+        ]
+      }
+    }
+  }
+}

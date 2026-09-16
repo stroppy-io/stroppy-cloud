@@ -54,6 +54,11 @@ func Run(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) {
 	for i, h := range handles {
 		cell := s.Cells[i]
 		res, err := h.TryReady(ctx)
+		// Operator cancellation is not a failed cell, even when the suite
+		// is configured to continue after ordinary workload failures.
+		if ctx.Err() != nil {
+			return result, ctx.Err()
+		}
 		out := spec.SuiteCellResult{ID: cell.ID, RunID: string(h.ResourceRef())}
 		if err != nil {
 			out.Status = "failed"

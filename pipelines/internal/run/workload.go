@@ -2,7 +2,10 @@ package run
 
 import (
 	"fmt"
+	"maps"
 	"time"
+
+	"go.temporal.io/sdk/workflow"
 
 	"github.com/graphene-ci/pipeline/pkg/activity"
 	"github.com/graphene-ci/pipeline/pkg/artifact"
@@ -16,6 +19,8 @@ import (
 )
 
 const (
+	// Logs expire independently of infrastructure; configs have no TTL.
+	logArtifactRetention = 30 * 24 * time.Hour
 	// segmentMargin is added to a segment's own bound: schema and data load
 	// steps, image pull and container start are not part of the scenario
 	// duration.
@@ -42,6 +47,8 @@ type workloadOutcome struct {
 type artifactFile struct {
 	Name string
 	Path string
+	// Config preserves reproducible inputs until explicit deletion.
+	Config bool
 }
 
 // runWorkload executes the machine baseline (when asked) and then the
@@ -65,16 +72,45 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 	}
 	out := workloadOutcome{Runner: runner.Agent}
 
+	if run.ManagedYDB != nil {
+		ready, err := activity.Activity(ctx, runner.Agent,
+			activity.Fn(activities.NameWaitDatabase, activities.WaitDatabase, activities.WaitDatabaseRequest{
+				Endpoint: url, RunID: run.RunID, Workload: run.Workload, RegistrySecret: run.Provider.RegistrySecret,
+			}),
+			activity.WithGuarantee(activity.AtMostOnce),
+			activity.WithTimeout(6*time.Minute), activity.WithHeartbeat(time.Minute),
+		)
+		if err != nil {
+			return out, fmt.Errorf("managed database connectivity: %w", err)
+		}
+		if ready.ConfigPath != "" {
+			out.Files = append(out.Files, artifactFile{Name: "managed-ydb-readiness-config", Path: ready.ConfigPath, Config: true})
+		}
+		if ready.LogPath != "" {
+			out.Files = append(out.Files, artifactFile{Name: "managed-ydb-readiness-log", Path: ready.LogPath})
+		}
+		if !ready.Ready {
+			return out, fmt.Errorf("managed database readiness: %s", ready.Error)
+		}
+	}
+
 	if b := run.Workload.Baseline; b != nil && b.Enabled {
 		out.Baseline = runBaseline(ctx, run, runner, &out)
 	}
 
 	for i, seg := range segments {
 		events.Emit(ctx, events.SegmentStarted, events.Payload{"segment": seg.Name, "index": i, "script": seg.Workload.Script})
+		labels := maps.Clone(run.Observability.Labels)
+		if labels == nil {
+			labels = map[string]string{}
+		}
+		labels["graphene.run"] = string(ctx.RunId())
+		labels["graphene.namespace"] = workflow.GetInfo(ctx.Context).Namespace
+		labels["stroppy.tenant"] = run.Tenant
 		req := activities.RunSegmentRequest{
 			RunID: run.RunID, Segment: seg, Index: i, Workload: run.Workload, URL: url,
 			OTLPEndpoint: run.Observability.OTLPEndpoint, OTLPHeaders: run.Observability.OTLPHeaders,
-			Labels:         run.Observability.Labels,
+			Labels:         labels,
 			RegistrySecret: run.Provider.RegistrySecret,
 		}
 		res, err := activity.Activity(ctx, runner.Agent,
@@ -93,7 +129,7 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 		}
 		out.Segments = append(out.Segments, res.Result)
 		if res.ConfigPath != "" {
-			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-config", Path: res.ConfigPath})
+			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-config", Path: res.ConfigPath, Config: true})
 		}
 		if res.LogPath != "" {
 			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-log", Path: res.LogPath})
@@ -164,6 +200,11 @@ func publishArtifacts(ctx pipeline.Context, run spec.Run, wl workloadOutcome) []
 			ctx.Logger().Warn("artifact upload failed", "artifact", name, "error", err)
 			continue
 		}
+		var retention []pipeline.TransferOption
+		if !f.Config {
+			retention = append(retention, pipeline.KeepFor(logArtifactRetention))
+		}
+		pipeline.ToStand(ctx, h, retention...)
 		names = append(names, "artifact/"+name)
 	}
 	return names

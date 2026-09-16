@@ -9,6 +9,8 @@ export interface CfgProxysqlCnf2Item {
   port?: number | string;
   /** Hostgroup. Initial hostgroup id — writer_hostgroup for the primary, reader_hostgroup for replicas. */
   hostgroup: number | string;
+  /** Backend TLS. Use TLS for backend connections; required for fresh caching_sha2_password authentication. */
+  use_ssl?: number | string;
   /** Weight. Relative share of traffic inside its hostgroup. */
   weight?: number | string;
   /** Max connections. Backend connection-pool limit for this server. */
@@ -25,6 +27,10 @@ export interface CfgProxysqlCnf2 {
   admin_credentials?: string;
   /** Admin interfaces. host:port list the admin interface listens on, semicolon-separated. */
   admin_mysql_ifaces?: string;
+  /** Metrics endpoint. Expose native Prometheus metrics through the REST API listener. */
+  restapi_enabled?: "true" | "false";
+  /** Metrics port. REST API and Prometheus listener port. */
+  restapi_port?: number | string;
   /** Client interfaces. host:port list the SQL proxy listens on; not changeable at runtime. */
   interfaces?: string;
   /** Worker threads. Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count. */
@@ -47,6 +53,8 @@ export interface CfgProxysqlCnf2 {
   default_schema?: string;
   /** Default charset. Character set assumed for clients that do not announce one. */
   default_charset?: string;
+  /** Default collation. Client handshake collation; must match default_charset. The default matches Stroppy's utf8mb4 charset instead of the upstream utf8 collation. */
+  default_collation_connection?: string;
   /** Sort sessions. Sort sessions by connection id to improve cache locality across threads. */
   sessions_sort?: "true" | "false";
   /** Command statistics. Collect per-command counters in stats_mysql_commands_counters. */
@@ -77,23 +85,23 @@ export interface CfgProxysqlCnf2 {
   user_max_connections?: number | string;
   /** Transaction persistent. 1 pins a session to one hostgroup for the whole transaction — required for correctness with read/write split. */
   transaction_persistent?: number | string;
-  /** Backend topology. Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, or none (static hostgroups only). */
-  topology?: "replication" | "group_replication" | "none";
+  /** Backend topology. Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, Galera, or none (static hostgroups only). */
+  topology?: "replication" | "group_replication" | "galera" | "none";
   /** Writer hostgroup. Hostgroup id receiving writes. */
   writer_hostgroup?: number | string;
   /** Reader hostgroup. Hostgroup id receiving reads. */
   reader_hostgroup?: number | string;
-  /** Backup writer hostgroup. Group replication only: members that could become primary. */
+  /** Backup writer hostgroup. Group Replication / Galera: members that could become primary. */
   backup_writer_hostgroup?: number | string;
-  /** Offline hostgroup. Group replication only: members that left or fell too far behind. */
+  /** Offline hostgroup. Group Replication / Galera: members that left or fell too far behind. */
   offline_hostgroup?: number | string;
   /** Replication check type. Which read_only flavor decides writer vs reader. Only these three are settable from the config file — the combined forms need the admin interface. */
   check_type?: "read_only" | "innodb_read_only" | "super_read_only";
-  /** Max writers. Group replication only: how many members may sit in the writer hostgroup at once. */
+  /** Max writers. Group Replication / Galera: how many members may sit in the writer hostgroup at once. */
   max_writers?: number | string;
   /** Writer is also reader. 0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read. */
   writer_is_also_reader?: number | string;
-  /** Max transactions behind. Group replication only: lag in transactions before a reader is shunned; 0 disables the check. */
+  /** Max transactions behind. Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check. */
   max_transactions_behind?: number | string;
   /** Read/write split. Render the two default rules: `SELECT ... FOR UPDATE` to the writer, every other `SELECT` to the reader. */
   read_write_split?: "true" | "false";
@@ -107,7 +115,7 @@ export interface CfgProxysqlCnf2 {
   readonly users_block?: string;
   /** mysql_query_rules block. The read/write split rules; order matters — FOR UPDATE has to be matched first. */
   readonly query_rules_block?: string;
-  /** Hostgroup manager block. mysql_replication_hostgroups or mysql_group_replication_hostgroups, depending on topology. */
+  /** Hostgroup manager block. Replication, Group Replication or Galera hostgroup manager, selected by topology. */
   readonly hostgroups_block?: string;
   /** Rendered extra mysql_variables. The `custom` map joined into extra keys inside the mysql_variables block; values must already carry libconfig quoting. */
   readonly custom_rendered?: string;

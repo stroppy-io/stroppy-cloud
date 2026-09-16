@@ -1,0 +1,234 @@
+{
+  "matrix-pg-mirror-df957f8d-pg-1": {
+    "workload_logs": [
+      {
+        "time_unix_nano": "1789390353384760636",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.3841298,\"logger\":\"config_file\",\"caller\":\"runner/config_file.go:80\",\"msg\":\"Loaded config file\",\"path\":\"/workspace/stroppy-config.json\"}"
+      },
+      {
+        "time_unix_nano": "1789390353394096067",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.3936048,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'drop_schema' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390353395301797",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.394921,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'drop_schema' step (took 1ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390353395352036",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.3949642,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'create_schema' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390353400430941",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.3999946,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'create_schema' step (took 5ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390353400456064",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.4000409,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'load_data' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390353404015003",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.4035077,\"logger\":\"workload.insert-progress\",\"caller\":\"insertprogress/tracker.go:437\",\"msg\":\"insert progress\",\"workload\":\"simple\",\"event\":\"completed\",\"table\":\"stroppy_demo\",\"method\":\"plain_bulk\",\"row_kind\":\"confirmed\",\"stage\":\"runtime_next\",\"workers\":1,\"rows\":100,\"total_rows\":100,\"generated_rows\":100,\"confirmed_rows\":100,\"inflight_rows\":0,\"delta_rows\":100,\"batches\":1,\"elapsed\":0.003394216,\"sample_interval\":0.003394216,\"avg_batch_duration\":0.00320529,\"current_rows_per_second\":29461.884570693204,\"avg_rows_per_second\":29461.884570693204,\"percent\":100}"
+      },
+      {
+        "time_unix_nano": "1789390353404044266",
+        "body": "{\"level\":\"info\",\"ts\":1789390353.4035916,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'load_data' step (took 3ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390473409650171",
+        "body": "missing _msg field; see https://docs.victoriametrics.com/victorialogs/keyconcepts/#message-field"
+      },
+      {
+        "time_unix_nano": "1789390473409682509",
+        "body": "=== bench summary ==="
+      },
+      {
+        "time_unix_nano": "1789390473409693423",
+        "body": "  run_query_operations_total               978475.000"
+      },
+      {
+        "time_unix_nano": "1789390473409714968",
+        "body": "  insert_rows_total                        100.000"
+      },
+      {
+        "time_unix_nano": "1789390473409724131",
+        "body": "  insert_progress_rows_total               100.000"
+      },
+      {
+        "time_unix_nano": "1789390473409732568",
+        "body": "  insert_progress_rows_per_second          29461.885"
+      },
+      {
+        "time_unix_nano": "1789390473409741669",
+        "body": "  run_query_duration                       count=978475 avg=0.235 p(50)~=0.250 p(90)~=0.500 p(95)~=0.500 p(99)~=0.500"
+      },
+      {
+        "time_unix_nano": "1789390473409750095",
+        "body": "  insert_operations_total                  1.000"
+      },
+      {
+        "time_unix_nano": "1789390473409776436",
+        "body": "  insert_duration                          count=1 avg=3.355 p(50)~=5.000 p(90)~=5.000 p(95)~=5.000 p(99)~=5.000"
+      },
+      {
+        "time_unix_nano": "1789390473409795522",
+        "body": "  iteration_duration                       count=244618 avg=0.980 p(50)~=1.000 p(90)~=2.500 p(95)~=2.500 p(99)~=2.500"
+      },
+      {
+        "time_unix_nano": "1789390473409810606",
+        "body": "  iterations_total                         244618.000"
+      }
+    ],
+    "artifacts": [
+      {
+        "ref": "artifact/2bf3e915-stroppy-smoke-config",
+        "phase": "ready",
+        "owner": "stand/stroppy-run",
+        "state": {
+          "blob": {
+            "digest": "sha256:09204646b0e9b545d325b5c9a9924f4dde98f726e966733c9bcb3b16c263fc10",
+            "location": "blobs/09204646b0e9b545d325b5c9a9924f4dde98f726e966733c9bcb3b16c263fc10",
+            "size": 451
+          },
+          "owner": "stand/stroppy-run",
+          "verified": true
+        }
+      },
+      {
+        "ref": "artifact/2bf3e915-stroppy-smoke-log",
+        "phase": "ready",
+        "owner": "stand/stroppy-run",
+        "state": {
+          "blob": {
+            "digest": "sha256:905dd59f3d9b38d04d3e6b615faa5e008d84a416373a10a7f875698f92a37386",
+            "location": "blobs/905dd59f3d9b38d04d3e6b615faa5e008d84a416373a10a7f875698f92a37386",
+            "size": 2336
+          },
+          "keepUntil": "2026-10-14T12:54:36.619961227Z",
+          "owner": "stand/stroppy-run",
+          "verified": true
+        }
+      }
+    ],
+    "load_window": {
+      "start_unix_nano": "1789390353404044266",
+      "end_unix_nano": "1789390473409682509",
+      "basis": "Persisted Stroppy logs: end of load_data setup to bench summary; approximate workload interval, excludes image pull"
+    }
+  },
+  "matrix-pg-mirror-df957f8d-pg-2": {
+    "workload_logs": [
+      {
+        "time_unix_nano": "1789390359123104335",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.122345,\"logger\":\"config_file\",\"caller\":\"runner/config_file.go:80\",\"msg\":\"Loaded config file\",\"path\":\"/workspace/stroppy-config.json\"}"
+      },
+      {
+        "time_unix_nano": "1789390359133036070",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.1324155,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'drop_schema' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390359134233036",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.133892,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'drop_schema' step (took 1ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390359134261236",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.133933,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'create_schema' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390359139363144",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.1389556,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'create_schema' step (took 5ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390359139395526",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.1390088,\"logger\":\"workload\",\"caller\":\"bench/step.go:94\",\"msg\":\"Start of 'load_data' step\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390359142494042",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.1420605,\"logger\":\"workload.insert-progress\",\"caller\":\"insertprogress/tracker.go:437\",\"msg\":\"insert progress\",\"workload\":\"simple\",\"event\":\"completed\",\"table\":\"stroppy_demo\",\"method\":\"plain_bulk\",\"row_kind\":\"confirmed\",\"stage\":\"runtime_next\",\"workers\":1,\"rows\":100,\"total_rows\":100,\"generated_rows\":100,\"confirmed_rows\":100,\"inflight_rows\":0,\"delta_rows\":100,\"batches\":1,\"elapsed\":0.002994708,\"sample_interval\":0.002994708,\"avg_batch_duration\":0.002772546,\"current_rows_per_second\":33392.23723982438,\"avg_rows_per_second\":33392.23723982438,\"percent\":100}"
+      },
+      {
+        "time_unix_nano": "1789390359142520379",
+        "body": "{\"level\":\"info\",\"ts\":1789390359.1421196,\"logger\":\"workload\",\"caller\":\"bench/step.go:100\",\"msg\":\"End of 'load_data' step (took 3ms)\",\"workload\":\"simple\"}"
+      },
+      {
+        "time_unix_nano": "1789390479148341897",
+        "body": "missing _msg field; see https://docs.victoriametrics.com/victorialogs/keyconcepts/#message-field"
+      },
+      {
+        "time_unix_nano": "1789390479148382919",
+        "body": "=== bench summary ==="
+      },
+      {
+        "time_unix_nano": "1789390479148399609",
+        "body": "  run_query_operations_total               984707.000"
+      },
+      {
+        "time_unix_nano": "1789390479148413668",
+        "body": "  insert_rows_total                        100.000"
+      },
+      {
+        "time_unix_nano": "1789390479148426109",
+        "body": "  insert_progress_rows_total               100.000"
+      },
+      {
+        "time_unix_nano": "1789390479148443187",
+        "body": "  insert_progress_rows_per_second          33392.237"
+      },
+      {
+        "time_unix_nano": "1789390479148461218",
+        "body": "  run_query_duration                       count=984707 avg=0.233 p(50)~=0.250 p(90)~=0.500 p(95)~=0.500 p(99)~=0.500"
+      },
+      {
+        "time_unix_nano": "1789390479148478765",
+        "body": "  insert_operations_total                  1.000"
+      },
+      {
+        "time_unix_nano": "1789390479148507632",
+        "body": "  insert_duration                          count=1 avg=2.939 p(50)~=5.000 p(90)~=5.000 p(95)~=5.000 p(99)~=5.000"
+      },
+      {
+        "time_unix_nano": "1789390479148528146",
+        "body": "  iteration_duration                       count=246176 avg=0.974 p(50)~=1.000 p(90)~=2.500 p(95)~=2.500 p(99)~=2.500"
+      },
+      {
+        "time_unix_nano": "1789390479148550042",
+        "body": "  iterations_total                         246176.000"
+      }
+    ],
+    "artifacts": [
+      {
+        "ref": "artifact/8d7f91db-stroppy-smoke-config",
+        "phase": "ready",
+        "owner": "stand/stroppy-run",
+        "state": {
+          "blob": {
+            "digest": "sha256:678cdaa16e0807087a44a1a1994a131a47efa03551aedf17c58a6cb349c78b07",
+            "location": "blobs/678cdaa16e0807087a44a1a1994a131a47efa03551aedf17c58a6cb349c78b07",
+            "size": 450
+          },
+          "owner": "stand/stroppy-run",
+          "verified": true
+        }
+      },
+      {
+        "ref": "artifact/8d7f91db-stroppy-smoke-log",
+        "phase": "ready",
+        "owner": "stand/stroppy-run",
+        "state": {
+          "blob": {
+            "digest": "sha256:bd28fb529984d3a100ead0b9806d71b46105174f86d29150a9b73b2f71b35ffa",
+            "location": "blobs/bd28fb529984d3a100ead0b9806d71b46105174f86d29150a9b73b2f71b35ffa",
+            "size": 2333
+          },
+          "keepUntil": "2026-10-14T12:54:42.509735433Z",
+          "owner": "stand/stroppy-run",
+          "verified": true
+        }
+      }
+    ],
+    "load_window": {
+      "start_unix_nano": "1789390359142520379",
+      "end_unix_nano": "1789390479148382919",
+      "basis": "Persisted Stroppy logs: end of load_data setup to bench summary; approximate workload interval, excludes image pull"
+    }
+  }
+}

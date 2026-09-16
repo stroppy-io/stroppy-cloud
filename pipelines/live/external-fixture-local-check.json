@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T20:36:47.372134+00:00",
+  "database": "postgres",
+  "postgres_image": "docker.stroppy.io/library/postgres@sha256:67f41722b7a8cbdb868a44a4995c846eddfdc2973bccb291ce937dce88ad5675",
+  "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+  "init_script_sha256": "cc31a0f966cd6205da7a0ec7211d0b7d74df6430dcd9dfd61121b7abf8da7f8b",
+  "healthcheck": "read-only canary SQL, not listener availability",
+  "native_measurements": {
+    "iterations_total": 373366.0,
+    "run_query_operations_total": 373366.0,
+    "terminal_errors_total": 0.0,
+    "failed_queries_total": 0.0,
+    "queries_per_second": 74669.856
+  },
+  "scope": "Real PostgreSQL entrypoint and init files, database derived from compiled POSTGRES_DB, SCRAM connection from a separate native container. Local shared_buffers lowered to 16MB; YC resource settings unchanged."
+}

@@ -1,0 +1,20 @@
+{
+  "version": "0.2.13",
+  "commit": "8dfe1368a1ce0644ba591816d1b49d260aaeb2b4",
+  "release_run": 34997689872,
+  "ci_run": 34997622179,
+  "ci": "passed",
+  "release": "passed",
+  "gitops_commit": "f2d30b2",
+  "server_binary_source_verified": true,
+  "image_digest": "sha256:097ebd5b7776f4bf5b1851b551cd090b70aa56e3edb962dbb4db95254836ff34",
+  "deployment": "passed",
+  "argocd_sync": "Synced",
+  "argocd_health": "Healthy",
+  "argocd_revision": "f2d30b2f9ddcb47d368e6d13b10981fb3e447a29",
+  "original_dedicated_run_recovered": true,
+  "original_run_id": "matrix-ydb-managed-validation-ba8bf3ae-ydb-managed-dedicated-medium",
+  "managed_database": "etn0rleq85vpng1oftsh",
+  "managed_status": "PROVISIONING",
+  "checked_at": "2026-09-15T17:04:30.148367+00:00"
+}

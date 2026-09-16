@@ -4,8 +4,9 @@
 package application
 
 import (
-	"github.com/gopherex/xconf/pkg/structconf"
 	"time"
+
+	"github.com/gopherex/xconf/pkg/structconf"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/mail"

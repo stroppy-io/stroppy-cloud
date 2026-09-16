@@ -1,0 +1,314 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbautonomous-73a81601",
+  "expected_vm_count": 39,
+  "ready_instances": {
+    "stroppy-stroppy-live-e2b133cc-db-1": {
+      "instance_id": "fhml90ub13m2qgi0o4cv",
+      "resource_uid": "a1f0707a-2d7c-421e-b236-99059ccc1890",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:31:49.959627+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-2": {
+      "instance_id": "epd7hl2focaq6jafnqdl",
+      "resource_uid": "55fbfb02-4a69-4d6e-95b5-58d78ae5f840",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:13:05.043381+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-3": {
+      "instance_id": "fv4tk5bqnmqa3f3400ri",
+      "resource_uid": "39592b23-914b-41bd-95ec-aaa76db989fa",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:24:28.057921+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-5": {
+      "instance_id": "epdrco7jr12mdggu7tus",
+      "resource_uid": "173e022f-fcde-48de-b256-6f835a26cb88",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:09:50.964778+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-6": {
+      "instance_id": "fv4d7j2k9apl96gdvp00",
+      "resource_uid": "1e82b2ad-1550-429f-a81a-2a35670272bd",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:21:11.825624+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-7": {
+      "instance_id": "fhm23fbplabfli0eno61",
+      "resource_uid": "615da611-e40f-4df7-8ab4-fb81a10d13dc",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:28:36.578764+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-8": {
+      "instance_id": "epd973dnfsq4q46og13i",
+      "resource_uid": "7c150545-b115-4436-81a2-4cd61e3e1604",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:11:27.928714+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-9": {
+      "instance_id": "fv4ar1s6au9fgv7s8s5k",
+      "resource_uid": "dc5fde50-407c-4c09-9e19-4621b838726b",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:22:49.039099+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-compute-2": {
+      "instance_id": "epdpmtu1637rdnfdi7lv",
+      "resource_uid": "d176eaf6-9e93-4598-b0c6-f7c5c9caa151",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:08:13.997421+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-1": {
+      "instance_id": "fhm2emp7tjuqr5opa8bi",
+      "resource_uid": "e859b331-d87d-4a77-b561-458174f7ea41",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:24:28.057921+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-4": {
+      "instance_id": "fhm8a11c9jsn55eb5ogu",
+      "resource_uid": "db243132-39e7-48a8-a8c4-c80dbd833aff",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:22:49.039099+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-5": {
+      "instance_id": "epdptl5ehtd4fcmva7md",
+      "resource_uid": "4c15faf0-4e52-48d7-8867-d67f8f008b15",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:28:36.578764+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-8": {
+      "instance_id": "epdq9rjmbrdnlaeroh7r",
+      "resource_uid": "fd2ac32f-d174-46db-ba5c-027d208bda32",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:26:55.062545+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-1": {
+      "instance_id": "fhmmd0v0ck4deri5ke3k",
+      "resource_uid": "c5e1d3f7-e5ab-40e3-980f-faef60842f54",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:22:49.039099+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-2": {
+      "instance_id": "epd282sghgc0hlq7c4i7",
+      "resource_uid": "09e9a97b-d556-49d5-acf1-f4ede46699ca",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:12:16.663859+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-3": {
+      "instance_id": "fv4lo8c8g8l1q3bn8bk2",
+      "resource_uid": "1f31c3e2-2851-4a07-83ea-8a5dc610e735",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:30:13.242463+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-2": {
+      "instance_id": "epdcvkvu4ecispa07erq",
+      "resource_uid": "3a116566-4e41-45b2-b013-f7901d6a6ca1",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:29:24.911456+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-3": {
+      "instance_id": "fv47ve9epv7afi6lm9f5",
+      "resource_uid": "fd489386-b30f-4935-a3a8-9f814f05054f",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:13:53.477631+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-6": {
+      "instance_id": "fv4v9irju4kr7ep27o39",
+      "resource_uid": "b4999edc-00bf-4d75-8037-11b376c19fec",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:12:16.663859+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-7": {
+      "instance_id": "fhmberso86nfq7ie6pht",
+      "resource_uid": "41e7b38e-a266-45d4-84bc-ad06689e7c04",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:21:11.825624+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-9": {
+      "instance_id": "fv4uoadrhru2jlh1rdf3",
+      "resource_uid": "5b7089e0-777b-4d22-9e1f-af328d0da867",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:11:27.928714+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-compute-1": {
+      "instance_id": "fhmdpmop08j414ritufr",
+      "resource_uid": "a9df9ac3-65c8-4e75-ac03-d1f3ac0e205c",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:17:57.594395+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-compute-2": {
+      "instance_id": "epd0ph8jf7gvlp9af8o0",
+      "resource_uid": "462eb497-b569-4fb7-8880-9424752c5a6c",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:26:06.477852+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-runner-1": {
+      "instance_id": "fhmsusmrclr77v31lmj0",
+      "resource_uid": "93f6a709-83c9-41a5-b32e-91ba112ac7f5",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:16:19.526607+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-5": {
+      "instance_id": "epd5s88j8p0i69ukf28a",
+      "resource_uid": "344d05b5-d6f4-46ac-9e78-d7e19ee5925a",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:10:39.494640+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-6": {
+      "instance_id": "fv4q72i6hnubpoumtup4",
+      "resource_uid": "4e4ad4a6-fa9f-41e7-a3bc-10dcba4dc75f",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:26:55.062545+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-compute-1": {
+      "instance_id": "fhmd9fvrnsh184c909tr",
+      "resource_uid": "a98c7cf1-cdfa-4da2-9d6a-da8467429ecf",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:21:11.825624+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-compute-2": {
+      "instance_id": "epdhrrs9vdg2dvs6roc6",
+      "resource_uid": "1fa48199-032f-42a9-a95d-174a9ed53cb0",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:09:02.530991+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-compute-3": {
+      "instance_id": "fv42mr0220ekn8p4asq7",
+      "resource_uid": "953dcf79-50a0-4c18-8a3b-3f27de52c7e2",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:28:36.578764+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-runner-1": {
+      "instance_id": "fhmt0vtnqo8vj4u1hsdj",
+      "resource_uid": "3e02e401-ea35-4586-a67c-362a2fe04f7b",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:13:05.043381+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-4": {
+      "instance_id": "fhm9uivd31m2mu562h7d",
+      "resource_uid": "cc3dc4c1-bb18-4fed-9f7f-3cd12eb1da86",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:30:13.242463+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-compute-1": {
+      "instance_id": "fhmkr23b4otkli9bvvsn",
+      "resource_uid": "71d43546-5561-4e17-a98b-2443b195669c",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:26:55.062545+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-db-compute-3": {
+      "instance_id": "fv4ksbra17f49djfdpoa",
+      "resource_uid": "9f2bec11-56be-4451-9d4a-6cfaf04f8321",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:16:19.526607+00:00"
+    },
+    "stroppy-stroppy-live-e2b133cc-runner-1": {
+      "instance_id": "fhmr1hlv7ufnmgg7hu2u",
+      "resource_uid": "c55a31a7-413f-4d68-bda9-a739ec208724",
+      "run_id": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:25:16.593660+00:00"
+    },
+    "stroppy-stroppy-live-9ec63101-db-compute-3": {
+      "instance_id": "fv4tjn0qpv13u74tb2dt",
+      "resource_uid": "5fa3fa85-1825-4f5c-a95a-609f33b6c7cc",
+      "run_id": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:09:50.964778+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-4": {
+      "instance_id": "fhmbsut67o050gnsnccu",
+      "resource_uid": "0ae9b594-2349-4f64-a67e-98be22d29c71",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:24:28.057921+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-8": {
+      "instance_id": "epde63nfufjjgfei2gpb",
+      "resource_uid": "e1852025-18f0-41e3-970d-36ef77f4eed6",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:07:25.515791+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-9": {
+      "instance_id": "fv49a6indcglr6aqr03v",
+      "resource_uid": "fab6877b-8d5e-4faa-acb7-96844823f9c1",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:25:16.593660+00:00"
+    },
+    "stroppy-stroppy-live-ba93b5de-db-7": {
+      "instance_id": "fhm9c8c5h23bcmaqc619",
+      "resource_uid": "614e7ac1-232f-436e-a95c-7f3c839d4397",
+      "run_id": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "external_name_manager": "provider",
+      "ready_checked_at": "2026-09-15T23:14:41.860126+00:00"
+    }
+  },
+  "runtime_commit": "28827f692b04e1f01b1bc4bed5f40926418f05bb",
+  "checked_at": "2026-09-15T23:34:15.060506+00:00",
+  "observed_ready_vm_count": 39,
+  "provider_pod_uid": "16cbd03a-29f5-4c28-aab8-200e30661b0f",
+  "provider_restart_count": 0,
+  "sampled_peak_memory_mib": 1122,
+  "transient_api_errors": [
+    {
+      "resource": "stroppy-stroppy-live-ba93b5de-db-7",
+      "first_observed_at": "2026-09-15T22:59:26.196366+00:00",
+      "category": "YC active operations limit; automatically retried"
+    }
+  ],
+  "scope": "39 fresh VM reached Ready/Synced with matching YC IDs set by provider; sampled memory observations; workload and cleanup acceptance separate",
+  "workflow_runs": [
+    {
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous",
+      "uuid": "e2b133cc-171c-41ba-93d1-da1b370a03be",
+      "version": "26.1",
+      "vm_count": 13
+    },
+    {
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.2-autonomous",
+      "uuid": "9ec63101-4509-4ff2-9474-5276629b7d01",
+      "version": "26.2",
+      "vm_count": 13
+    },
+    {
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.3-autonomous",
+      "uuid": "ba93b5de-3b76-4a22-b273-9574de5f5426",
+      "version": "26.3",
+      "vm_count": 13
+    }
+  ]
+}

@@ -198,12 +198,17 @@ func TestHeadlineAndMerge(t *testing.T) {
 		},
 	}
 	h := Headline(segs)
-	if h.TPS != 50 || h.LatencyP99Ms != 40 || h.Errors != 7 || h.Duration.Std() != 100*time.Second {
+	if h.TPS != 0 || h.LatencyP99Ms != 40 || h.Errors != 7 || h.Duration.Std() != 100*time.Second {
 		t.Errorf("headline = %+v", h)
 	}
 	segs[1].Compliance = json.RawMessage(`{"tpm_c": 600}`)
-	if h := Headline(segs); h.TPS != 10 {
-		t.Errorf("tpmC headline = %+v", h)
+	if h := Headline(segs); h.TPS != 0 {
+		t.Errorf("tpmC must not be converted to TPS: %+v", h)
+	}
+	segs[1].Metrics["tps"] = spec.MetricValue{Value: 123.456, Unit: "transactions/s"}
+	segs[1].FinishedAt = start.Add(time.Hour)
+	if h := Headline(segs); h.TPS != 123.456 {
+		t.Errorf("Stroppy TPS must be copied independently of activity time: %+v", h)
 	}
 	merged := MergeMetrics(segs)
 	if _, ok := merged["steady.iterations_total"]; !ok {
@@ -243,5 +248,29 @@ func TestExitStatus(t *testing.T) {
 		if c, _ := ExitStatus(code); c != canceled {
 			t.Errorf("exit %d canceled=%v", code, c)
 		}
+	}
+}
+
+func TestConfigSeparatesSegmentsWithoutMutatingLabels(t *testing.T) {
+	labels := map[string]string{"graphene.namespace": "test", "stroppy.segment": "spoofed"}
+	in := Input{RunID: "run", Labels: labels, Workload: workload(), Segment: segment()}
+	in.Segment.Name = "first"
+	first, err := Config(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	in.Segment.Name = "second"
+	second, err := Config(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, cfg := range map[string]map[string]any{"first": first, "second": second} {
+		metadata := cfg["global"].(map[string]any)["metadata"].(map[string]string)
+		if metadata["stroppy.segment"] != name || metadata["graphene.namespace"] != "test" {
+			t.Fatalf("metadata = %v", metadata)
+		}
+	}
+	if labels["stroppy.segment"] != "spoofed" {
+		t.Fatal("mutated caller labels")
 	}
 }

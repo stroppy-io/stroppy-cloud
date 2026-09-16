@@ -109,22 +109,24 @@ type TenantSettings struct {
 }
 
 type ProviderProfiles struct {
-	ID               uuid.UUID
-	TenantID         uuid.UUID
-	Name             string
-	Kind             string
-	Settings         json.RawMessage
-	SecretNames      json.RawMessage
-	Status           string
-	StatusReason     string
-	VerifiedAt       *time.Time
-	VerifyRunID      string
-	Quotas           json.RawMessage
-	QuotasObservedAt *time.Time
-	CreatedBy        *uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
-	DeletedAt        *time.Time
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+	DeletedAt               *time.Time
 }
 
 type Webhooks struct {

@@ -1,0 +1,261 @@
+{
+  "status": "passed",
+  "scope": "PostgreSQL 15-18 x single, primary-replica, pgbouncer; YC ru-central1-a; functional simple workload, 2 minutes, 2 VUs; separate 100 GiB SSD data disks",
+  "total": 12,
+  "validated": 12,
+  "cells": [
+    {
+      "cell": "pg15-pgbouncer",
+      "run_id": "matrix-pg-final-951a642e-pg15-pgbouncer",
+      "iterations": 119664,
+      "exporters": 6,
+      "data_disks": 1,
+      "database_versions": [
+        "15.19.0"
+      ],
+      "traces": 24,
+      "spans": 278,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-pgbouncer-15-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg15-primary-replica",
+      "run_id": "matrix-pg-retry-daaf3554-pg15-primary-replica",
+      "iterations": 247142,
+      "exporters": 5,
+      "data_disks": 2,
+      "database_versions": [
+        "15.19.0"
+      ],
+      "traces": 24,
+      "spans": 271,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-primary-replica-15-simple.json",
+      "suite_input": "suite-postgres-versions-retry.json",
+      "server_versions_during_run": [
+        "0.2.6",
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    },
+    {
+      "cell": "pg15-single",
+      "run_id": "matrix-pg-versions-ed460e6f-pg15-single",
+      "iterations": 251067,
+      "exporters": 3,
+      "data_disks": 1,
+      "database_versions": [
+        "15.19.0"
+      ],
+      "traces": 16,
+      "spans": 167,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-single-15-simple.json",
+      "suite_input": "suite-postgres-versions.json",
+      "server_versions_during_run": [
+        "0.2.5"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    },
+    {
+      "cell": "pg16-pgbouncer",
+      "run_id": "matrix-pg-final-951a642e-pg16-pgbouncer",
+      "iterations": 125707,
+      "exporters": 6,
+      "data_disks": 1,
+      "database_versions": [
+        "16.15.0"
+      ],
+      "traces": 24,
+      "spans": 275,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-pgbouncer-16-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg16-primary-replica",
+      "run_id": "matrix-pg-final-951a642e-pg16-primary-replica",
+      "iterations": 245913,
+      "exporters": 5,
+      "data_disks": 2,
+      "database_versions": [
+        "16.15.0"
+      ],
+      "traces": 23,
+      "spans": 267,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-primary-replica-16-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg16-single",
+      "run_id": "matrix-pg-retry-daaf3554-pg16-single",
+      "iterations": 226003,
+      "exporters": 3,
+      "data_disks": 1,
+      "database_versions": [
+        "16.15.0"
+      ],
+      "traces": 19,
+      "spans": 177,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-single-16-simple.json",
+      "suite_input": "suite-postgres-versions-retry.json",
+      "server_versions_during_run": [
+        "0.2.6"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    },
+    {
+      "cell": "pg17-pgbouncer",
+      "run_id": "matrix-pg-final-951a642e-pg17-pgbouncer",
+      "iterations": 110919,
+      "exporters": 6,
+      "data_disks": 1,
+      "database_versions": [
+        "17.11.0"
+      ],
+      "traces": 24,
+      "spans": 278,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-pgbouncer-17-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg17-primary-replica",
+      "run_id": "matrix-pg-final-951a642e-pg17-primary-replica",
+      "iterations": 244947,
+      "exporters": 5,
+      "data_disks": 2,
+      "database_versions": [
+        "17.11.0"
+      ],
+      "traces": 23,
+      "spans": 265,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-primary-replica-17-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg17-single",
+      "run_id": "matrix-pg-versions-ed460e6f-pg17-single",
+      "iterations": 248890,
+      "exporters": 3,
+      "data_disks": 1,
+      "database_versions": [
+        "17.11.0"
+      ],
+      "traces": 19,
+      "spans": 188,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-single-17-simple.json",
+      "suite_input": "suite-postgres-versions.json",
+      "server_versions_during_run": [
+        "0.2.5"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    },
+    {
+      "cell": "pg18-pgbouncer",
+      "run_id": "matrix-pg-versions-ed460e6f-pg18-pgbouncer",
+      "iterations": 106636,
+      "exporters": 6,
+      "data_disks": 1,
+      "database_versions": [
+        "18.6.0"
+      ],
+      "traces": 21,
+      "spans": 259,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-pgbouncer-18-simple.json",
+      "suite_input": "suite-postgres-versions.json",
+      "server_versions_during_run": [
+        "0.2.5"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    },
+    {
+      "cell": "pg18-primary-replica",
+      "run_id": "matrix-pg-final-951a642e-pg18-primary-replica",
+      "iterations": 258251,
+      "exporters": 5,
+      "data_disks": 2,
+      "database_versions": [
+        "18.6.0"
+      ],
+      "traces": 23,
+      "spans": 265,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-primary-replica-18-simple.json",
+      "suite_input": "suite-postgres-versions-final.json",
+      "server_versions_during_run": [
+        "0.2.7"
+      ],
+      "worker_image": "stroppy-run:166453f8f98a639b"
+    },
+    {
+      "cell": "pg18-single",
+      "run_id": "matrix-pg-retry-daaf3554-pg18-single",
+      "iterations": 273455,
+      "exporters": 3,
+      "data_disks": 1,
+      "database_versions": [
+        "18.6.0"
+      ],
+      "traces": 19,
+      "spans": 174,
+      "error_spans": 0,
+      "template_input": "matrix/postgres-single-18-simple.json",
+      "suite_input": "suite-postgres-versions-retry.json",
+      "server_versions_during_run": [
+        "0.2.6"
+      ],
+      "worker_image": "stroppy-run:5d4c94c13c882225"
+    }
+  ],
+  "remaining_scope": [
+    "Patroni HA and other database catalog topologies",
+    "full workload and parameter matrices",
+    "failure and server restart recovery campaign",
+    "Stroppy-native TPS and workload OTLP export"
+  ],
+  "current_server_version": "0.2.7",
+  "checked_at": "2026-09-14T14:54:13.720027+00:00",
+  "artifacts_verified": 24,
+  "replication_versions_verified": [
+    15,
+    16,
+    17,
+    18
+  ],
+  "cleanup_evidence": "postgres-matrix.cleanup.json",
+  "ownership_evidence": "postgres-matrix.ownership.json",
+  "retention": {
+    "configs": "until explicit deletion",
+    "artifact_logs": "30 days",
+    "shared_metrics": "90 days unchanged",
+    "shared_logs": "30 days unchanged",
+    "shared_traces": "14 days unchanged"
+  }
+}

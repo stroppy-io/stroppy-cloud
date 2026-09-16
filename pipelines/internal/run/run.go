@@ -54,6 +54,9 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		addrs Addresses
 	}
 	prov, err := phase(ctx, PhaseProvisioning, func() (provisioned, error) {
+		if err := resolveImages(ctx, &run); err != nil {
+			return provisioned{}, err
+		}
 		if err := ensureProviderConfig(ctx, run); err != nil {
 			return provisioned{}, err
 		}
@@ -65,6 +68,13 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		infos, err := waitMachines(ctx, infra)
 		if err != nil {
 			return provisioned{}, err
+		}
+		endpoint, err := infra.ManagedEndpoint(ctx)
+		if err != nil {
+			return provisioned{}, err
+		}
+		if endpoint != "" {
+			run.Workload.URL = endpoint
 		}
 		return provisioned{infra: infra, addrs: NewAddresses(infra, infos)}, nil
 	})
@@ -155,8 +165,14 @@ func validate(run spec.Run) error {
 	if run.Workload.DriverType == "" || run.Workload.URL == "" {
 		return fmt.Errorf("the workload needs driver_type and url")
 	}
-	if _, err := spec.DecodeSegments(run.Workload.Segments); err != nil {
+	segments, err := spec.DecodeSegments(run.Workload.Segments)
+	if err != nil {
 		return err
+	}
+	for _, segment := range segments {
+		if _, err := stroppycfg.Params(segment); err != nil {
+			return err
+		}
 	}
 	return nil
 }

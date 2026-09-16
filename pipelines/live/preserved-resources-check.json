@@ -1,0 +1,76 @@
+{
+  "status": "passed_with_verified_autoscale_change",
+  "checked_at": "2026-09-15T23:36:10.474037+00:00",
+  "scope": "Baseline identities preserved except the previously verified cluster-autoscaler removal of one empty managed Kubernetes node and its boot disk. Final snapshot after test cleanup; full configuration equality is not asserted.",
+  "checks": {
+    "vm": {
+      "baseline_count": 12,
+      "current_count": 12,
+      "missing_baseline_ids": [
+        "fv4115p6tfv785o1l6rp"
+      ],
+      "unexpected_missing_ids": []
+    },
+    "disk": {
+      "baseline_count": 20,
+      "current_count": 20,
+      "missing_baseline_ids": [
+        "fv43bgfo5i1pgbbjnspn"
+      ],
+      "unexpected_missing_ids": []
+    },
+    "network": {
+      "baseline_count": 3,
+      "current_count": 3,
+      "missing_baseline_ids": [],
+      "unexpected_missing_ids": []
+    },
+    "subnet": {
+      "baseline_count": 4,
+      "current_count": 4,
+      "missing_baseline_ids": [],
+      "unexpected_missing_ids": []
+    },
+    "sg": {
+      "baseline_count": 6,
+      "current_count": 6,
+      "missing_baseline_ids": [],
+      "unexpected_missing_ids": []
+    }
+  },
+  "managed_node_scale_down": {
+    "vm_id": "fv4115p6tfv785o1l6rp",
+    "boot_disk_id": "fv43bgfo5i1pgbbjnspn",
+    "node_name": "cl1dceurf3lk0g237dfo-axol",
+    "node_group_id": "cat3vhtvba16b46rkqr5",
+    "events": [
+      {
+        "firstTimestamp": "2026-09-15T21:56:02Z",
+        "lastTimestamp": "2026-09-15T21:56:02Z",
+        "reason": "ScaleDown",
+        "source": {
+          "component": "cluster-autoscaler"
+        },
+        "message": "marked the node as toBeDeleted/unschedulable"
+      },
+      {
+        "firstTimestamp": "2026-09-15T21:56:02Z",
+        "lastTimestamp": "2026-09-15T21:56:02Z",
+        "reason": "ScaleDownEmpty",
+        "source": {
+          "component": "cluster-autoscaler"
+        },
+        "message": "Scale-down: removing empty node \"cl1dceurf3lk0g237dfo-axol\""
+      },
+      {
+        "firstTimestamp": "2026-09-15T21:56:08Z",
+        "lastTimestamp": "2026-09-15T21:56:08Z",
+        "reason": "ScaleDownEmpty",
+        "source": {
+          "component": "cluster-autoscaler"
+        },
+        "message": "Scale-down: empty node cl1dceurf3lk0g237dfo-axol removed"
+      }
+    ]
+  }
+}

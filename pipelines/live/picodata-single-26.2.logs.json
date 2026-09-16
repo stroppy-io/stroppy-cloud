@@ -1,0 +1,34 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-26.2",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 1020,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-picodata-metrics-85175d12-picodata-single-26.2"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/f1a26b45-c67c-4bda-91fc-7c4d24c89276-db-1-node-exporter": 57,
+    "docker/f1a26b45-c67c-4bda-91fc-7c4d24c89276-db-1-picodata": 513,
+    "docker/f1a26b45-c67c-4bda-91fc-7c4d24c89276-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T16:31:10.192585637Z",
+    "end": "2026-09-15T16:34:16.964897339Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": [
+    {
+      "entity": "docker/f1a26b45-c67c-4bda-91fc-7c4d24c89276-db-1-init",
+      "status": "ready",
+      "stdout": "not emitted by quiet bootstrap command",
+      "evidence": "persisted container.ready workflow signal after marker healthcheck",
+      "command_sha256": "2adbe06aceb657d258078768467a47dfb00f864a5638647201783147fc56ab03"
+    }
+  ]
+}

@@ -5600,6 +5600,13 @@ components:
         stale:
           type: boolean
           description: Older than the freshness window (1 min).
+        unavailable_reason:
+          type: string
+          description: permission_denied when cloud quotas cannot be read. Quotas are empty; launch skips
+            the cloud precheck, and the provider enforces its actual limits.
+        scope:
+          type: string
+          description: Scope of the quota snapshot or denied request, e.g. cloud:b1g... for Yandex Cloud.
         quotas:
           type: array
           items:

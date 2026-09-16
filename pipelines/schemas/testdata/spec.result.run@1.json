@@ -1,424 +1,424 @@
 {
-  "id": {
-    "namespace": "spec",
-    "name": "result.run",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "spec",
+    "name":  "result.run",
+    "version":  "v1.0.0"
   },
-  "description": "RunResult: headline metrics, per-segment outcome, artifacts and summary of one run.",
-  "fields": [
+  "description":  "RunResult: headline metrics, per-segment outcome, artifacts and summary of one run.",
+  "fields":  [
     {
-      "name": "metrics",
-      "description": "Canonical run metrics by key (tps, latency_p99_ms, errors…).",
-      "map": {
-        "valueSchema": {
-          "fields": [
+      "name":  "metrics",
+      "description":  "Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments.",
+      "map":  {
+        "valueSchema":  {
+          "fields":  [
             {
-              "name": "value",
-              "description": "Headline value of the metric over the window.",
-              "required": true,
-              "double": {},
-              "title": "Value"
+              "name":  "value",
+              "description":  "Headline value of the metric over the window.",
+              "required":  true,
+              "double":  {},
+              "title":  "Value"
             },
             {
-              "name": "unit",
-              "description": "Unit of the value: tps, ms, ratio…",
-              "string": {
-                "maxLen": "32"
+              "name":  "unit",
+              "description":  "Unit of the value: tps, ms, ratio…",
+              "string":  {
+                "maxLen":  "32"
               },
-              "title": "Unit"
+              "title":  "Unit"
             },
             {
-              "name": "min",
-              "description": "Lowest sample in the window.",
-              "double": {},
-              "title": "Minimum"
+              "name":  "min",
+              "description":  "Lowest sample in the window.",
+              "double":  {},
+              "title":  "Minimum"
             },
             {
-              "name": "max",
-              "description": "Highest sample in the window.",
-              "double": {},
-              "title": "Maximum"
+              "name":  "max",
+              "description":  "Highest sample in the window.",
+              "double":  {},
+              "title":  "Maximum"
             },
             {
-              "name": "avg",
-              "description": "Mean over the window.",
-              "double": {},
-              "title": "Average"
+              "name":  "avg",
+              "description":  "Mean over the window.",
+              "double":  {},
+              "title":  "Average"
             }
           ],
-          "strict": true
+          "strict":  true
         },
-        "maxEntries": "256"
+        "maxEntries":  "16384"
       },
-      "group": "Result",
-      "title": "Metrics"
+      "group":  "Result",
+      "title":  "Metrics"
     },
     {
-      "name": "segments",
-      "description": "One entry per workload segment, in execution order.",
-      "list": {
-        "items": [
+      "name":  "segments",
+      "description":  "One entry per workload segment, in execution order.",
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "name",
-                    "description": "Name of the workload segment.",
-                    "required": true,
-                    "string": {
-                      "maxLen": "64",
-                      "pattern": "^[a-z][a-z0-9_-]*$"
+                    "name":  "name",
+                    "description":  "Name of the workload segment.",
+                    "required":  true,
+                    "string":  {
+                      "maxLen":  "64",
+                      "pattern":  "^[a-z][a-z0-9_-]*$"
                     },
-                    "title": "Segment"
+                    "title":  "Segment"
                   },
                   {
-                    "name": "status",
-                    "description": "How the segment ended.",
-                    "required": true,
-                    "choice": {
-                      "options": [
+                    "name":  "status",
+                    "description":  "How the segment ended.",
+                    "required":  true,
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "completed"
+                          "value":  {
+                            "stringValue":  "completed"
                           },
-                          "label": "Completed"
+                          "label":  "Completed"
                         },
                         {
-                          "value": {
-                            "stringValue": "failed"
+                          "value":  {
+                            "stringValue":  "failed"
                           },
-                          "label": "Failed"
+                          "label":  "Failed"
                         },
                         {
-                          "value": {
-                            "stringValue": "skipped"
+                          "value":  {
+                            "stringValue":  "skipped"
                           },
-                          "label": "Skipped"
+                          "label":  "Skipped"
                         },
                         {
-                          "value": {
-                            "stringValue": "canceled"
+                          "value":  {
+                            "stringValue":  "canceled"
                           },
-                          "label": "Canceled"
+                          "label":  "Canceled"
                         }
                       ]
                     },
-                    "title": "Status"
+                    "title":  "Status"
                   },
                   {
-                    "name": "started_at",
-                    "timestamp": {},
-                    "title": "Started"
+                    "name":  "started_at",
+                    "timestamp":  {},
+                    "title":  "Started"
                   },
                   {
-                    "name": "finished_at",
-                    "timestamp": {},
-                    "title": "Finished"
+                    "name":  "finished_at",
+                    "timestamp":  {},
+                    "title":  "Finished"
                   },
                   {
-                    "name": "metrics",
-                    "description": "Metrics measured over this segment's window only (bench summary counters and histogram statistics).",
-                    "map": {
-                      "valueSchema": {
-                        "fields": [
+                    "name":  "metrics",
+                    "description":  "Metrics measured over this segment's window only (bench summary counters and histogram statistics).",
+                    "map":  {
+                      "valueSchema":  {
+                        "fields":  [
                           {
-                            "name": "value",
-                            "description": "Headline value of the metric over the window.",
-                            "required": true,
-                            "double": {},
-                            "title": "Value"
+                            "name":  "value",
+                            "description":  "Headline value of the metric over the window.",
+                            "required":  true,
+                            "double":  {},
+                            "title":  "Value"
                           },
                           {
-                            "name": "unit",
-                            "description": "Unit of the value: tps, ms, ratio…",
-                            "string": {
-                              "maxLen": "32"
+                            "name":  "unit",
+                            "description":  "Unit of the value: tps, ms, ratio…",
+                            "string":  {
+                              "maxLen":  "32"
                             },
-                            "title": "Unit"
+                            "title":  "Unit"
                           },
                           {
-                            "name": "min",
-                            "description": "Lowest sample in the window.",
-                            "double": {},
-                            "title": "Minimum"
+                            "name":  "min",
+                            "description":  "Lowest sample in the window.",
+                            "double":  {},
+                            "title":  "Minimum"
                           },
                           {
-                            "name": "max",
-                            "description": "Highest sample in the window.",
-                            "double": {},
-                            "title": "Maximum"
+                            "name":  "max",
+                            "description":  "Highest sample in the window.",
+                            "double":  {},
+                            "title":  "Maximum"
                           },
                           {
-                            "name": "avg",
-                            "description": "Mean over the window.",
-                            "double": {},
-                            "title": "Average"
+                            "name":  "avg",
+                            "description":  "Mean over the window.",
+                            "double":  {},
+                            "title":  "Average"
                           }
                         ],
-                        "strict": true
+                        "strict":  true
                       },
-                      "maxEntries": "256"
+                      "maxEntries":  "256"
                     },
-                    "title": "Metrics"
+                    "title":  "Metrics"
                   },
                   {
-                    "name": "errors",
-                    "description": "Stroppy's own error accounting; nonfatal errors keep the exit status 0.",
-                    "object": {
-                      "schema": {
-                        "fields": [
+                    "name":  "errors",
+                    "description":  "Stroppy's own error accounting; nonfatal errors keep the exit status 0.",
+                    "object":  {
+                      "schema":  {
+                        "fields":  [
                           {
-                            "name": "terminal_errors",
-                            "int64": {
-                              "gte": "0"
+                            "name":  "terminal_errors",
+                            "int64":  {
+                              "gte":  "0"
                             },
-                            "title": "Terminal errors"
+                            "title":  "Terminal errors"
                           },
                           {
-                            "name": "failed_iterations",
-                            "int64": {
-                              "gte": "0"
+                            "name":  "failed_iterations",
+                            "int64":  {
+                              "gte":  "0"
                             },
-                            "title": "Failed iterations"
+                            "title":  "Failed iterations"
                           },
                           {
-                            "name": "failed_queries",
-                            "int64": {
-                              "gte": "0"
+                            "name":  "failed_queries",
+                            "int64":  {
+                              "gte":  "0"
                             },
-                            "title": "Failed queries"
+                            "title":  "Failed queries"
                           },
                           {
-                            "name": "retry_attempts",
-                            "int64": {
-                              "gte": "0"
+                            "name":  "retry_attempts",
+                            "int64":  {
+                              "gte":  "0"
                             },
-                            "title": "Retry attempts"
+                            "title":  "Retry attempts"
                           }
                         ],
-                        "strict": true
+                        "strict":  true
                       }
                     },
-                    "title": "Nonfatal errors"
+                    "title":  "Nonfatal errors"
                   },
                   {
-                    "name": "exit_code",
-                    "description": "Exit status of the stroppy process (0 ok, 130/143 canceled, 1 error).",
-                    "int64": {
-                      "gte": "-1",
-                      "lte": "255"
+                    "name":  "exit_code",
+                    "description":  "Exit status of the stroppy process (0 ok, 130/143 canceled, 1 error).",
+                    "int64":  {
+                      "gte":  "-1",
+                      "lte":  "255"
                     },
-                    "title": "Exit code"
+                    "title":  "Exit code"
                   },
                   {
-                    "name": "compliance",
-                    "description": "Machine-readable TPC-C report (tpm_c, per-transaction mix and response times, verdicts) when the workload emits one.",
-                    "json": {},
-                    "title": "TPC-C compliance report"
+                    "name":  "compliance",
+                    "description":  "Machine-readable TPC-C report (tpm_c, per-transaction mix and response times, verdicts) when the workload emits one.",
+                    "json":  {},
+                    "title":  "TPC-C compliance report"
                   },
                   {
-                    "name": "error",
-                    "description": "Failure text; set when the status is failed.",
-                    "string": {
-                      "maxLen": "4096"
+                    "name":  "error",
+                    "description":  "Failure text; set when the status is failed.",
+                    "string":  {
+                      "maxLen":  "4096"
                     },
-                    "title": "Error"
+                    "title":  "Error"
                   }
                 ],
-                "rules": [
+                "rules":  [
                   {
-                    "expr": "!(\"status\" in this) || this.status != \"failed\" || (\"error\" in this)",
-                    "message": "a failed segment must carry an error",
-                    "id": "failed-segment-has-error"
+                    "expr":  "!(\"status\" in this) || this.status != \"failed\" || (\"error\" in this)",
+                    "message":  "a failed segment must carry an error",
+                    "id":  "failed-segment-has-error"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "64"
+        "maxItems":  "64"
       },
-      "group": "Result",
-      "title": "Segments"
+      "group":  "Result",
+      "title":  "Segments"
     },
     {
-      "name": "artifacts",
-      "description": "Graphene artifact references (artifact/<id>): raw stroppy output, the report.",
-      "list": {
-        "items": [
+      "name":  "artifacts",
+      "description":  "Graphene artifact references (artifact/<id>): raw stroppy output, the report.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "minLen": "1",
-              "maxLen": "256"
+            "string":  {
+              "minLen":  "1",
+              "maxLen":  "256"
             }
           }
         ],
-        "maxItems": "64",
-        "unique": true
+        "maxItems":  "129",
+        "unique":  true
       },
-      "group": "Result",
-      "title": "Artifacts"
+      "group":  "Result",
+      "title":  "Artifacts"
     },
     {
-      "name": "baseline",
-      "description": "Runner machine self-check from `stroppy baseline`, when the workload asked for one.",
-      "object": {
-        "schema": {
-          "fields": [
+      "name":  "baseline",
+      "description":  "Runner machine self-check from `stroppy baseline`, when the workload asked for one.",
+      "object":  {
+        "schema":  {
+          "fields":  [
             {
-              "name": "ok",
-              "description": "No verdict failed; warnings do not clear it.",
-              "required": true,
-              "bool": {},
-              "title": "OK"
+              "name":  "ok",
+              "description":  "No verdict failed; warnings do not clear it.",
+              "required":  true,
+              "bool":  {},
+              "title":  "OK"
             },
             {
-              "name": "verdicts",
-              "description": "Hardware-independent invariants stroppy checked.",
-              "list": {
-                "items": [
+              "name":  "verdicts",
+              "description":  "Hardware-independent invariants stroppy checked.",
+              "list":  {
+                "items":  [
                   {
-                    "object": {
-                      "schema": {
-                        "fields": [
+                    "object":  {
+                      "schema":  {
+                        "fields":  [
                           {
-                            "name": "check",
-                            "required": true,
-                            "string": {
-                              "maxLen": "128"
+                            "name":  "check",
+                            "required":  true,
+                            "string":  {
+                              "maxLen":  "128"
                             },
-                            "title": "Check"
+                            "title":  "Check"
                           },
                           {
-                            "name": "status",
-                            "required": true,
-                            "choice": {
-                              "options": [
+                            "name":  "status",
+                            "required":  true,
+                            "choice":  {
+                              "options":  [
                                 {
-                                  "value": {
-                                    "stringValue": "ok"
+                                  "value":  {
+                                    "stringValue":  "ok"
                                   },
-                                  "label": "OK"
+                                  "label":  "OK"
                                 },
                                 {
-                                  "value": {
-                                    "stringValue": "warn"
+                                  "value":  {
+                                    "stringValue":  "warn"
                                   },
-                                  "label": "Warning"
+                                  "label":  "Warning"
                                 },
                                 {
-                                  "value": {
-                                    "stringValue": "fail"
+                                  "value":  {
+                                    "stringValue":  "fail"
                                   },
-                                  "label": "Failed"
+                                  "label":  "Failed"
                                 }
                               ]
                             },
-                            "title": "Status"
+                            "title":  "Status"
                           },
                           {
-                            "name": "detail",
-                            "string": {
-                              "maxLen": "1024"
+                            "name":  "detail",
+                            "string":  {
+                              "maxLen":  "1024"
                             },
-                            "title": "Detail"
+                            "title":  "Detail"
                           }
                         ],
-                        "strict": true
+                        "strict":  true
                       }
                     }
                   }
                 ],
-                "maxItems": "64"
+                "maxItems":  "64"
               },
-              "title": "Verdicts"
+              "title":  "Verdicts"
             },
             {
-              "name": "report",
-              "description": "The full baseline JSON report (host, tiers, verdicts).",
-              "json": {},
-              "title": "Report"
+              "name":  "report",
+              "description":  "The full baseline JSON report (host, tiers, verdicts).",
+              "json":  {},
+              "title":  "Report"
             },
             {
-              "name": "error",
-              "description": "Why the baseline did not run to completion.",
-              "string": {
-                "maxLen": "4096"
+              "name":  "error",
+              "description":  "Why the baseline did not run to completion.",
+              "string":  {
+                "maxLen":  "4096"
               },
-              "title": "Error"
+              "title":  "Error"
             }
           ],
-          "strict": true
+          "strict":  true
         }
       },
-      "group": "Result",
-      "title": "Baseline"
+      "group":  "Result",
+      "title":  "Baseline"
     },
     {
-      "name": "summary",
-      "description": "The headline numbers the run list, rating and compare sort on.",
-      "object": {
-        "schema": {
-          "fields": [
+      "name":  "summary",
+      "description":  "The headline numbers the run list, rating and compare sort on.",
+      "object":  {
+        "schema":  {
+          "fields":  [
             {
-              "name": "tps",
-              "description": "Transactions per second over the measured segments.",
-              "double": {
-                "gte": 0
+              "name":  "tps",
+              "description":  "Transactions per second over the measured segments.",
+              "double":  {
+                "gte":  0
               },
-              "unit": "tps",
-              "title": "Throughput"
+              "unit":  "tps",
+              "title":  "Throughput"
             },
             {
-              "name": "latency_p50_ms",
-              "double": {
-                "gte": 0
+              "name":  "latency_p50_ms",
+              "double":  {
+                "gte":  0
               },
-              "unit": "ms",
-              "title": "Latency p50"
+              "unit":  "ms",
+              "title":  "Latency p50"
             },
             {
-              "name": "latency_p95_ms",
-              "double": {
-                "gte": 0
+              "name":  "latency_p95_ms",
+              "double":  {
+                "gte":  0
               },
-              "unit": "ms",
-              "title": "Latency p95"
+              "unit":  "ms",
+              "title":  "Latency p95"
             },
             {
-              "name": "latency_p99_ms",
-              "double": {
-                "gte": 0
+              "name":  "latency_p99_ms",
+              "double":  {
+                "gte":  0
               },
-              "unit": "ms",
-              "title": "Latency p99"
+              "unit":  "ms",
+              "title":  "Latency p99"
             },
             {
-              "name": "errors",
-              "description": "Failed requests across the run.",
-              "int64": {
-                "gte": "0"
+              "name":  "errors",
+              "description":  "Failed requests across the run.",
+              "int64":  {
+                "gte":  "0"
               },
-              "title": "Errors"
+              "title":  "Errors"
             },
             {
-              "name": "duration",
-              "description": "Wall-clock length of the measured part of the run.",
-              "duration": {
-                "gte": "0s"
+              "name":  "duration",
+              "description":  "Wall-clock length of the measured part of the run.",
+              "duration":  {
+                "gte":  "0s"
               },
-              "title": "Duration"
+              "title":  "Duration"
             }
           ],
-          "strict": true
+          "strict":  true
         }
       },
-      "group": "Summary",
-      "title": "Summary"
+      "group":  "Summary",
+      "title":  "Summary"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

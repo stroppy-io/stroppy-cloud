@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-single-24.3",
+  "checked_at": "2026-09-15T17:51:17.207078+00:00",
+  "source": "Read-only pgwire SQL and local HTTP through ordinary agents on every CockroachDB YC member; all catalog members Online at expected version",
+  "checks": {
+    "db-1": {
+      "agent": "2d63bb24-db-1",
+      "source": "Read-only pgwire SQL and local HTTP node status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "64d67b1a8c3320928aef0aac51e8c526fc9dc39b6ff29fe3dc721a365b2a141a",
+      "checks": {
+        "probe": "cockroach",
+        "status": "passed",
+        "version": "CockroachDB CCL v24.3.36 (x86_64-pc-linux-gnu, built 2026/08/24 19:02:50, go1.22.12 X:nocoverageredesign)",
+        "members": [
+          {
+            "id": 1,
+            "address": "10.130.0.33:26257",
+            "version": "v24.3.36"
+          }
+        ],
+        "local_node_ready": true
+      }
+    }
+  }
+}

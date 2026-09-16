@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:56:32.647453+00:00",
+  "checkout_base": "c79e371d1a74a94ecb458885bf42732ab361e329",
+  "working_tree": "uncommitted by user instruction",
+  "checks": [
+    "root go test ./... -count=1",
+    "pipelines go test ./... -count=1",
+    "compiler go test -race",
+    "compiler/library targeted golangci-lint",
+    "cfg/spec targeted golangci-lint, including final semisync render fix",
+    "git diff --check",
+    "all six MariaDB local configurations with real exporter collectors",
+    "raw timestamp boundary regression using original Galera samples and an injected in-window fault",
+    "component error classification: unknown permission and corruption errors remain blocking",
+    "bounded cluster coverage regression: preserve full startup evidence and reject later failures, unbounded exclusion, or shortened end",
+    "real OTEL SDK 1.46.0 gauge collection timestamp reproduction",
+    "final six MariaDB run results validated against product schemas; final suite result validated against the reflected Graphene output contract"
+  ],
+  "source_sha256": {
+    "internal/domain/compile/recipe_mysql_cluster.go": "13b7ec2970e1fb8dced960379bf73ebcdbced2c8c77b71d98a8861064eb50301",
+    "internal/domain/compile/mysql-group-start.sh": "7ba53195a1a5ec898b381b5ba7d3397e9e990f1f7b03206604dbe1581e10daf3",
+    "internal/domain/compile/mariadb-galera-start.sh": "eb12e5af92d35e67e6b8f858a3cd30f9411977c8cab723b91f5e4f02739cb382",
+    "internal/domain/compile/recipe_mysql.go": "2f11f833ec0d8c36623ff403ff246ba9a7154f4a62e1a05c8b9f808f36d4f79c",
+    "internal/domain/library/service.go": "f56fa526c9c932987704b5780e899a9308014f403bd43ed14802214d8dd88e78",
+    "pipelines/schemas/cfg/mysql.go": "835d490d529de35390a0d69ae2483291a174fb3f5ad85e3385abaffe62ac2fc8",
+    "pipelines/schemas/cfg/mariadb.go": "6900fb6bac3c08942600546a6eca88e1d6e6b14b851ce3cd3818846fc4eb22cd",
+    "pipelines/schemas/cfg/proxysql.go": "d71a453bc9fb9d837334b96b5a1d1f5be41ddd50506d1dda3bf0744077aaba83",
+    "pipelines/live/inspect_metrics.py": "6e50fb8baf28951afee8bc6ced688dba24f5677eee9abf0e4490fa4a2c6cb473",
+    "pipelines/live/inspect_mysql_cluster_metrics.py": "186d315ffc96541fe30ee664dbc356480478212786778f257965ee0c5192f02b",
+    "pipelines/live/inspect_native_metrics.py": "a77c9908cb2e4a8a3ddb20ec91dd6703dee9fe15f9a6406319298eb91d893a75",
+    "pipelines/live/inspect_component_logs.py": "bab67f12bf92768d6e7ce5f0d759dd53638479811d17b4eb71bb5d41ffb59390",
+    "pipelines/spec/manifest_test.go": "b0db0548a2f1f639afcc8738701dbc09316389b9453ff978bda780febe27b493"
+  }
+}

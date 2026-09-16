@@ -104,14 +104,13 @@ func TestPostgresParams(t *testing.T) {
 | OrioleDB | образы `*-pg16` / `*-pg17` / `*-pg18` | `cfg.orioledb.postgresql.conf@16/@17/@18` |
 | MySQL | 8.0 / 8.4 | `cfg.my.cnf@8/@8.4` |
 | MariaDB | 10.11 / 11.4 / 11.8 | `cfg.mariadb.cnf@10.11/@11.4/@11.8` |
-| Picodata | 25.3 (legacy) / 26.1 / 26.2 | `cfg.picodata.yaml@25/@26` |
+| Picodata | 25.3 (legacy) / 26.1 / 26.2 | `cfg.picodata.yaml@25/@26.1/@26` |
 | YDB | 25.4 / 26.1 / 26.2 / 26.3 | `cfg.ydb.config.yaml@25/@26` |
 | CockroachDB | 24.1 / 24.3 / 25.2 / 25.4 / 26.2 / 26.3 | `cfg.cockroach.flags@24/@25/@26` |
 | MaxScale (параметр mariadb) | линия 25.10 | `cfg.maxscale.cnf@25` |
 
-Обвязка, версия которой продуктом не выбирается: `pg_hba 1`, `patroni 3`
-(3.3), `etcd 3` (3.5), `haproxy 2` (2.9), `pgbouncer 1` (1.23), `proxysql 2`
-(2.6), экспортёры: postgres_exporter 0.15, mysqld_exporter 0.15,
+Обвязка, версия которой продуктом не выбирается: `pg_hba 1`, `patroni 3` (legacy 3.3), `patroni 4` (4.1.5), `etcd 3` (3.5), `haproxy 2` (2.9), `pgbouncer 1` (1.23), `proxysql 2`
+(2.6), экспортёры: postgres_exporter 0.15, mysqld_exporter 0.19,
 node_exporter 1.8.
 
 Version-gating внутри одного билдера (что именно расходится по мажорам):
@@ -122,7 +121,7 @@ Version-gating внутри одного билдера (что именно р�
   аспектов (18), `reserved_connections` с 16, `transaction_timeout` с 17.
   `cfg.orioledb.postgresql.conf@N` переиспользует эту таблицу целиком; сам
   набор `orioledb.*` от мажора PostgreSQL не зависит.
-* `mariadb.cnf`: 10.11 — `tx_isolation`, `innodb_flush_method`,
+* `mariadb.cnf`: 10.11 — SQL-поле `tx_isolation` рендерится как `transaction-isolation`, `innodb_flush_method`,
   `innodb_change_buffering`; 11.4/11.8 — `transaction_isolation`,
   `innodb_log_file_buffering` / `innodb_data_file_buffering`,
   `innodb_doublewrite` как enum с `fast`; 11.8 добавляет
@@ -132,8 +131,9 @@ Version-gating внутри одного билдера (что именно р�
 * `picodata.yaml`: 26.x вложил сеть — `iproto_listen`/`iproto_advertise` →
   `instance.iproto.{listen,advertise}`, `http_listen` →
   `instance.http.listen`, `instance.pg` → `instance.pgproto` (и `pg.ssl` →
-  `pgproto.tls.enabled`); добавились `cluster.tier.<t>.replication_mode` /
-  `wal_mode`, `memtx.system_memory`, `wal_dir`, `backup_dir`.
+  `pgproto.tls.enabled`); добавились `memtx.system_memory`, `wal_dir`, `backup_dir`.
+  `cluster.tier.<t>.replication_mode` / `wal_mode` появились только в 26.2;
+  схема @26.1 запрещает их.
 * `ydb.config.yaml`: 25 и 26 рендерят один и тот же документ configuration
   V1. V2 (обёртка `metadata:`/`config:`) появилась в 25.1, но остаётся
   экспериментальной, а 26.x её не требует и V1 не убирает. Мажор 26 заведён
@@ -147,3 +147,9 @@ Version-gating внутри одного билдера (что именно р�
   `backend_connect_timeout`/`backend_read_timeout`/`backend_write_timeout` в
   один `backend_timeout`; в 24.02 дефолт `master_failure_mode` стал
   `fail_on_write`, а `transaction_replay_timeout` — 30s.
+
+Patroni 4 uses cfg.patroni.yml@4; the @3 schema is retained unchanged.
+An external HBA path renders as postgresql.parameters.hba_file in @4,
+not as the inline pg_hba list. The compiler supplies topology addresses,
+bootstrap hook and the selected PostgreSQL binary/config paths. Cluster-wide
+DCS tuning comes from the db role for all members.

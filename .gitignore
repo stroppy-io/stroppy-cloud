@@ -16,3 +16,5 @@ docs/.docusaurus
 .superpowers/
 .claude/worktrees/
 openapi/.build
+__pycache__/
+*.py[cod]

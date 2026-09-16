@@ -1302,57 +1302,61 @@ func (q *Queries) InsertProviderProfile(ctx context.Context, arg InsertProviderP
 }
 
 const providerProfileByIDSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
-       quotas, quotas_observed_at, created_by, created_at, updated_at
+       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
 FROM provider_profiles
 WHERE id = $1 AND deleted_at IS NULL;`
 
 type ProviderProfileByIDRow struct {
-	ID               uuid.UUID
-	TenantID         uuid.UUID
-	Name             string
-	Kind             string
-	Settings         json.RawMessage
-	SecretNames      json.RawMessage
-	Status           string
-	StatusReason     string
-	VerifiedAt       *time.Time
-	VerifyRunID      string
-	Quotas           json.RawMessage
-	QuotasObservedAt *time.Time
-	CreatedBy        *uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
 }
 
 func (q *Queries) ProviderProfileByID(ctx context.Context, id uuid.UUID) (ProviderProfileByIDRow, error) {
 	row := q.db.QueryRow(ctx, providerProfileByIDSQL, id)
 	var i ProviderProfileByIDRow
-	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt)
+	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt)
 	return i, err
 }
 
 const providerProfilesOfTenantSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
-       quotas, quotas_observed_at, created_by, created_at, updated_at
+       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
 FROM provider_profiles
 WHERE tenant_id = $1 AND deleted_at IS NULL
 ORDER BY created_at;`
 
 type ProviderProfilesOfTenantRow struct {
-	ID               uuid.UUID
-	TenantID         uuid.UUID
-	Name             string
-	Kind             string
-	Settings         json.RawMessage
-	SecretNames      json.RawMessage
-	Status           string
-	StatusReason     string
-	VerifiedAt       *time.Time
-	VerifyRunID      string
-	Quotas           json.RawMessage
-	QuotasObservedAt *time.Time
-	CreatedBy        *uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
 }
 
 func (q *Queries) ProviderProfilesOfTenant(ctx context.Context, tenantID uuid.UUID) ([]ProviderProfilesOfTenantRow, error) {
@@ -1364,7 +1368,7 @@ func (q *Queries) ProviderProfilesOfTenant(ctx context.Context, tenantID uuid.UU
 	var items []ProviderProfilesOfTenantRow
 	for rows.Next() {
 		var i ProviderProfilesOfTenantRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1377,28 +1381,30 @@ func (q *Queries) ProviderProfilesOfTenant(ctx context.Context, tenantID uuid.UU
 
 const readyProviderProfilesSQL = `-- Every ready profile of every live tenant — the periodic quota refresh.
 SELECT p.id, p.tenant_id, p.name, p.kind, p.settings, p.secret_names, p.status, p.status_reason, p.verified_at, p.verify_run_id,
-       p.quotas, p.quotas_observed_at, p.created_by, p.created_at, p.updated_at
+       p.quotas, p.quotas_observed_at, p.quotas_unavailable_reason, p.quotas_scope, p.created_by, p.created_at, p.updated_at
 FROM provider_profiles p
 JOIN tenants t ON t.id = p.tenant_id AND t.deleted_at IS NULL
 WHERE p.status = 'ready' AND p.deleted_at IS NULL
 ORDER BY p.quotas_observed_at NULLS FIRST;`
 
 type ReadyProviderProfilesRow struct {
-	ID               uuid.UUID
-	TenantID         uuid.UUID
-	Name             string
-	Kind             string
-	Settings         json.RawMessage
-	SecretNames      json.RawMessage
-	Status           string
-	StatusReason     string
-	VerifiedAt       *time.Time
-	VerifyRunID      string
-	Quotas           json.RawMessage
-	QuotasObservedAt *time.Time
-	CreatedBy        *uuid.UUID
-	CreatedAt        time.Time
-	UpdatedAt        time.Time
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
 }
 
 func (q *Queries) ReadyProviderProfiles(ctx context.Context) ([]ReadyProviderProfilesRow, error) {
@@ -1410,7 +1416,7 @@ func (q *Queries) ReadyProviderProfiles(ctx context.Context) ([]ReadyProviderPro
 	var items []ReadyProviderProfilesRow
 	for rows.Next() {
 		var i ReadyProviderProfilesRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1456,17 +1462,20 @@ func (q *Queries) SetProviderStatus(ctx context.Context, arg SetProviderStatusPa
 	return tag.RowsAffected(), err
 }
 
-const setProviderQuotasSQL = `UPDATE provider_profiles SET quotas = $1, quotas_observed_at = $2, updated_at = now()
-WHERE id = $3 AND deleted_at IS NULL;`
+const setProviderQuotasSQL = `UPDATE provider_profiles SET quotas = $1, quotas_observed_at = $2,
+    quotas_unavailable_reason = $3, quotas_scope = $4, updated_at = now()
+WHERE id = $5 AND deleted_at IS NULL;`
 
 type SetProviderQuotasParams struct {
-	Quotas     json.RawMessage
-	ObservedAt *time.Time
-	ID         uuid.UUID
+	Quotas            json.RawMessage
+	ObservedAt        *time.Time
+	UnavailableReason string
+	Scope             string
+	ID                uuid.UUID
 }
 
 func (q *Queries) SetProviderQuotas(ctx context.Context, arg SetProviderQuotasParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, setProviderQuotasSQL, arg.Quotas, arg.ObservedAt, arg.ID)
+	tag, err := q.db.Exec(ctx, setProviderQuotasSQL, arg.Quotas, arg.ObservedAt, arg.UnavailableReason, arg.Scope, arg.ID)
 	return tag.RowsAffected(), err
 }
 

@@ -65,6 +65,8 @@ export interface CfgMariadbCnf11_8 {
   wsrep_cluster_name?: string;
   /** SST method. How a joiner gets a full state snapshot. mariabackup is non-blocking; rsync blocks the donor. */
   wsrep_sst_method?: "mariabackup" | "rsync" | "mysqldump";
+  /** SST credentials. user:password for backup SST; filled by the server from topology, unused by rsync. */
+  wsrep_sst_auth?: string | null;
   /** Galera applier threads. Threads applying write-sets from other nodes. */
   wsrep_slave_threads?: number | string;
   /** Sync wait bitmask. Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT. */

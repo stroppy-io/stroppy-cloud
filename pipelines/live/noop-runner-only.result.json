@@ -1,0 +1,177 @@
+{
+  "metrics": {
+    "execute-sql.failed_iterations_total": {
+      "value": 0
+    },
+    "execute-sql.failed_queries_total": {
+      "value": 0
+    },
+    "execute-sql.iteration_duration_avg": {
+      "value": 0.006,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_count": {
+      "value": 36213697
+    },
+    "execute-sql.iteration_duration_p50": {
+      "value": 0.005,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p90": {
+      "value": 0.01,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p95": {
+      "value": 0.025,
+      "unit": "ms"
+    },
+    "execute-sql.iteration_duration_p99": {
+      "value": 0.025,
+      "unit": "ms"
+    },
+    "execute-sql.iterations_per_second": {
+      "value": 301780.259,
+      "unit": "iterations/s"
+    },
+    "execute-sql.iterations_total": {
+      "value": 36213697
+    },
+    "execute-sql.measurement_seconds": {
+      "value": 120,
+      "unit": "s"
+    },
+    "execute-sql.queries_per_second": {
+      "value": 301780.259,
+      "unit": "queries/s"
+    },
+    "execute-sql.retry_attempts_total": {
+      "value": 0
+    },
+    "execute-sql.run_query_duration_avg": {
+      "value": 0,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_count": {
+      "value": 36213697
+    },
+    "execute-sql.run_query_duration_p50": {
+      "value": 0.005,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p90": {
+      "value": 0.005,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p95": {
+      "value": 0.005,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_duration_p99": {
+      "value": 0.005,
+      "unit": "ms"
+    },
+    "execute-sql.run_query_operations_total": {
+      "value": 36213697
+    },
+    "execute-sql.terminal_errors_total": {
+      "value": 0
+    }
+  },
+  "segments": [
+    {
+      "name": "execute-sql",
+      "status": "completed",
+      "started_at": "2026-09-15T19:14:08.950884013Z",
+      "finished_at": "2026-09-15T19:16:13.969046749Z",
+      "metrics": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "iteration_duration_avg": {
+          "value": 0.006,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 36213697
+        },
+        "iteration_duration_p50": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 0.01,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 0.025,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 0.025,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 301780.259,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 36213697
+        },
+        "measurement_seconds": {
+          "value": 120,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 301780.259,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 0,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 36213697
+        },
+        "run_query_duration_p50": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 0.005,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 36213697
+        },
+        "terminal_errors_total": {
+          "value": 0
+        }
+      },
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    "artifact/26d33b53-stroppy-execute-sql-config",
+    "artifact/26d33b53-stroppy-execute-sql-log"
+  ],
+  "summary": {
+    "latency_p50_ms": 0.005,
+    "latency_p95_ms": 0.025,
+    "latency_p99_ms": 0.025,
+    "duration": "2m5.018162736s"
+  }
+}

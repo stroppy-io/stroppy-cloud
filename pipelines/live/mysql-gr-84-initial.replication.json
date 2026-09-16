@@ -1,0 +1,286 @@
+{
+  "status": "passed",
+  "run_id": "matrix-mysql-clusters-be4cb125-mysql-gr-84",
+  "checked_at": "2026-09-15T10:53:03.923909+00:00",
+  "source": "read-only SQL through ordinary agent shell on all three YC members",
+  "checks": {
+    "db-1": {
+      "agent": "bda94f4b-db-1",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "8.4.11",
+          "server_id": 1,
+          "read_only": 0,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "members": [
+        {
+          "MEMBER_ID": "6ed7e3c6-b0f3-11f1-8aef-d00d14d4dd5d",
+          "MEMBER_HOST": "10.130.0.28",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "PRIMARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "7cc1f61a-b0f3-11f1-943c-d00d1eeea14d",
+          "MEMBER_HOST": "10.130.0.26",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "8a0c0064-b0f3-11f1-bba6-d00dd1852337",
+          "MEMBER_HOST": "10.130.0.17",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        }
+      ],
+      "appliers": [
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 1,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 2,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 3,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 4,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    },
+    "db-replica-1": {
+      "agent": "bda94f4b-db-replica-1",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "8.4.11",
+          "server_id": 2,
+          "read_only": 1,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "members": [
+        {
+          "MEMBER_ID": "6ed7e3c6-b0f3-11f1-8aef-d00d14d4dd5d",
+          "MEMBER_HOST": "10.130.0.28",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "PRIMARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "7cc1f61a-b0f3-11f1-943c-d00d1eeea14d",
+          "MEMBER_HOST": "10.130.0.26",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "8a0c0064-b0f3-11f1-bba6-d00dd1852337",
+          "MEMBER_HOST": "10.130.0.17",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        }
+      ],
+      "appliers": [
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 1,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 2,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 3,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 4,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 1,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 2,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 3,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 4,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    },
+    "db-replica-2": {
+      "agent": "bda94f4b-db-replica-2",
+      "source": "read-only SQL through the test database account over loopback TLS",
+      "probe_sha256": "0b069a256308c5a36c45b711ef6be18855a4d35a9d99d153f8e8900b7c7dcd80",
+      "server": [
+        {
+          "version": "8.4.11",
+          "server_id": 3,
+          "read_only": 1,
+          "datadir": "/var/lib/mysql/"
+        }
+      ],
+      "members": [
+        {
+          "MEMBER_ID": "6ed7e3c6-b0f3-11f1-8aef-d00d14d4dd5d",
+          "MEMBER_HOST": "10.130.0.28",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "PRIMARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "7cc1f61a-b0f3-11f1-943c-d00d1eeea14d",
+          "MEMBER_HOST": "10.130.0.26",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        },
+        {
+          "MEMBER_ID": "8a0c0064-b0f3-11f1-bba6-d00dd1852337",
+          "MEMBER_HOST": "10.130.0.17",
+          "MEMBER_PORT": 3306,
+          "MEMBER_STATE": "ONLINE",
+          "MEMBER_ROLE": "SECONDARY",
+          "MEMBER_VERSION": "8.4.11"
+        }
+      ],
+      "appliers": [
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 1,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 2,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 3,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_recovery",
+          "WORKER_ID": 4,
+          "SERVICE_STATE": "OFF",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 1,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 2,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 3,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        },
+        {
+          "CHANNEL_NAME": "group_replication_applier",
+          "WORKER_ID": 4,
+          "SERVICE_STATE": "ON",
+          "LAST_ERROR_NUMBER": 0,
+          "LAST_ERROR_MESSAGE": ""
+        }
+      ],
+      "replicated_rows": [
+        {
+          "rows_present": 100
+        }
+      ]
+    }
+  }
+}

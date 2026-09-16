@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T11:45:13.071494+00:00",
+  "workers": [
+    {
+      "deployment": "graphene-run-t-stroppy-live-matrix-maria-monit-84aefd3c006b7cf7",
+      "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114",
+      "image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:8969206820fe2378",
+      "ready_replicas": 1
+    },
+    {
+      "deployment": "graphene-run-t-stroppy-live-matrix-maria-monit-95dca84e2391d886",
+      "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118",
+      "image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:8969206820fe2378",
+      "ready_replicas": 1
+    }
+  ]
+}

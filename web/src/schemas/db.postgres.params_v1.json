@@ -1,269 +1,269 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "postgres.params",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "db",
+    "name":  "postgres.params",
+    "version":  "v1.0.0"
   },
-  "description": "PostgreSQL topology and options: version, replicas, HA machinery, extensions.",
-  "fields": [
+  "description":  "PostgreSQL topology and options: version, replicas, HA machinery, extensions.",
+  "fields":  [
     {
-      "name": "version",
-      "description": "Server major version; packages come from the PGDG apt repository (apt.postgresql.org).",
-      "required": true,
-      "choice": {
-        "options": [
+      "name":  "version",
+      "description":  "Server major version; packages come from the PGDG apt repository (apt.postgresql.org).",
+      "required":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "18"
+            "value":  {
+              "stringValue":  "18"
             },
-            "label": "18"
+            "label":  "18"
           },
           {
-            "value": {
-              "stringValue": "17"
+            "value":  {
+              "stringValue":  "17"
             },
-            "label": "17"
+            "label":  "17"
           },
           {
-            "value": {
-              "stringValue": "16"
+            "value":  {
+              "stringValue":  "16"
             },
-            "label": "16"
+            "label":  "16"
           },
           {
-            "value": {
-              "stringValue": "15"
+            "value":  {
+              "stringValue":  "15"
             },
-            "label": "15"
+            "label":  "15"
           }
         ],
-        "default": {
-          "stringValue": "17"
+        "default":  {
+          "stringValue":  "17"
         }
       },
-      "group": "Engine",
-      "title": "PostgreSQL version"
+      "group":  "Engine",
+      "title":  "PostgreSQL version"
     },
     {
-      "name": "replicas",
-      "description": "Physical streaming standbys next to the primary; 0 = a single node.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "8"
+      "name":  "replicas",
+      "description":  "Physical streaming standbys next to the primary; 0 = a single node.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "8"
       },
-      "group": "Topology",
-      "title": "Streaming replicas"
+      "group":  "Topology",
+      "title":  "Streaming replicas"
     },
     {
-      "name": "sync_replicas",
-      "description": "How many of the replicas commit synchronously (synchronous_standby_names); must not exceed replicas.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "8"
+      "name":  "sync_replicas",
+      "description":  "How many of the replicas commit synchronously (synchronous_standby_names); must not exceed replicas.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "8"
       },
-      "group": "Topology",
-      "title": "Synchronous replicas"
+      "group":  "Topology",
+      "title":  "Synchronous replicas"
     },
     {
-      "name": "ha",
-      "description": "none = plain primary/standby without failover; patroni = Patroni owns postgres and elects the leader through etcd.",
-      "required": true,
-      "choice": {
-        "options": [
+      "name":  "ha",
+      "description":  "none = plain primary/standby without failover; patroni = Patroni owns postgres and elects the leader through etcd.",
+      "required":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "none"
+            "value":  {
+              "stringValue":  "none"
             },
-            "label": "None (manual)"
+            "label":  "None (manual)"
           },
           {
-            "value": {
-              "stringValue": "patroni"
+            "value":  {
+              "stringValue":  "patroni"
             },
-            "label": "Patroni + etcd"
+            "label":  "Patroni + etcd"
           }
         ],
-        "default": {
-          "stringValue": "none"
+        "default":  {
+          "stringValue":  "none"
         }
       },
-      "group": "High availability",
-      "title": "High availability"
+      "group":  "High availability",
+      "title":  "High availability"
     },
     {
-      "name": "etcd_nodes",
-      "description": "Size of the etcd DCS backing Patroni; odd numbers only — 1 for a toy stand, 3 to survive one loss.",
-      "choice": {
-        "options": [
+      "name":  "etcd_nodes",
+      "description":  "Size of the etcd DCS backing Patroni; odd numbers only — 1 for a toy stand, 3 to survive one loss.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "int64Value": "1"
+            "value":  {
+              "int64Value":  "1"
             },
-            "label": "1 (no fault tolerance)"
+            "label":  "1 (no fault tolerance)"
           },
           {
-            "value": {
-              "int64Value": "3"
+            "value":  {
+              "int64Value":  "3"
             },
-            "label": "3 (tolerates one loss)"
+            "label":  "3 (tolerates one loss)"
           }
         ],
-        "default": {
-          "int64Value": "3"
+        "default":  {
+          "int64Value":  "3"
         }
       },
-      "group": "High availability",
-      "title": "etcd nodes",
-      "when": "root.ha == \"patroni\""
+      "group":  "High availability",
+      "title":  "etcd nodes",
+      "when":  "root.ha == \"patroni\""
     },
     {
-      "name": "haproxy",
-      "description": "HAProxy instances routing clients to the current primary (httpchk /primary against the Patroni REST API).",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "2"
+      "name":  "haproxy",
+      "description":  "HAProxy instances routing clients to the current primary (httpchk /primary against the Patroni REST API).",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "2"
       },
-      "group": "Routing",
-      "title": "HAProxy nodes"
+      "group":  "Routing",
+      "title":  "HAProxy nodes"
     },
     {
-      "name": "pgbouncer",
-      "description": "Collocate a PgBouncer pooler with every database node.",
-      "bool": {
-        "default": false
+      "name":  "pgbouncer",
+      "description":  "Collocate a PgBouncer pooler with every database node.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Routing",
-      "title": "PgBouncer"
+      "group":  "Routing",
+      "title":  "PgBouncer"
     },
     {
-      "name": "wal_archive",
-      "description": "Turn on archive_mode and archive WAL segments to local storage on the primary.",
-      "bool": {
-        "default": false
+      "name":  "wal_archive",
+      "description":  "Turn on archive_mode and archive WAL segments to local storage on the primary.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Storage",
-      "title": "WAL archiving"
+      "group":  "Storage",
+      "title":  "WAL archiving"
     },
     {
-      "name": "extensions",
-      "description": "CREATE EXTENSION on the benchmark database after initdb; preload-only ones are added to shared_preload_libraries too.",
-      "list": {
-        "items": [
+      "name":  "extensions",
+      "description":  "CREATE EXTENSION on the benchmark database after initdb; preload-only ones are added to shared_preload_libraries too.",
+      "list":  {
+        "items":  [
           {
-            "choice": {
-              "options": [
+            "choice":  {
+              "options":  [
                 {
-                  "value": {
-                    "stringValue": "pg_stat_statements"
+                  "value":  {
+                    "stringValue":  "pg_stat_statements"
                   },
-                  "label": "pg_stat_statements (contrib)"
+                  "label":  "pg_stat_statements (contrib)"
                 },
                 {
-                  "value": {
-                    "stringValue": "pg_buffercache"
+                  "value":  {
+                    "stringValue":  "pg_buffercache"
                   },
-                  "label": "pg_buffercache (contrib)"
+                  "label":  "pg_buffercache (contrib)"
                 },
                 {
-                  "value": {
-                    "stringValue": "pg_prewarm"
+                  "value":  {
+                    "stringValue":  "pg_prewarm"
                   },
-                  "label": "pg_prewarm (contrib)"
+                  "label":  "pg_prewarm (contrib)"
                 },
                 {
-                  "value": {
-                    "stringValue": "pg_trgm"
+                  "value":  {
+                    "stringValue":  "pg_trgm"
                   },
-                  "label": "pg_trgm (contrib)"
+                  "label":  "pg_trgm (contrib)"
                 },
                 {
-                  "value": {
-                    "stringValue": "vector"
+                  "value":  {
+                    "stringValue":  "vector"
                   },
-                  "label": "pgvector (postgresql-N-pgvector)"
+                  "label":  "pgvector (postgresql-N-pgvector)"
                 },
                 {
-                  "value": {
-                    "stringValue": "pg_partman"
+                  "value":  {
+                    "stringValue":  "pg_partman"
                   },
-                  "label": "pg_partman (postgresql-N-partman)"
+                  "label":  "pg_partman (postgresql-N-partman)"
                 },
                 {
-                  "value": {
-                    "stringValue": "postgis"
+                  "value":  {
+                    "stringValue":  "postgis"
                   },
-                  "label": "PostGIS 3 (postgresql-N-postgis-3)"
+                  "label":  "PostGIS 3 (postgresql-N-postgis-3)"
                 },
                 {
-                  "value": {
-                    "stringValue": "hypopg"
+                  "value":  {
+                    "stringValue":  "hypopg"
                   },
-                  "label": "hypopg (postgresql-N-hypopg)"
+                  "label":  "hypopg (postgresql-N-hypopg)"
                 },
                 {
-                  "value": {
-                    "stringValue": "pg_cron"
+                  "value":  {
+                    "stringValue":  "pg_cron"
                   },
-                  "label": "pg_cron (postgresql-N-cron)"
+                  "label":  "pg_cron (postgresql-N-cron)"
                 }
               ]
             }
           }
         ],
-        "maxItems": "9",
-        "unique": true
+        "maxItems":  "9",
+        "unique":  true
       },
-      "group": "Extensions",
-      "title": "Extensions"
+      "group":  "Extensions",
+      "title":  "Extensions"
     },
     {
-      "name": "locale",
-      "description": "Locale passed to initdb --locale; C.UTF-8 keeps collation cheap and stable across images.",
-      "string": {
-        "default": "C.UTF-8",
-        "maxLen": "64",
-        "pattern": "^[A-Za-z0-9_@.\\-]+$"
+      "name":  "locale",
+      "description":  "Locale passed to initdb --locale; C.UTF-8 keeps collation cheap and stable across images.",
+      "string":  {
+        "default":  "C.UTF-8",
+        "maxLen":  "64",
+        "pattern":  "^[A-Za-z0-9_@.\\-]+$"
       },
-      "group": "Initialization",
-      "title": "initdb locale"
+      "group":  "Initialization",
+      "title":  "initdb locale"
     },
     {
-      "name": "init_sql",
-      "description": "SQL executed on the primary once the cluster is up, before the workload (schema tweaks, roles, GUC overrides).",
-      "string": {
-        "maxLen": "65536"
+      "name":  "init_sql",
+      "description":  "SQL executed on the primary once the cluster is up, before the workload (schema tweaks, roles, GUC overrides).",
+      "string":  {
+        "maxLen":  "65536"
       },
-      "group": "Initialization",
-      "title": "Init SQL"
+      "group":  "Initialization",
+      "title":  "Init SQL"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "int(root.sync_replicas) <= int(root.replicas)",
-      "message": "sync_replicas must not exceed replicas",
-      "id": "sync-le-replicas"
+      "expr":  "int(root.sync_replicas) <= int(root.replicas)",
+      "message":  "sync_replicas must not exceed replicas",
+      "id":  "sync-le-replicas"
     },
     {
-      "expr": "root.ha != \"patroni\" || int(root.replicas) >= 1",
-      "message": "Patroni needs at least one replica to fail over to",
-      "id": "patroni-needs-replica"
+      "expr":  "root.ha != \"patroni\" || int(root.replicas) >= 1",
+      "message":  "Patroni needs at least one replica to fail over to",
+      "id":  "patroni-needs-replica"
     },
     {
-      "expr": "int(root.haproxy) == 0 || int(root.replicas) >= 1 || root.pgbouncer",
-      "message": "HAProxy in front of a single unpooled node adds a hop and measures nothing",
-      "id": "haproxy-pointless",
-      "severity": "SEVERITY_WARNING"
+      "expr":  "int(root.haproxy) == 0 || int(root.replicas) >= 1 || root.pgbouncer",
+      "message":  "HAProxy in front of a single unpooled node adds a hop and measures nothing",
+      "id":  "haproxy-pointless",
+      "severity":  "SEVERITY_WARNING"
     },
     {
-      "expr": "int(root.sync_replicas) == 0 || root.ha == \"patroni\" || int(root.replicas) >= 2",
-      "message": "synchronous commit without Patroni and with a single replica stalls the primary when that replica dies",
-      "id": "sync-single-replica",
-      "severity": "SEVERITY_WARNING"
+      "expr":  "int(root.sync_replicas) == 0 || root.ha == \"patroni\" || int(root.replicas) >= 2",
+      "message":  "synchronous commit without Patroni and with a single replica stalls the primary when that replica dies",
+      "id":  "sync-single-replica",
+      "severity":  "SEVERITY_WARNING"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

@@ -1,0 +1,18 @@
+[
+  {
+    "ref": "artifact/7b66b6b6-stroppy-execute-sql-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:40e29c5a9ae2c883a02b445b694229a98e1732478bff145f96912a7c485badf2",
+    "location": "blobs/40e29c5a9ae2c883a02b445b694229a98e1732478bff145f96912a7c485badf2",
+    "size": 992
+  },
+  {
+    "ref": "artifact/7b66b6b6-stroppy-execute-sql-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T19:41:24.157733428Z",
+    "digest": "sha256:1aed602d90e5f59f81ad2f2efa5ca947423c835af52f1065df067743081fc23f",
+    "location": "blobs/1aed602d90e5f59f81ad2f2efa5ca947423c835af52f1065df067743081fc23f",
+    "size": 718
+  }
+]

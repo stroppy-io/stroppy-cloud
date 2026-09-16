@@ -1,0 +1,18 @@
+{
+  "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18",
+  "cause": "The independent SQL probe used the lc_collate GUC removed in PostgreSQL 18. It now queries pg_database.datcollate. These two exact messages came from probe attempts; native workload errors remain checked separately.",
+  "observations": [
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:26:54.907911808Z",
+      "message_sha256": "d54988f7982ad61fa3ef0fdc84cc46296ae7316f1fce8d7afeaf8b799bcfb2f9",
+      "classification": "diagnostic_probe_query_error"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:26:24.809526058Z",
+      "message_sha256": "63e7136a07800a294a1f8c7649b4d3bcb9e52c69e13bffde7431e207e87c5fa1",
+      "classification": "diagnostic_probe_query_error"
+    }
+  ]
+}

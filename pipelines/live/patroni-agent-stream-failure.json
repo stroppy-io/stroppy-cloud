@@ -1,0 +1,244 @@
+{
+  "run_id": "matrix-patroni-bf90d7a0-pg17-patroni-ha",
+  "workload_started": false,
+  "agent_sessions": {
+    "598b9b62-db-1": [
+      {
+        "time": "2026-09-14T15:18:52.173065+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:19:52.130789+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:19:53.227085+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:20:53.176113+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:20:55.253283+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:21:55.213129+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:21:59.291179+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:22:59.250989+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:23:07.329528+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:24:07.287042+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:24:23.372430+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:25:23.324661+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:25:55.406272+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:26:55.364843+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:27:55.442761+00:00",
+        "event": "connected",
+        "error": null
+      }
+    ],
+    "598b9b62-proxy-1": [
+      {
+        "time": "2026-09-14T15:18:51.534734+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:19:51.657573+00:00",
+        "event": "pull failed",
+        "error": "unpack rootfs: context canceled"
+      },
+      {
+        "time": "2026-09-14T15:19:51.657848+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:19:52.738411+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:20:52.702288+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:20:54.776739+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:21:54.738703+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:21:58.822389+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:22:58.774302+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:23:06.869512+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:24:06.816453+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:24:22.892710+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:25:22.851970+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:25:54.938285+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:26:54.897937+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:27:54.974504+00:00",
+        "event": "connected",
+        "error": null
+      }
+    ],
+    "598b9b62-runner-1": [
+      {
+        "time": "2026-09-14T15:18:55.995696+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:19:55.938657+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:19:57.025586+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:20:56.984176+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:20:59.061417+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:21:59.019152+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:22:03.095216+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:23:03.054450+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:23:11.130143+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:24:11.088779+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:24:27.167567+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:25:27.125300+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:25:59.202570+00:00",
+        "event": "connected",
+        "error": null
+      },
+      {
+        "time": "2026-09-14T15:26:59.161761+00:00",
+        "event": "session ended, reconnecting",
+        "error": "recv: rpc error: code = Internal desc = stream terminated by RST_STREAM with error code: INTERNAL_ERROR"
+      },
+      {
+        "time": "2026-09-14T15:27:59.237211+00:00",
+        "event": "connected",
+        "error": null
+      }
+    ]
+  },
+  "cause": "Traefik websecure default readTimeout=60s terminates bidirectional grpc request bodies; server command wait does not observe session closure",
+  "ingress_fix_commit": "f455ddd"
+}

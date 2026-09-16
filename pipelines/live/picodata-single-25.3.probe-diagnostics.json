@@ -1,0 +1,21 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-25.3",
+  "scope": "One owned read-only membership probe closed its successful pgwire session without Terminate. Exact container log timestamp 16:10:49.259Z matches probe completion 16:10:49.330Z. Not a workload SQL failure.",
+  "local_reproduction": {
+    "picodata_version": "25.3.8",
+    "abrupt_close_eof_log_delta": 1,
+    "terminate_close_eof_log_delta": 0,
+    "checked_at": "2026-09-15T16:21:06.014547+00:00"
+  },
+  "old_probe_sha256": "5768a260fba30689d33b3545ecc05309efeb2ab3b1f583b3864aa4b862857da4",
+  "fixed_probe_sha256": "1588b0b95886408f59de8f82625497b3540eeb482e10dce247bd53d9c191edb1",
+  "observations": [
+    {
+      "entity": "docker/4f582301-987a-4a12-b546-fad6d27e92a1-db-1-picodata",
+      "observed_at": "2026-09-15T16:10:51.164178644Z",
+      "message_sha256": "843ec45b158bfbb502021f6ee47e095d1f1d1468b8875a64086784bae65a509f",
+      "classification": "diagnostic_probe_abrupt_disconnect",
+      "message": "pgproto IO error: unexpected end of file"
+    }
+  ]
+}

@@ -21,7 +21,7 @@ type scheduleLauncher struct {
 	lib    *library.Service
 }
 
-func (l scheduleLauncher) LaunchTest(ctx context.Context, actor auth.Actor, tenantID, testID uuid.UUID, o run.Overrides) (uuid.UUID, string, string, error) {
+func (l scheduleLauncher) LaunchTest(ctx context.Context, actor auth.Actor, tenantID, testID uuid.UUID, o run.Overrides) (id uuid.UUID, name, status string, err error) {
 	r, err := l.runs.Launch(ctx, actor, tenantID, testID, o, "")
 	if err != nil {
 		return uuid.Nil, "", "", err
@@ -29,7 +29,7 @@ func (l scheduleLauncher) LaunchTest(ctx context.Context, actor auth.Actor, tena
 	return r.ID, r.Name, string(r.Status), nil
 }
 
-func (l scheduleLauncher) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, o run.Overrides) (uuid.UUID, string, string, error) {
+func (l scheduleLauncher) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, o run.Overrides) (id uuid.UUID, name, status string, err error) {
 	in := suite.Launch{Name: o.Name, Keep: o.Keep, RatingTenant: o.RatingTenant, RatingGlobal: o.RatingGlobal, Labels: o.Labels, Trigger: run.TriggerSchedule, ScheduleID: o.ScheduleID}
 	r, err := l.suites.LaunchSuite(ctx, actor, tenantID, suiteID, in, "")
 	if err != nil {

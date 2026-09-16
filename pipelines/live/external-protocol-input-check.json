@@ -1,0 +1,54 @@
+{
+  "status": "compile_passed",
+  "scope": "actual live-inputs CLI plus production compiler; placeholder DSNs only, no external database accessed",
+  "cells": [
+    {
+      "protocol": "pg",
+      "driver_type": "postgres",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    },
+    {
+      "protocol": "mysql",
+      "driver_type": "mysql",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    },
+    {
+      "protocol": "picodata",
+      "driver_type": "picodata",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    },
+    {
+      "protocol": "cockroach",
+      "driver_type": "postgres",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    },
+    {
+      "protocol": "ydb_grpc",
+      "driver_type": "ydb",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    },
+    {
+      "protocol": "ydb_grpcs",
+      "driver_type": "ydb",
+      "dsn_preserved": true,
+      "runner_only": true,
+      "status": "compile_passed",
+      "live": "pending"
+    }
+  ]
+}

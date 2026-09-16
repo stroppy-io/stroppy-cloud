@@ -465,7 +465,46 @@
               }
             ]
           },
-          "picodata":  {},
+          "picodata":  {
+            "fields":  [
+              {
+                "name":  "query_exec_mode",
+                "description":  "pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1.",
+                "choice":  {
+                  "options":  [
+                    {
+                      "value":  {
+                        "stringValue":  "exec"
+                      },
+                      "label":  "Exec (no cache)"
+                    },
+                    {
+                      "value":  {
+                        "stringValue":  "cache_statement"
+                      },
+                      "label":  "Cache prepared statements"
+                    },
+                    {
+                      "value":  {
+                        "stringValue":  "cache_describe"
+                      },
+                      "label":  "Cache statement descriptions"
+                    },
+                    {
+                      "value":  {
+                        "stringValue":  "describe_exec"
+                      },
+                      "label":  "Describe then exec"
+                    }
+                  ],
+                  "default":  {
+                    "stringValue":  "exec"
+                  }
+                },
+                "title":  "Query execution mode"
+              }
+            ]
+          },
           "ydb":  {
             "fields":  [
               {

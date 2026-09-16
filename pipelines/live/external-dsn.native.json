@@ -1,0 +1,127 @@
+{
+  "status": "passed",
+  "run_id": "external-dsn-7383cd13",
+  "segments": [
+    {
+      "segment": "external-canary",
+      "run_id": "external-dsn-7383cd13",
+      "source": "authenticated Graphene Metrics API / persistent VictoriaMetrics",
+      "series": 62,
+      "instance": "b48ad1d6-6c3c-40b4-a14a-2c78fca94f81",
+      "metric_names": [
+        "stroppy_failed_iterations_total",
+        "stroppy_failed_queries_total",
+        "stroppy_iteration_duration_milliseconds_bucket",
+        "stroppy_iteration_duration_milliseconds_count",
+        "stroppy_iteration_duration_milliseconds_sum",
+        "stroppy_iterations_per_second_per_second",
+        "stroppy_iterations_total",
+        "stroppy_measurement_seconds",
+        "stroppy_queries_per_second_per_second",
+        "stroppy_retry_attempts_total",
+        "stroppy_run_query_duration_milliseconds_bucket",
+        "stroppy_run_query_duration_milliseconds_count",
+        "stroppy_run_query_duration_milliseconds_sum",
+        "stroppy_run_query_operations_total",
+        "stroppy_terminal_errors_total",
+        "target_info"
+      ],
+      "measurements": {
+        "iterations_per_second": 7148.56151278,
+        "queries_per_second": 7148.56151278,
+        "measurement_seconds": 120.000506181,
+        "iterations_total": 857831.0,
+        "failed_iterations_total": 0.0,
+        "failed_queries_total": 0.0,
+        "terminal_errors_total": 0.0,
+        "retry_attempts_total": 0.0
+      },
+      "native_summary": {
+        "failed_iterations_total": {
+          "value": 0
+        },
+        "failed_queries_total": {
+          "value": 0
+        },
+        "iteration_duration_avg": {
+          "value": 0.278,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 857831
+        },
+        "iteration_duration_p50": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "iterations_per_second": {
+          "value": 7148.562,
+          "unit": "iterations/s"
+        },
+        "iterations_total": {
+          "value": 857831
+        },
+        "measurement_seconds": {
+          "value": 120.001,
+          "unit": "s"
+        },
+        "queries_per_second": {
+          "value": 7148.562,
+          "unit": "queries/s"
+        },
+        "retry_attempts_total": {
+          "value": 0
+        },
+        "run_query_duration_avg": {
+          "value": 0.266,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 857831
+        },
+        "run_query_duration_p50": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 857831
+        },
+        "terminal_errors_total": {
+          "value": 0
+        }
+      },
+      "workload_without_terminal_errors": true,
+      "compliance": null,
+      "query_window": {
+        "start": "2026-09-15T20:53:21.403949+00:00",
+        "end": "2026-09-15T20:53:51.403949+00:00"
+      },
+      "query_scope": "final native measurements after segment exit; not a full time-series export",
+      "status": "passed"
+    }
+  ]
+}

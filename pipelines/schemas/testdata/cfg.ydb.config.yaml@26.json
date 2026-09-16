@@ -7,6 +7,37 @@
   "description":  "YDB 26.x static cluster configuration (config.yaml, configuration V1).",
   "fields":  [
     {
+      "name":  "static_erasure",
+      "description":  "static_erasure — erasure scheme of the static blob-storage group, filled by the server from topology.",
+      "choice":  {
+        "options":  [
+          {
+            "value":  {
+              "stringValue":  "none"
+            },
+            "label":  "none — no redundancy"
+          },
+          {
+            "value":  {
+              "stringValue":  "block-4-2"
+            },
+            "label":  "block-4-2"
+          },
+          {
+            "value":  {
+              "stringValue":  "mirror-3-dc"
+            },
+            "label":  "mirror-3-dc"
+          }
+        ],
+        "default":  {
+          "stringValue":  "none"
+        }
+      },
+      "group":  "Cluster",
+      "title":  "Static group fault tolerance"
+    },
+    {
       "name":  "drives",
       "description":  "The pdisks of one host configuration. Filled by the server from pdisks_per_storage_node.",
       "list":  {
@@ -669,7 +700,7 @@
     {
       "name":  "drive_block",
       "computed":  {
-        "expr":  "(\"drives\" in root) ? root.drives.map(d,\n\t\t\t\t\"  - path: \" + d.path + \"\\n    type: \" + d.type\n\t\t\t).join(\"\\n\") : \"  []\"",
+        "expr":  "(\"drives\" in root) ? root.drives.map(d,\n\t\t\t\t\"  - path: \" + d.path + \"\\n    type: \" + d.type.upperAscii()\n\t\t\t).join(\"\\n\") : \"  []\"",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Cluster",
@@ -701,6 +732,16 @@
       },
       "group":  "Cluster",
       "title":  "Rendered state_storage"
+    },
+    {
+      "name":  "channel_profile_block",
+      "description":  "Three channels for system tablet profile 0, derived from the first configured storage pool.",
+      "computed":  {
+        "expr":  "[0, 1, 2].map(channel,\n\t\t\t \"    - erasure_species: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].erasure_species : root.static_erasure) + \"\\n\" +\n\t\t\t \"      pdisk_category: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? (root.storage_pool_types[0].pdisk_type == \"ROT\" ? \"0\" : (root.storage_pool_types[0].pdisk_type == \"NVME\" ? \"2\" : \"1\")) : \"1\") + \"\\n\" +\n\t\t\t \"      storage_pool_kind: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].kind : \"ssd\")\n\t\t\t).join(\"\\n\")",
+        "result":  "RESULT_TYPE_STRING"
+      },
+      "group":  "Domain",
+      "title":  "Rendered system tablet channels"
     },
     {
       "name":  "feature_flag_block",
@@ -755,6 +796,6 @@
   "strict":  true,
   "coerce":  true,
   "templates":  {
-    "conf":  "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\n  port: {{{values.interconnect_port}}}\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+    "conf":  "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

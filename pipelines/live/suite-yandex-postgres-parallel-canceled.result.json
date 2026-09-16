@@ -1,0 +1,1 @@
+{"cells":[{"id":"pg-1","run_id":"run/matrix-pg-parallel-b7cc726c-pg-1","status":"failed","error":"canceled"},{"id":"pg-2","run_id":"run/matrix-pg-parallel-b7cc726c-pg-2","status":"failed","error":"canceled"}],"total":2,"done":0,"failed":2}

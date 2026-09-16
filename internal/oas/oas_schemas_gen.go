@@ -16086,7 +16086,12 @@ func (s *QueryRunMetricsRawReq) SetStep(val OptString) {
 type QuotaReport struct {
 	ObservedAt NilDateTime `json:"observed_at"`
 	// Older than the freshness window (1 min).
-	Stale  bool                    `json:"stale"`
+	Stale bool `json:"stale"`
+	// Permission_denied when cloud quotas cannot be read. Quotas are empty; launch skips the cloud
+	// precheck, and the provider enforces its actual limits.
+	UnavailableReason OptString `json:"unavailable_reason"`
+	// Scope of the quota snapshot or denied request, e.g. cloud:b1g... for Yandex Cloud.
+	Scope  OptString               `json:"scope"`
 	Quotas []QuotaReportQuotasItem `json:"quotas"`
 }
 
@@ -16098,6 +16103,16 @@ func (s *QuotaReport) GetObservedAt() NilDateTime {
 // GetStale returns the value of Stale.
 func (s *QuotaReport) GetStale() bool {
 	return s.Stale
+}
+
+// GetUnavailableReason returns the value of UnavailableReason.
+func (s *QuotaReport) GetUnavailableReason() OptString {
+	return s.UnavailableReason
+}
+
+// GetScope returns the value of Scope.
+func (s *QuotaReport) GetScope() OptString {
+	return s.Scope
 }
 
 // GetQuotas returns the value of Quotas.
@@ -16113,6 +16128,16 @@ func (s *QuotaReport) SetObservedAt(val NilDateTime) {
 // SetStale sets the value of Stale.
 func (s *QuotaReport) SetStale(val bool) {
 	s.Stale = val
+}
+
+// SetUnavailableReason sets the value of UnavailableReason.
+func (s *QuotaReport) SetUnavailableReason(val OptString) {
+	s.UnavailableReason = val
+}
+
+// SetScope sets the value of Scope.
+func (s *QuotaReport) SetScope(val OptString) {
+	s.Scope = val
 }
 
 // SetQuotas sets the value of Quotas.

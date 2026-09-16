@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "module": "github.com/graphene-ci/library/docker",
+  "version": "v0.2.3",
+  "commit": "bd9b93323284524296b0efbb0a41e72dba251c79",
+  "sum": "h1:2prS9paUREJMpi/IaULY7OxviVGVrIMVR5mXAP3tg1c=",
+  "ci": 35010004847,
+  "release": 35010100446,
+  "local_checks": [
+    "regression fails without installation heartbeat",
+    "standalone module tests",
+    "all library module tests and lint",
+    "pipeline tests and lint"
+  ],
+  "docs_commit": "1da4a61e07b697c0943fdea1b51a18e5c30bbf3a",
+  "docs_ci": 35010008689,
+  "worker": "932541bfa871c3f2",
+  "contract": {
+    "first_heartbeat": "before engine probe",
+    "interval_seconds": 15,
+    "pipeline_heartbeat_timeout_seconds": 60,
+    "installation_attempt_timeout_seconds": 900
+  },
+  "cloud_recovery": "previous Serverless attempt recovered automatically after its original 15-minute timeout; new timeout applies to future workers"
+}

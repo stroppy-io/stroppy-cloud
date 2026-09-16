@@ -1,0 +1,114 @@
+{
+  "status": "deployed_recovered",
+  "checked_at": "2026-09-15T22:12:10.087096+00:00",
+  "run_id": "matrix-ydbparallel-9176f5d9",
+  "provider_image_version": "v0.12.0",
+  "evictions": [
+    {
+      "pod": "provider-jet-yc-c40f8c9b9edd-6b85f6cb6b-4bwqk",
+      "reason": "Evicted",
+      "message": "The node was low on resource: memory. Threshold quantity: 100Mi, available: 57280Ki. Container package-runtime was using 546040Ki, request is 0, has larger consumption of memory. ",
+      "requests": {}
+    },
+    {
+      "pod": "provider-jet-yc-c40f8c9b9edd-6b85f6cb6b-b5qq6",
+      "reason": "Evicted",
+      "message": "The node was low on resource: memory. Threshold quantity: 100Mi, available: 96432Ki. Container package-runtime was using 2275716Ki, request is 0, has larger consumption of memory. ",
+      "requests": {}
+    },
+    {
+      "pod": "provider-jet-yc-c40f8c9b9edd-6b85f6cb6b-nn7wq",
+      "reason": "Evicted",
+      "message": "The node was low on resource: memory. Threshold quantity: 100Mi, available: 13412Ki. Container package-runtime was using 751340Ki, request is 0, has larger consumption of memory. ",
+      "requests": {}
+    },
+    {
+      "pod": "provider-jet-yc-c40f8c9b9edd-6b85f6cb6b-zfzvw",
+      "reason": "Evicted",
+      "message": "The node was low on resource: memory. Threshold quantity: 100Mi, available: 100820Ki. Container package-runtime was using 1106688Ki, request is 0, has larger consumption of memory. ",
+      "requests": {}
+    }
+  ],
+  "yc_operation_limit_errors": [
+    {
+      "resource": "stroppy-stroppy-live-196f8ab3-db-6",
+      "message_sha256": "fbb81a5e43e6c3abbc6c3e2c85f54b18b647d758d7fb351986a93f9a4b0e1cb6",
+      "condition_time": "2026-09-15T21:35:29Z",
+      "observed_at": "2026-09-15T21:36:57.499986+00:00"
+    },
+    {
+      "resource": "stroppy-stroppy-live-196f8ab3-db-6",
+      "message_sha256": "741e5015161dab16886fbd58ff7c1ee3a3b1d2f9e133b50e60eb495e824e0061",
+      "condition_time": "2026-09-15T21:35:29Z",
+      "observed_at": "2026-09-15T21:36:57.499999+00:00"
+    }
+  ],
+  "quota_manager_folder_lookup": "Unsupported resource type; numeric effective folder operation limit not verified",
+  "campaign_vm_created": 39,
+  "campaign_vm_expected": 39,
+  "proposed_runtime": {
+    "memory_request": "2Gi",
+    "memory_limit": "2Gi",
+    "cpu_request": "250m",
+    "max_reconcile_rate": 1,
+    "node_pool": "infra",
+    "dedicated_runtime_config": "provider-jet-yc"
+  },
+  "validation": {
+    "helm_render": "passed",
+    "kubernetes_server_dry_run": "passed",
+    "image_entrypoint": "provider",
+    "required_terraform_options": "present in published image environment",
+    "deployed": true,
+    "helm_lint": "passed",
+    "runtime_memory_resources": {
+      "limits": {
+        "memory": "2Gi"
+      },
+      "requests": {
+        "cpu": "250m",
+        "memory": "2Gi"
+      }
+    },
+    "runtime_args": [
+      "--max-reconcile-rate=1"
+    ]
+  },
+  "source": "https://github.com/yandex-cloud/provider-jet-yc/blob/v0.12.0/cmd/provider/main.go",
+  "source_sha256": "9ddf6684abdd3c7970d4e35ae9cb6f1d04c9e542f42a0321ed7c1100f16adbf6",
+  "limitation": "max-reconcile-rate limits reconcile starts and per-controller concurrency; not a strict global cap on outstanding asynchronous YC operations",
+  "gitops_commit": "28827f692b04e1f01b1bc4bed5f40926418f05bb",
+  "deployed_at": "2026-09-15T21:48:41Z",
+  "provider_pod": "provider-jet-yc-c40f8c9b9edd-6bcccfcfcd-wr6dw",
+  "provider_restarts": 0,
+  "memory_observation_mib": 460,
+  "recovered_vm_links": 21,
+  "ready_vm_count": 39,
+  "gitops_sync": "Synced",
+  "gitops_health": "Healthy",
+  "nine_native_segments": "passed",
+  "autonomous_verification": {
+    "status": "passed",
+    "run_id": "matrix-ydbautonomous-73a81601",
+    "checked_at": "2026-09-15T23:36:10.474037+00:00",
+    "provisioning_evidence": "yc-autonomous-provisioning-check.json",
+    "workload_evidence": "ydb-autonomous-workload-check.json",
+    "cleanup_evidence": "ydb-autonomous-cleanup-check.json",
+    "last_provider_observation": {
+      "checked_at": "2026-09-15T23:34:15.060506+00:00",
+      "provider_pods": [
+        {
+          "name": "provider-jet-yc-c40f8c9b9edd-6bcccfcfcd-wr6dw",
+          "uid": "16cbd03a-29f5-4c28-aab8-200e30661b0f",
+          "phase": "Running",
+          "reason": null,
+          "restarts": 0
+        }
+      ],
+      "instances_declared": 0,
+      "instances_ready": 0,
+      "condition_failures": [],
+      "resource_usage": "NAME                                            CPU(cores)   MEMORY(bytes)   \nprovider-jet-yc-c40f8c9b9edd-6bcccfcfcd-wr6dw   101m         285Mi           \n"
+    }
+  }
+}

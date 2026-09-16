@@ -1,0 +1,50 @@
+{
+  "checked_at": "2026-09-14T12:58:14.841765+00:00",
+  "run_prefixes": [
+    "a240e0ec",
+    "bf17490f",
+    "86099920",
+    "2aef3987",
+    "add49ba5",
+    "2bf3e915",
+    "8d7f91db"
+  ],
+  "captured_vm_and_disk_ids": [
+    "fhm03tkrdgp9jd5sq0l2",
+    "fhm04cfe14a71nohrmmv",
+    "fhm0mf7fuf7a86k4idq0",
+    "fhm13b7nnjf8sqi73l78",
+    "fhm17fdivank1oh09o2h",
+    "fhm3kt3g3na4k08lmr2p",
+    "fhm44uljnbukduo6kmpb",
+    "fhm4uh1husrop7v5ksn2",
+    "fhm6j98q5vl10138sr2u",
+    "fhm7f7vurgpiicabqad9",
+    "fhm83ae8m9ntfv4u8fb7",
+    "fhm8fqo34drps46j0ui0",
+    "fhmau61jhv5519vu0ndf",
+    "fhmb4ubi9hrpaieu641b",
+    "fhmcdslqas4som1q45sn",
+    "fhmdaduaqbhv97dopgk2",
+    "fhmgfl6g152qkfnl2366",
+    "fhmglnjsna7n1ddq5r5f",
+    "fhmkl1ao9hk55oor6g32",
+    "fhmnultdbv0h8qmcvesb",
+    "fhmo17l7k5rlg8feaand",
+    "fhmoa0peraevv6g9j4nn",
+    "fhmqmvt7s1jaaiukr6ho",
+    "fhmqteg2f9j3v89hv4tc",
+    "fhmsci903adervd5dufe",
+    "fhmtj4kn8o5omda9gt05",
+    "fhmuneeh4no80hbn85mg"
+  ],
+  "remaining": {
+    "compute instance": [],
+    "compute disk": [],
+    "vpc network": [],
+    "vpc subnet": [],
+    "vpc security-group": [],
+    "matrix-pg-mirror-df957f8d-pg-1": {},
+    "matrix-pg-mirror-df957f8d-pg-2": {}
+  }
+}

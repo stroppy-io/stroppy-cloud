@@ -103,7 +103,7 @@ export interface SpecResultRun1Summary {
 
 /** root */
 export interface SpecResultRun1 {
-  /** Metrics. Canonical run metrics by key (tps, latency_p99_ms, errors…). */
+  /** Metrics. Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments. */
   metrics?: Record<string, SpecResultRun1MetricsValue>;
   /** Segments. One entry per workload segment, in execution order. */
   segments?: Array<SpecResultRun1Item>;

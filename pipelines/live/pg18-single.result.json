@@ -1,0 +1,199 @@
+{
+  "metrics": {
+    "smoke.insert_duration_avg": {
+      "value": 5.155,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_count": {
+      "value": 1
+    },
+    "smoke.insert_duration_p50": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p90": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p95": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "smoke.insert_duration_p99": {
+      "value": 10,
+      "unit": "ms"
+    },
+    "smoke.insert_operations_total": {
+      "value": 1
+    },
+    "smoke.insert_progress_rows_per_second": {
+      "value": 19235.001
+    },
+    "smoke.insert_progress_rows_total": {
+      "value": 100
+    },
+    "smoke.insert_rows_total": {
+      "value": 100
+    },
+    "smoke.iteration_duration_avg": {
+      "value": 0.876,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_count": {
+      "value": 273455
+    },
+    "smoke.iteration_duration_p50": {
+      "value": 1,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p90": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p95": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iteration_duration_p99": {
+      "value": 2.5,
+      "unit": "ms"
+    },
+    "smoke.iterations_total": {
+      "value": 273455
+    },
+    "smoke.run_query_duration_avg": {
+      "value": 0.211,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_count": {
+      "value": 1093823
+    },
+    "smoke.run_query_duration_p50": {
+      "value": 0.25,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p90": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p95": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_duration_p99": {
+      "value": 0.5,
+      "unit": "ms"
+    },
+    "smoke.run_query_operations_total": {
+      "value": 1093823
+    }
+  },
+  "segments": [
+    {
+      "name": "smoke",
+      "status": "completed",
+      "started_at": "2026-09-14T13:54:32.32364199Z",
+      "finished_at": "2026-09-14T13:56:34.654051516Z",
+      "metrics": {
+        "insert_duration_avg": {
+          "value": 5.155,
+          "unit": "ms"
+        },
+        "insert_duration_count": {
+          "value": 1
+        },
+        "insert_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "insert_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "insert_duration_p95": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "insert_duration_p99": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "insert_operations_total": {
+          "value": 1
+        },
+        "insert_progress_rows_per_second": {
+          "value": 19235.001
+        },
+        "insert_progress_rows_total": {
+          "value": 100
+        },
+        "insert_rows_total": {
+          "value": 100
+        },
+        "iteration_duration_avg": {
+          "value": 0.876,
+          "unit": "ms"
+        },
+        "iteration_duration_count": {
+          "value": 273455
+        },
+        "iteration_duration_p50": {
+          "value": 1,
+          "unit": "ms"
+        },
+        "iteration_duration_p90": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p95": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iteration_duration_p99": {
+          "value": 2.5,
+          "unit": "ms"
+        },
+        "iterations_total": {
+          "value": 273455
+        },
+        "run_query_duration_avg": {
+          "value": 0.211,
+          "unit": "ms"
+        },
+        "run_query_duration_count": {
+          "value": 1093823
+        },
+        "run_query_duration_p50": {
+          "value": 0.25,
+          "unit": "ms"
+        },
+        "run_query_duration_p90": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p95": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_duration_p99": {
+          "value": 0.5,
+          "unit": "ms"
+        },
+        "run_query_operations_total": {
+          "value": 1093823
+        }
+      },
+      "exit_code": 0
+    }
+  ],
+  "artifacts": [
+    "artifact/ecdff9d2-stroppy-smoke-config",
+    "artifact/ecdff9d2-stroppy-smoke-log"
+  ],
+  "summary": {
+    "latency_p50_ms": 1,
+    "latency_p95_ms": 2.5,
+    "latency_p99_ms": 2.5,
+    "duration": "2m2.330409526s"
+  }
+}

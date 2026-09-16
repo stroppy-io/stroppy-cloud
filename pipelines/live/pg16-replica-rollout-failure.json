@@ -1,0 +1,10 @@
+{
+  "run_id": "matrix-pg-retry-daaf3554-pg16-primary-replica",
+  "trigger": "server rollout from 0.2.6 to 0.2.7 during workload",
+  "failure": "activity Heartbeat timeout",
+  "activity": "stroppy.segment.run",
+  "event_id": "572",
+  "retry_state": "RETRY_STATE_MAXIMUM_ATTEMPTS_REACHED",
+  "replication_probe": "passed before rollout",
+  "followup": "fresh run on unchanged 0.2.7; restart recovery remains a separate fault-campaign case"
+}

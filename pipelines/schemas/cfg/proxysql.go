@@ -55,6 +55,12 @@ func Proxysql2() *schemapb.Schema {
 				Desc("host:port list the admin interface listens on, semicolon-separated.").
 				MinLen(1).MaxLen(255).Default("0.0.0.0:6032"),
 
+			// doc: https://proxysql.com/documentation/prometheus-exporter/
+			trueFalse("restapi_enabled", "false").Title("Metrics endpoint").Group("Admin").
+				Desc("Expose native Prometheus metrics through the REST API listener."),
+			schemapb.Int64("restapi_port").Title("Metrics port").Group("Admin").
+				Desc("REST API and Prometheus listener port.").Gte(1).Lte(65535).Default(6070),
+
 			// ---- mysql_variables -------------------------------------------
 			// doc: .../mysql-variables/#mysql-interfaces
 			schemapb.Str("interfaces").Title("Client interfaces").Group("MySQL").
@@ -99,6 +105,10 @@ func Proxysql2() *schemapb.Schema {
 			schemapb.Str("default_charset").Title("Default charset").Group("MySQL").
 				Desc("Character set assumed for clients that do not announce one.").
 				MinLen(1).MaxLen(32).Default("utf8mb4"),
+			// doc: https://proxysql.com/documentation/global-variables/mysql-variables/#mysql-default_collation_connection
+			schemapb.Str("default_collation_connection").Title("Default collation").Group("MySQL").
+				Desc("Client handshake collation; must match default_charset. The default matches Stroppy's utf8mb4 charset instead of the upstream utf8 collation.").
+				MinLen(1).MaxLen(64).Default("utf8mb4_general_ci"),
 			// doc: .../mysql-variables/#mysql-sessions_sort
 			trueFalse("sessions_sort", "true").Title("Sort sessions").Group("MySQL").
 				Desc("Sort sessions by connection id to improve cache locality across threads."),
@@ -158,9 +168,10 @@ func Proxysql2() *schemapb.Schema {
 
 			// ---- hostgroups ------------------------------------------------------
 			schemapb.Choice("topology").Title("Backend topology").Group("Hostgroups").
-				Desc("Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, or none (static hostgroups only).").
+				Desc("Which hostgroup manager block is rendered: async/semisync replication (read_only based), group replication, Galera, or none (static hostgroups only).").
 				Opt(schemapb.StrV("replication"), "asynchronous / semisync replication").
 				Opt(schemapb.StrV("group_replication"), "group replication").
+				Opt(schemapb.StrV("galera"), "Galera").
 				Opt(schemapb.StrV("none"), "static hostgroups").
 				Default(schemapb.StrV("replication")),
 			schemapb.Int64("writer_hostgroup").Title("Writer hostgroup").Group("Hostgroups").
@@ -168,10 +179,10 @@ func Proxysql2() *schemapb.Schema {
 			schemapb.Int64("reader_hostgroup").Title("Reader hostgroup").Group("Hostgroups").
 				Desc("Hostgroup id receiving reads.").Gte(0).Lte(1000000).Default(20),
 			schemapb.Int64("backup_writer_hostgroup").Title("Backup writer hostgroup").Group("Hostgroups").
-				Desc("Group replication only: members that could become primary.").
+				Desc("Group Replication / Galera: members that could become primary.").
 				Gte(0).Lte(1000000).Default(30),
 			schemapb.Int64("offline_hostgroup").Title("Offline hostgroup").Group("Hostgroups").
-				Desc("Group replication only: members that left or fell too far behind.").
+				Desc("Group Replication / Galera: members that left or fell too far behind.").
 				Gte(0).Lte(1000000).Default(40),
 			// doc: .../mysql-tables/#mysql_replication_hostgroups check_type
 			schemapb.Choice("check_type").Title("Replication check type").Group("Hostgroups").
@@ -181,14 +192,14 @@ func Proxysql2() *schemapb.Schema {
 				Opt(schemapb.StrV("super_read_only"), "super_read_only").
 				Default(schemapb.StrV("read_only")),
 			schemapb.Int64("max_writers").Title("Max writers").Group("Hostgroups").
-				Desc("Group replication only: how many members may sit in the writer hostgroup at once.").
+				Desc("Group Replication / Galera: how many members may sit in the writer hostgroup at once.").
 				Gte(1).Lte(64).Default(1),
 			// doc: .../mysql-tables/#mysql_group_replication_hostgroups writer_is_also_reader
 			schemapb.Int64("writer_is_also_reader").Title("Writer is also reader").Group("Hostgroups").
 				Desc("0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read.").
 				In(0, 1, 2).Default(0),
 			schemapb.Int64("max_transactions_behind").Title("Max transactions behind").Group("Hostgroups").
-				Desc("Group replication only: lag in transactions before a reader is shunned; 0 disables the check.").
+				Desc("Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check.").
 				Gte(0).Lte(1000000).Default(0),
 
 			// ---- query rules --------------------------------------------------------
@@ -204,6 +215,9 @@ func Proxysql2() *schemapb.Schema {
 						Title("Port").Desc("Backend port."),
 					schemapb.Int64("hostgroup").Required().Gte(0).Lte(1000000).
 						Title("Hostgroup").Desc("Initial hostgroup id — writer_hostgroup for the primary, reader_hostgroup for replicas."),
+					// doc: https://proxysql.com/documentation/main-runtime/#mysql_servers
+					schemapb.Int64("use_ssl").In(0, 1).Default(0).
+						Title("Backend TLS").Desc("Use TLS for backend connections; required for fresh caching_sha2_password authentication."),
 					schemapb.Int64("weight").Gte(1).Lte(10000000).Default(1).
 						Title("Weight").Desc("Relative share of traffic inside its hostgroup."),
 					schemapb.Int64("max_connections").Gte(1).Lte(1000000).Default(1000).
@@ -220,7 +234,7 @@ func Proxysql2() *schemapb.Schema {
 				`(("mysql_servers" in root) && size(root.mysql_servers) > 0) ? ("mysql_servers =\n(\n" + root.mysql_servers.map(s,
 					"    { address=\"" + `+psDef("address", "")+` + "\", port=" + `+psDef("port", "3306")+` +
 					", hostgroup=" + `+psDef("hostgroup", "0")+` + ", weight=" + `+psDef("weight", "1")+` +
-					", max_connections=" + `+psDef("max_connections", "1000")+` + " }").join(",\n") + "\n)\n") : ""`).
+					", max_connections=" + `+psDef("max_connections", "1000")+` + ", use_ssl=" + `+psDef("use_ssl", "0")+` + " }").join(",\n") + "\n)\n") : ""`).
 				Result(schemapb.ResultString).Group("Rendered").
 				Title("mysql_servers block").Desc("The backend list in libconfig record syntax."),
 
@@ -244,7 +258,7 @@ func Proxysql2() *schemapb.Schema {
 				`(root.topology == "replication") ? ("mysql_replication_hostgroups =\n(\n    { writer_hostgroup=" + string(root.writer_hostgroup) +
 					", reader_hostgroup=" + string(root.reader_hostgroup) +
 					", check_type=\"" + string(root.check_type) + "\" }\n)\n")
-				: ((root.topology == "group_replication") ? ("mysql_group_replication_hostgroups =\n(\n    { writer_hostgroup=" + string(root.writer_hostgroup) +
+				: ((root.topology in ["group_replication", "galera"]) ? ("mysql_" + root.topology + "_hostgroups =\n(\n    { writer_hostgroup=" + string(root.writer_hostgroup) +
 					", backup_writer_hostgroup=" + string(root.backup_writer_hostgroup) +
 					", reader_hostgroup=" + string(root.reader_hostgroup) +
 					", offline_hostgroup=" + string(root.offline_hostgroup) +
@@ -252,7 +266,7 @@ func Proxysql2() *schemapb.Schema {
 					", writer_is_also_reader=" + string(root.writer_is_also_reader) +
 					", max_transactions_behind=" + string(root.max_transactions_behind) + " }\n)\n") : "")`).
 				Result(schemapb.ResultString).Group("Rendered").
-				Title("Hostgroup manager block").Desc("mysql_replication_hostgroups or mysql_group_replication_hostgroups, depending on topology."),
+				Title("Hostgroup manager block").Desc("Replication, Group Replication or Galera hostgroup manager, selected by topology."),
 
 			schemapb.Computed("custom_rendered",
 				`("custom" in root) ? root.custom.map(k, "    " + k + "=" + string(root.custom[k])).join("\n") : ""`).
@@ -263,8 +277,8 @@ func Proxysql2() *schemapb.Schema {
 		Rules(
 			schemapb.Rule(`!("writer_hostgroup" in root) || !("reader_hostgroup" in root) || int(root.writer_hostgroup) != int(root.reader_hostgroup)`,
 				"writer_hostgroup and reader_hostgroup must differ").ID("hostgroups-distinct"),
-			schemapb.Rule(`!("topology" in root) || root.topology != "group_replication" || (int(root.backup_writer_hostgroup) != int(root.writer_hostgroup) && int(root.offline_hostgroup) != int(root.writer_hostgroup))`,
-				"group replication needs four distinct hostgroups").ID("gr-hostgroups-distinct"),
+			schemapb.Rule(`!(root.topology in ["group_replication", "galera"]) || (root.backup_writer_hostgroup != root.writer_hostgroup && root.backup_writer_hostgroup != root.reader_hostgroup && root.backup_writer_hostgroup != root.offline_hostgroup && root.offline_hostgroup != root.writer_hostgroup && root.offline_hostgroup != root.reader_hostgroup && root.reader_hostgroup > 0)`,
+				"Group Replication and Galera need four distinct hostgroups, with a positive reader hostgroup").ID("gr-hostgroups-distinct"),
 			schemapb.Rule(`!("monitor_read_only_timeout" in root) || !("monitor_read_only_interval" in root) || int(root.monitor_read_only_timeout) < int(root.monitor_read_only_interval)`,
 				"monitor_read_only_timeout must be smaller than monitor_read_only_interval").ID("read-only-timeout"),
 			customKeyRule(),
@@ -278,6 +292,8 @@ admin_variables=
 {
     admin_credentials="{{{values.admin_credentials}}}"
     mysql_ifaces="{{{values.admin_mysql_ifaces}}}"
+    restapi_enabled={{{values.restapi_enabled}}}
+    restapi_port={{{values.restapi_port}}}
 }
 
 mysql_variables=
@@ -293,6 +309,7 @@ mysql_variables=
     server_version="{{{values.server_version}}}"
     default_schema="{{{values.default_schema}}}"
     default_charset="{{{values.default_charset}}}"
+    default_collation_connection="{{{values.default_collation_connection}}}"
     sessions_sort={{{values.sessions_sort}}}
     commands_stats={{{values.commands_stats}}}
     monitor_username="{{{values.monitor_username}}}"

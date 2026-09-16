@@ -1,0 +1,10 @@
+{
+  "status": "not_started",
+  "checked_at": "2026-09-15T23:52:42.872461+00:00",
+  "reason": "User requested resolving Kubernetes credentials first, then discussing a new test plan before any launches. Prepared suite inputs are drafts, not scheduled runs.",
+  "draft_run_ids": [
+    "soak-pg18-5h-2543dfda",
+    "matrix-pgnative-cc3e3d4f"
+  ],
+  "token_evidence": "persistent-kubeconfig-check.json"
+}

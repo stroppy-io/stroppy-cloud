@@ -1,0 +1,151 @@
+{
+  "status": "passed",
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-26.1",
+  "source": "persisted native Stroppy insert-progress logs, exact namespace and run selector",
+  "samples": [
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "new_order",
+      "method": "native",
+      "rows": 18000,
+      "total_rows": 18000,
+      "generated_rows": 18000,
+      "confirmed_rows": 18000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "order_line",
+      "method": "native",
+      "rows": 600000,
+      "total_rows": 600000,
+      "generated_rows": 600000,
+      "confirmed_rows": 600000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "orders",
+      "method": "native",
+      "rows": 60000,
+      "total_rows": 60000,
+      "generated_rows": 60000,
+      "confirmed_rows": 60000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "stock",
+      "method": "native",
+      "rows": 200000,
+      "total_rows": 200000,
+      "generated_rows": 200000,
+      "confirmed_rows": 200000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "item",
+      "method": "native",
+      "rows": 100000,
+      "total_rows": 100000,
+      "generated_rows": 100000,
+      "confirmed_rows": 100000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "customer",
+      "method": "native",
+      "rows": 60000,
+      "total_rows": 60000,
+      "generated_rows": 60000,
+      "confirmed_rows": 60000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "district",
+      "method": "native",
+      "rows": 20,
+      "total_rows": 20,
+      "generated_rows": 20,
+      "confirmed_rows": 20,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "warehouse",
+      "method": "native",
+      "rows": 2,
+      "total_rows": 2,
+      "generated_rows": 2,
+      "confirmed_rows": 2,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcb/tx",
+      "event": "completed",
+      "table": "pgbench_accounts",
+      "method": "native",
+      "rows": 100000,
+      "total_rows": 100000,
+      "generated_rows": 100000,
+      "confirmed_rows": 100000,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcb/tx",
+      "event": "completed",
+      "table": "pgbench_tellers",
+      "method": "native",
+      "rows": 10,
+      "total_rows": 10,
+      "generated_rows": 10,
+      "confirmed_rows": 10,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "tpcb/tx",
+      "event": "completed",
+      "table": "pgbench_branches",
+      "method": "native",
+      "rows": 1,
+      "total_rows": 1,
+      "generated_rows": 1,
+      "confirmed_rows": 1,
+      "inflight_rows": 0,
+      "percent": 100
+    },
+    {
+      "workload": "simple",
+      "event": "completed",
+      "table": "stroppy_demo",
+      "method": "plain_bulk",
+      "rows": 100,
+      "total_rows": 100,
+      "generated_rows": 100,
+      "confirmed_rows": 100,
+      "inflight_rows": 0,
+      "percent": 100
+    }
+  ]
+}

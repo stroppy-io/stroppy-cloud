@@ -1,0 +1,18 @@
+{
+  "run_id": "native-tpcc-77fa0211-tpcc",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 15089,
+  "limit": 20000,
+  "runs_observed": [
+    "native-tpcc-77fa0211-tpcc"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/fab090da-027a-420b-826f-f0ceb2bd6258-db-1-node-exporter": 57,
+    "docker/fab090da-027a-420b-826f-f0ceb2bd6258-db-1-postgres": 11719,
+    "docker/fab090da-027a-420b-826f-f0ceb2bd6258-db-1-postgres-exporter": 6,
+    "docker/fab090da-027a-420b-826f-f0ceb2bd6258-runner-1-node-exporter": 57
+  }
+}

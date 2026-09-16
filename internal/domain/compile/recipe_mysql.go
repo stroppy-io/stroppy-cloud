@@ -35,9 +35,9 @@ func mysqlRecipe(c *compilation) error {
 	mode := strParam(p, "replication", "async")
 	switch {
 	case mode == "group":
-		return errs.Newf(errs.CodeInvalid, "params.replication: group replication is not launchable yet")
+		return mysqlClusterRecipe(c, false)
 	case mode == "galera":
-		return errs.Newf(errs.CodeInvalid, "params.replication: galera is not launchable yet")
+		return mysqlClusterRecipe(c, true)
 	case boolParam(p, "maxscale"):
 		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet")
 	}
@@ -55,13 +55,31 @@ func mysqlRecipe(c *compilation) error {
 		for _, m := range c.machinesOf(role) {
 			serverID++
 			overlay := map[string]any{"server_id": serverID, "report_host": ip(m), "bind_address": "0.0.0.0", "port": mysqlPort}
+			if role == topology.RoleDBReplica {
+				overlay["read_only"] = "ON"
+			}
 			if !maria {
 				overlay["gtid_mode"] = "ON"
 				overlay["enforce_gtid_consistency"] = "ON"
+				if mode == "semi_sync" {
+					overlay["rpl_semi_sync_source_enabled"] = "OFF"
+					overlay["rpl_semi_sync_replica_enabled"] = "OFF"
+					if role == topology.RoleDB {
+						overlay["rpl_semi_sync_source_enabled"] = "ON"
+					} else {
+						overlay["rpl_semi_sync_replica_enabled"] = "ON"
+					}
+				}
 			}
 			conf, err := c.render(role, c.schemaFor(role, confPrefix), "conf", overlay)
 			if err != nil {
 				return err
+			}
+			if !maria && mode == "semi_sync" && role == topology.RoleDB {
+				// The database schema validates the requested ack count against
+				// the number of replicas. Keep it in the startup configuration.
+				conf += fmt.Sprintf("\nloose-rpl_semi_sync_source_wait_for_replica_count = %d\n",
+					int(numberOf(p["semi_sync_wait_for_slave_count"])))
 			}
 			ct := spec.Container{
 				Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
@@ -73,12 +91,20 @@ func mysqlRecipe(c *compilation) error {
 					fmt.Sprintf("%s -h127.0.0.1 -uroot -p%s -e 'SELECT 1'", clientOf(maria), mysqlPassword)),
 				Restart: "always",
 			}
+			if !maria && mode == "semi_sync" && role == topology.RoleDB {
+				// Fail readiness if the plugin was not loaded after initialization.
+				ct.Healthcheck = healthcheck("CMD-SHELL", fmt.Sprintf(
+					"test \"$(mysql -h127.0.0.1 -uroot -p%s -Nse 'SELECT @@GLOBAL.rpl_semi_sync_source_enabled')\" = 1", mysqlPassword))
+			}
 			if role == topology.RoleDB {
 				ct.Env["MYSQL_DATABASE"], ct.Env["MARIADB_DATABASE"] = mysqlDatabase, mysqlDatabase
-				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlInitSQL(strParam(p, "init_sql", ""))})
+				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlInitSQL(maria, strParam(p, "init_sql", ""))})
 			} else {
 				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlReplicaSQL(maria, ip(primary))})
 				ct.DependsOn = []string{primary + "-" + c.engineOf(topology.RoleDB)}
+				if !maria {
+					ct.Healthcheck = healthcheck("CMD-SHELL", mysqlReplicaHealth(mode == "semi_sync"))
+				}
 			}
 			c.add(ct)
 		}
@@ -111,11 +137,28 @@ func clientOf(maria bool) string {
 	return "mysql"
 }
 
+// A listening replica is not necessarily replicating. Wait for both the
+// receiver and applier and for the primary's initial database to arrive.
+func mysqlReplicaHealth(semisync bool) string {
+	query := "SELECT @@GLOBAL.read_only = 1 AND " +
+		"EXISTS(SELECT 1 FROM performance_schema.replication_connection_status WHERE CHANNEL_NAME='' AND SERVICE_STATE='ON') AND " +
+		"EXISTS(SELECT 1 FROM performance_schema.replication_applier_status WHERE CHANNEL_NAME='' AND SERVICE_STATE='ON') AND " +
+		"EXISTS(SELECT 1 FROM information_schema.SCHEMATA WHERE SCHEMA_NAME='stroppy')"
+	if semisync {
+		query += " AND @@GLOBAL.rpl_semi_sync_replica_enabled = 1 AND " +
+			"EXISTS(SELECT 1 FROM performance_schema.global_status WHERE VARIABLE_NAME='Rpl_semi_sync_replica_status' AND VARIABLE_VALUE='ON')"
+	}
+	return fmt.Sprintf("test \"$(mysql -h127.0.0.1 -uroot -p%s -Nse %q)\" = 1", mysqlPassword, query)
+}
+
 // mysqlInitSQL runs once on the primary: the exporter user and init SQL.
-func mysqlInitSQL(extra string) string {
+func mysqlInitSQL(maria bool, extra string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s';\n", exporterUser, exporterPassword)
 	fmt.Fprintf(&b, "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '%s'@'%%';\n", exporterUser)
+	if maria {
+		fmt.Fprintf(&b, "GRANT SLAVE MONITOR ON *.* TO '%s'@'%%';\n", exporterUser)
+	}
 	b.WriteString("FLUSH PRIVILEGES;\n")
 	if extra != "" {
 		b.WriteString(strings.TrimSpace(extra))
@@ -149,28 +192,55 @@ func (c *compilation) proxysql() error {
 	if writer == 0 && reader == 0 {
 		writer, reader = 10, 20
 	}
+	maria := c.in.Database.Kind == catalog.MariaDB
+	mode := strParam(c.params(), "replication", "async")
+	members := append(c.machinesOf(topology.RoleDB), c.machinesOf(topology.RoleDBReplica)...)
 	servers := []any{}
-	for _, m := range c.machinesOf(topology.RoleDB) {
-		servers = append(servers, map[string]any{"address": ip(m), "port": mysqlPort, "hostgroup": writer})
+	dependencies := []string{}
+	for _, dbRole := range []string{topology.RoleDB, topology.RoleDBReplica} {
+		hostgroup := writer
+		if dbRole == topology.RoleDBReplica {
+			hostgroup = reader
+		}
+		for _, m := range c.machinesOf(dbRole) {
+			server := map[string]any{"address": ip(m), "port": mysqlPort, "hostgroup": hostgroup}
+			if !maria {
+				server["use_ssl"] = 1
+			}
+			servers = append(servers, server)
+			dependencies = append(dependencies, m+"-"+c.engineOf(dbRole))
+		}
 	}
-	for _, m := range c.machinesOf(topology.RoleDBReplica) {
-		servers = append(servers, map[string]any{"address": ip(m), "port": mysqlPort, "hostgroup": reader})
-	}
-	cnf, err := c.render(role, schemaID, "conf", map[string]any{
+	overlay := map[string]any{
 		"mysql_servers": servers, "username": mysqlUser, "password": mysqlPassword,
 		"interfaces": fmt.Sprintf("0.0.0.0:%d", proxysqlPort), "monitor_username": exporterUser, "monitor_password": exporterPassword,
-	})
+		"restapi_enabled": "true", "restapi_port": 6070, "admin_mysql_ifaces": "127.0.0.1:6032",
+	}
+	if mode == "group" {
+		overlay["topology"] = "group_replication"
+	}
+	if mode == "galera" {
+		overlay["topology"] = "galera"
+	}
+	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {
 		return err
+	}
+	query := fmt.Sprintf("test \"$(mysql --skip-ssl --connect-timeout=3 -h127.0.0.1 -P%d -u%s -p%s -D%s -Nse 'SELECT 1')\" = 1", proxysqlPort, mysqlUser, mysqlPassword, mysqlDatabase)
+	if mode == "group" || mode == "galera" {
+		for _, m := range members {
+			query += " && " + clusterSQLCheck(maria, ip(m), len(members), true)
+		}
 	}
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
 			Name: m + "-proxysql", Role: role, Machine: m, Image: imageProxySQL,
-			Files:       []spec.File{{Path: proxysqlConfPath, Content: cnf}},
-			Ports:       []spec.Port{{Container: proxysqlPort, Host: proxysqlPort}},
-			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", proxysqlPort)),
-			Restart:     "always",
-			DependsOn:   c.dbContainers(),
+			// Raise only this process's soft limit within the existing hard limit.
+			Cmd:   []string{"bash", "-ec", `ulimit -Sn "$(ulimit -Hn)"; exec proxysql -f --idle-threads -D /var/lib/proxysql`},
+			Files: []spec.File{{Path: proxysqlConfPath, Content: cnf}, {Path: "/etc/stroppy/proxy-health.sh", Content: "#!/usr/bin/env bash\nset -euo pipefail\n" + query + "\n", Mode: "0755"}},
+			// The observer scrapes the first declared port.
+			Ports: []spec.Port{{Container: 6070, Host: 6070}, {Container: proxysqlPort, Host: proxysqlPort}}, Scrape: "/metrics",
+			Healthcheck: healthcheck("CMD", "bash", "/etc/stroppy/proxy-health.sh"), Restart: "always", DependsOn: dependencies,
 		})
 	}
 	return nil

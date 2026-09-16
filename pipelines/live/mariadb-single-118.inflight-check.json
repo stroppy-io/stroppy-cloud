@@ -1,0 +1,65 @@
+{
+  "status": "passed",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-single-118",
+  "query_range": {
+    "start": "2026-09-15T12:06:20Z",
+    "end": "2026-09-15T12:09:32.440340+00:00"
+  },
+  "scope": "in-flight observation; final workload verification remains required",
+  "collectors": [
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    },
+    {
+      "entity": "docker/5395e553-cf4f-4fde-9cbb-52299ec068c5-db-1-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 12,
+      "first_at": 1789473995.766,
+      "last_at": 1789474160.759
+    }
+  ]
+}

@@ -1,0 +1,425 @@
+{
+  "status": "passed",
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-three-node-24.1",
+  "checked_at": "2026-09-15T19:25:32.633829+00:00",
+  "database_version": "24.1.33",
+  "scope": "Exact message hashes only; all workload samples show three live nodes, zero unavailable and zero underreplicated ranges. All five native workloads have zero terminal errors.",
+  "workload_cluster_health": {
+    "db-1": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges",
+        "min": 26.0,
+        "max": 60.0,
+        "last": 27.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "replicas_quiescent",
+        "min": 54.0,
+        "max": 77.0,
+        "last": 77.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      }
+    ],
+    "db-2": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges",
+        "min": 4.0,
+        "max": 25.0,
+        "last": 25.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "replicas_quiescent",
+        "min": 54.0,
+        "max": 74.0,
+        "last": 74.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      }
+    ],
+    "db-3": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges",
+        "min": 5.0,
+        "max": 29.0,
+        "last": 29.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      },
+      {
+        "name": "replicas_quiescent",
+        "min": 52.0,
+        "max": 75.0,
+        "last": 75.0,
+        "first_at": 1789498722,
+        "last_at": 1789499007
+      }
+    ]
+  },
+  "observations": [
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:56.974356123Z",
+      "message_sha256": "2ae2832b7b1f87c4705042732eb39c81b50847d0a8dad79f9e56083f81583acf",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:56.974289854Z",
+      "message_sha256": "2e8ed10ab7edd68ecd53d0c3ce2e5ebcd08b3062c0e845f7f9da83a3712c6bd5",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:56.974233555Z",
+      "message_sha256": "12e3d23a58db85d257eef1d1cc728f9dc1a4f2ca7287b662e2775dc817ef6682",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:56.974208147Z",
+      "message_sha256": "284920c109c568c54cf16a70334d64f7030e218a7d37372256bb83a90e27407e",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:26.82092526Z",
+      "message_sha256": "52855ca9c01714930f55a3b1bd656c9b970d2e37caf75a1ee7372c6077811a2d",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:26.82088613Z",
+      "message_sha256": "6b02e55df49290ff8de6bb2c3749b3b46f7a7cdc0f3e9130de22c277c80252cd",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:02:26.820866196Z",
+      "message_sha256": "26b408717a7c2479923ff4242f3ddb74c1557c3e0b6cccda8b7f91f0e6043cac",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.67258695Z",
+      "message_sha256": "02dcf46fcb7c89b161b05ac78a889f7f411c8f7334eef108fa123706a280d333",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.672555324Z",
+      "message_sha256": "d3f1376affa77ae9db7fe7b7cd5a7739a7461c038518ed17e4ed3507377fd0ae",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.672545523Z",
+      "message_sha256": "f0d2a4eea052051d59ab305aa92a38a8b791efe7bd0bc7076429a03bee6b9144",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.67250467Z",
+      "message_sha256": "db92f5bff6d806e90eee8b7c101017fbec6f0bab72ed76dd5a8e3d030349fe61",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.672489955Z",
+      "message_sha256": "ee88fc5fdb56e2a0aba75b8808da1582f33c4900b86981ffd9fa63bd76e64bfa",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:56.672464326Z",
+      "message_sha256": "a5848baaa2db0b70014f3f14cf810cf4154e18be1089d73c6351cdb9d928e399",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:26.529572552Z",
+      "message_sha256": "66f8b9846879fc6f0757c42295ca9067b0df6d22241ccb775a61d7d7fe47b8f7",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:01:26.529553078Z",
+      "message_sha256": "6605ba3ca9f8ba334cbc2b5a5ac17117d8f06d397758097d71a9bb6278b54e3c",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:56.381517584Z",
+      "message_sha256": "a52f2ef86bc6ae26b346de8644efe3a670ff0917b6d7702d0c9bf178ebccfe2a",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:56.38148465Z",
+      "message_sha256": "4c0686a662dde2984f86a6228bf4872f5d1d882abcd1b8b5474366c62769c24d",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:56.38147857Z",
+      "message_sha256": "a5a5c828de0a6464b6c614db87eb86c0c5672bc90c06680d181c7c66f5b6c84c",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:56.381462763Z",
+      "message_sha256": "a40381fd587a9baae0f6edfd6be4e9a341a8d6737306035205a8df0fa7f10ef1",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:26.219680074Z",
+      "message_sha256": "ffa2e8b9693f3de74234a0bbca2b16d1bc7f2695bc86c9f7636fd54ff9e3f1ee",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:26.219666304Z",
+      "message_sha256": "5335ab0731a0920dc1ddb3926f876169be2c917ba2e51600be2fdb5db941bc96",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:26.219601896Z",
+      "message_sha256": "e073173bc90b63d133e2145431125010f977eadad91d7483663c2d30c16fcb6a",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:26.219592069Z",
+      "message_sha256": "5914906109345f91f89e98c3c5192c4b502a0622d6e97e2f1c05b1a843caf4f4",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T19:00:26.219570444Z",
+      "message_sha256": "72e2af104337538d401acdc02c93fcce1172b8dd7f8e3edc6a2c872804d96f84",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:55.762842762Z",
+      "message_sha256": "570920f3bcae096da1101ec419aa526c0468a7dbf4c86a496c7019ebb930cdac",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:55.762836463Z",
+      "message_sha256": "0c1a5e32faeb76cfb0f9bb71c3656eb8417f9de2d8af08c12fdce8ea9000f96d",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:55.762829271Z",
+      "message_sha256": "f52a8d771e6244fffb99ad641bfd9698b74c6635ccc0004d39b20229da796c13",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:55.762806409Z",
+      "message_sha256": "f3a6b8d489d776b4428b182e3f59b0f82e7af7ac6e90d140b390b8d587fd2f98",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:25.615326215Z",
+      "message_sha256": "f5bdcbf4f80d7530ae74ee157591247bf5ac9218d951b03fb52ae357d7763597",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:25.61531941Z",
+      "message_sha256": "1d70aca2a01e71e5aa26be01b4fd0b20d12e450dcbd294fef97ff70c6d8ce74d",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:25.615312609Z",
+      "message_sha256": "a2d3c5db484fe745759ec98a387e89c43336cf74bd80cf7995dc29341dec3f0a",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:59:25.615296695Z",
+      "message_sha256": "f41db9cc2afe12b67a5ccb35189b1f970abb42cec5798c70d570a6028ca6dda1",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:58:55.455382919Z",
+      "message_sha256": "996f3159a94607e1cddb10bf182589e04298f1990c5292dcba663f7a9ba7c670",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:58:55.455360579Z",
+      "message_sha256": "22e5125f9c3a7c56fb84ba066cd2686d94ca8bd4ba53631ada696a32d65acc83",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-1-cockroach",
+      "observed_at": "2026-09-15T18:58:25.274139174Z",
+      "message_sha256": "178b504a3d5f75a165ecff54fb6efee6f0677428e4b2879b7720d9d626d90c6d",
+      "classification": "cockroach_queue_owned_lease_elsewhere",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.1.33/pkg/kv/kvserver/queue.go#L1075",
+      "note": "Background queue declines processing while another replica holds a valid lease."
+    },
+    {
+      "entity": "docker/e3e22e00-3dc0-42e6-b753-2fd6cfbd4359-db-3-cockroach",
+      "observed_at": "2026-09-15T18:58:23.712915691Z",
+      "message_sha256": "3dbf9159f949f7c5c3ae96358c20525c8b47b7af45224c51e27e2b2100207dfe",
+      "classification": "pebble_concurrent_compaction_retry",
+      "reference": "https://github.com/cockroachdb/pebble/blob/7f8efc273dac/compaction.go#L41",
+      "note": "Exact ErrCancelledCompaction from the Pebble revision pinned by CockroachDB v24.1.33; concurrent excise or ingest-split; compaction is retried."
+    }
+  ]
+}

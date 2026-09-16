@@ -1,0 +1,314 @@
+{
+  "status": "passed",
+  "run_id": "matrix-mysql-family-19fb11ff-mysql80-semi-sync",
+  "source": "persisted mysqld_exporter time series through Graphene Metrics API",
+  "query_range": {
+    "start": "2026-09-15T09:51:04.782455868Z",
+    "end": "2026-09-15T09:55:32.752620+00:00"
+  },
+  "source_counters": {
+    "mysql_global_status_rpl_semi_sync_source_clients": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_net_avg_wait_time": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_net_wait_time": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_net_waits": {
+      "min": 3.0,
+      "max": 5605.0,
+      "last": 5605.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_no_times": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_no_tx": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_status": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_timefunc_failures": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_tx_avg_wait_time": {
+      "min": 497.0,
+      "max": 1136.0,
+      "last": 1136.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_tx_wait_time": {
+      "min": 1493.0,
+      "max": 6356054.0,
+      "last": 6356054.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_tx_waits": {
+      "min": 3.0,
+      "max": 5595.0,
+      "last": 5595.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_wait_pos_backtraverse": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_wait_sessions": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    },
+    "mysql_global_status_rpl_semi_sync_source_yes_tx": {
+      "min": 3.0,
+      "max": 5605.0,
+      "last": 5605.0,
+      "samples": 17,
+      "first_at": 1789465879,
+      "last_at": 1789466119
+    }
+  },
+  "replica_counters": {
+    "mysql_global_status_rpl_semi_sync_replica_status": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_auto_position": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_connect_retry": {
+      "min": 60.0,
+      "max": 60.0,
+      "last": 60.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_exec_master_log_pos": {
+      "min": 2850.0,
+      "max": 185427333.0,
+      "last": 185427333.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_get_master_public_key": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_last_errno": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_last_io_errno": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_last_sql_errno": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_master_port": {
+      "min": 3306.0,
+      "max": 3306.0,
+      "last": 3306.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_master_retry_count": {
+      "min": 86400.0,
+      "max": 86400.0,
+      "last": 86400.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_master_server_id": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_master_ssl_allowed": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_master_ssl_verify_server_cert": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_read_master_log_pos": {
+      "min": 2850.0,
+      "max": 185668807.0,
+      "last": 185668807.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_relay_log_pos": {
+      "min": 3060.0,
+      "max": 185427543.0,
+      "last": 185427543.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_relay_log_space": {
+      "min": 3002220.0,
+      "max": 188668177.0,
+      "last": 188668177.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_seconds_behind_master": {
+      "min": 0.0,
+      "max": 1.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_skip_counter": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_slave_io_running": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_slave_sql_running": {
+      "min": 1.0,
+      "max": 1.0,
+      "last": 1.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_sql_delay": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    },
+    "mysql_slave_status_until_log_pos": {
+      "min": 0.0,
+      "max": 0.0,
+      "last": 0.0,
+      "samples": 16,
+      "first_at": 1789465894,
+      "last_at": 1789466119
+    }
+  },
+  "last_segment_finished_at": "2026-09-15T09:55:17.752620673Z",
+  "checks": [
+    "source and replica semi-sync active in all collected samples",
+    "one acknowledging replica",
+    "successful acknowledgements recorded",
+    "zero async transactions and zero semi-sync fallback events",
+    "sample coverage reaches the last segment within one 15-second query step",
+    "replica IO and SQL threads running, no replication errors, final apply lag zero"
+  ],
+  "limitations": [
+    "Sampled exporter observations, not continuous SQL monitoring",
+    "Replica read_only, receiver/applier health and row delivery are checked separately by live SQL during the simple segment"
+  ]
+}

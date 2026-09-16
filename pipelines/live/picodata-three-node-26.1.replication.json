@@ -1,0 +1,86 @@
+{
+  "status": "passed",
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-26.1",
+  "checked_at": "2026-09-15T16:57:42.535692+00:00",
+  "source": "Read-only pgwire SQL through ordinary agents on every Picodata YC member; all catalog members Online at expected version",
+  "checks": {
+    "db-1": {
+      "agent": "58061896-db-1",
+      "source": "Read-only pgwire SQL through ordinary agent, no Docker or privilege escalation",
+      "probe_sha256": "1588b0b95886408f59de8f82625497b3540eeb482e10dce247bd53d9c191edb1",
+      "checks": {
+        "probe": "picodata",
+        "status": "passed",
+        "members": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ]
+      }
+    },
+    "db-2": {
+      "agent": "58061896-db-2",
+      "source": "Read-only pgwire SQL through ordinary agent, no Docker or privilege escalation",
+      "probe_sha256": "1588b0b95886408f59de8f82625497b3540eeb482e10dce247bd53d9c191edb1",
+      "checks": {
+        "probe": "picodata",
+        "status": "passed",
+        "members": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ]
+      }
+    },
+    "db-3": {
+      "agent": "58061896-db-3",
+      "source": "Read-only pgwire SQL through ordinary agent, no Docker or privilege escalation",
+      "probe_sha256": "1588b0b95886408f59de8f82625497b3540eeb482e10dce247bd53d9c191edb1",
+      "checks": {
+        "probe": "picodata",
+        "status": "passed",
+        "members": [
+          [
+            "db-1",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-2",
+            "[\"Online\",1]",
+            "26.1.6"
+          ],
+          [
+            "db-3",
+            "[\"Online\",1]",
+            "26.1.6"
+          ]
+        ]
+      }
+    }
+  }
+}

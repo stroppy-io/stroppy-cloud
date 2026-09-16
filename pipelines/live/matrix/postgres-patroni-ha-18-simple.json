@@ -1,0 +1,1006 @@
+{
+  "run_id": "bb7fe69c-734f-47bb-80d3-668fc964e36c",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-a",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.130.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "db-1",
+      "role": "db",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "postgres",
+        "stroppy.io/role": "db"
+      }
+    },
+    {
+      "name": "db-replica-1",
+      "role": "db-replica",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "postgres",
+        "stroppy.io/role": "db-replica"
+      }
+    },
+    {
+      "name": "db-replica-2",
+      "role": "db-replica",
+      "cpu": 4,
+      "memory_gb": 16,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "postgres",
+        "stroppy.io/role": "db-replica"
+      }
+    },
+    {
+      "name": "etcd-1",
+      "role": "etcd",
+      "cpu": 2,
+      "memory_gb": 8,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 20,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "etcd",
+        "stroppy.io/role": "etcd"
+      }
+    },
+    {
+      "name": "etcd-2",
+      "role": "etcd",
+      "cpu": 2,
+      "memory_gb": 8,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 20,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "etcd",
+        "stroppy.io/role": "etcd"
+      }
+    },
+    {
+      "name": "etcd-3",
+      "role": "etcd",
+      "cpu": 2,
+      "memory_gb": 8,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 20,
+          "type": "network-ssd",
+          "mount": "/data"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "etcd",
+        "stroppy.io/role": "etcd"
+      }
+    },
+    {
+      "name": "proxy-1",
+      "role": "proxy",
+      "cpu": 2,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "haproxy",
+        "stroppy.io/role": "proxy"
+      }
+    },
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 4,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      }
+    }
+  ],
+  "containers": [
+    {
+      "name": "db-1-node-exporter",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-1-postgres",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/stroppy-io/patroni:pg18-4.1.5",
+      "env": {
+        "PGDATA": "/var/lib/postgresql/data/pgdata"
+      },
+      "ports": [
+        {
+          "container": 5432,
+          "host": 5432
+        },
+        {
+          "container": 8008,
+          "host": 8008
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/pg",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/postgresql.conf",
+          "content": "# postgresql.conf for PostgreSQL 18 \u2014 generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@18 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 16\njit = on\ndefault_statistics_target = 100\n\n# --- Asynchronous I/O (PostgreSQL 18+) ---\nio_method = worker\nio_workers = 3\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_worker_slots = 16\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_max_threshold = 100000000\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = ''\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n"
+        },
+        {
+          "path": "/etc/stroppy/pg_hba.conf",
+          "content": "# pg_hba.conf \u2014 generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni.yml",
+          "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"on\"\n        synchronous_mode_strict: true\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-1\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/18/bin\n    connect_address: ${ip:db-1}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-1}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-bb7fe69c-734f-47bb-80d3-668fc964e36c\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni-init.sh",
+          "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\n\nSTROPPY_SQL\n",
+          "mode": "0755"
+        }
+      ],
+      "depends_on": [
+        "etcd-1-etcd",
+        "etcd-2-etcd",
+        "etcd-3-etcd"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-1-postgres-exporter",
+      "role": "db",
+      "machine": "db-1",
+      "image": "docker.stroppy.io/prometheuscommunity/postgres-exporter:v0.18.1",
+      "cmd": [
+        "--collector.postmaster",
+        "--collector.stat_statements",
+        "--web.listen-address=:9187"
+      ],
+      "env": {
+        "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+      },
+      "ports": [
+        {
+          "container": 9187,
+          "host": 9187
+        }
+      ],
+      "scrape": "/metrics",
+      "depends_on": [
+        "db-1-postgres"
+      ],
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-1-node-exporter",
+      "role": "db-replica",
+      "machine": "db-replica-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-1-postgres",
+      "role": "db-replica",
+      "machine": "db-replica-1",
+      "image": "docker.stroppy.io/stroppy-io/patroni:pg18-4.1.5",
+      "env": {
+        "PGDATA": "/var/lib/postgresql/data/pgdata"
+      },
+      "ports": [
+        {
+          "container": 5432,
+          "host": 5432
+        },
+        {
+          "container": 8008,
+          "host": 8008
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/pg",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/postgresql.conf",
+          "content": "# postgresql.conf for PostgreSQL 18 \u2014 generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@18 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 16\njit = on\ndefault_statistics_target = 100\n\n# --- Asynchronous I/O (PostgreSQL 18+) ---\nio_method = worker\nio_workers = 3\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_worker_slots = 16\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_max_threshold = 100000000\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = ''\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n"
+        },
+        {
+          "path": "/etc/stroppy/pg_hba.conf",
+          "content": "# pg_hba.conf \u2014 generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni.yml",
+          "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"on\"\n        synchronous_mode_strict: true\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-replica-1\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/18/bin\n    connect_address: ${ip:db-replica-1}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-replica-1}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-bb7fe69c-734f-47bb-80d3-668fc964e36c\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni-init.sh",
+          "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\n\nSTROPPY_SQL\n",
+          "mode": "0755"
+        }
+      ],
+      "depends_on": [
+        "etcd-1-etcd",
+        "etcd-2-etcd",
+        "etcd-3-etcd"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-1-postgres-exporter",
+      "role": "db-replica",
+      "machine": "db-replica-1",
+      "image": "docker.stroppy.io/prometheuscommunity/postgres-exporter:v0.18.1",
+      "cmd": [
+        "--collector.postmaster",
+        "--collector.stat_statements",
+        "--web.listen-address=:9187"
+      ],
+      "env": {
+        "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+      },
+      "ports": [
+        {
+          "container": 9187,
+          "host": 9187
+        }
+      ],
+      "scrape": "/metrics",
+      "depends_on": [
+        "db-replica-1-postgres"
+      ],
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-2-node-exporter",
+      "role": "db-replica",
+      "machine": "db-replica-2",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-2-postgres",
+      "role": "db-replica",
+      "machine": "db-replica-2",
+      "image": "docker.stroppy.io/stroppy-io/patroni:pg18-4.1.5",
+      "env": {
+        "PGDATA": "/var/lib/postgresql/data/pgdata"
+      },
+      "ports": [
+        {
+          "container": 5432,
+          "host": 5432
+        },
+        {
+          "container": 8008,
+          "host": 8008
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/pg",
+          "target": "/var/lib/postgresql/data"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/postgresql.conf",
+          "content": "# postgresql.conf for PostgreSQL 18 \u2014 generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@18 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 16\njit = on\ndefault_statistics_target = 100\n\n# --- Asynchronous I/O (PostgreSQL 18+) ---\nio_method = worker\nio_workers = 3\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_worker_slots = 16\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_max_threshold = 100000000\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = ''\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n"
+        },
+        {
+          "path": "/etc/stroppy/pg_hba.conf",
+          "content": "# pg_hba.conf \u2014 generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni.yml",
+          "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"on\"\n        synchronous_mode_strict: true\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-replica-2\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/18/bin\n    connect_address: ${ip:db-replica-2}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-replica-2}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-bb7fe69c-734f-47bb-80d3-668fc964e36c\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n"
+        },
+        {
+          "path": "/etc/stroppy/patroni-init.sh",
+          "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\n\nSTROPPY_SQL\n",
+          "mode": "0755"
+        }
+      ],
+      "depends_on": [
+        "etcd-1-etcd",
+        "etcd-2-etcd",
+        "etcd-3-etcd"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD-SHELL",
+          "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "db-replica-2-postgres-exporter",
+      "role": "db-replica",
+      "machine": "db-replica-2",
+      "image": "docker.stroppy.io/prometheuscommunity/postgres-exporter:v0.18.1",
+      "cmd": [
+        "--collector.postmaster",
+        "--collector.stat_statements",
+        "--web.listen-address=:9187"
+      ],
+      "env": {
+        "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+      },
+      "ports": [
+        {
+          "container": 9187,
+          "host": 9187
+        }
+      ],
+      "scrape": "/metrics",
+      "depends_on": [
+        "db-replica-2-postgres"
+      ],
+      "restart": "always"
+    },
+    {
+      "name": "etcd-1-etcd",
+      "role": "etcd",
+      "machine": "etcd-1",
+      "image": "docker.stroppy.io/coreos/etcd:v3.5.33",
+      "cmd": [
+        "/usr/local/bin/etcd",
+        "--config-file=/etc/stroppy/etcd.yml"
+      ],
+      "ports": [
+        {
+          "container": 2379,
+          "host": 2379
+        },
+        {
+          "container": 2380,
+          "host": 2380
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/etcd",
+          "target": "/var/lib/etcd"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/etcd.yml",
+          "content": "# etcd 3.5 configuration \u2014 generated by stroppy.\nname: etcd-1\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-1}:2380\nadvertise-client-urls: http://${ip:etcd-1}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: bb7fe69c-734f-47bb-80d3-668fc964e36c\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD",
+          "/usr/local/bin/etcdctl",
+          "--endpoints=http://127.0.0.1:2379",
+          "endpoint",
+          "health"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "etcd-1-node-exporter",
+      "role": "etcd",
+      "machine": "etcd-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "etcd-2-etcd",
+      "role": "etcd",
+      "machine": "etcd-2",
+      "image": "docker.stroppy.io/coreos/etcd:v3.5.33",
+      "cmd": [
+        "/usr/local/bin/etcd",
+        "--config-file=/etc/stroppy/etcd.yml"
+      ],
+      "ports": [
+        {
+          "container": 2379,
+          "host": 2379
+        },
+        {
+          "container": 2380,
+          "host": 2380
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/etcd",
+          "target": "/var/lib/etcd"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/etcd.yml",
+          "content": "# etcd 3.5 configuration \u2014 generated by stroppy.\nname: etcd-2\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-2}:2380\nadvertise-client-urls: http://${ip:etcd-2}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: bb7fe69c-734f-47bb-80d3-668fc964e36c\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD",
+          "/usr/local/bin/etcdctl",
+          "--endpoints=http://127.0.0.1:2379",
+          "endpoint",
+          "health"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "etcd-2-node-exporter",
+      "role": "etcd",
+      "machine": "etcd-2",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "etcd-3-etcd",
+      "role": "etcd",
+      "machine": "etcd-3",
+      "image": "docker.stroppy.io/coreos/etcd:v3.5.33",
+      "cmd": [
+        "/usr/local/bin/etcd",
+        "--config-file=/etc/stroppy/etcd.yml"
+      ],
+      "ports": [
+        {
+          "container": 2379,
+          "host": 2379
+        },
+        {
+          "container": 2380,
+          "host": 2380
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/data/etcd",
+          "target": "/var/lib/etcd"
+        }
+      ],
+      "files": [
+        {
+          "path": "/etc/stroppy/etcd.yml",
+          "content": "# etcd 3.5 configuration \u2014 generated by stroppy.\nname: etcd-3\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-3}:2380\nadvertise-client-urls: http://${ip:etcd-3}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: bb7fe69c-734f-47bb-80d3-668fc964e36c\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n"
+        }
+      ],
+      "scrape": "/metrics",
+      "healthcheck": {
+        "cmd": [
+          "CMD",
+          "/usr/local/bin/etcdctl",
+          "--endpoints=http://127.0.0.1:2379",
+          "endpoint",
+          "health"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "etcd-3-node-exporter",
+      "role": "etcd",
+      "machine": "etcd-3",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "proxy-1-haproxy",
+      "role": "proxy",
+      "machine": "proxy-1",
+      "image": "docker.stroppy.io/library/haproxy:3.0",
+      "ports": [
+        {
+          "container": 5000,
+          "host": 5000
+        },
+        {
+          "container": 5001,
+          "host": 5001
+        }
+      ],
+      "files": [
+        {
+          "path": "/usr/local/etc/haproxy/haproxy.cfg",
+          "content": "# managed by stroppy-cloud \u2014 cfg.haproxy.cfg@2\nglobal\n    maxconn 20000\n    log /dev/log local0 info\n    stats socket /tmp/haproxy.sock mode 660 level admin\n\ndefaults\n    mode tcp\n    retries 2\n    timeout connect 4s\n    timeout client 1800s\n    timeout server 1800s\n    timeout check 5s\n    log global\n    option tcplog\n\nlisten rw\n    bind *:5000\n    mode tcp\n    balance leastconn\n    option httpchk\n    http-check send meth GET uri /primary\n    http-check expect status 200\n    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n    server db-1 ${ip:db-1}:5432 check port 8008 weight 100\n    server db-replica-1 ${ip:db-replica-1}:5432 check port 8008 weight 100\n    server db-replica-2 ${ip:db-replica-2}:5432 check port 8008 weight 100\n\nlisten ro\n    bind *:5001\n    mode tcp\n    balance leastconn\n    option httpchk\n    http-check send meth GET uri /replica\n    http-check expect status 200\n    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n    server db-1 ${ip:db-1}:5432 check port 8008 weight 100\n    server db-replica-1 ${ip:db-replica-1}:5432 check port 8008 weight 100\n    server db-replica-2 ${ip:db-replica-2}:5432 check port 8008 weight 100\n\nlisten stats\n    bind *:8404\n    mode http\n    stats enable\n    stats uri /stats\n    stats refresh 5s\n\nlisten stroppy_metrics\n    bind 127.0.0.1:8405\n    mode http\n    http-request use-service prometheus-exporter if { path /metrics }\n"
+        }
+      ],
+      "depends_on": [
+        "db-1-postgres"
+      ],
+      "healthcheck": {
+        "cmd": [
+          "CMD",
+          "bash",
+          "-ec",
+          "haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg; exec 3<>/dev/tcp/127.0.0.1/5000"
+        ],
+        "interval": "5s",
+        "retries": 60
+      },
+      "restart": "always"
+    },
+    {
+      "name": "proxy-1-node-exporter",
+      "role": "proxy",
+      "machine": "proxy-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    },
+    {
+      "name": "runner-1-node-exporter",
+      "role": "runner",
+      "machine": "runner-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    }
+  ],
+  "host_prep": [
+    {
+      "role": "db",
+      "kind": "script",
+      "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice=/dev/disk/by-id/virtio-data\ntarget=/data\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '') mkfs.ext4 \"$device\" ;;\n    ext4) ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk '$2 == \"/data\" { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s /data %s defaults 0 2\\n' \"$uuid\" \"$fstype\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n"
+    },
+    {
+      "role": "db-replica",
+      "kind": "script",
+      "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice=/dev/disk/by-id/virtio-data\ntarget=/data\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '') mkfs.ext4 \"$device\" ;;\n    ext4) ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk '$2 == \"/data\" { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s /data %s defaults 0 2\\n' \"$uuid\" \"$fstype\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n"
+    },
+    {
+      "role": "etcd",
+      "kind": "script",
+      "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice=/dev/disk/by-id/virtio-data\ntarget=/data\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '') mkfs.ext4 \"$device\" ;;\n    ext4) ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk '$2 == \"/data\" { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s /data %s defaults 0 2\\n' \"$uuid\" \"$fstype\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n"
+    }
+  ],
+  "scrapes": [
+    {
+      "role": "db",
+      "url": "http://127.0.0.1:8008/metrics",
+      "job": "db-1-postgres"
+    },
+    {
+      "role": "db-replica",
+      "url": "http://127.0.0.1:8008/metrics",
+      "job": "db-replica-1-postgres"
+    },
+    {
+      "role": "db-replica",
+      "url": "http://127.0.0.1:8008/metrics",
+      "job": "db-replica-2-postgres"
+    },
+    {
+      "role": "proxy",
+      "url": "http://127.0.0.1:8405/metrics",
+      "job": "proxy-1-haproxy"
+    }
+  ],
+  "flows": [
+    {
+      "from_role": "db-replica",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "db-replica",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg-streaming"
+    },
+    {
+      "from_role": "db-replica",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg-streaming"
+    },
+    {
+      "from_role": "db-replica",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "db-replica",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg-streaming"
+    },
+    {
+      "from_role": "db-replica",
+      "to_role": "etcd",
+      "protocol": "tcp",
+      "port": 2379,
+      "label": "etcd"
+    },
+    {
+      "from_role": "db",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "db",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg-streaming"
+    },
+    {
+      "from_role": "db",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "db",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg-streaming"
+    },
+    {
+      "from_role": "db",
+      "to_role": "etcd",
+      "protocol": "tcp",
+      "port": 2379,
+      "label": "etcd"
+    },
+    {
+      "from_role": "etcd",
+      "to_role": "etcd",
+      "protocol": "tcp",
+      "port": 2380,
+      "label": "etcd-peer"
+    },
+    {
+      "from_role": "proxy",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "proxy",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg"
+    },
+    {
+      "from_role": "proxy",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 8008,
+      "label": "patroni-api"
+    },
+    {
+      "from_role": "proxy",
+      "to_role": "db-replica",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "pg"
+    },
+    {
+      "from_role": "runner",
+      "to_role": "proxy",
+      "protocol": "tcp",
+      "port": 5000,
+      "label": "pg"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "postgres",
+    "url": "postgresql://postgres:stroppy_postgres@${ip:role:proxy}:5000/postgres?sslmode=disable",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "smoke",
+        "run": {
+          "duration": "2m0s",
+          "executor": "constant-vus",
+          "query_timeout": "0s",
+          "vus": 2
+        },
+        "warmup": "0s",
+        "workload": {
+          "script": "simple"
+        }
+      }
+    ]
+  },
+  "result_expectations": [
+    "iterations_total"
+  ]
+}

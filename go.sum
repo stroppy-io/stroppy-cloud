@@ -156,8 +156,10 @@ github.com/gopherex/xshutdown v1.0.0 h1:oXj0J3iNW+bOzyDbtVBS/p17b3U26loDuIxx2S1E
 github.com/gopherex/xshutdown v1.0.0/go.mod h1:VP9PHNALDhbpRtqDS67qP+M1PQKjj2MgokukD01KQUA=
 github.com/gopherex/xtrace/contrib/sdk v1.0.2 h1:Pdqyuq8pL83InpmrDppybCBidfryrNNmoHAtivnJLX0=
 github.com/gopherex/xtrace/contrib/sdk v1.0.2/go.mod h1:fYj76suOeYYfxS4yBqxju3ECcv3R8s4krKsbsD1616s=
-github.com/graphene-ci/graphene v0.2.1 h1:XCbKIYz6+ga71o6wS2nReNB+tj0UgqQKBWDgQiioXos=
-github.com/graphene-ci/graphene v0.2.1/go.mod h1:2cqAmo2eCRy/bCn1g7oVXZaMD/MBmF8B2epwMviLlUE=
+github.com/graphene-ci/graphene v0.2.3 h1:3QBP3sSPRAd/ow4JjSQ46HGdS+HM7b69uBjDaZo9b/A=
+github.com/graphene-ci/graphene v0.2.3/go.mod h1:2cqAmo2eCRy/bCn1g7oVXZaMD/MBmF8B2epwMviLlUE=
+github.com/graphene-ci/pipeline v0.2.5 h1:hNhqUU3WI7/mhQXttbc3E6T069/ZiOITftGtCrAf+qc=
+github.com/graphene-ci/pipeline v0.2.5/go.mod h1:GNCAh88M3at1by34gPFZOHKCTD2ksSRCBGyIznUWnRs=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0 h1:/Tnpcb2E0Pz/tN9s3bfEY2Q8ePCEX9iuS+cneUwncnw=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0/go.mod h1:zOBXOsUaBSjKgmH4OGzV1esUpR3oUSCPYVd2cUBjKYY=
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
@@ -280,10 +282,10 @@ github.com/moby/docker-image-spec v1.3.1 h1:jMKff3w6PgbfSa69GfNg+zN/XLhfXJGnEx3N
 github.com/moby/docker-image-spec v1.3.1/go.mod h1:eKmb5VW8vQEh/BAr2yvVNvuiJuY6UIocYsFu/DxxRpo=
 github.com/moby/go-archive v0.2.0 h1:zg5QDUM2mi0JIM9fdQZWC7U8+2ZfixfTYoHL7rWUcP8=
 github.com/moby/go-archive v0.2.0/go.mod h1:mNeivT14o8xU+5q1YnNrkQVpK+dnNe/K6fHqnTg4qPU=
-github.com/moby/moby/api v1.54.1 h1:TqVzuJkOLsgLDDwNLmYqACUuTehOHRGKiPhvH8V3Nn4=
-github.com/moby/moby/api v1.54.1/go.mod h1:+RQ6wluLwtYaTd1WnPLykIDPekkuyD/ROWQClE83pzs=
-github.com/moby/moby/client v0.4.0 h1:S+2XegzHQrrvTCvF6s5HFzcrywWQmuVnhOXe2kiWjIw=
-github.com/moby/moby/client v0.4.0/go.mod h1:QWPbvWchQbxBNdaLSpoKpCdf5E+WxFAgNHogCWDoa7g=
+github.com/moby/moby/api v1.55.0 h1:2/sexvQyqIWS8pRSCFddBfpW2qE7vR7FCL+vN8pxwMc=
+github.com/moby/moby/api v1.55.0/go.mod h1:+RQ6wluLwtYaTd1WnPLykIDPekkuyD/ROWQClE83pzs=
+github.com/moby/moby/client v0.5.1 h1:tYNaJno4c0HXz12y5BiqEDy0rVTYkWzI26lGvnTMiJw=
+github.com/moby/moby/client v0.5.1/go.mod h1:odLstlZ6uSnfvAgVxMpvgmb8SUdd+siH2T0GBuxVAlM=
 github.com/moby/patternmatcher v0.6.1 h1:qlhtafmr6kgMIJjKJMDmMWq7WLkKIo23hsrpR3x084U=
 github.com/moby/patternmatcher v0.6.1/go.mod h1:hDPoyOpDY7OrrMDLaYoY3hf52gNCR/YOUYxkhApJIxc=
 github.com/moby/sys/sequential v0.6.0 h1:qrx7XFUd/5DxtqcoH1h438hF5TmOvzC/lspjy7zgvCU=

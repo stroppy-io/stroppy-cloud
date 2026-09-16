@@ -1,0 +1,35 @@
+{
+  "native_version": "dev-native-29ef870a8eb6",
+  "race_suite": {
+    "command": "make tests",
+    "status": "passed"
+  },
+  "integration_suite": {
+    "command": "make integration",
+    "status": "passed",
+    "seconds": 24.764,
+    "mandatory": [
+      "PostgreSQL",
+      "MySQL",
+      "CSV",
+      "OTLP",
+      "PostgreSQL TPC-C expected rollback accounting"
+    ]
+  },
+  "linter": {
+    "command": "make linter",
+    "status": "passed"
+  },
+  "expected_rollback_regression": {
+    "logical_iterations": 1000,
+    "terminal_errors": 0,
+    "checks": [
+      "expected rollback count > 0",
+      "completed rollbacks equal requested rollbacks",
+      "successful logical transactions = iterations",
+      "rollback failure remains an error",
+      "wrapped and single-cause joined backend exceptions accepted",
+      "additional joined failures rejected"
+    ]
+  }
+}

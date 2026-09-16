@@ -1,0 +1,21 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-26.1",
+  "scope": "Owned membership probe completed at 16:20:38.189Z, matching Picodata client EOF at 16:20:38.115Z. No workload SQL failure.",
+  "local_reproduction": {
+    "picodata_version": "26.1.6",
+    "abrupt_close_eof_log_delta": 1,
+    "terminate_close_eof_log_delta": 0,
+    "checked_at": "2026-09-15T16:33:41.202769+00:00"
+  },
+  "old_probe_sha256": "5768a260fba30689d33b3545ecc05309efeb2ab3b1f583b3864aa4b862857da4",
+  "fixed_probe_sha256": "1588b0b95886408f59de8f82625497b3540eeb482e10dce247bd53d9c191edb1",
+  "observations": [
+    {
+      "entity": "docker/9098ca70-5427-4e79-af22-43dd97577b49-db-1-picodata",
+      "observed_at": "2026-09-15T16:20:49.45992452Z",
+      "message_sha256": "90f2f3366bacaf60fa0c3211f5a5272e1e52e5c32bd6e556fad2b3f6d492a594",
+      "classification": "diagnostic_probe_abrupt_disconnect",
+      "message": "pgproto connection has IO error: unexpected end of file"
+    }
+  ]
+}

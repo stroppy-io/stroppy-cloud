@@ -73,6 +73,8 @@ export interface CfgMyCnf8 {
   group_replication_single_primary_mode?: "ON" | "OFF";
   /** Update-everywhere checks. Multi-primary safety checks; must be OFF in single-primary mode. */
   group_replication_enforce_update_everywhere_checks?: "ON" | "OFF";
+  /** Transaction consistency. Group synchronization before or after transactions. BEFORE waits for preceding transactions before reads, allowing read-after-write through replicas; this is separate from SQL transaction isolation. */
+  group_replication_consistency?: "EVENTUAL" | "BEFORE_ON_PRIMARY_FAILOVER" | "BEFORE" | "AFTER" | "BEFORE_AND_AFTER" | null;
   /** Bind address. Addresses mysqld listens on; * or 0.0.0.0 for all IPv4. */
   bind_address?: string;
   /** Port. TCP port for the classic MySQL protocol. */

@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.3-autonomous",
+  "source": "Replay of persisted VictoriaMetrics raw filesystem samples",
+  "raw_series": 14,
+  "unique_filesystems": 12,
+  "retry_entities": [
+    "docker/ba93b5de-3b76-4a22-b273-9574de5f5426-db-9-node-exporter",
+    "docker/ba93b5de-3b76-4a22-b273-9574de5f5426-db-compute-1-node-exporter"
+  ],
+  "regression_tests": {
+    "retry_series": "passed",
+    "missing_disk": "passed",
+    "conflicting_size": "passed"
+  },
+  "note": "Only identical entity/device/fstype/size inventory records are deduplicated; other metric series retain attempt labels."
+}

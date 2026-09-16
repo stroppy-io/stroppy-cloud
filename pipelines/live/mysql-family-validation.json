@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T10:18:17.988896+00:00",
+  "scope": "MySQL 8.0/8.4 single and semi-sync; MariaDB 10.11/11.4/11.8 single; five functional segments per catalog cell",
+  "checks": [
+    "pipelines: go test ./... -count=1",
+    "pipelines: go test ./spec -run TestLive -count=1 after final result fixtures",
+    "pipelines: golangci-lint run ./schemas/cfg/... ./spec/... (0 issues)",
+    "compiler/catalog/live-input tests and lint passed",
+    "native build/unit/integration/lint and focused race checks passed; provenance matches all 23 source file hashes and saved patch",
+    "Graphene make test/make lint and managed package race checks passed; CI and release successful",
+    "native metric summaries match persisted OTLP data for all 35 workload segments",
+    "component metrics/logs, pipeline traces and SHA-256 of 70 retained artifacts verified",
+    "live SQL plus persisted replication status and lag verified on both MySQL semi-sync topologies",
+    "completed insert-progress records verified for all seven corrected-image runs",
+    "all stage-created YC resources removed; baseline IDs preserved"
+  ],
+  "evidence": [
+    "mysql-family-check.json",
+    "mysql-family-cleanup.json",
+    "mysql-family-failures.json",
+    "mysql-native-image.json",
+    "graphene211-check.json"
+  ],
+  "limitations": [
+    "functional smoke does not complete full workload, baseline or failure matrices",
+    "Group Replication and Galera implementation remains pending",
+    "native Stroppy and stroppy-cloud changes remain uncommitted; the native image is a temporary development build"
+  ]
+}

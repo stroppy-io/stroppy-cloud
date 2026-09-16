@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:16:45.881523+00:00",
+  "source_sha256": "bab67f12bf92768d6e7ce5f0d759dd53638479811d17b4eb71bb5d41ffb59390",
+  "checks": [
+    "observed MariaDB record-changed and ProxySQL monitor-timeout patterns remain visible as observations",
+    "missing monitoring privilege and corruption remain blocking candidates",
+    "MariaDB-specific classification does not apply to MySQL"
+  ],
+  "scope": "log classifier regression using representative messages; not a workload test"
+}

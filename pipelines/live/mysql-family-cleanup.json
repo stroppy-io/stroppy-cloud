@@ -1,0 +1,317 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T10:16:21.122122+00:00",
+  "folder_id": "b1ghttqg66t14ldkvfcq",
+  "source": "fresh YC resource lists compared with pre-stage IDs and per-attempt ledgers; Graphene run phases",
+  "resources": {
+    "vm": {
+      "baseline_count": 12,
+      "current_count": 12,
+      "created_count": 36,
+      "created_ids": [
+        "fhm06ggc8jbh5g96v89t",
+        "fhm26kcolt4ps3t272d3",
+        "fhm35l1agn9hhoingmo9",
+        "fhm76c1ncuqgqabspnfq",
+        "fhm97lof8e45g4bpfb84",
+        "fhm9it45ugm36lin9ge5",
+        "fhma37h4ucf4dijo4stb",
+        "fhmbr3sv5tfjco5ai862",
+        "fhmc9qufqqh4a5sj6b6t",
+        "fhmdbn0r16624bvf9lv9",
+        "fhmi71rdichpjb9dbpgg",
+        "fhml557hpoi2vddlv9o6",
+        "fhmmgmfcjoa2p45s9a7n",
+        "fhmmrcm1d7sbcpodec28",
+        "fhmnhq6ap0nhlj8dh210",
+        "fhmqs13attfvnhbt0plc",
+        "fhmr311s654uu8bt4v0b",
+        "fhmro8vvd9f2a7mu57s0",
+        "fhmtk1ccmocpm1psj0tn",
+        "fhmu7hmtil5j11i2kb0s",
+        "fhmuhhtobibvo4rqpboo",
+        "fhmuplbo0avg7cqvhmjq",
+        "fv40ibhpt2otsd2abaeb",
+        "fv454ae9ill6pbbgb97d",
+        "fv46ijjdaa5gn2oelof4",
+        "fv46jgc545f58omqm5pe",
+        "fv49234lai54pd647ecj",
+        "fv4bmbc8o7uat80q70nv",
+        "fv4gvvrvl7pigiitnt3i",
+        "fv4h3tqjvlcblgo36v30",
+        "fv4jc3s6un4t8eg5m9kq",
+        "fv4qndosa1jgc128p4cc",
+        "fv4s8gflo3m7bmv2kh8u",
+        "fv4steakds60ctftderf",
+        "fv4upprkdk6gpg382oru",
+        "fv4vcib7mo3a4bajofj8"
+      ],
+      "remaining_created_ids": [],
+      "missing_baseline_ids": [],
+      "unrelated_new_ids": []
+    },
+    "disk": {
+      "baseline_count": 20,
+      "current_count": 20,
+      "created_count": 57,
+      "created_ids": [
+        "fhm08apgleprv5365u24",
+        "fhm0m3ukp1j60lf4n9v3",
+        "fhm2p8if2979linvvadi",
+        "fhm2s81v0s4rgqk2ng8h",
+        "fhm2vkjf946514c9q641",
+        "fhm3j4f32ohq37f3f7n8",
+        "fhm3rbornu7d6a6qligp",
+        "fhm46juf1gm5cae20vcq",
+        "fhm5aiu7gvsd9rsl1dr2",
+        "fhm5n8ltskrruu8e1880",
+        "fhm6h9qjsuv7fj04olme",
+        "fhm756fsd81gvn35f1nc",
+        "fhm96fm72mjj1umhp3ju",
+        "fhm9m12esm82e65g053q",
+        "fhma006qik5bmk0gujqq",
+        "fhmc17lfu3jbtvrpg7jf",
+        "fhmdgb0e07b420jjhk65",
+        "fhmdoirdi1d4qmksvd8q",
+        "fhmfe68rmq1vp62sojja",
+        "fhmg1qb64nspd0h1mam1",
+        "fhmlsdfsldhqndk8lqvo",
+        "fhmlumb6m2v18catt3oq",
+        "fhmm1elm7m64j81agnaf",
+        "fhmmjff60afv04s9299t",
+        "fhmo2aotsm1ir1g7dlle",
+        "fhmpm90tp24rhrh5narb",
+        "fhmqep2ioc7dbtfvibpi",
+        "fhmqp9pl0eor5ht6kose",
+        "fhmsujskm8ouph83pv7r",
+        "fhmsvcgbqbd9oc0imn97",
+        "fhmt6521ksc5kmb7qsna",
+        "fhmtqhehv7nomk2sflh6",
+        "fhmudlu4nekfrj8ihkr7",
+        "fhmuhrjth46t1r7g9hmb",
+        "fv42jtrho80k0jv4nrjl",
+        "fv4306qmqftc5ndshuqp",
+        "fv43bei2gtlslhffi6iv",
+        "fv444qitrtmng4cm52kk",
+        "fv45uabui1qduuf1roe3",
+        "fv48c3ip4o3snspfn47m",
+        "fv48g0st3287a12j78hu",
+        "fv49chomuo7s9ru7slpu",
+        "fv49t69rdo2cjf6cu802",
+        "fv4avi3a0o3tuenj8giv",
+        "fv4e3ckmr04r98sddu6m",
+        "fv4gvps0cstc51tdgb46",
+        "fv4hfd083smqm9c8me02",
+        "fv4i9h2fdv3c80c3o52o",
+        "fv4j71j3pfsirgguulq7",
+        "fv4ll5ioa6ga5qq541lt",
+        "fv4ou0002u1b5mk3jfkq",
+        "fv4pga3aj6rbegm3agsj",
+        "fv4qjdf5sb9phdh8tk65",
+        "fv4rkua39ohg3ebm9qvb",
+        "fv4s58lritfmsen6hru2",
+        "fv4tclh7d9hkudddnedb",
+        "fv4tj5mc7f8u1fn2f697"
+      ],
+      "remaining_created_ids": [],
+      "missing_baseline_ids": [],
+      "unrelated_new_ids": []
+    },
+    "network": {
+      "baseline_count": 3,
+      "current_count": 3,
+      "created_count": 16,
+      "created_ids": [
+        "enp02otaa10s8pdc7ejk",
+        "enp2mcd9i9ja2nabf26l",
+        "enp40nuafp9h2aoi2oh8",
+        "enp49sv12fj6hr6e9q2c",
+        "enp66io6p1ibj1m9m88i",
+        "enp6hke62eo5guacq7d9",
+        "enp8q03c7ss8dv7o5gna",
+        "enpa9md4cpmc7hpf11r4",
+        "enpastfreb8bb6mdavij",
+        "enpc0bghi09291bp3u8c",
+        "enpf0uff4gedm459m3c7",
+        "enpf8q6a2cn4162fkogk",
+        "enpfs6mqbbki90l7n582",
+        "enpi6t7fs29uh2mms9s2",
+        "enpir4itbnp4g4nnpe4h",
+        "enpqqlseqmfhl6evk9vj"
+      ],
+      "remaining_created_ids": [],
+      "missing_baseline_ids": [],
+      "unrelated_new_ids": []
+    },
+    "subnet": {
+      "baseline_count": 4,
+      "current_count": 4,
+      "created_count": 16,
+      "created_ids": [
+        "e9b0hf0feotjnfhi25f0",
+        "e9bb49ns5t22b1onmg53",
+        "e9bee03vgscipekrv7li",
+        "e9bi0eu25tvlbhoiftja",
+        "e9bjd0d8h3k660gitjoo",
+        "e9bji0n5f6d5lvq1hufg",
+        "e9bjok1bivcdvebl2uah",
+        "e9bl6nsnonge4igl55nc",
+        "e9blqh3vdjo0n8r6da2f",
+        "e9bqp1jat47ao0f6477h",
+        "e9bsntsgp6v94454dqg4",
+        "fl83751nm4g146s63mab",
+        "fl85bti26gvq1ngo1o7n",
+        "fl8b720vesqi3eekjlo3",
+        "fl8ek67kk3c1g0la1boo",
+        "fl8remsl64iqgi2lvtfs"
+      ],
+      "remaining_created_ids": [],
+      "missing_baseline_ids": [],
+      "unrelated_new_ids": []
+    },
+    "sg": {
+      "baseline_count": 6,
+      "current_count": 6,
+      "created_count": 16,
+      "created_ids": [
+        "enp40e0ffdd95jil5jna",
+        "enp622rt7qbo0qp32imv",
+        "enp8010s5dp1dqro98ao",
+        "enp99ali0r06rmdgq6e5",
+        "enpantfagqtphekg362j",
+        "enpb61e0g95cm20tsbqc",
+        "enpclagk4tbbsj9o9rpd",
+        "enphd97puqrb4ujl90fr",
+        "enplia3icn04kd18n4ln",
+        "enpnfdnmckddarvihooc",
+        "enpqhqill83seamdbpu5",
+        "enprji84qg2fmjvmrmmj",
+        "enpskfj0jmemnckjbn02",
+        "enpsmi40aipamoqg60di",
+        "enptk257lprobev873v2",
+        "enpv8aqnks0brsncih5n"
+      ],
+      "remaining_created_ids": [],
+      "missing_baseline_ids": [],
+      "unrelated_new_ids": []
+    }
+  },
+  "runs": [
+    {
+      "ref": "run/matrix-mysql84-fixed-fc2399ff",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql84-fixed-fc2399ff-mysql84-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-family-19fb11ff",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-family-19fb11ff-mariadb1011-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-family-19fb11ff-mysql80-semi-sync",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-family-1f79d4b3-mysql84-semi-sync",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-family-1f79d4b3-mysql80-semi-sync",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-family-1f79d4b3",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mariadb-fixed-5ce18e32-mariadb1011-single",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mariadb-fixed-5ce18e32",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-semisync-2c224f96-mysql84-semi-sync",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-semisync-2c224f96",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mariadb-fixed-5ce18e32-mariadb114-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-fixed-2a83f8e4-mysql84-semi-sync",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-fixed-2a83f8e4",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mariadb-fixed-5ce18e32-mariadb118-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-fixed-2a83f8e4-mysql80-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-maria-3d24d9a0-maria1011-single",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-mysql-4c2d4d7e-mysql80-single",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-maria-3d24d9a0",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-maria-3d24d9a0-maria114-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql-4c2d4d7e",
+      "phase": "Canceled"
+    },
+    {
+      "ref": "run/matrix-maria-3d24d9a0-maria118-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql84-634139c4",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql84-634139c4-single",
+      "phase": "Completed"
+    },
+    {
+      "ref": "run/matrix-mysql84-6cf42333",
+      "phase": "Failed"
+    },
+    {
+      "ref": "run/matrix-mysql84-6cf42333-single",
+      "phase": "Failed"
+    }
+  ],
+  "remaining_worker_deployments": [],
+  "workers_checked_at": "2026-09-15T10:17:40.643532+00:00",
+  "local_test_helpers": "completed; owned telemetry port forwards stopped",
+  "local_cleanup_at": "2026-09-15T10:19:05.558055+00:00"
+}

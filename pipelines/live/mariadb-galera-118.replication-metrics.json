@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118",
+  "checked_at": "2026-09-15T12:06:27.524045+00:00",
+  "source": "persistent VictoriaMetrics raw export with original sample timestamps; no range-query lookback or resampling",
+  "query_range": {
+    "start": "2026-09-15T11:49:04.819455144Z",
+    "end": "2026-09-15T11:53:13.025645+00:00"
+  },
+  "nodes": {
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-1-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "4e581e7a-b0fb-11f1-bce5-dfcb0eea2612",
+      "replication_latency": "present"
+    },
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-2-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "4e581e7a-b0fb-11f1-bce5-dfcb0eea2612",
+      "replication_latency": "present"
+    },
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mysqld-exporter": {
+      "topology": "galera",
+      "cluster_size": 3,
+      "synced": true,
+      "connected": true,
+      "ready": true,
+      "primary_component": true,
+      "state_uuid": "4e581e7a-b0fb-11f1-bce5-dfcb0eea2612",
+      "replication_latency": "present"
+    }
+  },
+  "proxy": {
+    "series": 309,
+    "backend_queries_observed": true,
+    "access_denied": 0
+  }
+}

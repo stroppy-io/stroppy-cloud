@@ -48,6 +48,13 @@ func Ydb26() *schemapb.Schema { return ydbConfig(26) }
 //nolint:funlen // one flat static-configuration surface
 func ydbConfig(major uint64) *schemapb.Schema {
 	fields := []schemapb.FieldDef{
+		// doc: https://ydb.tech/docs/en/devops/deployment-options/manual/initial-deployment/deployment-configuration-v1
+		schemapb.Choice("static_erasure").Title("Static group fault tolerance").Group("Cluster").
+			Desc("static_erasure — erasure scheme of the static blob-storage group, filled by the server from topology.").
+			Opt(schemapb.StrV("none"), "none — no redundancy").
+			Opt(schemapb.StrV("block-4-2"), "block-4-2").
+			Opt(schemapb.StrV("mirror-3-dc"), "mirror-3-dc").
+			Default(schemapb.StrV("none")),
 		// --- host_configs --------------------------------------------------
 		// doc: host_configs[].drive[].type — ssd | nvme | rot
 		schemapb.List("drives",
@@ -263,7 +270,7 @@ func ydbConfig(major uint64) *schemapb.Schema {
 		// folded into a YAML block here and printed as one value.
 		schemapb.Computed("drive_block",
 			`("drives" in root) ? root.drives.map(d,
-				"  - path: " + d.path + "\n    type: " + d.type
+				"  - path: " + d.path + "\n    type: " + d.type.upperAscii()
 			).join("\n") : "  []"`).
 			Result(schemapb.ResultString).Group("Cluster").Title("Rendered host_configs[].drive"),
 		schemapb.Computed("host_block",
@@ -296,6 +303,19 @@ func ydbConfig(major uint64) *schemapb.Schema {
 			 root.state_storage_nodes.map(n, string(n)).join(", ") +
 			 "]\n      nto_select: " + string(root.state_storage_nto_select)`).
 			Result(schemapb.ResultString).Group("Cluster").Title("Rendered state_storage"),
+		// doc: configuration V1 channel_profile_config.profile[0], channels 0/1/2.
+		// System tablet channels use the first configured database storage pool.
+		schemapb.Computed("channel_profile_block",
+			`[0, 1, 2].map(channel,
+			 "    - erasure_species: " +
+			 (("storage_pool_types" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].erasure_species : root.static_erasure) + "\n" +
+			 "      pdisk_category: " +
+			 (("storage_pool_types" in root && size(root.storage_pool_types) > 0) ? (root.storage_pool_types[0].pdisk_type == "ROT" ? "0" : (root.storage_pool_types[0].pdisk_type == "NVME" ? "2" : "1")) : "1") + "\n" +
+			 "      storage_pool_kind: " +
+			 (("storage_pool_types" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].kind : "ssd")
+			).join("\n")`).
+			Result(schemapb.ResultString).Group("Domain").Title("Rendered system tablet channels").
+			Desc("Three channels for system tablet profile 0, derived from the first configured storage pool."),
 		schemapb.Computed("feature_flag_block",
 			`!("feature_flags" in root) || size(root.feature_flags) == 0 ? "" :
 			 "feature_flags:\n" +
@@ -331,6 +351,7 @@ func ydbConfig(major uint64) *schemapb.Schema {
 				"block-4-2 needs at least 8 hosts").ID("block42-needs-8-hosts"),
 		).
 		Template("conf", fmt.Sprintf("# managed by stroppy-cloud — cfg.ydb.config.yaml@%d", major)+`
+static_erasure: {{{values.static_erasure}}}
 host_configs:
 - host_config_id: {{{values.host_config_id}}}
   drive:
@@ -348,6 +369,11 @@ domains_config:
     enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}
 blob_storage_config:
   service_set: {{{values.blob_storage_service_set}}}
+channel_profile_config:
+  profile:
+  - profile_id: 0
+    channel:
+{{{values.channel_profile_block}}}
 actor_system_config:
   use_auto_config: {{{values.use_auto_config}}}
   node_type: {{{values.node_type}}}
@@ -357,7 +383,6 @@ grpc_config:
 {{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}
 {{/values.grpc_tls_block}}interconnect_config:
   start_tcp: true
-  port: {{{values.interconnect_port}}}
 monitoring_config:
   monitoring_port: {{{values.monitoring_port}}}
 table_service_config:

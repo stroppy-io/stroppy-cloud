@@ -1,0 +1,63 @@
+{
+  "status": "open",
+  "checked_at": "2026-09-15T16:53:35.408829+00:00",
+  "scope": "Database Prometheus scrape through Graphene docker library 0.2.2; native Stroppy OTLP uses a separate verified path.",
+  "findings": [
+    {
+      "id": "database-distributions",
+      "status": "failed",
+      "source": "graphene-ci/library/docker/observe.go sampleValue",
+      "description": "Histogram, gauge histogram and summary families are skipped; counters are emitted as gauges. Existing component metric checks prove observed scalar series only. Full distribution and monotonicity preservation requires the accepted embedded OTEL collector path."
+    }
+  ],
+  "ydb_parser_checks": [
+    {
+      "error": "<nil>",
+      "families": {
+        "COUNTER": 4906,
+        "GAUGE": 5707,
+        "HISTOGRAM": 141,
+        "UNTYPED": 78
+      },
+      "file": "db-1-ydb-_counters_prometheus.metrics",
+      "series": {
+        "COUNTER": 9747,
+        "GAUGE": 10250,
+        "HISTOGRAM": 275,
+        "UNTYPED": 2760
+      }
+    },
+    {
+      "error": "<nil>",
+      "families": {
+        "COUNTER": 5016,
+        "GAUGE": 5851,
+        "HISTOGRAM": 141,
+        "UNTYPED": 78
+      },
+      "file": "db-1-ydb-_counters_prometheus.metrics",
+      "series": {
+        "COUNTER": 9863,
+        "GAUGE": 10398,
+        "HISTOGRAM": 276,
+        "UNTYPED": 2760
+      }
+    },
+    {
+      "error": "<nil>",
+      "families": {
+        "COUNTER": 4736,
+        "GAUGE": 5505,
+        "HISTOGRAM": 138,
+        "UNTYPED": 78
+      },
+      "file": "db-1-ydb-_counters_prometheus.metrics",
+      "series": {
+        "COUNTER": 9514,
+        "GAUGE": 9945,
+        "HISTOGRAM": 264,
+        "UNTYPED": 2760
+      }
+    }
+  ]
+}

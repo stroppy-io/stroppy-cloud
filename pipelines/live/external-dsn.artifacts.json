@@ -1,0 +1,18 @@
+[
+  {
+    "ref": "artifact/7383cd13-stroppy-external-canary-config",
+    "owner": "stand/stroppy-run",
+    "keepUntil": null,
+    "digest": "sha256:36c0bcae35ed5ebcd130b8e41d896682fff291c55f1d4dc60e40ecec54743e05",
+    "location": "blobs/36c0bcae35ed5ebcd130b8e41d896682fff291c55f1d4dc60e40ecec54743e05",
+    "size": 1197
+  },
+  {
+    "ref": "artifact/7383cd13-stroppy-external-canary-log",
+    "owner": "stand/stroppy-run",
+    "keepUntil": "2026-10-15T20:53:24.303848869Z",
+    "digest": "sha256:89bdcb2959736dbb531f91fade86ee0c4a7d8d49b8b83f34ab23f751c49ef640",
+    "location": "blobs/89bdcb2959736dbb531f91fade86ee0c4a7d8d49b8b83f34ab23f751c49ef640",
+    "size": 3975479
+  }
+]

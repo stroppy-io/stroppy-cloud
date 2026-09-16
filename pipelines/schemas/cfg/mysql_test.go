@@ -1,10 +1,25 @@
 package cfg
 
 import (
+	schemapb "github.com/gopherex/schemapb/go/schemapb"
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/internal/schematest"
 )
+
+func TestMyCnfGroupReplicationRender(t *testing.T) {
+	for _, s := range []*schemapb.Schema{MyCnf80(), MyCnf84()} {
+		schematest.Run(t, s, schematest.Cases{
+			Valid: []map[string]any{myFull()}, Render: "conf",
+			Contains: []string{
+				"plugin_load_add = group_replication.so",
+				"loose-group_replication_group_name = aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+				"loose-group_replication_local_address = 10.0.0.1:33061",
+				"loose-group_replication_group_seeds = 10.0.0.1:33061,10.0.0.2:33061",
+			},
+		})
+	}
+}
 
 func myFull() map[string]any {
 	return map[string]any{
@@ -81,4 +96,13 @@ func TestMyCnf84(t *testing.T) {
 			"innodb_redo_log_capacity = ",
 		},
 	})
+}
+
+func TestMyCnfSemisyncTimeoutRender(t *testing.T) {
+	for _, schema := range []*schemapb.Schema{MyCnf80(), MyCnf84()} {
+		schematest.Run(t, schema, schematest.Cases{
+			Valid:  []map[string]any{{"rpl_semi_sync_source_enabled": "ON", "rpl_semi_sync_source_timeout": int64(1733)}},
+			Render: "conf", Contains: []string{"loose-rpl_semi_sync_source_timeout = 1733"},
+		})
+	}
 }

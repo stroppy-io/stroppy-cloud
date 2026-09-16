@@ -1,0 +1,127 @@
+{
+  "checked_at": "2026-09-14T17:10:31.296357+00:00",
+  "status": "passed",
+  "scope": "PostgreSQL 15-18 Patroni HA, simple smoke, 2m, 2 VUs, real YC ru-central1-a",
+  "suite_run_id": "matrix-patroni-96794a09",
+  "total": 4,
+  "validated": 4,
+  "failed": 0,
+  "server_during_runs": "0.2.8",
+  "topology": {
+    "postgresql": 3,
+    "etcd": 3,
+    "haproxy": 1,
+    "runner": 1,
+    "postgres_data_disk_gib": 100,
+    "etcd_data_disk_gib": 20
+  },
+  "cells": [
+    {
+      "cell": "pg17-patroni-ha",
+      "run_id": "matrix-patroni-96794a09-pg17-patroni-ha",
+      "iterations": 132109,
+      "exporters": 18,
+      "data_disks": 6,
+      "database_versions": [
+        "17.11.0"
+      ],
+      "traces": 39,
+      "spans": 613,
+      "error_spans": 0,
+      "logs": 6407,
+      "log_components": 18,
+      "sql_replication_verified": true,
+      "agents": 8,
+      "agent_reconnections": 0,
+      "ownership_tree": {}
+    },
+    {
+      "cell": "pg18-patroni-ha",
+      "run_id": "matrix-patroni-96794a09-pg18-patroni-ha",
+      "iterations": 134147,
+      "exporters": 18,
+      "data_disks": 6,
+      "database_versions": [
+        "18.6.0"
+      ],
+      "traces": 39,
+      "spans": 613,
+      "error_spans": 0,
+      "logs": 5482,
+      "log_components": 18,
+      "sql_replication_verified": true,
+      "agents": 8,
+      "agent_reconnections": 0,
+      "ownership_tree": {}
+    },
+    {
+      "cell": "pg16-patroni-ha",
+      "run_id": "matrix-patroni-96794a09-pg16-patroni-ha",
+      "iterations": 137621,
+      "exporters": 18,
+      "data_disks": 6,
+      "database_versions": [
+        "16.15.0"
+      ],
+      "traces": 39,
+      "spans": 610,
+      "error_spans": 0,
+      "logs": 7168,
+      "log_components": 18,
+      "sql_replication_verified": true,
+      "agents": 8,
+      "agent_reconnections": 0,
+      "ownership_tree": {}
+    },
+    {
+      "cell": "pg15-patroni-ha",
+      "run_id": "matrix-patroni-96794a09-pg15-patroni-ha",
+      "iterations": 144852,
+      "exporters": 18,
+      "data_disks": 6,
+      "database_versions": [
+        "15.19.0"
+      ],
+      "traces": 39,
+      "spans": 608,
+      "error_spans": 0,
+      "logs": 7210,
+      "log_components": 18,
+      "sql_replication_verified": true,
+      "agents": 8,
+      "agent_reconnections": 0,
+      "ownership_tree": {}
+    }
+  ],
+  "artifact_downloads_verified": 8,
+  "cleanup_verified": true,
+  "retention": {
+    "configs": "until explicit deletion",
+    "artifact_logs": "30d",
+    "shared_metrics": "90d",
+    "shared_logs": "30d",
+    "shared_traces": "14d"
+  },
+  "tps": "not computed by pipeline; native Stroppy TPS export still pending",
+  "traces_scope": "pipeline spans; workload OTLP is not validated",
+  "remaining_scope": [
+    "MySQL Group Replication, MariaDB Galera, Managed YDB implementation",
+    "other catalog version/topology smoke matrices excluding AWS",
+    "all workload, baseline and segment matrices",
+    "native Stroppy TPS and workload OTLP exports",
+    "fault campaigns after successful positive matrices"
+  ],
+  "server_before_post_matrix_rollout": {
+    "pod": "graphene-server-774d5b485b-xjc5x",
+    "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.8",
+    "image_id": "docker.stroppy.io/graphene-ci/graphene-server@sha256:f5d9b9adbfe14d5008152999679b110aa4a0ab624718fc422aa322ac6945e1a0",
+    "ready": true,
+    "restarts": 0
+  },
+  "local_checks": [
+    "root go test ./...",
+    "pipelines go test ./...",
+    "Graphene make test and make lint",
+    "local Patroni SQL through RW and RO HAProxy ports"
+  ]
+}

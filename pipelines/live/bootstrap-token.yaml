@@ -1,0 +1,10 @@
+# The controller fills data.token. Keep credentials out of this manifest.
+# Do not add this Secret to ServiceAccount.secrets: it is a manually managed token.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: stroppy-live-api-token
+  namespace: graphene
+  annotations:
+    kubernetes.io/service-account.name: stroppy-live
+type: kubernetes.io/service-account-token

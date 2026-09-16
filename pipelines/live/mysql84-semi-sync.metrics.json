@@ -1,0 +1,914 @@
+{
+  "run_id": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+  "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+  "query_range": {
+    "start": "2026-09-15T09:38:21.172227+00:00",
+    "end": "2026-09-15T10:02:41.788107+00:00"
+  },
+  "series_count": 4339,
+  "queried_entities": [
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter",
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter",
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter"
+  ],
+  "exporter_runs_observed": [
+    "matrix-mysql-family-19fb11ff-mysql84-semi-sync"
+  ],
+  "exporter_agents_observed": [
+    "6093aad0-db-1",
+    "6093aad0-db-replica-1",
+    "6093aad0-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    },
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+      "metric_names": 743
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+      "metric_names": 748
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+      "mysql_up": {
+        "min": 0.0,
+        "max": 1.0
+      }
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+      "mysql_up": {
+        "min": 1.0,
+        "max": 1.0
+      }
+    }
+  },
+  "replication": {
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+      "mysql_global_status_rpl_semi_sync_source_clients": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_net_avg_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_net_wait_time": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_net_waits": {
+        "min": 3.0,
+        "max": 6538.0,
+        "last": 6538.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_no_times": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_no_tx": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_status": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_timefunc_failures": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_tx_avg_wait_time": {
+        "min": 598.0,
+        "max": 1191.0,
+        "last": 1095.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_tx_wait_time": {
+        "min": 1796.0,
+        "max": 7142048.0,
+        "last": 7142048.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_tx_waits": {
+        "min": 3.0,
+        "max": 6521.0,
+        "last": 6521.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_wait_pos_backtraverse": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_wait_sessions": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      },
+      "mysql_global_status_rpl_semi_sync_source_yes_tx": {
+        "min": 3.0,
+        "max": 6538.0,
+        "last": 6538.0,
+        "samples": 19,
+        "first_at": 1789465890,
+        "last_at": 1789466160
+      }
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+      "mysql_global_status_rpl_semi_sync_replica_status": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_auto_position": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_connect_retry": {
+        "min": 60.0,
+        "max": 60.0,
+        "last": 60.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_exec_source_log_pos": {
+        "min": 2851.0,
+        "max": 194957126.0,
+        "last": 194957126.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_get_source_public_key": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_last_errno": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_last_io_errno": {
+        "min": 0.0,
+        "max": 2003.0,
+        "last": 2003.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_last_sql_errno": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_read_source_log_pos": {
+        "min": 2851.0,
+        "max": 194957126.0,
+        "last": 194957126.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_relay_log_pos": {
+        "min": 3062.0,
+        "max": 194957337.0,
+        "last": 194957337.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_relay_log_space": {
+        "min": 3000589.0,
+        "max": 197954864.0,
+        "last": 197954864.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_replica_io_running": {
+        "min": 0.0,
+        "max": 1.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_replica_sql_running": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_seconds_behind_source": {
+        "min": 0.0,
+        "max": 1.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_skip_counter": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_source_port": {
+        "min": 3306.0,
+        "max": 3306.0,
+        "last": 3306.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_source_retry_count": {
+        "min": 10.0,
+        "max": 10.0,
+        "last": 10.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_source_server_id": {
+        "min": 1.0,
+        "max": 1.0,
+        "last": 1.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_source_ssl_allowed": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_source_ssl_verify_server_cert": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_sql_delay": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      },
+      "mysql_slave_status_until_log_pos": {
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "samples": 24,
+        "first_at": 1789465905,
+        "last_at": 1789466250
+      }
+    }
+  },
+  "database_versions": {
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+      "version": "8.4.11",
+      "version_comment": "MySQL Community Server - GPL"
+    },
+    "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+      "version": "8.4.11",
+      "version_comment": "MySQL Community Server - GPL"
+    }
+  },
+  "disk_info": [
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fv48g0st3287a12j78hu",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "device": "vda",
+      "serial": "fv4gvps0cstc51tdgb46",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fv43bei2gtlslhffi6iv",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "transfer_activity_attempts_observed": [],
+  "workload_observation": {
+    "run_id": "matrix-mysql-family-19fb11ff-mysql84-semi-sync",
+    "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+    "query_range": {
+      "start": "2026-09-15T09:50:56.794510015Z",
+      "end": "2026-09-15T09:55:25.670511+00:00"
+    },
+    "series_count": 2271,
+    "queried_entities": [
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter",
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter"
+    ],
+    "exporter_runs_observed": [
+      "matrix-mysql-family-19fb11ff-mysql84-semi-sync"
+    ],
+    "exporter_agents_observed": [
+      "6093aad0-db-1",
+      "6093aad0-db-replica-1"
+    ],
+    "data_filesystems": [],
+    "exporters": {
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+        "metric_names": 743
+      },
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+        "metric_names": 748
+      }
+    },
+    "component_health": {
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+        "mysql_up": {
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+        "mysql_up": {
+          "min": 1.0,
+          "max": 1.0
+        }
+      }
+    },
+    "replication": {
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+        "mysql_global_status_rpl_semi_sync_source_clients": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_net_avg_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_net_wait_time": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_net_waits": {
+          "min": 3.0,
+          "max": 5105.0,
+          "last": 5105.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_no_times": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_no_tx": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_status": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_timefunc_failures": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_tx_avg_wait_time": {
+          "min": 598.0,
+          "max": 1191.0,
+          "last": 986.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_tx_wait_time": {
+          "min": 1796.0,
+          "max": 5026865.0,
+          "last": 5026865.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_tx_waits": {
+          "min": 3.0,
+          "max": 5098.0,
+          "last": 5098.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_wait_pos_backtraverse": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_wait_sessions": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        },
+        "mysql_global_status_rpl_semi_sync_source_yes_tx": {
+          "min": 3.0,
+          "max": 5105.0,
+          "last": 5105.0,
+          "samples": 16,
+          "first_at": 1789465886,
+          "last_at": 1789466111
+        }
+      },
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+        "mysql_global_status_rpl_semi_sync_replica_status": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_auto_position": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_connect_retry": {
+          "min": 60.0,
+          "max": 60.0,
+          "last": 60.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_exec_source_log_pos": {
+          "min": 2851.0,
+          "max": 186760516.0,
+          "last": 186760516.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_get_source_public_key": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_last_errno": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_last_io_errno": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_last_sql_errno": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_read_source_log_pos": {
+          "min": 2851.0,
+          "max": 186784584.0,
+          "last": 186784584.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_relay_log_pos": {
+          "min": 3062.0,
+          "max": 186760727.0,
+          "last": 186760727.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_relay_log_space": {
+          "min": 3000589.0,
+          "max": 189782322.0,
+          "last": 189782322.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_replica_io_running": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_replica_sql_running": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_seconds_behind_source": {
+          "min": 0.0,
+          "max": 1.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_skip_counter": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_source_port": {
+          "min": 3306.0,
+          "max": 3306.0,
+          "last": 3306.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_source_retry_count": {
+          "min": 10.0,
+          "max": 10.0,
+          "last": 10.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_source_server_id": {
+          "min": 1.0,
+          "max": 1.0,
+          "last": 1.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_source_ssl_allowed": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_source_ssl_verify_server_cert": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_sql_delay": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        },
+        "mysql_slave_status_until_log_pos": {
+          "min": 0.0,
+          "max": 0.0,
+          "last": 0.0,
+          "samples": 15,
+          "first_at": 1789465901,
+          "last_at": 1789466111
+        }
+      }
+    },
+    "database_versions": {
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-1-mysqld-exporter": {
+        "version": "8.4.11",
+        "version_comment": "MySQL Community Server - GPL"
+      },
+      "docker/6093aad0-b060-46d2-b99c-13f66e976b82-db-replica-1-mysqld-exporter": {
+        "version": "8.4.11",
+        "version_comment": "MySQL Community Server - GPL"
+      }
+    },
+    "disk_info": [],
+    "node_collectors_reporting_zero": [],
+    "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+    "postgres_exporter_scrape_error_max": [],
+    "mysql_exporter_scrape_error_max": [],
+    "transfer_activity_attempts_observed": []
+  },
+  "health_scope_note": "Health assertions cover workload start through 15 seconds after its last segment. Full-run samples also include planned database shutdown during cleanup."
+}

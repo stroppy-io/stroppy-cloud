@@ -37,7 +37,7 @@ const NameEnsureProviderConfig = "stroppy.provider.ensure-config"
 const crossplaneNamespace = "crossplane-system"
 
 // KubeconfigSecret names the Graphene secret with the installation's
-// kubeconfig, used when the worker does not run inside the cluster.
+// kubeconfig. Both provider configuration and managed resources use it.
 const KubeconfigSecret = "kubeconfig"
 
 // EnsureProviderConfigRequest asks for the tenant's crossplane
@@ -80,7 +80,7 @@ func EnsureProviderConfig(ctx context.Context, req EnsureProviderConfigRequest) 
 	if err != nil {
 		return EnsureProviderConfigResult{}, err
 	}
-	cfg, err := kubeConfig(ctx)
+	cfg, err := kubeConfig(ctx, workerapi.GetSecret)
 	if err != nil {
 		return EnsureProviderConfigResult{}, err
 	}
@@ -181,17 +181,19 @@ func providerObjects(req EnsureProviderConfigRequest, credJSON string) (map[stri
 	}
 }
 
-// kubeConfig prefers the in-cluster identity of the run pod; outside the
-// cluster it falls back to the installation's kubeconfig secret.
-func kubeConfig(ctx context.Context) (*rest.Config, error) {
-	if cfg, err := rest.InClusterConfig(); err == nil {
-		return cfg, nil
-	}
-	raw, err := workerapi.GetSecret(ctx, KubeconfigSecret)
+// kubeConfig uses the same cluster and identity as k8slib.NewClientFromSecret.
+// Selecting the pod's identity here can configure a different cluster, or fail
+// under the default service account before managed resources are declared.
+func kubeConfig(ctx context.Context, resolve func(context.Context, string) (string, error)) (*rest.Config, error) {
+	raw, err := resolve(ctx, KubeconfigSecret)
 	if err != nil {
-		return nil, fmt.Errorf("not in cluster and no %q secret: %w", KubeconfigSecret, err)
+		return nil, fmt.Errorf("kubernetes config secret %q: %w", KubeconfigSecret, err)
 	}
-	return clientcmd.RESTConfigFromKubeConfig([]byte(raw))
+	cfg, err := clientcmd.RESTConfigFromKubeConfig([]byte(raw))
+	if err != nil {
+		return nil, fmt.Errorf("kubernetes config secret %q: %w", KubeconfigSecret, err)
+	}
+	return cfg, nil
 }
 
 func upsertSecret(ctx context.Context, cs kubernetes.Interface, s *corev1.Secret) error {

@@ -1,211 +1,227 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "picodata.params",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "db",
+    "name": "picodata.params",
+    "version": "v1.0.0"
   },
-  "description":  "Picodata topology and options: version, tiers, sharding, memtx memory.",
-  "fields":  [
+  "description": "Picodata topology and options: version, tiers, sharding, memtx memory.",
+  "fields": [
     {
-      "name":  "version",
-      "description":  "Picodata series (YY.MINOR); packages come from download.picodata.io.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "version",
+      "description": "Picodata series (YY.MINOR); packages come from download.picodata.io.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "26.2"
+            "value": {
+              "stringValue": "26.2"
             },
-            "label":  "26.2"
+            "label": "26.2"
           },
           {
-            "value":  {
-              "stringValue":  "26.1"
+            "value": {
+              "stringValue": "26.1"
             },
-            "label":  "26.1"
+            "label": "26.1"
           },
           {
-            "value":  {
-              "stringValue":  "25.3"
+            "value": {
+              "stringValue": "25.3"
             },
-            "label":  "25.3 (legacy)"
+            "label": "25.3 (legacy)"
           }
         ],
-        "default":  {
-          "stringValue":  "26.1"
+        "default": {
+          "stringValue": "26.1"
         }
       },
-      "group":  "Engine",
-      "title":  "Picodata version"
+      "group": "Engine",
+      "title": "Picodata version"
     },
     {
-      "name":  "tiers",
-      "description":  "Cluster tiers; one of them must be named `default` — the tier an instance lands in when it names none.",
-      "list":  {
-        "items":  [
+      "name": "tiers",
+      "description": "Cluster tiers; one of them must be named `default` — the tier an instance lands in when it names none.",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "description":  "Key under cluster.tier; instances join a tier by this name.",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_]{0,31}$"
+                    "name": "name",
+                    "description": "Key under cluster.tier; instances join a tier by this name.",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_]{0,31}$"
                     },
-                    "group":  "Tier",
-                    "title":  "Tier name"
+                    "group": "Tier",
+                    "title": "Tier name"
                   },
                   {
-                    "name":  "instances",
-                    "description":  "How many picodata instances stroppy-cloud starts in this tier; must divide evenly into replicasets.",
-                    "int64":  {
-                      "default":  "1",
-                      "gte":  "1",
-                      "lte":  "64"
+                    "name": "instances",
+                    "description": "How many picodata instances stroppy-cloud starts in this tier; must divide evenly into replicasets.",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "64"
                     },
-                    "group":  "Tier",
-                    "title":  "Instances"
+                    "group": "Tier",
+                    "title": "Instances"
                   },
                   {
-                    "name":  "replication_factor",
-                    "description":  "Instances per replicaset in this tier (Picodata default 1).",
-                    "int64":  {
-                      "default":  "1",
-                      "gte":  "1",
-                      "lte":  "9"
+                    "name": "replication_factor",
+                    "description": "Instances per replicaset in this tier (Picodata default 1).",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "9"
                     },
-                    "group":  "Tier",
-                    "title":  "Replication factor"
+                    "group": "Tier",
+                    "title": "Replication factor"
                   },
                   {
-                    "name":  "can_vote",
-                    "description":  "Whether instances of this tier take part in the cluster raft vote (Picodata default true).",
-                    "bool":  {
-                      "default":  true
+                    "name": "can_vote",
+                    "description": "Whether instances of this tier take part in the cluster raft vote (Picodata default true).",
+                    "bool": {
+                      "default": true
                     },
-                    "group":  "Tier",
-                    "title":  "Raft voter"
+                    "group": "Tier",
+                    "title": "Raft voter"
                   },
                   {
-                    "name":  "bucket_count",
-                    "description":  "Sharding buckets for this tier; unset falls back to cluster.default_bucket_count.",
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "1000000"
+                    "name": "bucket_count",
+                    "description": "Sharding buckets for this tier; unset falls back to cluster.default_bucket_count.",
+                    "int64": {
+                      "gte": "1",
+                      "lte": "1000000"
                     },
-                    "group":  "Tier",
-                    "title":  "Bucket count"
+                    "group": "Tier",
+                    "title": "Bucket count"
                   },
                   {
-                    "name":  "replication_mode",
-                    "description":  "Within a replicaset: async = the leader does not wait for replicas, sync = it does (Picodata default async).",
-                    "choice":  {
-                      "options":  [
+                    "name": "replication_mode",
+                    "description": "Within a replicaset: async = the leader does not wait for replicas, sync = it does (Picodata default async).",
+                    "choice": {
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "async"
+                          "value": {
+                            "stringValue": "async"
                           },
-                          "label":  "Asynchronous"
+                          "label": "Asynchronous"
                         },
                         {
-                          "value":  {
-                            "stringValue":  "sync"
+                          "value": {
+                            "stringValue": "sync"
                           },
-                          "label":  "Synchronous"
+                          "label": "Synchronous"
                         }
                       ],
-                      "default":  {
-                        "stringValue":  "async"
+                      "default": {
+                        "stringValue": "async"
                       }
                     },
-                    "group":  "Tier",
-                    "title":  "Replication mode"
+                    "group": "Tier",
+                    "title": "Replication mode"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "minItems":  "1",
-        "maxItems":  "8"
+        "minItems": "1",
+        "maxItems": "8"
       },
-      "group":  "Topology",
-      "title":  "Tiers"
+      "group": "Topology",
+      "title": "Tiers"
     },
     {
-      "name":  "default_bucket_count",
-      "description":  "cluster.default_bucket_count — buckets a tier gets when it sets none of its own (Picodata default 3000).",
-      "int64":  {
-        "default":  "3000",
-        "gte":  "1",
-        "lte":  "1000000"
+      "name": "default_bucket_count",
+      "description": "cluster.default_bucket_count — buckets a tier gets when it sets none of its own (Picodata default 3000).",
+      "int64": {
+        "default": "3000",
+        "gte": "1",
+        "lte": "1000000"
       },
-      "group":  "Sharding",
-      "title":  "Default bucket count"
+      "group": "Sharding",
+      "title": "Default bucket count"
     },
     {
-      "name":  "memtx_memory_mb",
-      "description":  "instance.memtx.memory per instance; Picodata's own default of 64 MB only fits a smoke test.",
-      "int64":  {
-        "default":  "2048",
-        "gte":  "32",
-        "lte":  "1048576"
+      "name": "memtx_memory_mb",
+      "description": "instance.memtx.memory per instance; Picodata's own default of 64 MB only fits a smoke test.",
+      "int64": {
+        "default": "2048",
+        "gte": "32",
+        "lte": "1048576"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "memtx memory"
+      "group": "Memory",
+      "unit": "MB",
+      "title": "memtx memory"
     },
     {
-      "name":  "haproxy",
-      "description":  "HAProxy instances spreading pgproto clients over the instances of the default tier.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "2"
+      "name": "sql_vdbe_opcode_max",
+      "description": "Maximum VDBE instructions per local SQL plan. Picodata defaults to 45000; full-scan workload validation can require a higher explicit limit.",
+      "int64": {
+        "default": "45000",
+        "gte": "1",
+        "lte": "1000000000"
       },
-      "group":  "Routing",
-      "title":  "HAProxy nodes"
+      "group": "SQL runtime",
+      "title": "SQL instruction limit"
     },
     {
-      "name":  "pgproto",
-      "description":  "Expose the PostgreSQL wire-protocol listener; stroppy drives Picodata through it.",
-      "bool":  {
-        "default":  true
+      "name": "haproxy",
+      "description": "HAProxy instances spreading pgproto clients over the instances of the default tier.",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "2"
       },
-      "group":  "Routing",
-      "title":  "PostgreSQL protocol"
+      "group": "Routing",
+      "title": "HAProxy nodes"
+    },
+    {
+      "name": "pgproto",
+      "description": "Expose the PostgreSQL wire-protocol listener; stroppy drives Picodata through it.",
+      "bool": {
+        "default": true
+      },
+      "group": "Routing",
+      "title": "PostgreSQL protocol"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "root.tiers.exists(t, t.name == \"default\")",
-      "message":  "one tier must be named `default`",
-      "id":  "default-tier-required"
+      "expr": "root.tiers.exists(t, t.name == \"default\")",
+      "message": "one tier must be named `default`",
+      "id": "default-tier-required"
     },
     {
-      "expr":  "root.tiers.all(t, size(root.tiers.filter(u, u.name == t.name)) == 1)",
-      "message":  "tier names must be unique",
-      "id":  "tier-names-unique"
+      "expr": "root.tiers.all(t, size(root.tiers.filter(u, u.name == t.name)) == 1)",
+      "message": "tier names must be unique",
+      "id": "tier-names-unique"
     },
     {
-      "expr":  "root.tiers.all(t, int(t.instances) % int(t.replication_factor) == 0)",
-      "message":  "a tier's instances must divide evenly into replicasets of replication_factor",
-      "id":  "tier-replicasets-whole"
+      "expr": "root.tiers.all(t, int(t.instances) % int(t.replication_factor) == 0)",
+      "message": "a tier's instances must divide evenly into replicasets of replication_factor",
+      "id": "tier-replicasets-whole"
     },
     {
-      "expr":  "root.tiers.exists(t, t.can_vote)",
-      "message":  "at least one tier must be able to vote, otherwise the cluster raft never elects a leader",
-      "id":  "some-tier-votes"
+      "expr": "root.tiers.exists(t, t.can_vote)",
+      "message": "at least one tier must be able to vote, otherwise the cluster raft never elects a leader",
+      "id": "some-tier-votes"
     },
     {
-      "expr":  "int(root.haproxy) == 0 || root.pgproto",
-      "message":  "HAProxy fronts the pgproto listener, so pgproto must be on",
-      "id":  "haproxy-needs-pgproto"
+      "expr": "root.version == \"26.2\" || root.tiers.all(t, t.replication_mode == \"async\")",
+      "message": "synchronous tier replication requires Picodata 26.2",
+      "id": "sync-requires-26-2"
+    },
+    {
+      "expr": "int(root.haproxy) == 0 || root.pgproto",
+      "message": "HAProxy fronts the pgproto listener, so pgproto must be on",
+      "id": "haproxy-needs-pgproto"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

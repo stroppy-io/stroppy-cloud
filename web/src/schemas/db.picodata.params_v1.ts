@@ -27,6 +27,8 @@ export interface DbPicodataParams1 {
   default_bucket_count?: number | string;
   /** memtx memory. instance.memtx.memory per instance; Picodata's own default of 64 MB only fits a smoke test. [MB] */
   memtx_memory_mb?: number | string;
+  /** SQL instruction limit. Maximum VDBE instructions per local SQL plan. Picodata defaults to 45000; full-scan workload validation can require a higher explicit limit. */
+  sql_vdbe_opcode_max?: number | string;
   /** HAProxy nodes. HAProxy instances spreading pgproto clients over the instances of the default tier. */
   haproxy?: number | string;
   /** PostgreSQL protocol. Expose the PostgreSQL wire-protocol listener; stroppy drives Picodata through it. */

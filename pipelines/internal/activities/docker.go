@@ -65,22 +65,41 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 		return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, err)
 	}
 	defer func() { _ = rc.Close() }()
-	// Drain the progress stream, heartbeating so a slow registry does not
-	// look like a dead activity.
-	buf := make([]byte, 32*1024)
-	for {
-		if _, err := rc.Read(buf); err != nil {
-			if errors.Is(err, io.EOF) {
-				break
-			}
-			return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, err)
-		}
-		if activity.IsActivity(ctx) {
-			activity.RecordHeartbeat(ctx, "pulling "+req.Image)
-		}
+	if err := readPullProgress(ctx, rc); err != nil {
+		return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, err)
 	}
 	obs.Info(ctx, "image pulled", obs.Str("image", req.Image))
 	return PullImageResult{Image: req.Image}, nil
+}
+
+// Docker can return HTTP 200 and report a failed pull in the JSON stream.
+// Decode messages instead of discarding their bytes so callers never create
+// a container from an image whose download or extraction failed.
+func readPullProgress(ctx context.Context, r io.Reader) error {
+	dec := json.NewDecoder(r)
+	for {
+		var message struct {
+			Error       string `json:"error"`
+			ErrorDetail struct {
+				Message string `json:"message"`
+			} `json:"errorDetail"`
+		}
+		if err := dec.Decode(&message); err != nil {
+			if errors.Is(err, io.EOF) {
+				return nil
+			}
+			return fmt.Errorf("decode docker progress: %w", err)
+		}
+		if message.ErrorDetail.Message != "" {
+			return errors.New(message.ErrorDetail.Message)
+		}
+		if message.Error != "" {
+			return errors.New(message.Error)
+		}
+		if activity.IsActivity(ctx) {
+			activity.RecordHeartbeat(ctx, "pulling image")
+		}
+	}
 }
 
 // registryAuth turns a provider.registry.credentials value into the
@@ -154,12 +173,23 @@ func WaitHealthy(ctx context.Context, req WaitHealthyRequest) (WaitHealthyResult
 			}
 			return WaitHealthyResult{}, fmt.Errorf("container %s is not running (%s)", req.Container, reason)
 		}
-		code, out, err := execInContainer(ctx, cli, insp.ID, req.Cmd)
+		var shell []string
+		if insp.Config != nil {
+			shell = insp.Config.Shell
+		}
+		command, err := healthCommand(req.Cmd, shell)
+		if err != nil {
+			return WaitHealthyResult{}, fmt.Errorf("healthcheck %s: %w", req.Container, err)
+		}
+		code, out, err := execInContainer(ctx, cli, insp.ID, command)
 		if err == nil && code == 0 {
 			obs.Info(ctx, "container healthy", obs.Str("container", req.Container), obs.Int("attempts", attempt))
 			return WaitHealthyResult{Attempts: attempt, Elapsed: time.Since(start)}, nil
 		}
 		lastOut = strings.TrimSpace(out)
+		if err != nil {
+			lastOut = err.Error() + ": " + lastOut
+		}
 		if activity.IsActivity(ctx) {
 			activity.RecordHeartbeat(ctx, fmt.Sprintf("%s: attempt %d/%d", req.Container, attempt, retries))
 		}

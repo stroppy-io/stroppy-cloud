@@ -161,6 +161,16 @@ func compilePostgres(p *Plan, kind catalog.DatabaseKind, params map[string]any) 
 	if ha == "patroni" {
 		p.add(RoleEtcd, "etcd", intOf(params, "etcd_nodes", 3))
 		p.colocate("patroni", "patroni", RoleDB)
+		p.colocate("patroni-replica", "patroni", RoleDBReplica)
+		p.Flows = append(p.Flows, Flow{From: RoleEtcd, To: RoleEtcd, Protocol: "etcd-peer", Port: 2380})
+		for _, from := range []string{RoleDB, RoleDBReplica} {
+			for _, to := range []string{RoleDB, RoleDBReplica} {
+				p.Flows = append(p.Flows, Flow{From: from, To: to, Protocol: "patroni-api", Port: 8008}, Flow{From: from, To: to, Protocol: "pg-streaming", Port: 5432})
+			}
+			if haproxy > 0 {
+				p.Flows = append(p.Flows, Flow{From: RoleProxy, To: from, Protocol: "patroni-api", Port: 8008})
+			}
+		}
 		p.Flows = append(p.Flows, Flow{From: RoleDB, To: RoleEtcd, Protocol: "etcd", Port: 2379}, Flow{From: RoleDBReplica, To: RoleEtcd, Protocol: "etcd", Port: 2379})
 	}
 	if replicas > 0 {
@@ -219,7 +229,12 @@ func compileMySQL(p *Plan, params map[string]any) {
 	if replicas > 0 {
 		p.Flows = append(p.Flows, Flow{From: RoleDBReplica, To: RoleDB, Protocol: "mysql-replication", Port: 3306})
 		if mode == "group" {
-			p.Flows = append(p.Flows, Flow{From: RoleDB, To: RoleDBReplica, Protocol: "group-replication", Port: 33061})
+			for _, from := range []string{RoleDB, RoleDBReplica} {
+				for _, to := range []string{RoleDB, RoleDBReplica} {
+					p.Flows = append(p.Flows, Flow{From: from, To: to, Protocol: "group-replication", Port: 33061},
+						Flow{From: from, To: to, Protocol: "group-recovery", Port: 3306})
+				}
+			}
 		}
 	}
 	p.Client = Endpoint{RoleDB, "mysql", 3306}
@@ -246,7 +261,10 @@ func compileMariaDB(p *Plan, params map[string]any) {
 	if mode == "galera" {
 		nodes := intOf(params, "galera_nodes", 3)
 		p.add(RoleDB, "mariadb", nodes)
-		p.Flows = append(p.Flows, Flow{From: RoleDB, To: RoleDB, Protocol: "galera", Port: 4567})
+		p.Flows = append(p.Flows,
+			Flow{From: RoleDB, To: RoleDB, Protocol: "galera", Port: 4567},
+			Flow{From: RoleDB, To: RoleDB, Protocol: "galera-ist", Port: 4568},
+			Flow{From: RoleDB, To: RoleDB, Protocol: "galera-sst", Port: 4444})
 		replicas = 0
 	} else {
 		p.add(RoleDB, "mariadb", 1)

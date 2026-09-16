@@ -1,0 +1,267 @@
+{
+  "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-25.4",
+  "source": "persistent VictoriaMetrics raw export with original sample timestamps; no range-query lookback or resampling",
+  "query_range": {
+    "start": "2026-09-15T19:31:47.017747+00:00",
+    "end": "2026-09-15T20:04:22.361387+00:00"
+  },
+  "series_count": 45262,
+  "nonfinite_raw_samples": [
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "metric": "instance:node_cpu:ratio",
+      "samples": 1
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "metric": "instance:node_cpu:ratio",
+      "samples": 1
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "metric": "instance:node_cpu:ratio",
+      "samples": 1
+    }
+  ],
+  "database_distribution_scope": "Scalar series only: Graphene docker 0.2.2 and 0.2.3 drop histogram/summary families and counter types; see database-metric-coverage.json",
+  "queried_entities": [
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-ydb",
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-ydb",
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter"
+  ],
+  "exporter_runs_observed": [
+    "matrix-ydbmetrics-4f28bec5-ydb-single-25.4"
+  ],
+  "exporter_agents_observed": [
+    "5e3419bf-db-1",
+    "5e3419bf-db-compute-1",
+    "5e3419bf-runner-1"
+  ],
+  "data_filesystems": [
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "device": "/dev/vdb",
+      "fstype": "ext4",
+      "size_bytes": 105089261568.0
+    }
+  ],
+  "exporters": {
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-ydb": {
+      "metric_names": 10315
+    },
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter": {
+      "metric_names": 248
+    },
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-ydb": {
+      "metric_names": 11275
+    },
+    "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {},
+  "replication": {},
+  "cluster_replication": [],
+  "proxy_metrics": [],
+  "database_versions": {},
+  "disk_info": [
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "device": "vda",
+      "serial": "fhm7mrq7r80gidtvup6u",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmhgbrchlt8uiiqig6n",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "device": "vdb",
+      "serial": "data",
+      "model": "",
+      "path": "pci-0000:01:01.0"
+    },
+    {
+      "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fhmf65gdjg07ipi6regs",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+      "zfs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "mysql_exporter_collectors": [],
+  "transfer_activity_attempts_observed": [],
+  "health_scope_note": "Persisted component metrics; native workload verifies database operations. Independent membership checks recorded separately where applicable."
+}

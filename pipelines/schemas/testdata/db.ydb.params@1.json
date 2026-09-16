@@ -1,268 +1,268 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "ydb.params",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "db",
+    "name": "ydb.params",
+    "version": "v1.0.0"
   },
-  "description":  "Self-hosted YDB topology: storage/database nodes, erasure mode, pdisks, database path.",
-  "fields":  [
+  "description": "Self-hosted YDB topology: storage/database nodes, erasure mode, pdisks, database path.",
+  "fields": [
     {
-      "name":  "version",
-      "description":  "ydbd server series; binaries are fetched through the stroppy gateway.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "version",
+      "description": "ydbd server series; binaries are fetched through the stroppy gateway.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "26.3"
+            "value": {
+              "stringValue": "26.3"
             },
-            "label":  "26.3 (latest)"
+            "label": "26.3 (latest)"
           },
           {
-            "value":  {
-              "stringValue":  "26.2"
+            "value": {
+              "stringValue": "26.2"
             },
-            "label":  "26.2"
+            "label": "26.2"
           },
           {
-            "value":  {
-              "stringValue":  "26.1"
+            "value": {
+              "stringValue": "26.1"
             },
-            "label":  "26.1"
+            "label": "26.1"
           },
           {
-            "value":  {
-              "stringValue":  "25.4"
+            "value": {
+              "stringValue": "25.4"
             },
-            "label":  "25.4"
+            "label": "25.4"
           }
         ],
-        "default":  {
-          "stringValue":  "26.2"
+        "default": {
+          "stringValue": "26.2"
         }
       },
-      "group":  "Engine",
-      "title":  "YDB version"
+      "group": "Engine",
+      "title": "YDB version"
     },
     {
-      "name":  "fault_tolerance",
-      "description":  "config.erasure: none = no redundancy (dev only); block-4-2 = 4 data + 2 parity over >=8 fail domains; mirror-3-dc = 3 realms x 3 domains, >=9 nodes.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "fault_tolerance",
+      "description": "config.erasure: none = no redundancy (dev only); block-4-2 = 4 data + 2 parity over >=8 fail domains; mirror-3-dc = 3 realms x 3 domains, >=9 nodes.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
+            "value": {
+              "stringValue": "none"
             },
-            "label":  "none (no redundancy)"
+            "label": "none (no redundancy)"
           },
           {
-            "value":  {
-              "stringValue":  "block-4-2"
+            "value": {
+              "stringValue": "block-4-2"
             },
-            "label":  "block-4-2 (>= 8 fail domains)"
+            "label": "block-4-2 (>= 8 fail domains)"
           },
           {
-            "value":  {
-              "stringValue":  "mirror-3-dc"
+            "value": {
+              "stringValue": "mirror-3-dc"
             },
-            "label":  "mirror-3-dc (>= 9 nodes, 3 DCs)"
+            "label": "mirror-3-dc (>= 9 nodes, 3 DCs)"
           }
         ],
-        "default":  {
-          "stringValue":  "none"
+        "default": {
+          "stringValue": "none"
         }
       },
-      "group":  "Storage",
-      "title":  "Erasure mode"
+      "group": "Storage",
+      "title": "Erasure mode"
     },
     {
-      "name":  "failure_domain",
-      "description":  "config.fail_domain_type: which level of host.location the storage layer treats as one failure unit. Upstream uses disk for single-host block-4-2 and rack for mirror-3-dc.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "failure_domain",
+      "description": "config.fail_domain_type: which level of host.location the storage layer treats as one failure unit. Upstream uses disk for single-host block-4-2 and rack for mirror-3-dc.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "disk"
+            "value": {
+              "stringValue": "disk"
             },
-            "label":  "disk (all pdisks of a host are independent)"
+            "label": "disk (all pdisks of a host are independent)"
           },
           {
-            "value":  {
-              "stringValue":  "body"
+            "value": {
+              "stringValue": "body"
             },
-            "label":  "body (one host = one domain)"
+            "label": "body (one host = one domain)"
           },
           {
-            "value":  {
-              "stringValue":  "rack"
+            "value": {
+              "stringValue": "rack"
             },
-            "label":  "rack (one rack = one domain)"
+            "label": "rack (one rack = one domain)"
           }
         ],
-        "default":  {
-          "stringValue":  "disk"
+        "default": {
+          "stringValue": "disk"
         }
       },
-      "group":  "Storage",
-      "title":  "Fail domain level"
+      "group": "Storage",
+      "title": "Fail domain level"
     },
     {
-      "name":  "storage_nodes",
-      "description":  "Nodes running the BlobStorage layer; together with pdisks_per_node they supply the fail domains the erasure mode demands.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "64"
+      "name": "storage_nodes",
+      "description": "Nodes running the BlobStorage layer; together with pdisks_per_node they supply the fail domains the erasure mode demands.",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "64"
       },
-      "group":  "Topology",
-      "title":  "Storage nodes"
+      "group": "Topology",
+      "title": "Storage nodes"
     },
     {
-      "name":  "database_nodes",
-      "description":  "Nodes running the query/tablet layer of the database; these are what the workload connects to.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "64"
+      "name": "database_nodes",
+      "description": "Nodes running the query/tablet layer of the database; these are what the workload connects to.",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "64"
       },
-      "group":  "Topology",
-      "title":  "Database nodes"
+      "group": "Topology",
+      "title": "Database nodes"
     },
     {
-      "name":  "pdisks_per_node",
-      "description":  "Drive entries per host_config; with failure_domain=disk each pdisk is its own fail domain, which is how a small stand reaches 8 or 9 of them.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "8"
+      "name": "pdisks_per_node",
+      "description": "Drive entries per host_config; with failure_domain=disk each pdisk is its own fail domain, which is how a small stand reaches 8 or 9 of them.",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "8"
       },
-      "group":  "Storage",
-      "title":  "PDisks per storage node"
+      "group": "Storage",
+      "title": "PDisks per storage node"
     },
     {
-      "name":  "disk_type",
-      "description":  "config.default_disk_type and the drive type of every host_config entry; storage pools are built per device type.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "disk_type",
+      "description": "config.default_disk_type and the drive type of every host_config entry; storage pools are built per device type.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "SSD"
+            "value": {
+              "stringValue": "SSD"
             },
-            "label":  "SSD"
+            "label": "SSD"
           },
           {
-            "value":  {
-              "stringValue":  "NVME"
+            "value": {
+              "stringValue": "NVME"
             },
-            "label":  "NVMe"
+            "label": "NVMe"
           },
           {
-            "value":  {
-              "stringValue":  "HDD"
+            "value": {
+              "stringValue": "HDD"
             },
-            "label":  "HDD (rotational)"
+            "label": "HDD (rotational)"
           }
         ],
-        "default":  {
-          "stringValue":  "SSD"
+        "default": {
+          "stringValue": "SSD"
         }
       },
-      "group":  "Storage",
-      "title":  "PDisk device type"
+      "group": "Storage",
+      "title": "PDisk device type"
     },
     {
-      "name":  "storage_groups",
-      "description":  "Blob storage groups created in the database's storage pool; more groups spread tablets wider.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "1024"
+      "name": "storage_groups",
+      "description": "Blob storage groups created in the database's storage pool; more groups spread tablets wider.",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "1024"
       },
-      "group":  "Storage",
-      "title":  "Storage groups"
+      "group": "Storage",
+      "title": "Storage groups"
     },
     {
-      "name":  "auto_size_pdisks",
-      "description":  "Let the recipe size the pdisk files from the machine's free disk instead of a fixed size.",
-      "bool":  {
-        "default":  true
+      "name": "auto_size_pdisks",
+      "description": "Let the recipe size the pdisk files from the machine's free disk instead of a fixed size.",
+      "bool": {
+        "default": true
       },
-      "group":  "Storage",
-      "title":  "Auto-size pdisks"
+      "group": "Storage",
+      "title": "Auto-size pdisks"
     },
     {
-      "name":  "database_path",
-      "description":  "Full path of the benchmark database inside the cluster; /Root itself is reserved for the cluster root.",
-      "string":  {
-        "default":  "/Root/stroppy",
-        "maxLen":  "255",
-        "pattern":  "^/Root/[A-Za-z0-9_][A-Za-z0-9_\\-]*(/[A-Za-z0-9_][A-Za-z0-9_\\-]*)*$"
+      "name": "database_path",
+      "description": "Full path of the benchmark database inside the cluster; /Root itself is reserved for the cluster root.",
+      "string": {
+        "default": "/Root/stroppy",
+        "maxLen": "255",
+        "pattern": "^/Root/[A-Za-z0-9_][A-Za-z0-9_\\-]*(/[A-Za-z0-9_][A-Za-z0-9_\\-]*)*$"
       },
-      "group":  "Database",
-      "title":  "Database path"
+      "group": "Database",
+      "title": "Database path"
     },
     {
-      "name":  "grpcs",
-      "description":  "Serve the gRPC endpoint over TLS (grpcs://) with a self-signed cluster certificate instead of plain grpc://.",
-      "bool":  {
-        "default":  false
+      "name": "grpcs",
+      "description": "Serve the gRPC endpoint over TLS (grpcs://) with a self-signed cluster certificate instead of plain grpc://.",
+      "bool": {
+        "default": false
       },
-      "group":  "Database",
-      "title":  "TLS (grpcs)"
+      "group": "Database",
+      "title": "TLS (grpcs)"
     },
     {
-      "name":  "haproxy",
-      "description":  "HAProxy instances spreading gRPC clients over the database nodes.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "2"
+      "name": "haproxy",
+      "description": "HAProxy instances spreading gRPC clients over the database nodes.",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "2"
       },
-      "group":  "Routing",
-      "title":  "HAProxy nodes"
+      "group": "Routing",
+      "title": "HAProxy nodes"
     },
     {
-      "name":  "fail_domains",
-      "description":  "How many independent failure units the storage layer actually gets — what the erasure mode is checked against.",
-      "computed":  {
-        "expr":  "int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1)",
-        "result":  "RESULT_TYPE_INT64"
+      "name": "fail_domains",
+      "description": "How many independent failure units the storage layer actually gets — what the erasure mode is checked against.",
+      "computed": {
+        "expr": "int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1)",
+        "result": "RESULT_TYPE_INT64"
       },
-      "group":  "Storage",
-      "title":  "Fail domains"
+      "group": "Storage",
+      "title": "Fail domains"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "root.fault_tolerance != \"block-4-2\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) >= 8",
-      "message":  "block-4-2 needs at least 8 fail domains (storage_nodes x pdisks_per_node when failure_domain=disk)",
-      "id":  "block42-min-domains"
+      "expr": "root.fault_tolerance != \"block-4-2\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) >= 8",
+      "message": "block-4-2 needs at least 8 fail domains (storage_nodes x pdisks_per_node when failure_domain=disk)",
+      "id": "block42-min-domains"
     },
     {
-      "expr":  "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) >= 9",
-      "message":  "mirror-3-dc needs at least 9 fail domains across 3 realms",
-      "id":  "mirror3dc-min-domains"
+      "expr": "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) >= 9",
+      "message": "mirror-3-dc needs at least 9 fail domains across 3 realms",
+      "id": "mirror3dc-min-domains"
     },
     {
-      "expr":  "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) % 3 == 0",
-      "message":  "mirror-3-dc spreads hosts over exactly 3 datacenters, so storage_nodes must be a multiple of 3",
-      "id":  "mirror3dc-three-realms"
+      "expr": "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) % 3 == 0",
+      "message": "mirror-3-dc spreads hosts over exactly 3 datacenters, so storage_nodes must be a multiple of 3",
+      "id": "mirror3dc-three-realms"
     },
     {
-      "expr":  "root.fault_tolerance != \"none\" || int(root.storage_nodes) >= 1",
-      "message":  "erasure none still needs one storage node",
-      "id":  "none-min-domains"
+      "expr": "root.fault_tolerance != \"none\" || int(root.storage_nodes) >= 1",
+      "message": "erasure none still needs one storage node",
+      "id": "none-min-domains"
     },
     {
-      "expr":  "int(root.haproxy) == 0 || int(root.database_nodes) >= 2",
-      "message":  "HAProxy in front of a single database node only adds a hop",
-      "id":  "haproxy-pointless",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "int(root.haproxy) == 0 || int(root.database_nodes) >= 2",
+      "message": "HAProxy in front of a single database node only adds a hop",
+      "id": "haproxy-pointless",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

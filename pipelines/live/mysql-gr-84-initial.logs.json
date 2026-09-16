@@ -1,0 +1,26 @@
+{
+  "run_id": "matrix-mysql-clusters-be4cb125-mysql-gr-84",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 2359,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-mysql-clusters-be4cb125-mysql-gr-84"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-1-mysql": 109,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-1-mysqld-exporter": 12,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-1-node-exporter": 57,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-1-mysql": 146,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-1-mysqld-exporter": 12,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-1-node-exporter": 57,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-2-mysql": 88,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-2-mysqld-exporter": 12,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-2-node-exporter": 57,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-proxy-1-node-exporter": 57,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-proxy-1-proxysql": 528,
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-runner-1-node-exporter": 57
+  }
+}

@@ -43,6 +43,8 @@ import cfgOrioledbPostgresqlConf18Schema from './cfg.orioledb.postgresql.conf_v1
 import type { CfgOrioledbPostgresqlConf18 } from './cfg.orioledb.postgresql.conf_v18';
 import cfgPatroniYml3Schema from './cfg.patroni.yml_v3.json';
 import type { CfgPatroniYml3 } from './cfg.patroni.yml_v3';
+import cfgPatroniYml4Schema from './cfg.patroni.yml_v4.json';
+import type { CfgPatroniYml4 } from './cfg.patroni.yml_v4';
 import cfgPgHbaConf1Schema from './cfg.pg_hba.conf_v1.json';
 import type { CfgPgHbaConf1 } from './cfg.pg_hba.conf_v1';
 import cfgPgbouncerIni1Schema from './cfg.pgbouncer.ini_v1.json';
@@ -51,6 +53,8 @@ import cfgPicodataYaml25Schema from './cfg.picodata.yaml_v25.json';
 import type { CfgPicodataYaml25 } from './cfg.picodata.yaml_v25';
 import cfgPicodataYaml26Schema from './cfg.picodata.yaml_v26.json';
 import type { CfgPicodataYaml26 } from './cfg.picodata.yaml_v26';
+import cfgPicodataYaml26_1Schema from './cfg.picodata.yaml_v26.1.json';
+import type { CfgPicodataYaml26_1 } from './cfg.picodata.yaml_v26.1';
 import cfgPostgresqlConf15Schema from './cfg.postgresql.conf_v15.json';
 import type { CfgPostgresqlConf15 } from './cfg.postgresql.conf_v15';
 import cfgPostgresqlConf16Schema from './cfg.postgresql.conf_v16.json';
@@ -148,10 +152,12 @@ export const schemaIds = [
   "cfg.orioledb.postgresql.conf@17",
   "cfg.orioledb.postgresql.conf@18",
   "cfg.patroni.yml@3",
+  "cfg.patroni.yml@4",
   "cfg.pg_hba.conf@1",
   "cfg.pgbouncer.ini@1",
   "cfg.picodata.yaml@25",
   "cfg.picodata.yaml@26",
+  "cfg.picodata.yaml@26.1",
   "cfg.postgresql.conf@15",
   "cfg.postgresql.conf@16",
   "cfg.postgresql.conf@17",
@@ -215,10 +221,12 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "cfg.orioledb.postgresql.conf@17" ? CfgOrioledbPostgresqlConf17 :
   Id extends "cfg.orioledb.postgresql.conf@18" ? CfgOrioledbPostgresqlConf18 :
   Id extends "cfg.patroni.yml@3" ? CfgPatroniYml3 :
+  Id extends "cfg.patroni.yml@4" ? CfgPatroniYml4 :
   Id extends "cfg.pg_hba.conf@1" ? CfgPgHbaConf1 :
   Id extends "cfg.pgbouncer.ini@1" ? CfgPgbouncerIni1 :
   Id extends "cfg.picodata.yaml@25" ? CfgPicodataYaml25 :
   Id extends "cfg.picodata.yaml@26" ? CfgPicodataYaml26 :
+  Id extends "cfg.picodata.yaml@26.1" ? CfgPicodataYaml26_1 :
   Id extends "cfg.postgresql.conf@15" ? CfgPostgresqlConf15 :
   Id extends "cfg.postgresql.conf@16" ? CfgPostgresqlConf16 :
   Id extends "cfg.postgresql.conf@17" ? CfgPostgresqlConf17 :
@@ -280,10 +288,12 @@ export const schemas: Record<SchemaId, unknown> = {
   "cfg.orioledb.postgresql.conf@17": cfgOrioledbPostgresqlConf17Schema,
   "cfg.orioledb.postgresql.conf@18": cfgOrioledbPostgresqlConf18Schema,
   "cfg.patroni.yml@3": cfgPatroniYml3Schema,
+  "cfg.patroni.yml@4": cfgPatroniYml4Schema,
   "cfg.pg_hba.conf@1": cfgPgHbaConf1Schema,
   "cfg.pgbouncer.ini@1": cfgPgbouncerIni1Schema,
   "cfg.picodata.yaml@25": cfgPicodataYaml25Schema,
   "cfg.picodata.yaml@26": cfgPicodataYaml26Schema,
+  "cfg.picodata.yaml@26.1": cfgPicodataYaml26_1Schema,
   "cfg.postgresql.conf@15": cfgPostgresqlConf15Schema,
   "cfg.postgresql.conf@16": cfgPostgresqlConf16Schema,
   "cfg.postgresql.conf@17": cfgPostgresqlConf17Schema,
@@ -345,10 +355,12 @@ export type {
   CfgOrioledbPostgresqlConf17,
   CfgOrioledbPostgresqlConf18,
   CfgPatroniYml3,
+  CfgPatroniYml4,
   CfgPgHbaConf1,
   CfgPgbouncerIni1,
   CfgPicodataYaml25,
   CfgPicodataYaml26,
+  CfgPicodataYaml26_1,
   CfgPostgresqlConf15,
   CfgPostgresqlConf16,
   CfgPostgresqlConf17,

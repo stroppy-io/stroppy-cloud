@@ -216,6 +216,12 @@ func myCnf(major string) *schemapb.Schema {
 		// doc: .../group-replication-system-variables.html#sysvar_group_replication_enforce_update_everywhere_checks
 		myOnOff("group_replication_enforce_update_everywhere_checks").Title("Update-everywhere checks").Group("Group replication").
 			Desc("Multi-primary safety checks; must be OFF in single-primary mode.").Default(myOff()),
+		// doc: https://dev.mysql.com/doc/refman/8.4/en/group-replication-system-variables.html#sysvar_group_replication_consistency
+		schemapb.Choice("group_replication_consistency").Title("Transaction consistency").Group("Group replication").
+			Desc("Group synchronization before or after transactions. BEFORE waits for preceding transactions before reads, allowing read-after-write through replicas; this is separate from SQL transaction isolation.").
+			Opt(schemapb.StrV("EVENTUAL"), "Eventual").Opt(schemapb.StrV("BEFORE_ON_PRIMARY_FAILOVER"), "Before primary failover").
+			Opt(schemapb.StrV("BEFORE"), "Before transaction").Opt(schemapb.StrV("AFTER"), "After transaction").
+			Opt(schemapb.StrV("BEFORE_AND_AFTER"), "Before and after").Nullable(),
 
 		// ---- Connections ---------------------------------------------------
 		// doc: https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_bind_address
@@ -396,13 +402,14 @@ func myCnf(major string) *schemapb.Schema {
 	// ---- custom + computed blocks -------------------------------------------
 	grLines := myJoin(
 		`"plugin_load_add = group_replication.so\n"`,
-		myEmit("group_replication_group_name", "group_replication_group_name"),
-		myEmit("group_replication_start_on_boot", "group_replication_start_on_boot"),
-		myEmit("group_replication_bootstrap_group", "group_replication_bootstrap_group"),
-		myEmit("group_replication_single_primary_mode", "group_replication_single_primary_mode"),
-		myEmit("group_replication_enforce_update_everywhere_checks", "group_replication_enforce_update_everywhere_checks"),
-		myEmit("group_replication_local_address", "group_replication_local_address"),
-		myEmit("group_replication_group_seeds", "group_replication_group_seeds"),
+		myEmit("loose-group_replication_group_name", "group_replication_group_name"),
+		myEmit("loose-group_replication_start_on_boot", "group_replication_start_on_boot"),
+		myEmit("loose-group_replication_bootstrap_group", "group_replication_bootstrap_group"),
+		myEmit("loose-group_replication_single_primary_mode", "group_replication_single_primary_mode"),
+		myEmit("loose-group_replication_enforce_update_everywhere_checks", "group_replication_enforce_update_everywhere_checks"),
+		myEmit("loose-group_replication_local_address", "group_replication_local_address"),
+		myEmit("loose-group_replication_group_seeds", "group_replication_group_seeds"),
+		myEmit("loose-group_replication_consistency", "group_replication_consistency"),
 	)
 	if is80 {
 		grLines = myJoin(grLines,
@@ -412,11 +419,13 @@ func myCnf(major string) *schemapb.Schema {
 	}
 
 	semisync := myJoin(
+		// mysqld --initialize ignores plugin_load_add; loose options allow the
+		// initial datadir creation. The recipe checks the plugin after startup.
 		`((("rpl_semi_sync_source_enabled" in root) && root.rpl_semi_sync_source_enabled == "ON") ?
-			"plugin_load_add = semisync_source.so\nrpl_semi_sync_source_enabled = ON\n" +`+
-			myEmit("rpl_semi_sync_source_timeout", "rpl_semi_sync_source_timeout")+` : "")`,
+			"plugin_load_add = semisync_source.so\nloose-rpl_semi_sync_source_enabled = ON\n" +`+
+			myEmit("loose-rpl_semi_sync_source_timeout", "rpl_semi_sync_source_timeout")+` : "")`,
 		`((("rpl_semi_sync_replica_enabled" in root) && root.rpl_semi_sync_replica_enabled == "ON") ?
-			"plugin_load_add = semisync_replica.so\nrpl_semi_sync_replica_enabled = ON\n" : "")`,
+			"plugin_load_add = semisync_replica.so\nloose-rpl_semi_sync_replica_enabled = ON\n" : "")`,
 	)
 
 	fields = append(fields,

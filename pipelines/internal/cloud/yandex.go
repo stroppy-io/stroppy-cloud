@@ -13,6 +13,9 @@ import (
 	"github.com/yandex-cloud/go-genproto/yandex/cloud/vpc/v1"
 	ycsdk "github.com/yandex-cloud/go-sdk"
 	"github.com/yandex-cloud/go-sdk/iamkey"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -124,7 +127,7 @@ func (y Yandex) Verify(ctx context.Context, settings json.RawMessage, credential
 
 // Quotas reads the compute/vpc quota limits and usage of the folder's
 // cloud through Quota Manager.
-func (y Yandex) Quotas(ctx context.Context, settings json.RawMessage, credentials, location string) (spec.QuotasResult, error) {
+func (y Yandex) Quotas(ctx context.Context, settings json.RawMessage, credentials, _ string) (spec.QuotasResult, error) {
 	var st yandexSettings
 	if err := json.Unmarshal(settings, &st); err != nil {
 		return spec.QuotasResult{}, fmt.Errorf("yandex settings: %w", err)
@@ -145,26 +148,47 @@ func (y Yandex) Quotas(ctx context.Context, settings json.RawMessage, credential
 		}
 		cloudID = folder.GetCloudId()
 	}
+	return readYandexQuotas(ctx, sdk.QuotaManager().QuotaLimit(), cloudID)
+}
+
+type yandexQuotaClient interface {
+	List(context.Context, *quotamanager.ListQuotaLimitsRequest, ...grpc.CallOption) (*quotamanager.ListQuotaLimitsResponse, error)
+}
+
+func readYandexQuotas(ctx context.Context, client yandexQuotaClient, cloudID string) (spec.QuotasResult, error) {
 	resource := &quotamanager.Resource{Id: cloudID, Type: "resource-manager.cloud"}
-	out := spec.QuotasResult{ObservedAt: time.Now().UTC()}
+	out := spec.QuotasResult{ObservedAt: time.Now().UTC(), Scope: "cloud:" + cloudID, Quotas: []spec.Quota{}}
 	for _, svc := range []string{"compute", "vpc"} {
-		it := sdk.QuotaManager().QuotaLimit().QuotaLimitIterator(ctx, &quotamanager.ListQuotaLimitsRequest{Resource: resource, Service: svc})
-		for it.Next() {
-			q := it.Value()
-			unit, wanted := yandexUnit(q.GetQuotaId())
-			if !wanted {
-				continue
+		req := &quotamanager.ListQuotaLimitsRequest{Resource: resource, Service: svc}
+		for {
+			page, err := client.List(ctx, req)
+			if status.Code(err) == codes.PermissionDenied {
+				// Cloud-level quota visibility is optional for a folder-scoped
+				// account. Discard partial pages: an incomplete snapshot must
+				// not look like a successful capacity check.
+				out.Quotas = []spec.Quota{}
+				out.UnavailableReason = "permission_denied"
+				return out, nil
 			}
-			out.Quotas = append(out.Quotas, spec.Quota{
-				Name:  q.GetQuotaId(),
-				Limit: q.GetLimit().GetValue(),
-				Used:  q.GetUsage().GetValue(),
-				Unit:  unit,
-				Zone:  location,
-			})
-		}
-		if err := it.Error(); err != nil {
-			return spec.QuotasResult{}, fmt.Errorf("quota limits of %s: %w", svc, err)
+			if err != nil {
+				return spec.QuotasResult{}, fmt.Errorf("quota limits of %s: %w", svc, err)
+			}
+			for _, q := range page.GetQuotaLimits() {
+				unit, wanted := yandexUnit(q.GetQuotaId())
+				if !wanted {
+					continue
+				}
+				out.Quotas = append(out.Quotas, spec.Quota{
+					Name:  q.GetQuotaId(),
+					Limit: q.GetLimit().GetValue(),
+					Used:  q.GetUsage().GetValue(),
+					Unit:  unit,
+				})
+			}
+			if page.GetNextPageToken() == "" {
+				break
+			}
+			req.PageToken = page.GetNextPageToken()
 		}
 	}
 	return out, nil

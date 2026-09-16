@@ -1,127 +1,127 @@
 {
-  "id": {
-    "namespace": "tenant",
-    "name": "webhook",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "tenant",
+    "name":  "webhook",
+    "version":  "v1.0.0"
   },
-  "description": "Outgoing webhook of a tenant: endpoint, subscribed events and signing secret.",
-  "fields": [
+  "description":  "Outgoing webhook of a tenant: endpoint, subscribed events and signing secret.",
+  "fields":  [
     {
-      "name": "url",
-      "description": "HTTPS endpoint the event is POSTed to.",
-      "required": true,
-      "string": {
-        "maxLen": "2048",
-        "pattern": "^https://",
-        "format": "url"
+      "name":  "url",
+      "description":  "HTTPS endpoint the event is POSTed to.",
+      "required":  true,
+      "string":  {
+        "maxLen":  "2048",
+        "pattern":  "^https://",
+        "format":  "url"
       },
-      "group": "Delivery",
-      "title": "Endpoint",
-      "examples": [
+      "group":  "Delivery",
+      "title":  "Endpoint",
+      "examples":  [
         {
-          "stringValue": "https://ci.example.com/hooks/stroppy"
+          "stringValue":  "https://ci.example.com/hooks/stroppy"
         }
       ]
     },
     {
-      "name": "events",
-      "description": "Which events are delivered; at least one.",
-      "required": true,
-      "list": {
-        "items": [
+      "name":  "events",
+      "description":  "Which events are delivered; at least one.",
+      "required":  true,
+      "list":  {
+        "items":  [
           {
-            "choice": {
-              "options": [
+            "choice":  {
+              "options":  [
                 {
-                  "value": {
-                    "stringValue": "run.started"
+                  "value":  {
+                    "stringValue":  "run.started"
                   },
-                  "label": "Run started"
+                  "label":  "Run started"
                 },
                 {
-                  "value": {
-                    "stringValue": "run.stage"
+                  "value":  {
+                    "stringValue":  "run.stage"
                   },
-                  "label": "Run changed phase"
+                  "label":  "Run changed phase"
                 },
                 {
-                  "value": {
-                    "stringValue": "run.finished"
+                  "value":  {
+                    "stringValue":  "run.finished"
                   },
-                  "label": "Run finished"
+                  "label":  "Run finished"
                 },
                 {
-                  "value": {
-                    "stringValue": "run.failed"
+                  "value":  {
+                    "stringValue":  "run.failed"
                   },
-                  "label": "Run failed"
+                  "label":  "Run failed"
                 },
                 {
-                  "value": {
-                    "stringValue": "run.cancelled"
+                  "value":  {
+                    "stringValue":  "run.cancelled"
                   },
-                  "label": "Run canceled"
+                  "label":  "Run canceled"
                 },
                 {
-                  "value": {
-                    "stringValue": "suite.started"
+                  "value":  {
+                    "stringValue":  "suite.started"
                   },
-                  "label": "Suite started"
+                  "label":  "Suite started"
                 },
                 {
-                  "value": {
-                    "stringValue": "suite.cell_finished"
+                  "value":  {
+                    "stringValue":  "suite.cell_finished"
                   },
-                  "label": "Suite cell finished"
+                  "label":  "Suite cell finished"
                 },
                 {
-                  "value": {
-                    "stringValue": "suite.finished"
+                  "value":  {
+                    "stringValue":  "suite.finished"
                   },
-                  "label": "Suite finished"
+                  "label":  "Suite finished"
                 }
               ]
             }
           }
         ],
-        "minItems": "1",
-        "maxItems": "8",
-        "unique": true
+        "minItems":  "1",
+        "maxItems":  "8",
+        "unique":  true
       },
-      "group": "Delivery",
-      "title": "Events"
+      "group":  "Delivery",
+      "title":  "Events"
     },
     {
-      "name": "secret",
-      "description": "Shared secret for the HMAC-SHA256 signature; shown once at creation.",
-      "required": true,
-      "string": {
-        "minLen": "16",
-        "maxLen": "256"
+      "name":  "secret",
+      "description":  "Shared secret for the HMAC-SHA256 signature; shown once at creation.",
+      "required":  true,
+      "string":  {
+        "minLen":  "16",
+        "maxLen":  "256"
       },
-      "group": "Delivery",
-      "title": "Signing secret",
-      "secret": true
+      "group":  "Delivery",
+      "title":  "Signing secret",
+      "secret":  true
     },
     {
-      "name": "enabled",
-      "description": "Deliveries are paused while this is off; the subscription is kept.",
-      "bool": {
-        "default": true
+      "name":  "enabled",
+      "description":  "Deliveries are paused while this is off; the subscription is kept.",
+      "bool":  {
+        "default":  true
       },
-      "group": "Delivery",
-      "title": "Enabled"
+      "group":  "Delivery",
+      "title":  "Enabled"
     },
     {
-      "name": "description",
-      "description": "What this hook is for, for whoever finds it later.",
-      "string": {
-        "maxLen": "512"
+      "name":  "description",
+      "description":  "What this hook is for, for whoever finds it later.",
+      "string":  {
+        "maxLen":  "512"
       },
-      "group": "Delivery",
-      "title": "Description"
+      "group":  "Delivery",
+      "title":  "Description"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

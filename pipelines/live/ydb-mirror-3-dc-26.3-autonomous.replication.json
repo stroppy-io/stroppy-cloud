@@ -1,0 +1,2324 @@
+{
+  "status": "passed",
+  "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.3-autonomous",
+  "checked_at": "2026-09-15T23:04:14.077122+00:00",
+  "source": "Read-only HTTP node, tenant and storage state through ordinary agents on every YDB YC member; all catalog members healthy at expected version",
+  "checks": {
+    "db-1": {
+      "agent": "ba93b5de-db-1",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-2": {
+      "agent": "ba93b5de-db-2",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-3": {
+      "agent": "ba93b5de-db-3",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-4": {
+      "agent": "ba93b5de-db-4",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-5": {
+      "agent": "ba93b5de-db-5",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-6": {
+      "agent": "ba93b5de-db-6",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-7": {
+      "agent": "ba93b5de-db-7",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-8": {
+      "agent": "ba93b5de-db-8",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-9": {
+      "agent": "ba93b5de-db-9",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-compute-1": {
+      "agent": "ba93b5de-db-compute-1",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-compute-2": {
+      "agent": "ba93b5de-db-compute-2",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    },
+    "db-compute-3": {
+      "agent": "ba93b5de-db-compute-3",
+      "source": "Read-only local HTTP YDB node, tenant and storage status through ordinary agent; no Docker or privilege escalation",
+      "probe_sha256": "c3238815234d493f1d4be5519a9cd113a52dc44058f444790c72131a75e1bb16",
+      "checks": {
+        "probe": "ydb",
+        "status": "passed",
+        "members": [
+          {
+            "id": 1,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 2,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 3,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 4,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 5,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 6,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 7,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-a"
+          },
+          {
+            "id": 8,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 9,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Storage",
+              "StateStorage",
+              "StateStorageBoard",
+              "SchemeBoard",
+              "Bootstrapper"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50001,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-b"
+          },
+          {
+            "id": 50002,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-d"
+          },
+          {
+            "id": 50000,
+            "version": "26.3.1.14.0b885de",
+            "state": "Green",
+            "roles": [
+              "Tenant"
+            ],
+            "zone": "ru-central1-a"
+          }
+        ],
+        "database": "/Root/stroppy",
+        "tenant_state": "RUNNING",
+        "storage_groups": [
+          {
+            "pool": "static",
+            "id": 0,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          },
+          {
+            "pool": "/Root/stroppy:ssd",
+            "id": 2181038080,
+            "erasure": "mirror-3-dc",
+            "state": "Green",
+            "vdisk_nodes": [
+              1,
+              4,
+              7,
+              2,
+              5,
+              8,
+              3,
+              6,
+              9
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

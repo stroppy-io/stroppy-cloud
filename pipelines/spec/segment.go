@@ -21,7 +21,7 @@ type Segment struct {
 	// schema does not model; rendered as `--<name> <value>`.
 	ExtraParams map[string]string `json:"extra_params,omitempty"`
 	Files       []SegmentFile     `json:"files,omitempty"`
-	Thresholds  Thresholds        `json:"thresholds,omitzero"`
+	Thresholds  Thresholds        `json:"thresholds,omitempty,omitzero"`
 	Warmup      Duration          `json:"warmup,omitempty"`
 	LogLevel    string            `json:"log_level,omitempty"`
 	Raw         json.RawMessage   `json:"-"`

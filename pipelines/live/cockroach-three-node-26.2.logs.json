@@ -1,0 +1,33 @@
+{
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-three-node-26.2",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 3386,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-cockroach-74ee56ed-cockroach-three-node-26.2"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-1-cockroach": 64,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-1-init": 3,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-1-node-exporter": 57,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-2-cockroach": 1592,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-2-node-exporter": 57,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-3-cockroach": 329,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-3-node-exporter": 57,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-proxy-1-haproxy": 3,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-proxy-1-node-exporter": 57,
+    "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T20:12:39.443966528Z",
+    "end": "2026-09-15T20:17:53.274405203Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

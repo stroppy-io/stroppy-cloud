@@ -6,6 +6,21 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/internal/schematest"
 )
 
+func TestProxysqlClusterRender(t *testing.T) {
+	for _, topology := range []string{"group_replication", "galera"} {
+		t.Run(topology, func(t *testing.T) {
+			schematest.Run(t, Proxysql2(), schematest.Cases{
+				Valid: []map[string]any{{"topology": topology, "restapi_enabled": "true", "mysql_servers": []any{map[string]any{"address": "10.0.0.1", "hostgroup": int64(10), "use_ssl": int64(1)}}}},
+				Invalid: []schematest.Invalid{
+					{Value: map[string]any{"topology": topology, "backup_writer_hostgroup": int64(10)}, Code: "RULE_VIOLATED", Path: "gr-hostgroups-distinct"},
+					{Value: map[string]any{"topology": topology, "offline_hostgroup": int64(20)}, Code: "RULE_VIOLATED", Path: "gr-hostgroups-distinct"},
+				},
+				Render: "conf", Contains: []string{"mysql_" + topology + "_hostgroups =", "restapi_enabled=true", "restapi_port=6070", "use_ssl=1"},
+			})
+		})
+	}
+}
+
 func TestProxysql2(t *testing.T) {
 	schematest.Run(t, Proxysql2(), schematest.Cases{
 		Valid: []map[string]any{
@@ -45,6 +60,8 @@ func TestProxysql2(t *testing.T) {
 			"mysql_users =",
 			"mysql_query_rules =",
 			"monitor_read_only_interval=",
+			`default_charset="utf8mb4"`,
+			`default_collation_connection="utf8mb4_general_ci"`,
 		},
 	})
 }

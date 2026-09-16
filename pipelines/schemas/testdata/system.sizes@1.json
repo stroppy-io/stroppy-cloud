@@ -1,714 +1,714 @@
 {
-  "id":  {
-    "namespace":  "system",
-    "name":  "sizes",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "system",
+    "name": "sizes",
+    "version": "v1.0.0"
   },
-  "description":  "Platform size table: provider → role family → XS..XL → concrete machine.",
-  "fields":  [
+  "description": "Platform size table: provider → role family → XS..XL → concrete machine.",
+  "fields": [
     {
-      "name":  "yandex",
-      "description":  "Keys are role families (db, proxy, runner, coordinator); each maps XS..XL to a machine.",
-      "map":  {
-        "valueSchema":  {
-          "fields":  [
+      "name": "yandex",
+      "description": "Keys are role families (db, proxy, runner, coordinator); each maps XS..XL to a machine.",
+      "map": {
+        "valueSchema": {
+          "fields": [
             {
-              "name":  "XS",
-              "description":  "What size XS means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "XS",
+              "description": "What size XS means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "XS"
+              "title": "XS"
             },
             {
-              "name":  "S",
-              "description":  "What size S means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "S",
+              "description": "What size S means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "S"
+              "title": "S"
             },
             {
-              "name":  "M",
-              "description":  "What size M means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "M",
+              "description": "What size M means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "M"
+              "title": "M"
             },
             {
-              "name":  "L",
-              "description":  "What size L means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "L",
+              "description": "What size L means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "L"
+              "title": "L"
             },
             {
-              "name":  "XL",
-              "description":  "What size XL means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "XL",
+              "description": "What size XL means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "XL"
+              "title": "XL"
             }
           ],
-          "strict":  true
+          "strict": true
         },
-        "maxEntries":  "16"
+        "maxEntries": "16"
       },
-      "group":  "Sizes",
-      "title":  "yandex"
+      "group": "Sizes",
+      "title": "yandex"
     },
     {
-      "name":  "aws",
-      "description":  "Keys are role families (db, proxy, runner, coordinator); each maps XS..XL to a machine.",
-      "map":  {
-        "valueSchema":  {
-          "fields":  [
+      "name": "aws",
+      "description": "Keys are role families (db, proxy, runner, coordinator); each maps XS..XL to a machine.",
+      "map": {
+        "valueSchema": {
+          "fields": [
             {
-              "name":  "XS",
-              "description":  "What size XS means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "XS",
+              "description": "What size XS means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "XS"
+              "title": "XS"
             },
             {
-              "name":  "S",
-              "description":  "What size S means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "S",
+              "description": "What size S means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "S"
+              "title": "S"
             },
             {
-              "name":  "M",
-              "description":  "What size M means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "M",
+              "description": "What size M means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "M"
+              "title": "M"
             },
             {
-              "name":  "L",
-              "description":  "What size L means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "L",
+              "description": "What size L means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "L"
+              "title": "L"
             },
             {
-              "name":  "XL",
-              "description":  "What size XL means for this role family.",
-              "required":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
+              "name": "XL",
+              "description": "What size XL means for this role family.",
+              "required": true,
+              "object": {
+                "schema": {
+                  "fields": [
                     {
-                      "name":  "cpu",
-                      "description":  "Cores the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "288"
+                      "name": "cpu",
+                      "description": "Cores the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "288"
                       },
-                      "title":  "vCPU"
+                      "title": "vCPU"
                     },
                     {
-                      "name":  "memory_gb",
-                      "description":  "RAM the machine gets.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "1",
-                        "lte":  "4096"
+                      "name": "memory_gb",
+                      "description": "RAM the machine gets.",
+                      "required": true,
+                      "int64": {
+                        "gte": "1",
+                        "lte": "4096"
                       },
-                      "unit":  "GB",
-                      "title":  "Memory"
+                      "unit": "GB",
+                      "title": "Memory"
                     },
                     {
-                      "name":  "instance_type",
-                      "description":  "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
-                      "required":  true,
-                      "string":  {
-                        "minLen":  "1",
-                        "maxLen":  "64"
+                      "name": "instance_type",
+                      "description": "Platform id (yandex, e.g. standard-v3) or EC2 instance type (aws, e.g. m7i.2xlarge).",
+                      "required": true,
+                      "string": {
+                        "minLen": "1",
+                        "maxLen": "64"
                       },
-                      "title":  "Instance type"
+                      "title": "Instance type"
                     },
                     {
-                      "name":  "default_disk_gb",
-                      "description":  "Data disk size when the test does not override it.",
-                      "required":  true,
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
+                      "name": "default_disk_gb",
+                      "description": "Data disk size when the test does not override it.",
+                      "required": true,
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
                       },
-                      "unit":  "GB",
-                      "title":  "Default disk"
+                      "unit": "GB",
+                      "title": "Default disk"
                     },
                     {
-                      "name":  "disk_type",
-                      "description":  "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
-                      "required":  true,
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                      "name": "disk_type",
+                      "description": "Provider disk type id: network-ssd / network-ssd-io-m3 (yandex), gp3 / io2 (aws).",
+                      "required": true,
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                       },
-                      "title":  "Disk type"
+                      "title": "Disk type"
                     }
                   ],
-                  "strict":  true
+                  "strict": true
                 }
               },
-              "title":  "XL"
+              "title": "XL"
             }
           ],
-          "strict":  true
+          "strict": true
         },
-        "maxEntries":  "16"
+        "maxEntries": "16"
       },
-      "group":  "Sizes",
-      "title":  "aws"
+      "group": "Sizes",
+      "title": "aws"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.cpu <= root.yandex[r].S.cpu && root.yandex[r].S.cpu <= root.yandex[r].M.cpu && root.yandex[r].M.cpu <= root.yandex[r].L.cpu && root.yandex[r].L.cpu <= root.yandex[r].XL.cpu)",
-      "message":  "yandex: cpu must not shrink as the size grows",
-      "id":  "yandex-cpu-monotonic"
+      "expr": "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.cpu <= root.yandex[r].S.cpu && root.yandex[r].S.cpu <= root.yandex[r].M.cpu && root.yandex[r].M.cpu <= root.yandex[r].L.cpu && root.yandex[r].L.cpu <= root.yandex[r].XL.cpu)",
+      "message": "yandex: cpu must not shrink as the size grows",
+      "id": "yandex-cpu-monotonic"
     },
     {
-      "expr":  "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.memory_gb <= root.yandex[r].S.memory_gb && root.yandex[r].S.memory_gb <= root.yandex[r].M.memory_gb && root.yandex[r].M.memory_gb <= root.yandex[r].L.memory_gb && root.yandex[r].L.memory_gb <= root.yandex[r].XL.memory_gb)",
-      "message":  "yandex: memory must not shrink as the size grows",
-      "id":  "yandex-memory-monotonic"
+      "expr": "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.memory_gb <= root.yandex[r].S.memory_gb && root.yandex[r].S.memory_gb <= root.yandex[r].M.memory_gb && root.yandex[r].M.memory_gb <= root.yandex[r].L.memory_gb && root.yandex[r].L.memory_gb <= root.yandex[r].XL.memory_gb)",
+      "message": "yandex: memory must not shrink as the size grows",
+      "id": "yandex-memory-monotonic"
     },
     {
-      "expr":  "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.default_disk_gb <= root.yandex[r].S.default_disk_gb && root.yandex[r].S.default_disk_gb <= root.yandex[r].M.default_disk_gb && root.yandex[r].M.default_disk_gb <= root.yandex[r].L.default_disk_gb && root.yandex[r].L.default_disk_gb <= root.yandex[r].XL.default_disk_gb)",
-      "message":  "yandex: the default disk should not shrink as the size grows",
-      "id":  "yandex-disk-monotonic",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "!(\"yandex\" in root) || root.yandex.all(r, root.yandex[r].XS.default_disk_gb <= root.yandex[r].S.default_disk_gb && root.yandex[r].S.default_disk_gb <= root.yandex[r].M.default_disk_gb && root.yandex[r].M.default_disk_gb <= root.yandex[r].L.default_disk_gb && root.yandex[r].L.default_disk_gb <= root.yandex[r].XL.default_disk_gb)",
+      "message": "yandex: the default disk should not shrink as the size grows",
+      "id": "yandex-disk-monotonic",
+      "severity": "SEVERITY_WARNING"
     },
     {
-      "expr":  "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.cpu <= root.aws[r].S.cpu && root.aws[r].S.cpu <= root.aws[r].M.cpu && root.aws[r].M.cpu <= root.aws[r].L.cpu && root.aws[r].L.cpu <= root.aws[r].XL.cpu)",
-      "message":  "aws: cpu must not shrink as the size grows",
-      "id":  "aws-cpu-monotonic"
+      "expr": "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.cpu <= root.aws[r].S.cpu && root.aws[r].S.cpu <= root.aws[r].M.cpu && root.aws[r].M.cpu <= root.aws[r].L.cpu && root.aws[r].L.cpu <= root.aws[r].XL.cpu)",
+      "message": "aws: cpu must not shrink as the size grows",
+      "id": "aws-cpu-monotonic"
     },
     {
-      "expr":  "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.memory_gb <= root.aws[r].S.memory_gb && root.aws[r].S.memory_gb <= root.aws[r].M.memory_gb && root.aws[r].M.memory_gb <= root.aws[r].L.memory_gb && root.aws[r].L.memory_gb <= root.aws[r].XL.memory_gb)",
-      "message":  "aws: memory must not shrink as the size grows",
-      "id":  "aws-memory-monotonic"
+      "expr": "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.memory_gb <= root.aws[r].S.memory_gb && root.aws[r].S.memory_gb <= root.aws[r].M.memory_gb && root.aws[r].M.memory_gb <= root.aws[r].L.memory_gb && root.aws[r].L.memory_gb <= root.aws[r].XL.memory_gb)",
+      "message": "aws: memory must not shrink as the size grows",
+      "id": "aws-memory-monotonic"
     },
     {
-      "expr":  "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.default_disk_gb <= root.aws[r].S.default_disk_gb && root.aws[r].S.default_disk_gb <= root.aws[r].M.default_disk_gb && root.aws[r].M.default_disk_gb <= root.aws[r].L.default_disk_gb && root.aws[r].L.default_disk_gb <= root.aws[r].XL.default_disk_gb)",
-      "message":  "aws: the default disk should not shrink as the size grows",
-      "id":  "aws-disk-monotonic",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "!(\"aws\" in root) || root.aws.all(r, root.aws[r].XS.default_disk_gb <= root.aws[r].S.default_disk_gb && root.aws[r].S.default_disk_gb <= root.aws[r].M.default_disk_gb && root.aws[r].M.default_disk_gb <= root.aws[r].L.default_disk_gb && root.aws[r].L.default_disk_gb <= root.aws[r].XL.default_disk_gb)",
+      "message": "aws: the default disk should not shrink as the size grows",
+      "id": "aws-disk-monotonic",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

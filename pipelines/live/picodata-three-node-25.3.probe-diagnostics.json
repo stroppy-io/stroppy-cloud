@@ -1,0 +1,215 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-25.3",
+  "classification_scope": "Exact startup/pre-workload messages collected after the workload started; source messages remain in VictoriaLogs",
+  "observations": [
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:42:23.830755329Z",
+      "source_time": "2026-09-15T16:42:02.756000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "6bfabc318a0e234a7d15be51b7a10aa085268d122bb334c57ecfd241d06b9015",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:42:23.830375987Z",
+      "source_time": "2026-09-15T16:41:56.525000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "e2a30e9e6e2e25119200b06aea878d751c7f362f88b07a05faa8e9888bbc6fb8",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:42:23.83019685Z",
+      "source_time": "2026-09-15T16:41:56.514000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "0fb9c60cef1240224d17a4ee1ab91c1e564dc8b4a7cf63c11b924fdc863d7fcb",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:42:23.829917095Z",
+      "source_time": "2026-09-15T16:41:55.391000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "d43ff26ba082e8d1cfb4822f42da27328f256599bbbf9840df944b2a03b5a485",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:42:22.849065323Z",
+      "source_time": "2026-09-15T16:41:56.523000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "5bb76d7fa4495c0471cc828e7bd578ce921c7ab9a6807f52d509a3a8f6553b69",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:42:22.849059506Z",
+      "source_time": "2026-09-15T16:41:56.523000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "4a15c05090ed0c4f1374d7913d6fd015b894cb86ebac403265634552ff4e0dfd",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:42:22.847677841Z",
+      "source_time": "2026-09-15T16:41:54.457000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "57dc861bc71409c8bc1fbaa3d33ff11d9c78ff0f069404b12721f4fde7552614",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-2-picodata",
+      "observed_at": "2026-09-15T16:42:22.740548026Z",
+      "source_time": "2026-09-15T16:41:56.523000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "caf3fa8b43dd7cf65adeaf558b0a7cfe280db9beb0c03e983c717c3e7b92515d",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-2-picodata",
+      "observed_at": "2026-09-15T16:42:22.740324518Z",
+      "source_time": "2026-09-15T16:41:56.516000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "91c6371aa3eae76317a7d762cfa0b8eb47408450586919940ee452f0e4a82fa0",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-2-picodata",
+      "observed_at": "2026-09-15T16:42:22.740018158Z",
+      "source_time": "2026-09-15T16:41:55.392000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "4fe05e847e3e81fc2caa27d243840c4632a7b5db03d5797fb068c12f4518c19e",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-2-picodata",
+      "observed_at": "2026-09-15T16:42:22.739943954Z",
+      "source_time": "2026-09-15T16:41:55.390000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "3ec07154ec3e849899123f7f1fa0da652b6247196f2bc6d9296d56955fbeb874",
+      "classification": "picodata_pre_workload_log_delivered_later",
+      "workload_started_at": "2026-09-15T16:42:05.06638666Z",
+      "evidence": "All exact messages predate first workload start. All database container.ready signals were at 16:41:58-16:42:00 UTC, HAProxy ready at 16:42:02.809, initializer ready at 16:42:04.821. Native workloads report zero terminal errors; no general EOF exemption."
+    }
+  ],
+  "post_workload_cleanup_observations": [
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:48:25.508410929Z",
+      "source_time": "2026-09-15T16:48:22.914000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "0c211ab8e6a76ce39b92b3434bb17bd979ee19d1012b314f1eda004b45c16c92",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:48:25.508324028Z",
+      "source_time": "2026-09-15T16:48:22.913000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "d6f7fcce2f3003c923e0b4801e5b0af70c4ddd66c622aef29d086dfdf65bb7d6",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:47:25.283202949Z",
+      "source_time": "2026-09-15T16:47:13.563000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "0b74b25a991cc455a153d55b7c733afd5ed5fd060d7e7a9f9afff33712c86fc1",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:47:25.283075506Z",
+      "source_time": "2026-09-15T16:47:13.131000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "09db2fd2c3f8c9833d55bcce8ad2558aeef7edaaea377028c525c89ec4b1acf2",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:47:25.282685442Z",
+      "source_time": "2026-09-15T16:47:13.060000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "e3518a514534401dc0cb6b3a7fab4c35403392a0de3b28b4b19a0f2a8e8a994e",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:47:25.282218906Z",
+      "source_time": "2026-09-15T16:47:02.323000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "947e9befadbdc580152853bfe27cde6b773f5f5e3a8f983952b24535f96cad1b",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-1-picodata",
+      "observed_at": "2026-09-15T16:47:25.282191051Z",
+      "source_time": "2026-09-15T16:47:02.323000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "563b5b441e0b4fbe3bc5f8f7f769fac39a0026086c02acf9bf2562ed99153d0a",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:47:24.222976962Z",
+      "source_time": "2026-09-15T16:47:13.561000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "5b21eae0f369b015c233a95c1fcda76252b1ffea03cd4361a97e29f6d6ec6fb3",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:47:24.222901683Z",
+      "source_time": "2026-09-15T16:47:13.128000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "e07c6468704b1f3d20bdfb5d19ab6f46e89f4eb50438d7e497d9bb9c5455bd3d",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:47:24.222209374Z",
+      "source_time": "2026-09-15T16:47:13.057000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "3c110bbfafb0944f2ff61aa385f7ed6751a14beac5ac9d509f665276f6d33ff5",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:47:24.221505793Z",
+      "source_time": "2026-09-15T16:47:02.320000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "398bfef710b66585c1f816731a4083b4e82377960c7b4cf4a457e960d60ddf6b",
+      "classification": "post_workload_cleanup_observation"
+    },
+    {
+      "entity": "docker/c143e26c-8d67-424e-82e1-662ee63005e1-db-3-picodata",
+      "observed_at": "2026-09-15T16:47:24.221473964Z",
+      "source_time": "2026-09-15T16:47:02.320000+00:00",
+      "source_time_basis": "UTC Picodata log prefix; this deployment uses the default UTC container clock",
+      "message_sha256": "ff75e50e87105cc48bcf660bdce949ecf1d86fa083303e38e374f43d30e64af3",
+      "classification": "post_workload_cleanup_observation"
+    }
+  ],
+  "cleanup_scope_note": "Functional cleanup verifies removal of owned resources. Post-workload connection failures and duplicate replica connection messages are retained; graceful Picodata decommissioning is not claimed."
+}

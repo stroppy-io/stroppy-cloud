@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "cell": "pg17-patroni-ha",
+      "iterations_total_in_native_log": 132109.0,
+      "matches_pipeline_result": true,
+      "log_bytes": 2339,
+      "log_lines": 19,
+      "explicit_failed_iterations_counter_present": false,
+      "segment_exit_code": 0
+    },
+    {
+      "cell": "pg18-patroni-ha",
+      "iterations_total_in_native_log": 134147.0,
+      "matches_pipeline_result": true,
+      "log_bytes": 2337,
+      "log_lines": 19,
+      "explicit_failed_iterations_counter_present": false,
+      "segment_exit_code": 0
+    },
+    {
+      "cell": "pg16-patroni-ha",
+      "iterations_total_in_native_log": 137621.0,
+      "matches_pipeline_result": true,
+      "log_bytes": 2339,
+      "log_lines": 19,
+      "explicit_failed_iterations_counter_present": false,
+      "segment_exit_code": 0
+    },
+    {
+      "cell": "pg15-patroni-ha",
+      "iterations_total_in_native_log": 144852.0,
+      "matches_pipeline_result": true,
+      "log_bytes": 2339,
+      "log_lines": 19,
+      "explicit_failed_iterations_counter_present": false,
+      "segment_exit_code": 0
+    }
+  ],
+  "scope": "native log summary counters and pipeline exit status; no inferred TPS or inferred failure counter"
+}

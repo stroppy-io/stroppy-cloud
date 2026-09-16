@@ -1,105 +1,105 @@
 {
-  "id": {
-    "namespace": "system",
-    "name": "limits",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "system",
+    "name":  "limits",
+    "version":  "v1.0.0"
   },
-  "description": "Tenant limits: how much a tenant may run at once, how big, and for how long.",
-  "fields": [
+  "description":  "Tenant limits: how much a tenant may run at once, how big, and for how long.",
+  "fields":  [
     {
-      "name": "max_concurrent_runs",
-      "description": "Runs a tenant may have in flight, suite children included.",
-      "required": true,
-      "int64": {
-        "default": "3",
-        "gte": "1",
-        "lte": "1000"
+      "name":  "max_concurrent_runs",
+      "description":  "Runs a tenant may have in flight, suite children included.",
+      "required":  true,
+      "int64":  {
+        "default":  "3",
+        "gte":  "1",
+        "lte":  "1000"
       },
-      "group": "Limits",
-      "title": "Concurrent runs"
+      "group":  "Limits",
+      "title":  "Concurrent runs"
     },
     {
-      "name": "max_machines_per_run",
-      "description": "Upper bound on the machine count of one RunSpec.",
-      "required": true,
-      "int64": {
-        "default": "8",
-        "gte": "1",
-        "lte": "64"
+      "name":  "max_machines_per_run",
+      "description":  "Upper bound on the machine count of one RunSpec.",
+      "required":  true,
+      "int64":  {
+        "default":  "8",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "Limits",
-      "title": "Machines per run"
+      "group":  "Limits",
+      "title":  "Machines per run"
     },
     {
-      "name": "max_size",
-      "description": "Largest T-shirt size any role of a run may use.",
-      "required": true,
-      "choice": {
-        "options": [
+      "name":  "max_size",
+      "description":  "Largest T-shirt size any role of a run may use.",
+      "required":  true,
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "XS"
+            "value":  {
+              "stringValue":  "XS"
             },
-            "label": "XS"
+            "label":  "XS"
           },
           {
-            "value": {
-              "stringValue": "S"
+            "value":  {
+              "stringValue":  "S"
             },
-            "label": "S"
+            "label":  "S"
           },
           {
-            "value": {
-              "stringValue": "M"
+            "value":  {
+              "stringValue":  "M"
             },
-            "label": "M"
+            "label":  "M"
           },
           {
-            "value": {
-              "stringValue": "L"
+            "value":  {
+              "stringValue":  "L"
             },
-            "label": "L"
+            "label":  "L"
           },
           {
-            "value": {
-              "stringValue": "XL"
+            "value":  {
+              "stringValue":  "XL"
             },
-            "label": "XL"
+            "label":  "XL"
           }
         ],
-        "default": {
-          "stringValue": "L"
+        "default":  {
+          "stringValue":  "L"
         }
       },
-      "group": "Limits",
-      "title": "Largest size"
+      "group":  "Limits",
+      "title":  "Largest size"
     },
     {
-      "name": "max_keep",
-      "description": "Longest a stand may be kept alive after a run finishes.",
-      "required": true,
-      "duration": {
-        "default": "86400s",
-        "gte": "0s",
-        "lte": "2592000s"
+      "name":  "max_keep",
+      "description":  "Longest a stand may be kept alive after a run finishes.",
+      "required":  true,
+      "duration":  {
+        "default":  "86400s",
+        "gte":  "0s",
+        "lte":  "2592000s"
       },
-      "group": "Limits",
-      "title": "Longest stand"
+      "group":  "Limits",
+      "title":  "Longest stand"
     },
     {
-      "name": "run_retention_max_days",
-      "description": "Ceiling for the tenant's own run_retention_days setting.",
-      "required": true,
-      "int64": {
-        "default": "180",
-        "gte": "1",
-        "lte": "3650"
+      "name":  "run_retention_max_days",
+      "description":  "Ceiling for the tenant's own run_retention_days setting.",
+      "required":  true,
+      "int64":  {
+        "default":  "180",
+        "gte":  "1",
+        "lte":  "3650"
       },
-      "group": "Limits",
-      "unit": "days",
-      "title": "Run retention"
+      "group":  "Limits",
+      "unit":  "days",
+      "title":  "Run retention"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

@@ -1,0 +1,110 @@
+{
+  "artifacts": [
+    {
+      "ref": "artifact/2addd63f-stroppy-smoke-config",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": null
+    },
+    {
+      "ref": "artifact/2addd63f-stroppy-smoke-log",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": "2026-10-14T15:49:25.300215055Z"
+    },
+    {
+      "ref": "artifact/bb7fe69c-stroppy-smoke-config",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": null
+    },
+    {
+      "ref": "artifact/bb7fe69c-stroppy-smoke-log",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": "2026-10-14T16:09:36.862033533Z"
+    },
+    {
+      "ref": "artifact/fef81f72-stroppy-smoke-config",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": null
+    },
+    {
+      "ref": "artifact/fef81f72-stroppy-smoke-log",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": "2026-10-14T16:33:00.251862036Z"
+    },
+    {
+      "ref": "artifact/4604db36-stroppy-smoke-config",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": null
+    },
+    {
+      "ref": "artifact/4604db36-stroppy-smoke-log",
+      "phase": "ready",
+      "owner": "stand/stroppy-run",
+      "keep_until": "2026-10-14T16:55:25.586905369Z"
+    }
+  ],
+  "download_checks": [
+    {
+      "ref": "artifact/2addd63f-stroppy-smoke-config",
+      "location": "blobs/7c6783920dc34a501e214a6a4e370385dc1dd5005687a82b6787c4b6ab4fe9eb",
+      "digest": "sha256:7c6783920dc34a501e214a6a4e370385dc1dd5005687a82b6787c4b6ab4fe9eb",
+      "size": 451,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/2addd63f-stroppy-smoke-log",
+      "location": "blobs/2df2ac4e3ab2ca6aca95d43bfeaab8b5b0e0a85cca40d66d590d4820ade6884b",
+      "digest": "sha256:2df2ac4e3ab2ca6aca95d43bfeaab8b5b0e0a85cca40d66d590d4820ade6884b",
+      "size": 2339,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/bb7fe69c-stroppy-smoke-config",
+      "location": "blobs/5198404dd26d6f226e3092954697183f868b73dd6bdab9cab9c3f1770e84fd64",
+      "digest": "sha256:5198404dd26d6f226e3092954697183f868b73dd6bdab9cab9c3f1770e84fd64",
+      "size": 451,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/bb7fe69c-stroppy-smoke-log",
+      "location": "blobs/876fc71fc8e5f8846cdaf2a7ae7cf113040ee56f3324563b3e6113ee65074ca0",
+      "digest": "sha256:876fc71fc8e5f8846cdaf2a7ae7cf113040ee56f3324563b3e6113ee65074ca0",
+      "size": 2337,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/fef81f72-stroppy-smoke-config",
+      "location": "blobs/d009cb7ea5b7ac75b8e2de105f59b58239f7c7e64edfb7fbf34e862d867c22cc",
+      "digest": "sha256:d009cb7ea5b7ac75b8e2de105f59b58239f7c7e64edfb7fbf34e862d867c22cc",
+      "size": 451,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/fef81f72-stroppy-smoke-log",
+      "location": "blobs/85abf2d6a11124984145fbaf48cdbc86c9e4d3e55fd1f347f92fc710444082ba",
+      "digest": "sha256:85abf2d6a11124984145fbaf48cdbc86c9e4d3e55fd1f347f92fc710444082ba",
+      "size": 2339,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/4604db36-stroppy-smoke-config",
+      "location": "blobs/ef1296befaba2a8b59921296b3c02bfb5a0bf5fe3390ba3654600660c3edb7aa",
+      "digest": "sha256:ef1296befaba2a8b59921296b3c02bfb5a0bf5fe3390ba3654600660c3edb7aa",
+      "size": 451,
+      "download_verified": true
+    },
+    {
+      "ref": "artifact/4604db36-stroppy-smoke-log",
+      "location": "blobs/ed49a70fc2775576e66aff84949b1e53f58ff3b37159439f6264a0793fe06dba",
+      "digest": "sha256:ed49a70fc2775576e66aff84949b1e53f58ff3b37159439f6264a0793fe06dba",
+      "size": 2339,
+      "download_verified": true
+    }
+  ]
+}

@@ -11,7 +11,7 @@ type Result struct {
 	Segments  []SegmentResult        `json:"segments,omitempty"`
 	Artifacts []string               `json:"artifacts,omitempty"`
 	Baseline  *BaselineResult        `json:"baseline,omitempty"`
-	Summary   Summary                `json:"summary,omitzero"`
+	Summary   Summary                `json:"summary,omitempty,omitzero"`
 }
 
 // BaselineResult is the outcome of `stroppy baseline` on the runner.
@@ -63,8 +63,8 @@ const (
 type SegmentResult struct {
 	Name       string                 `json:"name"`
 	Status     SegmentStatus          `json:"status"`
-	StartedAt  time.Time              `json:"started_at,omitzero"`
-	FinishedAt time.Time              `json:"finished_at,omitzero"`
+	StartedAt  time.Time              `json:"started_at,omitempty,omitzero"`
+	FinishedAt time.Time              `json:"finished_at,omitempty,omitzero"`
 	Metrics    map[string]MetricValue `json:"metrics,omitempty"`
 	Errors     *ErrorCounts           `json:"errors,omitempty"`
 	ExitCode   int                    `json:"exit_code"`
@@ -89,7 +89,7 @@ type Suite struct {
 	Tenant      string        `json:"tenant"`
 	Cells       []SuiteCell   `json:"cells"`
 	Concurrency int           `json:"concurrency,omitempty"`
-	Defaults    SuiteDefaults `json:"defaults,omitzero"`
+	Defaults    SuiteDefaults `json:"defaults,omitempty,omitzero"`
 }
 
 // SuiteCell is one run of a suite.
@@ -158,8 +158,12 @@ type Quotas struct {
 
 // QuotasResult is spec.result.quotas@1.
 type QuotasResult struct {
-	ObservedAt time.Time `json:"observed_at"`
-	Quotas     []Quota   `json:"quotas"`
+	// UnavailableReason is permission_denied when cloud quotas cannot be read.
+	// An unavailable snapshot has no quotas; provisioning still enforces limits.
+	UnavailableReason string    `json:"unavailable_reason,omitempty"`
+	Scope             string    `json:"scope,omitempty"`
+	ObservedAt        time.Time `json:"observed_at"`
+	Quotas            []Quota   `json:"quotas"`
 }
 
 // Quota is one cloud limit with its usage.

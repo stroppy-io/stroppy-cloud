@@ -1,0 +1,454 @@
+{
+  "status": "passed",
+  "scope": "local single topology on every storage/compute member; YC/mirror3dc not verified",
+  "cells": {
+    "25.4": {
+      "status": "passed",
+      "checked_at": "2026-09-15T18:00:00.305287+00:00",
+      "input_sha256": "6f97cd7345dc7a079df81acfb0e5150da3a90ca48d6b64e79c3c72f2abb2628f",
+      "checks": {
+        "stroppy-ydb-7feb83fb-db-compute-1-ydb": ".sys\n"
+      },
+      "native": {},
+      "viewer": {
+        "db-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "stable-25-4-1.b7e8995",
+              "state": "Green",
+              "roles": [
+                "SchemeBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "StateStorageBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "stable-25-4-1.b7e8995",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        },
+        "db-compute-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "stable-25-4-1.b7e8995",
+              "state": "Green",
+              "roles": [
+                "SchemeBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "StateStorageBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "stable-25-4-1.b7e8995",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "binary_sha256": "c9a522d2edc9d0627fa449ed21d7bc563203bfe8a339dae28a7898933de7da68"
+    },
+    "26.1": {
+      "status": "passed",
+      "checked_at": "2026-09-15T18:00:05.294266+00:00",
+      "input_sha256": "3826ef515ac2393f15b2844e1b95c27c8c879455352006808634fef503053d26",
+      "checks": {
+        "stroppy-ydb-62a6820b-db-compute-1-ydb": ".sys\n"
+      },
+      "native": {},
+      "viewer": {
+        "db-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.1.1.22.1b59297",
+              "state": "Green",
+              "roles": [
+                "StateStorageBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "SchemeBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.1.1.22.1b59297",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        },
+        "db-compute-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.1.1.22.1b59297",
+              "state": "Green",
+              "roles": [
+                "StateStorageBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "SchemeBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.1.1.22.1b59297",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "binary_sha256": "c9a522d2edc9d0627fa449ed21d7bc563203bfe8a339dae28a7898933de7da68"
+    },
+    "26.2": {
+      "status": "passed",
+      "checked_at": "2026-09-15T18:00:12.501447+00:00",
+      "input_sha256": "88a89ec9c038e17d564df27edb7d5b08c8843b9da642c331d70bb8519d68c06c",
+      "checks": {
+        "stroppy-ydb-a4865f83-db-compute-1-ydb": ".sys\n"
+      },
+      "native": {},
+      "viewer": {
+        "db-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.2.1.14.1bd0f9c",
+              "state": "Green",
+              "roles": [
+                "StateStorageBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "SchemeBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.2.1.14.1bd0f9c",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        },
+        "db-compute-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.2.1.14.1bd0f9c",
+              "state": "Green",
+              "roles": [
+                "StateStorageBoard",
+                "Bootstrapper",
+                "Storage",
+                "StateStorage",
+                "SchemeBoard"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.2.1.14.1bd0f9c",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "binary_sha256": "c9a522d2edc9d0627fa449ed21d7bc563203bfe8a339dae28a7898933de7da68"
+    },
+    "26.3": {
+      "status": "passed",
+      "checked_at": "2026-09-15T18:00:17.519594+00:00",
+      "input_sha256": "fc31e601ec38e510e4eb2c75fc1a304f2172741623ea33af73fd529127ab2849",
+      "checks": {
+        "stroppy-ydb-59cc8c9b-db-compute-1-ydb": ".sys\n"
+      },
+      "native": {},
+      "viewer": {
+        "db-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.3.1.14.0b885de",
+              "state": "Green",
+              "roles": [
+                "Storage",
+                "StateStorage",
+                "StateStorageBoard",
+                "SchemeBoard",
+                "Bootstrapper"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.3.1.14.0b885de",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        },
+        "db-compute-1-ydb": {
+          "probe": "ydb",
+          "status": "passed",
+          "members": [
+            {
+              "id": 1,
+              "version": "26.3.1.14.0b885de",
+              "state": "Green",
+              "roles": [
+                "Storage",
+                "StateStorage",
+                "StateStorageBoard",
+                "SchemeBoard",
+                "Bootstrapper"
+              ],
+              "zone": "ru-central1-a"
+            },
+            {
+              "id": 50000,
+              "version": "26.3.1.14.0b885de",
+              "state": "Green",
+              "roles": [
+                "Tenant"
+              ],
+              "zone": "ru-central1-a"
+            }
+          ],
+          "database": "/Root/stroppy",
+          "tenant_state": "RUNNING",
+          "storage_groups": [
+            {
+              "pool": "static",
+              "id": 0,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            },
+            {
+              "pool": "/Root/stroppy:ssd",
+              "id": 2181038080,
+              "erasure": "none",
+              "state": "Green",
+              "vdisk_nodes": [
+                1
+              ]
+            }
+          ]
+        }
+      },
+      "binary_sha256": "c9a522d2edc9d0627fa449ed21d7bc563203bfe8a339dae28a7898933de7da68"
+    }
+  }
+}

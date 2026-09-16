@@ -1,0 +1,15 @@
+{
+  "status": "restored",
+  "namespace": "default",
+  "pipeline": "stroppy-run",
+  "accidental_image": "graphene.stroppy.io:443/default/stroppy-run:13fb59df33cfbc86",
+  "restored_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:1f7361bcf2c0e171",
+  "previous_publish_event_id": 2064,
+  "verified_fields": [
+    "image",
+    "manifest",
+    "concurrency"
+  ],
+  "runs_started_in_default": 0,
+  "checked_at": "2026-09-14T20:28:00.601270+00:00"
+}

@@ -1,0 +1,174 @@
+{
+  "checked_at": "2026-09-14T17:15:11.674099+00:00",
+  "commit": "aa39645fe8cbbb15f6b8607edb64cc2e74efa3e1",
+  "release": "v0.2.9",
+  "deployment_verified": true,
+  "original_server": "0.2.8",
+  "original_failure": {
+    "returned_bytes": 8388608,
+    "complete_workload_response_bytes": 12761953,
+    "complete_workload_response_series": 15948,
+    "error": "Unterminated string: truncated JSON snapshot"
+  },
+  "response_limit_bytes": 8388608,
+  "oversize_behavior": "error without partial snapshot; narrow query or use individual resource",
+  "local_checks": [
+    "make lint",
+    "make test",
+    "8 MiB exact-boundary and oversized response tests, scoped and raw metrics",
+    "RFC3339 CLI interval validation"
+  ],
+  "cli_live_queries": [
+    {
+      "form": "metrics",
+      "bytes": 753145,
+      "series": 783
+    },
+    {
+      "form": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-1-postgres-exporter",
+      "bytes": 753145,
+      "series": 783
+    },
+    {
+      "form": "metrics",
+      "bytes": 2083,
+      "series": 3
+    }
+  ],
+  "ci": {
+    "run_id": 34866759147,
+    "conclusion": "success"
+  },
+  "published_images": {
+    "ghcr.io/graphene-ci/graphene-server:0.2.9": "sha256:40131d93afc55e981a2fcd858fd1d984439931f88d5fdc3b4c76ba62c4b82017",
+    "docker.stroppy.io/graphene-ci/graphene-server:0.2.9": "sha256:40131d93afc55e981a2fcd858fd1d984439931f88d5fdc3b4c76ba62c4b82017"
+  },
+  "release_run": 34867052881,
+  "release_conclusion": "success",
+  "cli_release": {
+    "asset": "graphenectl_0.2.9_linux_amd64.tar.gz",
+    "sha256": "c6c46c8851fedb6a3d596552dc4729a226c4af5d555b67a83ff6b4316c2ac490",
+    "checksum_matches_published": true,
+    "version": "graphenectl version 0.2.9"
+  },
+  "historical_cli_helper_check": {
+    "run_id": "matrix-pg-versions-ed460e6f-pg17-single",
+    "query_range": {
+      "start": "2026-09-14T13:32:28.288299764Z",
+      "end": "2026-09-14T13:34:31.457782267Z"
+    },
+    "series_count": 3398,
+    "exporters": 3,
+    "same_entities_as_original_report": true,
+    "cli_version": "0.2.9"
+  },
+  "deployment": {
+    "infra_commit": "7eb2edf697a46054c6ffda9e413af0297782028e",
+    "namespace": "graphene",
+    "pod": "graphene-server-7986d4d5f5-wwgr7",
+    "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.9",
+    "image_id": "docker.stroppy.io/graphene-ci/graphene-server@sha256:40131d93afc55e981a2fcd858fd1d984439931f88d5fdc3b4c76ba62c4b82017",
+    "ready": true,
+    "restarts": 0,
+    "argo_sync": "Synced",
+    "argo_health": "Healthy",
+    "healthy_after_metrics_queries": true
+  },
+  "resource_queries": [
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-1-node-exporter",
+      "series": 667,
+      "snapshot_bytes": 493578
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-1-postgres",
+      "series": 97,
+      "snapshot_bytes": 70897
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-1-postgres-exporter",
+      "series": 783,
+      "snapshot_bytes": 564843
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-1-node-exporter",
+      "series": 667,
+      "snapshot_bytes": 504415
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-1-postgres",
+      "series": 97,
+      "snapshot_bytes": 72491
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-1-postgres-exporter",
+      "series": 834,
+      "snapshot_bytes": 616465
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-2-node-exporter",
+      "series": 667,
+      "snapshot_bytes": 504379
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-2-postgres",
+      "series": 97,
+      "snapshot_bytes": 72637
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-2-postgres-exporter",
+      "series": 787,
+      "snapshot_bytes": 578537
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-1-etcd",
+      "series": 1064,
+      "snapshot_bytes": 852465
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-1-node-exporter",
+      "series": 623,
+      "snapshot_bytes": 475618
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-2-etcd",
+      "series": 1064,
+      "snapshot_bytes": 852605
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-2-node-exporter",
+      "series": 623,
+      "snapshot_bytes": 475651
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-3-etcd",
+      "series": 1064,
+      "snapshot_bytes": 852539
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-3-node-exporter",
+      "series": 623,
+      "snapshot_bytes": 475673
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-proxy-1-haproxy",
+      "series": 879,
+      "snapshot_bytes": 615665
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-proxy-1-node-exporter",
+      "series": 595,
+      "snapshot_bytes": 443545
+    },
+    {
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-runner-1-node-exporter",
+      "series": 639,
+      "snapshot_bytes": 489392
+    }
+  ],
+  "oversize_live_check": {
+    "exit_code": 1,
+    "stdout_bytes": 0,
+    "error": "metrics backend response exceeds 8 MiB"
+  }
+}

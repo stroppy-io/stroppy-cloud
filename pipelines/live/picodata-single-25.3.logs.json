@@ -1,0 +1,44 @@
+{
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-25.3",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 10551,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-picodata-metrics-85175d12-picodata-single-25.3"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/4f582301-987a-4a12-b546-fad6d27e92a1-db-1-node-exporter": 57,
+    "docker/4f582301-987a-4a12-b546-fad6d27e92a1-db-1-picodata": 10023,
+    "docker/4f582301-987a-4a12-b546-fad6d27e92a1-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T16:09:28.926244163Z",
+    "end": "2026-09-15T16:12:49.278564973Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/4f582301-987a-4a12-b546-fad6d27e92a1-db-1-picodata",
+      "observed_at": "2026-09-15T16:10:51.164178644Z",
+      "message_sha256": "843ec45b158bfbb502021f6ee47e095d1f1d1468b8875a64086784bae65a509f",
+      "classification": "diagnostic_probe_abrupt_disconnect",
+      "message": "pgproto IO error: unexpected end of file"
+    }
+  ],
+  "observation_counts": {
+    "diagnostic_probe_abrupt_disconnect": 1
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": [
+    {
+      "entity": "docker/4f582301-987a-4a12-b546-fad6d27e92a1-db-1-init",
+      "status": "ready",
+      "stdout": "not emitted by quiet bootstrap command",
+      "evidence": "persisted container.ready workflow signal after marker healthcheck",
+      "command_sha256": "2adbe06aceb657d258078768467a47dfb00f864a5638647201783147fc56ab03"
+    }
+  ]
+}

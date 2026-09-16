@@ -580,6 +580,17 @@
       "title":  "SST method"
     },
     {
+      "name":  "wsrep_sst_auth",
+      "description":  "user:password for backup SST; filled by the server from topology, unused by rsync.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
+      },
+      "group":  "Cluster",
+      "title":  "SST credentials",
+      "secret":  true
+    },
+    {
       "name":  "wsrep_slave_threads",
       "description":  "Threads applying write-sets from other nodes.",
       "int64":  {
@@ -1130,7 +1141,7 @@
       "name":  "galera_lines",
       "description":  "The whole wsrep_* block, emitted only when wsrep_on is ON.",
       "computed":  {
-        "expr":  "(((\"wsrep_on\" in root) && root.wsrep_on == \"ON\") ? (\"wsrep_on = ON\\n\" +\n((\"wsrep_provider\" in root) ? \"wsrep_provider\" + \" = \" + string(root[\"wsrep_provider\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_name\" in root) ? \"wsrep_cluster_name\" + \" = \" + string(root[\"wsrep_cluster_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_address\" in root) ? \"wsrep_cluster_address\" + \" = \" + string(root[\"wsrep_cluster_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_address\" in root) ? \"wsrep_node_address\" + \" = \" + string(root[\"wsrep_node_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_name\" in root) ? \"wsrep_node_name\" + \" = \" + string(root[\"wsrep_node_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_method\" in root) ? \"wsrep_sst_method\" + \" = \" + string(root[\"wsrep_sst_method\"]) + \"\\n\" : \"\") +\n((\"wsrep_slave_threads\" in root) ? \"wsrep_slave_threads\" + \" = \" + string(root[\"wsrep_slave_threads\"]) + \"\\n\" : \"\") +\n((\"wsrep_sync_wait\" in root) ? \"wsrep_sync_wait\" + \" = \" + string(root[\"wsrep_sync_wait\"]) + \"\\n\" : \"\")) : \"wsrep_on = OFF\\n\")",
+        "expr":  "(((\"wsrep_on\" in root) && root.wsrep_on == \"ON\") ? (\"wsrep_on = ON\\n\" +\n((\"wsrep_provider\" in root) ? \"wsrep_provider\" + \" = \" + string(root[\"wsrep_provider\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_name\" in root) ? \"wsrep_cluster_name\" + \" = \" + string(root[\"wsrep_cluster_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_address\" in root) ? \"wsrep_cluster_address\" + \" = \" + string(root[\"wsrep_cluster_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_address\" in root) ? \"wsrep_node_address\" + \" = \" + string(root[\"wsrep_node_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_name\" in root) ? \"wsrep_node_name\" + \" = \" + string(root[\"wsrep_node_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_method\" in root) ? \"wsrep_sst_method\" + \" = \" + string(root[\"wsrep_sst_method\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_auth\" in root) ? \"wsrep_sst_auth\" + \" = \" + string(root[\"wsrep_sst_auth\"]) + \"\\n\" : \"\") +\n((\"wsrep_slave_threads\" in root) ? \"wsrep_slave_threads\" + \" = \" + string(root[\"wsrep_slave_threads\"]) + \"\\n\" : \"\") +\n((\"wsrep_sync_wait\" in root) ? \"wsrep_sync_wait\" + \" = \" + string(root[\"wsrep_sync_wait\"]) + \"\\n\" : \"\")) : \"wsrep_on = OFF\\n\")",
         "result":  "RESULT_TYPE_STRING"
       },
       "group":  "Rendered",

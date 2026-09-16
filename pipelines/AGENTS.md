@@ -43,10 +43,28 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 - Фазы: `provisioning → deploying → workload → collecting → teardown`,
   каждая через `phase[T]` (milestones `phase.started/finished/failed`, panic
   от `Ready` перехватывается и перекидывается).
+- Deploy после пользовательских host_prep обеспечивает Docker через
+  `dockerlib.Install()` на первом runner и всех машинах с контейнерами.
+  Установка идемпотентна, машины готовятся параллельно; ошибка останавливает
+  deploy и запускает cleanup. Входу не нужны install-скрипты для Docker.
+  Docker library 0.2.3 отправляет heartbeat сразу и каждые 15 секунд;
+  pipeline задаёт минутный heartbeat timeout и 15 минут на попытку установки.
+- Node-exporter читает rootfs, procfs, sysfs и udev машины через read-only
+  `/host`; `--path.rootfs` сам по себе не перенаправляет остальные пути.
+  Версия 1.12.1 читает `ID_SERIAL` virtio-дисков YC, включая имя `data`.
+- Healthcheck принимает Docker-формы `CMD` и `CMD-SHELL`, а также прямой argv.
+  `CMD-SHELL` использует shell образа (по умолчанию `/bin/sh -c`); маркеры
+  не передаются как имена исполняемых файлов. Ошибка exec сохраняется в диагностике.
+- Managed YDB перед workload проверяется тем же образом Stroppy: TCP, TLS/IAM
+  и read-only SELECT 1. Readiness ограничена пятью минутами, не входит в нагрузку;
+  её конфиг и журнал попыток сохраняются отдельными артефактами с общим retention.
 - Сегменты workload — последовательно, `AtMostOnce`, таймаут
   `duration*1.5 + warmup + 30m`.
 - `Keep` → `ToStand(infra.Root, KeepFor)` после результата; иначе cleanup
   interceptor Graphene сносит всё каскадом от root-сети.
+- Загруженные артефакты перед возвратом результата передаются stand:
+  конфиги без TTL (до явного удаления), логи сегментов и baseline — 30 дней.
+  Они переживают cleanup run; срок не зависит от Keep инфраструктуры.
 
 ## Правила activities (`internal/activities`)
 
@@ -58,8 +76,14 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   одинаков на хосте, в контейнере агента и для docker daemon (bind-mount).
 - `EnsureProviderConfig` — единственная, что ходит в k8s напрямую: пишет
   Secret + ProviderConfig `t-<tenant>` в `crossplane-system`. Не
-  graphene-ресурс (общий на тенанта). Kubeconfig: in-cluster, иначе
-  graphene-секрет `kubeconfig` в ns тенанта.
+  graphene-ресурс (общий на тенанта). Kubeconfig: graphene-секрет
+  `kubeconfig` в ns тенанта, тот же кластер и identity, что у `k8slib`.
+  Учётка run-пода не подменяет явно заданные реквизиты.
+  Live bootstrap использует постоянный token Secret `graphene/stroppy-live-api-token`
+  существующей SA `stroppy-live`. Повторная настройка повторно использует этот
+  токен; `--sync-token-only` (старый алиас `--refresh-token-only`) не выдаёт
+  восьмичасовой токен и не меняет RBAC. Конфигурация и проверка — `live/bootstrap.py`,
+  `live/bootstrap-token.yaml`, `live/persistent-kubeconfig-check.json`.
 
 ## Плейсхолдеры и env (контракт с сервером)
 
@@ -71,6 +95,13 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   только пишет их в конфиг. Никакого env-моста: stroppy 6 типизирован.
 - Имена облачных ресурсов: `stroppy-<tenant>-<run8>-...`; агенты
   `<run8>-<machine>`.
+- Контейнеры Docker и их Graphene-записи именуются `<полный-run-UUID>-<name>`;
+  логическое имя остаётся в RunSpec, depends_on, событиях и метке
+  `stroppy-container`. Healthcheck и flow-ссылки используют физическое имя.
+  Это разделяет одновременно работающие прогоны в одном namespace.
+- Отмена suite возвращает Canceled независимо от continue_on_failure;
+  обычная ошибка ячейки остаётся отдельным исходом. Cleanup Graphene
+  отправляет отмену дочерним run, которые выполняют собственный teardown.
 
 ## Зависимости (не трогать без причины)
 
@@ -143,3 +174,46 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
 - Сборки с коммита: версия `nightly-<sha>` (так печатает `stroppy version`),
   образ задаёт каталог. Параметры новых сборок, не описанные схемой, идут через
   `extra_params` как типизированные флаги.
+
+## Native workload metrics
+
+The workflow stamps the actual Graphene namespace/run and tenant; config rendering
+adds the segment name without mutating caller labels. Explicit workload parameters
+are scalars next to `script`, never a nested `params` object. Parameter-shape
+validation runs before provisioning. CLI failure summaries retain the leading
+`Error:` message even when Stroppy prints usage afterward.
+
+The pipeline copies native `tps`, `iterations_per_second`, `queries_per_second`
+and `measurement_seconds`, adding units without computing throughput. Workloads
+without logical transactions do not report TPS. Full metrics and workload-specific
+reports remain available alongside the compact headline.
+
+Native Stroppy fixes are temporarily tested on YC using development images built
+from the uncommitted working tree, with inputs pinned to immutable image digests.
+See [the temporary build procedure](live/README.md#временное-решение-dev-сборки-до-pr-и-релиза-stroppy)
+for provenance requirements and the source-preservation limitation. Retire this
+workaround only after the upstream PR is merged, an official image is published,
+and equivalent checks pass with its digest. Do not infer permission to commit or
+create that PR from this temporary testing agreement.
+
+
+## MySQL family live checks
+
+The compiler selects `cfg.my.cnf@8` for MySQL 8.0, `@8.4` for 8.4 and
+`cfg.mariadb.cnf@<selected-version>` for MariaDB. Semisync plugin options use
+`loose-` because fresh mysqld initialization skips plugin loading; readiness
+requires the plugin afterwards. Replica `read_only=ON` belongs in the permanent
+config, since initdb `SET GLOBAL` does not survive the temporary-server restart.
+A healthy listener alone is insufficient: verify receiver, applier, semisync
+status and replicated test rows. `live/mysql_probe.py` uses ordinary SQL access
+and does not require sudo or Docker access in an agent shell.
+
+Run results allow 256 metrics per segment and 64 segments, so aggregate metrics
+must not reuse the per-segment cap. Artifact capacity is config + log per segment
+plus the optional baseline log. Preserve every native metric instead of truncating.
+
+SDK 0.2.5 bounds OTLP metric requests to 2 MiB by splitting complete protobuf
+collections/points before gRPC export. Resource identity, labels, timestamps and
+metric semantics are preserved; receiver partial rejections remain errors. Large
+YDB scrapes require this SDK in the published worker. The server receive limit
+and the separate database histogram/summary scrape gap are unchanged.

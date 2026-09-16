@@ -1,0 +1,96 @@
+{
+  "run_id": "external-dsn-7383cd13",
+  "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+  "query_range": {
+    "start": "2026-09-15T20:45:01.536657+00:00",
+    "end": "2026-09-15T20:54:58.106473+00:00"
+  },
+  "series_count": 658,
+  "nonfinite_raw_samples": [],
+  "database_distribution_scope": "Scalar series only: Graphene docker 0.2.2 and 0.2.3 drop histogram/summary families and counter types; see database-metric-coverage.json",
+  "queried_entities": [
+    "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter"
+  ],
+  "exporter_runs_observed": [
+    "external-dsn-7383cd13"
+  ],
+  "exporter_agents_observed": [
+    "7383cd13-runner-1"
+  ],
+  "data_filesystems": [],
+  "exporters": {
+    "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter": {
+      "metric_names": 247
+    }
+  },
+  "component_health": {},
+  "replication": {},
+  "cluster_replication": [],
+  "proxy_metrics": [],
+  "database_versions": {},
+  "disk_info": [
+    {
+      "entity": "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "device": "vda",
+      "serial": "fv4q1ec8hjrnrnrt7mv1",
+      "model": "",
+      "path": "pci-0000:01:00.0"
+    }
+  ],
+  "node_collectors_reporting_zero": [
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "bcachefs"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "bonding"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "conntrack"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "fibrechannel"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "infiniband"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "ipvs"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "kernel_hung"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "nfs"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "nfsd"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "nvme"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "tapestats"
+    ],
+    [
+      "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "zfs"
+    ]
+  ],
+  "node_collector_zero_note": "Zero can also mean hardware or subsystem absent; inspect exporter logs before treating it as a fault.",
+  "postgres_exporter_scrape_error_max": [],
+  "mysql_exporter_scrape_error_max": [],
+  "mysql_exporter_collectors": [],
+  "transfer_activity_attempts_observed": [],
+  "health_scope_note": "Persisted component metrics; native workload verifies database operations. Independent membership checks recorded separately where applicable."
+}

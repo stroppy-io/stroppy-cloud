@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/workflow"
 
@@ -168,4 +169,24 @@ func count(list []string, name string) int {
 		}
 	}
 	return n
+}
+
+func TestSimulatedSuiteCancellation(t *testing.T) {
+	for _, continueOnFailure := range []bool{false, true} {
+		name := "stop on failure"
+		if continueOnFailure {
+			name = "continue on failure"
+		}
+		t.Run(name, func(t *testing.T) {
+			s := newChildSim(t)
+			wf := pipelinetest.Workflow(s.w, PipelineID, Run)
+			s.delays["test-"+PipelineID+"-a"] = 10 * time.Minute
+			s.delays["test-"+PipelineID+"-b"] = 10 * time.Minute
+			s.w.Env.RegisterDelayedCallback(s.w.Env.CancelWorkflow, time.Minute)
+			s.w.Env.ExecuteWorkflow(wf, spec.Suite{SuiteRunID: "s", Tenant: "acme", Cells: []spec.SuiteCell{cell("a"), cell("b")}, Concurrency: 2, Defaults: spec.SuiteDefaults{ContinueOnFailure: continueOnFailure}})
+			require.True(t, temporal.IsCanceledError(s.w.Env.GetWorkflowError()), "operator cancel must remain canceled: %v", s.w.Env.GetWorkflowError())
+			require.Len(t, s.started, 2)
+			require.NotContains(t, s.events, CellFailed, "operator cancel is not a failed cell")
+		})
+	}
 }

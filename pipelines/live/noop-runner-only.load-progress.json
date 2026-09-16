@@ -1,0 +1,8 @@
+{
+  "status": "not_applicable",
+  "run_id": "matrix-aux-30be9f55-noop-runner-only",
+  "reason": "execute_sql runs supplied statements without an insert/population phase",
+  "scripts": [
+    "execute_sql"
+  ]
+}

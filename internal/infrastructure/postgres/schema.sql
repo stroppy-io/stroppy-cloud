@@ -152,6 +152,8 @@ CREATE TABLE provider_profiles (
     verify_run_id      text        NOT NULL DEFAULT '',
     quotas             jsonb,
     quotas_observed_at timestamptz,
+    quotas_unavailable_reason text NOT NULL DEFAULT '',
+    quotas_scope text NOT NULL DEFAULT '',
     created_by         uuid        REFERENCES profiles (id) ON DELETE SET NULL,
     created_at         timestamptz NOT NULL DEFAULT now(),
     updated_at         timestamptz NOT NULL DEFAULT now(),

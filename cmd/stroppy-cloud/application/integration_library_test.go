@@ -126,7 +126,12 @@ func TestE2ELibrary(t *testing.T) {
 		}
 		r := e.req(http.MethodPost, base+"/databases/"+clone.ID, nil, tok) // no such op → 405/404, sanity only
 		_ = r
-		e.want(e.req(http.MethodPatch, base+"/databases/"+clone.ID, map[string]any{"params": map[string]any{"version": "16"}, "version": "16"}, tok), http.StatusOK, nil)
+		// A version change must also replace the explicitly selected config schema.
+		e.problem(e.req(http.MethodPatch, base+"/databases/"+clone.ID, map[string]any{"params": map[string]any{"version": "16"}, "version": "16"}, tok), http.StatusUnprocessableEntity, "invalid")
+		e.want(e.req(http.MethodPatch, base+"/databases/"+clone.ID, map[string]any{
+			"params": map[string]any{"version": "16"}, "version": "16",
+			"configs": map[string]any{"db": map[string]any{"cfg.postgresql.conf@16": map[string]any{"shared_buffers": 2048}}},
+		}, tok), http.StatusOK, nil)
 		var diff struct {
 			Changes []struct {
 				Path string `json:"path"`

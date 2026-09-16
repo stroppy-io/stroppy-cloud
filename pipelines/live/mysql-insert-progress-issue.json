@@ -1,0 +1,120 @@
+{
+  "run_id": "matrix-mysql84-634139c4-single",
+  "status": "fixed",
+  "issue": "native Stroppy insert-progress reports completed progress above 100 percent",
+  "scope": "load progress reporting; final throughput counters are verified separately",
+  "examples": [
+    {
+      "workload": "tpcc/procs",
+      "event": "completed",
+      "table": "district",
+      "row_kind": "generated",
+      "rows": 20,
+      "total_rows": 10,
+      "generated_rows": 20,
+      "confirmed_rows": 10,
+      "inflight_rows": 10,
+      "percent": 200
+    },
+    {
+      "workload": "tpcc/procs",
+      "event": "completed",
+      "table": "warehouse",
+      "row_kind": "generated",
+      "rows": 2,
+      "total_rows": 1,
+      "generated_rows": 2,
+      "confirmed_rows": 1,
+      "inflight_rows": 1,
+      "percent": 200
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "district",
+      "row_kind": "generated",
+      "rows": 20,
+      "total_rows": 10,
+      "generated_rows": 20,
+      "confirmed_rows": 10,
+      "inflight_rows": 10,
+      "percent": 200
+    },
+    {
+      "workload": "tpcc/tx",
+      "event": "completed",
+      "table": "warehouse",
+      "row_kind": "generated",
+      "rows": 2,
+      "total_rows": 1,
+      "generated_rows": 2,
+      "confirmed_rows": 1,
+      "inflight_rows": 1,
+      "percent": 200
+    },
+    {
+      "workload": "tpcb/procs",
+      "event": "completed",
+      "table": "pgbench_tellers",
+      "row_kind": "generated",
+      "rows": 20,
+      "total_rows": 10,
+      "generated_rows": 20,
+      "confirmed_rows": 10,
+      "inflight_rows": 10,
+      "percent": 200
+    },
+    {
+      "workload": "tpcb/procs",
+      "event": "completed",
+      "table": "pgbench_branches",
+      "row_kind": "generated",
+      "rows": 2,
+      "total_rows": 1,
+      "generated_rows": 2,
+      "confirmed_rows": 1,
+      "inflight_rows": 1,
+      "percent": 200
+    },
+    {
+      "workload": "tpcb/tx",
+      "event": "completed",
+      "table": "pgbench_tellers",
+      "row_kind": "generated",
+      "rows": 20,
+      "total_rows": 10,
+      "generated_rows": 20,
+      "confirmed_rows": 10,
+      "inflight_rows": 10,
+      "percent": 200
+    },
+    {
+      "workload": "tpcb/tx",
+      "event": "completed",
+      "table": "pgbench_branches",
+      "row_kind": "generated",
+      "rows": 2,
+      "total_rows": 1,
+      "generated_rows": 2,
+      "confirmed_rows": 1,
+      "inflight_rows": 1,
+      "percent": 200
+    },
+    {
+      "workload": "simple",
+      "event": "completed",
+      "table": "stroppy_demo",
+      "row_kind": "generated",
+      "rows": 200,
+      "total_rows": 100,
+      "generated_rows": 200,
+      "confirmed_rows": 100,
+      "inflight_rows": 100,
+      "percent": 200
+    }
+  ],
+  "source": "persistent VictoriaLogs, exact run and namespace filter",
+  "resolution": "Share the SQL bulk insert remainder progress counter instead of copying it",
+  "validated_by": "mysql80-single.load-progress.json",
+  "image": "mysql-native-image.json"
+}

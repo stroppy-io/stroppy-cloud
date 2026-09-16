@@ -1,0 +1,18 @@
+{
+  "run_id": "native-exports-74979a8a-tpcb",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 509,
+  "limit": 20000,
+  "runs_observed": [
+    "native-exports-74979a8a-tpcb"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-db-1-node-exporter": 57,
+    "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-db-1-postgres": 56,
+    "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-db-1-postgres-exporter": 6,
+    "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-runner-1-node-exporter": 57
+  }
+}

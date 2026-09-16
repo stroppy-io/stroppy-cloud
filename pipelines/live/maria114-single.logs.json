@@ -1,0 +1,18 @@
+{
+  "run_id": "matrix-maria-3d24d9a0-maria114-single",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 467,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-maria-3d24d9a0-maria114-single"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-mariadb": 77,
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-mysqld-exporter": 13,
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-db-1-node-exporter": 57,
+    "docker/c272ed1d-f268-4390-93fd-b98088e171f4-runner-1-node-exporter": 57
+  }
+}

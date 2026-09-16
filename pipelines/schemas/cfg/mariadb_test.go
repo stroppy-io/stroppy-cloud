@@ -56,7 +56,7 @@ func TestMariadbCnf1011(t *testing.T) {
 		Contains: []string{
 			"[mariadb]",
 			"innodb_log_file_size = ",
-			"tx_isolation = ",
+			"transaction-isolation = ",
 			"log_warnings = ",
 			"wsrep_on = ",
 		},

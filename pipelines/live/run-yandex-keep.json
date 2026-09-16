@@ -1,0 +1,54 @@
+{
+  "run_id": "a11e0008-0000-4000-8000-000000000008",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-d",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.131.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 2,
+      "memory_gb": 4,
+      "image": "fd8d6s0blceqbto92ss8",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "noop",
+    "url": "noop://localhost",
+    "segments": [
+      {
+        "name": "smoke",
+        "workload": {
+          "script": "execute_sql",
+          "sql_body": "--= smoke\nSELECT 1;"
+        },
+        "run": {
+          "executor": "constant-vus",
+          "vus": 1,
+          "duration": "10s"
+        },
+        "log_level": "warn"
+      }
+    ]
+  },
+  "keep": "2m"
+}

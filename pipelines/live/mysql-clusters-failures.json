@@ -1,0 +1,125 @@
+{
+  "checked_at": "2026-09-15T12:56:32.647095+00:00",
+  "failures": [
+    {
+      "scope": "local fresh MySQL initialization",
+      "error": "Access denied for root during official entrypoint initialization",
+      "cause": "MYSQL_PWD inherited the final root password before the root account was initialized",
+      "fix": "unset MYSQL_PWD for official entrypoint; retain it only for wrapper SQL probes",
+      "verified": "all five local clusters"
+    },
+    {
+      "scope": "MySQL Group Replication config",
+      "error": "group_replication_group_name option is mandatory",
+      "cause": "renderer arguments for loose plugin settings were reversed",
+      "fix": "render loose option names from original schema field names; regression render tests",
+      "verified": "MySQL 8.0 and 8.4 local clusters"
+    },
+    {
+      "scope": "MySQL recovery channel",
+      "error": "ERROR 3139: CHANGE REPLICATION SOURCE with the given parameters cannot be performed on channel group_replication_recovery",
+      "cause": "SOURCE_SSL is not accepted for this managed channel",
+      "fix": "use group_replication_recovery_use_ssl; CHANGE SOURCE only configures credentials",
+      "verified": "MySQL 8.0 and 8.4 local clusters"
+    },
+    {
+      "scope": "MySQL joiner initialization",
+      "error": "This member has more executed transactions than those present in the group",
+      "cause": "each node loaded timezone tables and created local GTIDs",
+      "fix": "only seed loads timezone tables; joiners receive them through replication",
+      "verified": "MySQL 8.0 and 8.4 local clusters"
+    },
+    {
+      "scope": "Galera peer handshake",
+      "error": "handling gmcast protocol message failed at gcomm/types.hpp:String():30; failed to reach primary view",
+      "cause": "stroppy-prefixed UUID cluster name was too long for the peer handshake",
+      "fix": "use the full UUID as 32 hex characters without hyphens",
+      "verified": "MariaDB 10.11, 11.4 and 11.8 local clusters"
+    },
+    {
+      "scope": "ProxySQL healthcheck",
+      "error": "nc absent in image; combined health command exceeded schema length",
+      "cause": "healthcheck assumed a binary not present in ProxySQL 2.7.3",
+      "fix": "SQL readiness script supplied as container file, checks proxy and every database member",
+      "verified": "all five local clusters"
+    },
+    {
+      "scope": "YC initial MySQL 8.4 simple",
+      "error": "7 terminal row count mismatch errors: expected 100, got 0",
+      "cause": "read/write split sent immediate post-load reads to replicas with eventual consistency",
+      "fix": "seed MySQL BEFORE and Galera wsrep_sync_wait=1 before explicit user overrides",
+      "verified": "all five corrected YC cluster configurations completed five native workloads each without terminal errors; persisted checks passed, Galera 10.11 startup telemetry coverage is explicit"
+    },
+    {
+      "scope": "YC initial ProxySQL",
+      "error": "incompatible utf8mb4/utf8_general_ci; RLIMIT_NOFILE=1024",
+      "fix": "matching default_collation_connection and raise process soft file limit within existing hard limit",
+      "verified": "all five corrected local and YC clusters"
+    },
+    {
+      "scope": "YC Docker installation",
+      "error": "dpkg frontend lock held by unattended-upgrades",
+      "fix": "graphene-ci/library/docker v0.2.2 with temporary APT lock wait timeout",
+      "verified": "unit/lint/CI, real fcntl lock in local container, published docker 0.2.2 consumed by corrected YC workers"
+    },
+    {
+      "scope": "persisted native metric validation",
+      "error": "metrics backend response exceeds 8 MiB",
+      "fix": "query final native measurements in 30-second post-segment window",
+      "verified": "all five initial MySQL 8.4 native final measurements verified through authenticated Graphene metrics API"
+    },
+    {
+      "scope": "MariaDB single and Galera exporter permissions",
+      "error": "collect.slave_status=0; Error 1227: SLAVE MONITOR required",
+      "cause": "REPLICATION CLIENT does not imply SLAVE MONITOR for fresh users on supported MariaDB versions; verifier checked removed mysql_exporter_last_scrape_error metric instead of per-collector success",
+      "fix": "grant SLAVE MONITOR at MariaDB bootstrap; verify mysql_exporter_collector_success=1 during every workload window; retain all collector labels",
+      "verified": "all six MariaDB configurations passed locally and in YC with all six collectors per database; suite matrix-maria-monitor-e4a0fdb4 completed 6/6 cells and 30/30 segments",
+      "evidence": [
+        "mariadb118-single.collector-check.json",
+        "mariadb114-single.collector-check.json",
+        "mariadb1011-single.collector-check.json"
+      ]
+    },
+    {
+      "scope": "MySQL semi-sync config rendering",
+      "error": "custom source timeout omitted from option file",
+      "cause": "myEmit key and field arguments were reversed",
+      "fix": "render schema field rpl_semi_sync_source_timeout as loose-rpl_semi_sync_source_timeout",
+      "verified": "MySQL 8.0 and 8.4 schema renderer with non-default 1733 ms; live custom timeout experiment not performed"
+    },
+    {
+      "scope": "Galera persisted health verification",
+      "error": "range query returned cluster_size=2 at workload start despite three ready members",
+      "cause": "lookback reused raw sample from 11:49:01 before the segment started at 11:49:04; all original in-window samples were 3",
+      "fix": "health checks use raw export with exact OTLP collection timestamp bounds; source scrape timestamps are not preserved",
+      "verified": "real raw samples plus regression preserving in-window faults; successful persisted verification with separate documented delayed gauge at Galera 10.11 startup",
+      "evidence": [
+        "mariadb-galera-118.bootstrap-samples.json",
+        "raw-metrics-check.json"
+      ]
+    },
+    {
+      "scope": "Galera 10.11 startup OTLP gauge",
+      "error": "cluster_size=2 exported after the ready cluster started the workload",
+      "cause": "OTEL synchronous gauge repeats its last record with the next collection timestamp; scrape beat 30s and OTLP reader 15s",
+      "fix": "retain full window, separately report bounded first 45s coverage; compare database log timestamps and SQL probe; assert stable cluster metrics afterwards",
+      "verified": "SDK 1.46.0 reproduction and all three YC DB membership logs; regression rejects later faults or unbounded window exclusions",
+      "evidence": [
+        "mariadb-galera-1011.startup-telemetry.json",
+        "mariadb-galera-1011.replication-metrics.json",
+        "cluster-coverage-check.json"
+      ],
+      "remaining": "source scrape timestamps are not preserved by the current Graphene metric bridge"
+    },
+    {
+      "scope": "Graphene stand Continue-as-New",
+      "error": "2,458,311-byte payload exceeds 2,097,152-byte limit; artifact transfer stalls the last MariaDB single run",
+      "cause": "100 cached mutation responses copied the growing full holdings map across Continue-as-New",
+      "fix": "accept/extend/release return count; full holdings remain in describe; no retention changes",
+      "verified": "Graphene 0.2.12 released, ArgoCD Synced/Healthy, existing stand and all prior artifacts preserved; the same stalled run resumed and completed, all suite resources cleaned",
+      "evidence": [
+        "graphene212-check.json"
+      ]
+    }
+  ]
+}

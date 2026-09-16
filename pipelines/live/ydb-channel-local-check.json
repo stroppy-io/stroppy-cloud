@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T20:48:36.286989+00:00",
+  "cases": [
+    {
+      "input": "ydb-mirror-3-dc-25.4-simple.json",
+      "input_sha256": "dbf9bf6302d7c25c525523f2bc177c339381784bf4084f6f27c27466cd8f549d",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:25.4.1.15",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-mirror-3-dc-26.1-simple.json",
+      "input_sha256": "be52f0f298e28d96d19ce2bd8ca1cc01aa9629f4c884119f2fa8cfc0b338afe2",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.1.1.22",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-mirror-3-dc-26.2-simple.json",
+      "input_sha256": "77f6b17da0bbe71f518cdfbed9609e6e3d7e8c5e43a470f2d81fea71f8709c0b",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.2.1.14",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-mirror-3-dc-26.3-simple.json",
+      "input_sha256": "c3bef712b8300199aaeef275dc01a357e04114317611311eb196e1d52c4bfdb4",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.3.1.14",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-single-25.4-simple.json",
+      "input_sha256": "f5caa5c6c3e283e49f375bb0a95c5c33de1f83331c247e3304c21141e4d006f3",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:25.4.1.15",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-single-26.1-simple.json",
+      "input_sha256": "8eb698da439a95dfa55bdb40af2dbc7f270d6335163c7bbdf65331b7a7ac6fb6",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.1.1.22",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-single-26.2-simple.json",
+      "input_sha256": "621cca4b37ed0a93242fd1b003f48d6428bfba86a4ee36a1bd357a88143317e5",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.2.1.14",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    },
+    {
+      "input": "ydb-single-26.3-simple.json",
+      "input_sha256": "a0e7d60c813f9bb82fbb5322a10ab4dbdea1eaff7ec77420f45f930a3f33f3b3",
+      "image": "docker.stroppy.io/ydbplatform/local-ydb:26.3.1.14",
+      "status": "passed",
+      "grpc_listening": true,
+      "monitoring_listening": true,
+      "scope": "single storage process startup; distributed quorum and workloads are verified separately on YC"
+    }
+  ]
+}

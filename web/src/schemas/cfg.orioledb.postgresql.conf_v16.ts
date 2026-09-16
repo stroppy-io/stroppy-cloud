@@ -169,8 +169,8 @@ export interface CfgOrioledbPostgresqlConf16 {
   default_text_search_config?: string;
   /** orioledb.main_buffers. Shared memory OrioleDB uses to cache hot pages; the OrioleDB counterpart of shared_buffers. [MB] */
   orioledb_main_buffers?: number | string;
-  /** orioledb.undo_buffers. Ring buffer holding older row and page versions (OrioleDB's undo log). [MB] */
-  orioledb_undo_buffers?: number | string;
+  /** orioledb.undo_buffers. Ring buffer holding older row and page versions. Leave unset for the engine default, which grows with the maximum process count; an explicit value must meet the engine's process-dependent minimum. [MB] */
+  orioledb_undo_buffers?: number | string | null;
   /** orioledb.free_tree_buffers. Shared memory for the free-space metadata of compressed tables. [MB] */
   orioledb_free_tree_buffers?: number | string;
   /** orioledb.catalog_buffers. Shared memory for table metadata. [MB] */

@@ -1,0 +1,34 @@
+{
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-three-node-26.3",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 9260,
+  "limit": null,
+  "read_mode": "stream_until_eof",
+  "runs_observed": [
+    "matrix-cockroach-74ee56ed-cockroach-three-node-26.3"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-1-cockroach": 7104,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-1-init": 3,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-1-node-exporter": 57,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-2-cockroach": 612,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-2-node-exporter": 57,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-3-cockroach": 117,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-db-3-node-exporter": 57,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-proxy-1-haproxy": 3,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-proxy-1-node-exporter": 57,
+    "docker/e417488c-ccec-41a8-bfc8-84f74d321b8a-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T20:31:33.648208575Z",
+    "end": "2026-09-15T20:36:57.444295571Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

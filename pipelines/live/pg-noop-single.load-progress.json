@@ -1,0 +1,8 @@
+{
+  "status": "not_applicable",
+  "run_id": "matrix-pgnoop-f4eb20b2-pg-noop-single",
+  "reason": "execute_sql runs supplied statements without an insert/population phase",
+  "scripts": [
+    "execute_sql"
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "17": {
+    "pull_digest": "sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:d3d2c855398c6c56978b1c1ca26fd452a8225bbd02a24e5a87be7bcc67445b51",
+          "size": 3523,
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          }
+        },
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:888650aff0a71ba36d575b534106b9be771861ef0d0c12f4d985332c347035fe",
+          "size": 837,
+          "annotations": {
+            "vnd.docker.reference.digest": "sha256:d3d2c855398c6c56978b1c1ca26fd452a8225bbd02a24e5a87be7bcc67445b51",
+            "vnd.docker.reference.type": "attestation-manifest"
+          },
+          "platform": {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        }
+      ]
+    },
+    "local_image_id": "sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db",
+    "postgres_version": "postgres (PostgreSQL) 17.11 (Debian 17.11-1.pgdg13+2)",
+    "patroni_version": "patroni 4.1.5"
+  },
+  "15": {
+    "pull_digest": "sha256:b11559fa1e03dea5ed9dba5941727ff99c939a2cc2018569efe0b972d0af0c6b",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:7c7a7188724a5ec340e5adad777902c87a78d640c15650acde7abf47ebde5ce0",
+          "size": 3522,
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          }
+        },
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:a56deffdbdff6a882182a79203a08319e460fcb58e6a1784d1e0d940d3d980dd",
+          "size": 837,
+          "annotations": {
+            "vnd.docker.reference.digest": "sha256:7c7a7188724a5ec340e5adad777902c87a78d640c15650acde7abf47ebde5ce0",
+            "vnd.docker.reference.type": "attestation-manifest"
+          },
+          "platform": {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        }
+      ]
+    },
+    "local_image_id": "sha256:b11559fa1e03dea5ed9dba5941727ff99c939a2cc2018569efe0b972d0af0c6b",
+    "postgres_version": "postgres (PostgreSQL) 15.19 (Debian 15.19-1.pgdg13+2)",
+    "patroni_version": "patroni 4.1.5"
+  },
+  "16": {
+    "pull_digest": "sha256:2d2a50ab1b2d5027f874aee5b1549f5410096546bb165b1b3d7f60e3399637ba",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:95074cdc0ddc4ec6562cbac6e32505091fce99d7c82a07d34119f3c4aebae4de",
+          "size": 3523,
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          }
+        },
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:78195aa4362716fc4e422c7c5e61acb29862904bf52be1cb70938cf53ad795c5",
+          "size": 837,
+          "annotations": {
+            "vnd.docker.reference.digest": "sha256:95074cdc0ddc4ec6562cbac6e32505091fce99d7c82a07d34119f3c4aebae4de",
+            "vnd.docker.reference.type": "attestation-manifest"
+          },
+          "platform": {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        }
+      ]
+    },
+    "local_image_id": "sha256:2d2a50ab1b2d5027f874aee5b1549f5410096546bb165b1b3d7f60e3399637ba",
+    "postgres_version": "postgres (PostgreSQL) 16.15 (Debian 16.15-1.pgdg13+2)",
+    "patroni_version": "patroni 4.1.5"
+  },
+  "18": {
+    "pull_digest": "sha256:8d0cb5df9499fd03035de30e60b41149e037c02fd3f4c8a6be9616089ef71fa2",
+    "manifest": {
+      "schemaVersion": 2,
+      "mediaType": "application/vnd.oci.image.index.v1+json",
+      "manifests": [
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:279c47fe76db3bf88baa2480ddcd0db1f31c919b09c54096de7c56be51b6731c",
+          "size": 3335,
+          "platform": {
+            "architecture": "amd64",
+            "os": "linux"
+          }
+        },
+        {
+          "mediaType": "application/vnd.oci.image.manifest.v1+json",
+          "digest": "sha256:9c2915c605efd2bb5afab5216f1560df829fb027a2a6d847ffbc199a1a034730",
+          "size": 837,
+          "annotations": {
+            "vnd.docker.reference.digest": "sha256:279c47fe76db3bf88baa2480ddcd0db1f31c919b09c54096de7c56be51b6731c",
+            "vnd.docker.reference.type": "attestation-manifest"
+          },
+          "platform": {
+            "architecture": "unknown",
+            "os": "unknown"
+          }
+        }
+      ]
+    },
+    "local_image_id": "sha256:8d0cb5df9499fd03035de30e60b41149e037c02fd3f4c8a6be9616089ef71fa2",
+    "postgres_version": "postgres (PostgreSQL) 18.6 (Debian 18.6-1.pgdg13+2)",
+    "patroni_version": "patroni 4.1.5"
+  }
+}

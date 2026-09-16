@@ -1,0 +1,79 @@
+{
+  "checked_at": "2026-09-15T15:12:11.636967+00:00",
+  "identity": "system:serviceaccount:graphene:stroppy-live",
+  "cluster_role": "stroppy-live-yandex",
+  "api_group": "ydb.yandex-cloud.jet.crossplane.io",
+  "checks": [
+    {
+      "resource": "databaseserverlesses",
+      "verb": "get",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "list",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "watch",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "create",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "update",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "patch",
+      "allowed": true
+    },
+    {
+      "resource": "databaseserverlesses",
+      "verb": "delete",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "get",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "list",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "watch",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "create",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "update",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "patch",
+      "allowed": true
+    },
+    {
+      "resource": "databasededicateds",
+      "verb": "delete",
+      "allowed": true
+    }
+  ],
+  "scope": "Kubernetes Crossplane resources; cloud IAM unchanged; actual YDB creation pending"
+}

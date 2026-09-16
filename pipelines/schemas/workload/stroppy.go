@@ -158,7 +158,15 @@ func Stroppy() *schemapb.Schema {
 					schemapb.Bool("tls_insecure_skip_verify").Title("Skip TLS verification").
 						Desc("tlsInsecureSkipVerify — testing only.").Default(false),
 				).
-				Variant("picodata").
+				Variant("picodata",
+					schemapb.Choice("query_exec_mode").Title("Query execution mode").
+						Desc("pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1.").
+						Opt(schemapb.StrV("exec"), "Exec (no cache)").
+						Opt(schemapb.StrV("cache_statement"), "Cache prepared statements").
+						Opt(schemapb.StrV("cache_describe"), "Cache statement descriptions").
+						Opt(schemapb.StrV("describe_exec"), "Describe then exec").
+						Default(schemapb.StrV("exec")),
+				).
 				Variant("cockroach",
 					// doc: cockroachlabs.com/docs/stable/connection-parameters
 					schemapb.Choice("sslmode").Title("SSL mode").

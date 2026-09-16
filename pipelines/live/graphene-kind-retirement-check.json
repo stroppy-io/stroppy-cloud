@@ -1,0 +1,32 @@
+{
+  "status": "deployed",
+  "checked_at": "2026-09-15T18:38:08.117155+00:00",
+  "version": "0.2.14",
+  "commit": "a4383ebf9e45da86249ff7e2a164e9b5b0efca84",
+  "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.14",
+  "image_digest": "sha256:7b03d7bb9938a1c3f421e6bb7344b2a13f46635515c30146a55a7312dcfd327f",
+  "binary_buildinfo": {
+    "version": "0.2.14",
+    "revision": "a4383ebf9e45da86249ff7e2a164e9b5b0efca84",
+    "modified": false
+  },
+  "gitops_commit": "f0b4f56fdb5d491b0f92c918ad6f7d260d85df70",
+  "argo_sync": "Synced",
+  "argo_health": "Healthy",
+  "pod": "graphene-server-78889bd9d7-2b95v",
+  "tests": {
+    "regression_failed_before_fix": true,
+    "make_test": "passed",
+    "make_lint": "passed",
+    "ci_run": 35007667022,
+    "ci_status": "success"
+  },
+  "release_run": 35007730913,
+  "release_status": "success",
+  "fix": "Retirement activity sends deletion signal and returns without awaiting its calling workflow closure",
+  "scope": "Kind dictionary records only; regular resource cleanup still awaits closure",
+  "cli_linux_amd64": {
+    "archive_sha256": "8840e32d9f778724039a78a20189ecaff616d85878745526fbe47eedffe52d82",
+    "build_revision": "a4383ebf9e45da86249ff7e2a164e9b5b0efca84"
+  }
+}

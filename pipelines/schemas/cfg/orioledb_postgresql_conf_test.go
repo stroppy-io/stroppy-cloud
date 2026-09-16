@@ -12,7 +12,6 @@ import (
 // PostgreSQL major: the extension registers the same GUC table everywhere.
 var orioledbDefaultLines = []string{
 	"orioledb.main_buffers = 64MB",
-	"orioledb.undo_buffers = 1MB",
 	"orioledb.free_tree_buffers = 8MB",
 	"orioledb.catalog_buffers = 8MB",
 	"orioledb.temp_buffers = 64MB",
@@ -44,7 +43,7 @@ func runOrioledb(t *testing.T, s *schemapb.Schema, extra map[string]any) string 
 		full[k] = v
 	}
 
-	full["extensions"] = []any{"orioledb", "pg_stat_statements"}
+	full["extensions"] = []any{"pg_stat_statements", "orioledb"}
 	full["orioledb_main_buffers"] = int64(8192)
 	full["orioledb_undo_buffers"] = int64(256)
 	full["orioledb_checkpoint_completion_ratio"] = 0.7
@@ -65,7 +64,6 @@ func runOrioledb(t *testing.T, s *schemapb.Schema, extra map[string]any) string 
 			"shared_preload_libraries = '",
 			"# --- OrioleDB ---",
 			"orioledb.main_buffers = ",
-			"orioledb.undo_buffers = ",
 			"orioledb.checkpoint_completion_ratio = ",
 			"orioledb.serializable = ",
 		},
@@ -75,7 +73,7 @@ func runOrioledb(t *testing.T, s *schemapb.Schema, extra map[string]any) string 
 	// with its documented defaults is asserted here.
 	out := renderDefaults(t, s)
 	wantLines(t, out, orioledbDefaultLines...)
-	dontWantLines(t, out, "orioledb.device_filename")
+	dontWantLines(t, out, "orioledb.device_filename", "orioledb.undo_buffers")
 
 	return out
 }

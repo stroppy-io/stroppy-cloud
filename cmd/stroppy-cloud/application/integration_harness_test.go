@@ -55,9 +55,11 @@ type fakeGraphene struct {
 	commands   []string // "<ref> <command>" of every Invoke
 	deleted    []string // refs deleted
 	// verifyOK / quotas shape the probe pipelines' answers.
-	verifyOK bool
-	quotas   []provider.Quota
-	nextID   int64
+	verifyOK               bool
+	quotas                 []provider.Quota
+	quotaUnavailableReason string
+	quotaError             error
+	nextID                 int64
 }
 
 // fakeRun is one started pipeline run; stroppy-run runs carry a scripted
@@ -283,7 +285,10 @@ func (f *fakeGraphene) RunResult(_ context.Context, req *connect.Request[managem
 	case graphene.PipelineProviderVerify:
 		result = provider.VerifyResult{OK: f.verifyOK, AccountID: "acc-1", Permissions: []provider.Permission{{Name: "compute.instances.list", Granted: f.verifyOK}}, Error: map[bool]string{true: "", false: "missing rights"}[f.verifyOK]}
 	case graphene.PipelineQuotas:
-		result = provider.QuotasResult{ObservedAt: time.Now().UTC(), Quotas: f.quotas}
+		if f.quotaError != nil {
+			return nil, f.quotaError
+		}
+		result = provider.QuotasResult{ObservedAt: time.Now().UTC(), Quotas: f.quotas, UnavailableReason: f.quotaUnavailableReason, Scope: "cloud:b1gcloud000000000000"}
 	default:
 		if len(run.result) > 0 {
 			return connect.NewResponse(&managementv1.RunResultResponse{Result: run.result}), nil

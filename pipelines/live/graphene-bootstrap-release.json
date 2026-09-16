@@ -1,0 +1,20 @@
+{
+  "version": "0.2.6",
+  "commit": "7481196394a92051ac4bbec832b5a0eaa33d6ac8",
+  "ci_run": 34850861517,
+  "release_run": 34851023538,
+  "ci": "success",
+  "release": "success",
+  "image": "docker.stroppy.io/graphene-ci/graphene-server:0.2.6",
+  "image_digest": "sha256:c90115ed6cc3fc6c6ec647f5b7224de5808a3354860038ccd7862b22b57b80ee",
+  "infra_commit": "26706efa7d09f751330717a9978aaf32d85ac890",
+  "argo_sync": "Synced",
+  "argo_health": "Healthy",
+  "bootstrap_tests": "real curl/wget recover after two HTTP 503 responses; exhausted retries leave no executable or temporary file",
+  "cli_archive_sha256_verified": "e693a35d3c8f49d57da3f5335f345aeee38c6c3f9ff37fec8d951d13940b0a65",
+  "live_vm_bootstrap": {
+    "instance": "fhm2co9isi8cpai27u3m",
+    "retries": true,
+    "atomic_install": true
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "run_id": "matrix-mysql-clusters-be4cb125-mysql-gr-84",
+  "checked_at": "2026-09-15T11:14:02.346088+00:00",
+  "source": "Graphene metrics API backed by the persistent metrics store; separate queries for each exporter resource",
+  "query_range": {
+    "start": "2026-09-15T10:52:49.727719083Z",
+    "end": "2026-09-15T10:57:12.424505+00:00"
+  },
+  "nodes": {
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-1-mysqld-exporter": {
+      "topology": "group-replication",
+      "members_online": 3,
+      "primary_count": 1,
+      "transaction_statistics": "present"
+    },
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-1-mysqld-exporter": {
+      "topology": "group-replication",
+      "members_online": 3,
+      "primary_count": 1,
+      "transaction_statistics": "present"
+    },
+    "docker/bda94f4b-6b60-4750-bf2d-055b013eb1e8-db-replica-2-mysqld-exporter": {
+      "topology": "group-replication",
+      "members_online": 3,
+      "primary_count": 1,
+      "transaction_statistics": "present"
+    }
+  },
+  "proxy": {
+    "series": 245,
+    "backend_queries_observed": true,
+    "access_denied": 0
+  }
+}

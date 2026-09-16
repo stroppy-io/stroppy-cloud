@@ -1,0 +1,945 @@
+{
+  "status": "passed",
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-three-node-24.3",
+  "database_version": "24.3.36",
+  "checked_at": "2026-09-15T19:43:51.838328+00:00",
+  "scope": "Exact message hashes, pinned upstream source, native workload checks plus persisted workload-window liveness and range availability.",
+  "workload_cluster_health": {
+    "db-1": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      }
+    ],
+    "db-2": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      }
+    ],
+    "db-3": [
+      {
+        "name": "liveness_livenodes",
+        "min": 3.0,
+        "max": 3.0,
+        "last": 3.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_unavailable",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      },
+      {
+        "name": "ranges_underreplicated",
+        "min": 0.0,
+        "max": 0.0,
+        "last": 0.0,
+        "first_at": 1789499987,
+        "last_at": 1789500257
+      }
+    ]
+  },
+  "observations": [
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329735004Z",
+      "message_sha256": "3060b3c7b6395b0e158a0381d65a58e61c6295e2933e44d4ec647b0019ac8f52",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329724415Z",
+      "message_sha256": "b6aa6d3f7e0e8c5ac71bd9ca5dba97a021b068a0a3cf219e136305616bea0155",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329716087Z",
+      "message_sha256": "41c92e626320aa2e5367fa27f9e5bf7b5161bef0c64aabb2e5c7d59317b01696",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329705773Z",
+      "message_sha256": "7607a93af10e2cf802b95b09af848e82a1b9e0e268c68207cad4b1b46d5349a4",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329679755Z",
+      "message_sha256": "16b19f51ba8fb4f6e168d4d1a95f0bcd489805e09296fee526682961fa1015ca",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.3296668Z",
+      "message_sha256": "b126758e42165abaab6433c4d08102454e2ee40b29179fc452da122e6a19c510",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:21:31.329536566Z",
+      "message_sha256": "7ff97f8f2f07aaecf339e293dcb490f80b2c2093dce8ba2ad35a63afff933aae",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054247713Z",
+      "message_sha256": "d18e69ef92393722ac91381081447c5edfd87d2f053edadb54e4ed2ba97a5ef0",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054238569Z",
+      "message_sha256": "1fc414fedb3011e24781b9d8f89f26f8dfca6140c22aa1c766ddc94b803149a3",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054228643Z",
+      "message_sha256": "fc046e45076ef1c4d3d1a210419145eb3dbaebfebfc6c34ca5b1fb62342b37a1",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.05421954Z",
+      "message_sha256": "26c0234840152678910e39b63f61b3303a16d10219cc550e15561dd805eaa9da",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.05420923Z",
+      "message_sha256": "322121ddd8be81c8f5f08436468d0cdd17e33620736806a747631db1cd3549fd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054164267Z",
+      "message_sha256": "004812b989870aab6e1ad12505a720ac4f42107a938de2cd0946d9373837dfdd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054155132Z",
+      "message_sha256": "8103678a444d1ef018afde20cd19a03e779642d4fd269bd1ee1569a75bef8a0b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054146589Z",
+      "message_sha256": "07d4ab1ff7daa285fa455712b6563b8ba3126748fcf6cd180c06c9c5571e7271",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054137296Z",
+      "message_sha256": "5d7d3644704e8fa01011f819c35df430100b4d2fb0f92386a17f2ad33a121434",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054128012Z",
+      "message_sha256": "420f58f7c01153bffe9b634a49ad4d89f9b3bc799bdfdc220aefbed813af55fa",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054119238Z",
+      "message_sha256": "ad7e7ca711957cb9dc1344185b8df6e33af7a8a5818a0a4ea31a2b86efc45fc2",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054109448Z",
+      "message_sha256": "c6b4889c89751c1070ac9499fbda8ae4381c897012cc5d0b427af5dade3ec04f",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054099145Z",
+      "message_sha256": "53e2a2c4429840d0a4a5b3f073d4b3717f7036662fa10f0ed4e3591d575a66dd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:20:31.054077194Z",
+      "message_sha256": "2c9007f5e07fe3a0342a16ae0b9024c5da261c50dcc13f0d7b59c1d64a2bc47e",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980693741Z",
+      "message_sha256": "2a78f2cec1796f059557cbaf08e888cd58c37e25d8eb816d765ea593ac6251a1",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980684482Z",
+      "message_sha256": "670cc57d2ab6ada19a1cb63da60c56717f2b682f8be0529beadf880f810c1dd8",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980668061Z",
+      "message_sha256": "c6934771f6bf4e9491593501c73de69708d9a3f6255b76397c7bfcc12e7dea8f",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980659926Z",
+      "message_sha256": "cbcf7cdc46e93a8881d879d31a3c5d82abbb706bf1dbbb2cedbc75bc2409e317",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980651571Z",
+      "message_sha256": "1130ce0f966447eb52aec8481018e774c07628c97334dd18d950c4aa5512d14b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980643289Z",
+      "message_sha256": "6b2cb69c41249d5f08273117ce06b7d54de30beecc3a7ffc4a313e41f8d1e885",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980635019Z",
+      "message_sha256": "c53d815ac44c727ceaece8d948ee007f97f2854f7a945a320568737537ccc556",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980626753Z",
+      "message_sha256": "ff526d819dcd529bc28f99b907a1ea3bb711491105dff90f0ad4a3c132a78761",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980617817Z",
+      "message_sha256": "19377cdf2bce636e826f2879233d6736b200ace0f64d7db330f2f6c511334351",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980601792Z",
+      "message_sha256": "b6f0718bee9c2e51d5e3581942694a405a0c178bf9ee87a666a5fdeaee2811dd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980593745Z",
+      "message_sha256": "3fe233a376c3c31997322b734de055d303402387335060fb37c55efeacdd54c9",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980583708Z",
+      "message_sha256": "7db8dfff5ea81665a11d4c4028bc732398496c39f62c0593137e300c11a9657e",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980574332Z",
+      "message_sha256": "c022a28f3b3b12203161e71933d00fee98c8309691d34705b332d7bfee1c9b96",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98056556Z",
+      "message_sha256": "626f697e13563c6ea5dc119775817331ef1dc933366cf2fe641cb93e1b46bfd7",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980548168Z",
+      "message_sha256": "23e71ae4d2f4c247768f9b63fa1cc4f3662be6e210aaaf1eb93634d4e69da36f",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980532477Z",
+      "message_sha256": "b5a8bcdf7c2da5619822ff96a76076815434313445d0fb5a7561a0555c6fc16f",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980524083Z",
+      "message_sha256": "333cf3629de0bc1d84fba583ad82db5cd5fa9554a62bd4bb01c4edcd3239568b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980514188Z",
+      "message_sha256": "71d19317bd7833d00e21545796defc72b31485e985e45db0204d626e05734d26",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980505424Z",
+      "message_sha256": "1a5ca039e6ef2667eb19521bb146bd0819504e3cb70b8e329e59f94edb7e3666",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980497609Z",
+      "message_sha256": "51b4f5f5add057661c7dc4d0649467710642f2a9f3a036fbb22166149fe7dd69",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980488893Z",
+      "message_sha256": "f59432287b3b84b75fe588a6a9c18d7f3733c46d0ce894546e4b649ce0d2cc77",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980466051Z",
+      "message_sha256": "0841af5c4a46c4cbfe70bea076c8da774d1dcccd07ce8aad3a2519fd9a6d730b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980457558Z",
+      "message_sha256": "e850858280a82938da5b7be9ee27cf64dce8faaa3373511058df16e13d205a97",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980449718Z",
+      "message_sha256": "8439f4985765d904777dc767902243e5a49f6dbe21b5441ab2f6ed4468e0d08c",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980442071Z",
+      "message_sha256": "b78609c3821497c3c5e7356ece57ae869174d1a75ebb7a1e470abbbce1444d77",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980433589Z",
+      "message_sha256": "97e883bbe94cac8fb70e674fbc9b96c9f7cd6ddc85ab1fd4dd0a0def1699afd3",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980424783Z",
+      "message_sha256": "6ec9653529ad44df134918e70776e9bbb070e2455002d45b341f69e9ccf6c27b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980414997Z",
+      "message_sha256": "2abb970c850af60711dd03f33ac1f3e1e482cba0aca4e5f523ec97b917002512",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980406008Z",
+      "message_sha256": "1e11db3f01fd9c868a319f7ad1da40e26d20b72780c2ea09c9dc995f48491c29",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980397535Z",
+      "message_sha256": "36f591c929b34d4f68ec52a9bb9446a514ac966f6518b39b8a6e81bcdc64d75b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980389326Z",
+      "message_sha256": "49dc655e6cd3940993c9d603aab3e080bc6db991e44de72969ea5a42fcfed251",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980380961Z",
+      "message_sha256": "a5805c727606a53dbea2c2733c05d1e8197faa22c50584ba4e07453dde443ef3",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980372734Z",
+      "message_sha256": "7f755cae4232dbb1b7f2b873b208d2b8b9822ff4b211f32976c6ac701dae4a88",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98036437Z",
+      "message_sha256": "2383f39c2c8858a46af325b361186b01deddf90dbb36754bae3cedd820eafefc",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980354576Z",
+      "message_sha256": "aeda11ae90a09cb1d286833e663c4621a1c30edef38685e3113ded818656e866",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980342689Z",
+      "message_sha256": "d16c1cc94baa3a3658bc96c37f5c3d53aec2b122dc83d45b5bdbbf8d01e871b7",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980324709Z",
+      "message_sha256": "ff2907213bc21f4ebc3cf23b941193426352c2256f612e4a81ec45ff33ad615b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98031655Z",
+      "message_sha256": "0cc87aace4efdb2d269d623640bcfd3277c664400c4a0e28c1cc1ad35b7829d1",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980307487Z",
+      "message_sha256": "6a56060852da427da3614fc20823cdc904ea4c43e5a870c6e50661d7279544cc",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980298174Z",
+      "message_sha256": "0174fb4838a43d90c6a27be0cc034f58bfd898171d045b717575462cd362f9f8",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980289346Z",
+      "message_sha256": "c49280d0660a9b446bf1565a5e5176b33496a5239bc4617bdac81ebdd3f29b5e",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980280761Z",
+      "message_sha256": "c7d5eb28be9176d9e7d1e3158566911c96b284a64d3887eefd184c8285458c4b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980272085Z",
+      "message_sha256": "7d671c10d43b4f83eb1d8200646e5ee37d31fb3b94a072e3781ad42a7f6877ba",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980262701Z",
+      "message_sha256": "6bd8bc7c3dbf1540ad6bc906a4e469f61a242068d93db2ee6ada8090484401d0",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980254265Z",
+      "message_sha256": "6285df5d2ea7f9105824b8f7254ba6eed57324a2604848679c4c3de72e238323",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980245573Z",
+      "message_sha256": "e1813a5d41fc2a3ab19104fafe718512b71994217c0929352da46b2a97fb103e",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.9802364Z",
+      "message_sha256": "2c766a64fe06a2f20c46ae118ad1e2b5674471da801a6163f58976f1b83673e2",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980227819Z",
+      "message_sha256": "57320500d9813cdee9cc90b98723f3681a8bf0ca3442c3dc38b5e40553305cb6",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98021926Z",
+      "message_sha256": "3b7c0b8deee75f498ff27db35826d85f50c00d251adb3cba0565a8f7f28e6f16",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980209745Z",
+      "message_sha256": "4f996aee20c608d8e1e8e18c566fd8a76e389e66f6ae68d907091fd16e09e479",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980193311Z",
+      "message_sha256": "e36fc6bdd13a94aecdc23c106d699b7b33fd4aaa6bcd53a235abc029715b9860",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98017095Z",
+      "message_sha256": "798742b4fc48e91c3a58d0ab2d18d4441a584f3774bc3918b22ef6e56d7cb0d1",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980162249Z",
+      "message_sha256": "12c368ddcf8e9e585bbbda159301a9395e7665e2303fe9b6121ede63fa4fe2a8",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980153564Z",
+      "message_sha256": "c812014a1b40e57766fbbd73c24fd7667dda634e3c4a7356113f2763e39aba6c",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.98014457Z",
+      "message_sha256": "8a2bd56ced2f8e137ac74d8260449f81338a637ecae679aace0c6aa33f1b29bc",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-3-cockroach",
+      "observed_at": "2026-09-15T19:20:30.980120795Z",
+      "message_sha256": "f3277fec57a1213324806a2f0701b5111cfdeaec25b698ccbc930ee52ef33fae",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859989174Z",
+      "message_sha256": "396c3c332a33ef10cb671b2aabfa26e6df0681f67c080364e748f56426d537c0",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859978127Z",
+      "message_sha256": "522b2c7ef02a0d6651b608a5f79330abe89ce110b1d14c79342c6bb0ae94fcd2",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859968568Z",
+      "message_sha256": "b4d7d051a5f7075cfc6df7836ad09d5be522382998c67c4d6e35e643dfd8a8cb",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859959486Z",
+      "message_sha256": "5b865b846c7fb7e33fbdc3674f2fa404c85405f1f7e2027dff7b51d910ac1140",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859951016Z",
+      "message_sha256": "95845429df4e427402a6f652ef97ff0ce4f474961fcf7b3f3acc3d6f974f45cd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859942435Z",
+      "message_sha256": "79a15e04b834e75e8d59ba7f9ce61f73c3cd1b7e2f655d5563f7f724d51370d5",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859933291Z",
+      "message_sha256": "d7a35405a480fed9e06c46f3c240fb7aded5529dcf963be8d0762316e65f4c40",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859923982Z",
+      "message_sha256": "83b53f04fe05f2342f9be2e4cf40ca08147dbd7bfaaf18734213be0c5084cfb1",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859913417Z",
+      "message_sha256": "ac5f5a9f5d2d4e18ecd67956190af203d3e1bd7c83d44ecf95bb94c23e30f4c6",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.85990432Z",
+      "message_sha256": "bd410e3b61867f69c7ebff83af6e428934b1839e2dd2e1f612ba3dd0847215d8",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859895023Z",
+      "message_sha256": "d38a959f9d76c37bb1f5b01e48e6f9320e1236dd415569e7241cfd63b0ea52ea",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859885979Z",
+      "message_sha256": "1a8081f97f5b6b86993cbc2cb58910b675604ff083b28b2faf47b64326687efa",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859876556Z",
+      "message_sha256": "12b9b260e92d940593b9fbc78eadbc63464d2e360fdbd616cd816a5f9efea838",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859866951Z",
+      "message_sha256": "6029ba9d9bd184711f7e3ec0435d3927655dba83f65db2183301abab7d000e95",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859857531Z",
+      "message_sha256": "28318e3e2bc183679a1d4b39a1a9b5fd0f52eec1d57f18e90ab3af81623de4d8",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.85984698Z",
+      "message_sha256": "ea10711985c160c4531b3b46cbd6fcab207f69c10c54f2bc312a67aadec94629",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859836686Z",
+      "message_sha256": "9a93c038e5189221720c7e9b1a05e0fac6b64b214581f036cc10d3c00360f839",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859751651Z",
+      "message_sha256": "a1c1223e8d9f6344461560de28dba0fef75831a67bf613f827c28a451a931acd",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859721725Z",
+      "message_sha256": "c5e86ecd05915c2dd7b78ebee738af3068cf53f770b583d4464f8700765a09b0",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859712614Z",
+      "message_sha256": "388c04939c090be449cca843f0ae7c11b136a1073c94bad69ce2362209a2d331",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859702448Z",
+      "message_sha256": "5b19de8ce7ae6ead9de7d95a4d70d2189cfd17fb51e384deda47ad847438dcd4",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859691906Z",
+      "message_sha256": "f02e5f63830537485dbd3d9a62a606cc69bb58cbdac88075b075b38f08cc5540",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.85968142Z",
+      "message_sha256": "c50574bc3f37d76c4292cc37e8171e43f6b6f99a54ef9c5349b219cac378b45b",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859669188Z",
+      "message_sha256": "51f44da37beb379ee9564f7391162455f955702be9c01a61975ca3cf04760b4e",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859656601Z",
+      "message_sha256": "1fae30206e53c4efa4a052d5204105ac8f1531d10dc28d3174b1512363cfbd21",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859645535Z",
+      "message_sha256": "29fc96ad74905822076e2b68aac723a7269b7421050599b3c701417fc5ef701c",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859614699Z",
+      "message_sha256": "de3e66e88c65577deb3559543b95bbe34cae52f030f58f91e38b5165c7308237",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-1-cockroach",
+      "observed_at": "2026-09-15T19:20:30.859593358Z",
+      "message_sha256": "96cb8532395654557ffe1fd963e14590f9aa2ff15c37f7260ddd5245651f9cf2",
+      "classification": "cockroach_concurrent_auto_statistics",
+      "reference": "https://github.com/cockroachdb/cockroach/blob/v24.3.36/pkg/sql/stats/automatic_stats.go#L924",
+      "note": "Automatic statistics refresh handles the concurrent-job sentinel by rescheduling; exact background-job messages remain visible."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:19:30.688472842Z",
+      "message_sha256": "7b84a7037d5fc8895559a8ff882ae901c8aacae975b1e3585a3d58824831298d",
+      "classification": "pebble_concurrent_compaction_retry",
+      "reference": "https://github.com/cockroachdb/pebble/blob/7c20ebb6590f/compaction.go",
+      "note": "Exact ErrCancelledCompaction in the pinned Pebble revision; concurrent excise or ingest-split; compaction retried."
+    },
+    {
+      "entity": "docker/5b05d1f1-a61c-45cf-a8bc-cf5502f7abd7-db-2-cockroach",
+      "observed_at": "2026-09-15T19:19:30.688461185Z",
+      "message_sha256": "019e5da8e407ab662ec6bacc61c4af3e9d922ad961808f55ab2a7c0df5414a8d",
+      "classification": "pebble_concurrent_compaction_retry",
+      "reference": "https://github.com/cockroachdb/pebble/blob/7c20ebb6590f/compaction.go",
+      "note": "Exact ErrCancelledCompaction in the pinned Pebble revision; concurrent excise or ingest-split; compaction retried."
+    }
+  ]
+}

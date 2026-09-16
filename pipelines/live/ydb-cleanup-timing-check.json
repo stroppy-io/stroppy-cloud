@@ -1,0 +1,27 @@
+{
+  "status": "measured",
+  "scope": "Wall time from cleanup activity schedule to successful workflow completion; includes downstream resource dependency waits",
+  "runs": [
+    {
+      "version": "26.1",
+      "run_id": "matrix-ydbparallel-9176f5d9-ydb-mirror-3-dc-26.1",
+      "cleanup_started_at": "2026-09-15T22:02:17.193615534Z",
+      "workflow_completed_at": "2026-09-15T22:22:26.047249759Z",
+      "cleanup_to_completion_seconds": 1208.853634
+    },
+    {
+      "version": "26.2",
+      "run_id": "matrix-ydbparallel-9176f5d9-ydb-mirror-3-dc-26.2",
+      "cleanup_started_at": "2026-09-15T22:04:07.643342862Z",
+      "workflow_completed_at": "2026-09-15T22:24:40.610136002Z",
+      "cleanup_to_completion_seconds": 1232.966794
+    },
+    {
+      "version": "26.3",
+      "run_id": "matrix-ydbparallel-9176f5d9-ydb-mirror-3-dc-26.3",
+      "cleanup_started_at": "2026-09-15T22:04:35.772000399Z",
+      "workflow_completed_at": "2026-09-15T22:25:33.894769611Z",
+      "cleanup_to_completion_seconds": 1258.122769
+    }
+  ]
+}

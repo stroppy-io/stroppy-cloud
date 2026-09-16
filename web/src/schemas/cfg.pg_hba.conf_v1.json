@@ -1,270 +1,270 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "pg_hba.conf",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "pg_hba.conf",
+    "version":  "v1.0.0"
   },
-  "description": "pg_hba.conf: ordered client authentication records.",
-  "fields": [
+  "description":  "pg_hba.conf: ordered client authentication records.",
+  "fields":  [
     {
-      "name": "rules",
-      "description": "Authentication records in file order: PostgreSQL uses the first record that matches.",
-      "nullable": true,
-      "list": {
-        "items": [
+      "name":  "rules",
+      "description":  "Authentication records in file order: PostgreSQL uses the first record that matches.",
+      "nullable":  true,
+      "list":  {
+        "items":  [
           {
-            "name": "rule",
-            "object": {
-              "schema": {
-                "fields": [
+            "name":  "rule",
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "type",
-                    "description": "Connection type the record matches.",
-                    "required": true,
-                    "choice": {
-                      "options": [
+                    "name":  "type",
+                    "description":  "Connection type the record matches.",
+                    "required":  true,
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "local"
+                          "value":  {
+                            "stringValue":  "local"
                           },
-                          "label": "local (unix socket)"
+                          "label":  "local (unix socket)"
                         },
                         {
-                          "value": {
-                            "stringValue": "host"
+                          "value":  {
+                            "stringValue":  "host"
                           },
-                          "label": "host (TCP, any encryption)"
+                          "label":  "host (TCP, any encryption)"
                         },
                         {
-                          "value": {
-                            "stringValue": "hostssl"
+                          "value":  {
+                            "stringValue":  "hostssl"
                           },
-                          "label": "hostssl (TCP, SSL only)"
+                          "label":  "hostssl (TCP, SSL only)"
                         },
                         {
-                          "value": {
-                            "stringValue": "hostnossl"
+                          "value":  {
+                            "stringValue":  "hostnossl"
                           },
-                          "label": "hostnossl (TCP, no SSL)"
+                          "label":  "hostnossl (TCP, no SSL)"
                         }
                       ],
-                      "default": {
-                        "stringValue": "host"
+                      "default":  {
+                        "stringValue":  "host"
                       }
                     },
-                    "group": "Record",
-                    "title": "Type"
+                    "group":  "Record",
+                    "title":  "Type"
                   },
                   {
-                    "name": "database",
-                    "description": "Database the record matches: a name, a comma-separated list, or one of all / sameuser / samerole / replication.",
-                    "required": true,
-                    "string": {
-                      "default": "all",
-                      "minLen": "1",
-                      "maxLen": "512"
+                    "name":  "database",
+                    "description":  "Database the record matches: a name, a comma-separated list, or one of all / sameuser / samerole / replication.",
+                    "required":  true,
+                    "string":  {
+                      "default":  "all",
+                      "minLen":  "1",
+                      "maxLen":  "512"
                     },
-                    "group": "Record",
-                    "title": "Database"
+                    "group":  "Record",
+                    "title":  "Database"
                   },
                   {
-                    "name": "user",
-                    "description": "Role the record matches: a name, a comma-separated list, +group, or all.",
-                    "required": true,
-                    "string": {
-                      "default": "all",
-                      "minLen": "1",
-                      "maxLen": "512"
+                    "name":  "user",
+                    "description":  "Role the record matches: a name, a comma-separated list, +group, or all.",
+                    "required":  true,
+                    "string":  {
+                      "default":  "all",
+                      "minLen":  "1",
+                      "maxLen":  "512"
                     },
-                    "group": "Record",
-                    "title": "User"
+                    "group":  "Record",
+                    "title":  "User"
                   },
                   {
-                    "name": "address",
-                    "description": "Client address for host records: CIDR (10.0.0.0/8, ::1/128), a hostname, or all / samehost / samenet. Must be empty for `local` records.",
-                    "nullable": true,
-                    "string": {
-                      "maxLen": "256"
+                    "name":  "address",
+                    "description":  "Client address for host records: CIDR (10.0.0.0/8, ::1/128), a hostname, or all / samehost / samenet. Must be empty for `local` records.",
+                    "nullable":  true,
+                    "string":  {
+                      "maxLen":  "256"
                     },
-                    "group": "Record",
-                    "title": "Address"
+                    "group":  "Record",
+                    "title":  "Address"
                   },
                   {
-                    "name": "method",
-                    "description": "Authentication method. `oauth` exists only from PostgreSQL 18.",
-                    "required": true,
-                    "choice": {
-                      "options": [
+                    "name":  "method",
+                    "description":  "Authentication method. `oauth` exists only from PostgreSQL 18.",
+                    "required":  true,
+                    "choice":  {
+                      "options":  [
                         {
-                          "value": {
-                            "stringValue": "trust"
+                          "value":  {
+                            "stringValue":  "trust"
                           },
-                          "label": "trust"
+                          "label":  "trust"
                         },
                         {
-                          "value": {
-                            "stringValue": "reject"
+                          "value":  {
+                            "stringValue":  "reject"
                           },
-                          "label": "reject"
+                          "label":  "reject"
                         },
                         {
-                          "value": {
-                            "stringValue": "scram-sha-256"
+                          "value":  {
+                            "stringValue":  "scram-sha-256"
                           },
-                          "label": "scram-sha-256"
+                          "label":  "scram-sha-256"
                         },
                         {
-                          "value": {
-                            "stringValue": "md5"
+                          "value":  {
+                            "stringValue":  "md5"
                           },
-                          "label": "md5 (deprecated)"
+                          "label":  "md5 (deprecated)"
                         },
                         {
-                          "value": {
-                            "stringValue": "password"
+                          "value":  {
+                            "stringValue":  "password"
                           },
-                          "label": "password (cleartext)"
+                          "label":  "password (cleartext)"
                         },
                         {
-                          "value": {
-                            "stringValue": "peer"
+                          "value":  {
+                            "stringValue":  "peer"
                           },
-                          "label": "peer (local only)"
+                          "label":  "peer (local only)"
                         },
                         {
-                          "value": {
-                            "stringValue": "ident"
+                          "value":  {
+                            "stringValue":  "ident"
                           },
-                          "label": "ident"
+                          "label":  "ident"
                         },
                         {
-                          "value": {
-                            "stringValue": "cert"
+                          "value":  {
+                            "stringValue":  "cert"
                           },
-                          "label": "cert"
+                          "label":  "cert"
                         },
                         {
-                          "value": {
-                            "stringValue": "gss"
+                          "value":  {
+                            "stringValue":  "gss"
                           },
-                          "label": "gss"
+                          "label":  "gss"
                         },
                         {
-                          "value": {
-                            "stringValue": "ldap"
+                          "value":  {
+                            "stringValue":  "ldap"
                           },
-                          "label": "ldap"
+                          "label":  "ldap"
                         },
                         {
-                          "value": {
-                            "stringValue": "radius"
+                          "value":  {
+                            "stringValue":  "radius"
                           },
-                          "label": "radius"
+                          "label":  "radius"
                         },
                         {
-                          "value": {
-                            "stringValue": "pam"
+                          "value":  {
+                            "stringValue":  "pam"
                           },
-                          "label": "pam"
+                          "label":  "pam"
                         },
                         {
-                          "value": {
-                            "stringValue": "oauth"
+                          "value":  {
+                            "stringValue":  "oauth"
                           },
-                          "label": "oauth (18+)"
+                          "label":  "oauth (18+)"
                         }
                       ],
-                      "default": {
-                        "stringValue": "scram-sha-256"
+                      "default":  {
+                        "stringValue":  "scram-sha-256"
                       }
                     },
-                    "group": "Record",
-                    "title": "Method"
+                    "group":  "Record",
+                    "title":  "Method"
                   },
                   {
-                    "name": "options",
-                    "description": "Method options appended verbatim, e.g. `map=stroppy` or `clientcert=verify-full`.",
-                    "nullable": true,
-                    "string": {
-                      "maxLen": "512"
+                    "name":  "options",
+                    "description":  "Method options appended verbatim, e.g. `map=stroppy` or `clientcert=verify-full`.",
+                    "nullable":  true,
+                    "string":  {
+                      "maxLen":  "512"
                     },
-                    "group": "Record",
-                    "title": "Options"
+                    "group":  "Record",
+                    "title":  "Options"
                   }
                 ],
-                "rules": [
+                "rules":  [
                   {
-                    "expr": "this.type == \"local\" ? !(\"address\" in this) || this.address == \"\" : (\"address\" in this) && this.address != \"\"",
-                    "message": "address is required for host records and forbidden for local records",
-                    "id": "address-per-type"
+                    "expr":  "this.type == \"local\" ? !(\"address\" in this) || this.address == \"\" : (\"address\" in this) && this.address != \"\"",
+                    "message":  "address is required for host records and forbidden for local records",
+                    "id":  "address-per-type"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "maxItems": "256"
+        "maxItems":  "256"
       },
-      "group": "Records",
-      "title": "Records"
+      "group":  "Records",
+      "title":  "Records"
     },
     {
-      "name": "rules_rendered",
-      "description": "The `rules` list joined into pg_hba.conf lines, tab-separated, in list order.",
-      "computed": {
-        "expr": "(\"rules\" in root) ? root.rules.map(r, r.type + \"\\t\" + r.database + \"\\t\" + r.user + (r.type == \"local\" ? \"\" : \"\\t\" + r.address) + \"\\t\" + r.method + ((\"options\" in r) && r.options != \"\" ? \"\\t\" + r.options : \"\")).join(\"\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "rules_rendered",
+      "description":  "The `rules` list joined into pg_hba.conf lines, tab-separated, in list order.",
+      "computed":  {
+        "expr":  "(\"rules\" in root) ? root.rules.map(r, r.type + \"\\t\" + r.database + \"\\t\" + r.user + (r.type == \"local\" ? \"\" : \"\\t\" + r.address) + \"\\t\" + r.method + ((\"options\" in r) && r.options != \"\" ? \"\\t\" + r.options : \"\")).join(\"\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Records",
-      "title": "Rendered records"
+      "group":  "Records",
+      "title":  "Rendered records"
     },
     {
-      "name": "include_cluster_defaults",
-      "description": "Prepend the records the server derives from the topology (local superuser peer access, replication between the cluster peers, the workload role from the load-generator subnet). Filled by the server; `no` means `rules` is the whole file.",
-      "choice": {
-        "options": [
+      "name":  "include_cluster_defaults",
+      "description":  "Prepend the records the server derives from the topology (local superuser peer access, replication between the cluster peers, the workload role from the load-generator subnet). Filled by the server; `no` means `rules` is the whole file.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "yes"
+            "value":  {
+              "stringValue":  "yes"
             },
-            "label": "yes"
+            "label":  "yes"
           },
           {
-            "value": {
-              "stringValue": "no"
+            "value":  {
+              "stringValue":  "no"
             },
-            "label": "no"
+            "label":  "no"
           }
         ],
-        "default": {
-          "stringValue": "yes"
+        "default":  {
+          "stringValue":  "yes"
         }
       },
-      "group": "Cluster",
-      "title": "Cluster defaults"
+      "group":  "Cluster",
+      "title":  "Cluster defaults"
     },
     {
-      "name": "cluster_defaults_rendered",
-      "description": "The unconditional record every stroppy node needs: local superuser access for the agent. The remaining topology records are appended by the server as `rules`.",
-      "computed": {
-        "expr": "root.include_cluster_defaults == \"yes\" ? \"local\\tall\\tpostgres\\t\\tpeer\" : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "cluster_defaults_rendered",
+      "description":  "The unconditional record every stroppy node needs: local superuser access for the agent. The remaining topology records are appended by the server as `rules`.",
+      "computed":  {
+        "expr":  "root.include_cluster_defaults == \"yes\" ? \"local\\tall\\tpostgres\\t\\tpeer\" : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Cluster",
-      "title": "Rendered cluster defaults"
+      "group":  "Cluster",
+      "title":  "Rendered cluster defaults"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "(\"rules\" in root) || root.include_cluster_defaults == \"yes\"",
-      "message": "an empty pg_hba.conf would lock everyone out: set rules or keep the cluster defaults",
-      "id": "not-empty"
+      "expr":  "(\"rules\" in root) || root.include_cluster_defaults == \"yes\"",
+      "message":  "an empty pg_hba.conf would lock everyone out: set rules or keep the cluster defaults",
+      "id":  "not-empty"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\n{{#values.cluster_defaults_rendered}}{{{values.cluster_defaults_rendered}}}\n{{/values.cluster_defaults_rendered}}{{#values.rules_rendered}}{{{values.rules_rendered}}}\n{{/values.rules_rendered}}"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\n{{#values.cluster_defaults_rendered}}{{{values.cluster_defaults_rendered}}}\n{{/values.cluster_defaults_rendered}}{{#values.rules_rendered}}{{{values.rules_rendered}}}\n{{/values.rules_rendered}}"
   }
 }

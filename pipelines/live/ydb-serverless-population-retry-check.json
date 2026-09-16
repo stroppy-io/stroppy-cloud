@@ -1,0 +1,84 @@
+{
+  "status": "fix_pending_live_verification",
+  "run_id": "matrix-ydbretry-578bcce5-ydb-managed-serverless",
+  "source_image_evidence": "ydbretry-native-image.json",
+  "stage": "tpcc/tx validate_population",
+  "workload_started": false,
+  "observations": [
+    {
+      "source_timestamp": 1789493680.6882474,
+      "query": "SELECT 100.0 * SUM(CASE WHEN s_data LIKE '%ORIGINAL%' THEN 1 ELSE 0 END) / COUNT(*) FROM stock WHERE s_w_id BETWEEN 1 AND 1",
+      "error_class": "transport/ResourceExhausted with stream context cancellation",
+      "message_sha256": "d40d43d1551347f01ebe47eba422addfef85f0e868f5459628ad8496956d1a69"
+    },
+    {
+      "source_timestamp": 1789493681.9981651,
+      "query": "SELECT 100.0 * SUM(CASE WHEN c_credit = 'BC' THEN 1 ELSE 0 END) / COUNT(*) FROM customer WHERE c_w_id BETWEEN 1 AND 1",
+      "error_class": "transport/ResourceExhausted with stream context cancellation",
+      "message_sha256": "9b63bab107f5d0295ed9d02de7677f082a9629b4d77ed2e53f3155a6cb8045ae"
+    },
+    {
+      "source_timestamp": 1789493683.3472724,
+      "query": "SELECT COUNT(*) FROM customer WHERE c_middle <> 'OE' AND c_w_id BETWEEN 1 AND 1",
+      "error_class": "transport/ResourceExhausted with stream context cancellation",
+      "message_sha256": "7bc627d9643dc0ef488c1f4125c6879d9563e3629dd6c90003c01d500d074315"
+    },
+    {
+      "source_timestamp": 1789493684.6607022,
+      "query": "SELECT COUNT(*) FROM warehouse WHERE w_ytd <> 300000 AND w_id BETWEEN 1 AND 1",
+      "error_class": "transport/ResourceExhausted with stream context cancellation",
+      "message_sha256": "5c94fc54aca4fd312d8aea0a4804b035435972c4b9870022ae4ffd6a969e7cda"
+    },
+    {
+      "source_timestamp": 1789493685.9852655,
+      "query": "SELECT COUNT(*) FROM district WHERE d_next_o_id <> 3001 AND d_w_id BETWEEN 1 AND 1",
+      "error_class": "transport/ResourceExhausted with stream context cancellation",
+      "message_sha256": "8b5ee5ff60ce281dce304fa5e5df63b2ec4124fb1845a91134bc2ea481b6b204"
+    }
+  ],
+  "artifact": "artifact/bc8ba08c-stroppy-tpcc-tx-log",
+  "downloaded_log_sha256": "aeafc756653f9b711470a77faba39be118b464a45928bf092fa62693653c6ca5",
+  "finding": "Read-only population queries did not use the workload retry policy. Five reads failed on serverless ResourceExhausted; this does not demonstrate invalid population data.",
+  "fix": "Per-read idempotent driver-classified retries within retry-attempts; separate tpcc_population_retry_attempts; data mismatches remain failures.",
+  "local_ydb_26_3_validation": {
+    "status": "passed",
+    "checked_at": "2026-09-15T17:45:56.144319+00:00",
+    "input_sha256": "fc31e601ec38e510e4eb2c75fc1a304f2172741623ea33af73fd529127ab2849",
+    "checks": {
+      "stroppy-ydb-59cc8c9b-db-compute-1-ydb": ".sys\n"
+    },
+    "native": {
+      "simple": {
+        "iterations_total": 7116.0,
+        "terminal_errors_total": 0.0
+      },
+      "tpcb/tx": {
+        "iterations_total": 1113.0,
+        "terminal_errors_total": 0.0,
+        "tps": 219.414
+      },
+      "tpcc/tx": {
+        "iterations_total": 288.0,
+        "terminal_errors_total": 0.0,
+        "tps": 52.205
+      }
+    },
+    "binary_sha256": "ae73369eb7c423b4692ca02c46eee6bda5e18dd2907daf0b9c5f25700701f50b"
+  },
+  "image_evidence": "populationretry-native-image.json",
+  "tests": [
+    "make linter_fix",
+    "make linter",
+    "make tests (race)",
+    "make build",
+    "make integration (PostgreSQL/MySQL/OTLP)",
+    "local YDB 26.3 simple/TPC-B/TPC-C"
+  ],
+  "live_fix_validation": {
+    "status": "passed",
+    "run_id": "matrix-ydbready-cd74e12d-ydb-managed-serverless",
+    "native_proof": "ydb-managed-serverless.native.json",
+    "tpcc_terminal_errors": 0,
+    "tpcc_successful_transactions": 3
+  }
+}

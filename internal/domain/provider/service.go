@@ -304,6 +304,7 @@ func (s *Service) RefreshQuotas(ctx context.Context, actor auth.Actor, tenantID,
 }
 
 // FreshQuotas is the launch path: cache when young enough, else a probe.
+// Permission-denied snapshots have no quotas; YC enforces limits at creation.
 func (s *Service) FreshQuotas(ctx context.Context, p Profile) ([]Quota, error) {
 	if p.QuotasObservedAt != nil && time.Since(*p.QuotasObservedAt) <= QuotaFreshness {
 		return p.Quotas, nil
@@ -349,5 +350,9 @@ func (s *Service) refreshQuotas(ctx context.Context, ns string, p Profile) error
 	if observed.IsZero() {
 		observed = time.Now().UTC()
 	}
-	return s.repo.SetQuotas(ctx, p.ID, res.Quotas, observed)
+	res.ObservedAt = observed
+	if res.UnavailableReason != "" {
+		res.Quotas = []Quota{}
+	}
+	return s.repo.SetQuotas(ctx, p.ID, res)
 }

@@ -32,7 +32,8 @@ type Run struct {
 	Network  Network  `json:"network"`
 	// Machines are every VM of the run; the pipeline creates one agent per
 	// machine.
-	Machines []Machine `json:"machines"`
+	Machines   []Machine   `json:"machines"`
+	ManagedYDB *ManagedYDB `json:"managed_ydb,omitempty"`
 	// Containers are everything that runs on the machines: databases,
 	// proxies, exporters.
 	Containers []Container `json:"containers,omitempty"`
@@ -44,7 +45,7 @@ type Run struct {
 	// groups and the topology view.
 	Flows         []Flow        `json:"flows,omitempty"`
 	Workload      Workload      `json:"workload"`
-	Observability Observability `json:"observability,omitzero"`
+	Observability Observability `json:"observability,omitempty,omitzero"`
 	// Keep keeps the stand alive after the run; 0 tears everything down.
 	Keep Duration `json:"keep,omitempty"`
 	// ResultExpectations are metric keys the run must report.
@@ -107,12 +108,14 @@ type Container struct {
 	Role        string            `json:"role"`
 	Machine     string            `json:"machine"`
 	Image       string            `json:"image"`
+	Entrypoint  []string          `json:"entrypoint,omitempty"`
 	Cmd         []string          `json:"cmd,omitempty"`
 	Env         map[string]string `json:"env,omitempty"`
 	Ports       []Port            `json:"ports,omitempty"`
 	Mounts      []Mount           `json:"mounts,omitempty"`
 	Files       []File            `json:"files,omitempty"`
 	Scrape      string            `json:"scrape,omitempty"`
+	ScrapePort  int               `json:"scrape_port,omitempty"`
 	DependsOn   []string          `json:"depends_on,omitempty"`
 	Healthcheck *Healthcheck      `json:"healthcheck,omitempty"`
 	Restart     string            `json:"restart,omitempty"`
@@ -200,6 +203,8 @@ type Workload struct {
 	Baseline *Baseline `json:"baseline,omitempty"`
 	// CACert is a PEM the pipeline writes next to the config (caCertFile).
 	CACert string `json:"ca_cert,omitempty"`
+	// YDBIAMCredentialsSecret names provider.yandex.credentials; resolved only on the runner.
+	YDBIAMCredentialsSecret string `json:"ydb_iam_credentials_secret,omitempty"`
 }
 
 // Baseline asks for `stroppy baseline` on the runner before the segments.
@@ -280,4 +285,20 @@ func (r Run) ContainersOn(machine string) []Container {
 		}
 	}
 	return out
+}
+
+// ManagedYDB is a database owned by this run, alongside its runner VMs.
+// Deletion protection is deliberately unavailable for disposable run resources.
+type ManagedYDB struct {
+	Zones               []string `json:"zones,omitempty"`
+	Type                string   `json:"type"`
+	LocationID          string   `json:"location_id"`
+	ResourcePresetID    string   `json:"resource_preset_id,omitempty"`
+	NodeCount           int      `json:"node_count,omitempty"`
+	StorageGroups       int      `json:"storage_groups,omitempty"`
+	StorageType         string   `json:"storage_type,omitempty"`
+	AssignPublicIPs     bool     `json:"assign_public_ips,omitempty"`
+	ThrottlingRCULimit  int      `json:"throttling_rcu_limit,omitempty"`
+	ProvisionedRCULimit int      `json:"provisioned_rcu_limit,omitempty"`
+	StorageSizeLimitGB  int      `json:"storage_size_limit_gb,omitempty"`
 }

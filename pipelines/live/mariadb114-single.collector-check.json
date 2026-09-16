@@ -1,0 +1,52 @@
+{
+  "status": "failed",
+  "run_id": "matrix-mariadb-fixed-5ce18e32-mariadb114-single",
+  "query_range": {
+    "start": "2026-09-15T09:06:16.845097643Z",
+    "end": "2026-09-15T09:10:04.161668197Z"
+  },
+  "collectors": [
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.global_status",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13
+    },
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.global_variables",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13
+    },
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmp",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13
+    },
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.innodb_cmpmem",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13
+    },
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.info_schema.query_response_time",
+      "min": 1.0,
+      "max": 1.0,
+      "samples": 13
+    },
+    {
+      "entity": "docker/08b57aff-b0fe-4167-960f-8cf74a513b5e-db-1-mysqld-exporter",
+      "collector": "collect.slave_status",
+      "min": 0.0,
+      "max": 0.0,
+      "samples": 13
+    }
+  ]
+}

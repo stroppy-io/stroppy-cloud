@@ -240,13 +240,13 @@ func TestSimulatedRunMultiMachineLayers(t *testing.T) {
 	// Layer order: postgres first, then replica and exporter in one layer.
 	ready := make([]string, 0, 3)
 	for _, e := range s.w.Events() {
-		if e.Action == "ready" && (e.Resource == "docker/postgres" || e.Resource == "docker/replica" || e.Resource == "docker/exporter") {
+		if e.Action == "ready" && (e.Resource == ref.OwnerRef("docker/"+run.RunID+"-postgres") || e.Resource == ref.OwnerRef("docker/"+run.RunID+"-replica") || e.Resource == ref.OwnerRef("docker/"+run.RunID+"-exporter")) {
 			ready = append(ready, string(e.Resource))
 		}
 	}
 	require.Len(t, ready, 3)
-	require.Equal(t, "docker/postgres", ready[0])
-	replica, _ := s.w.Resource("docker/replica")
+	require.Equal(t, "docker/"+run.RunID+"-postgres", ready[0])
+	replica, _ := s.w.Resource(ref.OwnerRef("docker/" + run.RunID + "-replica"))
 	require.Equal(t, db2, replica.Agent)
 	var replicaSpec struct {
 		Config struct {
@@ -335,12 +335,13 @@ func TestSimulatedRunMultipleSegmentsAndArtifactFailure(t *testing.T) {
 	require.Equal(t, []string{"load", "steady"}, order[:2])
 	require.Len(t, result.Segments, 2)
 	require.Equal(t, []string{"artifact/8f1c3f2a-stroppy-steady-log"}, result.Artifacts)
-	require.InDelta(t, 600, result.Summary.TPS, 0.01, "headline from the last measuring segment")
+	require.Zero(t, result.Summary.TPS, "no throughput was reported by Stroppy")
 	require.Contains(t, result.Metrics, "load.iterations_total")
 	require.Contains(t, result.Metrics, "steady.iterations_total")
 	// tpm_c was expected and is missing: published as degraded.
 	require.Contains(t, s.events, events.ResultPublished)
 	require.True(t, s.degraded)
+	s.w.Advance(logArtifactRetention + time.Hour)
 	s.w.AssertNoLeaks(t)
 }
 

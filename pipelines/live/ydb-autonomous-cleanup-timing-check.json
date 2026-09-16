@@ -1,0 +1,27 @@
+{
+  "status": "measured",
+  "scope": "Cleanup activity schedule to workflow completion, including resource dependency waits",
+  "runs": [
+    {
+      "version": "26.1",
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous",
+      "cleanup_started_at": "2026-09-15T23:08:08.780755496Z",
+      "workflow_completed_at": "2026-09-15T23:33:52.465554Z",
+      "cleanup_to_completion_seconds": 1543.684799
+    },
+    {
+      "version": "26.2",
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.2-autonomous",
+      "cleanup_started_at": "2026-09-15T23:09:24.226281494Z",
+      "workflow_completed_at": "2026-09-15T23:31:33.582530Z",
+      "cleanup_to_completion_seconds": 1329.356249
+    },
+    {
+      "version": "26.3",
+      "run_id": "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.3-autonomous",
+      "cleanup_started_at": "2026-09-15T23:07:18.451046318Z",
+      "workflow_completed_at": "2026-09-15T23:32:07.772100Z",
+      "cleanup_to_completion_seconds": 1489.321054
+    }
+  ]
+}

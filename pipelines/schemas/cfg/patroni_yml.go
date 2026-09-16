@@ -1,6 +1,9 @@
 package cfg
 
 import (
+	"fmt"
+	"strings"
+
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
@@ -24,9 +27,21 @@ import (
 // keys Patroni itself must own (they are written verbatim, in no fixed order).
 //
 //nolint:funlen // one flat key table
-func PatroniYml3() *schemapb.Schema {
-	return schemapb.NewSchema(ids.Cfg("patroni.yml", 3)).
-		Descr("patroni.yml for Patroni 3.x with an etcd3 DCS.").
+func PatroniYml3() *schemapb.Schema { return patroniYml(3) }
+
+// PatroniYml4 covers the shared Patroni 4.1 configuration keys.
+// doc: https://patroni.readthedocs.io/en/latest/yaml_configuration.html
+func PatroniYml4() *schemapb.Schema { return patroniYml(4) }
+
+//nolint:funlen // one flat key table
+func patroniYml(major uint64) *schemapb.Schema {
+	template := strings.Replace(patroniTemplate, "Patroni 3.x", fmt.Sprintf("Patroni %d.x", major), 1)
+	if major >= 4 {
+		// pg_hba is an inline list; an external file is a PostgreSQL hba_file parameter.
+		template = strings.Replace(template, "  pg_hba: {{{.}}}", "  parameters:\n    hba_file: {{{.}}}", 1)
+	}
+	return schemapb.NewSchema(ids.Cfg("patroni.yml", major)).
+		Descr(fmt.Sprintf("patroni.yml for Patroni %d.x with an etcd3 DCS.", major)).
 		Strict().Coerce().
 		Fields(
 			// ------------------------------------------------------- identity
@@ -193,7 +208,7 @@ func PatroniYml3() *schemapb.Schema {
 			schemapb.Rule(`root.watchdog_mode == "off" || int(root.watchdog_safety_margin) < int(root.ttl)`,
 				"watchdog safety_margin must be below ttl").ID("watchdog-margin"),
 		).
-		Template("conf", patroniTemplate).
+		Template("conf", template).
 		MustBuild()
 }
 

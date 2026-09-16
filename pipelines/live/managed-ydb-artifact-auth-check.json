@@ -1,0 +1,21 @@
+{
+  "run_id": "matrix-ydb-managed-auth-3c155064-ydb-managed-serverless",
+  "scope": "Downloaded config blobs after failed workload; digest verified by artifact downloader. OTLP headers intentionally remain private in configs.",
+  "checks": [
+    {
+      "artifact_index": 0,
+      "runtime_iam_token_absent": true,
+      "service_account_private_key_absent": true
+    },
+    {
+      "artifact_index": 2,
+      "runtime_iam_token_absent": true,
+      "service_account_private_key_absent": true
+    },
+    {
+      "artifact_index": 4,
+      "runtime_iam_token_absent": true,
+      "service_account_private_key_absent": true
+    }
+  ]
+}

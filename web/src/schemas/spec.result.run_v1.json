@@ -8,7 +8,7 @@
   "fields":  [
     {
       "name":  "metrics",
-      "description":  "Canonical run metrics by key (tps, latency_p99_ms, errors…).",
+      "description":  "Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments.",
       "map":  {
         "valueSchema":  {
           "fields":  [
@@ -48,7 +48,7 @@
           ],
           "strict":  true
         },
-        "maxEntries":  "256"
+        "maxEntries":  "16384"
       },
       "group":  "Result",
       "title":  "Metrics"
@@ -255,7 +255,7 @@
             }
           }
         ],
-        "maxItems":  "64",
+        "maxItems":  "129",
         "unique":  true
       },
       "group":  "Result",

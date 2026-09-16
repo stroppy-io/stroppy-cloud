@@ -1,0 +1,5 @@
+{
+  "status": "passed",
+  "ignored_nonexecuting_legacy_run": "matrix-oriole-0d49e1e2",
+  "reason": "Only workflow start/task scheduling/cancel request, no activity or child run ever started; authoritative quota usage still included"
+}

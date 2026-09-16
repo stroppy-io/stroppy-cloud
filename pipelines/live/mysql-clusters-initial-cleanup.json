@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T11:08:14.331309+00:00",
+  "scope": "exact infrastructure IDs of initial attempt; corrected retry resources excluded",
+  "resources": {
+    "vm": {
+      "deleted_ids": [
+        "fhm0srcbjhqos8jed2u4",
+        "fhm7a82r0ngg5c69d2oi",
+        "fhm9bsnredrgv1u9h082",
+        "fhma5la8m1melf2g256g",
+        "fhmd31936s8r9lhvk7sh",
+        "fhmkqjelql9olastl68d",
+        "fhmn50l53hsuq4a528ml",
+        "fhmo1q6jheofavik52rr",
+        "fhmsm3ohn77aj7vui1eo",
+        "fhmutqgkqoih8sfa8jsp"
+      ],
+      "baseline_preserved": 12
+    },
+    "disk": {
+      "deleted_ids": [
+        "fhm0ltsgb052ad25ud02",
+        "fhm21ttlrnshh6hr9kq9",
+        "fhm2g2aut09h9qv3iail",
+        "fhm2pilcj0gn09h7oq96",
+        "fhm49f2oi2m4rale70f5",
+        "fhm5o9ii33gk8q7lr19r",
+        "fhm661f8lfpsiue2j7iq",
+        "fhmacs2fbk1ladeohbu2",
+        "fhmb117ss8j0hieq1r2r",
+        "fhmen587kktoji0ioc5k",
+        "fhmh9dpfatvn32g8742n",
+        "fhmha5r3nr27h0sft5ku",
+        "fhmjdclh2ju2f8f68flv",
+        "fhmoi3b1gufb88l8mfuu",
+        "fhmoudsmpvk59726aofu",
+        "fhmrh259v1vocug4na8m"
+      ],
+      "baseline_preserved": 20
+    },
+    "network": {
+      "deleted_ids": [
+        "enp2qd0bn18ogvgnlet3",
+        "enpdg30h3t0cdbeta97s"
+      ],
+      "baseline_preserved": 3
+    },
+    "subnet": {
+      "deleted_ids": [
+        "e9bcicu9nq72gkbho95l",
+        "e9br7cju36qk7m55scj2"
+      ],
+      "baseline_preserved": 4
+    },
+    "sg": {
+      "deleted_ids": [
+        "enpl2gpgqouvpmrpv1o9",
+        "enpmvvnn5m6k76v4smn9"
+      ],
+      "baseline_preserved": 6
+    }
+  }
+}

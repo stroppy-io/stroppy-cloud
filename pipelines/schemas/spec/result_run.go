@@ -35,7 +35,8 @@ func ResultRun() *schemapb.Schema {
 		Strict().Coerce().
 		Fields(
 			metricValue("metrics").Title("Metrics").Group("Result").
-				Desc("Canonical run metrics by key (tps, latency_p99_ms, errors…)."),
+				Desc("Metrics keyed by segment and metric name; up to 256 metrics for each of 64 segments.").
+				MaxEntries(64*256),
 
 			schemapb.List("segments",
 				schemapb.Object("",
@@ -81,7 +82,7 @@ func ResultRun() *schemapb.Schema {
 			schemapb.List("artifacts", schemapb.Str("").MinLen(1).MaxLen(256)).
 				Title("Artifacts").Group("Result").
 				Desc("Graphene artifact references (artifact/<id>): raw stroppy output, the report.").
-				MaxItems(64).Unique(),
+				MaxItems(2*64+1).Unique(),
 
 			// doc: `stroppy baseline --json` — schema 1 report.
 			schemapb.Object("baseline",

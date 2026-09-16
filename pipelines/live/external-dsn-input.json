@@ -1,0 +1,99 @@
+{
+  "run_id": "7383cd13-ce1f-40d3-89c5-0d92dc3db3b5",
+  "tenant": "stroppy-live",
+  "provider": {
+    "kind": "yandex",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "zone": "ru-central1-d",
+      "platform_id": "standard-v3",
+      "public_ips": true,
+      "preemptible": false
+    },
+    "credentials_secret": "yc-sa-key",
+    "provider_config_name": "t-stroppy-live"
+  },
+  "network": {
+    "cidr": "10.130.0.0/24",
+    "allow_public_ips": true
+  },
+  "machines": [
+    {
+      "name": "runner-1",
+      "role": "runner",
+      "cpu": 4,
+      "memory_gb": 8,
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-d",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      }
+    }
+  ],
+  "containers": [
+    {
+      "name": "runner-1-node-exporter",
+      "role": "runner",
+      "machine": "runner-1",
+      "image": "docker.stroppy.io/prometheus/node-exporter:v1.12.1",
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "mounts": [
+        {
+          "source": "/",
+          "target": "/host",
+          "ro": true
+        }
+      ],
+      "scrape": "/metrics",
+      "restart": "always"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+    "driver_type": "postgres",
+    "url": "postgres://external_reader:FIXTURE_PASSWORD@FIXTURE_HOST:5432/postgres?sslmode=disable",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "external-canary",
+        "run": {
+          "duration": "2m",
+          "executor": "constant-vus",
+          "query_timeout": "0s",
+          "vus": 2
+        },
+        "warmup": "0s",
+        "workload": {
+          "script": "execute_sql",
+          "sql_body": "--= fixture_canary\nSELECT 1 / CASE WHEN COUNT(*)=1 AND MIN(id)=197 AND NOT has_table_privilege(current_user, 'external_fixture_canary', 'INSERT,UPDATE,DELETE,TRUNCATE') THEN 1 ELSE 0 END FROM external_fixture_canary;"
+        }
+      }
+    ]
+  },
+  "result_expectations": [
+    "iterations_total"
+  ],
+  "observability": {
+    "otlp_endpoint": "https://otel.stroppy.io",
+    "labels": {
+      "campaign": "native-tps-otlp"
+    },
+    "otlp_headers": ""
+  }
+}

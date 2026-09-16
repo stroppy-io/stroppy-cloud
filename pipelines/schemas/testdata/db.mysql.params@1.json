@@ -1,146 +1,146 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "mysql.params",
-    "version":  "v1.0.0"
+  "id": {
+    "namespace": "db",
+    "name": "mysql.params",
+    "version": "v1.0.0"
   },
-  "description":  "MySQL topology and options: version, replicas, replication mode, ProxySQL.",
-  "fields":  [
+  "description": "MySQL topology and options: version, replicas, replication mode, ProxySQL.",
+  "fields": [
     {
-      "name":  "version",
-      "description":  "Server series; packages come from repo.mysql.com.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "version",
+      "description": "Server series; packages come from repo.mysql.com.",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "8.4"
+            "value": {
+              "stringValue": "8.4"
             },
-            "label":  "8.4 LTS"
+            "label": "8.4 LTS"
           },
           {
-            "value":  {
-              "stringValue":  "8.0"
+            "value": {
+              "stringValue": "8.0"
             },
-            "label":  "8.0 (extended support only)"
+            "label": "8.0 (extended support only)"
           }
         ],
-        "default":  {
-          "stringValue":  "8.4"
+        "default": {
+          "stringValue": "8.4"
         }
       },
-      "group":  "Engine",
-      "title":  "MySQL version"
+      "group": "Engine",
+      "title": "MySQL version"
     },
     {
-      "name":  "replicas",
-      "description":  "Secondary servers besides the primary; with Group Replication the whole group is primary + replicas and may not exceed 9 members.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "8"
+      "name": "replicas",
+      "description": "Secondary servers besides the primary; with Group Replication the whole group is primary + replicas and may not exceed 9 members.",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "8"
       },
-      "group":  "Topology",
-      "title":  "Replicas"
+      "group": "Topology",
+      "title": "Replicas"
     },
     {
-      "name":  "replication",
-      "description":  "async = classic binlog replication; semi_sync = the semisync plugin waits for one replica ack; group = Group Replication (its own consensus, no semisync).",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "name": "replication",
+      "description": "async = classic binlog replication; semi_sync = the semisync plugin waits for one replica ack; group = Group Replication (its own consensus, no semisync).",
+      "required": true,
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "async"
+            "value": {
+              "stringValue": "async"
             },
-            "label":  "Asynchronous"
+            "label": "Asynchronous"
           },
           {
-            "value":  {
-              "stringValue":  "semi_sync"
+            "value": {
+              "stringValue": "semi_sync"
             },
-            "label":  "Semi-synchronous"
+            "label": "Semi-synchronous"
           },
           {
-            "value":  {
-              "stringValue":  "group"
+            "value": {
+              "stringValue": "group"
             },
-            "label":  "Group Replication"
+            "label": "Group Replication"
           }
         ],
-        "default":  {
-          "stringValue":  "async"
+        "default": {
+          "stringValue": "async"
         }
       },
-      "group":  "Replication",
-      "title":  "Replication mode"
+      "group": "Replication",
+      "title": "Replication mode"
     },
     {
-      "name":  "single_primary",
-      "description":  "Group Replication mode: on = one writable primary with automatic election, off = multi-primary (every member writable).",
-      "bool":  {
-        "default":  true
+      "name": "single_primary",
+      "description": "Group Replication mode: on = one writable primary with automatic election, off = multi-primary (every member writable).",
+      "bool": {
+        "default": true
       },
-      "group":  "Replication",
-      "title":  "Single-primary group",
-      "when":  "root.replication == \"group\""
+      "group": "Replication",
+      "title": "Single-primary group",
+      "when": "root.replication == \"group\""
     },
     {
-      "name":  "semi_sync_wait_for_slave_count",
-      "description":  "rpl_semi_sync_source_wait_for_replica_count: how many replicas must acknowledge before the primary commits.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "8"
+      "name": "semi_sync_wait_for_slave_count",
+      "description": "rpl_semi_sync_source_wait_for_replica_count: how many replicas must acknowledge before the primary commits.",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "8"
       },
-      "group":  "Replication",
-      "title":  "Semi-sync acks",
-      "when":  "root.replication == \"semi_sync\""
+      "group": "Replication",
+      "title": "Semi-sync acks",
+      "when": "root.replication == \"semi_sync\""
     },
     {
-      "name":  "proxysql",
-      "description":  "ProxySQL instances routing reads and writes to the right member; 0 = clients talk to the primary directly.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "2"
+      "name": "proxysql",
+      "description": "ProxySQL instances routing reads and writes to the right member; 0 = clients talk to the primary directly.",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "2"
       },
-      "group":  "Routing",
-      "title":  "ProxySQL nodes"
+      "group": "Routing",
+      "title": "ProxySQL nodes"
     },
     {
-      "name":  "init_sql",
-      "description":  "SQL executed on the primary once the server is up, before the workload.",
-      "string":  {
-        "maxLen":  "65536"
+      "name": "init_sql",
+      "description": "SQL executed on the primary once the server is up, before the workload.",
+      "string": {
+        "maxLen": "65536"
       },
-      "group":  "Initialization",
-      "title":  "Init SQL"
+      "group": "Initialization",
+      "title": "Init SQL"
     }
   ],
-  "rules":  [
+  "rules": [
     {
-      "expr":  "root.replication != \"group\" || (int(root.replicas) + 1 >= 3 && int(root.replicas) + 1 <= 9)",
-      "message":  "Group Replication needs 3..9 members, i.e. replicas between 2 and 8",
-      "id":  "group-members"
+      "expr": "root.replication != \"group\" || (int(root.replicas) + 1 >= 3 && int(root.replicas) + 1 <= 9)",
+      "message": "Group Replication needs 3..9 members, i.e. replicas between 2 and 8",
+      "id": "group-members"
     },
     {
-      "expr":  "root.replication == \"async\" || int(root.replicas) >= 1",
-      "message":  "semi-synchronous and Group Replication both need at least one replica",
-      "id":  "replication-needs-replica"
+      "expr": "root.replication == \"async\" || int(root.replicas) >= 1",
+      "message": "semi-synchronous and Group Replication both need at least one replica",
+      "id": "replication-needs-replica"
     },
     {
-      "expr":  "!(\"semi_sync_wait_for_slave_count\" in root) || root.replication != \"semi_sync\" || int(root.semi_sync_wait_for_slave_count) <= int(root.replicas)",
-      "message":  "cannot wait for more acks than there are replicas",
-      "id":  "semi-sync-acks-le-replicas"
+      "expr": "!(\"semi_sync_wait_for_slave_count\" in root) || root.replication != \"semi_sync\" || int(root.semi_sync_wait_for_slave_count) <= int(root.replicas)",
+      "message": "cannot wait for more acks than there are replicas",
+      "id": "semi-sync-acks-le-replicas"
     },
     {
-      "expr":  "int(root.proxysql) == 0 || int(root.replicas) >= 1",
-      "message":  "ProxySQL in front of a single server only adds a hop",
-      "id":  "proxysql-pointless",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "int(root.proxysql) == 0 || int(root.replicas) >= 1",
+      "message": "ProxySQL in front of a single server only adds a hop",
+      "id": "proxysql-pointless",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true,
+  "coerce": true
 }

@@ -1,123 +1,123 @@
 {
-  "id": {
-    "namespace": "spec",
-    "name": "suite",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "spec",
+    "name":  "suite",
+    "version":  "v1.0.0"
   },
-  "description": "SuiteSpec: the cells of a matrix run and how many of them run in parallel.",
-  "fields": [
+  "description":  "SuiteSpec: the cells of a matrix run and how many of them run in parallel.",
+  "fields":  [
     {
-      "name": "suite_run_id",
-      "description": "Suite run id minted by the server; the parent Graphene run id.",
-      "required": true,
-      "string": {
-        "format": "uuid"
+      "name":  "suite_run_id",
+      "description":  "Suite run id minted by the server; the parent Graphene run id.",
+      "required":  true,
+      "string":  {
+        "format":  "uuid"
       },
-      "group": "Identity",
-      "title": "Suite run id"
+      "group":  "Identity",
+      "title":  "Suite run id"
     },
     {
-      "name": "tenant",
-      "description": "Tenant slug; every child run lives in the same namespace.",
-      "required": true,
-      "string": {
-        "pattern": "^[a-z][a-z0-9-]{0,62}$"
+      "name":  "tenant",
+      "description":  "Tenant slug; every child run lives in the same namespace.",
+      "required":  true,
+      "string":  {
+        "pattern":  "^[a-z][a-z0-9-]{0,62}$"
       },
-      "group": "Identity",
-      "title": "Tenant"
+      "group":  "Identity",
+      "title":  "Tenant"
     },
     {
-      "name": "cells",
-      "description": "The resolved matrix: one child run per cell.",
-      "required": true,
-      "list": {
-        "items": [
+      "name":  "cells",
+      "description":  "The resolved matrix: one child run per cell.",
+      "required":  true,
+      "list":  {
+        "items":  [
           {
-            "object": {
-              "schema": {
-                "fields": [
+            "object":  {
+              "schema":  {
+                "fields":  [
                   {
-                    "name": "id",
-                    "description": "Stable cell id; the child run id is derived from parent + cell id.",
-                    "required": true,
-                    "string": {
-                      "pattern": "^[a-z0-9][a-z0-9_-]{0,63}$"
+                    "name":  "id",
+                    "description":  "Stable cell id; the child run id is derived from parent + cell id.",
+                    "required":  true,
+                    "string":  {
+                      "pattern":  "^[a-z0-9][a-z0-9_-]{0,63}$"
                     },
-                    "title": "Cell id"
+                    "title":  "Cell id"
                   },
                   {
-                    "name": "run_spec",
-                    "description": "A complete spec.run@1 value; the suite hands it to a child run unread.",
-                    "required": true,
-                    "json": {},
-                    "title": "RunSpec"
+                    "name":  "run_spec",
+                    "description":  "A complete spec.run@1 value; the suite hands it to a child run unread.",
+                    "required":  true,
+                    "json":  {},
+                    "title":  "RunSpec"
                   }
                 ],
-                "strict": true
+                "strict":  true
               }
             }
           }
         ],
-        "minItems": "1",
-        "maxItems": "256"
+        "minItems":  "1",
+        "maxItems":  "256"
       },
-      "group": "Cells",
-      "title": "Cells"
+      "group":  "Cells",
+      "title":  "Cells"
     },
     {
-      "name": "concurrency",
-      "description": "How many cells run at the same time.",
-      "int64": {
-        "default": "1",
-        "gte": "1",
-        "lte": "64"
+      "name":  "concurrency",
+      "description":  "How many cells run at the same time.",
+      "int64":  {
+        "default":  "1",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "Execution",
-      "title": "Concurrency"
+      "group":  "Execution",
+      "title":  "Concurrency"
     },
     {
-      "name": "defaults",
-      "description": "Settings shared by every cell.",
-      "object": {
-        "schema": {
-          "fields": [
+      "name":  "defaults",
+      "description":  "Settings shared by every cell.",
+      "object":  {
+        "schema":  {
+          "fields":  [
             {
-              "name": "continue_on_failure",
-              "description": "Keep running the remaining cells after one fails.",
-              "bool": {
-                "default": true
+              "name":  "continue_on_failure",
+              "description":  "Keep running the remaining cells after one fails.",
+              "bool":  {
+                "default":  true
               },
-              "title": "Continue on failure"
+              "title":  "Continue on failure"
             },
             {
-              "name": "labels",
-              "description": "Labels stamped on every child run.",
-              "map": {
-                "maxEntries": "32",
-                "valueField": {
-                  "name": "value",
-                  "string": {
-                    "maxLen": "255"
+              "name":  "labels",
+              "description":  "Labels stamped on every child run.",
+              "map":  {
+                "maxEntries":  "32",
+                "valueField":  {
+                  "name":  "value",
+                  "string":  {
+                    "maxLen":  "255"
                   }
                 }
               },
-              "title": "Labels"
+              "title":  "Labels"
             }
           ],
-          "strict": true
+          "strict":  true
         }
       },
-      "group": "Execution",
-      "title": "Defaults"
+      "group":  "Execution",
+      "title":  "Defaults"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"cells\" in root) || root.cells.all(c, root.cells.filter(x, x.id == c.id).size() == 1)",
-      "message": "cell ids must be unique",
-      "id": "cell-ids-unique"
+      "expr":  "!(\"cells\" in root) || root.cells.all(c, root.cells.filter(x, x.id == c.id).size() == 1)",
+      "message":  "cell ids must be unique",
+      "id":  "cell-ids-unique"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }

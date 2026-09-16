@@ -1,0 +1,33 @@
+{
+  "status": "passed_yc_retest",
+  "checked_at": "2026-09-15T13:54:19.517158+00:00",
+  "pipeline_image": "graphene.stroppy.io:443/t-stroppy-live/stroppy-run:45997b54543d9045",
+  "entrypoint_contract": {
+    "omitted": "preserve image entrypoint (nil Docker API field)",
+    "provided": "override image entrypoint with expanded argv",
+    "local_docker_api_check": [
+      {
+        "entrypoint": null,
+        "path": "docker-entrypoint.sh"
+      },
+      {
+        "entrypoint": [],
+        "path": "postgres"
+      }
+    ]
+  },
+  "affected_run_ids": [
+    "matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg17",
+    "matrix-oriole-0d49e1e2-managed-orioledb-single-pg16"
+  ],
+  "failure": "Empty entrypoint removed image bootstrap; PostgreSQL refused root execution. Suite canceled for owned-resource cleanup and rerun.",
+  "fixed_by": "Addresses.ExpandList preserves nil; regression asserts nil rather than only zero length.",
+  "pipeline_digest": "sha256:9a503084c281de450f5db8bd3a58f8aa5bcdd61e74e648c4f184d811e722c0e8",
+  "retry_suite_run_id": "matrix-oriole-retry-86dd0e6a",
+  "retest_run_id": "matrix-oriole-retry-86dd0e6a",
+  "retest_verified_cells": [
+    "orioledb-primary-replica-pg17",
+    "orioledb-single-pg16",
+    "orioledb-primary-replica-pg16"
+  ]
+}

@@ -66,12 +66,21 @@ func (m *Machine) TryReady(ctx pipeline.Context) (MachineInfo, error) {
 
 // Infra is the provisioned network and its machines.
 type Infra struct {
+	managedEndpoint func(pipeline.Context) (string, error)
 	// Root is the resource ToStand moves: the network; everything else is
 	// its descendant.
 	Root pipeline.Handle
 	// Machines by spec name, in spec order (Order).
 	Machines map[string]*Machine
 	Order    []string
+}
+
+// ManagedEndpoint waits for the run-owned managed database, if any.
+func (i Infra) ManagedEndpoint(ctx pipeline.Context) (string, error) {
+	if i.managedEndpoint == nil {
+		return "", nil
+	}
+	return i.managedEndpoint(ctx)
 }
 
 // Machine returns the machine by name.

@@ -1,0 +1,380 @@
+{
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 4170,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-1-mariadb": 570,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-1-mysqld-exporter": 11,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-1-node-exporter": 57,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-2-mariadb": 349,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-2-mysqld-exporter": 10,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-2-node-exporter": 57,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb": 532,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mysqld-exporter": 10,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-node-exporter": 57,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-proxy-1-node-exporter": 57,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-proxy-1-proxysql": 1253,
+    "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T11:49:04.819455144Z",
+    "end": "2026-09-15T11:52:58.025645598Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991304048Z",
+      "message_sha256": "7e671dcc9acbdded45cef505d2b4ec836a48ce85e8023157b1c0c4d6c00938ca",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.99129484Z",
+      "message_sha256": "c007f3487ad1606e9c9d60eb44d0ff6b816805da10dedfb942383776a1d8e13a",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991285949Z",
+      "message_sha256": "0ee892eb2ac9c023290daa8c79a76d2557dd8024ea9fb3640266818ea30fbd30",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.99123962Z",
+      "message_sha256": "c007f3487ad1606e9c9d60eb44d0ff6b816805da10dedfb942383776a1d8e13a",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991231667Z",
+      "message_sha256": "f2504c2b0ad084313c7f05b4aea9a96040d631d459408d10af902038cbbf0838",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991223654Z",
+      "message_sha256": "8cd82e62c87a4f7ea65c2c454e5f1bb6452c4e1ff11904e04626b38d252e9698",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991215583Z",
+      "message_sha256": "1e2f52f0bccae50e4958d13a87c0f829521c967c970878dafe8434dd3639ab45",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991207333Z",
+      "message_sha256": "1e2f52f0bccae50e4958d13a87c0f829521c967c970878dafe8434dd3639ab45",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991198933Z",
+      "message_sha256": "c41aeb0219042aaed4adaec747b7f3de19bc5d0b74c4952e7ef5c7c555a3b441",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991189843Z",
+      "message_sha256": "c41aeb0219042aaed4adaec747b7f3de19bc5d0b74c4952e7ef5c7c555a3b441",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991181684Z",
+      "message_sha256": "7ab5ceb957a485530f9a2b134fef92fa5554c142f780d2ea4b20bf53fba45c6d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991173555Z",
+      "message_sha256": "e52b01e7ef5d5fecf3bd3deb64798913f4e98daefe2f37a041ebac12b76dd70d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991164411Z",
+      "message_sha256": "c2be90390134d2da68d5422b0212fc5b5be5bc7847878640fb42c7f58a53d6a0",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991156068Z",
+      "message_sha256": "dd5d754d6e352bca32739466abca4417b17927d924643d7c9a9c524861c196a6",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991143273Z",
+      "message_sha256": "dd5d754d6e352bca32739466abca4417b17927d924643d7c9a9c524861c196a6",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.99113493Z",
+      "message_sha256": "c19372d32ee98ec5d546d321948263aa532c667741f1c87ef2fe417c4944dc31",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991124056Z",
+      "message_sha256": "228334bb9ec0333c1bc8ca5754ec8d21c888979c9d1f456cabb3569756fb226d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991115106Z",
+      "message_sha256": "228334bb9ec0333c1bc8ca5754ec8d21c888979c9d1f456cabb3569756fb226d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991107238Z",
+      "message_sha256": "c63a1704cc365d9a1fa18100c836b6ebcba847f58e6d9c6300df9a9897c1773b",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991099341Z",
+      "message_sha256": "34c693325e936d2111f9690c3eea09abe4499608c2e1bf039fd00341d1e762fb",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991090976Z",
+      "message_sha256": "ac95c562da42b5815c28218b4aa1d3d458a324b63825293400addb8559531563",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991076445Z",
+      "message_sha256": "93bae5a317f9fb42b3a34dc9979da99e909a5a06283e530bb3dfb17b4b251f49",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991064926Z",
+      "message_sha256": "6ee89f6a0dcb9d58450e99e182d1b59d0d5e4ffe8ec226553916e841131f6328",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991030954Z",
+      "message_sha256": "9e927a9da1a88fbce5736576afc1a88e99a1a90f5be4361bef2063fc00aca721",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991022651Z",
+      "message_sha256": "c607a8190ac1ead4c6779fba92c2684e3e0c816323f94df8d2e854450db410c9",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991014916Z",
+      "message_sha256": "c607a8190ac1ead4c6779fba92c2684e3e0c816323f94df8d2e854450db410c9",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.991006891Z",
+      "message_sha256": "c9a7958fbe0a148faaf75b217b5d6594f7377636ef49c2523bc375f57e78909e",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.99099874Z",
+      "message_sha256": "c053eff245d4951d86ca246bd56b125989bd033f18d0ca630a92bac57f8932a6",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990989987Z",
+      "message_sha256": "e9f47b727aa41f2bbdc8e7acb8f23a110bbed1eb4097858f4f7017941ad4131f",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990981949Z",
+      "message_sha256": "6b1586f3faff522fb61935e178343f12ced34b76069ba793d7ec14540dac43aa",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990973844Z",
+      "message_sha256": "e9f47b727aa41f2bbdc8e7acb8f23a110bbed1eb4097858f4f7017941ad4131f",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990965988Z",
+      "message_sha256": "e9f47b727aa41f2bbdc8e7acb8f23a110bbed1eb4097858f4f7017941ad4131f",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990956798Z",
+      "message_sha256": "e9f47b727aa41f2bbdc8e7acb8f23a110bbed1eb4097858f4f7017941ad4131f",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990948685Z",
+      "message_sha256": "6b1586f3faff522fb61935e178343f12ced34b76069ba793d7ec14540dac43aa",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990888808Z",
+      "message_sha256": "cdae2e1d62d8d73720ed0e62b3413fd6d90e97ffd5195d4906f3274ca95b0989",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990880192Z",
+      "message_sha256": "52c8b578ba85bce8be9ecb25bc3a92ee0f39f4051f184243ffb43b0fb833a378",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990871283Z",
+      "message_sha256": "c64b243fc2bcdd7b7abb19cb8f26eae5d7ece0fdee0a4be5e2a366ce7caeaf10",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990862525Z",
+      "message_sha256": "c64b243fc2bcdd7b7abb19cb8f26eae5d7ece0fdee0a4be5e2a366ce7caeaf10",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990853811Z",
+      "message_sha256": "c64b243fc2bcdd7b7abb19cb8f26eae5d7ece0fdee0a4be5e2a366ce7caeaf10",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990845251Z",
+      "message_sha256": "7e7f9a58725e31cd28db5714b3411dea16df64c01f8913b4b4d5bf37a6c4df1d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990836132Z",
+      "message_sha256": "7e7f9a58725e31cd28db5714b3411dea16df64c01f8913b4b4d5bf37a6c4df1d",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990827092Z",
+      "message_sha256": "33f5d420dbbbb79814a1dc14f27b2767779d089afa8a90df716b8f5ecce15672",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990815553Z",
+      "message_sha256": "33f5d420dbbbb79814a1dc14f27b2767779d089afa8a90df716b8f5ecce15672",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990806901Z",
+      "message_sha256": "6df6b9ca1dd0cb1087df619b5d117c8db7c6cfa2bbd878c83ee06d2178fff2bf",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990797758Z",
+      "message_sha256": "6df6b9ca1dd0cb1087df619b5d117c8db7c6cfa2bbd878c83ee06d2178fff2bf",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990788283Z",
+      "message_sha256": "9e554320cf671dd3e2aebacba368212cb2a5044552818002d7c552e145d807fd",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990774761Z",
+      "message_sha256": "004ab9bde3ad2efd1a6b345d3f4df36c9ec3647dfcebfdd9ef520b9eb8954e08",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990764013Z",
+      "message_sha256": "f759500d98e147b0226c1ec93b9d2e80f125205c14ace466febd34d0783a6d2b",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    },
+    {
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-mariadb",
+      "observed_at": "2026-09-15T11:52:35.990739734Z",
+      "message_sha256": "a58954d9dab22d94d140af2a4e688006d14b215217ac8e3a3b7666cfa1ca92b5",
+      "classification": "mariadb_record_changed",
+      "reference": "https://jira.mariadb.org/browse/MDEV-37085"
+    }
+  ],
+  "observation_counts": {
+    "mariadb_record_changed": 49
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks"
+}

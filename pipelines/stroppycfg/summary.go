@@ -39,7 +39,7 @@ var (
 type Summary struct {
 	// Metrics are the bench summary values by key: counters and gauges under
 	// their name (iterations_total), histograms as <name>_count, _avg, _p50,
-	// _p90, _p95, _p99 (milliseconds, stroppy's histogram unit).
+	// _p90, _p95, _p99 (milliseconds for duration histograms).
 	Metrics map[string]spec.MetricValue
 	// Errors is the "completed with errors" block; nil when the run was clean.
 	Errors *spec.ErrorCounts
@@ -118,6 +118,12 @@ func ParseOutput(out []byte) Summary {
 func parseSummaryLine(line string, into map[string]spec.MetricValue) bool {
 	if m := histogramLine.FindStringSubmatch(line); m != nil {
 		name := m[1]
+		unit := ""
+		if strings.HasSuffix(name, "_duration") {
+			unit = "ms"
+		} else if name == "tx_queries_per_tx" {
+			unit = "queries/transaction"
+		}
 		if count, err := strconv.ParseFloat(m[2], 64); err == nil {
 			into[name+"_count"] = spec.MetricValue{Value: count}
 		}
@@ -126,7 +132,7 @@ func parseSummaryLine(line string, into map[string]spec.MetricValue) bool {
 			if err != nil {
 				continue
 			}
-			into[name+"_"+stat] = spec.MetricValue{Value: v, Unit: "ms"}
+			into[name+"_"+stat] = spec.MetricValue{Value: v, Unit: unit}
 		}
 		return true
 	}
@@ -135,7 +141,18 @@ func parseSummaryLine(line string, into map[string]spec.MetricValue) bool {
 		if err != nil {
 			return false
 		}
-		into[m[1]] = spec.MetricValue{Value: v}
+		unit := ""
+		switch m[1] {
+		case "tps":
+			unit = "transactions/s"
+		case "iterations_per_second":
+			unit = "iterations/s"
+		case "queries_per_second":
+			unit = "queries/s"
+		case "measurement_seconds":
+			unit = "s"
+		}
+		into[m[1]] = spec.MetricValue{Value: v, Unit: unit}
 		return true
 	}
 	return false
@@ -171,9 +188,10 @@ func ErrorRate(s Summary) float64 {
 	return failed / iterations
 }
 
-// Headline picks the summary numbers of a run from its segments: the last
-// segment that measured iterations gives TPS (iterations over its wall
-// time) and latency percentiles; a TPC-C compliance report gives tpmC.
+// Headline copies the last measuring segment's reported metrics. TPS must
+// be supplied by Stroppy itself: activity time includes container preparation
+// and is not a measurement window. TPC-C tpmC stays in its compliance report;
+// it is not interchangeable with overall transaction throughput.
 func Headline(segments []spec.SegmentResult) spec.Summary {
 	var out spec.Summary
 	for i := len(segments) - 1; i >= 0; i-- {
@@ -183,9 +201,8 @@ func Headline(segments []spec.SegmentResult) spec.Summary {
 		if !ok || iterations.Value == 0 {
 			continue
 		}
-		elapsed := seg.FinishedAt.Sub(seg.StartedAt).Seconds()
-		if elapsed > 0 {
-			out.TPS = iterations.Value / elapsed
+		out.TPS = m["tps"].Value
+		if seg.FinishedAt.After(seg.StartedAt) {
 			out.Duration = spec.Duration(seg.FinishedAt.Sub(seg.StartedAt))
 		}
 		out.LatencyP50Ms = m["iteration_duration_p50"].Value
@@ -193,14 +210,6 @@ func Headline(segments []spec.SegmentResult) spec.Summary {
 		out.LatencyP99Ms = m["iteration_duration_p99"].Value
 		if seg.Errors != nil {
 			out.Errors = seg.Errors.FailedIterations + seg.Errors.FailedQueries
-		}
-		if len(seg.Compliance) > 0 {
-			var rep struct {
-				TpmC float64 `json:"tpm_c"`
-			}
-			if json.Unmarshal(seg.Compliance, &rep) == nil && rep.TpmC > 0 {
-				out.TPS = rep.TpmC / 60
-			}
 		}
 		break
 	}

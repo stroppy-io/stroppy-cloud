@@ -1,0 +1,8 @@
+{
+  "status": "not_applicable",
+  "run_id": "external-dsn-7383cd13",
+  "reason": "execute_sql runs supplied statements without an insert/population phase",
+  "scripts": [
+    "execute_sql"
+  ]
+}

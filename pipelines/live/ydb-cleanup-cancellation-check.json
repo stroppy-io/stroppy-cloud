@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T21:31:50.576803+00:00",
+  "suite_run_id": "matrix-ydbchannels-09c363ed",
+  "child_run_id": "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4",
+  "action": "Cancel suite after all three child workload activities and artifact publication completed, while server.run.cleanup was pending",
+  "expected": "Child cleanup finishes and original successful result remains available; unstarted suite cells stay unstarted",
+  "sdk_version": "0.2.5",
+  "contract": "cleanupInbound.ExecuteWorkflow retains the business result and error; cleanup uses workflow.NewDisconnectedContext",
+  "verification": "Await child Completed, compare canonical run result segments to completed activity results, and verify all owned YC resources removed",
+  "child_phase": "Completed",
+  "canonical_segments_match_activity_results": true,
+  "all_expected_artifacts_preserved": true,
+  "remaining_resources": {
+    "vm": 0,
+    "disk": 0,
+    "network": 0,
+    "subnet": 0,
+    "sg": 0,
+    "ydb": 0
+  }
+}

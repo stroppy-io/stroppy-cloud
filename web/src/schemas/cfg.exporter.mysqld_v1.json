@@ -1,629 +1,629 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "exporter.mysqld",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "exporter.mysqld",
+    "version":  "v1.0.0"
   },
-  "description": "prometheus/mysqld_exporter 0.15/0.16 command line, rendered as one flag per line.",
-  "fields": [
+  "description":  "prometheus/mysqld_exporter 0.15/0.16 command line, rendered as one flag per line.",
+  "fields":  [
     {
-      "name": "mysqld_address",
-      "description": "host:port of the mysqld to scrape; filled by the server from topology.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "mysqld_address",
+      "description":  "host:port of the mysqld to scrape; filled by the server from topology.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Target",
-      "title": "MySQL address"
+      "group":  "Target",
+      "title":  "MySQL address"
     },
     {
-      "name": "mysqld_username",
-      "description": "Account used for scraping; needs PROCESS, REPLICATION CLIENT and SELECT.",
-      "string": {
-        "default": "exporter",
-        "minLen": "1",
-        "maxLen": "64"
+      "name":  "mysqld_username",
+      "description":  "Account used for scraping; needs PROCESS, REPLICATION CLIENT and SELECT.",
+      "string":  {
+        "default":  "exporter",
+        "minLen":  "1",
+        "maxLen":  "64"
       },
-      "group": "Target",
-      "title": "MySQL user"
+      "group":  "Target",
+      "title":  "MySQL user"
     },
     {
-      "name": "mysqld_password",
-      "description": "Password for that account; filled by the server. Never rendered into the flags file — it is passed as MYSQLD_EXPORTER_PASSWORD or written into config.my-cnf.",
-      "nullable": true,
-      "string": {
-        "maxLen": "255"
+      "name":  "mysqld_password",
+      "description":  "Password for that account; filled by the server. Never rendered into the flags file — it is passed as MYSQLD_EXPORTER_PASSWORD or written into config.my-cnf.",
+      "nullable":  true,
+      "string":  {
+        "maxLen":  "255"
       },
-      "group": "Target",
-      "title": "MySQL password",
-      "secret": true
+      "group":  "Target",
+      "title":  "MySQL password",
+      "secret":  true
     },
     {
-      "name": "config_my_cnf",
-      "description": "my.cnf whose [client] section holds the credentials; its options override the flags.",
-      "string": {
-        "default": "/etc/mysqld_exporter/.my.cnf",
-        "minLen": "1",
-        "maxLen": "255"
+      "name":  "config_my_cnf",
+      "description":  "my.cnf whose [client] section holds the credentials; its options override the flags.",
+      "string":  {
+        "default":  "/etc/mysqld_exporter/.my.cnf",
+        "minLen":  "1",
+        "maxLen":  "255"
       },
-      "group": "Target",
-      "title": "Credentials file"
+      "group":  "Target",
+      "title":  "Credentials file"
     },
     {
-      "name": "listen_port",
-      "description": "Port of the /metrics endpoint (--web.listen-address).",
-      "int64": {
-        "default": "9104",
-        "gte": "1",
-        "lte": "65535"
+      "name":  "listen_port",
+      "description":  "Port of the /metrics endpoint (--web.listen-address).",
+      "int64":  {
+        "default":  "9104",
+        "gte":  "1",
+        "lte":  "65535"
       },
-      "group": "Exporter",
-      "title": "Listen port"
+      "group":  "Exporter",
+      "title":  "Listen port"
     },
     {
-      "name": "log_level",
-      "description": "Exporter log verbosity.",
-      "choice": {
-        "options": [
+      "name":  "log_level",
+      "description":  "Exporter log verbosity.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "debug"
+            "value":  {
+              "stringValue":  "debug"
             },
-            "label": "debug"
+            "label":  "debug"
           },
           {
-            "value": {
-              "stringValue": "info"
+            "value":  {
+              "stringValue":  "info"
             },
-            "label": "info"
+            "label":  "info"
           },
           {
-            "value": {
-              "stringValue": "warn"
+            "value":  {
+              "stringValue":  "warn"
             },
-            "label": "warn"
+            "label":  "warn"
           },
           {
-            "value": {
-              "stringValue": "error"
+            "value":  {
+              "stringValue":  "error"
             },
-            "label": "error"
+            "label":  "error"
           }
         ],
-        "default": {
-          "stringValue": "info"
+        "default":  {
+          "stringValue":  "info"
         }
       },
-      "group": "Exporter",
-      "title": "Log level"
+      "group":  "Exporter",
+      "title":  "Log level"
     },
     {
-      "name": "max_open_connections",
-      "description": "Size of the exporter's connection pool to mysqld.",
-      "int64": {
-        "default": "3",
-        "gte": "1",
-        "lte": "64"
+      "name":  "max_open_connections",
+      "description":  "Size of the exporter's connection pool to mysqld.",
+      "int64":  {
+        "default":  "3",
+        "gte":  "1",
+        "lte":  "64"
       },
-      "group": "Exporter",
-      "title": "Max open connections"
+      "group":  "Exporter",
+      "title":  "Max open connections"
     },
     {
-      "name": "query_timeout",
-      "description": "Per-scraper query timeout; 0 disables it.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "600"
+      "name":  "query_timeout",
+      "description":  "Per-scraper query timeout; 0 disables it.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "600"
       },
-      "group": "Exporter",
-      "unit": "s",
-      "title": "Query timeout"
+      "group":  "Exporter",
+      "unit":  "s",
+      "title":  "Query timeout"
     },
     {
-      "name": "global_status",
-      "description": "SHOW GLOBAL STATUS — the core counter set. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "global_status",
+      "description":  "SHOW GLOBAL STATUS — the core counter set. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.global_status"
+      "group":  "Collectors",
+      "title":  "collect.global_status"
     },
     {
-      "name": "global_variables",
-      "description": "SHOW GLOBAL VARIABLES — server configuration as metrics. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "global_variables",
+      "description":  "SHOW GLOBAL VARIABLES — server configuration as metrics. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.global_variables"
+      "group":  "Collectors",
+      "title":  "collect.global_variables"
     },
     {
-      "name": "slave_status",
-      "description": "SHOW REPLICA/SLAVE STATUS — replication lag and errors. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "slave_status",
+      "description":  "SHOW REPLICA/SLAVE STATUS — replication lag and errors. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.slave_status"
+      "group":  "Collectors",
+      "title":  "collect.slave_status"
     },
     {
-      "name": "info_schema_innodb_metrics",
-      "description": "information_schema.innodb_metrics — the detailed InnoDB counters. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_innodb_metrics",
+      "description":  "information_schema.innodb_metrics — the detailed InnoDB counters. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.innodb_metrics"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.innodb_metrics"
     },
     {
-      "name": "info_schema_innodb_cmp",
-      "description": "information_schema.innodb_cmp — compression statistics. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_innodb_cmp",
+      "description":  "information_schema.innodb_cmp — compression statistics. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.innodb_cmp"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.innodb_cmp"
     },
     {
-      "name": "info_schema_innodb_cmpmem",
-      "description": "information_schema.innodb_cmpmem — compressed buffer pool statistics. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_innodb_cmpmem",
+      "description":  "information_schema.innodb_cmpmem — compressed buffer pool statistics. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.innodb_cmpmem"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.innodb_cmpmem"
     },
     {
-      "name": "info_schema_processlist",
-      "description": "information_schema.processlist — per-state connection counts; costly on busy servers. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_processlist",
+      "description":  "information_schema.processlist — per-state connection counts; costly on busy servers. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.processlist"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.processlist"
     },
     {
-      "name": "info_schema_tables",
-      "description": "information_schema.tables — per-table size and row counts. Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_tables",
+      "description":  "information_schema.tables — per-table size and row counts. Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.tables"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.tables"
     },
     {
-      "name": "info_schema_query_response_time",
-      "description": "Query response time histogram (Percona/MariaDB only). Upstream default ON.",
-      "choice": {
-        "options": [
+      "name":  "info_schema_query_response_time",
+      "description":  "Query response time histogram (Percona/MariaDB only). Upstream default ON.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "ON"
+        "default":  {
+          "stringValue":  "ON"
         }
       },
-      "group": "Collectors",
-      "title": "collect.info_schema.query_response_time"
+      "group":  "Collectors",
+      "title":  "collect.info_schema.query_response_time"
     },
     {
-      "name": "perf_schema_eventswaits",
-      "description": "performance_schema wait events summary. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "perf_schema_eventswaits",
+      "description":  "performance_schema wait events summary. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.perf_schema.eventswaits"
+      "group":  "Collectors",
+      "title":  "collect.perf_schema.eventswaits"
     },
     {
-      "name": "perf_schema_eventsstatements",
-      "description": "performance_schema statement digests — the per-query latency source. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "perf_schema_eventsstatements",
+      "description":  "performance_schema statement digests — the per-query latency source. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.perf_schema.eventsstatements"
+      "group":  "Collectors",
+      "title":  "collect.perf_schema.eventsstatements"
     },
     {
-      "name": "perf_schema_tableiowaits",
-      "description": "performance_schema table I/O waits. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "perf_schema_tableiowaits",
+      "description":  "performance_schema table I/O waits. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.perf_schema.tableiowaits"
+      "group":  "Collectors",
+      "title":  "collect.perf_schema.tableiowaits"
     },
     {
-      "name": "perf_schema_indexiowaits",
-      "description": "performance_schema index I/O waits. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "perf_schema_indexiowaits",
+      "description":  "performance_schema index I/O waits. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.perf_schema.indexiowaits"
+      "group":  "Collectors",
+      "title":  "collect.perf_schema.indexiowaits"
     },
     {
-      "name": "perf_schema_file_events",
-      "description": "performance_schema file I/O events. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "perf_schema_file_events",
+      "description":  "performance_schema file I/O events. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.perf_schema.file_events"
+      "group":  "Collectors",
+      "title":  "collect.perf_schema.file_events"
     },
     {
-      "name": "binlog_size",
-      "description": "Total size of the binary logs on disk. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "binlog_size",
+      "description":  "Total size of the binary logs on disk. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.binlog_size"
+      "group":  "Collectors",
+      "title":  "collect.binlog_size"
     },
     {
-      "name": "engine_innodb_status",
-      "description": "SHOW ENGINE INNODB STATUS — parsed into metrics. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "engine_innodb_status",
+      "description":  "SHOW ENGINE INNODB STATUS — parsed into metrics. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.engine_innodb_status"
+      "group":  "Collectors",
+      "title":  "collect.engine_innodb_status"
     },
     {
-      "name": "auto_increment_columns",
-      "description": "Auto-increment column headroom per table. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "auto_increment_columns",
+      "description":  "Auto-increment column headroom per table. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.auto_increment.columns"
+      "group":  "Collectors",
+      "title":  "collect.auto_increment.columns"
     },
     {
-      "name": "heartbeat",
-      "description": "pt-heartbeat table based replication delay. Upstream default OFF.",
-      "choice": {
-        "options": [
+      "name":  "heartbeat",
+      "description":  "pt-heartbeat table based replication delay. Upstream default OFF.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "ON"
+            "value":  {
+              "stringValue":  "ON"
             },
-            "label": "on"
+            "label":  "on"
           },
           {
-            "value": {
-              "stringValue": "OFF"
+            "value":  {
+              "stringValue":  "OFF"
             },
-            "label": "off"
+            "label":  "off"
           }
         ],
-        "default": {
-          "stringValue": "OFF"
+        "default":  {
+          "stringValue":  "OFF"
         }
       },
-      "group": "Collectors",
-      "title": "collect.heartbeat"
+      "group":  "Collectors",
+      "title":  "collect.heartbeat"
     },
     {
-      "name": "custom",
-      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map": {
-        "maxEntries": "64",
-        "valueField": {
-          "name": "value",
-          "string": {}
+      "name":  "custom",
+      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "map":  {
+        "maxEntries":  "64",
+        "valueField":  {
+          "name":  "value",
+          "string":  {}
         }
       },
-      "group": "Custom",
-      "title": "Extra settings"
+      "group":  "Custom",
+      "title":  "Extra settings"
     },
     {
-      "name": "collector_flags",
-      "description": "The collect.* toggles rendered as --collect.x / --no-collect.x, one per line.",
-      "computed": {
-        "expr": "((\"global_status\" in root) ? (root[\"global_status\"] == \"ON\" ? \"--collect.global_status\\n\" : \"--no-collect.global_status\\n\") : \"\") +\n((\"global_variables\" in root) ? (root[\"global_variables\"] == \"ON\" ? \"--collect.global_variables\\n\" : \"--no-collect.global_variables\\n\") : \"\") +\n((\"slave_status\" in root) ? (root[\"slave_status\"] == \"ON\" ? \"--collect.slave_status\\n\" : \"--no-collect.slave_status\\n\") : \"\") +\n((\"info_schema_innodb_metrics\" in root) ? (root[\"info_schema_innodb_metrics\"] == \"ON\" ? \"--collect.info_schema.innodb_metrics\\n\" : \"--no-collect.info_schema.innodb_metrics\\n\") : \"\") +\n((\"info_schema_innodb_cmp\" in root) ? (root[\"info_schema_innodb_cmp\"] == \"ON\" ? \"--collect.info_schema.innodb_cmp\\n\" : \"--no-collect.info_schema.innodb_cmp\\n\") : \"\") +\n((\"info_schema_innodb_cmpmem\" in root) ? (root[\"info_schema_innodb_cmpmem\"] == \"ON\" ? \"--collect.info_schema.innodb_cmpmem\\n\" : \"--no-collect.info_schema.innodb_cmpmem\\n\") : \"\") +\n((\"info_schema_processlist\" in root) ? (root[\"info_schema_processlist\"] == \"ON\" ? \"--collect.info_schema.processlist\\n\" : \"--no-collect.info_schema.processlist\\n\") : \"\") +\n((\"info_schema_tables\" in root) ? (root[\"info_schema_tables\"] == \"ON\" ? \"--collect.info_schema.tables\\n\" : \"--no-collect.info_schema.tables\\n\") : \"\") +\n((\"info_schema_query_response_time\" in root) ? (root[\"info_schema_query_response_time\"] == \"ON\" ? \"--collect.info_schema.query_response_time\\n\" : \"--no-collect.info_schema.query_response_time\\n\") : \"\") +\n((\"perf_schema_eventswaits\" in root) ? (root[\"perf_schema_eventswaits\"] == \"ON\" ? \"--collect.perf_schema.eventswaits\\n\" : \"--no-collect.perf_schema.eventswaits\\n\") : \"\") +\n((\"perf_schema_eventsstatements\" in root) ? (root[\"perf_schema_eventsstatements\"] == \"ON\" ? \"--collect.perf_schema.eventsstatements\\n\" : \"--no-collect.perf_schema.eventsstatements\\n\") : \"\") +\n((\"perf_schema_tableiowaits\" in root) ? (root[\"perf_schema_tableiowaits\"] == \"ON\" ? \"--collect.perf_schema.tableiowaits\\n\" : \"--no-collect.perf_schema.tableiowaits\\n\") : \"\") +\n((\"perf_schema_indexiowaits\" in root) ? (root[\"perf_schema_indexiowaits\"] == \"ON\" ? \"--collect.perf_schema.indexiowaits\\n\" : \"--no-collect.perf_schema.indexiowaits\\n\") : \"\") +\n((\"perf_schema_file_events\" in root) ? (root[\"perf_schema_file_events\"] == \"ON\" ? \"--collect.perf_schema.file_events\\n\" : \"--no-collect.perf_schema.file_events\\n\") : \"\") +\n((\"binlog_size\" in root) ? (root[\"binlog_size\"] == \"ON\" ? \"--collect.binlog_size\\n\" : \"--no-collect.binlog_size\\n\") : \"\") +\n((\"engine_innodb_status\" in root) ? (root[\"engine_innodb_status\"] == \"ON\" ? \"--collect.engine_innodb_status\\n\" : \"--no-collect.engine_innodb_status\\n\") : \"\") +\n((\"auto_increment_columns\" in root) ? (root[\"auto_increment_columns\"] == \"ON\" ? \"--collect.auto_increment.columns\\n\" : \"--no-collect.auto_increment.columns\\n\") : \"\") +\n((\"heartbeat\" in root) ? (root[\"heartbeat\"] == \"ON\" ? \"--collect.heartbeat\\n\" : \"--no-collect.heartbeat\\n\") : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "collector_flags",
+      "description":  "The collect.* toggles rendered as --collect.x / --no-collect.x, one per line.",
+      "computed":  {
+        "expr":  "((\"global_status\" in root) ? (root[\"global_status\"] == \"ON\" ? \"--collect.global_status\\n\" : \"--no-collect.global_status\\n\") : \"\") +\n((\"global_variables\" in root) ? (root[\"global_variables\"] == \"ON\" ? \"--collect.global_variables\\n\" : \"--no-collect.global_variables\\n\") : \"\") +\n((\"slave_status\" in root) ? (root[\"slave_status\"] == \"ON\" ? \"--collect.slave_status\\n\" : \"--no-collect.slave_status\\n\") : \"\") +\n((\"info_schema_innodb_metrics\" in root) ? (root[\"info_schema_innodb_metrics\"] == \"ON\" ? \"--collect.info_schema.innodb_metrics\\n\" : \"--no-collect.info_schema.innodb_metrics\\n\") : \"\") +\n((\"info_schema_innodb_cmp\" in root) ? (root[\"info_schema_innodb_cmp\"] == \"ON\" ? \"--collect.info_schema.innodb_cmp\\n\" : \"--no-collect.info_schema.innodb_cmp\\n\") : \"\") +\n((\"info_schema_innodb_cmpmem\" in root) ? (root[\"info_schema_innodb_cmpmem\"] == \"ON\" ? \"--collect.info_schema.innodb_cmpmem\\n\" : \"--no-collect.info_schema.innodb_cmpmem\\n\") : \"\") +\n((\"info_schema_processlist\" in root) ? (root[\"info_schema_processlist\"] == \"ON\" ? \"--collect.info_schema.processlist\\n\" : \"--no-collect.info_schema.processlist\\n\") : \"\") +\n((\"info_schema_tables\" in root) ? (root[\"info_schema_tables\"] == \"ON\" ? \"--collect.info_schema.tables\\n\" : \"--no-collect.info_schema.tables\\n\") : \"\") +\n((\"info_schema_query_response_time\" in root) ? (root[\"info_schema_query_response_time\"] == \"ON\" ? \"--collect.info_schema.query_response_time\\n\" : \"--no-collect.info_schema.query_response_time\\n\") : \"\") +\n((\"perf_schema_eventswaits\" in root) ? (root[\"perf_schema_eventswaits\"] == \"ON\" ? \"--collect.perf_schema.eventswaits\\n\" : \"--no-collect.perf_schema.eventswaits\\n\") : \"\") +\n((\"perf_schema_eventsstatements\" in root) ? (root[\"perf_schema_eventsstatements\"] == \"ON\" ? \"--collect.perf_schema.eventsstatements\\n\" : \"--no-collect.perf_schema.eventsstatements\\n\") : \"\") +\n((\"perf_schema_tableiowaits\" in root) ? (root[\"perf_schema_tableiowaits\"] == \"ON\" ? \"--collect.perf_schema.tableiowaits\\n\" : \"--no-collect.perf_schema.tableiowaits\\n\") : \"\") +\n((\"perf_schema_indexiowaits\" in root) ? (root[\"perf_schema_indexiowaits\"] == \"ON\" ? \"--collect.perf_schema.indexiowaits\\n\" : \"--no-collect.perf_schema.indexiowaits\\n\") : \"\") +\n((\"perf_schema_file_events\" in root) ? (root[\"perf_schema_file_events\"] == \"ON\" ? \"--collect.perf_schema.file_events\\n\" : \"--no-collect.perf_schema.file_events\\n\") : \"\") +\n((\"binlog_size\" in root) ? (root[\"binlog_size\"] == \"ON\" ? \"--collect.binlog_size\\n\" : \"--no-collect.binlog_size\\n\") : \"\") +\n((\"engine_innodb_status\" in root) ? (root[\"engine_innodb_status\"] == \"ON\" ? \"--collect.engine_innodb_status\\n\" : \"--no-collect.engine_innodb_status\\n\") : \"\") +\n((\"auto_increment_columns\" in root) ? (root[\"auto_increment_columns\"] == \"ON\" ? \"--collect.auto_increment.columns\\n\" : \"--no-collect.auto_increment.columns\\n\") : \"\") +\n((\"heartbeat\" in root) ? (root[\"heartbeat\"] == \"ON\" ? \"--collect.heartbeat\\n\" : \"--no-collect.heartbeat\\n\") : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Collector flags"
+      "group":  "Rendered",
+      "title":  "Collector flags"
     },
     {
-      "name": "custom_rendered",
-      "description": "The `custom` map joined into --key=value flags.",
-      "computed": {
-        "expr": "(\"custom\" in root) ? root.custom.map(k, \"--\" + k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "custom_rendered",
+      "description":  "The `custom` map joined into --key=value flags.",
+      "computed":  {
+        "expr":  "(\"custom\" in root) ? root.custom.map(k, \"--\" + k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Custom",
-      "title": "Rendered extra flags"
+      "group":  "Custom",
+      "title":  "Rendered extra flags"
     },
     {
-      "name": "target_flags",
-      "description": "--mysqld.address, emitted only once topology filled it in.",
-      "computed": {
-        "expr": "((\"mysqld_address\" in root) ? \"--mysqld.address=\" + string(root.mysqld_address) + \"\\n\" : \"\")",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "target_flags",
+      "description":  "--mysqld.address, emitted only once topology filled it in.",
+      "computed":  {
+        "expr":  "((\"mysqld_address\" in root) ? \"--mysqld.address=\" + string(root.mysqld_address) + \"\\n\" : \"\")",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Rendered",
-      "title": "Target flags"
+      "group":  "Rendered",
+      "title":  "Target flags"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id": "custom-keys"
+      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
+      "id":  "custom-keys"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "# mysqld_exporter — generated by stroppy, do not edit by hand\n{{{values.target_flags}}}--mysqld.username={{{values.mysqld_username}}}\n--config.my-cnf={{{values.config_my_cnf}}}\n--web.listen-address=:{{{values.listen_port}}}\n--log.level={{{values.log_level}}}\n--exporter.max_open_conns={{{values.max_open_connections}}}\n--exporter.query_timeout={{{values.query_timeout}}}\n{{{values.collector_flags}}}\n{{{values.custom_rendered}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "# mysqld_exporter — generated by stroppy, do not edit by hand\n{{{values.target_flags}}}--mysqld.username={{{values.mysqld_username}}}\n--config.my-cnf={{{values.config_my_cnf}}}\n--web.listen-address=:{{{values.listen_port}}}\n--log.level={{{values.log_level}}}\n--exporter.max_open_conns={{{values.max_open_connections}}}\n--exporter.query_timeout={{{values.query_timeout}}}\n{{{values.collector_flags}}}\n{{{values.custom_rendered}}}\n"
   }
 }

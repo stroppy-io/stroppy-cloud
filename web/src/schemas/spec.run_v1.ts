@@ -35,6 +35,32 @@ export interface SpecRun1Network {
   ingress?: Array<SpecRun1NetworkItem>;
 }
 
+/** object managed_ydb */
+export interface SpecRun1ManagedYdb {
+  /** Database type. Owned YC database type. */
+  type: "dedicated" | "serverless";
+  /** Physical zones. Dedicated database subnet zones. */
+  zones?: Array<string>;
+  /** Location. YC region or location identifier. */
+  location_id: string;
+  /** Compute preset. Dedicated node resource preset. */
+  resource_preset_id?: string;
+  /** Nodes. Dedicated fixed-scale node count. */
+  node_count?: number | string;
+  /** Storage groups. Dedicated storage group count. */
+  storage_groups?: number | string;
+  /** Storage type. Dedicated storage type identifier. */
+  storage_type?: string;
+  /** Public addresses. Whether dedicated database nodes receive public addresses. */
+  assign_public_ips?: boolean;
+  /** Request ceiling. Serverless request units per second ceiling; zero disables throttling. */
+  throttling_rcu_limit?: number | string;
+  /** Provisioned capacity. Serverless reserved request units per second. */
+  provisioned_rcu_limit?: number | string;
+  /** Storage ceiling. Serverless storage limit in GiB. */
+  storage_size_limit_gb?: number | string;
+}
+
 /** object  */
 export interface SpecRun1ItemItem {
   /** Device name. */
@@ -119,6 +145,8 @@ export interface SpecRun1Item2 {
   image: string;
   /** Command. Argv replacing the image command. */
   cmd?: Array<string>;
+  /** Entrypoint. Executable and arguments replacing the image entrypoint; omit to use the upstream image entrypoint. */
+  entrypoint?: Array<string>;
   /** Environment. */
   env?: Record<string, string>;
   /** Ports. */
@@ -129,6 +157,8 @@ export interface SpecRun1Item2 {
   files?: Array<SpecRun1Item2Item3>;
   /** Scrape path. Prometheus metrics path on the container, e.g. /metrics; empty = not scraped. */
   scrape?: string;
+  /** Metrics port. HTTP port for the scrape path; when omitted, uses the first container port for compatibility. */
+  scrape_port?: number | string;
   /** Depends on. Container names started before this one. */
   depends_on?: Array<string>;
   /** Health check. */
@@ -191,6 +221,8 @@ export interface SpecRun1Workload {
   segments: Array<unknown>;
   /** Baseline. Baked workload.stroppy@1 baseline object; absent or disabled = no machine self-check. */
   baseline?: unknown;
+  /** YDB credentials reference. Graphene secret containing YC service-account credentials; a short-lived IAM token is resolved on the runner into a temporary runtime config, never a retained artifact. */
+  ydb_iam_credentials_secret?: string;
   /** CA certificate. PEM the pipeline writes next to the config and points caCertFile at. */
   ca_cert?: string;
 }
@@ -215,6 +247,8 @@ export interface SpecRun1 {
   provider: SpecRun1Provider;
   /** Network. The network every machine of the run joins. */
   network: SpecRun1Network;
+  /** Managed YDB. YC database created and deleted with this run; no existing database is adopted. */
+  managed_ydb?: SpecRun1ManagedYdb;
   /** Machines. Every VM of the run; the pipeline creates one agent per machine. */
   machines: Array<SpecRun1Item>;
   /** Containers. Everything that runs on the machines: databases, proxies, exporters. */

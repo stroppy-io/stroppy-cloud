@@ -1,0 +1,3465 @@
+{
+  "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 10555,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-node-exporter": 57,
+    "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb": 7673,
+    "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-postgres-exporter": 6,
+    "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T13:26:03.541496972Z",
+    "end": "2026-09-15T13:29:46.986798817Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411511775Z",
+      "message_sha256": "8e0613d1e0869c8d6243e58584114b7a20bedd807c3681f3bc150d5bb07b66e0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411487338Z",
+      "message_sha256": "252270cf1adade40bd7edaaf864a86f0690dbcac532a9b8feb8ddc36712d37d3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411463191Z",
+      "message_sha256": "bde47597a06149b4953b1bcaf2c4e6dad2ea63b8c6faf28a437b31691f92f8bf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411441444Z",
+      "message_sha256": "d7f17923a16310dd0c17fc1436d4eeb32f96072c0cde480a0f92d817cde17546",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.41141757Z",
+      "message_sha256": "b2d06b56e3ac44d6cd0567915f7136ed6b17ac2f7fbf706029464a29fecb3c73",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411392568Z",
+      "message_sha256": "4dd60480eb0998c9b44cf09c169a45f4365bb62a8bf07f8e9953d71aee6d955d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411368175Z",
+      "message_sha256": "7fc4b64f3a14ebce702ccf80812d8d0d7a050b55efedb08a3af0ad4196938a36",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411340872Z",
+      "message_sha256": "2e9031fe5f09ee03ef5a1f8d5049888bb4e03c6a3321b2e832fe2c33c6cf693e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411314613Z",
+      "message_sha256": "303074c5e61733c7d99e133eb7ee7ca68f78097858bd6cf7862a0e99bd9bb52d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.41128974Z",
+      "message_sha256": "a5c8398025f75289943ee6cb57c565008d9f6d93a4c403774a7fb0a86a4c7497",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411247227Z",
+      "message_sha256": "664039385f58ce7ff10a68e0feb6d30d9c3325c749e231250ae263523175ee99",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411205239Z",
+      "message_sha256": "0a30d2fc590558ea0dcedbcab240650f1fe19f60105ee503fbbb8b00f79b4b43",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411052341Z",
+      "message_sha256": "412446de33050a427d4a9bd7f7e850b593ea9674506c642f8f2b59b388928dbf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411027367Z",
+      "message_sha256": "9afb969abf7fa858e4f18f2eea2658434dcdc46cd7c6011bd543b842aa715c8d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.411006409Z",
+      "message_sha256": "5798917f82e48955bf8854943fb5687f720702166742809258c8d9def6040f5c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410914088Z",
+      "message_sha256": "b0efba1111e38166bc72da12fb7d4d5ce43158cba2f9fae8f35f902e30b67f36",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410871075Z",
+      "message_sha256": "2a8e5159ce16602ce79f839304b903588018be4aa246f3420336e16e570cdfae",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410829166Z",
+      "message_sha256": "bbfccb5710e933908f8e6507a60c637d75dc740e4f09caa8cbc5c2a83b9bab14",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410707456Z",
+      "message_sha256": "6949b3bef33160d5aa2368ae061711ffda8c0add98146f3225f07ad638b38b16",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410690736Z",
+      "message_sha256": "6d96fd49ee047561c6481405f82af291b4f96bbcdadc2e7894c15d014dd519be",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410627215Z",
+      "message_sha256": "9e60313f9aeca355b419908a164b42bb4b85f5f95a885c5c6389c13d295b66e3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410545822Z",
+      "message_sha256": "4b9242db7eccbc93580b5ddd6efa0f3e09ddf33fb35b5b9b0d92d8fbd3d1e38f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410485078Z",
+      "message_sha256": "a879f664b6904cc9521b3617fb2febcb121a403b5c78e0409217e879668509b1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.41044436Z",
+      "message_sha256": "b497aa63d43f56a4bcadb293754960868a9d39ea97f8d380c61f632c7e8333a3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.410296345Z",
+      "message_sha256": "be2e11964eabf72db4d87a385e598b8ee75fe9d8f9b8bfbcf7763508f3c80f4d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409707138Z",
+      "message_sha256": "095582f91e365d2a5eb89db0ed96ad59841dabffb186128427128f84891da333",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409645842Z",
+      "message_sha256": "7d22f6ba4c192fa5daf538b7a0669cf3c857de2d370ca7d3163f1ebb92eecc14",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409621832Z",
+      "message_sha256": "6417f2e43169f05defcc9f9cc4c22c676d94645c985d7c90e23304462e438598",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409597017Z",
+      "message_sha256": "ec8c801ac8c756e1e42dcfe3868377fedcfd3df39a47aea309f2eb79aed26c32",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409572793Z",
+      "message_sha256": "679d78309aee8279001b91cf7287a62cb08ad27ebadd93ece62469bb060ab664",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409512522Z",
+      "message_sha256": "016afc136ec84542991b327e2e254a0d548c4f070d7636231b160772ccb5f04f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409487237Z",
+      "message_sha256": "91752008ef250f7ff0932d483a6853be793b9e9463e2352720ebe4043e808292",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409462449Z",
+      "message_sha256": "1bd6749340a21c41dbcc82c5d65eebc1f33e42771d8c341c3505160131a2f6f6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409436849Z",
+      "message_sha256": "aecf7fabf99e51346ae2b1733768a489026456977a8ec57fecdc6cc93a257c78",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409416851Z",
+      "message_sha256": "6b85fedcc5042892414f4a3b83e046f7a40c9ca2507d05612301f78b8606ade3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409252131Z",
+      "message_sha256": "784ee0971285e6bf8031c7a659a02abee68f71914c10a1b89d2651a28d5aed72",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409224102Z",
+      "message_sha256": "8e955cea79172e530794e99ca42e3b53f3eba0d3577cbd2c2e7fc035270883cb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409203131Z",
+      "message_sha256": "8bae139fd827ca1636e8309fa9b5eca4591aa0180d1db23abf4c24ca9cf39d63",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409178543Z",
+      "message_sha256": "1c7be4075299bfde42b44d8841d97c8cccb4427e8b46243bfadfdae27c177b7c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409153426Z",
+      "message_sha256": "5aa8995080ea5f5cd1962847a2dc32802b92ed640c515892bf4775122e2359f5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409127067Z",
+      "message_sha256": "f24bfe0c22500a782c52ab1addd56384814632a95ab7ea682e9d7a1210f7ea88",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409101699Z",
+      "message_sha256": "4530d07ca605141422cb13cd66b3dfa413efd662a95ac17b3f9fc76e546b1ab3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409075235Z",
+      "message_sha256": "1b9737d2dc3984d6d5ec9e8000338f5ea89227ef6b0412a3d533b30a2500ab09",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40904936Z",
+      "message_sha256": "9143dcfc9327e9ba7d88f50abcbf928c413727eaf58245c700bb1ba233646282",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.409028713Z",
+      "message_sha256": "1d5bb046c90b49151beb2e11ad79102e85856b3ac51ff8ad11f3165041807d4f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408964558Z",
+      "message_sha256": "b524dbb05ba912991c99cde653e3acaf5acf2b01869b7e9640e31297c6ac2de2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408938635Z",
+      "message_sha256": "2f1f664fbdc8b70cee069972a4d7444f877e6f4c9ad36dc23cd49d1d4cd8679e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408850952Z",
+      "message_sha256": "44e70a714f2a40e891c29686e458772ff23854cae91ec9c84efee96e555a36dc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40882581Z",
+      "message_sha256": "05d739c9281c6ca6037027c8552cf3028364c2e787e61e8051bb409ad6ba7a3f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408800594Z",
+      "message_sha256": "8b770fae7daf9caa1a3cc00f29513cde66dcf90b2d61962736590e1831bfc082",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408775694Z",
+      "message_sha256": "cad34434aa2d3c277645e3b5e0fda8b9044872787d8ca5e980afef33b4568359",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408750797Z",
+      "message_sha256": "e4d5c81c55157cc6c86909b8e6f99e62b7582a0ad19f84804a1ea467dafd339b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40872614Z",
+      "message_sha256": "a0865082caebcabcb5999d41a3f9ab1ecd10f879256d15cc50db24140f48b5a6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40870163Z",
+      "message_sha256": "46824dd3c9c447ea5e0a75d90e8bfa0307c0e34667ddc2e6c0e5122833a8cce6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408675611Z",
+      "message_sha256": "3f0a20cae3aade1f3d967777b7e97d89f67fb54fef92c09cad13225ea2b2da83",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408655183Z",
+      "message_sha256": "8aec042ead6a60bf385e876e313975543b9c3319dfa8ca07c478b857090213a8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408628222Z",
+      "message_sha256": "5a8bde3526b5f3e3d133c0caa3be145c4780a0b864a8f586c8ab5cd564c69fd0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408604021Z",
+      "message_sha256": "2538de7e50b3f941df4b0a4ac0622108268e4934d7554577e695fcd00867c3d2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408579321Z",
+      "message_sha256": "411b87668c251bb4e736b6d78e6f8807d372951e3bb928f5756322b4ec43fb4d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40855263Z",
+      "message_sha256": "9ea974b2e0781cbc774e3e8fa131ba18c7546a6bee6161a4881321457624f91e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408526061Z",
+      "message_sha256": "c4aa037e405a9ac1f30e1aa8e6f27615f4289c1c4f618a8100ee3390690b46f5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408500701Z",
+      "message_sha256": "1bd9c9ec3920de6f6835409027f7b9f8e2b952e94849668d1564e6790bd9aa0a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408479099Z",
+      "message_sha256": "bc39d7d83948bd7893b168d29ff5525394b62a81354f630c2a8932515e5aeeb0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408457288Z",
+      "message_sha256": "13af79c21169629ab578f4d1b0e89ad1e275f4bf3e94a731e574d5744deefc25",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408431873Z",
+      "message_sha256": "0ed74dcbba85d2ad69f98945d525a84dccc5e53288950d9e097334368d481430",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408368622Z",
+      "message_sha256": "90b23e2b85e1d4f2dd8c0301d9a8aa593483829e8b71d0a1a991d7073cc4baf8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408299167Z",
+      "message_sha256": "ebc06e0e26ca85f2d474e933e495247f094124e9af7781496c5fd96d58dffd79",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408236319Z",
+      "message_sha256": "c5c22470a89f09c620f60a3b6889ba1e2b20c24bcbefbb258dbfb5cc96a28281",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408209553Z",
+      "message_sha256": "cac6e6c88f84a22dbdcf2cb18b32d2064ed96947f5070ac1be453cbbbaef3163",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408188796Z",
+      "message_sha256": "be34cc0797a12bbbaf59f065688b0d92f52565a142491aa71e852e6f9c362f99",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408124341Z",
+      "message_sha256": "906d7c932f7e188f1f1dd3afa891d513c96bc9bc9fa54dd2b7265492a2318899",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408098283Z",
+      "message_sha256": "34debe38e4bffc186c8e676565c48a0bca6a68f77b0703db3c57f011785e2dae",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408073389Z",
+      "message_sha256": "78c380001ad495f24486bdd43f2f808d55190b2d54fb6ca76fea84fd8d311316",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408046348Z",
+      "message_sha256": "b8b501944c2d39e9fa57bdc306e909673a43e4758c92bc00c97dfd69fee541d9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.408004414Z",
+      "message_sha256": "c6e444e7444649496c8b887d4782d6a4c3a2bf40b48836bfbc61f37646611166",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407956363Z",
+      "message_sha256": "53c959b584126576db6ec2b18a238a5674186d77096392e87e3ff0d07cec7b3c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407921833Z",
+      "message_sha256": "014e3a9cd76cd0cc583ca1aaaf91d031a4bf80cbd5af007fe9b613cbe29df369",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.4078814Z",
+      "message_sha256": "4065be4d02196f49cc67b4121036d52fc6067038449726119ff20fd2046b0192",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407827262Z",
+      "message_sha256": "24b4b2801b3a91187548d8cc0ea615d66843829f1aa3734d50149e1c8ab2c75a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407792967Z",
+      "message_sha256": "85691443cde8bf6ad5d654d837d3dc97d254c591731d2e8a4a84e65f35cd9a72",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407684358Z",
+      "message_sha256": "3b05aa45b2ca296b35ac49859c02954e285a3a8993404167ced27a5dc0dc90ee",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407637808Z",
+      "message_sha256": "9204acdecd362505f22a8d17627b06b89e5dbb712f6fe3e5242fbba2d1fd0154",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407339551Z",
+      "message_sha256": "da5eefd70b688f4a13fcbc8aa439c865be3f55c50dd82291f64227bed69e5cfd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407297856Z",
+      "message_sha256": "cafdc2ae5a7a49384680efec92de70d806269bd78b8d7a1e444587eefe4a7a60",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407236625Z",
+      "message_sha256": "91be05464a779acacc7e06ccf6c10640492e58eb5bb2390219e023f997d9716b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407165337Z",
+      "message_sha256": "45e23d73798af56fe40504045f8a7de0e8f5ede76da34dd109e6cab0de2b0e38",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407121291Z",
+      "message_sha256": "6011637ea6fcf0ad214d68a05c6159961e7447670e1b2615d09bd9a48aaf7dd7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.407022407Z",
+      "message_sha256": "7442ba70ab26bb4afaa597da5479227cb33d1f2b8ac7a16ce06d1ead7d2107fd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406993781Z",
+      "message_sha256": "84cdee11b84634f0347bcdfcde160907de356ce935849d3aae94986f67d39a40",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406955268Z",
+      "message_sha256": "4a4c3d8243e76c5ea8052b7c82a9652af17844251cde619b1bab62245196633f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406753689Z",
+      "message_sha256": "8c4dec3d78800853f619772b5925241a21d6335ec3cf5e765bc5487d76653ae1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406732796Z",
+      "message_sha256": "2edf8af3232c883e94f5d6db869820e8fc82457d26b8bc22ace97e37236d338c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406696333Z",
+      "message_sha256": "d1142f97635e00874bc1ce2e20bd55204749bbb2717f97fa11806528d0b896e7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406576059Z",
+      "message_sha256": "4d07e7089fd11eaa3373035f89a2d0a952d4e6f9c3cdeca017102691b626aa1b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406514016Z",
+      "message_sha256": "04c7da9fa62b89a07d9d93c59f12535fe4927e56990935efda05325b9b53e18c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406450801Z",
+      "message_sha256": "9a1e95e74f7c9e6b1e86867e371bf676dcfa3ed6afaf33f6652a12bd35fbd386",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406426081Z",
+      "message_sha256": "396ad9929249f6fb078f3b1cbce27e10fa54b46ab3fb9ecc4e3f3b63cdb517d2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406400513Z",
+      "message_sha256": "68d90a56a2f4e5f06b2af7dec090fcfe4e0eff2ba8c03513007d1c0e2ae9df6b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406337783Z",
+      "message_sha256": "9024633b82e033585260590fd766268908f33afa91c381039522fdf4c1cea2c0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406272291Z",
+      "message_sha256": "e4a3b6e51f28dea8987ba5b360a6415654c4d4dc057467d2431660385699ad62",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406251263Z",
+      "message_sha256": "859f82a01101a5abba42035f13573f76831b01db4e992a951bb0c4e36fcd0c1a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406177533Z",
+      "message_sha256": "816cda4a6215c365721b7d644b93d4724746bcca424877d6edaa4d6889571360",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406072789Z",
+      "message_sha256": "a0a196a09ebfc441c515ac7aac7b9c4b8c90d852657962cf7dd534f7e3980208",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.406017077Z",
+      "message_sha256": "5aca09202fefb1278a2408ac985333c7c5e6385eb5db164bc8f3ca8d9f30b987",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40597608Z",
+      "message_sha256": "a860fc5041c9953b9e7f76fbe5381427b01cfc5127e41002d0cb5f7da0fed9ee",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405931769Z",
+      "message_sha256": "21965674cc084384efdc059c4b4ca7ba4e76ccbfda9fdabfb3ab0ee5aee709f6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405803746Z",
+      "message_sha256": "6fa0230972cf48617d32f4743bbd078d2fdc4e1db72b375587242444aa123d53",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405750097Z",
+      "message_sha256": "86755c741969d0a1f40467ea19736aaa63a5ffa0a9b74451a55ed2665b3bb264",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405710619Z",
+      "message_sha256": "04b04bd3ba201d3e723a5cf35f21d55eda5e53cefec6a8d3a92aa4dfaf722007",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405663451Z",
+      "message_sha256": "c003c74c8cac26919eae6a6ad580609da5f0554629d779ab052b711b1be62d4b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405622694Z",
+      "message_sha256": "e9b51d882f42bb8c8adb974c99a194963b00393b87d285cabe7f29967f86e6de",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405471461Z",
+      "message_sha256": "d4d7cc821bbe4acae28af7aaf4fcf49014aabce8eafb9f7385270c63c61a481f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40536898Z",
+      "message_sha256": "8c9eddde29f134ae3e424118b9dcc9c0e707a91a93bce5cad1e7af94a83f7eab",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405327384Z",
+      "message_sha256": "0da9975bd26fcb8e2ac7c0fa3f53b4beaa644c954ee9e199f44074ee0c7b0fa0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405287112Z",
+      "message_sha256": "c9fcdbee5f9db7fd9fc18b5a725fdf1d7dcea9813e170acf840113451ea2e0b7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405182809Z",
+      "message_sha256": "a0e015d56cbe6bea7b1e65859e68f62fcb0c69d953724425899bb1feeca31597",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405146341Z",
+      "message_sha256": "619262ee33ee0a58da07a6186957b584ee580ad7d0a46966063d23b7e42a28da",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40511236Z",
+      "message_sha256": "e83e96d69b97a721d902c97800f37801bb6a0f5a49412057440bb45d34af69a3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405066792Z",
+      "message_sha256": "edaa781bc54e40e1769b747bc058c2443e5f10afec9d8a0b4571fa97fa13928f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.405004437Z",
+      "message_sha256": "c4d51c42bf24ba94bc8075ef96a8476d31bac84097ddb63c831efd6b3a83d6d7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404495506Z",
+      "message_sha256": "8688da666b97cd631c4b3a36a997373f426562b5637bd393beb7448ac44c272a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404450312Z",
+      "message_sha256": "092d49e6e9e0e6edc887336396142d6ec8656ce457df4888b7c9a00c3d9792d6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404333306Z",
+      "message_sha256": "cf80e2861a5a1fc7c22269239b16dba7a38edf0a4f27a59d62b1d45062212da1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404284754Z",
+      "message_sha256": "d6b92fe1e63df60957aef9b1f15ec9a40dff83925fbb1f77a48f4e7dc72648b1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404245872Z",
+      "message_sha256": "10673d007c5964e05d5bd724ac16f2c852f650764dc29641a697bbfe3f815094",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404198137Z",
+      "message_sha256": "27cac90f4151845a115b3dad6c816175eade282db931eb696405ec6dca6fcd2b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40415204Z",
+      "message_sha256": "c417792e1d280c95c6e3441a59466085968c5797e122099e98a55742c18bfa33",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404110217Z",
+      "message_sha256": "ccf02e947eceec7d98769e6867fc51c43b7bc0861e4be43f00a8c24858b66cbe",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.404035283Z",
+      "message_sha256": "bc887c5488f0c120136b72383737da5a697ee20fd1260192ebf84e1a3e954f15",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403988864Z",
+      "message_sha256": "c47fd1d03fc0314df02164c173b845201d51965467117a94afe0137f011ed83d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403941301Z",
+      "message_sha256": "e4418845349b974d092ad380380c4e80a3064f9a6580ba009d27932f96c2a9bb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403893317Z",
+      "message_sha256": "86e81722430a65995f9159a273015798b5b8d3eb87d4991aa40c18fa4688c898",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40376449Z",
+      "message_sha256": "ff20e28578257f38e5c03873304eaaecc44fcdd6f6a04b8f970db4d97c948811",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403716505Z",
+      "message_sha256": "d4e322b6520e421fee020bb35091ed8972860d037f52e12dd4b35bfdfb934913",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403670598Z",
+      "message_sha256": "49ff55958d3efc420c6f5a6047dc2dcd05473838cfd208a07cbc4c51cb503f15",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40362237Z",
+      "message_sha256": "9ce1415fb825933cb38120bb1d0b4c60a22d011370f3186ede25b458b98108a9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403575197Z",
+      "message_sha256": "e1a56db5597036b030ce52fee4a2035af63066da563fd62eeca41fe85b0a1d14",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403527779Z",
+      "message_sha256": "a909b34b03e2dbcc3511da67d9df6e27762f371f8fa30a23692f149ce4b74757",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403487964Z",
+      "message_sha256": "8d640a80ebcd3f37903703299e6420e163fdd15ef213b47f61b51efe7e1b95bd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403368537Z",
+      "message_sha256": "30bd39b3aa659c16e340117d92c2ff9905204b7b3ae20bda59a372fd1e4dcba6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403330188Z",
+      "message_sha256": "64c2977d81c11118cd2ad6d97c055e585fc08a777868a1b000bbd7ed2d6298b0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403284247Z",
+      "message_sha256": "debdfe205ece30a3788a2aec06526be513de8b6cf09378467e966cd8bc355f6c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403247023Z",
+      "message_sha256": "c691c438b848f00b275c85b9a274b0edc4c656bb5cb9434175210ff509171edc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.403119919Z",
+      "message_sha256": "df3b346232b73f5f71dd04756439c6aa9623b97361cd166d7604b282c5df6ece",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40307708Z",
+      "message_sha256": "88569b0d0aed27d303faa9744801fb2fd3840402f32b6b51f5a8effe5c6ce4f7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402969711Z",
+      "message_sha256": "07df080872ef665d8beadb4f15489e1b26036dc078fe5d7f92c7cf82417ab02c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40272666Z",
+      "message_sha256": "640d2e19f3109ef64833fe82754d1c486ff75320e0312e3b10b4268010f33c04",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402700091Z",
+      "message_sha256": "700993e33233b81c8809abd35585ddbe5bc9d88653132e466afef240000eb8f5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402665371Z",
+      "message_sha256": "b675e1a1b93cc8d4e437c5cc6f22186d6bf9883bc163f3d3ab054357af401439",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402644879Z",
+      "message_sha256": "ae1ff373e0d035eae83ad921d3367f64ae3098edb0137cd696aeb84753918669",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402600103Z",
+      "message_sha256": "3cb8fd83ead3bfca20638e7d1cd45c56763218903770f557127e9d8dcd54dcc7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402574897Z",
+      "message_sha256": "74b10c02761f519f5cf73276149f5963488f4ba6a9eeef9ada298c36712108dc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40254859Z",
+      "message_sha256": "2a3be75edb456135854ff6ff56557ad67ad4b0b7aacf9b4ba8aac974f33acbc2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402491831Z",
+      "message_sha256": "5f2e4d54ae6a1fb6acb0a32bdcde06980c0fe4d77f9fafa1528ee07a67775b6f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402441659Z",
+      "message_sha256": "2f1bd7a7064fd2ccf48b05b83f787a5ea919e2676ebb7962846de1abfaed0281",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402381564Z",
+      "message_sha256": "d6edf8d076b4c83c8b52119e38758b391d554f7a3eac4178a8e9061ec29bf59d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402332238Z",
+      "message_sha256": "b7131fc057872b7cc85477e06d6db4073f760ccfb8da1094de99dbe19fafd7cc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402290771Z",
+      "message_sha256": "92aadde0b85cc0a44a8ee183804921456ca8924dcce376e97a9277cbc15dcc89",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402187244Z",
+      "message_sha256": "5f55a23de204478217b32cc48184a9c8137a3c7a0e9df4d8d6d633320dc1f00a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402138809Z",
+      "message_sha256": "6595be74ba2181a8e2d3c84fa359ff6a5badeded63f74e54b9ed6a0374a62553",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402090034Z",
+      "message_sha256": "cb96eae3a91d4c79a08ca70d45758b5fb3ac4c725935c75b0ef2f126b089b846",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402068959Z",
+      "message_sha256": "4909ff2d789b148c0152480b7885788e9041236c502e858b777478af02ebddde",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402044696Z",
+      "message_sha256": "a9d2029b78e2b6e739acc23f9c8e5afa74549dca031a70386c6bc28a9df2ac4c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.402014063Z",
+      "message_sha256": "4cd5a31fa533319e2ce3655fb2dc4b4bcf344247df707bcd83c7860e79b576a1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401942147Z",
+      "message_sha256": "02fed9ef54b7940760bec667e3c17acdba9b63adf1e0897535315e16e9b87643",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401902357Z",
+      "message_sha256": "7cb6387af10e406efef5eeec57f744be59c47f85716a9da63ba2fe3448e0ca7e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401847123Z",
+      "message_sha256": "1bcccf2a89867c07798797ea790b9c5d934078e7c8565440fb5b7a37500c1651",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401800736Z",
+      "message_sha256": "c96a812561b5fef2bde76f98f6bcc9d278f977820a7a7f8bd5a2751a262c4ddf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401757686Z",
+      "message_sha256": "a2513d2410dbacd2b4a473e2d1e22c51c49b0165fffa4beeaf7cabbee040720e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401708008Z",
+      "message_sha256": "da41e32581432563f13f8d1f4763a6d514aedc3a2475e319d332121d54571b52",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401657275Z",
+      "message_sha256": "7cba16c64081a12ac8967e61d123c828356d9172b17b02fcc0dfd6a08ff40602",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401617226Z",
+      "message_sha256": "f33761506449847b7037b849ef9beab3ac09c5a96e0de244ceb94971a58428ec",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.4015051Z",
+      "message_sha256": "3e93b83a073b9ec51ca68feb6516797a143cac3f944bcff2c46765e6159aa042",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401388037Z",
+      "message_sha256": "9430e0133cf3d76fd10b175969e6398ab71693e1cfd88cd1855dbb08f9d86deb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401288267Z",
+      "message_sha256": "96f9364e4861244f224c2088b70628296ddd0ca88ba6665a01b3364513eedf0e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401245955Z",
+      "message_sha256": "20aa44c084f9e7c9cb8b82ff4542820037b8e31aa985569efe6440575cf2cf76",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401207419Z",
+      "message_sha256": "c782e1a0e96724e8b0e0a4ece705760365d86bf2e7a5e266ce29beb3c1699e4e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401156192Z",
+      "message_sha256": "596b6bd271067ed7ea9ca9fe817521a1e475313e4e786a98d203456fb0b16375",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40114073Z",
+      "message_sha256": "38f27273af1639279eb3f1ec232a7daab8da6ae59cf4c78a86a9ee1b05199633",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.401092632Z",
+      "message_sha256": "dc9d5e11afc1af18273e9749afc56044b4667150da4aee1be4022129f225d07c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400845408Z",
+      "message_sha256": "777a10f2b28bd9b782a068f7e421770746058f7ed69afd176fedb1656e837dae",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400732737Z",
+      "message_sha256": "30868c76614c11458913bd2dc7d382a337a7e67844963340d8fed5d0662b126d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400688466Z",
+      "message_sha256": "97d6437c30432e6661f7790d04d740487c0459d999109449ea49ccb0c9e4a1ac",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400598615Z",
+      "message_sha256": "c61f19ca3fdf61df32e0ba554a0164be151cc2d98a286fbff11d85b39281cd9b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400555785Z",
+      "message_sha256": "32a33acc01c88a8969a2140bc671f284b50df549e8e1fa29f67ffc66ff598c4a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400510487Z",
+      "message_sha256": "966efc2b10a2a9d7e8065d4f1e67bac29e6e7fdb46a28840d73fb174c7c019b4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400465626Z",
+      "message_sha256": "70fadc7d0fbb3cd6b43e468da548e6eb1a37f4a84fa66eaffa97d3b4f7efc3f9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.40042129Z",
+      "message_sha256": "b58424252854e1345a0534247b9c2a23a85cc21eb26993fd5eee378296765850",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400378643Z",
+      "message_sha256": "67aeb41f187d095c869f2613278a2b65c3762c286f72a069f9aef0bba52c461e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400333521Z",
+      "message_sha256": "c2ae9f9ec67b146d3bafe30c07cc34239834599f19bbc797a00e6b5a8c10c0d2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400223603Z",
+      "message_sha256": "dd3f545af7890ff1cf53e1eadcf54f6977b5428cc3b09bf4ffde7337d0fe032f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.400111907Z",
+      "message_sha256": "552f1020501cfb229f0457f502ebd81e9506f4ee82d22f628177aee5161cee33",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399986908Z",
+      "message_sha256": "0e00a4e24756f7c1f3c44cebab7ca623ac4cf610040f4fc346dbc94044ca8d44",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399958805Z",
+      "message_sha256": "914b5e18e105a6fb1cd45c2e435a3e793ae8fc70f386dbfcdce77748833f630d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399922307Z",
+      "message_sha256": "a6fb97096225c759ecbd916264684f5f5b4f1183a820e34f3c5197aa0974ec2c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39987947Z",
+      "message_sha256": "40ba80500acc71beaf784b9fee610bf2ff37ddad845dacd58817e15f1c7346a9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399736375Z",
+      "message_sha256": "8c45e4c606e48af7f44cebf40843c9d3ae665d909116e540a1dbcf0724ceb1e0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399576922Z",
+      "message_sha256": "9f9032efae0a76d7888d83017eaad2ea8107eab9d2aa32c7075548919118f9b6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399504929Z",
+      "message_sha256": "8e663b72cdb7730ac2fcb538f6313306e765d1dfe9dbcad96b124de96008c3c3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39945855Z",
+      "message_sha256": "bfa690c1ef2bfae8a1471f670c929edcd87212aa715c9fa38170f54b7c36350f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39941416Z",
+      "message_sha256": "d4f7e777a67a9e16044c46c0e41b94cebe8b10c9c8cc7109b08534a1356d2337",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399366635Z",
+      "message_sha256": "3bd60688b94068875e4d0c992f36fbbe28516a15cf53d6590ad3a007aa985fbf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399328159Z",
+      "message_sha256": "c9eb76f71935f8fb974842446899ab0bc5137cbc30007a043043b7798bd47b9a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399311533Z",
+      "message_sha256": "71f113f210d22e25a242cb7a08ed7a269efb761fe652cedc3aeeb10e644e2841",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399266949Z",
+      "message_sha256": "148c6113cd1f53c7faa675aaf5599d99a0adb3b4cfa662da7f7b8d3944da0ef7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399221052Z",
+      "message_sha256": "a9e8283fa5a58513d600888d8bf85cf1b592153a207f83ec9581fe35e1cbe3da",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399182284Z",
+      "message_sha256": "ac039d0f48363a88c54bc763f40b10fd64970a488f38131e16c118be27f665e7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399123845Z",
+      "message_sha256": "4165b917303660eec27cd9a2b4be3e39e7130eb2e4628a4c2fcdc24ff4fcfe61",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399086065Z",
+      "message_sha256": "1834737c17e33f20bffb988680fbbccadc854db0e0f1b7d8b765dccf6926b3b7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.399041287Z",
+      "message_sha256": "48f192c21637acfe91337c1b6c14861e60867151ba7f1963de3a5b5fcffa285c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398994264Z",
+      "message_sha256": "9cf182364ab82c63ab689f3193517b2302faba89c54a5213896fda063460a7d6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398947373Z",
+      "message_sha256": "16d56ad4fdbc376175d925cb0bdd9000d881bb34154965e94dc3911362a3d69e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398901542Z",
+      "message_sha256": "99311e7267907149dc6230bf1f05b9c7ce952138024c080703810b78387c9e39",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398847957Z",
+      "message_sha256": "fdc11fc141fe8bcae96ee5501fe6b609e267d5bd743e7e5ad477a83b6aa0e83c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398803373Z",
+      "message_sha256": "da89d0f20d2839a06abd33daa3871264941247deabe6040fc60d751fab17de67",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398757748Z",
+      "message_sha256": "4f4ef375f379daed537da2de3c93dda79ac19041d494ffec44863a120191ddb3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398713499Z",
+      "message_sha256": "f7f4b9c7e96f277e18af1946d5f703efea675f4a6c0a932791b35b3096e420a8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39867465Z",
+      "message_sha256": "361181b30ce881efa1b5c0f1d7f954008753da4f6d565d629d2e3e2fc7b575bf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398629673Z",
+      "message_sha256": "4f257da6e8e8068aa3c6fb49caf0eea5ccbbac03102cb0af14e83cee22389bb3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398585174Z",
+      "message_sha256": "80ff0c0c80f1abbd49e12292ced7cdd714f288f996657a0220fe34a194aef8da",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398470625Z",
+      "message_sha256": "a4843aacb8292d1271c96beb784a8afcbe3016acde23a92a5938e6b9e93044eb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398357376Z",
+      "message_sha256": "9918ba2a8445bfce8f803e72345ef8942322fc5e73c8f21f4cba3e35a8e89157",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398311118Z",
+      "message_sha256": "925b2f1427dc7d77cf981a107eb31e04720426c8b3a437db49a6df871174bbd9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39826753Z",
+      "message_sha256": "44c1c5d4eb495692f37854284660fed74501d1e3b65e3fb45ae9d11c671213e4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39822108Z",
+      "message_sha256": "6735e57416019f63ddfce77a32ed78bd84450826b24bc43fdc091b15a3d3e2a6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398175355Z",
+      "message_sha256": "cbc359fead700853c02d9a3cbd2035f1a1f54d76cf4cd54caa7094a97aea9ba9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.398137764Z",
+      "message_sha256": "b86153721173e7c07bd78043475138c3d698fe73884ca9f45b9b58331809f512",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397892096Z",
+      "message_sha256": "1788e8549801965ca23e0e781045372e26338859c810e5bef7bc34d3f1ff1619",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397805406Z",
+      "message_sha256": "3934277406616c844d4c5c6fdc3512113f3f5521b576ee077125cc2a825f1a00",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397742349Z",
+      "message_sha256": "af74fe04a1156623b31733f9fdd06b137447d10754ae26f55816519d08586af7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397717504Z",
+      "message_sha256": "e3d26e53965557927f3ac288396f947d66ccda362e4f754f87fbd678719a3be9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397690146Z",
+      "message_sha256": "d3b1fbc5a1549f9de8bf0575a8646b07afc35e272f958d61d80944d6bfa6471c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397664873Z",
+      "message_sha256": "beec92f470edcf326fc5d1702704051b104a74c48d7e2afdd63f98fb0f635585",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397604128Z",
+      "message_sha256": "dabf5777a3726f0d74459afcf188ffff87d7482c8c5b14158ecaab7de0c237a6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397543594Z",
+      "message_sha256": "77f6ce8460035e1269ea85fa017d188abab3926ffc5937caff2d0454405dfbb8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397519449Z",
+      "message_sha256": "47deb2ce016cee553a4f2a50f74b4e4f95e9199fe407f48159023f4d8bf633a0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397492841Z",
+      "message_sha256": "67c85d85711f4f52bc0bb54c5f770a696bf69e7f8387523c12cfa3c2cab1d5fc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397468465Z",
+      "message_sha256": "7f0993c75afcda4456a36f352c07bdc480f1c6167f70223ef0be3a298a44867a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397437983Z",
+      "message_sha256": "348795d0dfe72ad7f33e800a2309100256811256a40316d6b5cc69cdcd7b3e9b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397398899Z",
+      "message_sha256": "f3224e1a5bd379ec782e63c5c6548fd4600f758a049cef229510113936a65ba8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397358227Z",
+      "message_sha256": "c495d12f4404b88b458a58624def0c8f32420e5a76e088db5cfea6ad95ee31a4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397325206Z",
+      "message_sha256": "7bf6bd031a84ef8270c81db3279f4925295a51c5eddbf2b7e23bd1151d62b273",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397285166Z",
+      "message_sha256": "57c839c766bc9f448f665b125e8e984a1bceba7860ba615bb70a9ade2eb86fd6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397251055Z",
+      "message_sha256": "046bec3d6e7b44744b8a812fbe8128ac91fd91969028aa6e12da4698998f3d97",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397199029Z",
+      "message_sha256": "9c70ed280d47c8c73f9ff88f2d69f9ba96cceb9cbe3419d186d5b9770d0fb6fc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397156396Z",
+      "message_sha256": "62bb93384756354462d5b2e0c4c0a2759062975783784bb45f9edc57c9ef8193",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397116989Z",
+      "message_sha256": "29540bd5a160639630092df367e2a8eb9b36201a6c77b061ca7b602ceaa9b258",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397076062Z",
+      "message_sha256": "40fa9e9b6ece4974b64459bdb03ead5ba5a8a00457c99228e867b759886b419b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.397035097Z",
+      "message_sha256": "1bda73eeff872516791be9aa4b18ee61d07b7eb05e02129028497937ab6126bf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396906081Z",
+      "message_sha256": "e0454c24a8522cdef853d207cc8b743162137cd59a6a16cba607fb6147967284",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39685188Z",
+      "message_sha256": "c536bf51c292b5183ca3563a719479de87fa19cdb78099b8ba9b2f4ff4dfeb97",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396810347Z",
+      "message_sha256": "0294babb544553e5b292c5284d5c19f746350c91ef9112decaf6fc32925605be",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396769123Z",
+      "message_sha256": "8139aa7fe02a4166b779fb4cecb37b815f42a6d43dd2814153e753266667f33d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396734311Z",
+      "message_sha256": "971f65644445bc69ca5ec3abbe9163983cd20dcf66a0dd7c90e440d541cd5183",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396699284Z",
+      "message_sha256": "1b2307339446fa26a206a508334f55fa9060db8de3beed10d2a5bfdae9217c22",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396594575Z",
+      "message_sha256": "9a7ef998b2e9d7d398b3ed932636fecea7444cc6b3accfec674e0ac114f0d3cb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396487692Z",
+      "message_sha256": "9d3274b6cae6370ce136a1c47d26e619f6eb338adde91d59db09ef6d55201e05",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39638342Z",
+      "message_sha256": "21574840b3dfdc871f193174a4da6848eca1039c416549de3c1d7e454f47db5c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396280038Z",
+      "message_sha256": "ec0dd4b95252a0d4589df314eb7c37119ee174f44b3eafb61e220af5eb7fcc26",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396236484Z",
+      "message_sha256": "426c1a5a6e46925bc64294db847250c356a006bdfae1c5e56327e23136be7d7a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396193664Z",
+      "message_sha256": "7fe365c1f69f830ec9820df02d4e7c00976a4bfa6451a13f8579b510d0b6ba23",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396155895Z",
+      "message_sha256": "37a39ffed7f1e453ab42ce7a4e91766edcd3acdd47cb8494abf174582b915bb1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396045398Z",
+      "message_sha256": "3cff25aba57bbea7f59e4046867ec5ba1c0f4bb0b2877fe0c984238b19d4eb41",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.396002569Z",
+      "message_sha256": "a6331552472959209fd37920207a080bda91895608fd74d3d8dd1bf24b0ce0e9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395964931Z",
+      "message_sha256": "14f72f78cc97dc4c3b6c26e9affc8aa43d0a5e008f79b6d684aafc038900e673",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395837336Z",
+      "message_sha256": "64c06d397110fd3a5db492df5a881d80df286d4639919aca94a505c3d682201f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395713471Z",
+      "message_sha256": "3d782a1570e56a1aefad42ee7b4506abe079ffc096cac9353123a39fa21627d4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39566909Z",
+      "message_sha256": "36940f71a3a8f0cabf56a51605f08aeaa1b8d232f76227e5bb19ead08738e23b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39532483Z",
+      "message_sha256": "348c2276853988311d6c6fb32b65354fe67cb1882f1d32e57c73007c635ba591",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395280582Z",
+      "message_sha256": "ab1d4084ad158be2058b68c6f2a8943f33a1978a1938b9dbafd236430bf5ad2e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395229774Z",
+      "message_sha256": "844bff3a592ad4e134acd1112b84d0522e9161b0bbd72e9618af4eb194fd0e33",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395188934Z",
+      "message_sha256": "3e6e46fee3bd3a0218db1301fecb96f7c1682c531a01d2e2440bb21b82835c78",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395125938Z",
+      "message_sha256": "1ca81ff09436633598d466d3b761b7fabb68b53bf904fcebf54568a1c1ddba07",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395082554Z",
+      "message_sha256": "4ca0056f9863990d5c21c8120cf4097a050ba9367efb2bb457abe3f5f8a549fc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395040127Z",
+      "message_sha256": "77ce250f33c891e08a95cb771141729773ab0b4863591350e1743b73caff5348",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.395018438Z",
+      "message_sha256": "c819aef9ba4d492555ffc1ee23b45a3c7c565352db2e48e854b1ca602608b5c9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394995549Z",
+      "message_sha256": "dd5385cf46377905fe0d691a8ca4d113e40adf0cbd8cdc5be363c002d4d253ff",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39495563Z",
+      "message_sha256": "204491b5a4933e53ba8b8f7b3e7020d1f29ae0a90155d629faff31bb9b788a0e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394798568Z",
+      "message_sha256": "5b6de3a476c951529559fa57cddda1c3693187adfe51ed7e2cdbe708b47f744e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394685236Z",
+      "message_sha256": "39504797936e2896c4b45b4aa386362b9505a4bb35997576c2fa1ec0689b5fd4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394641491Z",
+      "message_sha256": "cc785285ce4810e57141fd52b204833188726b6aa90c60e4440555624b50f054",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394596229Z",
+      "message_sha256": "0d3e3a8be54aa32717176c8dc4afdc131f1b2463d55d19dae107e9207612512c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394550453Z",
+      "message_sha256": "431b937ef31e640489f25babf5b136dd29ba03dc5c415a15d6af3f9be071fe51",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394504749Z",
+      "message_sha256": "c7f72d703c8d067998598f4eb3c20e9af3731b68e6ea1b3e8223c6d3123ebc51",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394459953Z",
+      "message_sha256": "0b83ce98e6c3f9bb28f1b568ad2cc72d9f5d0297555661f4c7eff583d2f70f54",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39441349Z",
+      "message_sha256": "76a987296b294c55a2e2ba750563ab7bef4fcd15f0bc85851f92f2c87741dc84",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394369401Z",
+      "message_sha256": "4030856f98c1670433a731d4acfc6b1d37e896709a71d7798b67c66db5fe1d27",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394331778Z",
+      "message_sha256": "c11c0475e4b0ee62759eb3bfa10b5e81516f71d5d3bae8fb53ebd19e371c88b9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394218268Z",
+      "message_sha256": "3643e0bd8c77097a52002511f82f314ed85437ede7306ebe65e78c7c4d35a0a0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394173006Z",
+      "message_sha256": "9df2ec7157756d94437cb33c2d9e6543c4d2cacb9a9e703fb5bffc8cd882e7c9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394129073Z",
+      "message_sha256": "dacd0fcf992830eeeccdfd8cb081ce411e8ddba473ff2a7f219ad321ca7bcdff",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.394092439Z",
+      "message_sha256": "593b6aabc57cf45213b59abeb2fc3c0d995b46100adf5b14ab9e75a1760a5f2e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393982353Z",
+      "message_sha256": "b9d42933008ed3f6831c25035cadcfebf05de282a61da8344b4763a10e66099b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39396635Z",
+      "message_sha256": "4825f813a02eaa7b74a3fb6d977f3cb0d89f2ee73e61743358f1cad7d344aca6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393950359Z",
+      "message_sha256": "ff266a42a85b95cfbf7e63bfab4512b12dabe514b66f51e6313608fc0ae5018c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393934034Z",
+      "message_sha256": "140e6227f55ffc500f43ca02c52a42bdfc00b5a18baec09b1e8ad5d1ab24f8bb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393796674Z",
+      "message_sha256": "d520ae4efdcdaa11bf860333091cb2ad59ef3bb9e6d3c4d3c68c1e028ddfc459",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393752865Z",
+      "message_sha256": "8da5a777b1a1ba948af5c616be426d6a99f96bd16063a5a1e77360df9c8a881c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393708344Z",
+      "message_sha256": "d52cee31510f5864dfda3b664b02272bd5110f188b7d13f6e87bceb79577369b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39366996Z",
+      "message_sha256": "b7bcf641f7109c00308c143520a2b039220e50dcfa206720ee0c70f6e2e557a6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393555453Z",
+      "message_sha256": "e9cfff5fec979a8f4e41b508e28416f1fef92fa41bece3148047656886ca50d9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393510934Z",
+      "message_sha256": "ebed60e92a3aa81c7a5a5e78ec285fb586290cf546fa03fb9b1480fa129fc815",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393465022Z",
+      "message_sha256": "c6d9552f1e0ac380974b2faca2f81c13dc5bce6543b2315dcb5bf8ba7037d084",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393345978Z",
+      "message_sha256": "14d0b124c1d11671c61c3e679e455f97b709ef34025ea16abcd0f9b9d3c7d520",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393307038Z",
+      "message_sha256": "9c787541f80d72496034a2f8fddcc316a014a5a77b9f76b6fad16ad264826e24",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.393051959Z",
+      "message_sha256": "e09afad505d826a7a18bc682e07afe4176bd7c61f1c7ebe47d665de0a8c61242",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39301191Z",
+      "message_sha256": "9145e0675e42d6268055227437701ace7647832caa068b8d28f6c07c2c516a1e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392969559Z",
+      "message_sha256": "15bd045f242cb10cbb2b9a0238b6f4bc21e84fa92c18b61bbeb42096c92d68f5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39292071Z",
+      "message_sha256": "c52477e36dc75135cada5c2b5ffba9dbcc8e8601d64d63e69972fa5c3e0b164d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392792681Z",
+      "message_sha256": "402097e066b1bce4dbe2bd60a32203d910a7db3ff06a52b7db804537447d05de",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392751921Z",
+      "message_sha256": "e94e5080f43e015fed3df3a5607d8c1481adafa9ff72ed189eda9134a5fabd83",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392634893Z",
+      "message_sha256": "8d4c9cae7685b934143bc92a4b18deb394412b7d7b876c817c10570854358f9e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392588195Z",
+      "message_sha256": "cddca4d834a2c13f44d2bce0dcb3daa93f7d450bcb4fee1f8b379c302daa9b8d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392525988Z",
+      "message_sha256": "13ef813b1041bd99afa6ee428f8c65ef9e55f1ab74431c517394b6083d3c363a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392482615Z",
+      "message_sha256": "b9dd5fcc9ea02f4cb3d378373cbe9fb071dc2582f9762336dafa9b8c438bed91",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392368956Z",
+      "message_sha256": "f14fb9f2623cf29c7bc490ced15dc6aa4ad418f147fa9112c5484dcb93a32ff5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39233481Z",
+      "message_sha256": "bcc2b16f045a89d4d1ab7b082b2841949e5fa32ba5c7d864b30654ebdac19616",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392215532Z",
+      "message_sha256": "e9d8c107b68791b8d5d8001c8408d545e96fa3d2f38a1b5160c86e4e853117c4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392127515Z",
+      "message_sha256": "c2e583f59fb75ca5b4d913c7103d1821a951ecba2ab0d976cc68bc8bc5bbc7b6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.392031142Z",
+      "message_sha256": "6199752ac7ccb5d5ac6384faf2f042e79de86abdfbf4c8951685e1298bf73b10",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39200789Z",
+      "message_sha256": "70eed572ba83cc33f84887d0f064d759b598312ef6027aa07d4daf4c511a48a1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39190456Z",
+      "message_sha256": "73a9c14bd94fa899bd238c4f44f7b0b7c9c49e276d8ee35113444efb698cee67",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.391841315Z",
+      "message_sha256": "bc24a5779c169b78aa59c024b77f0b8735fcca68e4e9d27ba8a94234b4b98a98",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.391721729Z",
+      "message_sha256": "688cec730d69f36bcdaf4a1748ce5fff7810840b0d2a08b302dd086d4fb6d150",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.391678804Z",
+      "message_sha256": "4de53c6af2c1177bfbce2ab45160159a95172e356ff17c455b854253efbd61a4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.391621188Z",
+      "message_sha256": "33a9a73e63fb5d40e2838861b33845f78d6158e58918b3d0b673b99328a65592",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.391583329Z",
+      "message_sha256": "5c365ce4ec9c2eebd3e3171845c63e977204a162493d675bac8f3decceabadf9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39154434Z",
+      "message_sha256": "38ea5ce0816b211234c7900e5f27d91a1d1744ea3d75c4cae191d821cbb6a9cc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390955942Z",
+      "message_sha256": "47a01925362635a97561ab1de6c9819d947dca521f4245964c5367af0a16395e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390898033Z",
+      "message_sha256": "842f8a6cb4f70e46d70dbc10ced422340eda9d12e6e8ad88fe623fd8998c7039",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39084113Z",
+      "message_sha256": "a75d77613c8df2c22ddea523c600fa3f9a01336ab64f95ae78411842930e5c2a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39079641Z",
+      "message_sha256": "c888a0463f2e8d7100c1c4ddefc2510299d295fec1ecc47cbbc269f1f62b6bbf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390750255Z",
+      "message_sha256": "a76cff9dbbd5a4e900af8030ac54e3a24c01ff5ef50097b2e347eabcb4c13350",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390706893Z",
+      "message_sha256": "d77b83ec2c169794f87413aa3d54d3b5cdb9c75ceec3e0601368ab3456d25234",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390658091Z",
+      "message_sha256": "4c44c029a375e4c244c6e4cedcc776eb1d31fe0bb90a64cf94e80975c4ee4bcf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390613646Z",
+      "message_sha256": "14d58f7c278c89093902f228bd072fbca5f3beec179a9c48aba48d9f0ac37485",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390567897Z",
+      "message_sha256": "44a1f01ebe5b407a75a85d30be04aa0d3ef6802f92a0d7c10ff3f20f2799db2b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390523859Z",
+      "message_sha256": "590fb542bd8f5849effbade31b2413d7fdd6df81ce328c0ac3a4155809e7aac8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390481229Z",
+      "message_sha256": "e71c320bfa5df8bcef7c93d9e44b38be0714dedabd7211c37f94525b61e62ef3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390446783Z",
+      "message_sha256": "cd73701cb6a1845b61f6479d9a2b4567c31c798aeef846263886e8896d22bbd2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.39040459Z",
+      "message_sha256": "d616b82f7c8ff03938fdb05bcc4a884eb51801ef3ac7d2b943b2f016ac2a17a8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390300399Z",
+      "message_sha256": "0c2dd41ea8d0fc42bf0f250035aaaae55bea3d3a11692167529db605cbb26d1e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390181733Z",
+      "message_sha256": "5bf2a634d583898a8892ac6a6c40eaac24a26b5b806d57766d829fbfe064a63e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390144378Z",
+      "message_sha256": "6f07d479f4cf788553750a4cafe899f3856475aac4825882c008815356220ad6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390100476Z",
+      "message_sha256": "26276f9e5de05ec5b980267d58b6f841081f9bc4a8fe4d6ac63a2edc1ff51ee5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.390060451Z",
+      "message_sha256": "a611e8e149eeb0271bd165eb58cd3b4295039fdd1e57ead40d0f8376cc14da60",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389931414Z",
+      "message_sha256": "fa0c2fb9a5af653b34d913002c89597e109e70d335c03b8116473bba719ecd59",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389894119Z",
+      "message_sha256": "996b15c7ca1507482d330562bf2378c73a0f936c49c4122501019d107b183a1a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389758011Z",
+      "message_sha256": "ba7a2e1933b7dd0818c52364c4550e71ec8205a4efb9c7045500194df3f0373d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389711963Z",
+      "message_sha256": "d8b03d475209c2662c368b69eb74a8cab347aede598b36f3671aa7578af0d34a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389672287Z",
+      "message_sha256": "0a1b9a9aacce56f3f55a476cd7cca03855bc2ed75201782ddc657dd1664e11f2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389631444Z",
+      "message_sha256": "c0c53e1d55005c9672ba269a5e8f758381dc882b5e1c755c52a370cd4e5806e6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389502213Z",
+      "message_sha256": "253ccc376cd2d9c4c4b28cfc61184f3b29c7db3e1e29fdac3f98eda99463d155",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389449394Z",
+      "message_sha256": "595fd2a481883dd499e3f29192dcf1b00920b0ab0e0c3d5af79f960797b2c9f7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.38939637Z",
+      "message_sha256": "99f5bddf59167ac0eeabbcbe26e4e55fc7f0b773e10bd1b29ed41e41d473f0fb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.389034733Z",
+      "message_sha256": "0ca2cfa3d9c6746a52bfa7fde0b962d0ae7d69d4b2c0effa8d922d82f4fc9d99",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.38897129Z",
+      "message_sha256": "c333810e5b4aad06866f699b4528300fa18d12d81e07cbc029107f80c79918de",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388894305Z",
+      "message_sha256": "6099097a8f683c7237062e0d275329d8308d83a4f88041c1e6fd9072b696d387",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388823708Z",
+      "message_sha256": "81574c9929ce1a07f238f8e154a6ef01bcb4d8826eb8c5daccb16de6fb6e311c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388801448Z",
+      "message_sha256": "5f4f23e757af28dc259683273b8b9e1354abe4f66b1ef82848dad0dccb797ae1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388766445Z",
+      "message_sha256": "bd2e6ad80346f7799739f779258adaf2ace5bc8dafd6d97351a2769622cd32c4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388637057Z",
+      "message_sha256": "98508b8e736def2b85825253247ec1b40267c5b48908b6710b509679dd554649",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388599376Z",
+      "message_sha256": "8fbd731301e66fff53a33a75b891052c1d96a0de1b44b2a9cdf51b43534519bb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388550866Z",
+      "message_sha256": "788d31a44274e20924635cee8e5b1bc47467dbbe43435f462012233a37175727",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388509051Z",
+      "message_sha256": "f95e69e37dea3659b38e9b9558bf5a8a6aeaa4edb8d0e03252217b0b361faf2b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388460486Z",
+      "message_sha256": "d76ce84addd80428209a7ca8925887f6ac2a278712495b399771db667591375b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388413121Z",
+      "message_sha256": "8a73220899903d949002e7a00271d98c77fe1ed95b161aa7d412ec63f7055fa9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388373227Z",
+      "message_sha256": "ad2659c3b85f47aa3fe90944a1fe772d4a32c7ec48fb9ce31e92757d9850be85",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388246885Z",
+      "message_sha256": "e4899380eaf9600f715ed45fb1d1c227b6ce92a0ec3fb7937ac8c59c64640659",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388117244Z",
+      "message_sha256": "26e527a85b5b94b50b3e573340fbd5272de4b6431c2a24b99d817756e4978805",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388099415Z",
+      "message_sha256": "8848450f2193c79b60c976d626eb27a3abb8f9f708f034f728811809bb668da7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388057143Z",
+      "message_sha256": "b06babc030991270d03d271dcd14b68c6a0eef7e4d6891cb1b7c54cdb2ea4569",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.388011099Z",
+      "message_sha256": "689a2a6ef0e7ab14b97546d04e50bc355121d000c8d0baddacc5bc5c5207c48d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387963316Z",
+      "message_sha256": "c184bc1e12720b3a59e962769d92dc94bb79c51c846d8da99db8f090e0974ca7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387916041Z",
+      "message_sha256": "526b9d17fc0065fe209d7eff640f3439d65e177bb38cd054f1c81f4d5bcb01b9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387876571Z",
+      "message_sha256": "5e5830fa02be0339d8c3d785455a151b1825f55d8415570bcbd8abb3338b980c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387740241Z",
+      "message_sha256": "8cb2d4bd76769235bb3e281a5c31304c688672899a41478bd9287751a4cba1c0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387695426Z",
+      "message_sha256": "54c08a2a4273aff0fc1db14e420dab4cd7e5fb1bfb512e35502925b5a83bdb68",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387563662Z",
+      "message_sha256": "2b2415b05bba1a12709667eeafc0bc94e5d30d3553ed00df3f8ce628b603e8d4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387443956Z",
+      "message_sha256": "d223f51f7fb564cf8de43f35eb3a557b8bf0b1e9edf29d7c30cafa78f17d930b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387324924Z",
+      "message_sha256": "889f3462a3117837cf02ca1adeb5472aba8de0f5b808e2716b2d8b582958f45a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387279205Z",
+      "message_sha256": "9d31f1e49866de467c924d0a503aa1d849d9aa306ca7f6da425e56bacf7dcde4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387231616Z",
+      "message_sha256": "a100139b0b5ec3be77e191f22e26b07c12997b2cb4d284d2dabff0c2a2f212d0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.387114521Z",
+      "message_sha256": "112e857ec2cb951867296a0bf28b2c0eb6581461be3b149f2d1b0f6e51ea7cb6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386769922Z",
+      "message_sha256": "2a78318813a00cfc8153c39fb7b8c158376281c23f90920e409a29a3200b0825",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386733194Z",
+      "message_sha256": "3db8e1e8525e1afe5fa87653afd83842965b90de6379f93ae28b5734b58facad",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386683314Z",
+      "message_sha256": "67e24d597be058760528bad4304b3f9fa0afe68af5c1a55a95591aa992f293fd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386648222Z",
+      "message_sha256": "069e598c7f59da4b15c733cf12da44bb8546baadf153ed5a21ffb6a12bfb1cf4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386488443Z",
+      "message_sha256": "f75344cfef3240a86edda55d5dcac615de480995350a82354d91035023a63383",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386331797Z",
+      "message_sha256": "c1c16aed5a870c1de4bf64e997e01b1b9ead1c51c72c72a400e90f6ec35a5783",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386306143Z",
+      "message_sha256": "b9c9e95ca67d2a187ae8d745ad5171f04ad5b37649d71a5988518f46ceb2f360",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386231639Z",
+      "message_sha256": "27c72b8f3752bfe5d19484e91f3f023cba4c48a44b6cb0a9411c1799686b7666",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386118737Z",
+      "message_sha256": "3bdf2eb12635f9fcec939ae294157609bca1527b9cd95a594bdb386c208b7398",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.386050596Z",
+      "message_sha256": "f1bf0b9636f95046a8e9207ea204312eb5037ba67b1d31b674377bde8d7e1b52",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385976783Z",
+      "message_sha256": "7e648f9d41ea09d15873055efb0fdd1cbc6e61932362db95e2750657173f4744",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385937908Z",
+      "message_sha256": "c57f0a0c09ca1d908e31a9e9ca17282240ec11f7d965fe43942258d83f79f225",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385798507Z",
+      "message_sha256": "9d08d25276d5398b6096cfd7407353b8af48870e2cd400d1f4a8c8401a1f7559",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385777889Z",
+      "message_sha256": "2fce74abd92e9e059838f8996b0a9d78e03506e112edff8d4a3064a5a375244f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385747972Z",
+      "message_sha256": "6aeb423f23b2c9f6ef6a2dbc35462ab1b5c95d74a5d2ffe58f2fc9dcfa63fb79",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385720114Z",
+      "message_sha256": "843e9b7950102640ba69738af902917b8f0df7b40f7b2f7800308f061a37822a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385699512Z",
+      "message_sha256": "48363df177f0c2454cd737707c63eb7c056c8910c1d1b290aa5a880755b69227",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385633174Z",
+      "message_sha256": "92dd029cce140b685ef3f9bfd576a2955d0da8a3fe529277ff11fea6ac52faa1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385607726Z",
+      "message_sha256": "ca6ee58ba55bd8c22e74f67f022da59b2acde6ba946d775fca5791e84abcad7f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385587264Z",
+      "message_sha256": "f21b2a6920a05c8567013d22e06fdee239af32498595012084f364c506cb6f16",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385564673Z",
+      "message_sha256": "65740e25b8df589a91db5c759aca7bcaa7dcb7ebe09c32e7edf3da3d41746eae",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.385539451Z",
+      "message_sha256": "0bda3c94c43be9d77badf9ed11ece3e4325c7f3b472cd1e70bc2acf21499ee32",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.371227934Z",
+      "message_sha256": "038fcd9f232c6ddb2e1171beeeeb4db7932807591f0ea5a0469a659d6d08464d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.371193706Z",
+      "message_sha256": "4eed263a11868a54470e81a624524417b20bf7e556868c9501f82c9363a43d99",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.371139395Z",
+      "message_sha256": "a42ca1a117cc4a6555380b60e2425ff5be51b9c5e8571ed9fcff98003d431ccf",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.371033753Z",
+      "message_sha256": "ed965b79510cfa0429ab1287be76695410442f4abf09d4471e13e3d7919bec4c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370992164Z",
+      "message_sha256": "f74a53d3d6b2078ad1fe3fd30adf048ffe418aa771260cdbee9c22b89680fdfc",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370949525Z",
+      "message_sha256": "8482f631959ed7d9f47ca94c0f2402d23607bd337368c35cbd4a0e83a6e90cb0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370905666Z",
+      "message_sha256": "9a001e9f0f21d630f6fe7f0d5df21e73adc815b11ca14b7a14c6d2a99c1defe8",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370863509Z",
+      "message_sha256": "e9ae52ce4592c41b28badb98c6cb3442b2018599b000003a5e11447b769945a0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370814036Z",
+      "message_sha256": "6eb2c03c5b5146f6c5441e5f8b842840d03e1e9a5b2036cf1a8e96687272b7ce",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370773059Z",
+      "message_sha256": "d4656978f2129411d8a997de5fed720f2e5578830674f0eb14f0de7c2c54c78d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370731216Z",
+      "message_sha256": "d432d110976fdc0b0ecf0bcbf553bdb8faff73a1ccab694fc83a4d775bc120d4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370626423Z",
+      "message_sha256": "0987a11ea0b301f7ba2e8e1f273d51ddabeda25afe6217d63aa54366c16b9d18",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.37052214Z",
+      "message_sha256": "65993792049ad2fb9a90c6c612a0eee0e09f4844a396ab413e7d1a7c4d98c5d6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.37041655Z",
+      "message_sha256": "c71ab2a86c76a9602ad35a610effebb05cfdfa2aa8879b57f6260b460035c4b1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370381989Z",
+      "message_sha256": "08235335d3515aa2a1bad774c45fe8c6c83c3c3839e164bfe79f0d4be8d88720",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370346074Z",
+      "message_sha256": "d4826db378a3eefdfc0960805ad7428862a759a351b1b387772a51c04360b51d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370304187Z",
+      "message_sha256": "1faa0752e7d3093ed5ee3d43e8edb9d15414c4cfc2ee6a29cf238df096e5e4f6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370262821Z",
+      "message_sha256": "7a25d3bb5de1d0c7f4428f33fe238b3720673e5eb697c1942c6961d1e2238ff7",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370157257Z",
+      "message_sha256": "53bda61d3b18527a2b205af882bd588162d10f8176b0d342e07db0a03ce639e2",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370104019Z",
+      "message_sha256": "b99a364437e9d3a0c12b1012a660d46e18f34d9dff01ab8066370d7190df41c0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370069225Z",
+      "message_sha256": "3a65660e069443574da5ab9f7ed4dff3eaeae570188edbbbf305f5c2e9ca2911",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.370027069Z",
+      "message_sha256": "c198a6f04bbf380ebced6849a47f2465338e0c57fb67a2fdec652b84c7cf768a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369902734Z",
+      "message_sha256": "8f17114fa8a42ba3ab305d68e4d3a7b29e4e5d54644c327d7f3fcb648421c729",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36976548Z",
+      "message_sha256": "29361002c7fc377429dd95fde6b2bd33df75490bf35e99c433b21d0eb9b8d998",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369724065Z",
+      "message_sha256": "87b5a987705286574f78111b0a4ba2531590284f46c64ee2b2b869236685bb10",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369678461Z",
+      "message_sha256": "3bcaf3500d5444c0fb627360ffc7b3269748ce938328f8806b0966d0158e3d9f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369634572Z",
+      "message_sha256": "a1fb9af0b11081dc53b5572f87a6b52e4333b0ed5e3a641fb8b170d32e332db9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369589853Z",
+      "message_sha256": "17667bfcc03bd3a53a4571283f02c20df54607c3e285bf6269d7545991a4690e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369551256Z",
+      "message_sha256": "084d80e929501062b64d32260fcf3aa18060edba9443bfdf6a71b450bc84e200",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36943407Z",
+      "message_sha256": "8eb6cc13256d3c1550d82b1a7a01620560bf8092104a1ffe96c78381f9990dda",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369379406Z",
+      "message_sha256": "4986c65c1146ff3872143cb11b5917a221805c33ba890188641abca6564d8355",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369341494Z",
+      "message_sha256": "f2affa00ac37ec705022c0853dd5abaf001b043be1a26cdaa6ce1af83563fc08",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369299226Z",
+      "message_sha256": "6c7df5867664a3a959200bfa5f80a73e4e47975180b132211b6d9efc61e9b41e",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36922902Z",
+      "message_sha256": "41dadb73c6282cc1f9477e017976624a3478c0aaa4685659289451fa660c43d0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.369178105Z",
+      "message_sha256": "d7c8278ccfa25eeeec052c2e86096e98863bbf4f9dfe28da54408bcb6966288d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366775069Z",
+      "message_sha256": "ee62edcb60ec8cb0aa96cc2700e56f56b440af108bd85e0d809f6792b953757d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366737348Z",
+      "message_sha256": "87fd44078fdae73b60f3d0fd5d3ce5e7895eb1353ad168a9e7bbd21a825ca2dd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366694846Z",
+      "message_sha256": "60b05d576c82f19ca3c34cef3df80ae1856c37a545272ea5a75c8a9922b201f1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366657396Z",
+      "message_sha256": "10d406e42597089e8fb3383133c3aa9b3031a19219602ff82a9a3a45a6d66688",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366639885Z",
+      "message_sha256": "98d8c796ce3a2f3b43a11e33188e46152979351876023bb004debda71dcf231a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366614298Z",
+      "message_sha256": "0794215202867a8aacaf991d7b037962edf6084cc764b14212d45245d733f1b5",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366570092Z",
+      "message_sha256": "55901b8e62a5efc38922853b8bca8f0e41bd338584dfee31f7d971d3b9ee69c9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366423591Z",
+      "message_sha256": "d70e8050c253f2b9096300dce5b813a0293df8e86c1cb1046ebd2a87b2ff57b4",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366373254Z",
+      "message_sha256": "f1c346788932e62759d836010eaa84ff05df90534feb44cebef6d2228f0933bb",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366316098Z",
+      "message_sha256": "80158c526ce24dcfea7c0aa68ba2143f6361f21a54ee7181f7b3f607ee07e248",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366257146Z",
+      "message_sha256": "00bdb40047ffa3bd81ec89b1ea9fb8789685d9ef875e4b50d3e8a5cfcc357924",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366209216Z",
+      "message_sha256": "1832f05d90d0785a6b143c9ff17b044d9d20c4885585443dec6ce21cc28e9616",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36615571Z",
+      "message_sha256": "291d209f71ddd16d1c188dfca2ddd721bbc7041ddecabc515b31f29e1611600a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.366027287Z",
+      "message_sha256": "5e199f1220991cbf79c087daf93e27f25f2bddf700603c5004f02d9bf6d100d1",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36598593Z",
+      "message_sha256": "e1ce7a43ccbd74f76d56f0ba81e7e412ef2d449b5a7d8be7ad8bb39c3f941278",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365916701Z",
+      "message_sha256": "44b713d702aa3eeab7aad0670bb070fbc1085a79dd1fb524f39defe0e156d5f0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365875276Z",
+      "message_sha256": "66ec0f61f9d625074e6b74358c0026ed6b9126a9edfbd05b37225aa17f8d6cfd",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365819518Z",
+      "message_sha256": "354c4eb19d4f91bb8c5d3bec23477d6de52e092db22de7e44c02d9819ba0b180",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365770973Z",
+      "message_sha256": "8d329fe397975cf8ad9caa3dfcd2cfcf533e0cfde24ef315b2b86f6f5ab97f6a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365730919Z",
+      "message_sha256": "20f89414ba49715aacf8ce988d74703a0bf664bda582dff84a13e507359cb108",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365682264Z",
+      "message_sha256": "4fd89f976e7e386a2d51c707a3be4a703d8903b5781746c55f3795794249c656",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365643438Z",
+      "message_sha256": "929c636d122c60fc524740a185bdb7a367fc9a23acff88833faa63b99b25e298",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365595872Z",
+      "message_sha256": "ec56f16646579a2a76f0a6fe598e4015ce9082f9c8dbb9e4b8398a0aaed10e02",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365549112Z",
+      "message_sha256": "468faa3284c10f1831590214894b360d8bbc82269ce330c60bf76e3c4bcf58b6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365428916Z",
+      "message_sha256": "348bbdf9753612466415b945219ff05a636842c7a64ff00733f6edc6dc09abe3",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365382512Z",
+      "message_sha256": "6aa5d066be93c0fdf007cc4a61c5b6bd3d384da97eacd4e3358d34c2575e0918",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365335245Z",
+      "message_sha256": "a5d029578fa1e0015bd23697b5dc925d4abd76462b02a187de2d7276551d47ff",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365289401Z",
+      "message_sha256": "3fabf463d5a3b0aa3fddb3d1ca8bbd9c4628b70413ee0f548179e5b7293c7211",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365242139Z",
+      "message_sha256": "d1a1a045a33d03c358328d32f000e3c3b28fd2fcd8e2ffd79f27372d5e892402",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36513548Z",
+      "message_sha256": "f97d4c48ceb3a271b66496a966129f20500326fbaadf5ae670ec4c2c82b7b645",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365089902Z",
+      "message_sha256": "6c6e549a73dd53bc210ea7ecb721857bc507f02840cb14bc174ee04c0575d8c6",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365051037Z",
+      "message_sha256": "53a00e6cf44199ab792a13b1f3d0342ccef34a65424c225cc09a4124326f0791",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.365003319Z",
+      "message_sha256": "f53e0d6d3a2bde71c3418dd95bb3c1b6f2278554805c50cbe50659655ca4973b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364865199Z",
+      "message_sha256": "42569c517e850caa2c8bc320a42426aa0881e53263df6dd77e11ae8e27506aa9",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364720239Z",
+      "message_sha256": "a7e6379edaa6c45b04b4324fa800d5e9fd995adabea50fcabc611f96153287fe",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36459886Z",
+      "message_sha256": "e5185679409191708b6dca2707cc3ec7630a1a754b236f55eeec90e8e1047a3d",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36447934Z",
+      "message_sha256": "9459711cd3cd5e1ce7f40034edf191f4d5da1312ba5cb23a916bb726a2e8282f",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364440169Z",
+      "message_sha256": "c643f1ed2a15bbb8e62dd675b31ce7bd6b7b41b5e7ccf0c00de1db1a2b225326",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364402067Z",
+      "message_sha256": "552578e9c07ad74db7f86a32cccd76e5a6ef057805317458825706c07520e039",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364354023Z",
+      "message_sha256": "a3764522c083fd65476319ac642c930b51e297ae34aeaf6e126c6d196f5f95a0",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.36423189Z",
+      "message_sha256": "d1d43ea37a1a9aa33463f795f58e06d3bde8ef76147d5c73d9c2d900c7c6be84",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364183697Z",
+      "message_sha256": "b242e91b2c924142359eb1cab57eabf436f116c2717378b2b61a98f9cb2e8a1a",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364139832Z",
+      "message_sha256": "5fb7bb5e0e04016d16ad0852e877341e527e695b0cd581ae0d1d4042b6614c6c",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364102148Z",
+      "message_sha256": "d55a8c7465647f4ba1484d01846d8873ec9b373616f17c5d2106387d1531a816",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.364060601Z",
+      "message_sha256": "4d44398bdf2472423db5ff77c06a19b882c946258d08e5b329fef973f406dcfe",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.363935712Z",
+      "message_sha256": "1a299dac4c1af02f6e49a10fbcaeec0fd968cf1bf4ba85216807112087159d25",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.363802506Z",
+      "message_sha256": "d4977b0962bccdca84d8168fcc903b93e0dfa7637cfb29eaf94d804f085fb35b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:29:25.3632798Z",
+      "message_sha256": "48b5108a92fe1a4e8d90c67f37ea0ed011ae03f65fc1ef7c4abedd7d005db79b",
+      "classification": "postgres_transaction_conflict",
+      "reference": "https://www.postgresql.org/docs/current/mvcc-serialization-failure-handling.html"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:26:54.907911808Z",
+      "message_sha256": "d54988f7982ad61fa3ef0fdc84cc46296ae7316f1fce8d7afeaf8b799bcfb2f9",
+      "classification": "diagnostic_probe_query_error"
+    },
+    {
+      "entity": "docker/f38ef70b-a9d2-4d2c-9fe0-95950c2b4a4d-db-1-orioledb",
+      "observed_at": "2026-09-15T13:26:24.809526058Z",
+      "message_sha256": "63e7136a07800a294a1f8c7649b4d3bcb9e52c69e13bffde7431e207e87c5fa1",
+      "classification": "diagnostic_probe_query_error"
+    }
+  ],
+  "observation_counts": {
+    "postgres_transaction_conflict": 489,
+    "diagnostic_probe_query_error": 2
+  },
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks"
+}

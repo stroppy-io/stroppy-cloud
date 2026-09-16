@@ -1,0 +1,24 @@
+{
+  "run_id": "matrix-ydbready-cd74e12d-ydb-managed-serverless",
+  "source": "persistent VictoriaLogs API, exact run and namespace selector",
+  "records": 343,
+  "limit": 20000,
+  "runs_observed": [
+    "matrix-ydbready-cd74e12d-ydb-managed-serverless"
+  ],
+  "namespaces_observed": [
+    "t-stroppy-live"
+  ],
+  "component_logs": {
+    "docker/4f01f4e1-a59c-4b42-afb4-ab85476e209f-runner-1-node-exporter": 57
+  },
+  "error_scan_window": {
+    "start": "2026-09-15T18:51:04.750552705Z",
+    "end": "2026-09-15T18:55:24.115056705Z"
+  },
+  "workload_error_candidates": [],
+  "workload_observations": [],
+  "observation_counts": {},
+  "error_scan_note": "ERROR/FATAL markers in container logs, bounded by log observation time; unknown candidates block verification; classified observations remain visible and require independent native-error and cluster-health checks",
+  "silent_initializers": []
+}

@@ -1,0 +1,457 @@
+[
+  {
+    "database": "postgres",
+    "topology": "single",
+    "version": "18",
+    "script": "simple",
+    "input": "postgres-single-18-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "primary-replica",
+    "version": "18",
+    "script": "simple",
+    "input": "postgres-primary-replica-18-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "patroni-ha",
+    "version": "18",
+    "script": "simple",
+    "input": "postgres-patroni-ha-18-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "pgbouncer",
+    "version": "18",
+    "script": "simple",
+    "input": "postgres-pgbouncer-18-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "single",
+    "version": "17",
+    "script": "simple",
+    "input": "postgres-single-17-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "primary-replica",
+    "version": "17",
+    "script": "simple",
+    "input": "postgres-primary-replica-17-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "patroni-ha",
+    "version": "17",
+    "script": "simple",
+    "input": "postgres-patroni-ha-17-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "pgbouncer",
+    "version": "17",
+    "script": "simple",
+    "input": "postgres-pgbouncer-17-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "single",
+    "version": "16",
+    "script": "simple",
+    "input": "postgres-single-16-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "primary-replica",
+    "version": "16",
+    "script": "simple",
+    "input": "postgres-primary-replica-16-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "patroni-ha",
+    "version": "16",
+    "script": "simple",
+    "input": "postgres-patroni-ha-16-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "pgbouncer",
+    "version": "16",
+    "script": "simple",
+    "input": "postgres-pgbouncer-16-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "single",
+    "version": "15",
+    "script": "simple",
+    "input": "postgres-single-15-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "primary-replica",
+    "version": "15",
+    "script": "simple",
+    "input": "postgres-primary-replica-15-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "patroni-ha",
+    "version": "15",
+    "script": "simple",
+    "input": "postgres-patroni-ha-15-simple.json"
+  },
+  {
+    "database": "postgres",
+    "topology": "pgbouncer",
+    "version": "15",
+    "script": "simple",
+    "input": "postgres-pgbouncer-15-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "single",
+    "version": "beta17-pg18",
+    "script": "simple",
+    "input": "orioledb-single-beta17-pg18-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "primary-replica",
+    "version": "beta17-pg18",
+    "script": "simple",
+    "input": "orioledb-primary-replica-beta17-pg18-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "single",
+    "version": "beta17-pg17",
+    "script": "simple",
+    "input": "orioledb-single-beta17-pg17-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "primary-replica",
+    "version": "beta17-pg17",
+    "script": "simple",
+    "input": "orioledb-primary-replica-beta17-pg17-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "single",
+    "version": "beta17-pg16",
+    "script": "simple",
+    "input": "orioledb-single-beta17-pg16-simple.json"
+  },
+  {
+    "database": "orioledb",
+    "topology": "primary-replica",
+    "version": "beta17-pg16",
+    "script": "simple",
+    "input": "orioledb-primary-replica-beta17-pg16-simple.json"
+  },
+  {
+    "database": "mysql",
+    "topology": "single",
+    "version": "8.4",
+    "script": "simple",
+    "input": "mysql-single-8.4-simple.json"
+  },
+  {
+    "database": "mysql",
+    "topology": "semi-sync",
+    "version": "8.4",
+    "script": "simple",
+    "input": "mysql-semi-sync-8.4-simple.json"
+  },
+  {
+    "database": "mysql",
+    "topology": "group-replication",
+    "version": "8.4",
+    "script": "simple",
+    "error": "invalid: params.replication: group replication is not launchable yet"
+  },
+  {
+    "database": "mysql",
+    "topology": "single",
+    "version": "8.0",
+    "script": "simple",
+    "input": "mysql-single-8.0-simple.json"
+  },
+  {
+    "database": "mysql",
+    "topology": "semi-sync",
+    "version": "8.0",
+    "script": "simple",
+    "input": "mysql-semi-sync-8.0-simple.json"
+  },
+  {
+    "database": "mysql",
+    "topology": "group-replication",
+    "version": "8.0",
+    "script": "simple",
+    "error": "invalid: params.replication: group replication is not launchable yet"
+  },
+  {
+    "database": "mariadb",
+    "topology": "single",
+    "version": "11.8",
+    "script": "simple",
+    "input": "mariadb-single-11.8-simple.json"
+  },
+  {
+    "database": "mariadb",
+    "topology": "galera",
+    "version": "11.8",
+    "script": "simple",
+    "error": "invalid: params.replication: galera is not launchable yet"
+  },
+  {
+    "database": "mariadb",
+    "topology": "single",
+    "version": "11.4",
+    "script": "simple",
+    "input": "mariadb-single-11.4-simple.json"
+  },
+  {
+    "database": "mariadb",
+    "topology": "galera",
+    "version": "11.4",
+    "script": "simple",
+    "error": "invalid: params.replication: galera is not launchable yet"
+  },
+  {
+    "database": "mariadb",
+    "topology": "single",
+    "version": "10.11",
+    "script": "simple",
+    "input": "mariadb-single-10.11-simple.json"
+  },
+  {
+    "database": "mariadb",
+    "topology": "galera",
+    "version": "10.11",
+    "script": "simple",
+    "error": "invalid: params.replication: galera is not launchable yet"
+  },
+  {
+    "database": "picodata",
+    "topology": "single",
+    "version": "26.2",
+    "script": "simple",
+    "input": "picodata-single-26.2-simple.json"
+  },
+  {
+    "database": "picodata",
+    "topology": "three-node",
+    "version": "26.2",
+    "script": "simple",
+    "input": "picodata-three-node-26.2-simple.json"
+  },
+  {
+    "database": "picodata",
+    "topology": "single",
+    "version": "26.1",
+    "script": "simple",
+    "input": "picodata-single-26.1-simple.json"
+  },
+  {
+    "database": "picodata",
+    "topology": "three-node",
+    "version": "26.1",
+    "script": "simple",
+    "input": "picodata-three-node-26.1-simple.json"
+  },
+  {
+    "database": "picodata",
+    "topology": "single",
+    "version": "25.3",
+    "script": "simple",
+    "input": "picodata-single-25.3-simple.json"
+  },
+  {
+    "database": "picodata",
+    "topology": "three-node",
+    "version": "25.3",
+    "script": "simple",
+    "input": "picodata-three-node-25.3-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "single",
+    "version": "26.3",
+    "script": "simple",
+    "input": "ydb-single-26.3-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "mirror-3-dc",
+    "version": "26.3",
+    "script": "simple",
+    "input": "ydb-mirror-3-dc-26.3-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "single",
+    "version": "26.2",
+    "script": "simple",
+    "input": "ydb-single-26.2-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "mirror-3-dc",
+    "version": "26.2",
+    "script": "simple",
+    "input": "ydb-mirror-3-dc-26.2-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "single",
+    "version": "26.1",
+    "script": "simple",
+    "input": "ydb-single-26.1-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "mirror-3-dc",
+    "version": "26.1",
+    "script": "simple",
+    "input": "ydb-mirror-3-dc-26.1-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "single",
+    "version": "25.4",
+    "script": "simple",
+    "input": "ydb-single-25.4-simple.json"
+  },
+  {
+    "database": "ydb",
+    "topology": "mirror-3-dc",
+    "version": "25.4",
+    "script": "simple",
+    "input": "ydb-mirror-3-dc-25.4-simple.json"
+  },
+  {
+    "database": "ydb_managed",
+    "topology": "dedicated-medium",
+    "version": "managed",
+    "script": "simple",
+    "error": "invalid: database kind ydb_managed cannot be launched yet"
+  },
+  {
+    "database": "ydb_managed",
+    "topology": "serverless",
+    "version": "managed",
+    "script": "simple",
+    "error": "invalid: database kind ydb_managed cannot be launched yet"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "26.3",
+    "script": "simple",
+    "input": "cockroach-single-26.3-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "26.3",
+    "script": "simple",
+    "input": "cockroach-three-node-26.3-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "26.2",
+    "script": "simple",
+    "input": "cockroach-single-26.2-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "26.2",
+    "script": "simple",
+    "input": "cockroach-three-node-26.2-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "25.4",
+    "script": "simple",
+    "input": "cockroach-single-25.4-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "25.4",
+    "script": "simple",
+    "input": "cockroach-three-node-25.4-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "25.2",
+    "script": "simple",
+    "input": "cockroach-single-25.2-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "25.2",
+    "script": "simple",
+    "input": "cockroach-three-node-25.2-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "24.3",
+    "script": "simple",
+    "input": "cockroach-single-24.3-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "24.3",
+    "script": "simple",
+    "input": "cockroach-three-node-24.3-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "single",
+    "version": "24.1",
+    "script": "simple",
+    "input": "cockroach-single-24.1-simple.json"
+  },
+  {
+    "database": "cockroach",
+    "topology": "three-node",
+    "version": "24.1",
+    "script": "simple",
+    "input": "cockroach-three-node-24.1-simple.json"
+  },
+  {
+    "database": "pg_noop",
+    "topology": "single",
+    "version": "0.1.2",
+    "script": "simple",
+    "input": "pg_noop-single-0.1.2-simple.json"
+  },
+  {
+    "database": "noop",
+    "topology": "runner-only",
+    "version": "builtin",
+    "script": "simple",
+    "input": "noop-runner-only-builtin-simple.json"
+  },
+  {
+    "database": "external",
+    "topology": "dsn",
+    "version": "external",
+    "script": "simple",
+    "input": "external-dsn-external-simple.json"
+  }
+]

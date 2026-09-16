@@ -1,0 +1,93 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T20:22:09.218180+00:00",
+  "module": "github.com/graphene-ci/pipeline",
+  "version": "v0.2.5",
+  "commit": "3b70067cf357912ef514d1e5d1f085c8928a6876",
+  "module_sum": "h1:hNhqUU3WI7/mhQXttbc3E6T069/ZiOITftGtCrAf+qc=",
+  "ci": 35013775275,
+  "release_ci": 35013839546,
+  "checks": [
+    "SDK make test and make lint",
+    "obs race test",
+    "real gRPC default 4 MiB receive limit, over 11 MiB input, all 3072 points retained",
+    "single instrument exceeding 4 MiB split at complete data points",
+    "gauge, sum, histogram, exponential histogram and summary preserve protobuf content",
+    "partial rejections accumulated; oversized individual points fail explicitly",
+    "RunTail concurrent stdout/stderr synchronized"
+  ],
+  "request_limit_bytes": 2097152,
+  "receiver_limit_unchanged": true,
+  "live_ydb_verification": {
+    "status": "passed",
+    "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-25.4",
+    "series_count": 45262,
+    "exporters": {
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter": {
+        "metric_names": 248
+      },
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-ydb": {
+        "metric_names": 10315
+      },
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter": {
+        "metric_names": 248
+      },
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-ydb": {
+        "metric_names": 11275
+      },
+      "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-runner-1-node-exporter": {
+        "metric_names": 247
+      }
+    },
+    "data_filesystems": [
+      {
+        "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-1-node-exporter",
+        "device": "/dev/vdb",
+        "fstype": "ext4",
+        "size_bytes": 105089261568.0
+      },
+      {
+        "entity": "docker/5e3419bf-f7d1-4200-bdd5-c5d35569ef26-db-compute-1-node-exporter",
+        "device": "/dev/vdb",
+        "fstype": "ext4",
+        "size_bytes": 105089261568.0
+      }
+    ],
+    "native_segments": 3,
+    "scope": "Native and scalar component metrics plus complete artifacts, logs, traces and YC cleanup accepted; database scrape histograms/summaries remain separate pending work."
+  },
+  "published_worker": "f53623d265c372b2",
+  "live_ydb_suite": "matrix-ydbmetrics-4f28bec5",
+  "accepted_live_cells": [
+    {
+      "database_version": "25.4",
+      "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-25.4",
+      "exporters": 5,
+      "series_count": 45262,
+      "data_filesystems": 2,
+      "native_segments": 3,
+      "evidence": "ydb-single-25.4.metrics.json",
+      "full_acceptance": "catalog-functional-check.json"
+    },
+    {
+      "database_version": "26.1",
+      "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-26.1",
+      "exporters": 5,
+      "series_count": 46053,
+      "data_filesystems": 2,
+      "native_segments": 3,
+      "evidence": "ydb-single-26.1.metrics.json",
+      "full_acceptance": "catalog-functional-check.json"
+    },
+    {
+      "database_version": "26.2",
+      "run_id": "matrix-ydbmetrics-4f28bec5-ydb-single-26.2",
+      "exporters": 5,
+      "series_count": 46627,
+      "data_filesystems": 2,
+      "native_segments": 3,
+      "evidence": "ydb-single-26.2.metrics.json",
+      "full_acceptance": "catalog-functional-check.json"
+    }
+  ]
+}

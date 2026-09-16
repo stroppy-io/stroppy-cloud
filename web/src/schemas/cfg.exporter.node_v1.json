@@ -1,49 +1,49 @@
 {
-  "id": {
-    "namespace": "cfg",
-    "name": "exporter.node",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "cfg",
+    "name":  "exporter.node",
+    "version":  "v1.0.0"
   },
-  "description": "node_exporter 1.8/1.9 flags: which collectors run and where it listens.",
-  "fields": [
+  "description":  "node_exporter 1.8/1.9 flags: which collectors run and where it listens.",
+  "fields":  [
     {
-      "name": "listen_port",
-      "description": "--web.listen-address port. 9100 is the registered node_exporter port.",
-      "int64": {
-        "default": "9100",
-        "gte": "1",
-        "lte": "65535"
+      "name":  "listen_port",
+      "description":  "--web.listen-address port. 9100 is the registered node_exporter port.",
+      "int64":  {
+        "default":  "9100",
+        "gte":  "1",
+        "lte":  "65535"
       },
-      "group": "Server",
-      "title": "Listen port"
+      "group":  "Server",
+      "title":  "Listen port"
     },
     {
-      "name": "listen_address",
-      "description": "Interface part of --web.listen-address; empty means all interfaces.",
-      "string": {
-        "default": "",
-        "maxLen": "64"
+      "name":  "listen_address",
+      "description":  "Interface part of --web.listen-address; empty means all interfaces.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "64"
       },
-      "group": "Server",
-      "title": "Listen address"
+      "group":  "Server",
+      "title":  "Listen address"
     },
     {
-      "name": "disable_defaults",
-      "description": "--collector.disable-defaults: start from nothing, only `enable` runs. Off keeps the upstream default set and applies enable/disable on top.",
-      "bool": {
-        "default": false
+      "name":  "disable_defaults",
+      "description":  "--collector.disable-defaults: start from nothing, only `enable` runs. Off keeps the upstream default set and applies enable/disable on top.",
+      "bool":  {
+        "default":  false
       },
-      "group": "Collectors",
-      "title": "Disable default collectors"
+      "group":  "Collectors",
+      "title":  "Disable default collectors"
     },
     {
-      "name": "enable",
-      "description": "--collector.<name> for each. pressure (PSI) and systemd are off upstream and worth turning on for a benchmark host.",
-      "list": {
-        "items": [
+      "name":  "enable",
+      "description":  "--collector.<name> for each. pressure (PSI) and systemd are off upstream and worth turning on for a benchmark host.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "in": [
+            "string":  {
+              "in":  [
                 "arp",
                 "conntrack",
                 "cpu",
@@ -88,20 +88,20 @@
             }
           }
         ],
-        "maxItems": "48",
-        "unique": true
+        "maxItems":  "48",
+        "unique":  true
       },
-      "group": "Collectors",
-      "title": "Enable collectors"
+      "group":  "Collectors",
+      "title":  "Enable collectors"
     },
     {
-      "name": "disable",
-      "description": "--no-collector.<name> for each. Turning off the noisy default collectors keeps the scrape cheap on a loaded host.",
-      "list": {
-        "items": [
+      "name":  "disable",
+      "description":  "--no-collector.<name> for each. Turning off the noisy default collectors keeps the scrape cheap on a loaded host.",
+      "list":  {
+        "items":  [
           {
-            "string": {
-              "in": [
+            "string":  {
+              "in":  [
                 "arp",
                 "bcache",
                 "bonding",
@@ -152,161 +152,161 @@
             }
           }
         ],
-        "maxItems": "48",
-        "unique": true
+        "maxItems":  "48",
+        "unique":  true
       },
-      "group": "Collectors",
-      "title": "Disable collectors"
+      "group":  "Collectors",
+      "title":  "Disable collectors"
     },
     {
-      "name": "filesystem_mount_points_exclude",
-      "description": "--collector.filesystem.mount-points-exclude: regex of mount points not to report.",
-      "string": {
-        "default": "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)",
-        "maxLen": "1024"
+      "name":  "filesystem_mount_points_exclude",
+      "description":  "--collector.filesystem.mount-points-exclude: regex of mount points not to report.",
+      "string":  {
+        "default":  "^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)",
+        "maxLen":  "1024"
       },
-      "group": "Filters",
-      "title": "Exclude mount points"
+      "group":  "Filters",
+      "title":  "Exclude mount points"
     },
     {
-      "name": "netdev_device_exclude",
-      "description": "--collector.netdev.device-exclude: regex of interfaces not to report.",
-      "string": {
-        "default": "^(veth.*|docker[0-9]+|br-.*|lo)$",
-        "maxLen": "1024"
+      "name":  "netdev_device_exclude",
+      "description":  "--collector.netdev.device-exclude: regex of interfaces not to report.",
+      "string":  {
+        "default":  "^(veth.*|docker[0-9]+|br-.*|lo)$",
+        "maxLen":  "1024"
       },
-      "group": "Filters",
-      "title": "Exclude network devices"
+      "group":  "Filters",
+      "title":  "Exclude network devices"
     },
     {
-      "name": "diskstats_device_exclude",
-      "description": "--collector.diskstats.device-exclude: regex of block devices not to report.",
-      "string": {
-        "default": "^(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\d+n\\d+p)\\d+$",
-        "maxLen": "1024"
+      "name":  "diskstats_device_exclude",
+      "description":  "--collector.diskstats.device-exclude: regex of block devices not to report.",
+      "string":  {
+        "default":  "^(ram|loop|fd|(h|s|v|xv)d[a-z]|nvme\\d+n\\d+p)\\d+$",
+        "maxLen":  "1024"
       },
-      "group": "Filters",
-      "title": "Exclude block devices"
+      "group":  "Filters",
+      "title":  "Exclude block devices"
     },
     {
-      "name": "textfile_directory",
-      "description": "--collector.textfile.directory: directory of *.prom files the agent may drop for run-scoped labels.",
-      "string": {
-        "default": "",
-        "maxLen": "256"
+      "name":  "textfile_directory",
+      "description":  "--collector.textfile.directory: directory of *.prom files the agent may drop for run-scoped labels.",
+      "string":  {
+        "default":  "",
+        "maxLen":  "256"
       },
-      "group": "Filters",
-      "title": "Textfile directory"
+      "group":  "Filters",
+      "title":  "Textfile directory"
     },
     {
-      "name": "log_level",
-      "description": "--log.level.",
-      "choice": {
-        "options": [
+      "name":  "log_level",
+      "description":  "--log.level.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "debug"
+            "value":  {
+              "stringValue":  "debug"
             },
-            "label": "debug"
+            "label":  "debug"
           },
           {
-            "value": {
-              "stringValue": "info"
+            "value":  {
+              "stringValue":  "info"
             },
-            "label": "info"
+            "label":  "info"
           },
           {
-            "value": {
-              "stringValue": "warn"
+            "value":  {
+              "stringValue":  "warn"
             },
-            "label": "warn"
+            "label":  "warn"
           },
           {
-            "value": {
-              "stringValue": "error"
+            "value":  {
+              "stringValue":  "error"
             },
-            "label": "error"
+            "label":  "error"
           }
         ],
-        "default": {
-          "stringValue": "warn"
+        "default":  {
+          "stringValue":  "warn"
         }
       },
-      "group": "Logging",
-      "title": "Log level"
+      "group":  "Logging",
+      "title":  "Log level"
     },
     {
-      "name": "log_format",
-      "description": "--log.format.",
-      "choice": {
-        "options": [
+      "name":  "log_format",
+      "description":  "--log.format.",
+      "choice":  {
+        "options":  [
           {
-            "value": {
-              "stringValue": "logfmt"
+            "value":  {
+              "stringValue":  "logfmt"
             },
-            "label": "logfmt"
+            "label":  "logfmt"
           },
           {
-            "value": {
-              "stringValue": "json"
+            "value":  {
+              "stringValue":  "json"
             },
-            "label": "json"
+            "label":  "json"
           }
         ],
-        "default": {
-          "stringValue": "logfmt"
+        "default":  {
+          "stringValue":  "logfmt"
         }
       },
-      "group": "Logging",
-      "title": "Log format"
+      "group":  "Logging",
+      "title":  "Log format"
     },
     {
-      "name": "enable_flags",
-      "computed": {
-        "expr": "(\"enable\" in root) ? root.enable.map(c, \" --collector.\" + c).join(\"\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "enable_flags",
+      "computed":  {
+        "expr":  "(\"enable\" in root) ? root.enable.map(c, \" --collector.\" + c).join(\"\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Collectors",
-      "title": "Rendered --collector.* flags"
+      "group":  "Collectors",
+      "title":  "Rendered --collector.* flags"
     },
     {
-      "name": "disable_flags",
-      "computed": {
-        "expr": "(\"disable\" in root) ? root.disable.map(c, \" --no-collector.\" + c).join(\"\") : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "disable_flags",
+      "computed":  {
+        "expr":  "(\"disable\" in root) ? root.disable.map(c, \" --no-collector.\" + c).join(\"\") : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Collectors",
-      "title": "Rendered --no-collector.* flags"
+      "group":  "Collectors",
+      "title":  "Rendered --no-collector.* flags"
     },
     {
-      "name": "defaults_flag",
-      "computed": {
-        "expr": "root.disable_defaults ? \" --collector.disable-defaults\" : \"\"",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "defaults_flag",
+      "computed":  {
+        "expr":  "root.disable_defaults ? \" --collector.disable-defaults\" : \"\"",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Collectors",
-      "title": "Rendered --collector.disable-defaults"
+      "group":  "Collectors",
+      "title":  "Rendered --collector.disable-defaults"
     },
     {
-      "name": "textfile_flag",
-      "computed": {
-        "expr": "root.textfile_directory == \"\" ? \"\" : \" --collector.textfile.directory=\" + root.textfile_directory",
-        "result": "RESULT_TYPE_STRING"
+      "name":  "textfile_flag",
+      "computed":  {
+        "expr":  "root.textfile_directory == \"\" ? \"\" : \" --collector.textfile.directory=\" + root.textfile_directory",
+        "result":  "RESULT_TYPE_STRING"
       },
-      "group": "Filters",
-      "title": "Rendered --collector.textfile.directory"
+      "group":  "Filters",
+      "title":  "Rendered --collector.textfile.directory"
     }
   ],
-  "rules": [
+  "rules":  [
     {
-      "expr": "!(\"enable\" in root) || !(\"disable\" in root) || root.enable.all(c, !(c in root.disable))",
-      "message": "a collector cannot be both enabled and disabled",
-      "id": "enable-disable-disjoint"
+      "expr":  "!(\"enable\" in root) || !(\"disable\" in root) || root.enable.all(c, !(c in root.disable))",
+      "message":  "a collector cannot be both enabled and disabled",
+      "id":  "enable-disable-disjoint"
     }
   ],
-  "strict": true,
-  "coerce": true,
-  "templates": {
-    "conf": "--web.listen-address={{{values.listen_address}}}:{{{values.listen_port}}}{{{values.defaults_flag}}}{{{values.enable_flags}}}{{{values.disable_flags}}} --collector.filesystem.mount-points-exclude={{{values.filesystem_mount_points_exclude}}} --collector.netdev.device-exclude={{{values.netdev_device_exclude}}} --collector.diskstats.device-exclude={{{values.diskstats_device_exclude}}}{{{values.textfile_flag}}} --log.level={{{values.log_level}}} --log.format={{{values.log_format}}}\n"
+  "strict":  true,
+  "coerce":  true,
+  "templates":  {
+    "conf":  "--web.listen-address={{{values.listen_address}}}:{{{values.listen_port}}}{{{values.defaults_flag}}}{{{values.enable_flags}}}{{{values.disable_flags}}} --collector.filesystem.mount-points-exclude={{{values.filesystem_mount_points_exclude}}} --collector.netdev.device-exclude={{{values.netdev_device_exclude}}} --collector.diskstats.device-exclude={{{values.diskstats_device_exclude}}}{{{values.textfile_flag}}} --log.level={{{values.log_level}}} --log.format={{{values.log_format}}}\n"
   }
 }

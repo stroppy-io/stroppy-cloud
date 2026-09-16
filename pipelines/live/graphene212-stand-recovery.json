@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "checked_at": "2026-09-15T12:50:20.826846+00:00",
+  "holdings_before": 254,
+  "holdings_after": 254,
+  "exact_initial_deadlines_preserved": 98,
+  "artifact_records_before": 255,
+  "artifact_records_after": 255,
+  "resume_payload_bytes": 41108,
+  "cached_responses": 100,
+  "cached_response_bytes": 6800,
+  "retention": "all original holdings, origin refs and retention modes preserved; exact initial deadlines unchanged",
+  "stand_phase": "ready"
+}

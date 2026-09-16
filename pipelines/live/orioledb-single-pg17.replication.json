@@ -1,0 +1,96 @@
+{
+  "status": "passed",
+  "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-single-pg17",
+  "checked_at": "2026-09-15T13:37:08.431062+00:00",
+  "source": "SQL through ordinary agents on every OrioleDB YC member; primary seeds 100 owned test rows",
+  "checks": {
+    "db-1": {
+      "agent": "7efd284c-db-1",
+      "role": "primary",
+      "source": "SQL over loopback through ordinary test agent; primary seeds 100 owned test rows",
+      "probe_sha256": "05704b3b336fc5cd0f4a177a53e434923b1ffd5987b5c207dd0d599331658a85",
+      "checks": [
+        {
+          "query": "SELECT current_setting('server_version'), pg_is_in_recovery(), current_setting('data_directory')",
+          "rows": [
+            [
+              "17.11 OrioleDB beta 17 PGTAG=patches17_21 alpine:3.21+clang build:2026-09-04T21:10:45+00:00 17.11",
+              "f",
+              "/var/lib/postgresql/data"
+            ]
+          ]
+        },
+        {
+          "query": "CREATE TABLE IF NOT EXISTS public.stroppy_replication_probe (id integer primary key); INSERT INTO public.stroppy_replication_probe SELECT generate_series(1,100) ON CONFLICT DO NOTHING; SELECT count(*) FROM public.stroppy_replication_probe",
+          "rows": [
+            [
+              "100"
+            ]
+          ]
+        },
+        {
+          "query": "SELECT status, latest_end_lsn::text, slot_name, sender_host FROM pg_stat_wal_receiver",
+          "rows": []
+        },
+        {
+          "query": "SELECT state, sync_state, sent_lsn::text, replay_lsn::text FROM pg_stat_replication",
+          "rows": []
+        },
+        {
+          "query": "SELECT extversion, current_setting('default_table_access_method'), current_setting('server_encoding'), (SELECT datcollate FROM pg_database WHERE datname=current_database()) FROM pg_extension WHERE extname='orioledb'",
+          "rows": [
+            [
+              "1.9",
+              "orioledb",
+              "UTF8",
+              "C"
+            ]
+          ]
+        },
+        {
+          "query": "SELECT n.nspname, c.relname, am.amname FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace JOIN pg_am am ON am.oid=c.relam WHERE c.relkind='r' AND n.nspname NOT IN ('pg_catalog','information_schema') AND n.nspname NOT LIKE 'pg_toast%' ORDER BY 1,2",
+          "rows": [
+            [
+              "public",
+              "stroppy_replication_probe",
+              "orioledb"
+            ]
+          ]
+        },
+        {
+          "query": "SELECT name, setting, source FROM pg_settings WHERE name IN ('shared_preload_libraries','pg_stat_statements.max','pg_stat_statements.track','orioledb.undo_buffers') ORDER BY name",
+          "rows": [
+            [
+              "orioledb.undo_buffers",
+              "2080",
+              "default"
+            ],
+            [
+              "pg_stat_statements.max",
+              "5000",
+              "configuration file"
+            ],
+            [
+              "pg_stat_statements.track",
+              "top",
+              "configuration file"
+            ],
+            [
+              "shared_preload_libraries",
+              "pg_stat_statements,orioledb",
+              "configuration file"
+            ]
+          ]
+        },
+        {
+          "query": "SELECT count(*) FROM pg_stat_statements",
+          "rows": [
+            [
+              "16"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

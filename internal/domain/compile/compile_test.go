@@ -32,7 +32,7 @@ func TestCompileCatalogTopologies(t *testing.T) {
 	provider, _ := cat.Provider("yandex")
 	unsupported := map[string]bool{}
 
-	for _, kind := range []catalog.DatabaseKind{catalog.Postgres, catalog.OrioleDB, catalog.MySQL, catalog.MariaDB, catalog.Cockroach, catalog.Picodata, catalog.YDB, catalog.PgNoop, catalog.Noop} {
+	for _, kind := range []catalog.DatabaseKind{catalog.Postgres, catalog.OrioleDB, catalog.MySQL, catalog.MariaDB, catalog.Cockroach, catalog.Picodata, catalog.YDB, catalog.YDBManaged, catalog.PgNoop, catalog.Noop} {
 		db, _ := cat.Database(kind)
 		for _, topo := range db.Topologies {
 			t.Run(string(kind)+"/"+topo.ID, func(t *testing.T) {
@@ -71,6 +71,12 @@ func TestCompileCatalogTopologies(t *testing.T) {
 					}
 					t.Fatalf("compile: %v", err)
 				}
+				if kind == catalog.Picodata {
+					pg, ok := out.Spec.Workload.Driver["postgres"].(map[string]any)
+					if !ok || pg["defaultQueryExecMode"] != "exec" {
+						t.Fatalf("Picodata pgx mode missing: %v", out.Spec.Workload.Driver)
+					}
+				}
 				raw, err := json.Marshal(out.Spec)
 				if err != nil {
 					t.Fatal(err)
@@ -96,7 +102,9 @@ func TestCompileCatalogTopologies(t *testing.T) {
 			})
 		}
 	}
-	t.Logf("unsupported: %v", unsupported)
+	if len(unsupported) > 0 {
+		t.Fatalf("catalog topologies must compile: %v", unsupported)
+	}
 }
 
 func validationText(e *errs.Error) string {
@@ -114,3 +122,86 @@ func defaultVersion(db catalog.Database) string {
 }
 
 var _ = spec.Run{}
+
+// Exercise version resolution across DeriveDatabase and the actual rendered
+// container files, including user overrides and rejection of stale schemas.
+func TestCompilePostgresConfigVersions(t *testing.T) {
+	ctx := context.Background()
+	reg := schemas.New()
+	cat, err := catalog.New(ctx, reg, reg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	provider, _ := cat.Provider("yandex")
+	for _, kind := range []catalog.DatabaseKind{catalog.Postgres, catalog.OrioleDB} {
+		db, _ := cat.Database(kind)
+		for _, version := range db.Versions {
+			t.Run(string(kind)+"/"+version.Version, func(t *testing.T) {
+				major := version.Version
+				prefix := "cfg.postgresql.conf@"
+				params := map[string]any{"version": version.Version}
+				if kind == catalog.OrioleDB {
+					_, major, _ = strings.Cut(version.Version, "-pg")
+					prefix = "cfg.orioledb.postgresql.conf@"
+					params = map[string]any{"image_tag": version.Version}
+				}
+				raw, _ := json.Marshal(params)
+				input := library.DatabaseSpec{Kind: kind, Version: version.Version, Params: raw,
+					Configs: map[string]map[string]json.RawMessage{"db": {prefix + major: json.RawMessage(`{"shared_buffers":256}`)}}}
+				dspec, derived, err := lib.DeriveDatabase(ctx, input)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(derived.EffectiveConfigs["db"][prefix+major]) == 0 {
+					t.Fatal("missing selected schema")
+				}
+				wspec, baked, _, err := lib.DeriveWorkload(ctx, library.WorkloadSpec{StroppyVersion: "6.0.0", Protocol: catalog.ProtoPg, Segments: []json.RawMessage{json.RawMessage(`{"name":"main","workload":{"script":"simple"},"run":{"vus":2,"duration":"30s"}}`)}})
+				if err != nil {
+					t.Fatal(err)
+				}
+				sizes := map[string]library.RoleSize{}
+				for _, n := range derived.Plan.Nodes {
+					sizes[n.Role] = library.RoleSize{Size: "S"}
+				}
+				out, err := compile.Compile(ctx, reg, compile.Input{RunID: uuid.New(), Tenant: "test", Database: dspec, Plan: derived.Plan, EffectiveConfigs: derived.EffectiveConfigs, Workload: wspec, WorkloadBaked: baked, Sizes: sizes, Provider: provider, ProviderKind: "yandex", ProviderSettings: json.RawMessage(`{"cloud_id":"b1g","folder_id":"b1g","zone":"ru-central1-a"}`), CredentialsSecret: "yc", Catalog: cat})
+				if err != nil {
+					t.Fatal(err)
+				}
+				found := false
+				for _, c := range out.Spec.Containers {
+					for _, f := range c.Files {
+						if f.Path != "/etc/stroppy/postgresql.conf" {
+							continue
+						}
+						found = true
+						if !strings.Contains(f.Content, "shared_buffers = 256MB") {
+							t.Error("user override lost")
+						}
+						if !strings.Contains(f.Content, "pg_stat_statements") {
+							t.Error("extension seed lost")
+						}
+						if major == "15" && strings.Contains(f.Content, "\nreserved_connections =") {
+							t.Error("PG16 option on PG15")
+						}
+						if (major == "15" || major == "16") && strings.Contains(f.Content, "transaction_timeout") {
+							t.Error("PG17 option on older PostgreSQL")
+						}
+						if major == "18" && !strings.Contains(f.Content, "io_method") {
+							t.Error("PG18 schema not used")
+						}
+					}
+				}
+				if !found {
+					t.Fatal("postgres config missing")
+				}
+				if major != "17" {
+					input.Configs = map[string]map[string]json.RawMessage{"db": {prefix + "17": json.RawMessage(`{"shared_buffers":256}`)}}
+					if _, _, err := lib.DeriveDatabase(ctx, input); err == nil {
+						t.Error("stale version override silently accepted")
+					}
+				}
+			})
+		}
+	}
+}

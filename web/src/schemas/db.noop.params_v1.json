@@ -1,23 +1,23 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "noop.params",
-    "version": "v1.0.0"
+  "id":  {
+    "namespace":  "db",
+    "name":  "noop.params",
+    "version":  "v1.0.0"
   },
-  "description": "No database — stroppy noop driver; measures the load generator ceiling.",
-  "fields": [
+  "description":  "No database — stroppy noop driver; measures the load generator ceiling.",
+  "fields":  [
     {
-      "name": "workers",
-      "description": "Parallel noop workers inside stroppy; 0 = one per CPU of the runner.",
-      "int64": {
-        "default": "0",
-        "gte": "0",
-        "lte": "4096"
+      "name":  "workers",
+      "description":  "Parallel noop workers inside stroppy; 0 = one per CPU of the runner.",
+      "int64":  {
+        "default":  "0",
+        "gte":  "0",
+        "lte":  "4096"
       },
-      "group": "Generator",
-      "title": "Workers"
+      "group":  "Generator",
+      "title":  "Workers"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict":  true,
+  "coerce":  true
 }
