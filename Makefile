@@ -13,6 +13,7 @@ MODULE  := github.com/stroppy-io/stroppy-cloud
 BINARY  := stroppy-server
 LDFLAGS := -w -s -X $(MODULE)/internal/build.Version=$(VERSION) -X $(MODULE)/internal/build.Commit=$(COMMIT)
 GOFLAGS := -trimpath -ldflags="$(LDFLAGS)"
+GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
 DOCKER_IMAGE := docker.stroppy.io/stroppy-io/stroppy-server
 DOCKER_TAG   := $(VERSION)
@@ -114,7 +115,11 @@ test: ## Run unit tests
 	go test ./... -count=1 -race
 
 lint: ## Run linters
-	golangci-lint run ./...
+	$(GOLANGCI_LINT) run ./...
+
+.PHONY: lint-pipelines
+lint-pipelines: ## Lint the pipeline module with the same version as CI
+	cd pipelines && $(GOLANGCI_LINT) run ./...
 
 fmt: ## Format Go code
 	gofmt -s -w .

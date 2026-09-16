@@ -160,7 +160,8 @@ func (s *session) subscribe(ctx context.Context, f Frame) {
 		s.fail(ctx, f.SubID, errs.Conflict("subscription exists or too many"))
 		return
 	}
-	sctx, cancel := context.WithCancel(ctx) //nolint:gosec // G118: cancelled by unsubscribe or the session end
+	// Cancelled by unsubscribe or the session end.
+	sctx, cancel := context.WithCancel(ctx)
 	sub := &subscription{id: f.SubID, topic: f.Topic, cursor: f.Cursor, cancel: cancel}
 	s.subs[f.SubID] = sub
 	s.mu.Unlock()
