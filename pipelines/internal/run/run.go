@@ -226,21 +226,17 @@ func ensureProviderConfig(ctx pipeline.Context, run spec.Run) error {
 func declareAgents(ctx pipeline.Context, run spec.Run) map[string]pipeline.AgentHandle {
 	agents := make(map[string]pipeline.AgentHandle, len(run.Machines))
 	for _, m := range run.Machines {
-		agents[m.Name] = pipeline.NewAgent(ctx, agentName(run, m), pipeline.WithLabels(map[string]string{
+		opts := []pipeline.ResourceOption{pipeline.WithLabels(map[string]string{
 			"role": m.Role, "machine": m.Name, "stroppy-run": run.RunID,
-		}))
+		})}
+		agents[m.Name] = pipeline.NewAgent(ctx, agentName(run, m), append(opts, agentFlows(run, m)...)...)
 	}
 	return agents
 }
 
-// agentName is unique per run inside the namespace: two concurrent runs
-// may both have a "db-1".
+// agentName is the agent of a machine (spec.AgentName).
 func agentName(run spec.Run, m spec.Machine) string {
-	id := run.RunID
-	if len(id) > 8 {
-		id = id[:8]
-	}
-	return id + "-" + m.Name
+	return spec.AgentName(run.RunID, m.Name)
 }
 
 // waitMachines waits, in parallel, for every VM to run and its agent to

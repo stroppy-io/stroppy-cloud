@@ -27206,6 +27206,16 @@ func (s *ResourceTree) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Flows != nil {
+			e.FieldStart("flows")
+			e.ArrStart()
+			for _, elem := range s.Flows {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
 		if s.KeepUntil.Set {
 			e.FieldStart("keep_until")
 			s.KeepUntil.Encode(e, json.EncodeDateTime)
@@ -27223,13 +27233,14 @@ func (s *ResourceTree) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfResourceTree = [6]string{
+var jsonFieldsNameOfResourceTree = [7]string{
 	0: "ref",
 	1: "kind",
 	2: "phase",
 	3: "labels",
-	4: "keep_until",
-	5: "children",
+	4: "flows",
+	5: "keep_until",
+	6: "children",
 }
 
 // Decode decodes ResourceTree from json.
@@ -27284,6 +27295,23 @@ func (s *ResourceTree) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"labels\"")
+			}
+		case "flows":
+			if err := func() error {
+				s.Flows = make([]ResourceTreeFlowsItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem ResourceTreeFlowsItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Flows = append(s.Flows, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"flows\"")
 			}
 		case "keep_until":
 			if err := func() error {
@@ -27364,6 +27392,170 @@ func (s *ResourceTree) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *ResourceTree) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *ResourceTreeFlowsItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *ResourceTreeFlowsItem) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("to")
+		e.Str(s.To)
+	}
+	{
+		if s.Protocol.Set {
+			e.FieldStart("protocol")
+			s.Protocol.Encode(e)
+		}
+	}
+	{
+		if s.Port.Set {
+			e.FieldStart("port")
+			s.Port.Encode(e)
+		}
+	}
+	{
+		if s.Label.Set {
+			e.FieldStart("label")
+			s.Label.Encode(e)
+		}
+	}
+	{
+		if s.Virtual.Set {
+			e.FieldStart("virtual")
+			s.Virtual.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfResourceTreeFlowsItem = [5]string{
+	0: "to",
+	1: "protocol",
+	2: "port",
+	3: "label",
+	4: "virtual",
+}
+
+// Decode decodes ResourceTreeFlowsItem from json.
+func (s *ResourceTreeFlowsItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ResourceTreeFlowsItem to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "to":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.To = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"to\"")
+			}
+		case "protocol":
+			if err := func() error {
+				s.Protocol.Reset()
+				if err := s.Protocol.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"protocol\"")
+			}
+		case "port":
+			if err := func() error {
+				s.Port.Reset()
+				if err := s.Port.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"port\"")
+			}
+		case "label":
+			if err := func() error {
+				s.Label.Reset()
+				if err := s.Label.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"label\"")
+			}
+		case "virtual":
+			if err := func() error {
+				s.Virtual.Reset()
+				if err := s.Virtual.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"virtual\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode ResourceTreeFlowsItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfResourceTreeFlowsItem) {
+					name = jsonFieldsNameOfResourceTreeFlowsItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *ResourceTreeFlowsItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ResourceTreeFlowsItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

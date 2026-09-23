@@ -350,7 +350,8 @@ func compileYDB(p *Plan, params map[string]any) {
 	p.add(RoleDBCompute, "ydb", compute)
 	p.Flows = append(p.Flows, Flow{From: RoleDBCompute, To: RoleDB, Protocol: "ydb-ic", Port: 19001}, Flow{From: RoleDB, To: RoleDB, Protocol: "ydb-ic", Port: 19001})
 	p.Client = Endpoint{RoleDBCompute, "ydb_grpc", 2136}
-	p.Requirements[RoleDB] = Requirement{CPU: 4, MemoryGB: 8, DiskGB: float64(40 * pdisks), Reason: fmt.Sprintf("%d pdisk(s) × 40 GB", pdisks)}
+	// The compiler's own floor: every pdisk file plus filesystem headroom.
+	p.Requirements[RoleDB] = Requirement{CPU: 4, MemoryGB: 8, DiskGB: float64(40*pdisks + 20), Reason: fmt.Sprintf("%d pdisk(s) × 40 GB + 20 GB filesystem", pdisks)}
 	p.Requirements[RoleDBCompute] = Requirement{CPU: 4, MemoryGB: 8, DiskGB: 20, Reason: "ydb database node"}
 	p.Label = fmt.Sprintf("ydb %s: %d storage + %d database", strOf(params, "fault_tolerance", "none"), storage, compute)
 }

@@ -3,6 +3,7 @@
 package application
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
@@ -17,6 +18,12 @@ import (
 // yandex profile) and returns the tenant base path, the token and the
 // test id.
 func runFixture(t *testing.T, e *e2e) (base, tok, testID string, tn tenant.Tenant) {
+	t.Helper()
+	return runFixtureWith(t, e, nil, "1h")
+}
+
+// runFixtureWith is runFixture with extra workload fields and a keep.
+func runFixtureWith(t *testing.T, e *e2e, workload map[string]any, keep string) (base, tok, testID string, tn tenant.Tenant) {
 	t.Helper()
 	owner := e.person(slug("owner")+"@example.com", "Owner")
 	tn = e.tenant(owner, slug("runs"))
@@ -42,18 +49,68 @@ func runFixture(t *testing.T, e *e2e) (base, tok, testID string, tn tenant.Tenan
 		Status string `json:"status"`
 	}
 	e.want(e.req(http.MethodPost, base+"/databases", map[string]any{"name": "pg-single", "kind": "postgres", "version": "17", "params": map[string]any{"version": "17"}}, tok), http.StatusCreated, &db)
-	e.want(e.req(http.MethodPost, base+"/workloads", map[string]any{
+	wlBody := map[string]any{
 		"name": "tpcc", "stroppy_version": "6.0.0", "protocol": "pg",
 		"segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "1m"}}},
-	}, tok), http.StatusCreated, &wl)
+	}
+	for k, v := range workload {
+		wlBody[k] = v
+	}
+	e.want(e.req(http.MethodPost, base+"/workloads", wlBody, tok), http.StatusCreated, &wl)
 	e.want(e.req(http.MethodPost, base+"/tests", map[string]any{
 		"name": "pg tpcc", "database": map[string]any{"ref": map[string]any{"id": db.ID}}, "workload": map[string]any{"ref": map[string]any{"id": wl.ID}},
-		"provider_profile_id": prof.ID, "sizes": map[string]any{"db": map[string]any{"size": "S"}, "runner": map[string]any{"size": "S"}}, "keep": "1h",
+		"provider_profile_id": prof.ID, "sizes": map[string]any{"db": map[string]any{"size": "S"}, "runner": map[string]any{"size": "S"}}, "keep": keep,
 	}, tok), http.StatusCreated, &test)
 	if test.Status != "ready" {
 		t.Fatalf("test %+v", test)
 	}
 	return base, tok, test.ID, tn
+}
+
+// treeView is the resource tree as the API answers it — the run's
+// topology: records as nodes, their declared flows as edges.
+type treeView struct {
+	Ref    string            `json:"ref"`
+	Kind   string            `json:"kind"`
+	Phase  string            `json:"phase"`
+	Labels map[string]string `json:"labels"`
+	Flows  []struct {
+		To       string `json:"to"`
+		Protocol string `json:"protocol"`
+		Port     int    `json:"port"`
+		Label    string `json:"label"`
+		Virtual  bool   `json:"virtual"`
+	} `json:"flows"`
+	Children []treeView `json:"children"`
+}
+
+// flatten is every node of the tree, parents first.
+func (t treeView) flatten() []treeView {
+	out := []treeView{t}
+	for _, c := range t.Children {
+		out = append(out, c.flatten()...)
+	}
+	return out
+}
+
+// treeChild is the first child whose ref or kind carries the marker.
+func treeChild(tree treeView, marker string) *treeView {
+	for i, c := range tree.Children {
+		if strings.HasSuffix(c.Kind, marker) || strings.HasPrefix(c.Ref, marker) {
+			return &tree.Children[i]
+		}
+	}
+	return nil
+}
+
+func runTree(t *testing.T, e *e2e, base, tok, id string) treeView {
+	t.Helper()
+	var tree treeView
+	e.want(e.req(http.MethodGet, base+"/runs/"+id+"/tree", nil, tok), http.StatusOK, &tree)
+	if tree.Ref != "run/"+id {
+		t.Fatalf("tree root %+v", tree)
+	}
+	return tree
 }
 
 type runView struct {
@@ -100,9 +157,12 @@ type runView struct {
 func TestE2ERuns(t *testing.T) {
 	e := e2eServer(t)
 	base, tok, testID, tn := runFixture(t, e)
+	// Every run pauses once its segment started, until released or cancelled.
+	e.graphene.hold("segment.started")
 	ctx := e.ctx
 
 	var launched runView
+	var firstTPS float64
 	t.Run("launch compiles the RunSpec and starts the pipeline", func(t *testing.T) {
 		r := e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{"name": "first", "labels": map[string]any{"ci": "1"}}, tok)
 		e.want(r, http.StatusCreated, &launched)
@@ -147,22 +207,12 @@ func TestE2ERuns(t *testing.T) {
 		e.want(e.req(http.MethodPost, base+"/runs/"+a.ID+":cancel", nil, tok), http.StatusOK, nil)
 	})
 
-	t.Run("projection follows the event stream to completion", func(t *testing.T) {
+	t.Run("projection follows the real pipeline to completion", func(t *testing.T) {
 		id := launched.ID
 		if n := e.app.services.Projector.Tick(ctx); n < 1 {
 			t.Fatalf("projector started %d followers", n)
 		}
-		e.graphene.emit(id, "run-started", "", nil)
-		e.graphene.milestone(id, "phase.started", map[string]any{"phase": "provisioning"})
-		e.graphene.milestone(id, "machine.ready", map[string]any{"machine": "db-1", "role": "db", "private_ip": "10.130.0.5"})
-		e.graphene.milestone(id, "machine.ready", map[string]any{"machine": "runner-1", "role": "runner", "private_ip": "10.130.0.6"})
-		e.graphene.milestone(id, "phase.finished", map[string]any{"phase": "provisioning"})
-		e.graphene.milestone(id, "phase.started", map[string]any{"phase": "deploying"})
-		e.graphene.milestone(id, "container.ready", map[string]any{"container": "db-1-postgres", "role": "db", "machine": "db-1"})
-		e.graphene.milestone(id, "phase.finished", map[string]any{"phase": "deploying"})
-		e.graphene.milestone(id, "phase.started", map[string]any{"phase": "workload"})
-		e.graphene.milestone(id, "segment.started", map[string]any{"segment": "main", "script": "tpcc/tx"})
-
+		// The pipeline is held right after the segment started.
 		var mid runView
 		eventually(t, 10*time.Second, func() bool {
 			e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &mid)
@@ -186,35 +236,35 @@ func TestE2ERuns(t *testing.T) {
 			ProgressPct float64 `json:"progress_pct"`
 		}
 		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/overview", nil, tok), http.StatusOK, &ov)
-		ready := map[string]string{}
 		for _, m := range ov.Machines {
-			ready[m.Name] = m.Status + "@" + m.Address
+			if m.Status != "ready" || !strings.HasPrefix(m.Address, "10.130.0.") {
+				t.Fatalf("machine %+v", m)
+			}
 		}
-		if ov.Source != "persisted" || ready["db-1"] != "ready@10.130.0.5" || len(ov.WorkloadSegments) != 1 || ov.WorkloadSegments[0].Status != "running" || ov.ProgressPct <= 0 {
+		if ov.Source != "persisted" || len(ov.Machines) != 2 || len(ov.WorkloadSegments) != 1 || ov.WorkloadSegments[0].Status != "running" || ov.ProgressPct <= 0 {
 			t.Fatalf("overview %+v", ov)
 		}
 		comp := map[string]string{}
 		for _, c := range ov.Components {
 			comp[c.ID] = c.Status
 		}
-		if comp["db-1-postgres"] != "ready" || comp["db-1-node-exporter"] != "pending" {
+		if comp["db-1-postgres"] != "ready" {
 			t.Fatalf("components %+v", comp)
 		}
 
-		e.graphene.milestone(id, "segment.finished", map[string]any{"segment": "main", "metrics": map[string]any{"tps": 1234.5}})
-		e.graphene.milestone(id, "phase.finished", map[string]any{"phase": "workload"})
-		e.graphene.milestone(id, "stand.kept", map[string]any{"keep": "1h"})
-		e.graphene.finish(id, "run-completed", "completed", spec.Result{
-			Metrics:  map[string]spec.MetricValue{"tps": {Value: 1234.5}},
-			Segments: []spec.SegmentResult{{Name: "main", Status: spec.SegmentCompleted, Metrics: map[string]spec.MetricValue{"tps": {Value: 1234.5}}}},
-			Summary:  spec.Summary{TPS: 1234.5, LatencyP95Ms: 12},
-		})
+		e.graphene.release(id)
 		var done runView
 		eventually(t, 10*time.Second, func() bool {
 			e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &done)
 			return done.Status == "completed"
 		})
-		if done.Phase != "done" || done.Summary.Headline["tps"] != 1234.5 || done.Summary.ProgressPct != 100 || !done.StandKept || done.Duration == "" {
+		fr, _ := e.graphene.runOf(id)
+		var res spec.Result
+		if err := json.Unmarshal(fr.rec.Result, &res); err != nil || res.Summary.TPS == 0 {
+			t.Fatalf("pipeline result %s: %v", fr.rec.Result, err)
+		}
+		firstTPS = res.Summary.TPS
+		if done.Phase != "done" || done.Summary.Headline["tps"] != res.Summary.TPS || done.Summary.ProgressPct != 100 || !done.StandKept || done.Duration == "" {
 			t.Fatalf("done %+v", done)
 		}
 		if len(done.Result.Segments) != 1 || done.Result.Segments[0].Status != "completed" {
@@ -226,36 +276,79 @@ func TestE2ERuns(t *testing.T) {
 				Title string `json:"title"`
 			} `json:"data"`
 		}
-		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/events", nil, tok), http.StatusOK, &events)
+		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/events?limit=200", nil, tok), http.StatusOK, &events)
 		kinds := map[string]bool{}
 		for _, ev := range events.Data {
 			kinds[ev.Kind] = true
 		}
-		if !kinds["run-started"] || !kinds["phase.started"] || !kinds["segment.finished"] || !kinds["run-completed"] {
-			t.Fatalf("events %+v", events)
+		for _, k := range []string{"run-started", "phase.started", "machine.ready", "container.ready", "segment.finished", "result.published", "stand.kept", "run-completed"} {
+			if !kinds[k] {
+				t.Fatalf("no %s in events %+v", k, events)
+			}
 		}
-		var tree struct {
-			Ref      string `json:"ref"`
-			Children []struct {
-				Ref string `json:"ref"`
-			} `json:"children"`
+		// The run's tree is its history: what it kept (the network with
+		// everything under it, and the artifacts) stands beside what it
+		// tore down.
+		tree := runTree(t, e, base, tok, id)
+		network := treeChild(tree, ".Network")
+		if network == nil || len(network.Children) == 0 || network.Phase != "ready" {
+			t.Fatalf("kept network %+v in %+v", network, tree)
 		}
-		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/tree", nil, tok), http.StatusOK, &tree)
-		if tree.Ref != "run/"+id || len(tree.Children) != 1 {
-			t.Fatalf("tree %+v", tree)
+		if treeChild(tree, "artifact") == nil {
+			t.Fatalf("kept artifacts %+v", tree)
 		}
+		// The same tree IS the topology: what each record is (labels) and
+		// what it talks to (flows), for the whole run including teardown.
+		nodes := map[string]treeView{}
+		for _, n := range tree.flatten() {
+			nodes[n.Ref] = n
+		}
+		var postgres, exporter, runnerAgent treeView
+		for ref, n := range nodes {
+			switch {
+			case n.Labels["kind"] == "database":
+				postgres = n
+			case n.Labels["kind"] == "exporter" && n.Labels["machine"] == "db-1":
+				exporter = n
+			case strings.HasPrefix(ref, "agent/") && n.Labels["role"] == "runner":
+				runnerAgent = n
+			}
+		}
+		if postgres.Labels["container"] != "db-1-postgres" || postgres.Labels["role"] != "db" || postgres.Labels["machine"] != "db-1" {
+			t.Fatalf("container kinds %+v", nodes)
+		}
+		// An exporter shares the database's role but speaks none of its
+		// protocols: the role's edges are not its.
+		if exporter.Ref == "" || len(exporter.Flows) != 0 {
+			t.Fatalf("exporter %+v", exporter)
+		}
+		// The workload runs on the runner's agent, so the agent is what
+		// talks to the database.
+		if len(runnerAgent.Flows) != 1 || runnerAgent.Flows[0].To != postgres.Ref ||
+			runnerAgent.Flows[0].Protocol != "tcp" || runnerAgent.Flows[0].Port != 5432 || runnerAgent.Flows[0].Label != "pg" {
+			t.Fatalf("workload edge %+v (database %s)", runnerAgent.Flows, postgres.Ref)
+		}
+
 		var arts struct {
 			Data []struct {
-				ID   string `json:"id"`
-				Name string `json:"name"`
-				Kind string `json:"kind"`
+				ID        string `json:"id"`
+				Name      string `json:"name"`
+				Kind      string `json:"kind"`
+				SizeBytes int    `json:"size_bytes"`
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/artifacts", nil, tok), http.StatusOK, &arts)
-		if len(arts.Data) != 1 || arts.Data[0].Kind != "stroppy_raw" {
-			t.Fatalf("artifacts %+v", arts)
+		byKind := map[string]string{}
+		for _, a := range arts.Data {
+			if a.SizeBytes == 0 {
+				t.Fatalf("artifact %+v", a)
+			}
+			byKind[a.Kind] = a.ID
 		}
-		if r := e.req(http.MethodGet, base+"/runs/"+id+"/artifacts/"+arts.Data[0].ID, nil, tok); r.Status != http.StatusOK || string(r.Body) != "{}" {
+		if byKind["config"] == "" || byKind["log_bundle"] == "" || len(arts.Data) != len(res.Artifacts) {
+			t.Fatalf("artifacts %+v vs %v", arts, res.Artifacts)
+		}
+		if r := e.req(http.MethodGet, base+"/runs/"+id+"/artifacts/"+byKind["log_bundle"], nil, tok); r.Status != http.StatusOK || !strings.Contains(string(r.Body), "=== bench summary ===") {
 			t.Fatalf("download %d %s", r.Status, r.Body)
 		}
 	})
@@ -265,9 +358,19 @@ func TestE2ERuns(t *testing.T) {
 		var got runView
 		e.want(e.req(http.MethodPost, base+"/runs/"+id+":keep-extend", map[string]any{"duration": "2h"}, tok), http.StatusOK, &got)
 		e.problem(e.req(http.MethodPost, base+"/runs/"+id+":keep-extend", map[string]any{"duration": "999h"}, tok), http.StatusUnprocessableEntity, "limit_exceeded")
+		// Past the pipeline's own hour the extension still holds the stand.
+		e.graphene.advance(90 * time.Minute)
+		if n := treeChild(runTree(t, e, base, tok, id), ".Network"); n == nil || n.Phase != "ready" {
+			t.Fatalf("extended stand gone: %+v", n)
+		}
 		e.want(e.req(http.MethodPost, base+"/runs/"+id+":keep-release", nil, tok), http.StatusOK, &got)
 		if got.StandKept {
 			t.Fatalf("still kept %+v", got)
+		}
+		// Released: the stand holds nothing of this run any more, so its
+		// records leave the run's tree with it (they were the stand's).
+		if n := treeChild(runTree(t, e, base, tok, id), ".Network"); n != nil {
+			t.Fatalf("released stand still there: %+v", n)
 		}
 		e.problem(e.req(http.MethodPost, base+"/runs/"+id+":keep-release", nil, tok), http.StatusConflict, "conflict")
 		e.graphene.mu.Lock()
@@ -322,7 +425,7 @@ func TestE2ERuns(t *testing.T) {
 			} `json:"trend"`
 		}
 		e.want(e.req(http.MethodGet, base+"/tests/"+testID+"/runs", nil, tok), http.StatusOK, &history)
-		if len(history.Data) < 2 || len(history.Trend.Points) != 1 || history.Trend.Points[0].Value != 1234.5 {
+		if len(history.Data) < 2 || len(history.Trend.Points) != 1 || history.Trend.Points[0].Value != firstTPS {
 			t.Fatalf("history %+v", history)
 		}
 	})
@@ -335,7 +438,6 @@ func TestE2ERuns(t *testing.T) {
 		}
 		e.problem(e.req(http.MethodDelete, base+"/runs/"+second.ID, nil, tok), http.StatusConflict, "conflict")
 		e.app.services.Projector.Tick(ctx)
-		e.graphene.emit(second.ID, "run-started", "", nil)
 		var cancelled runView
 		e.want(e.req(http.MethodPost, base+"/runs/"+second.ID+":cancel", nil, tok), http.StatusOK, &cancelled)
 		eventually(t, 10*time.Second, func() bool {

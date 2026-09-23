@@ -85,6 +85,7 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 		}
 		ct := spec.Container{
 			Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
+			Kind:   spec.ContainerKindDatabase,
 			Cmd:    []string{"bash", clusterStartPath},
 			Env:    map[string]string{"MYSQL_ROOT_PASSWORD": mysqlPassword, "MYSQL_ROOT_HOST": "%", "MARIADB_ROOT_PASSWORD": mysqlPassword, "MARIADB_ROOT_HOST": "%", "STROPPY_CLUSTER_SEED": "0", "STROPPY_RECOVERY_PASSWORD": recoveryPassword},
 			Mounts: []spec.Mount{{Source: dataMount + "/mysql", Target: mysqlDataInner}},
@@ -126,7 +127,8 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-mysqld-exporter", Role: role, Machine: m, Image: imageMySQLDExporter,
-			Env: map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword}, Cmd: cmd,
+			Kind: spec.ContainerKindExporter,
+			Env:  map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword}, Cmd: cmd,
 			Ports: []spec.Port{{Container: mysqldExporterPort, Host: mysqldExporterPort}}, Scrape: "/metrics", Restart: "always", DependsOn: []string{ct.Name},
 		})
 	}

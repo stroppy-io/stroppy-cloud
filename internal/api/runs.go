@@ -805,6 +805,22 @@ func treeOf(n run.TreeNode) oas.ResourceTree {
 	if len(n.Labels) > 0 {
 		out.Labels = oas.NewOptResourceTreeLabels(oas.ResourceTreeLabels(n.Labels))
 	}
+	for _, f := range n.Flows {
+		edge := oas.ResourceTreeFlowsItem{To: f.To}
+		if f.Protocol != "" {
+			edge.Protocol = oas.NewOptString(f.Protocol)
+		}
+		if f.Port > 0 {
+			edge.Port = oas.NewOptInt(f.Port)
+		}
+		if f.Label != "" {
+			edge.Label = oas.NewOptString(f.Label)
+		}
+		if f.Virtual {
+			edge.Virtual = oas.NewOptBool(true)
+		}
+		out.Flows = append(out.Flows, edge)
+	}
 	for _, c := range n.Children {
 		out.Children = append(out.Children, treeOf(c))
 	}

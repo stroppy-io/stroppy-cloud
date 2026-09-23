@@ -15,8 +15,8 @@ meet here:
     skeleton and the steps of every phase;
   - the pipeline's milestones (phase.*, machine.ready, container.ready,
     segment.*, baseline.*, stand.kept, result.published), delivered as
-    `signal-received` with subject `entity-note` and `{"name","payload"}`
-    in the input.
+    events of kind `note` whose subject is the milestone's name and whose
+    input is its payload.
 
 Apply is pure: it takes one raw event and returns what changed, so it is
 unit-testable without Graphene and replayable from the stored timeline.
@@ -57,19 +57,15 @@ type Outcome struct {
 	ResultReady bool
 }
 
-// milestone decodes an entity-note event.
+// milestone decodes a note event: the name is the subject, the payload
+// the input.
 func (e RawEvent) milestone() (Milestone, bool) {
-	if e.Kind != "signal-received" || e.Subject != "entity-note" || len(e.Input) == 0 {
+	if e.Kind != "note" || e.Subject == "" {
 		return Milestone{}, false
 	}
-	var m Milestone
-	if err := json.Unmarshal(e.Input, &m); err != nil || m.Name == "" {
-		// Signals arrive as a JSON list of arguments sometimes.
-		var list []Milestone
-		if err := json.Unmarshal(e.Input, &list); err != nil || len(list) == 0 || list[0].Name == "" {
-			return Milestone{}, false
-		}
-		m = list[0]
+	m := Milestone{Name: e.Subject}
+	if len(e.Input) > 0 {
+		_ = json.Unmarshal(e.Input, &m.Payload) //nolint:errcheck // a payloadless note is a note
 	}
 	return m, true
 }
@@ -176,6 +172,7 @@ func (st *State) applyMilestone(e RawEvent, m Milestone) Outcome {
 		ev.Title = "Baseline finished"
 		return Outcome{Timeline: ev}
 	case "stand.kept":
+		st.Stand = &StandState{Root: str(p, "root"), Keep: str(p, "keep")}
 		ev.Title = "Stand kept for " + str(p, "keep")
 		return Outcome{Timeline: ev}
 	case "result.published":
@@ -258,14 +255,26 @@ func (st *State) segment(name string, fn func(*SegmentState)) {
 	st.Segments = append(st.Segments, s)
 }
 
-// finishPhases settles what is still open when the run ends.
+// finishPhases settles what is still open when the run ends. A cancelled
+// run's pipeline reports the phase it was in as failed with the
+// cancellation as the error: that phase was cancelled, not failed.
 func (st *State) finishPhases(status string) {
 	for i := range st.Phases {
-		switch st.Phases[i].Status {
+		p := &st.Phases[i]
+		switch p.Status {
 		case "running":
-			st.Phases[i].Status = status
+			p.Status = status
 		case "pending":
-			st.Phases[i].Status = "skipped"
+			p.Status = "skipped"
+		case "failed":
+			if status == "cancelled" && strings.Contains(strings.ToLower(p.Error), "cancel") {
+				p.Status = status
+			}
+		}
+		for j := range p.Steps {
+			if p.Steps[j].Status == "running" || p.Steps[j].Status == "pending" {
+				p.Steps[j].Status = status
+			}
 		}
 	}
 	for i := range st.Segments {

@@ -315,12 +315,35 @@ components:
             last_failure: { type: string }
     ResourceTree:
       type: object
+      description: >-
+        A record of the run with what it owns and what it talks to — the run's
+        topology, drawn from one call: nodes are the records (machines,
+        containers, agents, artifacts), edges are their declared flows.
+        A finished run keeps its records here, with phase `deleted`.
       required: [ref, kind]
       properties:
         ref: { type: string }
         kind: { type: string }
         phase: { type: string }
-        labels: { type: object, additionalProperties: { type: string } }
+        labels:
+          type: object
+          additionalProperties: { type: string }
+          description: >-
+            Record markers. A container of a run carries `container`, `role`,
+            `machine` and `kind` (database, proxy, coordinator, exporter,
+            addon); an agent carries `role` and `machine`.
+        flows:
+          type: array
+          description: Declared outgoing edges of this record (intent, not observed traffic).
+          items:
+            type: object
+            required: [to]
+            properties:
+              to: { type: string, description: 'Target record ref ("docker/<run>-db-1-postgres") or an external endpoint.' }
+              protocol: { type: string, description: 'tcp, http, grpc, otlp, prometheus_pull, … — an open vocabulary.' }
+              port: { type: integer }
+              label: { type: string }
+              virtual: { type: boolean, description: A system edge that always exists (agent↔server), not one the run declared. }
         keep_until: { type: [string, 'null'], format: date-time }
         children:
           type: array

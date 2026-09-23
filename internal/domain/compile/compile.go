@@ -80,6 +80,7 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 		return Output{}, err
 	}
 	c.exporters()
+	c.managedFlow()
 	if err := c.workload(); err != nil {
 		return Output{}, err
 	}
@@ -152,11 +153,7 @@ func (c *compilation) machines() error {
 		if !ok {
 			return errs.Newf(errs.CodeInvalid, "sizes.%s: no size chosen", node.Role)
 		}
-		table, ok := c.in.Provider.Sizes[topology.Family(node.Role)]
-		if !ok {
-			table = c.in.Provider.Sizes[topology.RoleProxy]
-		}
-		cell, ok := table[rs.Size]
+		cell, ok := c.in.Provider.SizeTable(topology.Family(node.Role))[rs.Size]
 		if !ok {
 			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role))
 		}
@@ -274,6 +271,21 @@ func (c *compilation) flows() {
 		c.out.Spec.Flows = append(c.out.Spec.Flows, spec.Flow{FromRole: f.From, ToRole: f.To, Protocol: proto, Port: f.Port, Label: f.Protocol})
 	}
 }
+
+// managedFlow leads the workload's edge out of the stand: a managed
+// database is not in the plan, so no role stands for it. Runs after the
+// recipe, which is what decides the database is managed.
+func (c *compilation) managedFlow() {
+	if c.out.Spec.ManagedYDB == nil {
+		return
+	}
+	c.out.Spec.Flows = append(c.out.Spec.Flows, spec.Flow{
+		FromRole: topology.RoleRunner, External: "managed-ydb", Protocol: "grpc", Port: managedYDBPort, Label: "ydb",
+	})
+}
+
+// managedYDBPort is the client port of a managed YDB endpoint.
+const managedYDBPort = 2135
 
 // --- workload ---------------------------------------------------------------
 
@@ -521,6 +533,7 @@ func (c *compilation) exporters() {
 		name := m.Name + "-node-exporter"
 		c.add(spec.Container{
 			Name: name, Role: m.Role, Machine: m.Name, Image: imageNodeExporter,
+			Kind: spec.ContainerKindExporter,
 			Cmd: []string{
 				"--path.rootfs=/host", "--path.procfs=/host/proc", "--path.sysfs=/host/sys",
 				"--path.udev.data=/host/run/udev/data", fmt.Sprintf("--web.listen-address=:%d", nodeExporterPort),

@@ -13,7 +13,9 @@ import (
 // Selectors are checked after recipe compilation; unknown selectors are errors.
 func Runtime() *schemapb.Schema {
 	run := specschema.Run()
-	container := patchSchema(runItem("containers"), "name", "role", "machine")
+	// The kind is what the container IS — decided by the recipe that made
+	// it, like its name and its machine; an override does not rename it.
+	container := patchSchema(runItem("containers"), "name", "role", "machine", "kind")
 	s := schemapb.NewSchema(ids.Test("runtime", 1)).Strict().Coerce().
 		DefSchema("machine", Machine()).DefSchema("container", container).
 		Fields(

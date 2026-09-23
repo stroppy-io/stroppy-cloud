@@ -64,8 +64,17 @@ func (r *SettingsRepo) SetLimitsOverride(ctx context.Context, tenantID uuid.UUID
 	if l != nil {
 		raw, _ = json.Marshal(l) //nolint:errcheck // struct always marshals
 	}
-	if _, err := r.q.SetLimitsOverride(ctx, db.SetLimitsOverrideParams{TenantID: tenantID, LimitsOverride: raw}); err != nil {
+	// A tenant nobody has opened the settings of has no row yet: the
+	// override must not vanish into an update of nothing.
+	if _, err := r.q.EnsureSettings(ctx, tenantID); err != nil {
+		return infraf("settings: ensure: %v", err)
+	}
+	n, err := r.q.SetLimitsOverride(ctx, db.SetLimitsOverrideParams{TenantID: tenantID, LimitsOverride: raw})
+	if err != nil {
 		return infraf("settings: limits: %v", err)
+	}
+	if n != 1 {
+		return infraf("settings: limits: %d rows updated", n)
 	}
 	return nil
 }

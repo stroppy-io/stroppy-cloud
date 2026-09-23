@@ -3,6 +3,7 @@
 package application
 
 import (
+	"encoding/json"
 	"net/http"
 	"strings"
 	"testing"
@@ -13,7 +14,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/schedule"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/repositories"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 type suiteRunView struct {
@@ -130,8 +130,20 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 		}
 	})
 
+	// Cell i of the matrix measures 1000+100*i transactions per second.
+	cellTPS := func(tps func(i int) float64) func(string, json.RawMessage) simScenario {
+		return func(runID string, _ json.RawMessage) simScenario {
+			for i, c := range created.ComputedCells {
+				if strings.HasSuffix(runID, "-"+c.ID) {
+					return simScenario{TPS: tps(i)}
+				}
+			}
+			return simScenario{}
+		}
+	}
 	var sr suiteRunView
 	t.Run("launch prepares every cell and starts stroppy-suite", func(t *testing.T) {
+		e.graphene.scenario = cellTPS(func(i int) float64 { return float64(1000 + 100*i) })
 		e.want(e.req(http.MethodPost, base+"/suites/"+created.ID+":launch", map[string]any{"name": "m1"}, tok), http.StatusCreated, &sr)
 		if sr.Status != "pending" || sr.Progress.Total != 2 || sr.Progress.Pending != 2 || len(sr.Cells) != 2 || sr.Cells[0].Run.ID == "" {
 			t.Fatalf("suite run %+v", sr)
@@ -164,28 +176,19 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 	})
 
 	t.Run("children and the suite are projected to completion", func(t *testing.T) {
-		e.app.services.SuiteProj.Tick(ctx)
-		e.graphene.emit(sr.ID, "run-started", "", nil)
-		// The suite pipeline starts the cells as "<suite_run_id>-<cell_id>".
-		for _, c := range sr.Cells {
-			id := sr.ID + "-" + c.CellID
-			e.graphene.startChild(id, tn.GrapheneNamespace)
-		}
-		e.app.services.Projector.Tick(ctx)
-		for i, c := range sr.Cells {
-			id := sr.ID + "-" + c.CellID
-			e.graphene.emit(id, "run-started", "", nil)
-			e.graphene.finish(id, "run-completed", "completed", spec.Result{Summary: spec.Summary{TPS: float64(1000 + i*100)}})
-		}
-		var got suiteRunView
+		// stroppy-suite ran its cells as child runs "<suite_run_id>-<cell_id>".
 		eventually(t, 10*time.Second, func() bool {
-			e.want(e.req(http.MethodGet, base+"/suite-runs/"+sr.ID, nil, tok), http.StatusOK, &got)
-			return got.Progress.Done == 2 && got.Status == "running"
-		})
-		e.graphene.finish(sr.ID, "run-completed", "completed", spec.SuiteResult{Total: 2, Done: 2})
-		eventually(t, 10*time.Second, func() bool {
+			e.app.services.SuiteProj.Tick(ctx)
+			e.app.services.Projector.Tick(ctx)
+			var got suiteRunView
 			e.want(e.req(http.MethodGet, base+"/suite-runs/"+sr.ID, nil, tok), http.StatusOK, &got)
 			return got.Status == "completed"
+		})
+		var got suiteRunView
+		eventually(t, 10*time.Second, func() bool {
+			e.app.services.Projector.Tick(ctx)
+			e.want(e.req(http.MethodGet, base+"/suite-runs/"+sr.ID, nil, tok), http.StatusOK, &got)
+			return got.Progress.Done == 2
 		})
 		if got.Progress.Pct != 100 {
 			t.Fatalf("progress %+v", got.Progress)
@@ -222,41 +225,41 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 
 	t.Run("cancel cascades, retry-failed relaunches cancelled cells, compare shows regression", func(t *testing.T) {
 		var second suiteRunView
+		// The suite pauses once it started its first cell.
+		e.graphene.scenario = func(runID string, _ json.RawMessage) simScenario {
+			if strings.Count(runID, "-") == 4 {
+				return simScenario{Hold: "cell.started"}
+			}
+			return simScenario{}
+		}
 		e.want(e.req(http.MethodPost, base+"/suites/"+created.ID+":launch", map[string]any{"name": "m2"}, tok), http.StatusCreated, &second)
 		e.app.services.SuiteProj.Tick(ctx)
-		e.graphene.emit(second.ID, "run-started", "", nil)
+		e.app.services.Projector.Tick(ctx)
 		var cancelled suiteRunView
 		e.want(e.req(http.MethodPost, base+"/suite-runs/"+second.ID+":cancel", nil, tok), http.StatusOK, &cancelled)
 		eventually(t, 10*time.Second, func() bool {
+			e.app.services.SuiteProj.Tick(ctx)
+			e.app.services.Projector.Tick(ctx)
 			e.want(e.req(http.MethodGet, base+"/suite-runs/"+second.ID, nil, tok), http.StatusOK, &cancelled)
 			return cancelled.Status == "cancelled" && cancelled.Progress.Cancelled == 2
 		})
 		e.problem(e.req(http.MethodDelete, base+"/suite-runs/"+sr.ID+"x", nil, tok), http.StatusUnprocessableEntity, "invalid")
 
 		var retry suiteRunView
+		e.graphene.scenario = cellTPS(func(int) float64 { return 500 })
 		e.want(e.req(http.MethodPost, base+"/suite-runs/"+second.ID+":retry-failed", nil, tok), http.StatusCreated, &retry)
 		if retry.TriggerRef.RetryOf != second.ID || retry.Progress.Total != 2 {
 			t.Fatalf("retry %+v", retry)
 		}
-		// Finish the retry with lower tps: compared to the first run it regresses.
-		e.app.services.SuiteProj.Tick(ctx)
-		e.graphene.emit(retry.ID, "run-started", "", nil)
-		for _, c := range retry.Cells {
-			id := retry.ID + "-" + c.CellID
-			e.graphene.startChild(id, tn.GrapheneNamespace)
-		}
-		e.app.services.Projector.Tick(ctx)
-		for _, c := range retry.Cells {
-			id := retry.ID + "-" + c.CellID
-			e.graphene.emit(id, "run-started", "", nil)
-			e.graphene.finish(id, "run-completed", "completed", spec.Result{Summary: spec.Summary{TPS: 500}})
-		}
-		e.graphene.finish(retry.ID, "run-completed", "completed", spec.SuiteResult{Total: 2, Done: 2})
+		// The retry measures lower tps: compared to the first run it regresses.
 		var done suiteRunView
 		eventually(t, 10*time.Second, func() bool {
+			e.app.services.SuiteProj.Tick(ctx)
+			e.app.services.Projector.Tick(ctx)
 			e.want(e.req(http.MethodGet, base+"/suite-runs/"+retry.ID, nil, tok), http.StatusOK, &done)
 			return done.Status == "completed" && done.Progress.Done == 2
 		})
+		e.graphene.scenario = nil
 		var summary struct {
 			ComparedTo string `json:"compared_to"`
 			Rows       []struct {

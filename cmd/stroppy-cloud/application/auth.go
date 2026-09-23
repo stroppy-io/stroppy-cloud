@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,17 +36,18 @@ project's access_ttl.
 
 // IAMConfig is the `iam` section.
 type IAMConfig struct {
-	Mode        string `default:"hybrid" mapstructure:"mode"        validate:"oneof=remote local hybrid"`
-	BaseURL     string `mapstructure:"base_url"                     validate:"required,url"`
+	Mode string `default:"hybrid" mapstructure:"mode"        validate:"oneof=remote local hybrid"`
+	// BaseURL, ProjectID and ClientID are required unless dev mode is on.
+	BaseURL     string `mapstructure:"base_url"                     validate:"omitempty,url"`
 	Credential  string `mapstructure:"credential"`
-	ProjectID   string `mapstructure:"project_id"                   validate:"required"`
+	ProjectID   string `mapstructure:"project_id"`
 	Environment string `default:"live"   mapstructure:"environment" validate:"required"`
 	Issuer      string `mapstructure:"issuer"`
 	Audience    string `mapstructure:"audience"`
 	JWKSURL     string `mapstructure:"jwks_url"`
 	// ClientID is the SPA's app client (X-Client-Id); served to the SPA
 	// through the public config.
-	ClientID string `mapstructure:"client_id" validate:"required"`
+	ClientID string `mapstructure:"client_id"`
 	// WebhookSigningSecret verifies IAM lifecycle events; empty = the
 	// endpoint is not mounted.
 	WebhookSigningSecret string `mapstructure:"webhook_signing_secret"`
@@ -59,6 +61,80 @@ type IAMConfig struct {
 
 func (c *IAMConfig) WebhookEnabled() bool { return c.WebhookSigningSecret != "" }
 
+// complete reports the settings IAM verification needs.
+func (c *IAMConfig) complete() error {
+	if c.BaseURL == "" || c.ProjectID == "" || c.ClientID == "" {
+		return errors.New("iam.base_url, iam.project_id and iam.client_id are required (or turn dev mode on: dev.users)")
+	}
+	return nil
+}
+
+// DevConfig is the `dev` section: a local installation without IAM.
+type DevConfig struct {
+	// Users are static bearer tokens, `token=email[=Display name]`. Any
+	// entry turns dev mode on: IAM is not asked, a token is a user.
+	// NEVER for a shared installation — the tokens are the passwords.
+	Users []string `mapstructure:"users"`
+}
+
+// Enabled reports dev mode.
+func (c *DevConfig) Enabled() bool { return len(c.Users) > 0 }
+
+// devUser is one static identity.
+type devUser struct {
+	id          uuid.UUID
+	email, name string
+}
+
+// devNamespace makes a dev user's id stable across restarts.
+var devNamespace = uuid.MustParse("6f9d1c02-5d0b-4d8e-9d44-5e0b2a1f7c11")
+
+// devVerifier recognizes the static tokens of dev mode. The profile is
+// ensured and named on every call; invites for the e-mail apply as in IAM
+// mode, so a local stand can rehearse membership flows.
+type devVerifier struct {
+	users    map[string]devUser
+	profiles *profile.Service
+	tenants  *tenant.Service
+	log      *xlog.Logger
+}
+
+func newDevVerifier(cfg *DevConfig, profiles *profile.Service, tenants *tenant.Service, log *xlog.Logger) (*devVerifier, error) {
+	v := &devVerifier{users: map[string]devUser{}, profiles: profiles, tenants: tenants, log: log}
+	for _, entry := range cfg.Users {
+		token, rest, ok := strings.Cut(entry, "=")
+		email, name, _ := strings.Cut(rest, "=")
+		if !ok || token == "" || !strings.Contains(email, "@") {
+			return nil, fmt.Errorf("dev.users: %q is not token=email[=name]", entry)
+		}
+		if name == "" {
+			name, _, _ = strings.Cut(email, "@")
+		}
+		v.users[token] = devUser{id: uuid.NewSHA1(devNamespace, []byte(strings.ToLower(email))), email: email, name: name}
+	}
+	return v, nil
+}
+
+func (v *devVerifier) Verify(ctx context.Context, token string) (auth.Actor, bool, error) {
+	u, ok := v.users[token]
+	if !ok {
+		return auth.Actor{}, false, nil
+	}
+	p, created, err := v.profiles.Ensure(ctx, u.id, u.email)
+	if err != nil {
+		return auth.Actor{}, true, err
+	}
+	if created || p.DisplayName == "" {
+		if _, err := v.profiles.Seed(ctx, u.id, u.email, u.name, ""); err != nil {
+			v.log.Ctx().Warn(ctx, "dev: seed profile failed", xlog.ErrorCause(err))
+		}
+		if err := v.tenants.ApplyPending(ctx, u.id, u.email); err != nil {
+			v.log.Ctx().Warn(ctx, "dev: apply invites failed", xlog.ErrorCause(err))
+		}
+	}
+	return auth.Actor{UserID: u.id, Email: u.email}, true, nil
+}
+
 // errUnauthenticated — the token is not recognized. Never leaves the
 // process with a reason attached.
 var errUnauthenticated = errors.New("token not recognized")
@@ -68,14 +144,24 @@ var errUnauthenticated = errors.New("token not recognized")
 type verifierChain struct {
 	tokens *apitoken.Service
 	iam    *iamVerifier
+	// dev, when set, recognizes the static tokens of dev mode first.
+	dev *devVerifier
 }
 
 func (v verifierChain) Verify(ctx context.Context, token string) (auth.Actor, error) {
 	if token == "" {
 		return auth.Actor{}, errUnauthenticated
 	}
+	if v.dev != nil {
+		if a, ok, err := v.dev.Verify(ctx, token); ok {
+			return a, err
+		}
+	}
 	if apitoken.IsWire(token) {
 		return v.tokens.Verify(ctx, token)
+	}
+	if v.iam == nil {
+		return auth.Actor{}, errUnauthenticated
 	}
 	return v.iam.Verify(ctx, token)
 }

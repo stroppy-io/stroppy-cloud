@@ -24,8 +24,10 @@ import (
 // testDB is the shared, migrated connection to the throwaway Postgres. Tests
 // isolate by fresh uuids/slugs, so one database serves the package.
 var (
-	testDB  *postgres.Client
-	testLog = xlog.NewConsole(xlog.WithLevel(xlog.WarnLevel), xlog.WithWriter(os.Stderr))
+	testDB *postgres.Client
+	// victoriaLogsURL/victoriaMetricsURL are the real telemetry stores.
+	victoriaLogsURL, victoriaMetricsURL string
+	testLog                             = xlog.NewConsole(xlog.WithLevel(xlog.WarnLevel), xlog.WithWriter(os.Stderr))
 )
 
 func TestMain(m *testing.M) {
@@ -63,9 +65,44 @@ func TestMain(m *testing.M) {
 	}
 	testDB = db
 
+	vl, vlURL, err := startStore(ctx, "victoriametrics/victoria-logs:v1.52.0", "9428/tcp", "-retentionPeriod=30d")
+	if err != nil {
+		panic("start victoria-logs: " + err.Error())
+	}
+	vm, vmURL, err := startStore(ctx, "victoriametrics/victoria-metrics:v1.151.0", "8428/tcp", "-search.latencyOffset=0s", "-search.disableCache", "-retentionPeriod=30d")
+	if err != nil {
+		panic("start victoria-metrics: " + err.Error())
+	}
+	victoriaLogsURL, victoriaMetricsURL = vlURL, vmURL
+
 	code := m.Run()
 
 	db.Close()
 	_ = container.Terminate(ctx)
+	_ = vl.Terminate(ctx)
+	_ = vm.Terminate(ctx)
 	os.Exit(code)
+}
+
+// startStore runs one Victoria store and answers its base URL.
+func startStore(ctx context.Context, image, port string, args ...string) (testcontainers.Container, string, error) {
+	c, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
+		ContainerRequest: testcontainers.ContainerRequest{
+			Image: image, Cmd: args, ExposedPorts: []string{port},
+			WaitingFor: wait.ForHTTP("/health").WithPort(port).WithStartupTimeout(60 * time.Second),
+		},
+		Started: true,
+	})
+	if err != nil {
+		return nil, "", err
+	}
+	host, err := c.Host(ctx)
+	if err != nil {
+		return nil, "", err
+	}
+	mapped, err := c.MappedPort(ctx, port)
+	if err != nil {
+		return nil, "", err
+	}
+	return c, "http://" + host + ":" + mapped.Port(), nil
 }

@@ -249,8 +249,21 @@ func verdictOf(higherIsBetter bool, v, base, deadbandPct float64) string {
 	return "worse"
 }
 
+// lowerIsBetter reads a native metric key (optionally "<segment>.<key>"):
+// failures and retries are better fewer; counts and totals are volume,
+// better more (iteration_duration_count is how many iterations were
+// measured, not a latency); latencies and durations are better lower.
 func lowerIsBetter(key string) bool {
-	return strings.Contains(key, "latency") || strings.Contains(key, "error") || strings.Contains(key, "duration") || strings.Contains(key, "failed")
+	if i := strings.LastIndexByte(key, '.'); i >= 0 {
+		key = key[i+1:]
+	}
+	switch {
+	case strings.Contains(key, "failed") || strings.Contains(key, "error") || strings.Contains(key, "retry"):
+		return true
+	case strings.HasSuffix(key, "_count") || strings.HasSuffix(key, "_total"):
+		return false
+	}
+	return strings.Contains(key, "latency") || strings.Contains(key, "duration")
 }
 
 // Duration of a run, for the columns.

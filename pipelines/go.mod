@@ -14,17 +14,20 @@ require (
 	github.com/crossplane/crossplane-runtime/v2 v2.2.0
 	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-units v0.5.0
-	github.com/gopherex/schemapb/go v0.0.0-20260910140503-8839ac99233d
-	github.com/graphene-ci/library/docker v0.2.3
-	github.com/graphene-ci/library/k8s v0.2.0
-	github.com/graphene-ci/pipeline v0.2.5
+	github.com/google/uuid v1.6.0
+	github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3
+	github.com/graphene-ci/library/docker v0.3.2
+	github.com/graphene-ci/library/k8s v0.3.0
+	github.com/graphene-ci/pipeline v0.2.11
 	github.com/stretchr/testify v1.12.1
 	github.com/upbound/provider-aws/v2 v2.6.0
 	github.com/yandex-cloud/crossplane-provider-yc v0.14.0
 	github.com/yandex-cloud/go-genproto v0.118.0
 	github.com/yandex-cloud/go-sdk v0.34.0
 	go.temporal.io/sdk v1.48.0
+	google.golang.org/grpc v1.83.1
 	google.golang.org/protobuf v1.36.12
+	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.36.3
 	k8s.io/apimachinery v0.36.3
 	k8s.io/client-go v0.36.3
@@ -103,7 +106,6 @@ require (
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-containerregistry v0.21.9 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/graphene-ci/temporal-entity v0.0.0-20260824103956-3919c84e4abb // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.30.0 // indirect
@@ -210,11 +212,9 @@ require (
 	google.golang.org/genproto v0.0.0-20251202230838-ff82c1b0f217 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260819154853-08b0e4226688 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
-	google.golang.org/grpc v1.83.1 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.36.3 // indirect
 	k8s.io/code-generator v0.36.3 // indirect
 	k8s.io/component-base v0.36.3 // indirect

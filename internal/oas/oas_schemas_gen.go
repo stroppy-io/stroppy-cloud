@@ -16994,14 +16994,21 @@ func (s *Requirements) init() Requirements {
 	return m
 }
 
+// A record of the run with what it owns and what it talks to — the run's topology, drawn from one
+// call: nodes are the records (machines, containers, agents, artifacts), edges are their declared
+// flows. A finished run keeps its records here, with phase `deleted`.
 // Ref: #/components/schemas/ResourceTree
 type ResourceTree struct {
-	Ref       string                `json:"ref"`
-	Kind      string                `json:"kind"`
-	Phase     OptString             `json:"phase"`
-	Labels    OptResourceTreeLabels `json:"labels"`
-	KeepUntil OptNilDateTime        `json:"keep_until"`
-	Children  []ResourceTree        `json:"children"`
+	Ref   string    `json:"ref"`
+	Kind  string    `json:"kind"`
+	Phase OptString `json:"phase"`
+	// Record markers. A container of a run carries `container`, `role`, `machine` and `kind` (database,
+	// proxy, coordinator, exporter, addon); an agent carries `role` and `machine`.
+	Labels OptResourceTreeLabels `json:"labels"`
+	// Declared outgoing edges of this record (intent, not observed traffic).
+	Flows     []ResourceTreeFlowsItem `json:"flows"`
+	KeepUntil OptNilDateTime          `json:"keep_until"`
+	Children  []ResourceTree          `json:"children"`
 }
 
 // GetRef returns the value of Ref.
@@ -17022,6 +17029,11 @@ func (s *ResourceTree) GetPhase() OptString {
 // GetLabels returns the value of Labels.
 func (s *ResourceTree) GetLabels() OptResourceTreeLabels {
 	return s.Labels
+}
+
+// GetFlows returns the value of Flows.
+func (s *ResourceTree) GetFlows() []ResourceTreeFlowsItem {
+	return s.Flows
 }
 
 // GetKeepUntil returns the value of KeepUntil.
@@ -17054,6 +17066,11 @@ func (s *ResourceTree) SetLabels(val OptResourceTreeLabels) {
 	s.Labels = val
 }
 
+// SetFlows sets the value of Flows.
+func (s *ResourceTree) SetFlows(val []ResourceTreeFlowsItem) {
+	s.Flows = val
+}
+
 // SetKeepUntil sets the value of KeepUntil.
 func (s *ResourceTree) SetKeepUntil(val OptNilDateTime) {
 	s.KeepUntil = val
@@ -17064,6 +17081,69 @@ func (s *ResourceTree) SetChildren(val []ResourceTree) {
 	s.Children = val
 }
 
+type ResourceTreeFlowsItem struct {
+	// Target record ref ("docker/<run>-db-1-postgres") or an external endpoint.
+	To string `json:"to"`
+	// Tcp, http, grpc, otlp, prometheus_pull, … — an open vocabulary.
+	Protocol OptString `json:"protocol"`
+	Port     OptInt    `json:"port"`
+	Label    OptString `json:"label"`
+	// A system edge that always exists (agent↔server).
+	Virtual OptBool `json:"virtual"`
+}
+
+// GetTo returns the value of To.
+func (s *ResourceTreeFlowsItem) GetTo() string {
+	return s.To
+}
+
+// GetProtocol returns the value of Protocol.
+func (s *ResourceTreeFlowsItem) GetProtocol() OptString {
+	return s.Protocol
+}
+
+// GetPort returns the value of Port.
+func (s *ResourceTreeFlowsItem) GetPort() OptInt {
+	return s.Port
+}
+
+// GetLabel returns the value of Label.
+func (s *ResourceTreeFlowsItem) GetLabel() OptString {
+	return s.Label
+}
+
+// GetVirtual returns the value of Virtual.
+func (s *ResourceTreeFlowsItem) GetVirtual() OptBool {
+	return s.Virtual
+}
+
+// SetTo sets the value of To.
+func (s *ResourceTreeFlowsItem) SetTo(val string) {
+	s.To = val
+}
+
+// SetProtocol sets the value of Protocol.
+func (s *ResourceTreeFlowsItem) SetProtocol(val OptString) {
+	s.Protocol = val
+}
+
+// SetPort sets the value of Port.
+func (s *ResourceTreeFlowsItem) SetPort(val OptInt) {
+	s.Port = val
+}
+
+// SetLabel sets the value of Label.
+func (s *ResourceTreeFlowsItem) SetLabel(val OptString) {
+	s.Label = val
+}
+
+// SetVirtual sets the value of Virtual.
+func (s *ResourceTreeFlowsItem) SetVirtual(val OptBool) {
+	s.Virtual = val
+}
+
+// Record markers. A container of a run carries `container`, `role`, `machine` and `kind` (database,
+// proxy, coordinator, exporter, addon); an agent carries `role` and `machine`.
 type ResourceTreeLabels map[string]string
 
 func (s *ResourceTreeLabels) init() ResourceTreeLabels {

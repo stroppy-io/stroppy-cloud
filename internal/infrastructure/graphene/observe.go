@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"sort"
+	"strings"
 	"time"
 
 	"connectrpc.com/connect"
@@ -64,21 +66,16 @@ func (c *Client) WatchRun(ctx context.Context, runID string, fn func(status stri
 	return nil
 }
 
-// Tree reads the ownership tree of a ref.
+// Tree reads the ownership tree under owner: the records it owns (live
+// ones — Graphene shows a deleted record nowhere) with their subtrees.
 func (c *Client) Tree(ctx context.Context, owner string) (run.TreeNode, error) {
 	resp, err := c.Resources.Tree(ctx, connect.NewRequest(&managementv1.TreeRequest{Owner: owner}))
 	if err != nil {
 		return run.TreeNode{}, fmt.Errorf("graphene: tree of %s: %w", owner, err)
 	}
-	roots := resp.Msg.GetRoots()
-	if len(roots) == 0 {
-		return run.TreeNode{Ref: owner, Children: []run.TreeNode{}}, nil
-	}
-	if len(roots) == 1 {
-		return treeOf(roots[0]), nil
-	}
-	out := run.TreeNode{Ref: owner, Children: make([]run.TreeNode, 0, len(roots))}
-	for _, r := range roots {
+	kind, _, _ := strings.Cut(owner, "/")
+	out := run.TreeNode{Ref: owner, Kind: kind, Children: make([]run.TreeNode, 0, len(resp.Msg.GetRoots()))}
+	for _, r := range resp.Msg.GetRoots() {
 		out.Children = append(out.Children, treeOf(r))
 	}
 	return out, nil
@@ -90,10 +87,31 @@ func treeOf(n *managementv1.TreeNode) run.TreeNode {
 	}
 	r := n.GetResource()
 	out := run.TreeNode{Ref: r.GetRef(), Kind: r.GetKind(), Phase: r.GetPhase(), Labels: r.GetLabels(), Children: make([]run.TreeNode, 0, len(n.GetChildren()))}
+	for _, f := range r.GetFlows() {
+		out.Flows = append(out.Flows, run.Flow{To: f.GetTo(), Protocol: f.GetProtocol(), Port: int(f.GetPort()), Label: f.GetLabel(), Virtual: f.GetVirtual()})
+	}
 	for _, ch := range n.GetChildren() {
 		out.Children = append(out.Children, treeOf(ch))
 	}
 	return out
+}
+
+// Node describes one record with its subtree; false when it is gone.
+func (c *Client) Node(ctx context.Context, ref string) (run.TreeNode, bool, error) {
+	resp, err := c.Resources.Get(ctx, connect.NewRequest(&managementv1.GetRequest{Ref: ref}))
+	if IsNotFound(err) {
+		return run.TreeNode{}, false, nil
+	}
+	if err != nil {
+		return run.TreeNode{}, false, fmt.Errorf("graphene: get %s: %w", ref, err)
+	}
+	node := treeOf(&managementv1.TreeNode{Resource: resp.Msg.GetResource()})
+	sub, err := c.Tree(ctx, ref)
+	if err != nil {
+		return run.TreeNode{}, false, err
+	}
+	node.Children = sub.Children
+	return node, true, nil
 }
 
 // DeleteRef tears a subtree down (blocking on the Graphene side).
@@ -105,62 +123,122 @@ func (c *Client) DeleteRef(ctx context.Context, ref string) error {
 	return nil
 }
 
-// KeepExtend parks the run's stand for keep more (the pipeline moved it
-// to the stand already; extend just moves the deadline).
-func (c *Client) KeepExtend(ctx context.Context, runID string, keep time.Duration) error {
-	payload, _ := json.Marshal(map[string]any{"ref": "run/" + runID, "keep": keep.Nanoseconds()}) //nolint:errcheck // map
-	_, err := c.Resources.Invoke(ctx, connect.NewRequest(&managementv1.InvokeRequest{
-		Ref: "stand/" + PipelineRun, Command: "extend", Payload: payload,
-	}))
+// Holdings reads what the run handed to the pipeline's stand. The stand
+// records who handed each holding over, so one run's leftovers are told
+// from the next run's.
+func (c *Client) Holdings(ctx context.Context, runRef string) ([]run.Holding, error) {
+	resp, err := c.Resources.Get(ctx, connect.NewRequest(&managementv1.GetRequest{Ref: "stand/" + PipelineRun}))
+	if IsNotFound(err) {
+		return nil, nil
+	}
 	if err != nil {
-		return fmt.Errorf("graphene: extend keep of %s: %w", runID, err)
+		return nil, fmt.Errorf("graphene: stand of %s: %w", PipelineRun, err)
+	}
+	var state struct {
+		Holdings map[string]struct {
+			KeepUntil *time.Time `json:"keepUntil"`
+			From      string     `json:"from"`
+		} `json:"holdings"`
+	}
+	if err := json.Unmarshal(resp.Msg.GetResource().GetState(), &state); err != nil {
+		return nil, fmt.Errorf("graphene: stand state: %w", err)
+	}
+	out := make([]run.Holding, 0, len(state.Holdings))
+	for ref, h := range state.Holdings {
+		if h.From != runRef {
+			continue
+		}
+		out = append(out, run.Holding{Ref: ref, KeepUntil: h.KeepUntil})
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Ref < out[j].Ref })
+	return out, nil
+}
+
+// standCommand sends a command to the stand of stroppy-run, where the
+// pipeline hands the infrastructure it keeps (standflow: extend, release).
+func (c *Client) standCommand(ctx context.Context, command string, payload map[string]any) error {
+	raw, _ := json.Marshal(payload) //nolint:errcheck // map
+	_, err := c.Resources.Invoke(ctx, connect.NewRequest(&managementv1.InvokeRequest{
+		Ref: "stand/" + PipelineRun, Command: command, Payload: raw,
+	}))
+	return err
+}
+
+// KeepExtend moves the deadline of a holding to keep from now.
+func (c *Client) KeepExtend(ctx context.Context, held string, keep time.Duration) error {
+	if err := c.standCommand(ctx, "extend", map[string]any{"ref": held, "keep": keep.Nanoseconds()}); err != nil {
+		return fmt.Errorf("graphene: extend keep of %s: %w", held, err)
 	}
 	return nil
 }
 
-// KeepRelease tears the kept stand down now.
-func (c *Client) KeepRelease(ctx context.Context, runID string) error {
-	payload, _ := json.Marshal(map[string]any{"ref": "run/" + runID}) //nolint:errcheck // map
-	_, err := c.Resources.Invoke(ctx, connect.NewRequest(&managementv1.InvokeRequest{
-		Ref: "stand/" + PipelineRun, Command: "release", Payload: payload,
-	}))
-	if err != nil && !IsNotFound(err) {
-		return fmt.Errorf("graphene: release keep of %s: %w", runID, err)
+// KeepRelease tears a holding (and its subtree) down now.
+func (c *Client) KeepRelease(ctx context.Context, held string) error {
+	if err := c.standCommand(ctx, "release", map[string]any{"ref": held}); err != nil && !IsNotFound(err) {
+		return fmt.Errorf("graphene: release keep of %s: %w", held, err)
 	}
 	return nil
 }
 
-// Artifacts lists the artifact records owned by the run.
-func (c *Client) Artifacts(ctx context.Context, runID string) ([]run.Artifact, error) {
-	resp, err := c.Resources.List(ctx, connect.NewRequest(&managementv1.ListRequest{
-		Selector: &managementv1.Selector{Kind: "artifact", Owner: "run/" + runID}, PageSize: 200,
-	}))
-	if err != nil {
-		return nil, fmt.Errorf("graphene: artifacts of %s: %w", runID, err)
-	}
-	out := make([]run.Artifact, 0, len(resp.Msg.GetResources()))
-	for _, r := range resp.Msg.GetResources() {
-		a := run.Artifact{Ref: r.GetRef(), Name: r.GetRef()}
-		var state struct {
-			Name string `json:"name"`
-			Kind string `json:"kind"`
-			Blob struct {
-				Location    string `json:"location"`
-				ContentType string `json:"contentType"`
-				Size        int64  `json:"size"`
-				Digest      string `json:"digest"`
-			} `json:"blob"`
+// artifactBatch is GetMany's ceiling.
+const artifactBatch = 100
+
+// Artifacts describes artifact records. Visibility (List) carries no
+// state, so the records are read: the spec names the media type, the
+// state the verified blob. A record already gone (retention) is missing
+// from the answer and skipped.
+func (c *Client) Artifacts(ctx context.Context, refs []string) ([]run.Artifact, error) {
+	out := make([]run.Artifact, 0, len(refs))
+	for start := 0; start < len(refs); start += artifactBatch {
+		batch := refs[start:min(start+artifactBatch, len(refs))]
+		resp, err := c.Resources.GetMany(ctx, connect.NewRequest(&managementv1.GetManyRequest{Refs: batch}))
+		if err != nil {
+			return nil, fmt.Errorf("graphene: artifacts: %w", err)
 		}
-		if json.Unmarshal(r.GetState(), &state) == nil {
-			if state.Name != "" {
-				a.Name = state.Name
-			}
-			a.Kind = state.Kind
-			a.ContentType, a.SizeBytes, a.Digest = state.Blob.ContentType, state.Blob.Size, state.Blob.Digest
+		for _, r := range resp.Msg.GetResources() {
+			out = append(out, artifactOf(r))
 		}
-		out = append(out, a)
 	}
 	return out, nil
+}
+
+// artifactOf reads one artifact record.
+func artifactOf(r *managementv1.Resource) run.Artifact {
+	ref := r.GetRef()
+	name := strings.TrimPrefix(ref, "artifact/")
+	a := run.Artifact{Ref: ref, Name: name, Kind: artifactKind(name)}
+	var spec struct {
+		MediaType string `json:"mediaType"`
+	}
+	if json.Unmarshal(r.GetSpec(), &spec) == nil {
+		a.ContentType = spec.MediaType
+	}
+	var state struct {
+		Blob struct {
+			Size   int64  `json:"size"`
+			Digest string `json:"digest"`
+		} `json:"blob"`
+	}
+	if json.Unmarshal(r.GetState(), &state) == nil {
+		a.SizeBytes, a.Digest = state.Blob.Size, state.Blob.Digest
+	}
+	if at := r.GetStartedAt(); at != nil {
+		t := at.AsTime()
+		a.CreatedAt = &t
+	}
+	return a
+}
+
+// artifactKind classifies by the pipeline's names: <run8>-stroppy-<segment>-config,
+// -log; managed-ydb-readiness-config/-log; stroppy-baseline-log.
+func artifactKind(name string) string {
+	switch {
+	case strings.HasSuffix(name, "-config"):
+		return "config"
+	case strings.HasSuffix(name, "-log"):
+		return "log_bundle"
+	}
+	return "other"
 }
 
 // Download streams an artifact's bytes.

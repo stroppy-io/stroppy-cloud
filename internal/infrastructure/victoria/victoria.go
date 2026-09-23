@@ -1,6 +1,7 @@
 // Package victoria reads VictoriaLogs and VictoriaMetrics over their HTTP
-// APIs, scoping every query to one run by the label the pipelines stamp
-// on telemetry.
+// APIs, scoping every query to one run by the attributes Graphene stamps on
+// telemetry (graphene.namespace + graphene.run; Stroppy's native series
+// spell them graphene_namespace + graphene_run).
 //
 // doc: docs.victoriametrics.com/victorialogs/querying — /select/logsql/query
 // (NDJSON), /select/logsql/facets; docs.victoriametrics.com/keyconcepts —
@@ -20,11 +21,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/observe"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // Config is the stores' location.
@@ -33,17 +33,14 @@ type Config struct {
 	LogsURL string `mapstructure:"logs_url" validate:"omitempty,url"`
 	// MetricsURL is VictoriaMetrics (vmselect); empty = metrics unavailable.
 	MetricsURL string `mapstructure:"metrics_url" validate:"omitempty,url"`
-	// RunLabel is the label/field carrying the run id on every record.
-	RunLabel string `default:"stroppy_run_id" mapstructure:"run_label"`
 	// Timeout of one store request.
 	Timeout time.Duration `default:"30s" mapstructure:"timeout"`
 }
 
 // Logs is the VictoriaLogs client.
 type Logs struct {
-	base  string
-	label string
-	hc    *http.Client
+	base string
+	hc   *http.Client
 }
 
 // NewLogs builds the client (nil when not configured).
@@ -51,13 +48,18 @@ func NewLogs(cfg *Config) *Logs {
 	if cfg.LogsURL == "" {
 		return nil
 	}
-	return &Logs{base: strings.TrimRight(cfg.LogsURL, "/"), label: cfg.RunLabel, hc: &http.Client{Timeout: cfg.Timeout}}
+	return &Logs{base: strings.TrimRight(cfg.LogsURL, "/"), hc: &http.Client{Timeout: cfg.Timeout}}
+}
+
+// scopeQL is the LogsQL of the run scope.
+func scopeQL(s observe.Scope) string {
+	return fmt.Sprintf(`%q:=%q AND %q:=%q`, spec.AttrNamespace, s.Namespace, spec.AttrRun, s.Run)
 }
 
 // logsQL builds the LogsQL of a typed query: the run scope, then every
 // filter as an `in(...)` on its field, then the free text.
 func (l *Logs) logsQL(q observe.LogQuery) string {
-	parts := []string{fmt.Sprintf(`%s:=%q`, l.label, q.RunID.String())}
+	parts := []string{scopeQL(q.Scope)}
 	in := func(field string, values []string) {
 		if len(values) == 0 {
 			return
@@ -68,15 +70,15 @@ func (l *Logs) logsQL(q observe.LogQuery) string {
 		}
 		parts = append(parts, fmt.Sprintf("%s:in(%s)", field, strings.Join(quoted, ",")))
 	}
-	in("role", q.Roles)
-	in("machine", q.Machines)
-	in("container", q.Containers)
+	in(strconv.Quote(spec.AttrAgent), q.Agents)
+	in(strconv.Quote(spec.AttrEntity), q.Entities)
 	in("stream", q.Streams)
-	in("phase", q.Phases)
-	in("level", q.Levels)
-	if q.Segment != "" {
-		parts = append(parts, fmt.Sprintf("segment:=%q", q.Segment))
+	// OTLP severity lands as severity_text (INFO, WARN, ERROR, …).
+	levels := make([]string, 0, len(q.Levels))
+	for _, l := range q.Levels {
+		levels = append(levels, strings.ToUpper(l))
 	}
+	in("severity_text", levels)
 	if strings.TrimSpace(q.Text) != "" {
 		parts = append(parts, fmt.Sprintf("_msg:%s", strconv.Quote(q.Text)))
 	}
@@ -106,8 +108,8 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 }
 
 // Raw runs a LogsQL fragment AND-ed with the run scope.
-func (l *Logs) Raw(ctx context.Context, runID uuid.UUID, query string, start, end time.Time, limit int) (observe.LogPage, error) {
-	scoped := fmt.Sprintf(`%s:=%q AND (%s)`, l.label, runID.String(), query)
+func (l *Logs) Raw(ctx context.Context, scope observe.Scope, query string, start, end time.Time, limit int) (observe.LogPage, error) {
+	scoped := fmt.Sprintf(`%s AND (%s)`, scopeQL(scope), query)
 	lines, err := l.query(ctx, scoped, start, end, limit+1)
 	if err != nil {
 		return observe.LogPage{}, err
@@ -179,13 +181,10 @@ func lineOf(rec map[string]string) observe.LogLine {
 			}
 		}
 	}
-	pick(&line.Level, "level", "severity")
+	pick(&line.Level, "severity_text", "level")
+	delete(rec, "severity_number")
+	line.Level = strings.ToLower(line.Level)
 	pick(&line.Stream, "stream")
-	pick(&line.Role, "role", "stroppy_role")
-	pick(&line.Machine, "machine", "stroppy_machine")
-	pick(&line.Container, "container", "container_name")
-	pick(&line.Phase, "phase")
-	pick(&line.Segment, "segment")
 	if seq, err := strconv.Atoi(rec["seq"]); err == nil {
 		line.Seq = seq
 		delete(rec, "seq")
@@ -200,8 +199,13 @@ func lineOf(rec map[string]string) observe.LogLine {
 }
 
 // Facets implements observe.Logs over /select/logsql/facets.
-func (l *Logs) Facets(ctx context.Context, runID uuid.UUID, start, end time.Time) ([]run.Facet, error) {
-	form := url.Values{"query": {fmt.Sprintf(`%s:=%q`, l.label, runID.String())}, "start": {start.UTC().Format(time.RFC3339Nano)}, "end": {end.UTC().Format(time.RFC3339Nano)}, "limit": {"50"}}
+func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.Time) ([]run.Facet, error) {
+	form := url.Values{
+		"query": {scopeQL(scope)}, "start": {start.UTC().Format(time.RFC3339Nano)}, "end": {end.UTC().Format(time.RFC3339Nano)}, "limit": {"50"},
+		// A field with one value is still a filter the UI shows (every
+		// line INFO); VictoriaLogs drops constant fields unless asked.
+		"keep_const_fields": {"1"},
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, l.base+"/select/logsql/facets", strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, err
@@ -227,15 +231,24 @@ func (l *Logs) Facets(ctx context.Context, runID uuid.UUID, start, end time.Time
 	if err := json.NewDecoder(res.Body).Decode(&body); err != nil {
 		return nil, errs.Wrap(errs.CodeUnavailable, "logs store: facets", err)
 	}
-	wanted := map[string]bool{"role": true, "machine": true, "container": true, "stream": true, "phase": true, "level": true, "segment": true}
+	wanted := map[string]bool{spec.AttrAgent: true, spec.AttrEntity: true, "stream": true, "severity_text": true}
 	out := []run.Facet{}
 	for _, f := range body.Facets {
 		if !wanted[f.Field] {
 			continue
 		}
-		facet := run.Facet{Field: f.Field, Values: []run.FacetValue{}}
+		field := f.Field
+		lower := field == "severity_text"
+		if lower {
+			field = "level"
+		}
+		facet := run.Facet{Field: field, Values: []run.FacetValue{}}
 		for _, v := range f.Values {
-			facet.Values = append(facet.Values, run.FacetValue{Value: v.Value, Count: v.Hits})
+			value := v.Value
+			if lower {
+				value = strings.ToLower(value)
+			}
+			facet.Values = append(facet.Values, run.FacetValue{Value: value, Count: v.Hits})
 		}
 		out = append(out, facet)
 	}
@@ -245,9 +258,8 @@ func (l *Logs) Facets(ctx context.Context, runID uuid.UUID, start, end time.Time
 
 // Metrics is the VictoriaMetrics client.
 type Metrics struct {
-	base  string
-	label string
-	hc    *http.Client
+	base string
+	hc   *http.Client
 }
 
 // NewMetrics builds the client (nil when not configured).
@@ -255,7 +267,7 @@ func NewMetrics(cfg *Config) *Metrics {
 	if cfg.MetricsURL == "" {
 		return nil
 	}
-	return &Metrics{base: strings.TrimRight(cfg.MetricsURL, "/"), label: cfg.RunLabel, hc: &http.Client{Timeout: cfg.Timeout}}
+	return &Metrics{base: strings.TrimRight(cfg.MetricsURL, "/"), hc: &http.Client{Timeout: cfg.Timeout}}
 }
 
 // Query implements observe.Metrics: one range query per catalog key;
@@ -264,7 +276,7 @@ func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.S
 	var out []observe.Series
 	var failures []error
 	for _, def := range q.Metrics {
-		raw, err := m.rangeQuery(ctx, observe.KeyExpr(def, m.label, q.RunID), q.Start, q.End, q.Step)
+		raw, err := m.rangeQuery(ctx, observe.KeyExpr(def, q.Scope), q.Start, q.End, q.Step)
 		if err != nil {
 			failures = append(failures, fmt.Errorf("%s: %w", def.Key, err))
 			continue
@@ -279,9 +291,10 @@ func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.S
 	return out, failures, nil
 }
 
-// Raw runs PromQL with the run matcher injected into every selector.
-func (m *Metrics) Raw(ctx context.Context, runID uuid.UUID, query string, start, end time.Time, step time.Duration) (json.RawMessage, error) {
-	return m.rangeQuery(ctx, scopePromQL(query, m.label, runID.String()), start, end, step)
+// Raw runs MetricsQL with the run scope injected into every selector.
+func (m *Metrics) Raw(ctx context.Context, scope observe.Scope, query string, start, end time.Time, step time.Duration) (json.RawMessage, error) {
+	component, native := scope.Matchers()
+	return m.rangeQuery(ctx, scopePromQL(query, component, native), start, end, step)
 }
 
 // scopePromQL adds the run label matcher to every metric selector; a
@@ -290,8 +303,15 @@ func (m *Metrics) Raw(ctx context.Context, runID uuid.UUID, query string, start,
 // rewriting keeps the scope visible in the query returned to the user).
 // Label matchers inside braces, strings, numbers with duration suffixes,
 // functions and aggregation keywords are left alone.
-func scopePromQL(query, label, runID string) string {
-	matcher := fmt.Sprintf(`%s=%q`, label, runID)
+func scopePromQL(query, component, native string) string {
+	// A MetricsQL "or" filter: the component spelling or the native one,
+	// each with the selector's own matchers.
+	scoped := func(inner string) string {
+		if inner == "" {
+			return component + " or " + native
+		}
+		return inner + "," + component + " or " + inner + "," + native
+	}
 	var b strings.Builder
 	i := 0
 	for i < len(query) {
@@ -311,13 +331,13 @@ func scopePromQL(query, label, runID string) string {
 			b.WriteString(query[i:j])
 			i = j
 		case c == '{':
-			// Copy the matcher list verbatim.
+			// A selector without a metric name.
 			j := strings.IndexByte(query[i:], '}')
 			if j < 0 {
 				b.WriteString(query[i:])
 				return b.String()
 			}
-			b.WriteString(query[i : i+j+1])
+			b.WriteString("{" + scoped(strings.TrimSpace(query[i+1:i+j])) + "}")
 			i += j + 1
 		case c >= '0' && c <= '9':
 			// A number, possibly with a duration suffix (5m, 1h30m).
@@ -357,14 +377,10 @@ func scopePromQL(query, label, runID string) string {
 					return b.String()
 				}
 				inner := strings.TrimSpace(query[k+1 : k+end])
-				b.WriteString(name + "{" + matcher)
-				if inner != "" {
-					b.WriteString("," + inner)
-				}
-				b.WriteString("}")
+				b.WriteString(name + "{" + scoped(inner) + "}")
 				i = k + end + 1
 			default:
-				b.WriteString(name + "{" + matcher + "}")
+				b.WriteString(name + "{" + scoped("") + "}")
 				i = j
 			}
 		default:
@@ -436,7 +452,8 @@ func seriesOf(raw json.RawMessage, key, title, unit string) ([]observe.Series, e
 	}
 	out := make([]observe.Series, 0, len(body.Data.Result))
 	for _, r := range body.Data.Result {
-		s := observe.Series{Key: key, Title: title, Unit: unit, Role: r.Metric["role"], Machine: firstOf(r.Metric, "machine", "instance")}
+		// Machine carries the agent; the service names the machine.
+		s := observe.Series{Key: key, Title: title, Unit: unit, Machine: firstOf(r.Metric, spec.AttrAgent, "instance")}
 		var values []float64
 		for _, v := range r.Values {
 			ts, ok := v[0].(float64)

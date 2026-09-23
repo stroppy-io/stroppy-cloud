@@ -76,11 +76,14 @@ func New(d Deps) (http.Handler, error) {
 		r.Handle("/config.json", d.PublicConfig)
 	}
 
-	iam, err := reverseProxy(d.IAMURL, true)
-	if err != nil {
-		return nil, fmt.Errorf("iam proxy: %w", err)
+	// No IAM (dev mode): nothing to proxy.
+	if d.IAMURL != "" {
+		iam, err := reverseProxy(d.IAMURL, true)
+		if err != nil {
+			return nil, fmt.Errorf("iam proxy: %w", err)
+		}
+		r.Handle(iamPrefix+"/*", iam)
 	}
-	r.Handle(iamPrefix+"/*", iam)
 
 	if d.GrafanaURL != "" {
 		grafana, err := reverseProxy(d.GrafanaURL, false)

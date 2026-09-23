@@ -604,13 +604,51 @@ func (s *Service) Events(ctx context.Context, actor auth.Actor, tenantID, id uui
 	return s.repo.EventsAfter(ctx, id, after, limit)
 }
 
-// Tree is the raw Graphene resource tree under the run.
+// Tree is the raw Graphene resource tree under the run. Graphene shows
+// live records only: once the run hands its infrastructure to the stand
+// (keep), the kept root is no longer under the run — it is added back
+// here while it lives.
 func (s *Service) Tree(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID) (TreeNode, error) {
 	r, err := s.Get(ctx, actor, tenantID, id)
 	if err != nil {
 		return TreeNode{}, err
 	}
-	return s.graphene.Tree(s.scope(ctx, r.GrapheneNamespace), r.GrapheneRef())
+	sctx := s.scope(ctx, r.GrapheneNamespace)
+	tree, err := s.graphene.Tree(sctx, r.GrapheneRef())
+	if err != nil {
+		return TreeNode{}, err
+	}
+	// What the run kept moved to the pipeline's stand and left the run's
+	// tree; the stand names this run as the holder, so it comes back here.
+	if r.StandKept {
+		held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
+		if err != nil {
+			return TreeNode{}, err
+		}
+		for _, h := range held {
+			node, ok, err := s.graphene.Node(sctx, h.Ref)
+			if err != nil {
+				return TreeNode{}, err
+			}
+			if ok {
+				node.KeepUntil = h.KeepUntil
+				tree.Children = append(tree.Children, node)
+			}
+		}
+	}
+	return tree, nil
+}
+
+// artifactRefs are the artifact records the run published: the pipeline
+// names them in its result (they live under the stand, not the run).
+func artifactRefs(r Run) []string {
+	var res struct {
+		Artifacts []string `json:"artifacts"`
+	}
+	if len(r.Result) == 0 || json.Unmarshal(r.Result, &res) != nil {
+		return nil
+	}
+	return res.Artifacts
 }
 
 // Artifacts lists the run's downloadable outputs.
@@ -619,7 +657,11 @@ func (s *Service) Artifacts(ctx context.Context, actor auth.Actor, tenantID, id 
 	if err != nil {
 		return nil, err
 	}
-	return s.graphene.Artifacts(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID())
+	refs := artifactRefs(r)
+	if len(refs) == 0 {
+		return []Artifact{}, nil
+	}
+	return s.graphene.Artifacts(s.scope(ctx, r.GrapheneNamespace), refs)
 }
 
 // Download streams one artifact; the ref must belong to the run.
@@ -628,7 +670,7 @@ func (s *Service) Download(ctx context.Context, actor auth.Actor, tenantID, id u
 	if err != nil {
 		return Artifact{}, nil, err
 	}
-	arts, err := s.graphene.Artifacts(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID())
+	arts, err := s.graphene.Artifacts(s.scope(ctx, r.GrapheneNamespace), artifactRefs(r))
 	if err != nil {
 		return Artifact{}, nil, err
 	}
@@ -723,8 +765,18 @@ func (s *Service) KeepExtend(ctx context.Context, actor auth.Actor, tenantID, id
 	if lim.MaxKeep > 0 && d > lim.MaxKeep {
 		return Run{}, errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", d, lim.MaxKeep)
 	}
-	if err := s.graphene.KeepExtend(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID(), d); err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "extend", err)
+	sctx := s.scope(ctx, r.GrapheneNamespace)
+	held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
+	if err != nil {
+		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
+	}
+	if len(held) == 0 {
+		return Run{}, errs.Conflict("the stand holds nothing of this run any more")
+	}
+	for _, h := range held {
+		if err := s.graphene.KeepExtend(sctx, h.Ref, d); err != nil {
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "extend", err)
+		}
 	}
 	until := time.Now().UTC().Add(d)
 	if err := s.repo.SetKeep(ctx, id, true, &until); err != nil {
@@ -746,8 +798,15 @@ func (s *Service) KeepRelease(ctx context.Context, actor auth.Actor, tenantID, i
 	if !r.StandKept {
 		return Run{}, errs.Conflict("the stand is not kept")
 	}
-	if err := s.graphene.KeepRelease(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "release", err)
+	sctx := s.scope(ctx, r.GrapheneNamespace)
+	held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
+	if err != nil {
+		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
+	}
+	for _, h := range held {
+		if err := s.graphene.KeepRelease(sctx, h.Ref); err != nil {
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "release", err)
+		}
 	}
 	if err := s.repo.SetKeep(ctx, id, false, nil); err != nil {
 		return Run{}, err

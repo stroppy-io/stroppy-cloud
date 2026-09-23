@@ -63,6 +63,7 @@ func postgresFamily(c *compilation, oriole bool) error {
 			}
 			ct := spec.Container{
 				Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
+				Kind: spec.ContainerKindDatabase,
 				Env: map[string]string{
 					"POSTGRES_USER": pgUser, "POSTGRES_PASSWORD": pgPassword, "POSTGRES_DB": pgDatabase, "PGDATA": pgDataInner,
 					"POSTGRES_HOST_AUTH_METHOD": "scram-sha-256", "POSTGRES_INITDB_ARGS": "--data-checksums --locale=" + locale,
@@ -189,6 +190,7 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-pgbouncer", Role: role, Machine: m, Image: imagePgBouncer,
+			Kind: spec.ContainerKindProxy,
 			Files: []spec.File{
 				{Path: "/etc/pgbouncer/pgbouncer.ini", Content: ini},
 				{Path: "/etc/pgbouncer/userlist.txt", Content: fmt.Sprintf("%q %q\n", pgUser, pgPassword)},
@@ -200,6 +202,7 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 		})
 		c.add(spec.Container{
 			Name: m + "-pgbouncer-exporter", Role: role, Machine: m, Image: imagePgBouncerExport,
+			Kind:  spec.ContainerKindExporter,
 			Cmd:   []string{"--pgBouncer.connectionString=" + fmt.Sprintf("postgresql://%s:%s@127.0.0.1:%d/pgbouncer?sslmode=disable", pgUser, pgPassword, pgbPort), "--web.listen-address=:9127"},
 			Ports: []spec.Port{{Container: 9127, Host: 9127}}, Scrape: "/metrics",
 			DependsOn: []string{m + "-pgbouncer"}, Restart: "always",
@@ -213,6 +216,7 @@ func (c *compilation) postgresExporter(role string) {
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
 			Name: m + "-postgres-exporter", Role: role, Machine: m, Image: imagePostgresExport,
+			Kind:      spec.ContainerKindExporter,
 			Env:       map[string]string{"DATA_SOURCE_NAME": fmt.Sprintf("postgresql://%s:%s@127.0.0.1:%d/%s?sslmode=disable", pgUser, pgPassword, pgPort, pgDatabase)},
 			Cmd:       []string{"--collector.postmaster", "--collector.stat_statements", fmt.Sprintf("--web.listen-address=:%d", postgresExporterPort)},
 			Ports:     []spec.Port{{Container: postgresExporterPort, Host: postgresExporterPort}},
@@ -243,6 +247,7 @@ func pgNoopRecipe(c *compilation) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-pg-noop", Role: topology.RoleDB, Machine: m, Image: image,
+			Kind:        spec.ContainerKindDatabase,
 			Env:         env,
 			Ports:       []spec.Port{{Container: port, Host: port}},
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", port)),

@@ -105,7 +105,7 @@ func deployContainers(ctx pipeline.Context, run spec.Run, infra provision.Infra,
 			}
 			// Declared on the main context so the handle's future is owned
 			// by the run workflow, not a goroutine that may finish first.
-			h := dockerlib.Container(ctx, m.Agent, dspec, flowOptions(c, run)...)
+			h := dockerlib.Container(ctx, m.Agent, dspec, append(flowOptions(c, run), containerLabels(c, run))...)
 			out.handles[c.Name] = h
 			names = append(names, c.Name)
 			fns = append(fns, func(gctx pipeline.Context) error {
@@ -289,11 +289,39 @@ func scrapeURL(c spec.Container, run spec.Run) string {
 	return ""
 }
 
+// containerLabels marks the container's RECORD, so whoever reads the run
+// from Graphene — a topology view above all — knows what each record is
+// without guessing from its image or name.
+func containerLabels(c spec.Container, run spec.Run) pipeline.ResourceOption {
+	labels := map[string]string{
+		"stroppy-run": run.RunID,
+		"container":   c.Name,
+		"role":        c.Role,
+		"machine":     c.Machine,
+	}
+	if c.Kind != "" {
+		labels["kind"] = c.Kind
+	}
+	return pipeline.WithLabels(labels)
+}
+
 // flowOptions declares the outgoing edges of a container from the spec's
-// role-level flows: every container of from_role points at the FIRST
-// container of to_role (or the external target).
+// role-level flows: the SERVING container of from_role points at the
+// serving container of to_role (or the external target). An exporter or
+// an init sidecar shares its role with the database but speaks none of
+// its protocols, so the role's edges are not its.
 func flowOptions(c spec.Container, run spec.Run) []pipeline.ResourceOption {
 	var opts []pipeline.ResourceOption
+	serving, serves := servingContainerOfRole(run, c.Role)
+	switch {
+	case serves && serving != c.Name:
+		// Another container of this role speaks for it.
+		return opts
+	case !serves && roleClassified(run, c.Role):
+		// The role classifies its containers and none of them serves: the
+		// workload does the talking, on the machine's agent.
+		return opts
+	}
 	for _, f := range run.Flows {
 		if f.FromRole != c.Role {
 			continue
@@ -307,7 +335,7 @@ func flowOptions(c spec.Container, run spec.Run) []pipeline.ResourceOption {
 		case f.External != "":
 			opts = append(opts, pipeline.WithFlow(f.External, proto, label, pipeline.FlowPort(f.Port)))
 		case f.ToRole != "":
-			if target, ok := firstContainerOfRole(run, f.ToRole); ok && target != c.Name {
+			if target, ok := servingContainerOfRole(run, f.ToRole); ok && target != c.Name {
 				opts = append(opts, pipeline.WithFlow(string(dockerlib.ContainerKind)+"/"+containerName(run.RunID, target), proto, label, pipeline.FlowPort(f.Port)))
 			}
 		}
@@ -315,13 +343,73 @@ func flowOptions(c spec.Container, run spec.Run) []pipeline.ResourceOption {
 	return opts
 }
 
-func firstContainerOfRole(run spec.Run, role string) (string, bool) {
+// servingContainerOfRole is the container of the role that speaks its
+// protocols: the database, the proxy or the coordinator. A role whose
+// containers only watch (an exporter beside the workload's runner) has
+// none — its edges belong to whoever does the talking, the workload on
+// the machine's agent. A spec that names no kinds at all is older than
+// this distinction: there the role's first container serves.
+func servingContainerOfRole(run spec.Run, role string) (string, bool) {
+	first, found, kinds := "", false, false
 	for _, c := range run.Containers {
-		if c.Role == role {
+		if c.Role != role {
+			continue
+		}
+		if !found {
+			first, found = c.Name, true
+		}
+		if c.Kind != "" {
+			kinds = true
+		}
+		switch c.Kind {
+		case spec.ContainerKindDatabase, spec.ContainerKindProxy, spec.ContainerKindCoordinator:
 			return c.Name, true
 		}
 	}
+	if found && !kinds {
+		return first, true
+	}
 	return "", false
+}
+
+// roleClassified reports whether the spec says what the role's containers
+// are — a spec older than container kinds says nothing.
+func roleClassified(run spec.Run, role string) bool {
+	for _, c := range run.Containers {
+		if c.Role == role && c.Kind != "" {
+			return true
+		}
+	}
+	return false
+}
+
+// agentFlows are the edges of a machine whose role does no serving of its
+// own: the workload runs on the agent, so the agent is what talks to the
+// database.
+func agentFlows(run spec.Run, m spec.Machine) []pipeline.ResourceOption {
+	if _, serves := servingContainerOfRole(run, m.Role); serves {
+		return nil
+	}
+	var opts []pipeline.ResourceOption
+	for _, f := range run.Flows {
+		if f.FromRole != m.Role {
+			continue
+		}
+		proto := flowProtocol(f.Protocol)
+		label := f.Label
+		if label == "" {
+			label = f.Protocol
+		}
+		switch {
+		case f.External != "":
+			opts = append(opts, pipeline.WithFlow(f.External, proto, label, pipeline.FlowPort(f.Port)))
+		case f.ToRole != "":
+			if target, ok := servingContainerOfRole(run, f.ToRole); ok {
+				opts = append(opts, pipeline.WithFlow(string(dockerlib.ContainerKind)+"/"+containerName(run.RunID, target), proto, label, pipeline.FlowPort(f.Port)))
+			}
+		}
+	}
+	return opts
 }
 
 func flowProtocol(p string) pipeline.Protocol {
@@ -399,8 +487,7 @@ func restartPolicy(s string) container.RestartPolicyMode {
 	}
 }
 
-// Container records share a Graphene namespace across all runs. The full run
-// UUID separates identical logical container names, including concurrent cells.
+// containerName is the Docker record of a container (spec.ContainerName).
 func containerName(runID, logical string) string {
-	return runID + "-" + logical
+	return spec.ContainerName(runID, logical)
 }

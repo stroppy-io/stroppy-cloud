@@ -18,6 +18,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // LogQuery is the typed log filter.
@@ -35,6 +36,11 @@ type LogQuery struct {
 	Cursor     string
 	Direction  string // older | newer
 	Limit      int
+	// Resolved by the service from the run: where its telemetry is and
+	// which agents/entities the role, machine and container filters mean.
+	Scope    Scope
+	Agents   []string
+	Entities []string
 }
 
 // LogLine is one entry.
@@ -62,7 +68,7 @@ type LogPage struct {
 
 // MetricQuery selects catalog metrics over a window.
 type MetricQuery struct {
-	RunID      uuid.UUID
+	Scope      Scope
 	Start, End time.Time
 	Step       time.Duration
 	Metrics    []catalog.Metric
@@ -78,14 +84,15 @@ type Series struct {
 // Logs is the log store port.
 type Logs interface {
 	Query(ctx context.Context, q LogQuery) (LogPage, error)
-	Raw(ctx context.Context, runID uuid.UUID, query string, start, end time.Time, limit int) (LogPage, error)
-	Facets(ctx context.Context, runID uuid.UUID, start, end time.Time) ([]run.Facet, error)
+	Raw(ctx context.Context, scope Scope, query string, start, end time.Time, limit int) (LogPage, error)
+	// Facets counts the values of the stream, level, agent and entity fields.
+	Facets(ctx context.Context, scope Scope, start, end time.Time) ([]run.Facet, error)
 }
 
 // Metrics is the metric store port.
 type Metrics interface {
 	Query(ctx context.Context, q MetricQuery) ([]Series, []error, error)
-	Raw(ctx context.Context, runID uuid.UUID, query string, start, end time.Time, step time.Duration) (json.RawMessage, error)
+	Raw(ctx context.Context, scope Scope, query string, start, end time.Time, step time.Duration) (json.RawMessage, error)
 }
 
 // Runs resolves runs with access.
@@ -170,7 +177,11 @@ func (s *Service) Logs(ctx context.Context, actor auth.Actor, tenantID uuid.UUID
 	if err != nil {
 		return LogPage{}, Window{}, err
 	}
-	w, err := WindowOf(r, q.Segment, q.Start, q.End)
+	start, end := q.Start, q.End
+	if len(q.Phases) > 0 && start.IsZero() && end.IsZero() {
+		start, end = phaseSpan(r, q.Phases)
+	}
+	w, err := WindowOf(r, q.Segment, start, end)
 	if err != nil {
 		return LogPage{}, Window{}, err
 	}
@@ -178,8 +189,32 @@ func (s *Service) Logs(ctx context.Context, actor auth.Actor, tenantID uuid.UUID
 	if q.Limit <= 0 || q.Limit > 1000 {
 		q.Limit = 200
 	}
+	id := identitiesOf(r)
+	q.Scope, q.Agents, q.Entities = ScopeOf(r), id.agents(q.Roles, q.Machines), id.entities(q.Containers)
 	page, err := s.logs.Query(ctx, q)
+	for i := range page.Lines {
+		id.enrich(&page.Lines[i])
+	}
 	return page, w, err
+}
+
+// phaseSpan is the time the phases named took (telemetry carries no
+// phase: a phase is a window).
+func phaseSpan(r run.Run, phases []string) (start, end time.Time) {
+	for _, p := range r.State.Phases {
+		for _, want := range phases {
+			if string(p.ID) != want || p.StartedAt == nil {
+				continue
+			}
+			if start.IsZero() || p.StartedAt.Before(start) {
+				start = *p.StartedAt
+			}
+			if p.FinishedAt != nil && p.FinishedAt.After(end) {
+				end = *p.FinishedAt
+			}
+		}
+	}
+	return start, end
 }
 
 // RawLogs runs a LogsQL fragment inside the run scope.
@@ -201,7 +236,12 @@ func (s *Service) RawLogs(ctx context.Context, actor auth.Actor, tenantID, runID
 	if limit <= 0 || limit > 1000 {
 		limit = 200
 	}
-	return s.logs.Raw(ctx, runID, query, w.Start, w.End, limit)
+	page, err := s.logs.Raw(ctx, ScopeOf(r), query, w.Start, w.End, limit)
+	id := identitiesOf(r)
+	for i := range page.Lines {
+		id.enrich(&page.Lines[i])
+	}
+	return page, err
 }
 
 // LogFacets are the filter values seen in the run's logs.
@@ -217,7 +257,11 @@ func (s *Service) LogFacets(ctx context.Context, actor auth.Actor, tenantID, run
 	if err != nil {
 		return nil, err
 	}
-	return s.logs.Facets(ctx, runID, w.Start, w.End)
+	raw, err := s.logs.Facets(ctx, ScopeOf(r), w.Start, w.End)
+	if err != nil {
+		return nil, err
+	}
+	return identitiesOf(r).facets(raw), nil
 }
 
 // Metrics answers catalog keys over a window.
@@ -250,10 +294,22 @@ func (s *Service) Metrics(ctx context.Context, actor auth.Actor, tenantID, runID
 		}
 		defs = filtered
 	}
+	// A number of the result only has no series to draw.
+	drawn := defs[:0:0]
+	for _, d := range defs {
+		if d.Expr != "" {
+			drawn = append(drawn, d)
+		}
+	}
+	defs = drawn
 	if step <= 0 {
 		step = stepFor(w.End.Sub(w.Start))
 	}
-	series, perKey, err := s.metrics.Query(ctx, MetricQuery{RunID: runID, Start: w.Start, End: w.End, Step: step, Metrics: defs})
+	series, perKey, err := s.metrics.Query(ctx, MetricQuery{Scope: ScopeOf(r), Start: w.Start, End: w.End, Step: step, Metrics: defs})
+	id := identitiesOf(r)
+	for i := range series {
+		id.series(&series[i])
+	}
 	return series, perKey, w, err
 }
 
@@ -266,7 +322,8 @@ func (s *Service) RawMetrics(ctx context.Context, actor auth.Actor, tenantID, ru
 	if strings.TrimSpace(query) == "" {
 		return nil, errs.Invalid("query is required")
 	}
-	if _, err := s.runs.Get(ctx, actor, tenantID, runID); err != nil {
+	r, err := s.runs.Get(ctx, actor, tenantID, runID)
+	if err != nil {
 		return nil, err
 	}
 	if !end.After(start) {
@@ -275,7 +332,7 @@ func (s *Service) RawMetrics(ctx context.Context, actor auth.Actor, tenantID, ru
 	if step <= 0 {
 		step = stepFor(end.Sub(start))
 	}
-	return s.metrics.Raw(ctx, runID, query, start, end, step)
+	return s.metrics.Raw(ctx, ScopeOf(r), query, start, end, step)
 }
 
 // stepFor picks a step giving ~300 points.
@@ -291,11 +348,18 @@ func stepFor(span time.Duration) time.Duration {
 	}
 }
 
-// KeyExpr is the PromQL of a metric inside the run scope.
-func KeyExpr(m catalog.Metric, label string, runID uuid.UUID) string {
-	matcher := fmt.Sprintf(`%s=%q`, label, runID.String())
-	if m.Expr == "" {
-		return fmt.Sprintf("%s{%s}", m.Key, matcher)
-	}
-	return strings.ReplaceAll(m.Expr, "$run", matcher)
+// Matchers are the label matchers of the scope: Graphene's attributes
+// (the scraped component series) and Stroppy's own spelling (native
+// workload series).
+func (s Scope) Matchers() (component, native string) {
+	component = fmt.Sprintf(`%q=%q,%q=%q`, spec.AttrNamespace, s.Namespace, spec.AttrRun, s.Run)
+	native = fmt.Sprintf(`%s=%q,%s=%q`, spec.LabelNativeNamespace, s.Namespace, spec.LabelNativeRun, s.Run)
+	return component, native
+}
+
+// KeyExpr is the MetricsQL of a catalog metric inside the run scope:
+// `$run` is the component matcher, `$native` Stroppy's.
+func KeyExpr(m catalog.Metric, scope Scope) string {
+	component, native := scope.Matchers()
+	return strings.NewReplacer("$run", component, "$native", native).Replace(m.Expr)
 }

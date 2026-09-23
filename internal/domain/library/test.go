@@ -238,7 +238,7 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 				issue("sizes."+role, "required", "ERROR", "choose a size for "+role, suggestSize(sizes, role, req))
 				continue
 			}
-			table := sizes[topology.Family(role)]
+			table := sizeTable(sizes, role)
 			cell, ok := table[rs.Size]
 			if !ok {
 				issue("sizes."+role, "unknown_size", "ERROR", fmt.Sprintf("no %s size for %s", rs.Size, topology.Family(role)), nil)
@@ -320,9 +320,14 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 	return fit, res, nil
 }
 
+// sizeTable is the size table of a role, as the compiler resolves it.
+func sizeTable(sizes map[string]map[string]catalog.SizeSpec, role string) map[string]catalog.SizeSpec {
+	return catalog.Provider{Sizes: sizes}.SizeTable(topology.Family(role))
+}
+
 // suggestSize is the smallest size of the family that satisfies req.
 func suggestSize(sizes map[string]map[string]catalog.SizeSpec, role string, req topology.Requirement) any {
-	table := sizes[topology.Family(role)]
+	table := sizeTable(sizes, role)
 	for _, size := range catalog.Sizes {
 		cell, ok := table[size]
 		if !ok {

@@ -110,6 +110,7 @@ func (c *compilation) haproxy(listeners []haproxyListener) error {
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
 			Name: m + "-haproxy", Role: role, Machine: m, Image: imageHAProxy,
+			Kind:        spec.ContainerKindProxy,
 			Files:       []spec.File{{Path: "/usr/local/etc/haproxy/haproxy.cfg", Content: cfg}},
 			Ports:       portsOf(listeners),
 			Healthcheck: healthcheck("CMD", "bash", "-ec", fmt.Sprintf("haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg; exec 3<>/dev/tcp/127.0.0.1/%d", listeners[0].BindPort)),

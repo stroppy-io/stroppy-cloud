@@ -31,6 +31,8 @@ type Config struct {
 	Trace TraceConfig `mapstructure:"trace"`
 	HTTP  HTTPConfig  `mapstructure:"http"`
 	IAM   IAMConfig   `mapstructure:"iam"`
+	// Dev turns a local installation's login into static tokens (no IAM).
+	Dev   DevConfig   `mapstructure:"dev"`
 	Mail  mail.Config `mapstructure:"mail"`
 	Infra InfraConfig `mapstructure:"infra"`
 	// AdminEmails are the bootstrap platform admins (IAM e-mails); the

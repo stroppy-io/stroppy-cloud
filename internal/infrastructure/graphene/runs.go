@@ -33,16 +33,31 @@ func (c *Client) StartRun(ctx context.Context, runID, pipeline string, params an
 	return nil
 }
 
-// RunResult blocks until the run finishes and decodes its result.
-func (c *Client) RunResult(ctx context.Context, runID string, out any) error {
+// RunClose is how a run ended: the result it left and, when it did not
+// complete, the failure. A failed run still carries what it collected —
+// the pipeline puts the partial result into the failure's details.
+func (c *Client) RunClose(ctx context.Context, runID string) (json.RawMessage, string, error) {
 	resp, err := c.Runs.RunResult(ctx, connect.NewRequest(&managementv1.RunResultRequest{RunId: runID}))
 	if err != nil {
-		return fmt.Errorf("graphene: result of %s: %w", runID, err)
+		return nil, "", fmt.Errorf("graphene: result of %s: %w", runID, err)
+	}
+	return resp.Msg.GetResult(), resp.Msg.GetError(), nil
+}
+
+// RunResult blocks until the run finishes and decodes its result. A run
+// that did not complete is an error here: its partial result is RunClose's.
+func (c *Client) RunResult(ctx context.Context, runID string, out any) error {
+	raw, failure, err := c.RunClose(ctx, runID)
+	if err != nil {
+		return err
+	}
+	if failure != "" {
+		return fmt.Errorf("graphene: run %s did not complete: %s", runID, failure)
 	}
 	if out == nil {
 		return nil
 	}
-	if err := json.Unmarshal(resp.Msg.GetResult(), out); err != nil {
+	if err := json.Unmarshal(raw, out); err != nil {
 		return fmt.Errorf("graphene: result of %s: decode: %w", runID, err)
 	}
 	return nil

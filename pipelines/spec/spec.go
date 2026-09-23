@@ -118,8 +118,13 @@ type Disk struct {
 
 // Container is one container on a machine.
 type Container struct {
-	Name        string            `json:"name"`
-	Role        string            `json:"role"`
+	Name string `json:"name"`
+	Role string `json:"role"`
+	// Kind is what the container IS, for whoever draws the run: one of
+	// ContainerKind* (an open vocabulary — an unknown word renders as
+	// itself). The pipeline puts it on the container's record, so the
+	// topology reads it from Graphene and nobody guesses from the image.
+	Kind        string            `json:"kind,omitempty"`
 	Machine     string            `json:"machine"`
 	Image       string            `json:"image"`
 	Entrypoint  []string          `json:"entrypoint,omitempty"`
@@ -135,6 +140,23 @@ type Container struct {
 	Restart     string            `json:"restart,omitempty"`
 	Ulimits     map[string]int64  `json:"ulimits,omitempty"`
 }
+
+// The kinds a container is drawn as.
+const (
+	// ContainerKindDatabase serves the workload's queries (a primary, a
+	// replica — the role says which).
+	ContainerKindDatabase = "database"
+	// ContainerKindProxy stands in front of the databases (haproxy,
+	// pgbouncer, proxysql).
+	ContainerKindProxy = "proxy"
+	// ContainerKindCoordinator keeps the cluster's consensus (etcd).
+	ContainerKindCoordinator = "coordinator"
+	// ContainerKindExporter publishes metrics about something else.
+	ContainerKindExporter = "exporter"
+	// ContainerKindAddon is a one-shot helper beside the database (init
+	// sidecars).
+	ContainerKindAddon = "addon"
+)
 
 // Port declares a host-network port; Container and Host must be equal.
 type Port struct {

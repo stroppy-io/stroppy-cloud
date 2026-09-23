@@ -83,6 +83,7 @@ func mysqlRecipe(c *compilation) error {
 			}
 			ct := spec.Container{
 				Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
+				Kind:   spec.ContainerKindDatabase,
 				Env:    map[string]string{"MYSQL_ROOT_PASSWORD": mysqlPassword, "MYSQL_ROOT_HOST": "%", "MARIADB_ROOT_PASSWORD": mysqlPassword, "MARIADB_ROOT_HOST": "%"},
 				Mounts: []spec.Mount{{Source: dataMount + "/mysql", Target: mysqlDataInner}},
 				Files:  []spec.File{{Path: mysqlConfPath, Content: conf}},
@@ -113,7 +114,8 @@ func mysqlRecipe(c *compilation) error {
 		for _, m := range c.machinesOf(role) {
 			c.add(spec.Container{
 				Name: m + "-mysqld-exporter", Role: role, Machine: m, Image: imageMySQLDExporter,
-				Env: map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword},
+				Kind: spec.ContainerKindExporter,
+				Env:  map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword},
 				Cmd: []string{
 					fmt.Sprintf("--mysqld.address=127.0.0.1:%d", mysqlPort), "--mysqld.username=" + exporterUser, fmt.Sprintf("--web.listen-address=:%d", mysqldExporterPort),
 				},
@@ -235,6 +237,7 @@ func (c *compilation) proxysql() error {
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
 			Name: m + "-proxysql", Role: role, Machine: m, Image: imageProxySQL,
+			Kind: spec.ContainerKindProxy,
 			// Raise only this process's soft limit within the existing hard limit.
 			Cmd:   []string{"bash", "-ec", `ulimit -Sn "$(ulimit -Hn)"; exec proxysql -f --idle-threads -D /var/lib/proxysql`},
 			Files: []spec.File{{Path: proxysqlConfPath, Content: cnf}, {Path: "/etc/stroppy/proxy-health.sh", Content: "#!/usr/bin/env bash\nset -euo pipefail\n" + query + "\n", Mode: "0755"}},

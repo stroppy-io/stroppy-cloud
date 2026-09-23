@@ -14,7 +14,6 @@ import (
 	"github.com/coder/websocket/wsjson"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/transport/ws"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // wsClient dials the socket with a bearer in the query (browser style)
@@ -78,8 +77,11 @@ func TestE2EWebSocket(t *testing.T) {
 		}
 	})
 
+	// The pipeline pauses right after its first phase started.
+	e.graphene.hold("phase.started")
 	var launched runView
 	e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{"name": "live"}, tok), http.StatusCreated, &launched)
+	e.graphene.hold("")
 
 	t.Run("overview and events follow the projection", func(t *testing.T) {
 		c := dialWS(t, e, tok)
@@ -98,8 +100,6 @@ func TestE2EWebSocket(t *testing.T) {
 		c.next(5*time.Second, "ack", "ev")
 
 		e.app.services.Projector.Tick(e.ctx)
-		e.graphene.emit(launched.ID, "run-started", "", nil)
-		e.graphene.milestone(launched.ID, "phase.started", map[string]any{"phase": "provisioning"})
 		deadline := time.Now().Add(10 * time.Second)
 		sawRunning, sawEvent := false, false
 		for time.Now().Before(deadline) && !(sawRunning && sawEvent) {
@@ -130,7 +130,7 @@ func TestE2EWebSocket(t *testing.T) {
 		c.send(ws.Frame{Type: "ping", SubID: "p"})
 		c.next(5*time.Second, "pong", "p")
 
-		e.graphene.finish(launched.ID, "run-completed", "completed", spec.Result{Summary: spec.Summary{TPS: 42}})
+		e.graphene.release(launched.ID)
 		for {
 			f := c.next(10*time.Second, "event", "ov")
 			_ = json.Unmarshal(f.Payload, &ov)

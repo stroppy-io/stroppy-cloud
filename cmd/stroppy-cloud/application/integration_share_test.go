@@ -7,19 +7,26 @@ import (
 	"strings"
 	"testing"
 	"time"
-
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
-// finishRun drives a launched run to completed with the given tps.
-func finishRun(t *testing.T, e *e2e, id string, tps float64) {
+// launchWithTPS launches the test; its pipeline measures tps.
+func launchWithTPS(t *testing.T, e *e2e, base, testID, tok string, tps float64, body map[string]any, dst *runView) {
 	t.Helper()
-	e.app.services.Projector.Tick(e.ctx)
-	e.graphene.emit(id, "run-started", "", nil)
-	e.graphene.milestone(id, "phase.started", map[string]any{"phase": "workload"})
-	e.graphene.milestone(id, "segment.started", map[string]any{"segment": "main", "script": "tpcc/tx"})
-	e.graphene.milestone(id, "segment.finished", map[string]any{"segment": "main"})
-	e.graphene.finish(id, "run-completed", "completed", spec.Result{Summary: spec.Summary{TPS: tps, LatencyP95Ms: 10000 / tps}})
+	e.graphene.withTPS(tps)
+	defer e.graphene.withTPS(0)
+	e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", body, tok), http.StatusCreated, dst)
+}
+
+// finishRun waits for a launched run to be projected to its end.
+func finishRun(t *testing.T, e *e2e, base, tok, id string) runView {
+	t.Helper()
+	var r runView
+	eventually(t, 10*time.Second, func() bool {
+		e.app.services.Projector.Tick(e.ctx)
+		e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &r)
+		return r.Status == "completed" || r.Status == "failed" || r.Status == "cancelled"
+	})
+	return r
 }
 
 func TestE2EShareCompareRating(t *testing.T) {
@@ -27,15 +34,12 @@ func TestE2EShareCompareRating(t *testing.T) {
 	base, tok, testID, tn := runFixture(t, e)
 
 	var a, b runView
-	e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{"name": "base", "rating": map[string]any{"global": true}}, tok), http.StatusCreated, &a)
-	e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{"name": "candidate"}, tok), http.StatusCreated, &b)
-	finishRun(t, e, a.ID, 1000)
-	finishRun(t, e, b.ID, 1100)
-	eventually(t, 10*time.Second, func() bool {
-		e.want(e.req(http.MethodGet, base+"/runs/"+b.ID, nil, tok), http.StatusOK, &b)
-		e.want(e.req(http.MethodGet, base+"/runs/"+a.ID, nil, tok), http.StatusOK, &a)
-		return a.Status == "completed" && b.Status == "completed"
-	})
+	launchWithTPS(t, e, base, testID, tok, 1000, map[string]any{"name": "base", "rating": map[string]any{"global": true}}, &a)
+	launchWithTPS(t, e, base, testID, tok, 1100, map[string]any{"name": "candidate"}, &b)
+	a, b = finishRun(t, e, base, tok, a.ID), finishRun(t, e, base, tok, b.ID)
+	if a.Status != "completed" || b.Status != "completed" {
+		t.Fatalf("runs %s %s", a.Status, b.Status)
+	}
 
 	t.Run("compare: verdicts and spec diff", func(t *testing.T) {
 		var cmp struct {
@@ -44,6 +48,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 				RunID   string `json:"run_id"`
 				Verdict struct {
 					Better int `json:"better"`
+					Worse  int `json:"worse"`
 				} `json:"verdict"`
 			} `json:"columns"`
 			Metrics []struct {
@@ -59,7 +64,7 @@ func TestE2EShareCompareRating(t *testing.T) {
 			} `json:"spec_diff"`
 		}
 		e.want(e.req(http.MethodPost, base+"/compare", map[string]any{"run_ids": []string{a.ID, b.ID}}, tok), http.StatusOK, &cmp)
-		if cmp.BaselineRunID != a.ID || cmp.Columns[1].Verdict.Better != 2 {
+		if cmp.BaselineRunID != a.ID || cmp.Columns[1].Verdict.Better < 2 || cmp.Columns[1].Verdict.Worse != 0 {
 			t.Fatalf("compare %+v", cmp)
 		}
 		var tps, lat string

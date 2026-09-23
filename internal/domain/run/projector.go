@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"sync"
 	"time"
 
@@ -172,7 +173,7 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 	if err != nil {
 		return
 	}
-	if final, ok := terminalOf(st); ok {
+	if final, ok := TerminalOf(st); ok {
 		state.finishPhases(string(final))
 		_ = p.repo.SetProjection(ctx, r.ID, state, lastID) //nolint:errcheck // best-effort
 		reason := ""
@@ -187,14 +188,16 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 	}
 }
 
-// terminalOf maps a Graphene run status to the server's terminal status.
-func terminalOf(s string) (Status, bool) {
-	switch s {
-	case "completed", "succeeded", "success":
+// TerminalOf maps a Graphene phase to the server's terminal status.
+// Graphene speaks one lowercase vocabulary for runs and records alike:
+// running, completed, failed, canceled, terminated, timed-out, deleted.
+func TerminalOf(s string) (Status, bool) {
+	switch strings.ToLower(s) {
+	case "completed":
 		return StatusCompleted, true
-	case "failed", "timed-out", "timed_out", "terminated", "error":
+	case "failed", "timed-out", "terminated":
 		return StatusFailed, true
-	case "canceled", "cancelled":
+	case "canceled":
 		return StatusCancelled, true
 	}
 	return "", false
@@ -202,12 +205,17 @@ func terminalOf(s string) (Status, bool) {
 
 // finish stores the result of a finished run and tells the webhooks.
 func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reason string) {
-	// Failed/cancelled runs may also carry partial native reports. Keep the raw
-	// envelope so explicit zeroes and opaque report extensions survive storage.
-	var raw json.RawMessage
-	if err := p.graphene.RunResult(sctx, r.GrapheneID(), &raw); err != nil {
+	// A run that did not complete still collected something: its partial
+	// result rides in the failure. Keep the raw envelope so explicit zeroes
+	// and opaque report extensions survive storage.
+	raw, failure, err := p.graphene.RunClose(sctx, r.GrapheneID())
+	switch {
+	case err != nil:
 		p.log.Warn("projector: result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
-	} else {
+	case len(raw) == 0:
+		// Nothing was collected (the run died before its first phase).
+		p.log.Debug("projector: no result", xlog.String("run", r.ID.String()), xlog.String("failure", failure))
+	default:
 		var res spec.Result
 		if err := json.Unmarshal(raw, &res); err != nil {
 			p.log.Warn("projector: decode result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
@@ -227,7 +235,9 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 			}
 		}
 	}
-	if status == StatusCompleted && r.Keep > 0 {
+	// The stand is kept when the pipeline says so (stand.kept), not
+	// because keep was asked: a failed run tears everything down.
+	if cur, err := p.repo.ByID(ctx, r.ID); err == nil && cur.State.Stand != nil && r.Keep > 0 {
 		until := time.Now().UTC().Add(r.Keep)
 		_ = p.repo.SetKeep(ctx, r.ID, true, &until) //nolint:errcheck // best-effort
 	}

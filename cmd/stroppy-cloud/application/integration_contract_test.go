@@ -90,9 +90,11 @@ const saved=parseSchemaJSON(readFileSync(0,'utf8')); process.stdout.write(string
 	if m.Preemptible == nil || *m.Preemptible {
 		t.Fatal("explicit false lost")
 	}
-	// Project the complete native result through the observer, PostgreSQL and HTTP.
+	// Project the complete native result through the observer, PostgreSQL
+	// and HTTP. (Graphene hands a result out for a completed run only: a
+	// failed workflow carries its error, not its partial result.)
 	result := contractFixture(t, "result-complete.json")
-	e.graphene.finish(launched.ID, "run-failed", "failed", json.RawMessage(result))
+	e.graphene.replaceResult(launched.ID, json.RawMessage(result))
 	if e.app.services.Projector.Tick(e.ctx) < 1 {
 		t.Fatal("projector did not start")
 	}

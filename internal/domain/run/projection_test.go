@@ -8,9 +8,11 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 )
 
+// note is a milestone as Graphene delivers it: kind "note", the
+// milestone's name as the subject, its payload as the input.
 func note(id int64, name string, payload map[string]any) run.RawEvent {
-	raw, _ := json.Marshal(map[string]any{"name": name, "payload": payload})
-	return run.RawEvent{ID: id, At: time.Unix(id, 0), Kind: "signal-received", Subject: "entity-note", Input: raw}
+	raw, _ := json.Marshal(payload)
+	return run.RawEvent{ID: id, At: time.Unix(id, 0), Kind: "note", Subject: name, Input: raw}
 }
 
 func TestProjectionHappyPath(t *testing.T) {

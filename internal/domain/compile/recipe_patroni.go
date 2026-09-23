@@ -71,6 +71,7 @@ func (c *compilation) patroniEtcd() (names []string, hosts []any, err error) {
 		}
 		c.add(spec.Container{
 			Name: m + "-etcd", Role: topology.RoleEtcd, Machine: m, Image: imageEtcd,
+			Kind:        spec.ContainerKindCoordinator,
 			Cmd:         []string{"/usr/local/bin/etcd", "--config-file=" + confDir + "/etcd.yml"},
 			Files:       []spec.File{{Path: confDir + "/etcd.yml", Content: cfg}},
 			Mounts:      []spec.Mount{{Source: dataMount + "/etcd", Target: "/var/lib/etcd"}},
@@ -101,6 +102,7 @@ func (c *compilation) patroniNode(role, m string, hosts []any, deps []string) er
 	init := fmt.Sprintf("#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\n%s\nSTROPPY_SQL\n", strings.TrimSpace(strParam(c.params(), "init_sql", "")))
 	c.add(spec.Container{
 		Name: m + "-" + c.engineOf(role), Role: role, Machine: m,
+		Kind:        spec.ContainerKindDatabase,
 		Image:       "docker.stroppy.io/stroppy-io/patroni:pg" + c.in.Database.Version + "-4.1.5",
 		Env:         map[string]string{"PGDATA": pgDataInner + "/pgdata"},
 		Mounts:      []spec.Mount{{Source: pgDataDir, Target: pgDataInner}},

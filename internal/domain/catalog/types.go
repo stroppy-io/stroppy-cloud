@@ -89,6 +89,15 @@ type Provider struct {
 	Images []Image
 }
 
+// SizeTable is the size table of a role family. A family without its own
+// table (etcd, …) sizes like the small service machines: proxy.
+func (p Provider) SizeTable(family string) map[string]SizeSpec {
+	if t, ok := p.Sizes[family]; ok {
+		return t
+	}
+	return p.Sizes["proxy"]
+}
+
 // ProviderKind is a cloud id.
 type ProviderKind string
 
@@ -189,7 +198,9 @@ type Metric struct {
 	Scope          string // result | db | host
 	DBKinds        []DatabaseKind
 	RatingEligible bool
-	// Expr is the PromQL of the metric with `$run` for the run label
-	// matcher (`{<label>="<id>"}`); empty = `<key>{$run}`.
+	// Expr is the MetricsQL of the metric's time series: `$run` stands for
+	// the matchers of Graphene's attributes (scraped component series),
+	// `$native` for Stroppy's own spelling (workload series). Empty: the
+	// metric is a number of the result only, with no series.
 	Expr string
 }

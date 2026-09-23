@@ -132,13 +132,12 @@ func (p *Projector) follow(ctx context.Context, l run.Live) {
 	if err != nil {
 		return
 	}
-	switch st {
-	case "completed", "succeeded", "success":
-		p.finish(ctx, r, run.StatusCompleted, "", time.Now().UTC())
-	case "failed", "timed-out", "timed_out", "terminated", "error":
-		p.finish(ctx, r, run.StatusFailed, st, time.Now().UTC())
-	case "canceled", "cancelled":
-		p.finish(ctx, r, run.StatusCancelled, "", time.Now().UTC())
+	if final, ok := run.TerminalOf(st); ok {
+		reason := ""
+		if final == run.StatusFailed {
+			reason = st
+		}
+		p.finish(ctx, r, final, reason, time.Now().UTC())
 	}
 }
 

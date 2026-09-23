@@ -148,6 +148,13 @@ func Run() *schemapb.Schema {
 					schemapb.Str("machine").Title("Machine").
 						Desc("Name of the machine the container runs on.").
 						Pattern(namePattern).Required(),
+					schemapb.Choice("kind").Title("Kind").
+						Desc("What the container is; the pipeline marks its record with it, so a topology view reads the kind instead of guessing from the image.").
+						Opt(schemapb.StrV("database"), "Serves the workload's queries").
+						Opt(schemapb.StrV("proxy"), "Stands in front of the databases").
+						Opt(schemapb.StrV("coordinator"), "Keeps the cluster's consensus").
+						Opt(schemapb.StrV("exporter"), "Publishes metrics about something else").
+						Opt(schemapb.StrV("addon"), "One-shot helper beside the database"),
 					schemapb.Str("image").Title("Image").
 						Desc("Fully qualified docker image; every database is a container, no host packages.").
 						MinLen(1).MaxLen(512).Required(),

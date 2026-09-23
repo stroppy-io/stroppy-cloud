@@ -19,6 +19,9 @@ go.work: сервер подключает `schemas`/`spec` как обычну�
 ```
 spec/                 Run, Suite, ProviderVerify, Quotas + Result'ы; Duration ("5m")
 schemas/              все schemapb-схемы продукта (свой AGENTS.md)
+workflows/            публичная дверь к телам stroppy-run/suite: id, Run/Suite,
+                      wire-имена activities + алиасы payload'ов, имена milestones —
+                      для симуляции настоящего workflow вне модуля (e2e сервера)
 internal/run          workflow stroppy-run: run.go (фазы), deploy.go, workload.go,
                       template.go (${ip:...}), phase.go (milestones+parallel), record.go
 internal/suite        fan-out child-run'ов

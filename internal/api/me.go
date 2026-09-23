@@ -3,6 +3,8 @@ package api
 import (
 	"context"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/profile"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
@@ -17,7 +19,17 @@ func (h *Handler) GetMe(ctx context.Context) (*oas.Me, error) {
 	if err != nil {
 		return nil, err
 	}
-	return meOf(p), nil
+	return h.me(ctx, a, p), nil
+}
+
+// me is the profile as the caller sees it: platform admin by the database
+// flag or by the installation's config list.
+func (h *Handler) me(ctx context.Context, a auth.Actor, p profile.Profile) *oas.Me {
+	me := meOf(p)
+	if h.deps.Admin != nil && h.deps.Admin.IsAdmin(ctx, a) {
+		me.IsPlatformAdmin = true
+	}
+	return me
 }
 
 // PatchMe — display name, avatar, preferences, notifications.
@@ -57,7 +69,7 @@ func (h *Handler) PatchMe(ctx context.Context, req *oas.MePatch) (*oas.Me, error
 	if err != nil {
 		return nil, err
 	}
-	return meOf(p), nil
+	return h.me(ctx, a, p), nil
 }
 
 func meOf(p profile.Profile) *oas.Me {

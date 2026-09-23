@@ -133,6 +133,18 @@ func (a *Application) Run(ctx context.Context) (runErr error) {
 // handler assembles the HTTP surface: the IAM verifier and webhook, then
 // the transport over them.
 func (a *Application) handler(ctx context.Context) (http.Handler, error) {
+	if a.cfg.Dev.Enabled() {
+		dev, err := newDevVerifier(&a.cfg.Dev, a.services.Profiles, a.services.Tenants, a.log)
+		if err != nil {
+			return nil, err
+		}
+		a.log.Warn("DEV MODE: static tokens log in, IAM is not asked — never expose this installation",
+			xlog.Int("users", len(a.cfg.Dev.Users)))
+		return a.httpHandler(verifierChain{tokens: a.services.Tokens, dev: dev}, nil)
+	}
+	if err := a.cfg.IAM.complete(); err != nil {
+		return nil, err
+	}
 	iamVerifier, warmErr, err := newIAMVerifier(ctx, &a.cfg.IAM, a.services.IAM, a.services.Profiles, a.services.Tenants, a.log)
 	if err != nil {
 		return nil, err
@@ -207,7 +219,7 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 	return transport.New(transport.Deps{
 		API:          api.AcceptMiddleware(apiServer),
 		WS:           socket,
-		IAMURL:       a.cfg.IAM.BaseURL,
+		IAMURL:       map[bool]string{false: a.cfg.IAM.BaseURL}[a.cfg.Dev.Enabled()],
 		GrafanaURL:   a.cfg.HTTP.GrafanaURL,
 		Webhook:      webhook,
 		WebhookPath:  a.cfg.IAM.WebhookPath,
@@ -223,7 +235,13 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 // publicConfig is what the SPA needs before login: where IAM is (same
 // origin, proxied) and which app client it is.
 func (a *Application) publicConfig() http.Handler {
+	mode := "iam"
+	if a.cfg.Dev.Enabled() {
+		// The SPA asks for a token instead of redirecting to IAM.
+		mode = "dev"
+	}
 	body, _ := json.Marshal(map[string]any{ //nolint:errcheck // static map
+		"auth_mode": mode,
 		"iam": map[string]string{
 			"base_url":    "",
 			"client_id":   a.cfg.IAM.ClientID,

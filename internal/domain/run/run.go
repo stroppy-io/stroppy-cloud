@@ -280,26 +280,55 @@ type Graphene interface {
 	StartRun(ctx context.Context, runID, pipeline string, params any, labels map[string]string) error
 	CancelRun(ctx context.Context, runID string) error
 	DeleteRef(ctx context.Context, ref string) error
-	KeepExtend(ctx context.Context, runID string, keep time.Duration) error
-	KeepRelease(ctx context.Context, runID string) error
-	RunResult(ctx context.Context, runID string, out any) error
+	// Holdings are what the run handed to the pipeline's stand (keep).
+	Holdings(ctx context.Context, runRef string) ([]Holding, error)
+	// KeepExtend/KeepRelease address one holding of the stand.
+	KeepExtend(ctx context.Context, held string, keep time.Duration) error
+	KeepRelease(ctx context.Context, held string) error
+	// RunClose is the run's own account of its end: the result (partial
+	// when it failed) and the failure message.
+	RunClose(ctx context.Context, runID string) (json.RawMessage, string, error)
 	RunStatus(ctx context.Context, runID string) (string, error)
 	// Events streams the run's Graphene events after an id; follow keeps
 	// the stream open until the run finishes or ctx ends.
 	Events(ctx context.Context, runID string, afterID int64, follow bool, fn func(RawEvent) error) error
 	Tree(ctx context.Context, owner string) (TreeNode, error)
-	Artifacts(ctx context.Context, runID string) ([]Artifact, error)
+	// Node describes one live record with its subtree (false = gone).
+	Node(ctx context.Context, ref string) (TreeNode, bool, error)
+	// Artifacts describes artifact records by ref.
+	Artifacts(ctx context.Context, refs []string) ([]Artifact, error)
 	Download(ctx context.Context, ref string) (io.ReadCloser, error)
 }
 
-// TreeNode is the raw ownership tree.
+// Holding is one record the pipeline's stand keeps for a run.
+type Holding struct {
+	Ref string
+	// KeepUntil is the deadline; nil = until an explicit release.
+	KeepUntil *time.Time
+}
+
+// TreeNode is a record of the run with what it owns and what it talks
+// to: the ownership tree is the topology's nodes, the flows its edges.
 type TreeNode struct {
 	Ref       string            `json:"ref"`
 	Kind      string            `json:"kind"`
 	Phase     string            `json:"phase,omitempty"`
 	Labels    map[string]string `json:"labels,omitempty"`
+	Flows     []Flow            `json:"flows,omitempty"`
 	KeepUntil *time.Time        `json:"keep_until,omitempty"`
 	Children  []TreeNode        `json:"children"`
+}
+
+// Flow is one declared outgoing edge of a record — who it talks to and
+// how. Declared intent, not observed traffic.
+type Flow struct {
+	// To is a record ref or an external endpoint.
+	To       string `json:"to"`
+	Protocol string `json:"protocol,omitempty"`
+	Port     int    `json:"port,omitempty"`
+	Label    string `json:"label,omitempty"`
+	// Virtual marks a system edge (agent↔server), not one the run declared.
+	Virtual bool `json:"virtual,omitempty"`
 }
 
 // Artifact is one downloadable record of a run.

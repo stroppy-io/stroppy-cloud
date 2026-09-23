@@ -60,6 +60,7 @@ func cockroachRecipe(c *compilation) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-cockroach", Role: role, Machine: m, Image: image, Cmd: cmd,
+			Kind:        spec.ContainerKindDatabase,
 			Entrypoint:  []string{"/cockroach/cockroach"},
 			Mounts:      []spec.Mount{{Source: dataMount + "/cockroach", Target: crdbDataDir}},
 			Ports:       []spec.Port{{Container: crdbPort, Host: crdbPort}, {Container: crdbHTTPPort, Host: crdbHTTPPort}},
@@ -111,6 +112,7 @@ func nonComment(s string) []string {
 func (c *compilation) initSidecar(role, machine, image, script string, files []spec.File, deps []string) spec.Container {
 	return spec.Container{
 		Name: machine + "-init", Role: role, Machine: machine, Image: image,
+		Kind:        spec.ContainerKindAddon,
 		Entrypoint:  []string{"/bin/sh"},
 		Cmd:         []string{"-c", "set -e\n" + script + "touch /tmp/stroppy-init-done\nwhile true; do sleep 3600; done"},
 		Files:       files,
@@ -209,6 +211,7 @@ func picodataRecipe(c *compilation) error {
 		}
 		c.add(spec.Container{
 			Name: m + "-picodata", Role: role, Machine: m, Image: image,
+			Kind:   spec.ContainerKindDatabase,
 			Cmd:    []string{"run", "--config", confDir + "/picodata.yaml"},
 			Env:    map[string]string{"PICODATA_ADMIN_PASSWORD": picodataPassword},
 			Mounts: []spec.Mount{{Source: dataMount + "/picodata", Target: picoDataDir}},
@@ -324,6 +327,7 @@ func ydbRecipe(c *compilation) error {
 		c.add(spec.Container{
 			Scrape: "/counters/prometheus", ScrapePort: ydbMonPort,
 			Name: m + "-ydb", Role: topology.RoleDB, Machine: m, Image: image,
+			Kind:       spec.ContainerKindDatabase,
 			Entrypoint: []string{"/ydbd"},
 			Cmd: []string{
 				"server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbStaticPort),
@@ -361,6 +365,7 @@ until /ydbd -s grpc://%s:%d admin database %s create ssd:%d; do sleep 5; done
 		c.add(spec.Container{
 			Scrape: "/counters/prometheus", ScrapePort: ydbMonPort,
 			Name: m + "-ydb", Role: topology.RoleDBCompute, Machine: m, Image: image,
+			Kind:       spec.ContainerKindDatabase,
 			Entrypoint: []string{"/ydbd"},
 			Cmd: []string{
 				"server", "--yaml-config", ydbConfPath, "--grpc-port", fmt.Sprint(ydbGRPCPort),

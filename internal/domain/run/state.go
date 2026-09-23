@@ -20,9 +20,20 @@ type State struct {
 	Segments   []SegmentState            `json:"segments,omitempty"`
 	Baseline   *BaselineState            `json:"baseline,omitempty"`
 	Pending    *PendingActivity          `json:"pending,omitempty"`
-	ObservedAt time.Time                 `json:"observed_at"`
+	// Stand is where the run handed its infrastructure over (keep).
+	Stand      *StandState `json:"stand,omitempty"`
+	ObservedAt time.Time   `json:"observed_at"`
 	// Degraded lists why the projection may lag (stream lost, …).
 	Degraded []string `json:"degraded,omitempty"`
+}
+
+// StandState is the kept infrastructure: the pipeline moved its root
+// resource (the network, with everything under it) to the pipeline's stand.
+type StandState struct {
+	// Root is the held resource; stand commands address it.
+	Root string `json:"root"`
+	// Keep is the deadline the pipeline asked for ("1h0m0s").
+	Keep string `json:"keep,omitempty"`
 }
 
 // PhaseState is one phase with its steps (activities).
