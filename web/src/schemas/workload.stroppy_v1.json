@@ -1,1118 +1,26 @@
 {
-  "id": {
-    "namespace": "workload",
-    "name": "stroppy",
-    "version": "v1.0.0"
-  },
-  "description": "A stroppy workload: build, protocol, load segments, driver options and baseline.",
-  "fields": [
-    {
-      "name": "stroppy_version",
-      "description": "Stroppy build to run: a release (6.0.0) or a nightly of one commit (nightly-<sha>); must exist in the platform catalog. 6.0.0 is the minimum.",
-      "required": true,
-      "rules": [
-        {
-          "expr": "!this.matches(\"^[0-5][.]\")",
-          "message": "stroppy releases before 6.0.0 are not supported",
-          "id": "min-v6"
-        }
-      ],
-      "string": {
-        "maxLen": "64",
-        "pattern": "^(\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?|nightly-[0-9a-f]{7,40})$"
-      },
-      "group": "Workload",
-      "title": "Stroppy version",
-      "examples": [
-        {
-          "stringValue": "6.0.0"
-        },
-        {
-          "stringValue": "nightly-24898a8"
-        }
-      ]
-    },
-    {
-      "name": "protocol",
-      "description": "Wire protocol stroppy talks to the database with.",
-      "required": true,
-      "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "pg"
-            },
-            "label": "PostgreSQL"
-          },
-          {
-            "value": {
-              "stringValue": "mysql"
-            },
-            "label": "MySQL / MariaDB"
-          },
-          {
-            "value": {
-              "stringValue": "picodata"
-            },
-            "label": "Picodata (pgproto)"
-          },
-          {
-            "value": {
-              "stringValue": "ydb_grpc"
-            },
-            "label": "YDB (grpc)"
-          },
-          {
-            "value": {
-              "stringValue": "ydb_grpcs"
-            },
-            "label": "YDB (grpcs, TLS)"
-          },
-          {
-            "value": {
-              "stringValue": "cockroach"
-            },
-            "label": "CockroachDB (pgproto)"
-          },
-          {
-            "value": {
-              "stringValue": "noop"
-            },
-            "label": "Noop (framework ceiling)"
-          }
-        ]
-      },
-      "group": "Workload",
-      "title": "Protocol"
-    },
-    {
-      "name": "segments",
-      "description": "Ordered stroppy invocations; each one is a phase of the run.",
-      "required": true,
-      "list": {
-        "items": [
-          {
-            "ref": {
-              "name": "segment"
-            }
-          }
-        ],
-        "minItems": "1",
-        "maxItems": "64"
-      },
-      "group": "Segments",
-      "title": "Segments"
-    },
-    {
-      "name": "driver",
-      "description": "Protocol-neutral stroppy driver options.",
-      "object": {
-        "schema": {
-          "fields": [
-            {
-              "name": "default_insert_method",
-              "description": "Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves.",
-              "nullable": true,
-              "choice": {
-                "options": [
-                  {
-                    "value": {
-                      "stringValue": "native"
-                    },
-                    "label": "Native (COPY / BulkUpsert)"
-                  },
-                  {
-                    "value": {
-                      "stringValue": "columnar"
-                    },
-                    "label": "Columnar"
-                  },
-                  {
-                    "value": {
-                      "stringValue": "plain_bulk"
-                    },
-                    "label": "Plain bulk INSERT"
-                  },
-                  {
-                    "value": {
-                      "stringValue": "plain_query"
-                    },
-                    "label": "Plain single-row INSERT"
-                  }
-                ]
-              },
-              "title": "Insert method"
-            },
-            {
-              "name": "bulk_size",
-              "description": "Rows per bulk INSERT statement (bulkSize).",
-              "int64": {
-                "default": "2500",
-                "gte": "1",
-                "lte": "1000000"
-              },
-              "unit": "rows",
-              "title": "Bulk size"
-            },
-            {
-              "name": "pool",
-              "description": "Native Stroppy pool options; explicit driver settings take precedence over pool aliases.",
-              "object": {
-                "schema": {
-                  "fields": [
-                    {
-                      "name": "max_conns",
-                      "description": "Stroppy max_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max connections"
-                    },
-                    {
-                      "name": "min_conns",
-                      "description": "Stroppy min_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Min connections"
-                    },
-                    {
-                      "name": "min_idle_conns",
-                      "description": "Stroppy min_idle_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Min idle connections"
-                    },
-                    {
-                      "name": "max_conn_lifetime",
-                      "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max lifetime"
-                    },
-                    {
-                      "name": "max_conn_idle_time",
-                      "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle time"
-                    },
-                    {
-                      "name": "description_cache_capacity",
-                      "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Description cache"
-                    },
-                    {
-                      "name": "statement_cache_capacity",
-                      "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Statement cache"
-                    },
-                    {
-                      "name": "trace_log_level",
-                      "description": "pgx tracer log level (traceLogLevel).",
-                      "nullable": true,
-                      "choice": {
-                        "options": [
-                          {
-                            "value": {
-                              "stringValue": "trace"
-                            },
-                            "label": "Trace"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "debug"
-                            },
-                            "label": "Debug"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "info"
-                            },
-                            "label": "Info"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "warn"
-                            },
-                            "label": "Warn"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "error"
-                            },
-                            "label": "Error"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "none"
-                            },
-                            "label": "None"
-                          }
-                        ]
-                      },
-                      "group": "Logging",
-                      "title": "Driver log level"
-                    },
-                    {
-                      "name": "default_query_exec_mode",
-                      "description": "pgx defaultQueryExecMode.",
-                      "nullable": true,
-                      "choice": {
-                        "options": [
-                          {
-                            "value": {
-                              "stringValue": "cache_statement"
-                            },
-                            "label": "Cache statements"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "cache_describe"
-                            },
-                            "label": "Cache descriptions"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "describe_exec"
-                            },
-                            "label": "Describe and execute"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "exec"
-                            },
-                            "label": "Execute"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "simple_protocol"
-                            },
-                            "label": "Simple protocol"
-                          }
-                        ]
-                      },
-                      "group": "Driver",
-                      "title": "Query execution mode"
-                    },
-                    {
-                      "name": "max_open_conns",
-                      "description": "Stroppy max_open_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max open connections"
-                    },
-                    {
-                      "name": "max_idle_conns",
-                      "description": "Stroppy max_idle_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle connections"
-                    },
-                    {
-                      "name": "conn_max_lifetime",
-                      "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max lifetime"
-                    },
-                    {
-                      "name": "conn_max_idle_time",
-                      "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle time"
-                    }
-                  ],
-                  "strict": true
-                }
-              },
-              "group": "Driver",
-              "title": "Connection pool"
-            },
-            {
-              "name": "postgres",
-              "description": "Native Stroppy postgres options; explicit driver settings take precedence over pool aliases.",
-              "object": {
-                "schema": {
-                  "fields": [
-                    {
-                      "name": "max_conns",
-                      "description": "Stroppy max_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max connections"
-                    },
-                    {
-                      "name": "min_conns",
-                      "description": "Stroppy min_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Min connections"
-                    },
-                    {
-                      "name": "min_idle_conns",
-                      "description": "Stroppy min_idle_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Min idle connections"
-                    },
-                    {
-                      "name": "max_conn_lifetime",
-                      "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max lifetime"
-                    },
-                    {
-                      "name": "max_conn_idle_time",
-                      "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle time"
-                    },
-                    {
-                      "name": "description_cache_capacity",
-                      "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Description cache"
-                    },
-                    {
-                      "name": "statement_cache_capacity",
-                      "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Statement cache"
-                    },
-                    {
-                      "name": "trace_log_level",
-                      "description": "pgx tracer log level (traceLogLevel).",
-                      "nullable": true,
-                      "choice": {
-                        "options": [
-                          {
-                            "value": {
-                              "stringValue": "trace"
-                            },
-                            "label": "Trace"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "debug"
-                            },
-                            "label": "Debug"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "info"
-                            },
-                            "label": "Info"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "warn"
-                            },
-                            "label": "Warn"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "error"
-                            },
-                            "label": "Error"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "none"
-                            },
-                            "label": "None"
-                          }
-                        ]
-                      },
-                      "group": "Logging",
-                      "title": "Driver log level"
-                    },
-                    {
-                      "name": "default_query_exec_mode",
-                      "description": "pgx defaultQueryExecMode.",
-                      "nullable": true,
-                      "choice": {
-                        "options": [
-                          {
-                            "value": {
-                              "stringValue": "cache_statement"
-                            },
-                            "label": "Cache statements"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "cache_describe"
-                            },
-                            "label": "Cache descriptions"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "describe_exec"
-                            },
-                            "label": "Describe and execute"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "exec"
-                            },
-                            "label": "Execute"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "simple_protocol"
-                            },
-                            "label": "Simple protocol"
-                          }
-                        ]
-                      },
-                      "group": "Driver",
-                      "title": "Query execution mode"
-                    }
-                  ],
-                  "strict": true
-                }
-              },
-              "group": "Driver",
-              "title": "PostgreSQL driver"
-            },
-            {
-              "name": "sql",
-              "description": "Native Stroppy sql options; explicit driver settings take precedence over pool aliases.",
-              "object": {
-                "schema": {
-                  "fields": [
-                    {
-                      "name": "max_open_conns",
-                      "description": "Stroppy max_open_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max open connections"
-                    },
-                    {
-                      "name": "max_idle_conns",
-                      "description": "Stroppy max_idle_conns; unset preserves the driver default.",
-                      "nullable": true,
-                      "int64": {
-                        "gte": "0",
-                        "lte": "65535"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle connections"
-                    },
-                    {
-                      "name": "conn_max_lifetime",
-                      "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max lifetime"
-                    },
-                    {
-                      "name": "conn_max_idle_time",
-                      "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
-                      "nullable": true,
-                      "duration": {
-                        "gte": "0s",
-                        "lte": "86400s"
-                      },
-                      "group": "Pool",
-                      "title": "Max idle time"
-                    }
-                  ],
-                  "strict": true
-                }
-              },
-              "group": "Driver",
-              "title": "SQL driver"
-            },
-            {
-              "name": "insert_progress",
-              "description": "insertProgress.* — load progress reporting.",
-              "object": {
-                "schema": {
-                  "fields": [
-                    {
-                      "name": "enabled",
-                      "description": "Explicit insertProgress.enabled override; unset uses the mode.",
-                      "nullable": true,
-                      "bool": {},
-                      "title": "Enabled"
-                    },
-                    {
-                      "name": "mode",
-                      "description": "insertProgress.mode: where load progress goes.",
-                      "choice": {
-                        "options": [
-                          {
-                            "value": {
-                              "stringValue": "off"
-                            },
-                            "label": "Off"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "log"
-                            },
-                            "label": "Log"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "metrics"
-                            },
-                            "label": "Metrics"
-                          },
-                          {
-                            "value": {
-                              "stringValue": "both"
-                            },
-                            "label": "Log and metrics"
-                          }
-                        ],
-                        "default": {
-                          "stringValue": "both"
-                        }
-                      },
-                      "title": "Mode"
-                    },
-                    {
-                      "name": "interval",
-                      "description": "insertProgress.interval — progress cadence.",
-                      "duration": {
-                        "default": "10s",
-                        "gt": "0s",
-                        "lte": "3600s"
-                      },
-                      "title": "Interval"
-                    },
-                    {
-                      "name": "stall_after",
-                      "description": "insertProgress.stallAfter — warn when no rows moved for this long.",
-                      "duration": {
-                        "default": "60s",
-                        "gt": "0s",
-                        "lte": "86400s"
-                      },
-                      "title": "Stall after"
-                    }
-                  ],
-                  "strict": true
-                }
-              },
-              "title": "Load progress"
-            }
-          ],
-          "strict": true
-        }
-      },
-      "group": "Driver",
-      "title": "Driver"
-    },
-    {
-      "name": "connection",
-      "description": "Protocol-specific connection options; the kind must match the protocol.",
-      "oneOf": {
-        "discriminator": "kind",
-        "variants": {
-          "cockroach": {
-            "fields": [
-              {
-                "name": "sslmode",
-                "description": "TLS negotiation mode of the cockroach (pgwire) connection.",
-                "choice": {
-                  "options": [
-                    {
-                      "value": {
-                        "stringValue": "disable"
-                      },
-                      "label": "Disable"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "require"
-                      },
-                      "label": "Require"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "verify-full"
-                      },
-                      "label": "Verify full"
-                    }
-                  ],
-                  "default": {
-                    "stringValue": "disable"
-                  }
-                },
-                "title": "SSL mode"
-              },
-              {
-                "name": "application_name",
-                "string": {
-                  "default": "stroppy",
-                  "maxLen": "64"
-                },
-                "title": "Application name"
-              }
-            ]
-          },
-          "mysql": {
-            "fields": [
-              {
-                "name": "tls",
-                "description": "go-sql-driver TLS mode of the MySQL DSN.",
-                "choice": {
-                  "options": [
-                    {
-                      "value": {
-                        "stringValue": "false"
-                      },
-                      "label": "Off"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "preferred"
-                      },
-                      "label": "Preferred"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "skip-verify"
-                      },
-                      "label": "On, no verification"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "true"
-                      },
-                      "label": "On, verified"
-                    }
-                  ],
-                  "default": {
-                    "stringValue": "false"
-                  }
-                },
-                "title": "TLS"
-              },
-              {
-                "name": "charset",
-                "description": "Connection character set.",
-                "string": {
-                  "default": "utf8mb4",
-                  "maxLen": "32",
-                  "pattern": "^[a-z0-9_]+$"
-                },
-                "title": "Charset"
-              }
-            ]
-          },
-          "noop": {},
-          "pg": {
-            "fields": [
-              {
-                "name": "sslmode",
-                "description": "TLS negotiation mode of the postgres connection (URL sslmode).",
-                "choice": {
-                  "options": [
-                    {
-                      "value": {
-                        "stringValue": "disable"
-                      },
-                      "label": "Disable"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "require"
-                      },
-                      "label": "Require"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "verify-full"
-                      },
-                      "label": "Verify full"
-                    }
-                  ],
-                  "default": {
-                    "stringValue": "disable"
-                  }
-                },
-                "title": "SSL mode"
-              },
-              {
-                "name": "application_name",
-                "description": "application_name reported to postgres; shows up in pg_stat_activity.",
-                "string": {
-                  "default": "stroppy",
-                  "maxLen": "64"
-                },
-                "title": "Application name"
-              },
-              {
-                "name": "query_exec_mode",
-                "description": "pgx query execution mode (postgres.defaultQueryExecMode).",
-                "nullable": true,
-                "choice": {
-                  "options": [
-                    {
-                      "value": {
-                        "stringValue": "cache_statement"
-                      },
-                      "label": "Cache prepared statements"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "cache_describe"
-                      },
-                      "label": "Cache statement descriptions"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "describe_exec"
-                      },
-                      "label": "Describe then exec"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "exec"
-                      },
-                      "label": "Exec (no cache)"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "simple_protocol"
-                      },
-                      "label": "Simple protocol"
-                    }
-                  ]
-                },
-                "title": "Query exec mode"
-              }
-            ]
-          },
-          "picodata": {
-            "fields": [
-              {
-                "name": "query_exec_mode",
-                "description": "pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1.",
-                "nullable": true,
-                "choice": {
-                  "options": [
-                    {
-                      "value": {
-                        "stringValue": "exec"
-                      },
-                      "label": "Exec (no cache)"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "cache_statement"
-                      },
-                      "label": "Cache prepared statements"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "cache_describe"
-                      },
-                      "label": "Cache statement descriptions"
-                    },
-                    {
-                      "value": {
-                        "stringValue": "describe_exec"
-                      },
-                      "label": "Describe then exec"
-                    }
-                  ]
-                },
-                "title": "Query execution mode"
-              }
-            ]
-          },
-          "ydb": {
-            "fields": [
-              {
-                "name": "ca_cert",
-                "description": "PEM of a private CA (caCertFile), when the endpoint is not signed by a public one.",
-                "nullable": true,
-                "string": {
-                  "maxLen": "65536"
-                },
-                "title": "CA certificate",
-                "secret": true
-              },
-              {
-                "name": "auth_token",
-                "description": "IAM token passed as authToken.",
-                "nullable": true,
-                "string": {
-                  "maxLen": "4096"
-                },
-                "title": "Auth token",
-                "secret": true
-              },
-              {
-                "name": "auth_user",
-                "description": "Static credentials user (authUser).",
-                "nullable": true,
-                "string": {
-                  "maxLen": "128"
-                },
-                "title": "User"
-              },
-              {
-                "name": "auth_password",
-                "description": "Static credentials password (authPassword).",
-                "nullable": true,
-                "string": {
-                  "maxLen": "256"
-                },
-                "title": "Password",
-                "secret": true
-              },
-              {
-                "name": "tls_insecure_skip_verify",
-                "description": "tlsInsecureSkipVerify — testing only.",
-                "bool": {
-                  "default": false
-                },
-                "title": "Skip TLS verification"
-              }
-            ]
-          }
-        }
-      },
-      "group": "Driver",
-      "title": "Connection"
-    },
-    {
-      "name": "baseline",
-      "description": "Machine self-check with `stroppy baseline`; its JSON report lands in the run result.",
-      "object": {
-        "schema": {
-          "fields": [
-            {
-              "name": "enabled",
-              "description": "Run `stroppy baseline` on the runner machine before the segments: the stroppy ceiling a database run can never exceed.",
-              "bool": {
-                "default": false
-              },
-              "title": "Measure the runner"
-            },
-            {
-              "name": "tiers",
-              "description": "Which tiers to run (--tiers); unset = both.",
-              "list": {
-                "items": [
-                  {
-                    "choice": {
-                      "options": [
-                        {
-                          "value": {
-                            "stringValue": "noop"
-                          },
-                          "label": "noop driver (framework cost)"
-                        },
-                        {
-                          "value": {
-                            "stringValue": "wire"
-                          },
-                          "label": "pg-wire against pg-noop on loopback"
-                        }
-                      ]
-                    }
-                  }
-                ],
-                "minItems": "1",
-                "maxItems": "2",
-                "unique": true
-              },
-              "title": "Tiers"
-            },
-            {
-              "name": "quick",
-              "description": "Shorter phases and a smaller load (--quick).",
-              "bool": {
-                "default": false
-              },
-              "title": "Quick"
-            },
-            {
-              "name": "vus",
-              "description": "VU count of the parallel tx phase (--vus); unset = 20.",
-              "nullable": true,
-              "int64": {
-                "gte": "1",
-                "lte": "4096"
-              },
-              "title": "Parallel VUs"
-            },
-            {
-              "name": "rows",
-              "description": "Rows loaded into the probe table (--rows); unset = 250000.",
-              "nullable": true,
-              "int64": {
-                "gte": "1000",
-                "lte": "100000000"
-              },
-              "title": "Load rows"
-            },
-            {
-              "name": "duration",
-              "description": "Duration of each tx phase (--duration); unset = 3s.",
-              "nullable": true,
-              "duration": {
-                "gt": "0s",
-                "lte": "600s"
-              },
-              "title": "Tx phase duration"
-            }
-          ],
-          "strict": true
-        }
-      },
-      "group": "Baseline",
-      "title": "Baseline"
-    }
-  ],
-  "rules": [
-    {
-      "expr": "root.protocol in [\"pg\", \"mysql\", \"cockroach\", \"noop\"] || root.segments.all(s, !(s.workload.script in [\"tpcc/procs\", \"tpcb/procs\"]))",
-      "message": "stored-procedure workloads require PostgreSQL, MySQL, CockroachDB or noop",
-      "id": "stored-procedure-protocol"
-    },
-    {
-      "expr": "!(root.protocol in [\"ydb_grpc\", \"ydb_grpcs\"]) || root.segments.all(s, s.workload.script != \"tpcds\" || ((! (\"query_stream\" in s.workload) || s.workload.query_stream == null) && (!(\"streams\" in s.workload) || s.workload.streams == 1)))",
-      "message": "YDB TPC-DS supports the baked query set only",
-      "id": "tpcds-ydb-baked"
-    },
-    {
-      "expr": "root.protocol != \"picodata\" || root.segments.all(s, s.workload.script != \"tpcds\" || (\"no_steps\" in s && \"workload\" in s.no_steps) || (\"steps\" in s && size(s.steps) > 0 && !(\"workload\" in s.steps)))",
-      "message": "Picodata TPC-DS supports loading only; exclude the workload step",
-      "id": "tpcds-picodata-load-only"
-    },
-    {
-      "expr": "!(\"connection\" in root) || !(\"protocol\" in root) || root.connection.kind == (root.protocol.startsWith(\"ydb\") ? \"ydb\" : root.protocol)",
-      "message": "connection.kind must match the protocol",
-      "id": "connection-match-protocol"
-    },
-    {
-      "expr": "size(root.segments.map(s, s.name)) == size(root.segments.map(s, s.name).filter(n, root.segments.filter(x, x.name == n).size() == 1))",
-      "message": "segment names must be unique",
-      "id": "segment-names-unique"
-    }
-  ],
-  "strict": true,
   "coerce": true,
   "defs": {
     "segment": {
-      "id": {
-        "namespace": "workload",
-        "name": "segment",
-        "version": "v1.0.0"
-      },
-      "description": "One stroppy load segment: workload, typed parameters, scenario, steps and files.",
+      "coerce": true,
+      "description": "One stroppy load segment: workload, typed parameters, scenario, steps and thresholds.",
       "fields": [
         {
-          "name": "name",
           "description": "Segment id inside the workload; used as the phase label of the run and as a metric label.",
+          "group": "Segment",
+          "name": "name",
           "required": true,
           "string": {
-            "minLen": "1",
             "maxLen": "64",
+            "minLen": "1",
             "pattern": "^[a-z][a-z0-9_-]*$"
           },
-          "group": "Segment",
           "title": "Name"
         },
         {
-          "name": "workload",
           "description": "Built-in stroppy workload and its typed parameters; `script` is the id passed to `stroppy run`.",
-          "required": true,
+          "group": "Workload",
+          "name": "workload",
           "oneOf": {
             "discriminator": "script",
             "variants": {
@@ -1124,77 +32,77 @@
                     "string": {}
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers).",
+                    "group": "Load",
                     "int64": {
                       "default": "20",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "rows",
                     "description": "Rows loaded into the baseline probe table (rows).",
+                    "group": "Data",
                     "int64": {
                       "default": "250000",
                       "gte": "1"
                     },
-                    "group": "Data",
+                    "name": "rows",
                     "title": "Rows"
                   },
                   {
-                    "name": "tx_isolation",
-                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                    "nullable": true,
                     "choice": {
                       "options": [
                         {
+                          "label": "Read uncommitted",
                           "value": {
                             "stringValue": "read_uncommitted"
-                          },
-                          "label": "Read uncommitted"
+                          }
                         },
                         {
+                          "label": "Read committed",
                           "value": {
                             "stringValue": "read_committed"
-                          },
-                          "label": "Read committed"
+                          }
                         },
                         {
+                          "label": "Repeatable read",
                           "value": {
                             "stringValue": "repeatable_read"
-                          },
-                          "label": "Repeatable read"
+                          }
                         },
                         {
+                          "label": "Serializable",
                           "value": {
                             "stringValue": "serializable"
-                          },
-                          "label": "Serializable"
+                          }
                         },
                         {
+                          "label": "Database default",
                           "value": {
                             "stringValue": "db_default"
-                          },
-                          "label": "Database default"
+                          }
                         },
                         {
+                          "label": "Connection-level",
                           "value": {
                             "stringValue": "conn"
-                          },
-                          "label": "Connection-level"
+                          }
                         },
                         {
+                          "label": "None (no BEGIN)",
                           "value": {
                             "stringValue": "none"
-                          },
-                          "label": "None (no BEGIN)"
+                          }
                         }
                       ]
                     },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
                     "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
                     "title": "Transaction isolation"
                   }
                 ],
@@ -1208,24 +116,24 @@
                     "string": {}
                   },
                   {
-                    "name": "sql_body",
                     "description": "SQL text to execute (sqlBody); may start with a `--= name` marker to name the query.",
+                    "group": "SQL",
+                    "name": "sql_body",
                     "nullable": true,
                     "string": {
                       "maxLen": "1048576"
                     },
-                    "group": "SQL",
                     "title": "Inline SQL"
                   },
                   {
+                    "description": "SQL file to execute (sqlFile): a preset id shipped with stroppy; use sql_body for inline SQL.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "SQL file to execute (sqlFile): a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1249,100 +157,100 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "scale_factor",
                     "title": "Scale factor"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers).",
+                    "group": "Load",
                     "int64": {
                       "default": "1",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "retry_attempts",
                     "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
                     "int64": {
                       "default": "3",
                       "gte": "1",
                       "lte": "100"
                     },
-                    "group": "Transactions",
+                    "name": "retry_attempts",
                     "title": "Retry attempts"
                   },
                   {
-                    "name": "tx_isolation",
-                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                    "nullable": true,
                     "choice": {
                       "options": [
                         {
+                          "label": "Read uncommitted",
                           "value": {
                             "stringValue": "read_uncommitted"
-                          },
-                          "label": "Read uncommitted"
+                          }
                         },
                         {
+                          "label": "Read committed",
                           "value": {
                             "stringValue": "read_committed"
-                          },
-                          "label": "Read committed"
+                          }
                         },
                         {
+                          "label": "Repeatable read",
                           "value": {
                             "stringValue": "repeatable_read"
-                          },
-                          "label": "Repeatable read"
+                          }
                         },
                         {
+                          "label": "Serializable",
                           "value": {
                             "stringValue": "serializable"
-                          },
-                          "label": "Serializable"
+                          }
                         },
                         {
+                          "label": "Database default",
                           "value": {
                             "stringValue": "db_default"
-                          },
-                          "label": "Database default"
+                          }
                         },
                         {
+                          "label": "Connection-level",
                           "value": {
                             "stringValue": "conn"
-                          },
-                          "label": "Connection-level"
+                          }
                         },
                         {
+                          "label": "None (no BEGIN)",
                           "value": {
                             "stringValue": "none"
-                          },
-                          "label": "None (no BEGIN)"
+                          }
                         }
                       ]
                     },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
                     "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
                     "title": "Transaction isolation"
                   },
                   {
+                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1356,100 +264,100 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "TPC-B scale factor = branches (scaleFactor); 100k accounts per branch.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "scale_factor",
                     "title": "Scale factor"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers).",
+                    "group": "Load",
                     "int64": {
                       "default": "1",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "retry_attempts",
                     "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
                     "int64": {
                       "default": "3",
                       "gte": "1",
                       "lte": "100"
                     },
-                    "group": "Transactions",
+                    "name": "retry_attempts",
                     "title": "Retry attempts"
                   },
                   {
-                    "name": "tx_isolation",
-                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                    "nullable": true,
                     "choice": {
                       "options": [
                         {
+                          "label": "Read uncommitted",
                           "value": {
                             "stringValue": "read_uncommitted"
-                          },
-                          "label": "Read uncommitted"
+                          }
                         },
                         {
+                          "label": "Read committed",
                           "value": {
                             "stringValue": "read_committed"
-                          },
-                          "label": "Read committed"
+                          }
                         },
                         {
+                          "label": "Repeatable read",
                           "value": {
                             "stringValue": "repeatable_read"
-                          },
-                          "label": "Repeatable read"
+                          }
                         },
                         {
+                          "label": "Serializable",
                           "value": {
                             "stringValue": "serializable"
-                          },
-                          "label": "Serializable"
+                          }
                         },
                         {
+                          "label": "Database default",
                           "value": {
                             "stringValue": "db_default"
-                          },
-                          "label": "Database default"
+                          }
                         },
                         {
+                          "label": "Connection-level",
                           "value": {
                             "stringValue": "conn"
-                          },
-                          "label": "Connection-level"
+                          }
                         },
                         {
+                          "label": "None (no BEGIN)",
                           "value": {
                             "stringValue": "none"
-                          },
-                          "label": "None (no BEGIN)"
+                          }
                         }
                       ]
                     },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
                     "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
                     "title": "Transaction isolation"
                   },
                   {
+                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1463,137 +371,137 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "scale_factor",
                     "title": "Warehouses"
                   },
                   {
-                    "name": "warehouse_start",
                     "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "warehouse_start",
                     "title": "First warehouse"
                   },
                   {
-                    "name": "load_items",
-                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
-                    "nullable": true,
                     "bool": {},
+                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
                     "group": "Load",
+                    "name": "load_items",
+                    "nullable": true,
                     "title": "Load items"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers).",
+                    "group": "Load",
                     "int64": {
                       "default": "1",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "pg_unlogged",
-                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "group": "Load",
+                    "name": "pg_unlogged",
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "name": "pacing",
-                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
                     "group": "Transactions",
+                    "name": "pacing",
                     "title": "Pacing"
                   },
                   {
-                    "name": "retry_attempts",
                     "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
                     "int64": {
                       "default": "3",
                       "gte": "1",
                       "lte": "100"
                     },
-                    "group": "Transactions",
+                    "name": "retry_attempts",
                     "title": "Retry attempts"
                   },
                   {
-                    "name": "tx_isolation",
-                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                    "nullable": true,
                     "choice": {
                       "options": [
                         {
+                          "label": "Read uncommitted",
                           "value": {
                             "stringValue": "read_uncommitted"
-                          },
-                          "label": "Read uncommitted"
+                          }
                         },
                         {
+                          "label": "Read committed",
                           "value": {
                             "stringValue": "read_committed"
-                          },
-                          "label": "Read committed"
+                          }
                         },
                         {
+                          "label": "Repeatable read",
                           "value": {
                             "stringValue": "repeatable_read"
-                          },
-                          "label": "Repeatable read"
+                          }
                         },
                         {
+                          "label": "Serializable",
                           "value": {
                             "stringValue": "serializable"
-                          },
-                          "label": "Serializable"
+                          }
                         },
                         {
+                          "label": "Database default",
                           "value": {
                             "stringValue": "db_default"
-                          },
-                          "label": "Database default"
+                          }
                         },
                         {
+                          "label": "Connection-level",
                           "value": {
                             "stringValue": "conn"
-                          },
-                          "label": "Connection-level"
+                          }
                         },
                         {
+                          "label": "None (no BEGIN)",
                           "value": {
                             "stringValue": "none"
-                          },
-                          "label": "None (no BEGIN)"
+                          }
                         }
                       ]
                     },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
                     "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
                     "title": "Transaction isolation"
                   },
                   {
+                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1607,137 +515,137 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "Number of warehouses (scaleFactor); ~100 MB per warehouse drives the disk requirement.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "scale_factor",
                     "title": "Warehouses"
                   },
                   {
-                    "name": "warehouse_start",
                     "description": "First warehouse id (warehouseStart); lets several runners share one database.",
+                    "group": "Data",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "100000"
                     },
-                    "group": "Data",
+                    "name": "warehouse_start",
                     "title": "First warehouse"
                   },
                   {
-                    "name": "load_items",
-                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
-                    "nullable": true,
                     "bool": {},
+                    "description": "Load the shared item table (loadItems); unset = only when warehouse_start is 1.",
                     "group": "Load",
+                    "name": "load_items",
+                    "nullable": true,
                     "title": "Load items"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers).",
+                    "group": "Load",
                     "int64": {
                       "default": "1",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "pg_unlogged",
-                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "group": "Load",
+                    "name": "pg_unlogged",
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "name": "pacing",
-                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Apply TPC-C keying and think times (pacing); needed for a compliance verdict.",
                     "group": "Transactions",
+                    "name": "pacing",
                     "title": "Pacing"
                   },
                   {
-                    "name": "retry_attempts",
                     "description": "Maximum attempts of one transaction before the iteration fails (retryAttempts).",
+                    "group": "Transactions",
                     "int64": {
                       "default": "3",
                       "gte": "1",
                       "lte": "100"
                     },
-                    "group": "Transactions",
+                    "name": "retry_attempts",
                     "title": "Retry attempts"
                   },
                   {
-                    "name": "tx_isolation",
-                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
-                    "nullable": true,
                     "choice": {
                       "options": [
                         {
+                          "label": "Read uncommitted",
                           "value": {
                             "stringValue": "read_uncommitted"
-                          },
-                          "label": "Read uncommitted"
+                          }
                         },
                         {
+                          "label": "Read committed",
                           "value": {
                             "stringValue": "read_committed"
-                          },
-                          "label": "Read committed"
+                          }
                         },
                         {
+                          "label": "Repeatable read",
                           "value": {
                             "stringValue": "repeatable_read"
-                          },
-                          "label": "Repeatable read"
+                          }
                         },
                         {
+                          "label": "Serializable",
                           "value": {
                             "stringValue": "serializable"
-                          },
-                          "label": "Serializable"
+                          }
                         },
                         {
+                          "label": "Database default",
                           "value": {
                             "stringValue": "db_default"
-                          },
-                          "label": "Database default"
+                          }
                         },
                         {
+                          "label": "Connection-level",
                           "value": {
                             "stringValue": "conn"
-                          },
-                          "label": "Connection-level"
+                          }
                         },
                         {
+                          "label": "None (no BEGIN)",
                           "value": {
                             "stringValue": "none"
-                          },
-                          "label": "None (no BEGIN)"
+                          }
                         }
                       ]
                     },
+                    "description": "Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none.",
                     "group": "Transactions",
+                    "name": "tx_isolation",
+                    "nullable": true,
                     "title": "Transaction isolation"
                   },
                   {
+                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1751,7 +659,6 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "TPC-DS scale factor (scaleFactor); fractional allowed. Static dimensions (~1.9M customer_demographics rows) do not shrink.",
                     "double": {
                       "default": 1,
@@ -1759,112 +666,113 @@
                       "lte": 10000
                     },
                     "group": "Data",
+                    "name": "scale_factor",
                     "title": "Scale factor"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                    "group": "Load",
                     "int64": {
                       "default": "0",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "pg_unlogged",
-                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "group": "Load",
+                    "name": "pg_unlogged",
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "name": "streams",
                     "description": "Number of query streams (streams).",
+                    "group": "Queries",
                     "int64": {
                       "default": "1",
                       "gte": "1",
                       "lte": "64"
                     },
-                    "group": "Queries",
+                    "name": "streams",
                     "title": "Query streams"
                   },
                   {
-                    "name": "query_stream",
                     "description": "Generated query stream (queryStream); unset uses the baked query set. Explicit zero selects generated stream 0.",
-                    "nullable": true,
+                    "group": "Queries",
                     "int64": {
                       "gte": "0"
                     },
-                    "group": "Queries",
+                    "name": "query_stream",
+                    "nullable": true,
                     "title": "Query stream"
                   },
                   {
-                    "name": "query_seed",
                     "description": "Query generator seed (querySeed).",
+                    "group": "Queries",
                     "int64": {
                       "default": "19620718"
                     },
-                    "group": "Queries",
+                    "name": "query_seed",
                     "title": "Query seed"
                   },
                   {
-                    "name": "validate_force",
-                    "description": "Compare answers even when the scale factor is not 1 (validateForce).",
                     "bool": {
                       "default": false
                     },
+                    "description": "Compare answers even when the scale factor is not 1 (validateForce).",
                     "group": "Queries",
+                    "name": "validate_force",
                     "title": "Validate outside SF=1"
                   },
                   {
-                    "name": "ydb_store_mode",
-                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
                     "choice": {
-                      "options": [
-                        {
-                          "value": {
-                            "stringValue": "column"
-                          },
-                          "label": "Column store"
-                        },
-                        {
-                          "value": {
-                            "stringValue": "row"
-                          },
-                          "label": "Row store"
-                        }
-                      ],
                       "default": {
                         "stringValue": "column"
-                      }
+                      },
+                      "options": [
+                        {
+                          "label": "Column store",
+                          "value": {
+                            "stringValue": "column"
+                          }
+                        },
+                        {
+                          "label": "Row store",
+                          "value": {
+                            "stringValue": "row"
+                          }
+                        }
+                      ]
                     },
+                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
                     "group": "Load",
+                    "name": "ydb_store_mode",
                     "title": "YDB store mode"
                   },
                   {
+                    "description": "Schema SQL override (schemaFile): a preset id shipped with stroppy, like tpcds/schema.pico.",
+                    "group": "SQL",
                     "name": "schema_file",
-                    "description": "Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "Schema file"
                   },
                   {
+                    "description": "Query SQL override (sqlFile): a preset id shipped with stroppy, like tpcds/pico.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1878,7 +786,6 @@
                     "string": {}
                   },
                   {
-                    "name": "scale_factor",
                     "description": "TPC-H scale factor (scaleFactor); fractional allowed, 1 ≈ 1 GB of data.",
                     "double": {
                       "default": 1,
@@ -1886,62 +793,63 @@
                       "lte": 10000
                     },
                     "group": "Data",
+                    "name": "scale_factor",
                     "title": "Scale factor"
                   },
                   {
-                    "name": "load_workers",
                     "description": "Workers used to load each table (loadWorkers); 0 = automatic.",
+                    "group": "Load",
                     "int64": {
                       "default": "0",
                       "gte": "0",
                       "lte": "1024"
                     },
-                    "group": "Load",
+                    "name": "load_workers",
                     "title": "Load workers"
                   },
                   {
-                    "name": "pg_unlogged",
-                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "bool": {
                       "default": false
                     },
+                    "description": "Use unlogged PostgreSQL tables during the load, then set them logged (pgUnlogged). PostgreSQL only.",
                     "group": "Load",
+                    "name": "pg_unlogged",
                     "title": "Unlogged tables while loading"
                   },
                   {
-                    "name": "ydb_store_mode",
-                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
                     "choice": {
-                      "options": [
-                        {
-                          "value": {
-                            "stringValue": "column"
-                          },
-                          "label": "Column store"
-                        },
-                        {
-                          "value": {
-                            "stringValue": "row"
-                          },
-                          "label": "Row store"
-                        }
-                      ],
                       "default": {
                         "stringValue": "column"
-                      }
+                      },
+                      "options": [
+                        {
+                          "label": "Column store",
+                          "value": {
+                            "stringValue": "column"
+                          }
+                        },
+                        {
+                          "label": "Row store",
+                          "value": {
+                            "stringValue": "row"
+                          }
+                        }
+                      ]
                     },
+                    "description": "YDB table store mode (ydbStoreMode); ignored by other drivers.",
                     "group": "Load",
+                    "name": "ydb_store_mode",
                     "title": "YDB store mode"
                   },
                   {
+                    "description": "Dialect file override (sqlFile): a preset id shipped with stroppy, like tpch/pico.",
+                    "group": "SQL",
                     "name": "sql_file",
-                    "description": "Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files.",
                     "nullable": true,
                     "string": {
                       "maxLen": "256",
                       "pattern": "^[A-Za-z0-9._/-]+$"
                     },
-                    "group": "SQL",
                     "title": "SQL file"
                   }
                 ],
@@ -1949,117 +857,117 @@
               }
             }
           },
-          "group": "Workload",
+          "required": true,
           "title": "Workload"
         },
         {
-          "name": "run",
           "description": "Load shape of the segment.",
-          "required": true,
+          "group": "Scenario",
+          "name": "run",
           "object": {
             "schema": {
               "fields": [
                 {
-                  "name": "executor",
-                  "description": "Scenario executor: constant-vus runs for a duration, shared-iterations shares N iterations between VUs.",
                   "choice": {
-                    "options": [
-                      {
-                        "value": {
-                          "stringValue": "constant-vus"
-                        },
-                        "label": "Constant VUs for a duration"
-                      },
-                      {
-                        "value": {
-                          "stringValue": "shared-iterations"
-                        },
-                        "label": "Shared iterations"
-                      }
-                    ],
                     "default": {
                       "stringValue": "constant-vus"
-                    }
+                    },
+                    "options": [
+                      {
+                        "label": "Constant VUs for a duration",
+                        "value": {
+                          "stringValue": "constant-vus"
+                        }
+                      },
+                      {
+                        "label": "Shared iterations",
+                        "value": {
+                          "stringValue": "shared-iterations"
+                        }
+                      }
+                    ]
                   },
+                  "description": "Scenario executor: constant-vus runs for a duration, shared-iterations shares N iterations between VUs.",
+                  "name": "executor",
                   "title": "Executor"
                 },
                 {
-                  "name": "vus",
                   "description": "Concurrent virtual users (vus); sizes the runner machine and the pool.",
                   "int64": {
                     "default": "1",
                     "gte": "1",
                     "lte": "100000"
                   },
+                  "name": "vus",
                   "title": "Virtual users"
                 },
                 {
-                  "name": "duration",
                   "description": "Wall-clock length of a constant-vus scenario (duration).",
-                  "nullable": true,
                   "duration": {
                     "gt": "0s",
                     "lte": "86400s"
                   },
+                  "name": "duration",
+                  "nullable": true,
                   "title": "Duration"
                 },
                 {
-                  "name": "iterations",
                   "description": "Total iterations of a shared-iterations scenario (iterations).",
-                  "nullable": true,
                   "int64": {
                     "gte": "1"
                   },
+                  "name": "iterations",
+                  "nullable": true,
                   "title": "Iterations"
                 },
                 {
-                  "name": "query_timeout",
                   "description": "Per-statement deadline (queryTimeout); 0 disables it.",
                   "duration": {
                     "default": "0s",
                     "gte": "0s",
                     "lte": "3600s"
                   },
+                  "name": "query_timeout",
                   "title": "Query timeout"
                 }
               ],
               "rules": [
                 {
-                  "expr": "this.executor != \"constant-vus\" || (\"duration\" in this && this.duration != null)",
-                  "message": "constant-vus needs a duration",
-                  "id": "constant-vus-needs-duration"
+                  "expr": "this.executor != \"constant-vus\" || (\"duration\" in this \u0026\u0026 this.duration != null)",
+                  "id": "constant-vus-needs-duration",
+                  "message": "constant-vus needs a duration"
                 },
                 {
                   "expr": "this.executor != \"constant-vus\" || !(\"iterations\" in this) || this.iterations == null",
-                  "message": "iterations applies only to shared-iterations",
-                  "id": "iterations-executor"
+                  "id": "iterations-executor",
+                  "message": "iterations applies only to shared-iterations"
                 },
                 {
                   "expr": "this.executor != \"shared-iterations\" || !(\"duration\" in this) || this.duration == null",
-                  "message": "duration applies only to constant-vus",
-                  "id": "duration-executor"
+                  "id": "duration-executor",
+                  "message": "duration applies only to constant-vus"
                 },
                 {
-                  "expr": "this.executor != \"shared-iterations\" || (\"iterations\" in this && this.iterations != null)",
-                  "message": "shared-iterations needs an iteration count",
-                  "id": "shared-iterations-needs-count"
+                  "expr": "this.executor != \"shared-iterations\" || (\"iterations\" in this \u0026\u0026 this.iterations != null)",
+                  "id": "shared-iterations-needs-count",
+                  "message": "shared-iterations needs an iteration count"
                 }
               ],
               "strict": true
             }
           },
-          "group": "Scenario",
+          "required": true,
           "title": "Scenario"
         },
         {
-          "name": "steps",
           "description": "Run only the listed stroppy steps (--steps); empty = all steps.",
+          "group": "Steps",
           "list": {
             "items": [
               {
                 "string": {
-                  "minLen": "1",
                   "maxLen": "64",
+                  "minLen": "1",
                   "pattern": "^[a-z][a-z0-9_]*$"
                 }
               }
@@ -2067,18 +975,18 @@
             "maxItems": "32",
             "unique": true
           },
-          "group": "Steps",
+          "name": "steps",
           "title": "Only these steps"
         },
         {
-          "name": "no_steps",
           "description": "Skip the listed stroppy steps (--no-steps); stroppy rejects it together with steps.",
+          "group": "Steps",
           "list": {
             "items": [
               {
                 "string": {
-                  "minLen": "1",
                   "maxLen": "64",
+                  "minLen": "1",
                   "pattern": "^[a-z][a-z0-9_]*$"
                 }
               }
@@ -2086,19 +994,12 @@
             "maxItems": "32",
             "unique": true
           },
-          "group": "Steps",
+          "name": "no_steps",
           "title": "Skip these steps"
         },
         {
-          "name": "extra_params",
           "description": "Typed stroppy flags this form does not model, by flag name without dashes (load-workers); values are parsed by stroppy.",
-          "rules": [
-            {
-              "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9-]*$\"))",
-              "message": "extra parameter keys must be stroppy flag names (lower-kebab)",
-              "id": "extra-param-key-shape"
-            }
-          ],
+          "group": "Workload",
           "map": {
             "maxEntries": "64",
             "valueField": {
@@ -2108,150 +1009,70 @@
               }
             }
           },
-          "group": "Workload",
+          "name": "extra_params",
+          "rules": [
+            {
+              "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9-]*$\"))",
+              "id": "extra-param-key-shape",
+              "message": "extra parameter keys must be stroppy flag names (lower-kebab)"
+            }
+          ],
           "title": "Extra parameters"
         },
         {
-          "name": "files",
-          "description": "Extra files (SQL dialects, schemas, data) shipped with the segment.",
-          "list": {
-            "items": [
-              {
-                "object": {
-                  "schema": {
-                    "fields": [
-                      {
-                        "name": "name",
-                        "description": "Name the file gets in the segment workspace; reference it from sql_file/schema_file.",
-                        "required": true,
-                        "string": {
-                          "minLen": "1",
-                          "maxLen": "128",
-                          "pattern": "^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$"
-                        },
-                        "title": "File name"
-                      },
-                      {
-                        "name": "kind",
-                        "description": "What the file is: a schema/DDL file, a config, or a data file.",
-                        "choice": {
-                          "options": [
-                            {
-                              "value": {
-                                "stringValue": "sql"
-                              },
-                              "label": "SQL / DDL"
-                            },
-                            {
-                              "value": {
-                                "stringValue": "conf"
-                              },
-                              "label": "Config"
-                            },
-                            {
-                              "value": {
-                                "stringValue": "data"
-                              },
-                              "label": "Data"
-                            }
-                          ],
-                          "default": {
-                            "stringValue": "sql"
-                          }
-                        },
-                        "title": "Kind"
-                      },
-                      {
-                        "name": "content",
-                        "description": "Inline file body, at most 1 MiB.",
-                        "string": {
-                          "maxLen": "1048576"
-                        },
-                        "title": "Content"
-                      },
-                      {
-                        "name": "ref",
-                        "description": "Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.",
-                        "string": {
-                          "minLen": "1",
-                          "maxLen": "512",
-                          "pattern": "^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$"
-                        },
-                        "title": "Reference"
-                      }
-                    ],
-                    "rules": [
-                      {
-                        "expr": "(\"content\" in this) != (\"ref\" in this)",
-                        "message": "a file needs exactly one of content or ref",
-                        "id": "file-content-xor-ref"
-                      }
-                    ],
-                    "strict": true
-                  }
-                }
-              }
-            ],
-            "maxItems": "32"
-          },
-          "group": "Files",
-          "title": "Files"
-        },
-        {
-          "name": "thresholds",
           "description": "Pass/fail bounds the pipeline applies to the segment summary.",
+          "group": "Thresholds",
+          "name": "thresholds",
           "object": {
             "schema": {
               "fields": [
                 {
-                  "name": "p99_ms",
                   "description": "Fail the segment when iteration_duration p99 exceeds this.",
                   "double": {
                     "gt": 0
                   },
-                  "unit": "ms",
-                  "title": "p99 latency"
+                  "name": "p99_ms",
+                  "title": "p99 latency",
+                  "unit": "ms"
                 },
                 {
-                  "name": "error_rate",
                   "description": "Fail the segment when failed_iterations / iterations exceeds this (0..1).",
                   "double": {
                     "gte": 0,
                     "lte": 1
                   },
-                  "unit": "ratio",
-                  "title": "Error rate"
+                  "name": "error_rate",
+                  "title": "Error rate",
+                  "unit": "ratio"
                 }
               ],
               "strict": true
             }
           },
-          "group": "Thresholds",
           "title": "Thresholds"
         },
         {
-          "name": "seed",
           "description": "Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible.",
+          "group": "Scenario",
+          "name": "seed",
           "nullable": true,
+          "title": "Random seed",
           "uint64": {
             "gte": "0"
-          },
-          "group": "Scenario",
-          "title": "Random seed"
+          }
         },
         {
-          "name": "timeout",
           "description": "Execution deadline after the warmup wait, including container preparation and data load; unset uses duration plus headroom, or 24h for iterations.",
-          "nullable": true,
           "duration": {
             "gt": "0s",
             "lte": "604800s"
           },
           "group": "Scenario",
+          "name": "timeout",
+          "nullable": true,
           "title": "Segment timeout"
         },
         {
-          "name": "warmup",
           "description": "Idle wait before the segment starts, letting caches and replicas settle.",
           "duration": {
             "default": "0s",
@@ -2259,70 +1080,1158 @@
             "lte": "3600s"
           },
           "group": "Scenario",
+          "name": "warmup",
           "title": "Warm-up"
         },
         {
-          "name": "log_level",
-          "description": "Minimum stroppy log level (--log-level); debug traces parameter resolution.",
           "choice": {
-            "options": [
-              {
-                "value": {
-                  "stringValue": "debug"
-                },
-                "label": "debug"
-              },
-              {
-                "value": {
-                  "stringValue": "info"
-                },
-                "label": "info"
-              },
-              {
-                "value": {
-                  "stringValue": "warn"
-                },
-                "label": "warn"
-              },
-              {
-                "value": {
-                  "stringValue": "error"
-                },
-                "label": "error"
-              }
-            ],
             "default": {
               "stringValue": "info"
-            }
+            },
+            "options": [
+              {
+                "label": "debug",
+                "value": {
+                  "stringValue": "debug"
+                }
+              },
+              {
+                "label": "info",
+                "value": {
+                  "stringValue": "info"
+                }
+              },
+              {
+                "label": "warn",
+                "value": {
+                  "stringValue": "warn"
+                }
+              },
+              {
+                "label": "error",
+                "value": {
+                  "stringValue": "error"
+                }
+              }
+            ]
           },
+          "description": "Minimum stroppy log level (--log-level); debug traces parameter resolution.",
           "group": "Segment",
+          "name": "log_level",
           "title": "Log level"
         }
       ],
+      "id": {
+        "name": "segment",
+        "namespace": "workload",
+        "version": "v1.0.0"
+      },
       "rules": [
         {
-          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) && (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) && (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) && (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) && (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) && (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) && (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
-          "message": "step must be an executable Stroppy step of the selected workload",
-          "id": "known-workload-steps"
-        },
-        {
-          "expr": "[this == null ? root : this].all(s, !(\"files\" in s) || s.files.all(f, s.files.filter(x, x.name == f.name).size() == 1 && s.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + \"/\") && !f.name.startsWith(x.name + \"/\"))) && [\"stroppy-config.json\", \"ca.pem\", \"stroppy.log\"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + \"/\"))))",
-          "message": "file names must be unique and cannot overwrite runtime files",
-          "id": "segment-file-names"
+          "expr": "[this == null ? root : this].all(s, (s.workload.script != \"simple\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"baseline\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"execute_sql\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcb/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"load_data\",\"create_indexes\",\"create_foreign_keys\",\"analyze\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcc/procs\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"create_procedures\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"create_foreign_keys\",\"analyze\",\"validate_population\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpch/tx\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))) \u0026\u0026 (s.workload.script != \"tpcds\" || (!(\"steps\" in s) || s.steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"])) \u0026\u0026 (!(\"no_steps\" in s) || s.no_steps.all(step, step in [\"drop_schema\",\"create_schema\",\"set_unlogged\",\"load_data\",\"create_indexes\",\"set_logged\",\"analyze\",\"validate_answers\",\"workload\"]))))",
+          "id": "known-workload-steps",
+          "message": "step must be an executable Stroppy step of the selected workload"
         },
         {
           "expr": "[this == null ? root : this].all(s, !(\"steps\" in s) || !(\"no_steps\" in s) || size(s.steps) == 0 || size(s.no_steps) == 0)",
-          "message": "stroppy rejects --steps together with --no-steps",
-          "id": "steps-mutually-exclusive"
+          "id": "steps-mutually-exclusive",
+          "message": "stroppy rejects --steps together with --no-steps"
         },
         {
-          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload && s.workload.sql_body != null) != (\"sql_file\" in s.workload && s.workload.sql_file != null)))",
-          "message": "execute_sql needs exactly one of sql_body or sql_file",
-          "id": "execute-sql-source"
+          "expr": "[this == null ? root : this].all(s, !(\"workload\" in s) || s.workload.script != \"execute_sql\" || ((\"sql_body\" in s.workload \u0026\u0026 s.workload.sql_body != null) != (\"sql_file\" in s.workload \u0026\u0026 s.workload.sql_file != null)))",
+          "id": "execute-sql-source",
+          "message": "execute_sql needs exactly one of sql_body or sql_file"
         }
       ],
-      "strict": true,
-      "coerce": true
+      "strict": true
     }
-  }
+  },
+  "description": "A stroppy workload: build, protocol, load segments, driver options and baseline.",
+  "fields": [
+    {
+      "description": "Stroppy build to run: a release (6.0.0) or a nightly of one commit (nightly-\u003csha\u003e); must exist in the platform catalog. 6.0.0 is the minimum.",
+      "examples": [
+        {
+          "stringValue": "6.0.0"
+        },
+        {
+          "stringValue": "nightly-24898a8"
+        }
+      ],
+      "group": "Workload",
+      "name": "stroppy_version",
+      "required": true,
+      "rules": [
+        {
+          "expr": "!this.matches(\"^[0-5][.]\")",
+          "id": "min-v6",
+          "message": "stroppy releases before 6.0.0 are not supported"
+        }
+      ],
+      "string": {
+        "maxLen": "64",
+        "pattern": "^(\\d+\\.\\d+\\.\\d+(-[0-9A-Za-z.-]+)?|nightly-[0-9a-f]{7,40})$"
+      },
+      "title": "Stroppy version"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "PostgreSQL",
+            "value": {
+              "stringValue": "pg"
+            }
+          },
+          {
+            "label": "MySQL / MariaDB",
+            "value": {
+              "stringValue": "mysql"
+            }
+          },
+          {
+            "label": "Picodata (pgproto)",
+            "value": {
+              "stringValue": "picodata"
+            }
+          },
+          {
+            "label": "YDB (grpc)",
+            "value": {
+              "stringValue": "ydb_grpc"
+            }
+          },
+          {
+            "label": "YDB (grpcs, TLS)",
+            "value": {
+              "stringValue": "ydb_grpcs"
+            }
+          },
+          {
+            "label": "CockroachDB (pgproto)",
+            "value": {
+              "stringValue": "cockroach"
+            }
+          },
+          {
+            "label": "Noop (framework ceiling)",
+            "value": {
+              "stringValue": "noop"
+            }
+          }
+        ]
+      },
+      "description": "Wire protocol stroppy talks to the database with.",
+      "group": "Workload",
+      "name": "protocol",
+      "required": true,
+      "title": "Protocol"
+    },
+    {
+      "description": "Ordered stroppy invocations; each one is a phase of the run.",
+      "group": "Segments",
+      "list": {
+        "items": [
+          {
+            "ref": {
+              "name": "segment"
+            }
+          }
+        ],
+        "maxItems": "64",
+        "minItems": "1"
+      },
+      "name": "segments",
+      "required": true,
+      "title": "Segments"
+    },
+    {
+      "description": "Protocol-neutral stroppy driver options.",
+      "group": "Driver",
+      "name": "driver",
+      "object": {
+        "schema": {
+          "fields": [
+            {
+              "choice": {
+                "options": [
+                  {
+                    "label": "Native (COPY / BulkUpsert)",
+                    "value": {
+                      "stringValue": "native"
+                    }
+                  },
+                  {
+                    "label": "Columnar",
+                    "value": {
+                      "stringValue": "columnar"
+                    }
+                  },
+                  {
+                    "label": "Plain bulk INSERT",
+                    "value": {
+                      "stringValue": "plain_bulk"
+                    }
+                  },
+                  {
+                    "label": "Plain single-row INSERT",
+                    "value": {
+                      "stringValue": "plain_query"
+                    }
+                  }
+                ]
+              },
+              "description": "Fallback for load requests that leave their method unset (defaultInsertMethod); workloads normally choose themselves.",
+              "name": "default_insert_method",
+              "nullable": true,
+              "title": "Insert method"
+            },
+            {
+              "description": "Rows per bulk INSERT statement (bulkSize).",
+              "int64": {
+                "default": "2500",
+                "gte": "1",
+                "lte": "1000000"
+              },
+              "name": "bulk_size",
+              "title": "Bulk size",
+              "unit": "rows"
+            },
+            {
+              "description": "Native Stroppy pool options; explicit driver settings take precedence over pool aliases.",
+              "group": "Driver",
+              "name": "pool",
+              "object": {
+                "schema": {
+                  "fields": [
+                    {
+                      "description": "Stroppy max_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_conns",
+                      "nullable": true,
+                      "title": "Max connections"
+                    },
+                    {
+                      "description": "Stroppy min_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "min_conns",
+                      "nullable": true,
+                      "title": "Min connections"
+                    },
+                    {
+                      "description": "Stroppy min_idle_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "min_idle_conns",
+                      "nullable": true,
+                      "title": "Min idle connections"
+                    },
+                    {
+                      "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "max_conn_lifetime",
+                      "nullable": true,
+                      "title": "Max lifetime"
+                    },
+                    {
+                      "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "max_conn_idle_time",
+                      "nullable": true,
+                      "title": "Max idle time"
+                    },
+                    {
+                      "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "description_cache_capacity",
+                      "nullable": true,
+                      "title": "Description cache"
+                    },
+                    {
+                      "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "statement_cache_capacity",
+                      "nullable": true,
+                      "title": "Statement cache"
+                    },
+                    {
+                      "choice": {
+                        "options": [
+                          {
+                            "label": "Trace",
+                            "value": {
+                              "stringValue": "trace"
+                            }
+                          },
+                          {
+                            "label": "Debug",
+                            "value": {
+                              "stringValue": "debug"
+                            }
+                          },
+                          {
+                            "label": "Info",
+                            "value": {
+                              "stringValue": "info"
+                            }
+                          },
+                          {
+                            "label": "Warn",
+                            "value": {
+                              "stringValue": "warn"
+                            }
+                          },
+                          {
+                            "label": "Error",
+                            "value": {
+                              "stringValue": "error"
+                            }
+                          },
+                          {
+                            "label": "None",
+                            "value": {
+                              "stringValue": "none"
+                            }
+                          }
+                        ]
+                      },
+                      "description": "pgx tracer log level (traceLogLevel).",
+                      "group": "Logging",
+                      "name": "trace_log_level",
+                      "nullable": true,
+                      "title": "Driver log level"
+                    },
+                    {
+                      "choice": {
+                        "options": [
+                          {
+                            "label": "Cache statements",
+                            "value": {
+                              "stringValue": "cache_statement"
+                            }
+                          },
+                          {
+                            "label": "Cache descriptions",
+                            "value": {
+                              "stringValue": "cache_describe"
+                            }
+                          },
+                          {
+                            "label": "Describe and execute",
+                            "value": {
+                              "stringValue": "describe_exec"
+                            }
+                          },
+                          {
+                            "label": "Execute",
+                            "value": {
+                              "stringValue": "exec"
+                            }
+                          },
+                          {
+                            "label": "Simple protocol",
+                            "value": {
+                              "stringValue": "simple_protocol"
+                            }
+                          }
+                        ]
+                      },
+                      "description": "pgx defaultQueryExecMode.",
+                      "group": "Driver",
+                      "name": "default_query_exec_mode",
+                      "nullable": true,
+                      "title": "Query execution mode"
+                    },
+                    {
+                      "description": "Stroppy max_open_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_open_conns",
+                      "nullable": true,
+                      "title": "Max open connections"
+                    },
+                    {
+                      "description": "Stroppy max_idle_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_idle_conns",
+                      "nullable": true,
+                      "title": "Max idle connections"
+                    },
+                    {
+                      "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "conn_max_lifetime",
+                      "nullable": true,
+                      "title": "Max lifetime"
+                    },
+                    {
+                      "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "conn_max_idle_time",
+                      "nullable": true,
+                      "title": "Max idle time"
+                    }
+                  ],
+                  "strict": true
+                }
+              },
+              "title": "Connection pool"
+            },
+            {
+              "description": "Native Stroppy postgres options; explicit driver settings take precedence over pool aliases.",
+              "group": "Driver",
+              "name": "postgres",
+              "object": {
+                "schema": {
+                  "fields": [
+                    {
+                      "description": "Stroppy max_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_conns",
+                      "nullable": true,
+                      "title": "Max connections"
+                    },
+                    {
+                      "description": "Stroppy min_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "min_conns",
+                      "nullable": true,
+                      "title": "Min connections"
+                    },
+                    {
+                      "description": "Stroppy min_idle_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "min_idle_conns",
+                      "nullable": true,
+                      "title": "Min idle connections"
+                    },
+                    {
+                      "description": "Stroppy max_conn_lifetime; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "max_conn_lifetime",
+                      "nullable": true,
+                      "title": "Max lifetime"
+                    },
+                    {
+                      "description": "Stroppy max_conn_idle_time; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "max_conn_idle_time",
+                      "nullable": true,
+                      "title": "Max idle time"
+                    },
+                    {
+                      "description": "Stroppy description_cache_capacity; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "description_cache_capacity",
+                      "nullable": true,
+                      "title": "Description cache"
+                    },
+                    {
+                      "description": "Stroppy statement_cache_capacity; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "statement_cache_capacity",
+                      "nullable": true,
+                      "title": "Statement cache"
+                    },
+                    {
+                      "choice": {
+                        "options": [
+                          {
+                            "label": "Trace",
+                            "value": {
+                              "stringValue": "trace"
+                            }
+                          },
+                          {
+                            "label": "Debug",
+                            "value": {
+                              "stringValue": "debug"
+                            }
+                          },
+                          {
+                            "label": "Info",
+                            "value": {
+                              "stringValue": "info"
+                            }
+                          },
+                          {
+                            "label": "Warn",
+                            "value": {
+                              "stringValue": "warn"
+                            }
+                          },
+                          {
+                            "label": "Error",
+                            "value": {
+                              "stringValue": "error"
+                            }
+                          },
+                          {
+                            "label": "None",
+                            "value": {
+                              "stringValue": "none"
+                            }
+                          }
+                        ]
+                      },
+                      "description": "pgx tracer log level (traceLogLevel).",
+                      "group": "Logging",
+                      "name": "trace_log_level",
+                      "nullable": true,
+                      "title": "Driver log level"
+                    },
+                    {
+                      "choice": {
+                        "options": [
+                          {
+                            "label": "Cache statements",
+                            "value": {
+                              "stringValue": "cache_statement"
+                            }
+                          },
+                          {
+                            "label": "Cache descriptions",
+                            "value": {
+                              "stringValue": "cache_describe"
+                            }
+                          },
+                          {
+                            "label": "Describe and execute",
+                            "value": {
+                              "stringValue": "describe_exec"
+                            }
+                          },
+                          {
+                            "label": "Execute",
+                            "value": {
+                              "stringValue": "exec"
+                            }
+                          },
+                          {
+                            "label": "Simple protocol",
+                            "value": {
+                              "stringValue": "simple_protocol"
+                            }
+                          }
+                        ]
+                      },
+                      "description": "pgx defaultQueryExecMode.",
+                      "group": "Driver",
+                      "name": "default_query_exec_mode",
+                      "nullable": true,
+                      "title": "Query execution mode"
+                    }
+                  ],
+                  "strict": true
+                }
+              },
+              "title": "PostgreSQL driver"
+            },
+            {
+              "description": "Native Stroppy sql options; explicit driver settings take precedence over pool aliases.",
+              "group": "Driver",
+              "name": "sql",
+              "object": {
+                "schema": {
+                  "fields": [
+                    {
+                      "description": "Stroppy max_open_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_open_conns",
+                      "nullable": true,
+                      "title": "Max open connections"
+                    },
+                    {
+                      "description": "Stroppy max_idle_conns; unset preserves the driver default.",
+                      "group": "Pool",
+                      "int64": {
+                        "gte": "0",
+                        "lte": "65535"
+                      },
+                      "name": "max_idle_conns",
+                      "nullable": true,
+                      "title": "Max idle connections"
+                    },
+                    {
+                      "description": "Stroppy conn_max_lifetime; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "conn_max_lifetime",
+                      "nullable": true,
+                      "title": "Max lifetime"
+                    },
+                    {
+                      "description": "Stroppy conn_max_idle_time; zero disables the lifetime limit.",
+                      "duration": {
+                        "gte": "0s",
+                        "lte": "86400s"
+                      },
+                      "group": "Pool",
+                      "name": "conn_max_idle_time",
+                      "nullable": true,
+                      "title": "Max idle time"
+                    }
+                  ],
+                  "strict": true
+                }
+              },
+              "title": "SQL driver"
+            },
+            {
+              "description": "insertProgress.* — load progress reporting.",
+              "name": "insert_progress",
+              "object": {
+                "schema": {
+                  "fields": [
+                    {
+                      "bool": {},
+                      "description": "Explicit insertProgress.enabled override; unset uses the mode.",
+                      "name": "enabled",
+                      "nullable": true,
+                      "title": "Enabled"
+                    },
+                    {
+                      "choice": {
+                        "default": {
+                          "stringValue": "both"
+                        },
+                        "options": [
+                          {
+                            "label": "Off",
+                            "value": {
+                              "stringValue": "off"
+                            }
+                          },
+                          {
+                            "label": "Log",
+                            "value": {
+                              "stringValue": "log"
+                            }
+                          },
+                          {
+                            "label": "Metrics",
+                            "value": {
+                              "stringValue": "metrics"
+                            }
+                          },
+                          {
+                            "label": "Log and metrics",
+                            "value": {
+                              "stringValue": "both"
+                            }
+                          }
+                        ]
+                      },
+                      "description": "insertProgress.mode: where load progress goes.",
+                      "name": "mode",
+                      "title": "Mode"
+                    },
+                    {
+                      "description": "insertProgress.interval — progress cadence.",
+                      "duration": {
+                        "default": "10s",
+                        "gt": "0s",
+                        "lte": "3600s"
+                      },
+                      "name": "interval",
+                      "title": "Interval"
+                    },
+                    {
+                      "description": "insertProgress.stallAfter — warn when no rows moved for this long.",
+                      "duration": {
+                        "default": "60s",
+                        "gt": "0s",
+                        "lte": "86400s"
+                      },
+                      "name": "stall_after",
+                      "title": "Stall after"
+                    }
+                  ],
+                  "strict": true
+                }
+              },
+              "title": "Load progress"
+            }
+          ],
+          "strict": true
+        }
+      },
+      "title": "Driver"
+    },
+    {
+      "description": "Protocol-specific connection options; the kind must match the protocol.",
+      "group": "Driver",
+      "name": "connection",
+      "oneOf": {
+        "discriminator": "kind",
+        "variants": {
+          "cockroach": {
+            "fields": [
+              {
+                "choice": {
+                  "default": {
+                    "stringValue": "disable"
+                  },
+                  "options": [
+                    {
+                      "label": "Disable",
+                      "value": {
+                        "stringValue": "disable"
+                      }
+                    },
+                    {
+                      "label": "Require",
+                      "value": {
+                        "stringValue": "require"
+                      }
+                    },
+                    {
+                      "label": "Verify full",
+                      "value": {
+                        "stringValue": "verify-full"
+                      }
+                    }
+                  ]
+                },
+                "description": "TLS negotiation mode of the cockroach (pgwire) connection.",
+                "name": "sslmode",
+                "title": "SSL mode"
+              },
+              {
+                "name": "application_name",
+                "string": {
+                  "default": "stroppy",
+                  "maxLen": "64"
+                },
+                "title": "Application name"
+              }
+            ]
+          },
+          "mysql": {
+            "fields": [
+              {
+                "choice": {
+                  "default": {
+                    "stringValue": "false"
+                  },
+                  "options": [
+                    {
+                      "label": "Off",
+                      "value": {
+                        "stringValue": "false"
+                      }
+                    },
+                    {
+                      "label": "Preferred",
+                      "value": {
+                        "stringValue": "preferred"
+                      }
+                    },
+                    {
+                      "label": "On, no verification",
+                      "value": {
+                        "stringValue": "skip-verify"
+                      }
+                    },
+                    {
+                      "label": "On, verified",
+                      "value": {
+                        "stringValue": "true"
+                      }
+                    }
+                  ]
+                },
+                "description": "go-sql-driver TLS mode of the MySQL DSN.",
+                "name": "tls",
+                "title": "TLS"
+              },
+              {
+                "description": "Connection character set.",
+                "name": "charset",
+                "string": {
+                  "default": "utf8mb4",
+                  "maxLen": "32",
+                  "pattern": "^[a-z0-9_]+$"
+                },
+                "title": "Charset"
+              }
+            ]
+          },
+          "noop": {},
+          "pg": {
+            "fields": [
+              {
+                "choice": {
+                  "default": {
+                    "stringValue": "disable"
+                  },
+                  "options": [
+                    {
+                      "label": "Disable",
+                      "value": {
+                        "stringValue": "disable"
+                      }
+                    },
+                    {
+                      "label": "Require",
+                      "value": {
+                        "stringValue": "require"
+                      }
+                    },
+                    {
+                      "label": "Verify full",
+                      "value": {
+                        "stringValue": "verify-full"
+                      }
+                    }
+                  ]
+                },
+                "description": "TLS negotiation mode of the postgres connection (URL sslmode).",
+                "name": "sslmode",
+                "title": "SSL mode"
+              },
+              {
+                "description": "application_name reported to postgres; shows up in pg_stat_activity.",
+                "name": "application_name",
+                "string": {
+                  "default": "stroppy",
+                  "maxLen": "64"
+                },
+                "title": "Application name"
+              },
+              {
+                "choice": {
+                  "options": [
+                    {
+                      "label": "Cache prepared statements",
+                      "value": {
+                        "stringValue": "cache_statement"
+                      }
+                    },
+                    {
+                      "label": "Cache statement descriptions",
+                      "value": {
+                        "stringValue": "cache_describe"
+                      }
+                    },
+                    {
+                      "label": "Describe then exec",
+                      "value": {
+                        "stringValue": "describe_exec"
+                      }
+                    },
+                    {
+                      "label": "Exec (no cache)",
+                      "value": {
+                        "stringValue": "exec"
+                      }
+                    },
+                    {
+                      "label": "Simple protocol",
+                      "value": {
+                        "stringValue": "simple_protocol"
+                      }
+                    }
+                  ]
+                },
+                "description": "pgx query execution mode (postgres.defaultQueryExecMode).",
+                "name": "query_exec_mode",
+                "nullable": true,
+                "title": "Query exec mode"
+              }
+            ]
+          },
+          "picodata": {
+            "fields": [
+              {
+                "choice": {
+                  "options": [
+                    {
+                      "label": "Exec (no cache)",
+                      "value": {
+                        "stringValue": "exec"
+                      }
+                    },
+                    {
+                      "label": "Cache prepared statements",
+                      "value": {
+                        "stringValue": "cache_statement"
+                      }
+                    },
+                    {
+                      "label": "Cache statement descriptions",
+                      "value": {
+                        "stringValue": "cache_describe"
+                      }
+                    },
+                    {
+                      "label": "Describe then exec",
+                      "value": {
+                        "stringValue": "describe_exec"
+                      }
+                    }
+                  ]
+                },
+                "description": "pgx execution mode. Exec avoids prepared-statement limits and binary parameter incompatibilities in Picodata 25.3 and 26.1.",
+                "name": "query_exec_mode",
+                "nullable": true,
+                "title": "Query execution mode"
+              }
+            ]
+          },
+          "ydb": {
+            "fields": [
+              {
+                "description": "PEM of a private CA (caCertFile), when the endpoint is not signed by a public one.",
+                "name": "ca_cert",
+                "nullable": true,
+                "secret": true,
+                "string": {
+                  "maxLen": "65536"
+                },
+                "title": "CA certificate"
+              },
+              {
+                "description": "IAM token passed as authToken.",
+                "name": "auth_token",
+                "nullable": true,
+                "secret": true,
+                "string": {
+                  "maxLen": "4096"
+                },
+                "title": "Auth token"
+              },
+              {
+                "description": "Static credentials user (authUser).",
+                "name": "auth_user",
+                "nullable": true,
+                "string": {
+                  "maxLen": "128"
+                },
+                "title": "User"
+              },
+              {
+                "description": "Static credentials password (authPassword).",
+                "name": "auth_password",
+                "nullable": true,
+                "secret": true,
+                "string": {
+                  "maxLen": "256"
+                },
+                "title": "Password"
+              },
+              {
+                "bool": {
+                  "default": false
+                },
+                "description": "tlsInsecureSkipVerify — testing only.",
+                "name": "tls_insecure_skip_verify",
+                "title": "Skip TLS verification"
+              }
+            ]
+          }
+        }
+      },
+      "title": "Connection"
+    },
+    {
+      "description": "Machine self-check with `stroppy baseline`; its JSON report lands in the run result.",
+      "group": "Baseline",
+      "name": "baseline",
+      "object": {
+        "schema": {
+          "fields": [
+            {
+              "bool": {
+                "default": false
+              },
+              "description": "Run `stroppy baseline` on the runner machine before the segments: the stroppy ceiling a database run can never exceed.",
+              "name": "enabled",
+              "title": "Measure the runner"
+            },
+            {
+              "description": "Which tiers to run (--tiers); unset = both.",
+              "list": {
+                "items": [
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "noop driver (framework cost)",
+                          "value": {
+                            "stringValue": "noop"
+                          }
+                        },
+                        {
+                          "label": "pg-wire against pg-noop on loopback",
+                          "value": {
+                            "stringValue": "wire"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "maxItems": "2",
+                "minItems": "1",
+                "unique": true
+              },
+              "name": "tiers",
+              "title": "Tiers"
+            },
+            {
+              "bool": {
+                "default": false
+              },
+              "description": "Shorter phases and a smaller load (--quick).",
+              "name": "quick",
+              "title": "Quick"
+            },
+            {
+              "description": "VU count of the parallel tx phase (--vus); unset = 20.",
+              "int64": {
+                "gte": "1",
+                "lte": "4096"
+              },
+              "name": "vus",
+              "nullable": true,
+              "title": "Parallel VUs"
+            },
+            {
+              "description": "Rows loaded into the probe table (--rows); unset = 250000.",
+              "int64": {
+                "gte": "1000",
+                "lte": "100000000"
+              },
+              "name": "rows",
+              "nullable": true,
+              "title": "Load rows"
+            },
+            {
+              "description": "Duration of each tx phase (--duration); unset = 3s.",
+              "duration": {
+                "gt": "0s",
+                "lte": "600s"
+              },
+              "name": "duration",
+              "nullable": true,
+              "title": "Tx phase duration"
+            }
+          ],
+          "strict": true
+        }
+      },
+      "title": "Baseline"
+    }
+  ],
+  "id": {
+    "name": "stroppy",
+    "namespace": "workload",
+    "version": "v1.0.0"
+  },
+  "rules": [
+    {
+      "expr": "root.protocol in [\"pg\", \"mysql\", \"cockroach\", \"noop\"] || root.segments.all(s, !(s.workload.script in [\"tpcc/procs\", \"tpcb/procs\"]))",
+      "id": "stored-procedure-protocol",
+      "message": "stored-procedure workloads require PostgreSQL, MySQL, CockroachDB or noop"
+    },
+    {
+      "expr": "!(root.protocol in [\"ydb_grpc\", \"ydb_grpcs\"]) || root.segments.all(s, s.workload.script != \"tpcds\" || ((! (\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"streams\" in s.workload) || s.workload.streams == 1)))",
+      "id": "tpcds-ydb-baked",
+      "message": "YDB TPC-DS supports the baked query set only"
+    },
+    {
+      "expr": "root.protocol != \"picodata\" || root.segments.all(s, s.workload.script != \"tpcds\" || (\"no_steps\" in s \u0026\u0026 \"workload\" in s.no_steps) || (\"steps\" in s \u0026\u0026 size(s.steps) \u003e 0 \u0026\u0026 !(\"workload\" in s.steps)))",
+      "id": "tpcds-picodata-load-only",
+      "message": "Picodata TPC-DS supports loading only; exclude the workload step"
+    },
+    {
+      "expr": "!(\"connection\" in root) || !(\"protocol\" in root) || root.connection.kind == (root.protocol.startsWith(\"ydb\") ? \"ydb\" : root.protocol)",
+      "id": "connection-match-protocol",
+      "message": "connection.kind must match the protocol"
+    },
+    {
+      "expr": "size(root.segments.map(s, s.name)) == size(root.segments.map(s, s.name).filter(n, root.segments.filter(x, x.name == n).size() == 1))",
+      "id": "segment-names-unique",
+      "message": "segment names must be unique"
+    }
+  ],
+  "strict": true
 }

@@ -1,75 +1,71 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "cockroach.params",
-    "version": "v1.0.0"
-  },
+  "coerce": true,
   "description": "CockroachDB topology and options: version, node count, locality, TLS mode.",
   "fields": [
     {
-      "name": "version",
-      "description": "Server series; the binary is pulled per release train (LTS lines get a year of maintenance plus a year of assistance).",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "26.3"
-            },
-            "label": "26.3 (Innovation)"
-          },
-          {
-            "value": {
-              "stringValue": "26.2"
-            },
-            "label": "26.2 (Regular)"
-          },
-          {
-            "value": {
-              "stringValue": "25.4"
-            },
-            "label": "25.4 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "25.2"
-            },
-            "label": "25.2 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "24.3"
-            },
-            "label": "24.3 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "24.1"
-            },
-            "label": "24.1 LTS"
-          }
-        ],
         "default": {
           "stringValue": "25.4"
-        }
+        },
+        "options": [
+          {
+            "label": "26.3 (Innovation)",
+            "value": {
+              "stringValue": "26.3"
+            }
+          },
+          {
+            "label": "26.2 (Regular)",
+            "value": {
+              "stringValue": "26.2"
+            }
+          },
+          {
+            "label": "25.4 LTS",
+            "value": {
+              "stringValue": "25.4"
+            }
+          },
+          {
+            "label": "25.2 LTS",
+            "value": {
+              "stringValue": "25.2"
+            }
+          },
+          {
+            "label": "24.3 LTS",
+            "value": {
+              "stringValue": "24.3"
+            }
+          },
+          {
+            "label": "24.1 LTS",
+            "value": {
+              "stringValue": "24.1"
+            }
+          }
+        ]
       },
+      "description": "Server series; the binary is pulled per release train (LTS lines get a year of maintenance plus a year of assistance).",
       "group": "Engine",
+      "name": "version",
+      "required": true,
       "title": "CockroachDB version"
     },
     {
-      "name": "nodes",
-      "description": "Homogeneous cluster size; 1 for a single-node stand, otherwise an odd number >= 3 so Raft can hold a majority.",
+      "description": "Homogeneous cluster size; 1 for a single-node stand, otherwise an odd number \u003e= 3 so Raft can hold a majority.",
+      "group": "Topology",
       "int64": {
         "default": "3",
         "gte": "1",
         "lte": "15"
       },
-      "group": "Topology",
+      "name": "nodes",
       "title": "Nodes"
     },
     {
-      "name": "locality",
       "description": "--locality for each node, in node order; leave empty for a flat cluster. When set it must have exactly one entry per node and every entry must use the same keys in the same order.",
+      "group": "Topology",
       "list": {
         "items": [
           {
@@ -82,57 +78,61 @@
         ],
         "maxItems": "15"
       },
-      "group": "Topology",
+      "name": "locality",
       "title": "Per-node locality"
     },
     {
-      "name": "insecure",
-      "description": "Start with --insecure: no TLS and no authentication. Default on — a throwaway benchmark stand should measure the engine, not the handshake.",
       "bool": {
         "default": true
       },
+      "description": "Start with --insecure: no TLS and no authentication. Default on — a throwaway benchmark stand should measure the engine, not the handshake.",
       "group": "Security",
+      "name": "insecure",
       "title": "Insecure mode"
     },
     {
-      "name": "haproxy",
       "description": "HAProxy instances spreading SQL clients over the nodes (cockroach gen haproxy produces an equivalent config).",
+      "group": "Routing",
       "int64": {
         "default": "0",
         "gte": "0",
         "lte": "2"
       },
-      "group": "Routing",
+      "name": "haproxy",
       "title": "HAProxy nodes"
     },
     {
-      "name": "init_sql",
       "description": "SQL executed against the cluster once it is initialized, before the workload.",
+      "group": "Initialization",
+      "name": "init_sql",
       "string": {
         "maxLen": "65536"
       },
-      "group": "Initialization",
       "title": "Init SQL"
     }
   ],
+  "id": {
+    "name": "cockroach.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
   "rules": [
     {
-      "expr": "int(root.nodes) == 1 || (int(root.nodes) >= 3 && int(root.nodes) % 2 == 1)",
-      "message": "a cluster is either a single node or an odd number of at least 3 (Raft majority)",
-      "id": "odd-nodes"
+      "expr": "int(root.nodes) == 1 || (int(root.nodes) \u003e= 3 \u0026\u0026 int(root.nodes) % 2 == 1)",
+      "id": "odd-nodes",
+      "message": "a cluster is either a single node or an odd number of at least 3 (Raft majority)"
     },
     {
       "expr": "!(\"locality\" in root) || size(root.locality) == 0 || size(root.locality) == int(root.nodes)",
-      "message": "locality must be empty or carry exactly one entry per node",
-      "id": "locality-per-node"
+      "id": "locality-per-node",
+      "message": "locality must be empty or carry exactly one entry per node"
     },
     {
-      "expr": "int(root.haproxy) == 0 || int(root.nodes) >= 3",
-      "message": "HAProxy in front of a single node only adds a hop",
+      "expr": "int(root.haproxy) == 0 || int(root.nodes) \u003e= 3",
       "id": "haproxy-pointless",
+      "message": "HAProxy in front of a single node only adds a hop",
       "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict": true
 }

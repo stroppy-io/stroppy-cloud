@@ -1,1619 +1,1619 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "orioledb.postgresql.conf",
-    "version":  "v16.0.0"
-  },
-  "description":  "postgresql.conf for the OrioleDB build of PostgreSQL 16: the stock 16 parameters plus the orioledb.* settings.",
-  "fields":  [
+  "coerce": true,
+  "description": "postgresql.conf for the OrioleDB build of PostgreSQL 16: the stock 16 parameters plus the orioledb.* settings.",
+  "fields": [
     {
-      "name":  "shared_buffers",
-      "description":  "Shared memory buffers for page caching. Upstream default 128MB; the server usually overrides it from the role's memory at RunSpec compile.",
-      "int64":  {
-        "default":  "128",
-        "gte":  "1",
-        "lte":  "4194304"
+      "description": "Shared memory buffers for page caching. Upstream default 128MB; the server usually overrides it from the role's memory at RunSpec compile.",
+      "group": "Memory",
+      "int64": {
+        "default": "128",
+        "gte": "1",
+        "lte": "4194304"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "Shared buffers"
+      "name": "shared_buffers",
+      "title": "Shared buffers",
+      "unit": "MB"
     },
     {
-      "name":  "huge_pages",
-      "description":  "Request huge pages for the shared memory region.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "try"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "try"
-            },
-            "label":  "try"
+            "label": "try",
+            "value": {
+              "stringValue": "try"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "try"
-        }
+        ]
       },
-      "group":  "Memory",
-      "title":  "Huge pages"
+      "description": "Request huge pages for the shared memory region.",
+      "group": "Memory",
+      "name": "huge_pages",
+      "title": "Huge pages"
     },
     {
-      "name":  "temp_buffers",
-      "description":  "Per-session buffers for temporary tables.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "1",
-        "lte":  "65536"
+      "description": "Per-session buffers for temporary tables.",
+      "group": "Memory",
+      "int64": {
+        "default": "8",
+        "gte": "1",
+        "lte": "65536"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "Temp buffers"
+      "name": "temp_buffers",
+      "title": "Temp buffers",
+      "unit": "MB"
     },
     {
-      "name":  "work_mem",
-      "description":  "Memory per sort/hash operation before spilling to disk. Modeled in MB, so the sub-MB range of the upstream default is not reachable.",
-      "int64":  {
-        "default":  "4",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Memory per sort/hash operation before spilling to disk. Modeled in MB, so the sub-MB range of the upstream default is not reachable.",
+      "group": "Memory",
+      "int64": {
+        "default": "4",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "Work mem"
+      "name": "work_mem",
+      "title": "Work mem",
+      "unit": "MB"
     },
     {
-      "name":  "hash_mem_multiplier",
-      "description":  "work_mem multiplier for hash-based plan nodes.",
-      "double":  {
-        "default":  2,
-        "gte":  1,
-        "lte":  1000
+      "description": "work_mem multiplier for hash-based plan nodes.",
+      "double": {
+        "default": 2,
+        "gte": 1,
+        "lte": 1000
       },
-      "group":  "Memory",
-      "title":  "Hash mem multiplier"
+      "group": "Memory",
+      "name": "hash_mem_multiplier",
+      "title": "Hash mem multiplier"
     },
     {
-      "name":  "maintenance_work_mem",
-      "description":  "Memory for VACUUM, CREATE INDEX and ALTER TABLE ADD FOREIGN KEY.",
-      "int64":  {
-        "default":  "64",
-        "gte":  "1",
-        "lte":  "2097151"
+      "description": "Memory for VACUUM, CREATE INDEX and ALTER TABLE ADD FOREIGN KEY.",
+      "group": "Memory",
+      "int64": {
+        "default": "64",
+        "gte": "1",
+        "lte": "2097151"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "Maintenance work mem"
+      "name": "maintenance_work_mem",
+      "title": "Maintenance work mem",
+      "unit": "MB"
     },
     {
-      "name":  "effective_cache_size",
-      "description":  "Planner-only estimate of the OS + PostgreSQL cache available to one query. Allocates nothing.",
-      "int64":  {
-        "default":  "4096",
-        "gte":  "1",
-        "lte":  "16777216"
+      "description": "Planner-only estimate of the OS + PostgreSQL cache available to one query. Allocates nothing.",
+      "group": "Memory",
+      "int64": {
+        "default": "4096",
+        "gte": "1",
+        "lte": "16777216"
       },
-      "group":  "Memory",
-      "unit":  "MB",
-      "title":  "Effective cache size"
+      "name": "effective_cache_size",
+      "title": "Effective cache size",
+      "unit": "MB"
     },
     {
-      "name":  "wal_level",
-      "description":  "How much information is written to the WAL. `replica` is the minimum for streaming replication.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "replica"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "minimal"
-            },
-            "label":  "minimal"
+            "label": "minimal",
+            "value": {
+              "stringValue": "minimal"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "replica"
-            },
-            "label":  "replica"
+            "label": "replica",
+            "value": {
+              "stringValue": "replica"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "logical"
-            },
-            "label":  "logical"
+            "label": "logical",
+            "value": {
+              "stringValue": "logical"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "replica"
-        }
+        ]
       },
-      "group":  "WAL",
-      "title":  "WAL level"
+      "description": "How much information is written to the WAL. `replica` is the minimum for streaming replication.",
+      "group": "WAL",
+      "name": "wal_level",
+      "title": "WAL level"
     },
     {
-      "name":  "max_wal_size",
-      "description":  "Soft limit on WAL growth between automatic checkpoints.",
-      "int64":  {
-        "default":  "1024",
-        "gte":  "2",
-        "lte":  "4194304"
+      "description": "Soft limit on WAL growth between automatic checkpoints.",
+      "group": "WAL",
+      "int64": {
+        "default": "1024",
+        "gte": "2",
+        "lte": "4194304"
       },
-      "group":  "WAL",
-      "unit":  "MB",
-      "title":  "Max WAL size"
+      "name": "max_wal_size",
+      "title": "Max WAL size",
+      "unit": "MB"
     },
     {
-      "name":  "min_wal_size",
-      "description":  "WAL kept for recycling instead of being removed.",
-      "int64":  {
-        "default":  "80",
-        "gte":  "2",
-        "lte":  "4194304"
+      "description": "WAL kept for recycling instead of being removed.",
+      "group": "WAL",
+      "int64": {
+        "default": "80",
+        "gte": "2",
+        "lte": "4194304"
       },
-      "group":  "WAL",
-      "unit":  "MB",
-      "title":  "Min WAL size"
+      "name": "min_wal_size",
+      "title": "Min WAL size",
+      "unit": "MB"
     },
     {
-      "name":  "checkpoint_timeout",
-      "description":  "Maximum time between automatic WAL checkpoints.",
-      "int64":  {
-        "default":  "300",
-        "gte":  "30",
-        "lte":  "86400"
+      "description": "Maximum time between automatic WAL checkpoints.",
+      "group": "WAL",
+      "int64": {
+        "default": "300",
+        "gte": "30",
+        "lte": "86400"
       },
-      "group":  "WAL",
-      "unit":  "s",
-      "title":  "Checkpoint timeout"
+      "name": "checkpoint_timeout",
+      "title": "Checkpoint timeout",
+      "unit": "s"
     },
     {
-      "name":  "checkpoint_completion_target",
-      "description":  "Fraction of the checkpoint interval over which the checkpoint is spread.",
-      "double":  {
-        "default":  0.9,
-        "gte":  0,
-        "lte":  1
+      "description": "Fraction of the checkpoint interval over which the checkpoint is spread.",
+      "double": {
+        "default": 0.9,
+        "gte": 0,
+        "lte": 1
       },
-      "group":  "WAL",
-      "title":  "Checkpoint completion target"
+      "group": "WAL",
+      "name": "checkpoint_completion_target",
+      "title": "Checkpoint completion target"
     },
     {
-      "name":  "wal_compression",
-      "description":  "Compress full-page images written to the WAL. lz4 and zstd require a build with --with-lz4 / --with-zstd (both available since PostgreSQL 15).",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "pglz"
-            },
-            "label":  "pglz"
+            "label": "pglz",
+            "value": {
+              "stringValue": "pglz"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "lz4"
-            },
-            "label":  "lz4"
+            "label": "lz4",
+            "value": {
+              "stringValue": "lz4"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "zstd"
-            },
-            "label":  "zstd"
+            "label": "zstd",
+            "value": {
+              "stringValue": "zstd"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "WAL",
-      "title":  "WAL compression"
+      "description": "Compress full-page images written to the WAL. lz4 and zstd require a build with --with-lz4 / --with-zstd (both available since PostgreSQL 15).",
+      "group": "WAL",
+      "name": "wal_compression",
+      "title": "WAL compression"
     },
     {
-      "name":  "synchronous_commit",
-      "description":  "How much WAL durability a COMMIT waits for.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "local"
-            },
-            "label":  "local"
+            "label": "local",
+            "value": {
+              "stringValue": "local"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "remote_write"
-            },
-            "label":  "remote_write"
+            "label": "remote_write",
+            "value": {
+              "stringValue": "remote_write"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "remote_apply"
-            },
-            "label":  "remote_apply"
+            "label": "remote_apply",
+            "value": {
+              "stringValue": "remote_apply"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "WAL",
-      "title":  "Synchronous commit"
+      "description": "How much WAL durability a COMMIT waits for.",
+      "group": "WAL",
+      "name": "synchronous_commit",
+      "title": "Synchronous commit"
     },
     {
-      "name":  "wal_buffers",
-      "description":  "Shared memory for WAL not yet written to disk. `-1` derives it from shared_buffers; any other value must carry an explicit unit (a bare integer would mean 8kB blocks).",
-      "string":  {
-        "default":  "-1",
-        "pattern":  "^(-1|[0-9]+(kB|MB|GB))$"
+      "description": "Shared memory for WAL not yet written to disk. `-1` derives it from shared_buffers; any other value must carry an explicit unit (a bare integer would mean 8kB blocks).",
+      "group": "WAL",
+      "name": "wal_buffers",
+      "string": {
+        "default": "-1",
+        "pattern": "^(-1|[0-9]+(kB|MB|GB))$"
       },
-      "group":  "WAL",
-      "title":  "WAL buffers"
+      "title": "WAL buffers"
     },
     {
-      "name":  "fsync",
-      "description":  "Force WAL and data file updates to physical storage. Turning it off makes crashes unrecoverable — benchmark use only.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "WAL",
-      "title":  "fsync"
+      "description": "Force WAL and data file updates to physical storage. Turning it off makes crashes unrecoverable — benchmark use only.",
+      "group": "WAL",
+      "name": "fsync",
+      "title": "fsync"
     },
     {
-      "name":  "full_page_writes",
-      "description":  "Write the whole page to WAL on the first modification after a checkpoint; protects against torn pages.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "WAL",
-      "title":  "Full page writes"
+      "description": "Write the whole page to WAL on the first modification after a checkpoint; protects against torn pages.",
+      "group": "WAL",
+      "name": "full_page_writes",
+      "title": "Full page writes"
     },
     {
-      "name":  "wal_writer_delay",
-      "description":  "How often the WAL writer flushes WAL.",
-      "int64":  {
-        "default":  "200",
-        "gte":  "1",
-        "lte":  "10000"
+      "description": "How often the WAL writer flushes WAL.",
+      "group": "WAL",
+      "int64": {
+        "default": "200",
+        "gte": "1",
+        "lte": "10000"
       },
-      "group":  "WAL",
-      "unit":  "ms",
-      "title":  "WAL writer delay"
+      "name": "wal_writer_delay",
+      "title": "WAL writer delay",
+      "unit": "ms"
     },
     {
-      "name":  "max_wal_senders",
-      "description":  "Maximum concurrent walsender processes; 0 disables replication.",
-      "int64":  {
-        "default":  "10",
-        "gte":  "0",
-        "lte":  "262143"
+      "description": "Maximum concurrent walsender processes; 0 disables replication.",
+      "group": "Replication",
+      "int64": {
+        "default": "10",
+        "gte": "0",
+        "lte": "262143"
       },
-      "group":  "Replication",
-      "title":  "Max WAL senders"
+      "name": "max_wal_senders",
+      "title": "Max WAL senders"
     },
     {
-      "name":  "max_replication_slots",
-      "description":  "Maximum number of replication slots the server can define.",
-      "int64":  {
-        "default":  "10",
-        "gte":  "0",
-        "lte":  "262143"
+      "description": "Maximum number of replication slots the server can define.",
+      "group": "Replication",
+      "int64": {
+        "default": "10",
+        "gte": "0",
+        "lte": "262143"
       },
-      "group":  "Replication",
-      "title":  "Max replication slots"
+      "name": "max_replication_slots",
+      "title": "Max replication slots"
     },
     {
-      "name":  "hot_standby",
-      "description":  "Allow read-only queries while the server is in recovery.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "Replication",
-      "title":  "Hot standby"
+      "description": "Allow read-only queries while the server is in recovery.",
+      "group": "Replication",
+      "name": "hot_standby",
+      "title": "Hot standby"
     },
     {
-      "name":  "hot_standby_feedback",
-      "description":  "Report the standby's oldest running xmin to the primary so vacuum does not remove rows it still needs.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Replication",
-      "title":  "Hot standby feedback"
+      "description": "Report the standby's oldest running xmin to the primary so vacuum does not remove rows it still needs.",
+      "group": "Replication",
+      "name": "hot_standby_feedback",
+      "title": "Hot standby feedback"
     },
     {
-      "name":  "wal_keep_size",
-      "description":  "Minimum size of past WAL segments kept in pg_wal for standbys.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4194304"
+      "description": "Minimum size of past WAL segments kept in pg_wal for standbys.",
+      "group": "Replication",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4194304"
       },
-      "group":  "Replication",
-      "unit":  "MB",
-      "title":  "WAL keep size"
+      "name": "wal_keep_size",
+      "title": "WAL keep size",
+      "unit": "MB"
     },
     {
-      "name":  "synchronous_standby_names",
-      "description":  "Standby list that synchronous_commit waits for, e.g. \"ANY 1 (pg1, pg2)\". Filled by the server from topology; when a Patroni cluster owns the config, Patroni manages this key instead.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "4096"
+      "description": "Standby list that synchronous_commit waits for, e.g. \"ANY 1 (pg1, pg2)\". Filled by the server from topology; when a Patroni cluster owns the config, Patroni manages this key instead.",
+      "group": "Cluster",
+      "name": "synchronous_standby_names",
+      "nullable": true,
+      "string": {
+        "maxLen": "4096"
       },
-      "group":  "Cluster",
-      "title":  "Synchronous standby names"
+      "title": "Synchronous standby names"
     },
     {
-      "name":  "seq_page_cost",
-      "description":  "Planner cost of a sequentially fetched page.",
-      "double":  {
-        "default":  1,
-        "gte":  0,
-        "lte":  10000
+      "description": "Planner cost of a sequentially fetched page.",
+      "double": {
+        "default": 1,
+        "gte": 0,
+        "lte": 10000
       },
-      "group":  "Planner",
-      "title":  "Sequential page cost"
+      "group": "Planner",
+      "name": "seq_page_cost",
+      "title": "Sequential page cost"
     },
     {
-      "name":  "random_page_cost",
-      "description":  "Planner cost of a non-sequentially fetched page; lower it for SSD/NVMe storage.",
-      "double":  {
-        "default":  4,
-        "gte":  0,
-        "lte":  10000
+      "description": "Planner cost of a non-sequentially fetched page; lower it for SSD/NVMe storage.",
+      "double": {
+        "default": 4,
+        "gte": 0,
+        "lte": 10000
       },
-      "group":  "Planner",
-      "title":  "Random page cost"
+      "group": "Planner",
+      "name": "random_page_cost",
+      "title": "Random page cost"
     },
     {
-      "name":  "effective_io_concurrency",
-      "description":  "Number of concurrent I/O requests the planner expects the storage to sustain. Upstream default 1 up to PostgreSQL 17.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "0",
-        "lte":  "1000"
+      "description": "Number of concurrent I/O requests the planner expects the storage to sustain. Upstream default 1 up to PostgreSQL 17.",
+      "group": "Planner",
+      "int64": {
+        "default": "1",
+        "gte": "0",
+        "lte": "1000"
       },
-      "group":  "Planner",
-      "title":  "Effective I/O concurrency"
+      "name": "effective_io_concurrency",
+      "title": "Effective I/O concurrency"
     },
     {
-      "name":  "jit",
-      "description":  "Allow JIT compilation of expressions; usually off for OLTP benchmarks, where it only adds latency.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "Planner",
-      "title":  "JIT"
+      "description": "Allow JIT compilation of expressions; usually off for OLTP benchmarks, where it only adds latency.",
+      "group": "Planner",
+      "name": "jit",
+      "title": "JIT"
     },
     {
-      "name":  "default_statistics_target",
-      "description":  "Default number of ANALYZE histogram buckets / MCV entries per column.",
-      "int64":  {
-        "default":  "100",
-        "gte":  "1",
-        "lte":  "10000"
+      "description": "Default number of ANALYZE histogram buckets / MCV entries per column.",
+      "group": "Planner",
+      "int64": {
+        "default": "100",
+        "gte": "1",
+        "lte": "10000"
       },
-      "group":  "Planner",
-      "title":  "Default statistics target"
+      "name": "default_statistics_target",
+      "title": "Default statistics target"
     },
     {
-      "name":  "autovacuum",
-      "description":  "Run the autovacuum launcher.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "Autovacuum",
-      "title":  "Autovacuum"
+      "description": "Run the autovacuum launcher.",
+      "group": "Autovacuum",
+      "name": "autovacuum",
+      "title": "Autovacuum"
     },
     {
-      "name":  "autovacuum_max_workers",
-      "description":  "Maximum concurrent autovacuum worker processes.",
-      "int64":  {
-        "default":  "3",
-        "gte":  "1",
-        "lte":  "262143"
+      "description": "Maximum concurrent autovacuum worker processes.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "3",
+        "gte": "1",
+        "lte": "262143"
       },
-      "group":  "Autovacuum",
-      "title":  "Autovacuum max workers"
+      "name": "autovacuum_max_workers",
+      "title": "Autovacuum max workers"
     },
     {
-      "name":  "autovacuum_naptime",
-      "description":  "Delay between autovacuum runs on any one database.",
-      "int64":  {
-        "default":  "60",
-        "gte":  "1",
-        "lte":  "86400"
+      "description": "Delay between autovacuum runs on any one database.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "60",
+        "gte": "1",
+        "lte": "86400"
       },
-      "group":  "Autovacuum",
-      "unit":  "s",
-      "title":  "Autovacuum naptime"
+      "name": "autovacuum_naptime",
+      "title": "Autovacuum naptime",
+      "unit": "s"
     },
     {
-      "name":  "autovacuum_vacuum_threshold",
-      "description":  "Minimum number of updated/deleted tuples before a table is vacuumed.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "0"
+      "description": "Minimum number of updated/deleted tuples before a table is vacuumed.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "50",
+        "gte": "0"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum threshold"
+      "name": "autovacuum_vacuum_threshold",
+      "title": "Vacuum threshold"
     },
     {
-      "name":  "autovacuum_vacuum_insert_threshold",
-      "description":  "Minimum number of inserted tuples before a table is vacuumed; -1 disables insert-driven vacuums.",
-      "int64":  {
-        "default":  "1000",
-        "gte":  "-1"
+      "description": "Minimum number of inserted tuples before a table is vacuumed; -1 disables insert-driven vacuums.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "1000",
+        "gte": "-1"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum insert threshold"
+      "name": "autovacuum_vacuum_insert_threshold",
+      "title": "Vacuum insert threshold"
     },
     {
-      "name":  "autovacuum_analyze_threshold",
-      "description":  "Minimum number of changed tuples before a table is analyzed.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "0"
+      "description": "Minimum number of changed tuples before a table is analyzed.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "50",
+        "gte": "0"
       },
-      "group":  "Autovacuum",
-      "title":  "Analyze threshold"
+      "name": "autovacuum_analyze_threshold",
+      "title": "Analyze threshold"
     },
     {
-      "name":  "autovacuum_vacuum_scale_factor",
-      "description":  "Fraction of the table size added to autovacuum_vacuum_threshold.",
-      "double":  {
-        "default":  0.2,
-        "gte":  0,
-        "lte":  100
+      "description": "Fraction of the table size added to autovacuum_vacuum_threshold.",
+      "double": {
+        "default": 0.2,
+        "gte": 0,
+        "lte": 100
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum scale factor"
+      "group": "Autovacuum",
+      "name": "autovacuum_vacuum_scale_factor",
+      "title": "Vacuum scale factor"
     },
     {
-      "name":  "autovacuum_vacuum_insert_scale_factor",
-      "description":  "Fraction of the table size added to autovacuum_vacuum_insert_threshold.",
-      "double":  {
-        "default":  0.2,
-        "gte":  0,
-        "lte":  100
+      "description": "Fraction of the table size added to autovacuum_vacuum_insert_threshold.",
+      "double": {
+        "default": 0.2,
+        "gte": 0,
+        "lte": 100
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum insert scale factor"
+      "group": "Autovacuum",
+      "name": "autovacuum_vacuum_insert_scale_factor",
+      "title": "Vacuum insert scale factor"
     },
     {
-      "name":  "autovacuum_analyze_scale_factor",
-      "description":  "Fraction of the table size added to autovacuum_analyze_threshold.",
-      "double":  {
-        "default":  0.1,
-        "gte":  0,
-        "lte":  100
+      "description": "Fraction of the table size added to autovacuum_analyze_threshold.",
+      "double": {
+        "default": 0.1,
+        "gte": 0,
+        "lte": 100
       },
-      "group":  "Autovacuum",
-      "title":  "Analyze scale factor"
+      "group": "Autovacuum",
+      "name": "autovacuum_analyze_scale_factor",
+      "title": "Analyze scale factor"
     },
     {
-      "name":  "autovacuum_vacuum_cost_delay",
-      "description":  "Cost delay used by autovacuum workers; -1 reuses vacuum_cost_delay.",
-      "double":  {
-        "default":  2,
-        "gte":  -1,
-        "lte":  100
+      "description": "Cost delay used by autovacuum workers; -1 reuses vacuum_cost_delay.",
+      "double": {
+        "default": 2,
+        "gte": -1,
+        "lte": 100
       },
-      "group":  "Autovacuum",
-      "unit":  "ms",
-      "title":  "Autovacuum cost delay"
+      "group": "Autovacuum",
+      "name": "autovacuum_vacuum_cost_delay",
+      "title": "Autovacuum cost delay",
+      "unit": "ms"
     },
     {
-      "name":  "autovacuum_vacuum_cost_limit",
-      "description":  "Cost limit shared by all autovacuum workers; -1 reuses vacuum_cost_limit.",
-      "int64":  {
-        "default":  "-1",
-        "gte":  "-1",
-        "lte":  "10000"
+      "description": "Cost limit shared by all autovacuum workers; -1 reuses vacuum_cost_limit.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "-1",
+        "gte": "-1",
+        "lte": "10000"
       },
-      "group":  "Autovacuum",
-      "title":  "Autovacuum cost limit"
+      "name": "autovacuum_vacuum_cost_limit",
+      "title": "Autovacuum cost limit"
     },
     {
-      "name":  "vacuum_cost_delay",
-      "description":  "Sleep after the cost limit is exceeded during manual VACUUM; 0 disables cost-based delays.",
-      "double":  {
-        "default":  0,
-        "gte":  0,
-        "lte":  100
+      "description": "Sleep after the cost limit is exceeded during manual VACUUM; 0 disables cost-based delays.",
+      "double": {
+        "default": 0,
+        "gte": 0,
+        "lte": 100
       },
-      "group":  "Autovacuum",
-      "unit":  "ms",
-      "title":  "Vacuum cost delay"
+      "group": "Autovacuum",
+      "name": "vacuum_cost_delay",
+      "title": "Vacuum cost delay",
+      "unit": "ms"
     },
     {
-      "name":  "vacuum_cost_limit",
-      "description":  "Accumulated vacuum cost that triggers a sleep of vacuum_cost_delay.",
-      "int64":  {
-        "default":  "200",
-        "gte":  "1",
-        "lte":  "10000"
+      "description": "Accumulated vacuum cost that triggers a sleep of vacuum_cost_delay.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "200",
+        "gte": "1",
+        "lte": "10000"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum cost limit"
+      "name": "vacuum_cost_limit",
+      "title": "Vacuum cost limit"
     },
     {
-      "name":  "vacuum_cost_page_hit",
-      "description":  "Cost charged for a buffer found in shared_buffers.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "0",
-        "lte":  "10000"
+      "description": "Cost charged for a buffer found in shared_buffers.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "1",
+        "gte": "0",
+        "lte": "10000"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum cost: page hit"
+      "name": "vacuum_cost_page_hit",
+      "title": "Vacuum cost: page hit"
     },
     {
-      "name":  "vacuum_cost_page_miss",
-      "description":  "Cost charged for a buffer that has to be read in.",
-      "int64":  {
-        "default":  "2",
-        "gte":  "0",
-        "lte":  "10000"
+      "description": "Cost charged for a buffer that has to be read in.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "2",
+        "gte": "0",
+        "lte": "10000"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum cost: page miss"
+      "name": "vacuum_cost_page_miss",
+      "title": "Vacuum cost: page miss"
     },
     {
-      "name":  "vacuum_cost_page_dirty",
-      "description":  "Cost charged when vacuum dirties a previously clean block.",
-      "int64":  {
-        "default":  "20",
-        "gte":  "0",
-        "lte":  "10000"
+      "description": "Cost charged when vacuum dirties a previously clean block.",
+      "group": "Autovacuum",
+      "int64": {
+        "default": "20",
+        "gte": "0",
+        "lte": "10000"
       },
-      "group":  "Autovacuum",
-      "title":  "Vacuum cost: page dirty"
+      "name": "vacuum_cost_page_dirty",
+      "title": "Vacuum cost: page dirty"
     },
     {
-      "name":  "listen_addresses",
-      "description":  "TCP addresses to listen on. Product default is '*' rather than upstream 'localhost': every stroppy node is reached over the network by the load generator and the exporters.",
-      "string":  {
-        "default":  "*",
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "description": "TCP addresses to listen on. Product default is '*' rather than upstream 'localhost': every stroppy node is reached over the network by the load generator and the exporters.",
+      "group": "Connections",
+      "name": "listen_addresses",
+      "string": {
+        "default": "*",
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group":  "Connections",
-      "title":  "Listen addresses"
+      "title": "Listen addresses"
     },
     {
-      "name":  "port",
-      "description":  "TCP port the server listens on.",
-      "int64":  {
-        "default":  "5432",
-        "gte":  "1",
-        "lte":  "65535"
+      "description": "TCP port the server listens on.",
+      "group": "Connections",
+      "int64": {
+        "default": "5432",
+        "gte": "1",
+        "lte": "65535"
       },
-      "group":  "Connections",
-      "title":  "Port"
+      "name": "port",
+      "title": "Port"
     },
     {
-      "name":  "max_connections",
-      "description":  "Maximum concurrent client connections.",
-      "int64":  {
-        "default":  "100",
-        "gte":  "1",
-        "lte":  "262143"
+      "description": "Maximum concurrent client connections.",
+      "group": "Connections",
+      "int64": {
+        "default": "100",
+        "gte": "1",
+        "lte": "262143"
       },
-      "group":  "Connections",
-      "title":  "Max connections"
+      "name": "max_connections",
+      "title": "Max connections"
     },
     {
-      "name":  "superuser_reserved_connections",
-      "description":  "Connection slots out of max_connections reserved for superusers.",
-      "int64":  {
-        "default":  "3",
-        "gte":  "0",
-        "lte":  "262143"
+      "description": "Connection slots out of max_connections reserved for superusers.",
+      "group": "Connections",
+      "int64": {
+        "default": "3",
+        "gte": "0",
+        "lte": "262143"
       },
-      "group":  "Connections",
-      "title":  "Superuser reserved connections"
+      "name": "superuser_reserved_connections",
+      "title": "Superuser reserved connections"
     },
     {
-      "name":  "reserved_connections",
-      "description":  "Connection slots reserved for roles with pg_use_reserved_connections. Added in PostgreSQL 16.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "262143"
+      "description": "Connection slots reserved for roles with pg_use_reserved_connections. Added in PostgreSQL 16.",
+      "group": "Connections",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "262143"
       },
-      "group":  "Connections",
-      "title":  "Reserved connections"
+      "name": "reserved_connections",
+      "title": "Reserved connections"
     },
     {
-      "name":  "ssl",
-      "description":  "Enable SSL/TLS connections; requires ssl_cert_file and ssl_key_file.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Connections",
-      "title":  "SSL"
+      "description": "Enable SSL/TLS connections; requires ssl_cert_file and ssl_key_file.",
+      "group": "Connections",
+      "name": "ssl",
+      "title": "SSL"
     },
     {
-      "name":  "tcp_keepalives_idle",
-      "description":  "Idle time before the first TCP keepalive probe; 0 uses the OS default.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400"
+      "description": "Idle time before the first TCP keepalive probe; 0 uses the OS default.",
+      "group": "Connections",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400"
       },
-      "group":  "Connections",
-      "unit":  "s",
-      "title":  "TCP keepalives idle"
+      "name": "tcp_keepalives_idle",
+      "title": "TCP keepalives idle",
+      "unit": "s"
     },
     {
-      "name":  "tcp_keepalives_interval",
-      "description":  "Interval between TCP keepalive retransmits; 0 uses the OS default.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400"
+      "description": "Interval between TCP keepalive retransmits; 0 uses the OS default.",
+      "group": "Connections",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400"
       },
-      "group":  "Connections",
-      "unit":  "s",
-      "title":  "TCP keepalives interval"
+      "name": "tcp_keepalives_interval",
+      "title": "TCP keepalives interval",
+      "unit": "s"
     },
     {
-      "name":  "tcp_keepalives_count",
-      "description":  "TCP keepalive probes lost before the connection is dropped; 0 uses the OS default.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "1000"
+      "description": "TCP keepalive probes lost before the connection is dropped; 0 uses the OS default.",
+      "group": "Connections",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "1000"
       },
-      "group":  "Connections",
-      "title":  "TCP keepalives count"
+      "name": "tcp_keepalives_count",
+      "title": "TCP keepalives count"
     },
     {
-      "name":  "max_worker_processes",
-      "description":  "Maximum background worker processes the cluster may start.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "0",
-        "lte":  "262143"
+      "description": "Maximum background worker processes the cluster may start.",
+      "group": "Parallelism",
+      "int64": {
+        "default": "8",
+        "gte": "0",
+        "lte": "262143"
       },
-      "group":  "Parallelism",
-      "title":  "Max worker processes"
+      "name": "max_worker_processes",
+      "title": "Max worker processes"
     },
     {
-      "name":  "max_parallel_workers",
-      "description":  "Maximum workers usable for parallel operations; bounded by max_worker_processes.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "0",
-        "lte":  "1024"
+      "description": "Maximum workers usable for parallel operations; bounded by max_worker_processes.",
+      "group": "Parallelism",
+      "int64": {
+        "default": "8",
+        "gte": "0",
+        "lte": "1024"
       },
-      "group":  "Parallelism",
-      "title":  "Max parallel workers"
+      "name": "max_parallel_workers",
+      "title": "Max parallel workers"
     },
     {
-      "name":  "max_parallel_workers_per_gather",
-      "description":  "Workers a single Gather node may start; 0 disables parallel query.",
-      "int64":  {
-        "default":  "2",
-        "gte":  "0",
-        "lte":  "1024"
+      "description": "Workers a single Gather node may start; 0 disables parallel query.",
+      "group": "Parallelism",
+      "int64": {
+        "default": "2",
+        "gte": "0",
+        "lte": "1024"
       },
-      "group":  "Parallelism",
-      "title":  "Max parallel workers per gather"
+      "name": "max_parallel_workers_per_gather",
+      "title": "Max parallel workers per gather"
     },
     {
-      "name":  "max_parallel_maintenance_workers",
-      "description":  "Workers a single utility command (CREATE INDEX, VACUUM) may start.",
-      "int64":  {
-        "default":  "2",
-        "gte":  "0",
-        "lte":  "1024"
+      "description": "Workers a single utility command (CREATE INDEX, VACUUM) may start.",
+      "group": "Parallelism",
+      "int64": {
+        "default": "2",
+        "gte": "0",
+        "lte": "1024"
       },
-      "group":  "Parallelism",
-      "title":  "Max parallel maintenance workers"
+      "name": "max_parallel_maintenance_workers",
+      "title": "Max parallel maintenance workers"
     },
     {
-      "name":  "max_locks_per_transaction",
-      "description":  "Average number of object locks allocated per transaction slot.",
-      "int64":  {
-        "default":  "64",
-        "gte":  "10",
-        "lte":  "1048576"
+      "description": "Average number of object locks allocated per transaction slot.",
+      "group": "Locks",
+      "int64": {
+        "default": "64",
+        "gte": "10",
+        "lte": "1048576"
       },
-      "group":  "Locks",
-      "title":  "Max locks per transaction"
+      "name": "max_locks_per_transaction",
+      "title": "Max locks per transaction"
     },
     {
-      "name":  "deadlock_timeout",
-      "description":  "Time to wait on a lock before running deadlock detection.",
-      "int64":  {
-        "default":  "1000",
-        "gte":  "1",
-        "lte":  "3600000"
+      "description": "Time to wait on a lock before running deadlock detection.",
+      "group": "Locks",
+      "int64": {
+        "default": "1000",
+        "gte": "1",
+        "lte": "3600000"
       },
-      "group":  "Locks",
-      "unit":  "ms",
-      "title":  "Deadlock timeout"
+      "name": "deadlock_timeout",
+      "title": "Deadlock timeout",
+      "unit": "ms"
     },
     {
-      "name":  "lock_timeout",
-      "description":  "Abort a statement that waits longer than this for any lock; 0 disables.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400000"
+      "description": "Abort a statement that waits longer than this for any lock; 0 disables.",
+      "group": "Locks",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400000"
       },
-      "group":  "Locks",
-      "unit":  "ms",
-      "title":  "Lock timeout"
+      "name": "lock_timeout",
+      "title": "Lock timeout",
+      "unit": "ms"
     },
     {
-      "name":  "statement_timeout",
-      "description":  "Abort any statement running longer than this; 0 disables.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400000"
+      "description": "Abort any statement running longer than this; 0 disables.",
+      "group": "Locks",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400000"
       },
-      "group":  "Locks",
-      "unit":  "ms",
-      "title":  "Statement timeout"
+      "name": "statement_timeout",
+      "title": "Statement timeout",
+      "unit": "ms"
     },
     {
-      "name":  "idle_in_transaction_session_timeout",
-      "description":  "Terminate a session idle inside an open transaction for longer than this; 0 disables.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400000"
+      "description": "Terminate a session idle inside an open transaction for longer than this; 0 disables.",
+      "group": "Locks",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400000"
       },
-      "group":  "Locks",
-      "unit":  "ms",
-      "title":  "Idle in transaction timeout"
+      "name": "idle_in_transaction_session_timeout",
+      "title": "Idle in transaction timeout",
+      "unit": "ms"
     },
     {
-      "name":  "logging_collector",
-      "description":  "Capture stderr into rotated log files. Off in stroppy: journald/vector collect stderr.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Logging collector"
+      "description": "Capture stderr into rotated log files. Off in stroppy: journald/vector collect stderr.",
+      "group": "Logging",
+      "name": "logging_collector",
+      "title": "Logging collector"
     },
     {
-      "name":  "log_destination",
-      "description":  "Comma-separated log sinks: stderr, csvlog, jsonlog, syslog.",
-      "string":  {
-        "default":  "stderr",
-        "pattern":  "^(stderr|csvlog|jsonlog|syslog)(,(stderr|csvlog|jsonlog|syslog))*$"
+      "description": "Comma-separated log sinks: stderr, csvlog, jsonlog, syslog.",
+      "group": "Logging",
+      "name": "log_destination",
+      "string": {
+        "default": "stderr",
+        "pattern": "^(stderr|csvlog|jsonlog|syslog)(,(stderr|csvlog|jsonlog|syslog))*$"
       },
-      "group":  "Logging",
-      "title":  "Log destination"
+      "title": "Log destination"
     },
     {
-      "name":  "log_min_duration_statement",
-      "description":  "Log statements running at least this long; 0 logs all, -1 disables.",
-      "int64":  {
-        "default":  "-1",
-        "gte":  "-1",
-        "lte":  "86400000"
+      "description": "Log statements running at least this long; 0 logs all, -1 disables.",
+      "group": "Logging",
+      "int64": {
+        "default": "-1",
+        "gte": "-1",
+        "lte": "86400000"
       },
-      "group":  "Logging",
-      "unit":  "ms",
-      "title":  "Log min duration"
+      "name": "log_min_duration_statement",
+      "title": "Log min duration",
+      "unit": "ms"
     },
     {
-      "name":  "log_checkpoints",
-      "description":  "Log each checkpoint and restartpoint.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "on"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "on"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Log checkpoints"
+      "description": "Log each checkpoint and restartpoint.",
+      "group": "Logging",
+      "name": "log_checkpoints",
+      "title": "Log checkpoints"
     },
     {
-      "name":  "log_connections",
-      "description":  "Log every attempted connection. A boolean up to PostgreSQL 17; an aspect list from 18.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Log connections"
+      "description": "Log every attempted connection. A boolean up to PostgreSQL 17; an aspect list from 18.",
+      "group": "Logging",
+      "name": "log_connections",
+      "title": "Log connections"
     },
     {
-      "name":  "log_disconnections",
-      "description":  "Log session end and duration.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Log disconnections"
+      "description": "Log session end and duration.",
+      "group": "Logging",
+      "name": "log_disconnections",
+      "title": "Log disconnections"
     },
     {
-      "name":  "log_lock_waits",
-      "description":  "Log a session that waits longer than deadlock_timeout for a lock.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Log lock waits"
+      "description": "Log a session that waits longer than deadlock_timeout for a lock.",
+      "group": "Logging",
+      "name": "log_lock_waits",
+      "title": "Log lock waits"
     },
     {
-      "name":  "log_temp_files",
-      "description":  "Log temporary files at least this large; 0 logs all, -1 disables.",
-      "int64":  {
-        "default":  "-1",
-        "gte":  "-1"
+      "description": "Log temporary files at least this large; 0 logs all, -1 disables.",
+      "group": "Logging",
+      "int64": {
+        "default": "-1",
+        "gte": "-1"
       },
-      "group":  "Logging",
-      "unit":  "kB",
-      "title":  "Log temp files"
+      "name": "log_temp_files",
+      "title": "Log temp files",
+      "unit": "kB"
     },
     {
-      "name":  "log_autovacuum_min_duration",
-      "description":  "Log autovacuum actions taking at least this long; 0 logs all, -1 disables.",
-      "int64":  {
-        "default":  "600000",
-        "gte":  "-1",
-        "lte":  "86400000"
+      "description": "Log autovacuum actions taking at least this long; 0 logs all, -1 disables.",
+      "group": "Logging",
+      "int64": {
+        "default": "600000",
+        "gte": "-1",
+        "lte": "86400000"
       },
-      "group":  "Logging",
-      "unit":  "ms",
-      "title":  "Log autovacuum min duration"
+      "name": "log_autovacuum_min_duration",
+      "title": "Log autovacuum min duration",
+      "unit": "ms"
     },
     {
-      "name":  "log_line_prefix",
-      "description":  "printf-style prefix on every stderr log line.",
-      "string":  {
-        "default":  "%m [%p] ",
-        "maxLen":  "512"
+      "description": "printf-style prefix on every stderr log line.",
+      "group": "Logging",
+      "name": "log_line_prefix",
+      "string": {
+        "default": "%m [%p] ",
+        "maxLen": "512"
       },
-      "group":  "Logging",
-      "title":  "Log line prefix"
+      "title": "Log line prefix"
     },
     {
-      "name":  "log_statement",
-      "description":  "Which statement kinds to log in full.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "none"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none"
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "ddl"
-            },
-            "label":  "ddl"
+            "label": "ddl",
+            "value": {
+              "stringValue": "ddl"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "mod"
-            },
-            "label":  "mod"
+            "label": "mod",
+            "value": {
+              "stringValue": "mod"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "all"
-            },
-            "label":  "all"
+            "label": "all",
+            "value": {
+              "stringValue": "all"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "none"
-        }
+        ]
       },
-      "group":  "Logging",
-      "title":  "Log statement"
+      "description": "Which statement kinds to log in full.",
+      "group": "Logging",
+      "name": "log_statement",
+      "title": "Log statement"
     },
     {
-      "name":  "extensions",
-      "description":  "Shared libraries preloaded at server start; rendered into shared_preload_libraries. Filled by the server from the recipe (pg_stat_statements for the metrics dashboards, orioledb for the OrioleDB engine).",
-      "nullable":  true,
-      "list":  {
-        "items":  [
+      "description": "Shared libraries preloaded at server start; rendered into shared_preload_libraries. Filled by the server from the recipe (pg_stat_statements for the metrics dashboards, orioledb for the OrioleDB engine).",
+      "group": "Extensions",
+      "list": {
+        "items": [
           {
-            "name":  "library",
-            "string":  {
-              "minLen":  "1",
-              "maxLen":  "128",
-              "pattern":  "^[A-Za-z_][A-Za-z0-9_$]*$"
+            "name": "library",
+            "string": {
+              "maxLen": "128",
+              "minLen": "1",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_$]*$"
             }
           }
         ],
-        "maxItems":  "32",
-        "unique":  true
+        "maxItems": "32",
+        "unique": true
       },
-      "group":  "Extensions",
-      "title":  "Preloaded libraries"
+      "name": "extensions",
+      "nullable": true,
+      "title": "Preloaded libraries"
     },
     {
-      "name":  "shared_preload_libraries",
-      "description":  "The `extensions` list joined with commas — the literal shared_preload_libraries value.",
-      "computed":  {
-        "expr":  "(\"extensions\" in root) ? root.extensions.join(\",\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"extensions\" in root) ? root.extensions.join(\",\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Extensions",
-      "title":  "shared_preload_libraries"
+      "description": "The `extensions` list joined with commas — the literal shared_preload_libraries value.",
+      "group": "Extensions",
+      "name": "shared_preload_libraries",
+      "title": "shared_preload_libraries"
     },
     {
-      "name":  "pg_stat_statements_max",
-      "description":  "Number of statements tracked by pg_stat_statements. Rendered as `pg_stat_statements.max` (schemapb field names must be identifiers, so the dot cannot be in the field name).",
-      "int64":  {
-        "default":  "5000",
-        "gte":  "100",
-        "lte":  "1048576"
+      "description": "Number of statements tracked by pg_stat_statements. Rendered as `pg_stat_statements.max` (schemapb field names must be identifiers, so the dot cannot be in the field name).",
+      "group": "Extensions",
+      "int64": {
+        "default": "5000",
+        "gte": "100",
+        "lte": "1048576"
       },
-      "group":  "Extensions",
-      "title":  "pg_stat_statements.max"
+      "name": "pg_stat_statements_max",
+      "title": "pg_stat_statements.max"
     },
     {
-      "name":  "pg_stat_statements_track",
-      "description":  "Which statements pg_stat_statements counts. Rendered as `pg_stat_statements.track`.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "top"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none"
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "top"
-            },
-            "label":  "top"
+            "label": "top",
+            "value": {
+              "stringValue": "top"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "all"
-            },
-            "label":  "all"
+            "label": "all",
+            "value": {
+              "stringValue": "all"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "top"
-        }
+        ]
       },
-      "group":  "Extensions",
-      "title":  "pg_stat_statements.track"
+      "description": "Which statements pg_stat_statements counts. Rendered as `pg_stat_statements.track`.",
+      "group": "Extensions",
+      "name": "pg_stat_statements_track",
+      "title": "pg_stat_statements.track"
     },
     {
-      "name":  "pg_stat_statements_rendered",
-      "description":  "The pg_stat_statements.* lines, emitted only when the extension is actually preloaded.",
-      "computed":  {
-        "expr":  "(\"extensions\" in root) && (\"pg_stat_statements\" in root.extensions) ? \"pg_stat_statements.max = \" + string(root.pg_stat_statements_max) + \"\\npg_stat_statements.track = \" + string(root.pg_stat_statements_track) : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"extensions\" in root) \u0026\u0026 (\"pg_stat_statements\" in root.extensions) ? \"pg_stat_statements.max = \" + string(root.pg_stat_statements_max) + \"\\npg_stat_statements.track = \" + string(root.pg_stat_statements_track) : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Extensions",
-      "title":  "Rendered pg_stat_statements settings"
+      "description": "The pg_stat_statements.* lines, emitted only when the extension is actually preloaded.",
+      "group": "Extensions",
+      "name": "pg_stat_statements_rendered",
+      "title": "Rendered pg_stat_statements settings"
     },
     {
-      "name":  "timezone",
-      "description":  "Server time zone. Product default UTC so every run's timestamps line up with the metrics backend.",
-      "string":  {
-        "default":  "UTC",
-        "minLen":  "1",
-        "maxLen":  "128"
+      "description": "Server time zone. Product default UTC so every run's timestamps line up with the metrics backend.",
+      "group": "Locale",
+      "name": "timezone",
+      "string": {
+        "default": "UTC",
+        "maxLen": "128",
+        "minLen": "1"
       },
-      "group":  "Locale",
-      "title":  "Timezone"
+      "title": "Timezone"
     },
     {
-      "name":  "lc_messages",
-      "description":  "Locale for server log messages. Product default C so log parsers see English, untranslated messages.",
-      "string":  {
-        "default":  "C",
-        "minLen":  "1",
-        "maxLen":  "64"
+      "description": "Locale for server log messages. Product default C so log parsers see English, untranslated messages.",
+      "group": "Locale",
+      "name": "lc_messages",
+      "string": {
+        "default": "C",
+        "maxLen": "64",
+        "minLen": "1"
       },
-      "group":  "Locale",
-      "title":  "Message locale"
+      "title": "Message locale"
     },
     {
-      "name":  "default_text_search_config",
-      "description":  "Text search configuration used when none is given explicitly.",
-      "string":  {
-        "default":  "pg_catalog.simple",
-        "minLen":  "1",
-        "maxLen":  "128"
+      "description": "Text search configuration used when none is given explicitly.",
+      "group": "Locale",
+      "name": "default_text_search_config",
+      "string": {
+        "default": "pg_catalog.simple",
+        "maxLen": "128",
+        "minLen": "1"
       },
-      "group":  "Locale",
-      "title":  "Default text search config"
+      "title": "Default text search config"
     },
     {
-      "name":  "orioledb_main_buffers",
-      "description":  "Shared memory OrioleDB uses to cache hot pages; the OrioleDB counterpart of shared_buffers.",
-      "int64":  {
-        "default":  "64",
-        "gte":  "1",
-        "lte":  "4194304"
+      "description": "Shared memory OrioleDB uses to cache hot pages; the OrioleDB counterpart of shared_buffers.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "64",
+        "gte": "1",
+        "lte": "4194304"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.main_buffers"
+      "name": "orioledb_main_buffers",
+      "title": "orioledb.main_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_undo_buffers",
-      "description":  "Ring buffer holding older row and page versions. Leave unset for the engine default, which grows with the maximum process count; an explicit value must meet the engine's process-dependent minimum.",
-      "nullable":  true,
-      "int64":  {
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Ring buffer holding older row and page versions. Leave unset for the engine default, which grows with the maximum process count; an explicit value must meet the engine's process-dependent minimum.",
+      "group": "OrioleDB",
+      "int64": {
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.undo_buffers"
+      "name": "orioledb_undo_buffers",
+      "nullable": true,
+      "title": "orioledb.undo_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_free_tree_buffers",
-      "description":  "Shared memory for the free-space metadata of compressed tables.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Shared memory for the free-space metadata of compressed tables.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "8",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.free_tree_buffers"
+      "name": "orioledb_free_tree_buffers",
+      "title": "orioledb.free_tree_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_catalog_buffers",
-      "description":  "Shared memory for table metadata.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Shared memory for table metadata.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "8",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.catalog_buffers"
+      "name": "orioledb_catalog_buffers",
+      "title": "orioledb.catalog_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_temp_buffers",
-      "description":  "Per-backend buffer pool for OrioleDB temporary tables.",
-      "int64":  {
-        "default":  "64",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Per-backend buffer pool for OrioleDB temporary tables.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "64",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.temp_buffers"
+      "name": "orioledb_temp_buffers",
+      "title": "orioledb.temp_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_xid_buffers",
-      "description":  "In-memory buffer for OrioleDB transaction ids.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "In-memory buffer for OrioleDB transaction ids.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.xid_buffers"
+      "name": "orioledb_xid_buffers",
+      "title": "orioledb.xid_buffers",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_checkpoint_completion_ratio",
-      "description":  "Share of the checkpoint window spent on OrioleDB tables; the remainder goes to heap tables.",
-      "double":  {
-        "default":  0.5,
-        "gte":  0,
-        "lte":  1
+      "description": "Share of the checkpoint window spent on OrioleDB tables; the remainder goes to heap tables.",
+      "double": {
+        "default": 0.5,
+        "gte": 0,
+        "lte": 1
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.checkpoint_completion_ratio"
+      "group": "OrioleDB",
+      "name": "orioledb_checkpoint_completion_ratio",
+      "title": "orioledb.checkpoint_completion_ratio"
     },
     {
-      "name":  "orioledb_max_io_concurrency",
-      "description":  "Cap on concurrent OrioleDB I/O operations; 0 lets OrioleDB derive it from main_buffers.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4096"
+      "description": "Cap on concurrent OrioleDB I/O operations; 0 lets OrioleDB derive it from main_buffers.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4096"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.max_io_concurrency"
+      "name": "orioledb_max_io_concurrency",
+      "title": "orioledb.max_io_concurrency"
     },
     {
-      "name":  "orioledb_bgwriter_num_workers",
-      "description":  "Background writer processes flushing OrioleDB pages.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "0",
-        "lte":  "64"
+      "description": "Background writer processes flushing OrioleDB pages.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "1",
+        "gte": "0",
+        "lte": "64"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.bgwriter_num_workers"
+      "name": "orioledb_bgwriter_num_workers",
+      "title": "orioledb.bgwriter_num_workers"
     },
     {
-      "name":  "orioledb_recovery_pool_size",
-      "description":  "Worker processes replaying OrioleDB WAL during recovery.",
-      "int64":  {
-        "default":  "3",
-        "gte":  "1",
-        "lte":  "256"
+      "description": "Worker processes replaying OrioleDB WAL during recovery.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "3",
+        "gte": "1",
+        "lte": "256"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.recovery_pool_size"
+      "name": "orioledb_recovery_pool_size",
+      "title": "orioledb.recovery_pool_size"
     },
     {
-      "name":  "orioledb_recovery_idx_pool_size",
-      "description":  "Workers building indexes in parallel during recovery.",
-      "int64":  {
-        "default":  "3",
-        "gte":  "1",
-        "lte":  "256"
+      "description": "Workers building indexes in parallel during recovery.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "3",
+        "gte": "1",
+        "lte": "256"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.recovery_idx_pool_size"
+      "name": "orioledb_recovery_idx_pool_size",
+      "title": "orioledb.recovery_idx_pool_size"
     },
     {
-      "name":  "orioledb_recovery_queue_size",
-      "description":  "Shared memory for the message queues between recovery workers.",
-      "int64":  {
-        "default":  "8",
-        "gte":  "1",
-        "lte":  "1048576"
+      "description": "Shared memory for the message queues between recovery workers.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "8",
+        "gte": "1",
+        "lte": "1048576"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.recovery_queue_size"
+      "name": "orioledb_recovery_queue_size",
+      "title": "orioledb.recovery_queue_size",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_default_compress",
-      "description":  "Default compression level for new OrioleDB tables; -1 disables compression.",
-      "int64":  {
-        "default":  "-1",
-        "gte":  "-1",
-        "lte":  "22"
+      "description": "Default compression level for new OrioleDB tables; -1 disables compression.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "-1",
+        "gte": "-1",
+        "lte": "22"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.default_compress"
+      "name": "orioledb_default_compress",
+      "title": "orioledb.default_compress"
     },
     {
-      "name":  "orioledb_serializable",
-      "description":  "How OrioleDB answers a request for SERIALIZABLE isolation: table_lock takes a coarse ExclusiveLock per relation, error rejects the transaction, repeatable_read silently downgrades it.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "table_lock"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "table_lock"
-            },
-            "label":  "table_lock"
+            "label": "table_lock",
+            "value": {
+              "stringValue": "table_lock"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "error"
-            },
-            "label":  "error"
+            "label": "error",
+            "value": {
+              "stringValue": "error"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "repeatable_read"
-            },
-            "label":  "repeatable_read"
+            "label": "repeatable_read",
+            "value": {
+              "stringValue": "repeatable_read"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "table_lock"
-        }
+        ]
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.serializable"
+      "description": "How OrioleDB answers a request for SERIALIZABLE isolation: table_lock takes a coarse ExclusiveLock per relation, error rejects the transaction, repeatable_read silently downgrades it.",
+      "group": "OrioleDB",
+      "name": "orioledb_serializable",
+      "title": "orioledb.serializable"
     },
     {
-      "name":  "orioledb_use_mmap",
-      "description":  "Access the raw block device through mmap instead of read/write; only with device_filename.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.use_mmap"
+      "description": "Access the raw block device through mmap instead of read/write; only with device_filename.",
+      "group": "OrioleDB",
+      "name": "orioledb_use_mmap",
+      "title": "orioledb.use_mmap"
     },
     {
-      "name":  "orioledb_device_length",
-      "description":  "Usable length of the raw block device; only meaningful with device_filename, and 0 (the upstream default) means no device.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "1073741824"
+      "description": "Usable length of the raw block device; only meaningful with device_filename, and 0 (the upstream default) means no device.",
+      "group": "OrioleDB",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "1073741824"
       },
-      "group":  "OrioleDB",
-      "unit":  "MB",
-      "title":  "orioledb.device_length"
+      "name": "orioledb_device_length",
+      "title": "orioledb.device_length",
+      "unit": "MB"
     },
     {
-      "name":  "orioledb_enable_rewind",
-      "description":  "Experimental undo-based rewind: keeps committed transactions rewindable.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.enable_rewind"
+      "description": "Experimental undo-based rewind: keeps committed transactions rewindable.",
+      "group": "OrioleDB",
+      "name": "orioledb_enable_rewind",
+      "title": "orioledb.enable_rewind"
     },
     {
-      "name":  "orioledb_enable_stopevents",
-      "description":  "Debug-only stop events used by the OrioleDB test suite; costs throughput.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.enable_stopevents"
+      "description": "Debug-only stop events used by the OrioleDB test suite; costs throughput.",
+      "group": "OrioleDB",
+      "name": "orioledb_enable_stopevents",
+      "title": "orioledb.enable_stopevents"
     },
     {
-      "name":  "orioledb_debug_disable_bgwriter",
-      "description":  "Debug-only: never start the OrioleDB background writer.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
+        ]
+      },
+      "description": "Debug-only: never start the OrioleDB background writer.",
+      "group": "OrioleDB",
+      "name": "orioledb_debug_disable_bgwriter",
+      "title": "orioledb.debug_disable_bgwriter"
+    },
+    {
+      "description": "Raw block device OrioleDB stores data on instead of the filesystem. Unset means normal files.",
+      "group": "OrioleDB",
+      "name": "orioledb_device_filename",
+      "nullable": true,
+      "string": {
+        "maxLen": "512",
+        "minLen": "1"
+      },
+      "title": "orioledb.device_filename"
+    },
+    {
+      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "valueField": {
+          "name": "value",
+          "string": {}
         }
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.debug_disable_bgwriter"
+      "name": "custom",
+      "title": "Extra settings"
     },
     {
-      "name":  "orioledb_device_filename",
-      "description":  "Raw block device OrioleDB stores data on instead of the filesystem. Unset means normal files.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "512"
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "OrioleDB",
-      "title":  "orioledb.device_filename"
-    },
-    {
-      "name":  "custom",
-      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map":  {
-        "valueField":  {
-          "name":  "value",
-          "string":  {}
-        }
-      },
-      "group":  "Custom",
-      "title":  "Extra settings"
-    },
-    {
-      "name":  "custom_rendered",
-      "description":  "The `custom` map joined into config lines; the template prints it at the end of the file.",
-      "computed":  {
-        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Custom",
-      "title":  "Rendered extra settings"
+      "description": "The `custom` map joined into config lines; the template prints it at the end of the file.",
+      "group": "Custom",
+      "name": "custom_rendered",
+      "title": "Rendered extra settings"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "orioledb.postgresql.conf",
+    "namespace": "cfg",
+    "version": "v16.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id":  "custom-keys"
+      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "id": "custom-keys",
+      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$"
     },
     {
-      "expr":  "int(root.min_wal_size) <= int(root.max_wal_size)",
-      "message":  "min_wal_size must not exceed max_wal_size",
-      "id":  "wal-size-order"
+      "expr": "int(root.min_wal_size) \u003c= int(root.max_wal_size)",
+      "id": "wal-size-order",
+      "message": "min_wal_size must not exceed max_wal_size"
     },
     {
-      "expr":  "int(root.superuser_reserved_connections) < int(root.max_connections)",
-      "message":  "superuser_reserved_connections must be below max_connections",
-      "id":  "superuser-slots"
+      "expr": "int(root.superuser_reserved_connections) \u003c int(root.max_connections)",
+      "id": "superuser-slots",
+      "message": "superuser_reserved_connections must be below max_connections"
     },
     {
-      "expr":  "int(root.max_parallel_workers) <= int(root.max_worker_processes)",
-      "message":  "max_parallel_workers must not exceed max_worker_processes",
-      "id":  "parallel-workers"
+      "expr": "int(root.max_parallel_workers) \u003c= int(root.max_worker_processes)",
+      "id": "parallel-workers",
+      "message": "max_parallel_workers must not exceed max_worker_processes"
     },
     {
-      "expr":  "int(root.max_parallel_workers_per_gather) <= int(root.max_parallel_workers)",
-      "message":  "max_parallel_workers_per_gather must not exceed max_parallel_workers",
-      "id":  "parallel-per-gather"
+      "expr": "int(root.max_parallel_workers_per_gather) \u003c= int(root.max_parallel_workers)",
+      "id": "parallel-per-gather",
+      "message": "max_parallel_workers_per_gather must not exceed max_parallel_workers"
     },
     {
-      "expr":  "root.wal_level != \"minimal\" || int(root.max_wal_senders) == 0",
-      "message":  "wal_level = minimal requires max_wal_senders = 0",
-      "id":  "minimal-wal-no-senders"
+      "expr": "root.wal_level != \"minimal\" || int(root.max_wal_senders) == 0",
+      "id": "minimal-wal-no-senders",
+      "message": "wal_level = minimal requires max_wal_senders = 0"
     },
     {
-      "expr":  "(\"extensions\" in root) && (\"orioledb\" in root.extensions)",
-      "message":  "shared_preload_libraries must include orioledb",
-      "id":  "orioledb-preloaded"
+      "expr": "(\"extensions\" in root) \u0026\u0026 (\"orioledb\" in root.extensions)",
+      "id": "orioledb-preloaded",
+      "message": "shared_preload_libraries must include orioledb"
     },
     {
-      "expr":  "!(\"extensions\" in root) || !(\"pg_stat_statements\" in root.extensions) || root.extensions.filter(x, x == \"orioledb\" || x == \"pg_stat_statements\")[0] == \"pg_stat_statements\"",
-      "message":  "pg_stat_statements must precede orioledb in preloaded libraries",
-      "id":  "orioledb-statements-order"
+      "expr": "!(\"extensions\" in root) || !(\"pg_stat_statements\" in root.extensions) || root.extensions.filter(x, x == \"orioledb\" || x == \"pg_stat_statements\")[0] == \"pg_stat_statements\"",
+      "id": "orioledb-statements-order",
+      "message": "pg_stat_statements must precede orioledb in preloaded libraries"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# postgresql.conf for PostgreSQL 16 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@16 schema.\n\n# --- Memory ---\nshared_buffers = {{{values.shared_buffers}}}MB\nhuge_pages = {{{values.huge_pages}}}\ntemp_buffers = {{{values.temp_buffers}}}MB\nwork_mem = {{{values.work_mem}}}MB\nhash_mem_multiplier = {{{values.hash_mem_multiplier}}}\nmaintenance_work_mem = {{{values.maintenance_work_mem}}}MB\neffective_cache_size = {{{values.effective_cache_size}}}MB\n\n# --- Write-ahead log ---\nwal_level = {{{values.wal_level}}}\nmax_wal_size = {{{values.max_wal_size}}}MB\nmin_wal_size = {{{values.min_wal_size}}}MB\ncheckpoint_timeout = {{{values.checkpoint_timeout}}}s\ncheckpoint_completion_target = {{{values.checkpoint_completion_target}}}\nwal_compression = {{{values.wal_compression}}}\nsynchronous_commit = {{{values.synchronous_commit}}}\nwal_buffers = {{{values.wal_buffers}}}\nfsync = {{{values.fsync}}}\nfull_page_writes = {{{values.full_page_writes}}}\nwal_writer_delay = {{{values.wal_writer_delay}}}ms\n\n# --- Replication ---\nmax_wal_senders = {{{values.max_wal_senders}}}\nmax_replication_slots = {{{values.max_replication_slots}}}\nhot_standby = {{{values.hot_standby}}}\nhot_standby_feedback = {{{values.hot_standby_feedback}}}\nwal_keep_size = {{{values.wal_keep_size}}}MB\n{{#values.synchronous_standby_names}}synchronous_standby_names = '{{{.}}}'\n{{/values.synchronous_standby_names}}\n\n# --- Planner ---\nseq_page_cost = {{{values.seq_page_cost}}}\nrandom_page_cost = {{{values.random_page_cost}}}\neffective_io_concurrency = {{{values.effective_io_concurrency}}}\njit = {{{values.jit}}}\ndefault_statistics_target = {{{values.default_statistics_target}}}\n\n# --- Autovacuum ---\nautovacuum = {{{values.autovacuum}}}\nautovacuum_max_workers = {{{values.autovacuum_max_workers}}}\nautovacuum_naptime = {{{values.autovacuum_naptime}}}s\nautovacuum_vacuum_threshold = {{{values.autovacuum_vacuum_threshold}}}\nautovacuum_vacuum_insert_threshold = {{{values.autovacuum_vacuum_insert_threshold}}}\nautovacuum_analyze_threshold = {{{values.autovacuum_analyze_threshold}}}\nautovacuum_vacuum_scale_factor = {{{values.autovacuum_vacuum_scale_factor}}}\nautovacuum_vacuum_insert_scale_factor = {{{values.autovacuum_vacuum_insert_scale_factor}}}\nautovacuum_analyze_scale_factor = {{{values.autovacuum_analyze_scale_factor}}}\nautovacuum_vacuum_cost_delay = {{{values.autovacuum_vacuum_cost_delay}}}ms\nautovacuum_vacuum_cost_limit = {{{values.autovacuum_vacuum_cost_limit}}}\nvacuum_cost_delay = {{{values.vacuum_cost_delay}}}ms\nvacuum_cost_limit = {{{values.vacuum_cost_limit}}}\nvacuum_cost_page_hit = {{{values.vacuum_cost_page_hit}}}\nvacuum_cost_page_miss = {{{values.vacuum_cost_page_miss}}}\nvacuum_cost_page_dirty = {{{values.vacuum_cost_page_dirty}}}\n\n# --- Connections ---\nlisten_addresses = '{{{values.listen_addresses}}}'\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nsuperuser_reserved_connections = {{{values.superuser_reserved_connections}}}\nreserved_connections = {{{values.reserved_connections}}}\nssl = {{{values.ssl}}}\ntcp_keepalives_idle = {{{values.tcp_keepalives_idle}}}s\ntcp_keepalives_interval = {{{values.tcp_keepalives_interval}}}s\ntcp_keepalives_count = {{{values.tcp_keepalives_count}}}\n\n# --- Locks and parallelism ---\nmax_worker_processes = {{{values.max_worker_processes}}}\nmax_parallel_workers = {{{values.max_parallel_workers}}}\nmax_parallel_workers_per_gather = {{{values.max_parallel_workers_per_gather}}}\nmax_parallel_maintenance_workers = {{{values.max_parallel_maintenance_workers}}}\nmax_locks_per_transaction = {{{values.max_locks_per_transaction}}}\ndeadlock_timeout = {{{values.deadlock_timeout}}}ms\nlock_timeout = {{{values.lock_timeout}}}ms\nstatement_timeout = {{{values.statement_timeout}}}ms\nidle_in_transaction_session_timeout = {{{values.idle_in_transaction_session_timeout}}}ms\n\n# --- Logging ---\nlogging_collector = {{{values.logging_collector}}}\nlog_destination = '{{{values.log_destination}}}'\nlog_min_duration_statement = {{{values.log_min_duration_statement}}}\nlog_checkpoints = {{{values.log_checkpoints}}}\nlog_connections = {{{values.log_connections}}}\nlog_disconnections = {{{values.log_disconnections}}}\nlog_lock_waits = {{{values.log_lock_waits}}}\nlog_temp_files = {{{values.log_temp_files}}}\nlog_autovacuum_min_duration = {{{values.log_autovacuum_min_duration}}}\nlog_line_prefix = '{{{values.log_line_prefix}}}'\nlog_statement = {{{values.log_statement}}}\n\n# --- Extensions ---\n{{#values.shared_preload_libraries}}shared_preload_libraries = '{{{.}}}'\n{{/values.shared_preload_libraries}}\n{{#values.pg_stat_statements_rendered}}{{{values.pg_stat_statements_rendered}}}\n{{/values.pg_stat_statements_rendered}}\n\n# --- Locale ---\ntimezone = '{{{values.timezone}}}'\nlc_messages = '{{{values.lc_messages}}}'\ndefault_text_search_config = '{{{values.default_text_search_config}}}'\n\n# --- OrioleDB ---\norioledb.main_buffers = {{{values.orioledb_main_buffers}}}MB\n{{#values.orioledb_undo_buffers}}orioledb.undo_buffers = {{{.}}}MB\n{{/values.orioledb_undo_buffers}}\norioledb.free_tree_buffers = {{{values.orioledb_free_tree_buffers}}}MB\norioledb.catalog_buffers = {{{values.orioledb_catalog_buffers}}}MB\norioledb.temp_buffers = {{{values.orioledb_temp_buffers}}}MB\norioledb.xid_buffers = {{{values.orioledb_xid_buffers}}}MB\norioledb.checkpoint_completion_ratio = {{{values.orioledb_checkpoint_completion_ratio}}}\norioledb.max_io_concurrency = {{{values.orioledb_max_io_concurrency}}}\norioledb.bgwriter_num_workers = {{{values.orioledb_bgwriter_num_workers}}}\norioledb.recovery_pool_size = {{{values.orioledb_recovery_pool_size}}}\norioledb.recovery_idx_pool_size = {{{values.orioledb_recovery_idx_pool_size}}}\norioledb.recovery_queue_size = {{{values.orioledb_recovery_queue_size}}}MB\norioledb.default_compress = {{{values.orioledb_default_compress}}}\norioledb.serializable = {{{values.orioledb_serializable}}}\norioledb.use_mmap = {{{values.orioledb_use_mmap}}}\norioledb.device_length = {{{values.orioledb_device_length}}}MB\norioledb.enable_rewind = {{{values.orioledb_enable_rewind}}}\norioledb.enable_stopevents = {{{values.orioledb_enable_stopevents}}}\norioledb.debug_disable_bgwriter = {{{values.orioledb_debug_disable_bgwriter}}}\n{{#values.orioledb_device_filename}}orioledb.device_filename = '{{{.}}}'\n{{/values.orioledb_device_filename}}\n{{#values.custom_rendered}}\n# --- custom ---\n{{{values.custom_rendered}}}\n{{/values.custom_rendered}}\n"
+  "strict": true,
+  "templates": {
+    "conf": "# postgresql.conf for PostgreSQL 16 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@16 schema.\n\n# --- Memory ---\nshared_buffers = {{{values.shared_buffers}}}MB\nhuge_pages = {{{values.huge_pages}}}\ntemp_buffers = {{{values.temp_buffers}}}MB\nwork_mem = {{{values.work_mem}}}MB\nhash_mem_multiplier = {{{values.hash_mem_multiplier}}}\nmaintenance_work_mem = {{{values.maintenance_work_mem}}}MB\neffective_cache_size = {{{values.effective_cache_size}}}MB\n\n# --- Write-ahead log ---\nwal_level = {{{values.wal_level}}}\nmax_wal_size = {{{values.max_wal_size}}}MB\nmin_wal_size = {{{values.min_wal_size}}}MB\ncheckpoint_timeout = {{{values.checkpoint_timeout}}}s\ncheckpoint_completion_target = {{{values.checkpoint_completion_target}}}\nwal_compression = {{{values.wal_compression}}}\nsynchronous_commit = {{{values.synchronous_commit}}}\nwal_buffers = {{{values.wal_buffers}}}\nfsync = {{{values.fsync}}}\nfull_page_writes = {{{values.full_page_writes}}}\nwal_writer_delay = {{{values.wal_writer_delay}}}ms\n\n# --- Replication ---\nmax_wal_senders = {{{values.max_wal_senders}}}\nmax_replication_slots = {{{values.max_replication_slots}}}\nhot_standby = {{{values.hot_standby}}}\nhot_standby_feedback = {{{values.hot_standby_feedback}}}\nwal_keep_size = {{{values.wal_keep_size}}}MB\n{{#values.synchronous_standby_names}}synchronous_standby_names = '{{{.}}}'\n{{/values.synchronous_standby_names}}\n\n# --- Planner ---\nseq_page_cost = {{{values.seq_page_cost}}}\nrandom_page_cost = {{{values.random_page_cost}}}\neffective_io_concurrency = {{{values.effective_io_concurrency}}}\njit = {{{values.jit}}}\ndefault_statistics_target = {{{values.default_statistics_target}}}\n\n# --- Autovacuum ---\nautovacuum = {{{values.autovacuum}}}\nautovacuum_max_workers = {{{values.autovacuum_max_workers}}}\nautovacuum_naptime = {{{values.autovacuum_naptime}}}s\nautovacuum_vacuum_threshold = {{{values.autovacuum_vacuum_threshold}}}\nautovacuum_vacuum_insert_threshold = {{{values.autovacuum_vacuum_insert_threshold}}}\nautovacuum_analyze_threshold = {{{values.autovacuum_analyze_threshold}}}\nautovacuum_vacuum_scale_factor = {{{values.autovacuum_vacuum_scale_factor}}}\nautovacuum_vacuum_insert_scale_factor = {{{values.autovacuum_vacuum_insert_scale_factor}}}\nautovacuum_analyze_scale_factor = {{{values.autovacuum_analyze_scale_factor}}}\nautovacuum_vacuum_cost_delay = {{{values.autovacuum_vacuum_cost_delay}}}ms\nautovacuum_vacuum_cost_limit = {{{values.autovacuum_vacuum_cost_limit}}}\nvacuum_cost_delay = {{{values.vacuum_cost_delay}}}ms\nvacuum_cost_limit = {{{values.vacuum_cost_limit}}}\nvacuum_cost_page_hit = {{{values.vacuum_cost_page_hit}}}\nvacuum_cost_page_miss = {{{values.vacuum_cost_page_miss}}}\nvacuum_cost_page_dirty = {{{values.vacuum_cost_page_dirty}}}\n\n# --- Connections ---\nlisten_addresses = '{{{values.listen_addresses}}}'\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nsuperuser_reserved_connections = {{{values.superuser_reserved_connections}}}\nreserved_connections = {{{values.reserved_connections}}}\nssl = {{{values.ssl}}}\ntcp_keepalives_idle = {{{values.tcp_keepalives_idle}}}s\ntcp_keepalives_interval = {{{values.tcp_keepalives_interval}}}s\ntcp_keepalives_count = {{{values.tcp_keepalives_count}}}\n\n# --- Locks and parallelism ---\nmax_worker_processes = {{{values.max_worker_processes}}}\nmax_parallel_workers = {{{values.max_parallel_workers}}}\nmax_parallel_workers_per_gather = {{{values.max_parallel_workers_per_gather}}}\nmax_parallel_maintenance_workers = {{{values.max_parallel_maintenance_workers}}}\nmax_locks_per_transaction = {{{values.max_locks_per_transaction}}}\ndeadlock_timeout = {{{values.deadlock_timeout}}}ms\nlock_timeout = {{{values.lock_timeout}}}ms\nstatement_timeout = {{{values.statement_timeout}}}ms\nidle_in_transaction_session_timeout = {{{values.idle_in_transaction_session_timeout}}}ms\n\n# --- Logging ---\nlogging_collector = {{{values.logging_collector}}}\nlog_destination = '{{{values.log_destination}}}'\nlog_min_duration_statement = {{{values.log_min_duration_statement}}}\nlog_checkpoints = {{{values.log_checkpoints}}}\nlog_connections = {{{values.log_connections}}}\nlog_disconnections = {{{values.log_disconnections}}}\nlog_lock_waits = {{{values.log_lock_waits}}}\nlog_temp_files = {{{values.log_temp_files}}}\nlog_autovacuum_min_duration = {{{values.log_autovacuum_min_duration}}}\nlog_line_prefix = '{{{values.log_line_prefix}}}'\nlog_statement = {{{values.log_statement}}}\n\n# --- Extensions ---\n{{#values.shared_preload_libraries}}shared_preload_libraries = '{{{.}}}'\n{{/values.shared_preload_libraries}}\n{{#values.pg_stat_statements_rendered}}{{{values.pg_stat_statements_rendered}}}\n{{/values.pg_stat_statements_rendered}}\n\n# --- Locale ---\ntimezone = '{{{values.timezone}}}'\nlc_messages = '{{{values.lc_messages}}}'\ndefault_text_search_config = '{{{values.default_text_search_config}}}'\n\n# --- OrioleDB ---\norioledb.main_buffers = {{{values.orioledb_main_buffers}}}MB\n{{#values.orioledb_undo_buffers}}orioledb.undo_buffers = {{{.}}}MB\n{{/values.orioledb_undo_buffers}}\norioledb.free_tree_buffers = {{{values.orioledb_free_tree_buffers}}}MB\norioledb.catalog_buffers = {{{values.orioledb_catalog_buffers}}}MB\norioledb.temp_buffers = {{{values.orioledb_temp_buffers}}}MB\norioledb.xid_buffers = {{{values.orioledb_xid_buffers}}}MB\norioledb.checkpoint_completion_ratio = {{{values.orioledb_checkpoint_completion_ratio}}}\norioledb.max_io_concurrency = {{{values.orioledb_max_io_concurrency}}}\norioledb.bgwriter_num_workers = {{{values.orioledb_bgwriter_num_workers}}}\norioledb.recovery_pool_size = {{{values.orioledb_recovery_pool_size}}}\norioledb.recovery_idx_pool_size = {{{values.orioledb_recovery_idx_pool_size}}}\norioledb.recovery_queue_size = {{{values.orioledb_recovery_queue_size}}}MB\norioledb.default_compress = {{{values.orioledb_default_compress}}}\norioledb.serializable = {{{values.orioledb_serializable}}}\norioledb.use_mmap = {{{values.orioledb_use_mmap}}}\norioledb.device_length = {{{values.orioledb_device_length}}}MB\norioledb.enable_rewind = {{{values.orioledb_enable_rewind}}}\norioledb.enable_stopevents = {{{values.orioledb_enable_stopevents}}}\norioledb.debug_disable_bgwriter = {{{values.orioledb_debug_disable_bgwriter}}}\n{{#values.orioledb_device_filename}}orioledb.device_filename = '{{{.}}}'\n{{/values.orioledb_device_filename}}\n{{#values.custom_rendered}}\n# --- custom ---\n{{{values.custom_rendered}}}\n{{/values.custom_rendered}}\n"
   }
 }

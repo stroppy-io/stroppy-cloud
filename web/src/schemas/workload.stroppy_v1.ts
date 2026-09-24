@@ -17,7 +17,7 @@ export interface WorkloadStroppy1SegmentWorkloadExecuteSql {
   script: "execute_sql";
   /** Inline SQL. SQL text to execute (sqlBody); may start with a `--= name` marker to name the query. */
   sql_body?: string | null;
-  /** SQL file. SQL file to execute (sqlFile): a file shipped in files. */
+  /** SQL file. SQL file to execute (sqlFile): a preset id shipped with stroppy; use sql_body for inline SQL. */
   sql_file?: string | null;
 }
 
@@ -37,7 +37,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpcbProcs {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files. */
+  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico. */
   sql_file?: string | null;
 }
 
@@ -52,7 +52,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpcbTx {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files. */
+  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico. */
   sql_file?: string | null;
 }
 
@@ -75,7 +75,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpccProcs {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files. */
+  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes. */
   sql_file?: string | null;
 }
 
@@ -98,7 +98,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpccTx {
   retry_attempts?: number | string;
   /** Transaction isolation. Isolation override (txIsolation); unset keeps the driver default. Picodata only supports none. */
   tx_isolation?: "read_uncommitted" | "read_committed" | "repeatable_read" | "serializable" | "db_default" | "conn" | "none" | null;
-  /** SQL file. Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files. */
+  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes. */
   sql_file?: string | null;
 }
 
@@ -121,9 +121,9 @@ export interface WorkloadStroppy1SegmentWorkloadTpcds {
   validate_force?: boolean;
   /** YDB store mode. YDB table store mode (ydbStoreMode); ignored by other drivers. */
   ydb_store_mode?: "column" | "row";
-  /** Schema file. Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files. */
+  /** Schema file. Schema SQL override (schemaFile): a preset id shipped with stroppy, like tpcds/schema.pico. */
   schema_file?: string | null;
-  /** SQL file. Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files. */
+  /** SQL file. Query SQL override (sqlFile): a preset id shipped with stroppy, like tpcds/pico. */
   sql_file?: string | null;
 }
 
@@ -138,7 +138,7 @@ export interface WorkloadStroppy1SegmentWorkloadTpchTx {
   pg_unlogged?: boolean;
   /** YDB store mode. YDB table store mode (ydbStoreMode); ignored by other drivers. */
   ydb_store_mode?: "column" | "row";
-  /** SQL file. Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files. */
+  /** SQL file. Dialect file override (sqlFile): a preset id shipped with stroppy, like tpch/pico. */
   sql_file?: string | null;
 }
 
@@ -154,18 +154,6 @@ export interface WorkloadStroppy1SegmentRun {
   iterations?: number | string | null;
   /** Query timeout. Per-statement deadline (queryTimeout); 0 disables it. */
   query_timeout?: string;
-}
-
-/** object  */
-export interface WorkloadStroppy1SegmentItem {
-  /** File name. Name the file gets in the segment workspace; reference it from sql_file/schema_file. */
-  name: string;
-  /** Kind. What the file is: a schema/DDL file, a config, or a data file. */
-  kind?: "sql" | "conf" | "data";
-  /** Content. Inline file body, at most 1 MiB. */
-  content?: string;
-  /** Reference. Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner. */
-  ref?: string;
 }
 
 /** object thresholds */
@@ -190,8 +178,6 @@ export interface WorkloadStroppy1Segment {
   no_steps?: Array<string>;
   /** Extra parameters. Typed stroppy flags this form does not model, by flag name without dashes (load-workers); values are parsed by stroppy. */
   extra_params?: Record<string, string>;
-  /** Files. Extra files (SQL dialects, schemas, data) shipped with the segment. */
-  files?: Array<WorkloadStroppy1SegmentItem>;
   /** Thresholds. Pass/fail bounds the pipeline applies to the segment summary. */
   thresholds?: WorkloadStroppy1SegmentThresholds;
   /** Random seed. Stroppy global.seed; zero uses Stroppy's random seed, a positive value makes generation reproducible. */

@@ -16,6 +16,7 @@ github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherex/schemapb/go v0.0.0-20260910140503-8839ac99233d h1:Y4UNSm0cH8BCXUVsyb9pYuUiJNWFWcdQAzVW41Sgcy0=
 github.com/gopherex/schemapb/go v0.0.0-20260910140503-8839ac99233d/go.mod h1:g9W8TC7ZZyPXKp+eQuPv612T2d0ZGs/Y+AIR2RA8KYw=
+github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3/go.mod h1:g9W8TC7ZZyPXKp+eQuPv612T2d0ZGs/Y+AIR2RA8KYw=
 github.com/gopherex/xlog v1.0.2 h1:vIhRdsx3BS1Ja36BUKNUw5cWE4+CWiw/5EWSpIHDHJ8=
 github.com/gopherex/xlog v1.0.2/go.mod h1:gEMTFKZe5HRXeQHsg1+P6Zsdd5P5b0lWDPdCqmlpjG4=
 github.com/graphene-ci/pipeline v0.2.5 h1:hNhqUU3WI7/mhQXttbc3E6T069/ZiOITftGtCrAf+qc=

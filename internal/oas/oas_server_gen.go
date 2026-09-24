@@ -929,14 +929,6 @@ type Handler interface {
 	//
 	// POST /api/v1/t/{slug}/runs/{id}:rerun
 	RerunRun(ctx context.Context, req OptLaunchOverrides, params RerunRunParams) (*Run, error)
-	// ResumeRun implements resumeRun operation.
-	//
-	// Resume from the failure point. When the stand is still alive (`stand_kept`) the new run adopts it
-	// and restarts the workload from the failed segment; otherwise degrades to `rerun` (`resumed:
-	// false`).
-	//
-	// POST /api/v1/t/{slug}/runs/{id}:rerun-resume
-	ResumeRun(ctx context.Context, req OptResumeRunReq, params ResumeRunParams) (*ResumeRunCreated, error)
 	// ResumeSchedule implements resumeSchedule operation.
 	//
 	// Resume.

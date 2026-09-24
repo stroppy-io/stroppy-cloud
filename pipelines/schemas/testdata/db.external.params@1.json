@@ -1,71 +1,59 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "external.params",
-    "version": "v1.0.0"
-  },
+  "coerce": true,
   "description": "An already-running database addressed by DSN; the stand provisions and deploys nothing.",
   "fields": [
     {
-      "name": "protocol",
-      "description": "Wire protocol stroppy speaks to this database.",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "pg"
-            },
-            "label": "PostgreSQL wire protocol"
-          },
-          {
-            "value": {
-              "stringValue": "mysql"
-            },
-            "label": "MySQL / MariaDB"
-          },
-          {
-            "value": {
-              "stringValue": "picodata"
-            },
-            "label": "Picodata (pgproto)"
-          },
-          {
-            "value": {
-              "stringValue": "ydb_grpc"
-            },
-            "label": "YDB (grpc://)"
-          },
-          {
-            "value": {
-              "stringValue": "ydb_grpcs"
-            },
-            "label": "YDB (grpcs://, TLS)"
-          },
-          {
-            "value": {
-              "stringValue": "cockroach"
-            },
-            "label": "CockroachDB"
-          }
-        ],
         "default": {
           "stringValue": "pg"
-        }
+        },
+        "options": [
+          {
+            "label": "PostgreSQL wire protocol",
+            "value": {
+              "stringValue": "pg"
+            }
+          },
+          {
+            "label": "MySQL / MariaDB",
+            "value": {
+              "stringValue": "mysql"
+            }
+          },
+          {
+            "label": "Picodata (pgproto)",
+            "value": {
+              "stringValue": "picodata"
+            }
+          },
+          {
+            "label": "YDB (grpc://)",
+            "value": {
+              "stringValue": "ydb_grpc"
+            }
+          },
+          {
+            "label": "YDB (grpcs://, TLS)",
+            "value": {
+              "stringValue": "ydb_grpcs"
+            }
+          },
+          {
+            "label": "CockroachDB",
+            "value": {
+              "stringValue": "cockroach"
+            }
+          }
+        ]
       },
+      "description": "Wire protocol stroppy speaks to this database.",
       "group": "Connection",
+      "name": "protocol",
+      "required": true,
       "title": "Protocol"
     },
     {
-      "name": "dsn",
       "description": "Full connection string including credentials; stored encrypted and never rendered into logs or artifacts.",
-      "required": true,
-      "string": {
-        "minLen": "3",
-        "maxLen": "4096"
-      },
-      "group": "Connection",
-      "title": "DSN",
       "examples": [
         {
           "stringValue": "postgres://user:pass@db.internal:5432/stroppy?sslmode=require"
@@ -74,46 +62,58 @@
           "stringValue": "grpcs://ydb.internal:2135/?database=/Root/stroppy"
         }
       ],
-      "secret": true
+      "group": "Connection",
+      "name": "dsn",
+      "required": true,
+      "secret": true,
+      "string": {
+        "maxLen": "4096",
+        "minLen": "3"
+      },
+      "title": "DSN"
     },
     {
-      "name": "tls_skip_verify",
-      "description": "Accept the server certificate without checking the chain or hostname; needed for self-signed stands, never for a shared endpoint.",
       "bool": {
         "default": false
       },
+      "description": "Accept the server certificate without checking the chain or hostname; needed for self-signed stands, never for a shared endpoint.",
       "group": "Connection",
+      "name": "tls_skip_verify",
       "title": "Skip TLS verification"
     },
     {
-      "name": "probe_query",
       "description": "Statement run once before the workload to prove the DSN works and the database answers.",
+      "group": "Health",
+      "name": "probe_query",
       "string": {
         "default": "SELECT 1",
-        "minLen": "1",
-        "maxLen": "1024"
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group": "Health",
       "title": "Probe query"
     },
     {
-      "name": "truncate_before_run",
-      "description": "Let the workload drop and recreate its own tables. Off by default: this database is not ours to wipe.",
       "bool": {
         "default": false
       },
+      "description": "Let the workload drop and recreate its own tables. Off by default: this database is not ours to wipe.",
       "group": "Health",
+      "name": "truncate_before_run",
       "title": "Clean before run"
     }
   ],
+  "id": {
+    "name": "external.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
   "rules": [
     {
       "expr": "root.protocol != \"ydb_grpcs\" || !root.tls_skip_verify",
-      "message": "grpcs exists to verify the endpoint; skipping verification makes it grpc with extra cost",
       "id": "grpcs-verify",
+      "message": "grpcs exists to verify the endpoint; skipping verification makes it grpc with extra cost",
       "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict": true
 }

@@ -1,526 +1,526 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "picodata.yaml",
-    "version":  "v25.0.0"
-  },
-  "description":  "Picodata 25.3 instance configuration (picodata.yaml).",
-  "fields":  [
+  "coerce": true,
+  "description": "Picodata 25.3 instance configuration (picodata.yaml).",
+  "fields": [
     {
-      "name":  "cluster_name",
-      "description":  "cluster.name — every instance of one cluster must agree on it (upstream default demo).",
-      "string":  {
-        "default":  "stroppy",
-        "pattern":  "^[A-Za-z0-9_-]{1,63}$"
+      "description": "cluster.name — every instance of one cluster must agree on it (upstream default demo).",
+      "group": "Cluster",
+      "name": "cluster_name",
+      "string": {
+        "default": "stroppy",
+        "pattern": "^[A-Za-z0-9_-]{1,63}$"
       },
-      "group":  "Cluster",
-      "title":  "Cluster name"
+      "title": "Cluster name"
     },
     {
-      "name":  "default_replication_factor",
-      "description":  "cluster.default_replication_factor — replicas per replicaset for tiers that do not set their own (upstream default 1).",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "32"
+      "description": "cluster.default_replication_factor — replicas per replicaset for tiers that do not set their own (upstream default 1).",
+      "group": "Cluster",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "32"
       },
-      "group":  "Cluster",
-      "title":  "Default replication factor"
+      "name": "default_replication_factor",
+      "title": "Default replication factor"
     },
     {
-      "name":  "default_bucket_count",
-      "description":  "cluster.default_bucket_count — sharding buckets per tier (upstream default 3000).",
-      "int64":  {
-        "default":  "3000",
-        "gte":  "1",
-        "lte":  "1000000"
+      "description": "cluster.default_bucket_count — sharding buckets per tier (upstream default 3000).",
+      "group": "Cluster",
+      "int64": {
+        "default": "3000",
+        "gte": "1",
+        "lte": "1000000"
       },
-      "group":  "Cluster",
-      "title":  "Default bucket count"
+      "name": "default_bucket_count",
+      "title": "Default bucket count"
     },
     {
-      "name":  "shredding",
-      "description":  "cluster.shredding — overwrite deleted data files instead of unlinking them. Costs write bandwidth.",
-      "bool":  {
-        "default":  false
+      "bool": {
+        "default": false
       },
-      "group":  "Cluster",
-      "title":  "Shredding"
+      "description": "cluster.shredding — overwrite deleted data files instead of unlinking them. Costs write bandwidth.",
+      "group": "Cluster",
+      "name": "shredding",
+      "title": "Shredding"
     },
     {
-      "name":  "tiers",
-      "description":  "cluster.tier map. Filled by the server from the picodata params (tiers[] of the database form).",
-      "list":  {
-        "items":  [
+      "description": "cluster.tier map. Filled by the server from the picodata params (tiers[] of the database form).",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "description":  "Tier key under cluster.tier. One tier must be named \"default\".",
-                    "required":  true,
-                    "string":  {
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "description": "Tier key under cluster.tier. One tier must be named \"default\".",
+                    "group": "Cluster",
+                    "name": "name",
+                    "required": true,
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "group":  "Cluster",
-                    "title":  "Tier name"
+                    "title": "Tier name"
                   },
                   {
-                    "name":  "replication_factor",
-                    "description":  "cluster.tier.<name>.replication_factor — instances per replicaset in this tier.",
-                    "int64":  {
-                      "default":  "1",
-                      "gte":  "1",
-                      "lte":  "32"
+                    "description": "cluster.tier.\u003cname\u003e.replication_factor — instances per replicaset in this tier.",
+                    "group": "Cluster",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "32"
                     },
-                    "group":  "Cluster",
-                    "title":  "Replication factor"
+                    "name": "replication_factor",
+                    "title": "Replication factor"
                   },
                   {
-                    "name":  "can_vote",
-                    "description":  "cluster.tier.<name>.can_vote — whether instances of this tier take part in raft voting.",
-                    "bool":  {
-                      "default":  true
+                    "bool": {
+                      "default": true
                     },
-                    "group":  "Cluster",
-                    "title":  "Can vote"
+                    "description": "cluster.tier.\u003cname\u003e.can_vote — whether instances of this tier take part in raft voting.",
+                    "group": "Cluster",
+                    "name": "can_vote",
+                    "title": "Can vote"
                   },
                   {
-                    "name":  "bucket_count",
-                    "description":  "cluster.tier.<name>.bucket_count — sharding buckets of this tier.",
-                    "int64":  {
-                      "default":  "3000",
-                      "gte":  "1",
-                      "lte":  "1000000"
+                    "description": "cluster.tier.\u003cname\u003e.bucket_count — sharding buckets of this tier.",
+                    "group": "Cluster",
+                    "int64": {
+                      "default": "3000",
+                      "gte": "1",
+                      "lte": "1000000"
                     },
-                    "group":  "Cluster",
-                    "title":  "Bucket count"
+                    "name": "bucket_count",
+                    "title": "Bucket count"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "16"
+        "maxItems": "16"
       },
-      "group":  "Cluster",
-      "title":  "Tiers"
+      "name": "tiers",
+      "title": "Tiers"
     },
     {
-      "name":  "instance_name",
-      "description":  "instance.name. Filled by the server from topology; unset lets picodata derive tier_replicaset_instance.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[A-Za-z0-9_-]{1,63}$"
+      "description": "instance.name. Filled by the server from topology; unset lets picodata derive tier_replicaset_instance.",
+      "group": "Cluster",
+      "name": "instance_name",
+      "nullable": true,
+      "string": {
+        "pattern": "^[A-Za-z0-9_-]{1,63}$"
       },
-      "group":  "Cluster",
-      "title":  "Instance name"
+      "title": "Instance name"
     },
     {
-      "name":  "replicaset_name",
-      "description":  "instance.replicaset_name. Filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[A-Za-z0-9_-]{1,63}$"
+      "description": "instance.replicaset_name. Filled by the server from topology.",
+      "group": "Cluster",
+      "name": "replicaset_name",
+      "nullable": true,
+      "string": {
+        "pattern": "^[A-Za-z0-9_-]{1,63}$"
       },
-      "group":  "Cluster",
-      "title":  "Replicaset name"
+      "title": "Replicaset name"
     },
     {
-      "name":  "tier",
-      "description":  "instance.tier — which tier this instance joins. Filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+      "description": "instance.tier — which tier this instance joins. Filled by the server from topology.",
+      "group": "Cluster",
+      "name": "tier",
+      "nullable": true,
+      "string": {
+        "pattern": "^[a-z][a-z0-9_-]{0,31}$"
       },
-      "group":  "Cluster",
-      "title":  "Tier"
+      "title": "Tier"
     },
     {
-      "name":  "peer",
-      "description":  "instance.peer — \"host:port\" of the instances used to join the cluster. Filled by the server from topology.",
-      "list":  {
-        "items":  [
+      "description": "instance.peer — \"host:port\" of the instances used to join the cluster. Filled by the server from topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "string":  {
-              "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+            "string": {
+              "pattern": "^[^\\s]+:[0-9]{1,5}$"
             }
           }
         ],
-        "maxItems":  "64",
-        "unique":  true
+        "maxItems": "64",
+        "unique": true
       },
-      "group":  "Cluster",
-      "title":  "Peers"
+      "name": "peer",
+      "title": "Peers"
     },
     {
-      "name":  "failure_domain",
-      "description":  "instance.failure_domain — arbitrary key/value describing where the instance runs; picodata spreads a replicaset across distinct values. Filled by the server from topology.",
-      "map":  {
-        "maxEntries":  "8",
-        "valueField":  {
-          "name":  "value",
-          "string":  {
-            "pattern":  "^[A-Za-z0-9._-]{1,63}$"
+      "description": "instance.failure_domain — arbitrary key/value describing where the instance runs; picodata spreads a replicaset across distinct values. Filled by the server from topology.",
+      "group": "Cluster",
+      "map": {
+        "maxEntries": "8",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "pattern": "^[A-Za-z0-9._-]{1,63}$"
           }
         }
       },
-      "group":  "Cluster",
-      "title":  "Failure domain"
+      "name": "failure_domain",
+      "title": "Failure domain"
     },
     {
-      "name":  "instance_dir",
-      "description":  "instance.instance_dir — snapshots, xlogs and the TLS material live here; point it at the data disk.",
-      "string":  {
-        "default":  "/var/lib/picodata",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
+      "description": "instance.instance_dir — snapshots, xlogs and the TLS material live here; point it at the data disk.",
+      "group": "Instance",
+      "name": "instance_dir",
+      "string": {
+        "default": "/var/lib/picodata",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
       },
-      "group":  "Instance",
-      "title":  "Instance directory"
+      "title": "Instance directory"
     },
     {
-      "name":  "iproto_listen",
-      "description":  "instance.iproto_listen — the binary protocol socket other instances connect to.",
-      "string":  {
-        "default":  "0.0.0.0:3301",
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "instance.iproto_listen — the binary protocol socket other instances connect to.",
+      "group": "Network",
+      "name": "iproto_listen",
+      "string": {
+        "default": "0.0.0.0:3301",
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Network",
-      "title":  "iproto listen"
+      "title": "iproto listen"
     },
     {
-      "name":  "iproto_advertise",
-      "description":  "instance.iproto_advertise — the address other instances should use. Filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "instance.iproto_advertise — the address other instances should use. Filled by the server from topology.",
+      "group": "Cluster",
+      "name": "iproto_advertise",
+      "nullable": true,
+      "string": {
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Cluster",
-      "title":  "iproto advertise"
+      "title": "iproto advertise"
     },
     {
-      "name":  "http_listen",
-      "description":  "instance.http_listen — the HTTP endpoint (webui, metrics). Empty disables it.",
-      "string":  {
-        "default":  "0.0.0.0:8081",
-        "maxLen":  "128"
+      "description": "instance.http_listen — the HTTP endpoint (webui, metrics). Empty disables it.",
+      "group": "Network",
+      "name": "http_listen",
+      "string": {
+        "default": "0.0.0.0:8081",
+        "maxLen": "128"
       },
-      "group":  "Network",
-      "title":  "HTTP listen"
+      "title": "HTTP listen"
     },
     {
-      "name":  "pg_listen",
-      "description":  "instance.pg.listen — the PostgreSQL wire-protocol port stroppy connects to.",
-      "string":  {
-        "default":  "0.0.0.0:4327",
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "instance.pg.listen — the PostgreSQL wire-protocol port stroppy connects to.",
+      "group": "Network",
+      "name": "pg_listen",
+      "string": {
+        "default": "0.0.0.0:4327",
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Network",
-      "title":  "PostgreSQL listen"
+      "title": "PostgreSQL listen"
     },
     {
-      "name":  "pg_advertise",
-      "description":  "instance.pg.advertise. Filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "instance.pg.advertise. Filled by the server from topology.",
+      "group": "Cluster",
+      "name": "pg_advertise",
+      "nullable": true,
+      "string": {
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Cluster",
-      "title":  "PostgreSQL advertise"
+      "title": "PostgreSQL advertise"
     },
     {
-      "name":  "pg_ssl",
-      "description":  "instance.pg.ssl — requires server.crt/server.key inside instance_dir.",
-      "bool":  {
-        "default":  false
+      "bool": {
+        "default": false
       },
-      "group":  "Network",
-      "title":  "PostgreSQL SSL"
+      "description": "instance.pg.ssl — requires server.crt/server.key inside instance_dir.",
+      "group": "Network",
+      "name": "pg_ssl",
+      "title": "PostgreSQL SSL"
     },
     {
-      "name":  "admin_socket",
-      "description":  "instance.admin_socket — the unix socket `picodata admin` attaches to.",
-      "string":  {
-        "default":  "/var/run/picodata/admin.sock",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
+      "description": "instance.admin_socket — the unix socket `picodata admin` attaches to.",
+      "group": "Instance",
+      "name": "admin_socket",
+      "string": {
+        "default": "/var/run/picodata/admin.sock",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
       },
-      "group":  "Instance",
-      "title":  "Admin socket"
+      "title": "Admin socket"
     },
     {
-      "name":  "boot_timeout",
-      "description":  "instance.boot_timeout — seconds an instance waits to join the cluster before giving up (upstream default 7200).",
-      "int64":  {
-        "default":  "7200",
-        "gte":  "1",
-        "lte":  "86400"
+      "description": "instance.boot_timeout — seconds an instance waits to join the cluster before giving up (upstream default 7200).",
+      "group": "Instance",
+      "int64": {
+        "default": "7200",
+        "gte": "1",
+        "lte": "86400"
       },
-      "group":  "Instance",
-      "unit":  "s",
-      "title":  "Boot timeout"
+      "name": "boot_timeout",
+      "title": "Boot timeout",
+      "unit": "s"
     },
     {
-      "name":  "audit",
-      "description":  "instance.audit — \"file:<path>\", \"pipe:<command>\" or \"syslog:\". Empty disables the audit log.",
-      "string":  {
-        "default":  "",
-        "pattern":  "^$|^(file:|pipe:|syslog:).*$"
+      "description": "instance.audit — \"file:\u003cpath\u003e\", \"pipe:\u003ccommand\u003e\" or \"syslog:\". Empty disables the audit log.",
+      "group": "Instance",
+      "name": "audit",
+      "string": {
+        "default": "",
+        "pattern": "^$|^(file:|pipe:|syslog:).*$"
       },
-      "group":  "Instance",
-      "title":  "Audit destination"
+      "title": "Audit destination"
     },
     {
-      "name":  "memtx_memory",
-      "description":  "instance.memtx.memory — the in-memory storage arena; minimum 32M. The product default is 2G (upstream 64M is far too small for a benchmark).",
-      "string":  {
-        "default":  "2G",
-        "pattern":  "^[0-9]+[KMGT]?$"
+      "description": "instance.memtx.memory — the in-memory storage arena; minimum 32M. The product default is 2G (upstream 64M is far too small for a benchmark).",
+      "group": "Storage",
+      "name": "memtx_memory",
+      "string": {
+        "default": "2G",
+        "pattern": "^[0-9]+[KMGT]?$"
       },
-      "group":  "Storage",
-      "title":  "memtx memory"
+      "title": "memtx memory"
     },
     {
-      "name":  "memtx_max_tuple_size",
-      "description":  "instance.memtx.max_tuple_size — largest single tuple (upstream default 1M).",
-      "string":  {
-        "default":  "1M",
-        "pattern":  "^[0-9]+[KMGT]?$"
+      "description": "instance.memtx.max_tuple_size — largest single tuple (upstream default 1M).",
+      "group": "Storage",
+      "name": "memtx_max_tuple_size",
+      "string": {
+        "default": "1M",
+        "pattern": "^[0-9]+[KMGT]?$"
       },
-      "group":  "Storage",
-      "title":  "memtx max tuple size"
+      "title": "memtx max tuple size"
     },
     {
-      "name":  "vinyl_memory",
-      "description":  "instance.vinyl.memory — write buffer of the on-disk engine (upstream default 128M).",
-      "string":  {
-        "default":  "128M",
-        "pattern":  "^[0-9]+[KMGT]?$"
+      "description": "instance.vinyl.memory — write buffer of the on-disk engine (upstream default 128M).",
+      "group": "Storage",
+      "name": "vinyl_memory",
+      "string": {
+        "default": "128M",
+        "pattern": "^[0-9]+[KMGT]?$"
       },
-      "group":  "Storage",
-      "title":  "vinyl memory"
+      "title": "vinyl memory"
     },
     {
-      "name":  "vinyl_cache",
-      "description":  "instance.vinyl.cache — read cache of the on-disk engine (upstream default 128M).",
-      "string":  {
-        "default":  "128M",
-        "pattern":  "^[0-9]+[KMGT]?$"
+      "description": "instance.vinyl.cache — read cache of the on-disk engine (upstream default 128M).",
+      "group": "Storage",
+      "name": "vinyl_cache",
+      "string": {
+        "default": "128M",
+        "pattern": "^[0-9]+[KMGT]?$"
       },
-      "group":  "Storage",
-      "title":  "vinyl cache"
+      "title": "vinyl cache"
     },
     {
-      "name":  "vinyl_read_threads",
-      "description":  "instance.vinyl.read_threads (upstream default 1).",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "64"
+      "description": "instance.vinyl.read_threads (upstream default 1).",
+      "group": "Storage",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "64"
       },
-      "group":  "Storage",
-      "title":  "vinyl read threads"
+      "name": "vinyl_read_threads",
+      "title": "vinyl read threads"
     },
     {
-      "name":  "vinyl_write_threads",
-      "description":  "instance.vinyl.write_threads (upstream default 4).",
-      "int64":  {
-        "default":  "4",
-        "gte":  "2",
-        "lte":  "64"
+      "description": "instance.vinyl.write_threads (upstream default 4).",
+      "group": "Storage",
+      "int64": {
+        "default": "4",
+        "gte": "2",
+        "lte": "64"
       },
-      "group":  "Storage",
-      "title":  "vinyl write threads"
+      "name": "vinyl_write_threads",
+      "title": "vinyl write threads"
     },
     {
-      "name":  "log_level",
-      "description":  "instance.log.level.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "info"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "fatal"
-            },
-            "label":  "fatal"
+            "label": "fatal",
+            "value": {
+              "stringValue": "fatal"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "system"
-            },
-            "label":  "system"
+            "label": "system",
+            "value": {
+              "stringValue": "system"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "error"
-            },
-            "label":  "error"
+            "label": "error",
+            "value": {
+              "stringValue": "error"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "crit"
-            },
-            "label":  "crit"
+            "label": "crit",
+            "value": {
+              "stringValue": "crit"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "warn"
-            },
-            "label":  "warn"
+            "label": "warn",
+            "value": {
+              "stringValue": "warn"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "info"
-            },
-            "label":  "info"
+            "label": "info",
+            "value": {
+              "stringValue": "info"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "verbose"
-            },
-            "label":  "verbose"
+            "label": "verbose",
+            "value": {
+              "stringValue": "verbose"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "debug"
-            },
-            "label":  "debug"
+            "label": "debug",
+            "value": {
+              "stringValue": "debug"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "info"
+        ]
+      },
+      "description": "instance.log.level.",
+      "group": "Logging",
+      "name": "log_level",
+      "title": "Log level"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "plain"
+        },
+        "options": [
+          {
+            "label": "plain",
+            "value": {
+              "stringValue": "plain"
+            }
+          },
+          {
+            "label": "json",
+            "value": {
+              "stringValue": "json"
+            }
+          }
+        ]
+      },
+      "description": "instance.log.format.",
+      "group": "Logging",
+      "name": "log_format",
+      "title": "Log format"
+    },
+    {
+      "description": "instance.log.destination — \"file:\u003cpath\u003e\", \"pipe:\u003ccommand\u003e\" or \"syslog:\". Empty logs to stderr, which is what the agent collects.",
+      "group": "Logging",
+      "name": "log_destination",
+      "string": {
+        "default": "",
+        "pattern": "^$|^(file:|pipe:|syslog:).*$"
+      },
+      "title": "Log destination"
+    },
+    {
+      "description": "Further instance.* keys, emitted verbatim at the end of the instance section as `key: value`.",
+      "group": "Custom",
+      "map": {
+        "maxEntries": "32",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "maxLen": "256"
+          }
         }
       },
-      "group":  "Logging",
-      "title":  "Log level"
-    },
-    {
-      "name":  "log_format",
-      "description":  "instance.log.format.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "plain"
-            },
-            "label":  "plain"
-          },
-          {
-            "value":  {
-              "stringValue":  "json"
-            },
-            "label":  "json"
-          }
-        ],
-        "default":  {
-          "stringValue":  "plain"
-        }
-      },
-      "group":  "Logging",
-      "title":  "Log format"
-    },
-    {
-      "name":  "log_destination",
-      "description":  "instance.log.destination — \"file:<path>\", \"pipe:<command>\" or \"syslog:\". Empty logs to stderr, which is what the agent collects.",
-      "string":  {
-        "default":  "",
-        "pattern":  "^$|^(file:|pipe:|syslog:).*$"
-      },
-      "group":  "Logging",
-      "title":  "Log destination"
-    },
-    {
-      "name":  "custom",
-      "description":  "Further instance.* keys, emitted verbatim at the end of the instance section as `key: value`.",
-      "rules":  [
+      "name": "custom",
+      "rules": [
         {
-          "expr":  "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
-          "message":  "instance keys are lower_snake identifiers",
-          "id":  "custom-key-shape"
+          "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
+          "id": "custom-key-shape",
+          "message": "instance keys are lower_snake identifiers"
         }
       ],
-      "map":  {
-        "maxEntries":  "32",
-        "valueField":  {
-          "name":  "value",
-          "string":  {
-            "maxLen":  "256"
-          }
-        }
-      },
-      "group":  "Custom",
-      "title":  "Extra instance keys"
+      "title": "Extra instance keys"
     },
     {
-      "name":  "tier_block",
-      "computed":  {
-        "expr":  "(\"tiers\" in root) ? root.tiers.map(t,\n\t\t\t\t\t\"    \" + t.name + \":\\n\" +\n\t\t\t\t\t\"      replication_factor: \" + string(t.replication_factor) + \"\\n\" +\n\t\t\t\t\t\"      can_vote: \" + (t.can_vote ? \"true\" : \"false\") + \"\\n\" +\n\t\t\t\t\t\"      bucket_count: \" + string(t.bucket_count) \n\t\t\t\t).join(\"\\n\") : \"    default:\\n      replication_factor: \" + string(root.default_replication_factor) + \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"tiers\" in root) ? root.tiers.map(t,\n\t\t\t\t\t\"    \" + t.name + \":\\n\" +\n\t\t\t\t\t\"      replication_factor: \" + string(t.replication_factor) + \"\\n\" +\n\t\t\t\t\t\"      can_vote: \" + (t.can_vote ? \"true\" : \"false\") + \"\\n\" +\n\t\t\t\t\t\"      bucket_count: \" + string(t.bucket_count) \n\t\t\t\t).join(\"\\n\") : \"    default:\\n      replication_factor: \" + string(root.default_replication_factor) + \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered cluster.tier"
+      "group": "Cluster",
+      "name": "tier_block",
+      "title": "Rendered cluster.tier"
     },
     {
-      "name":  "peer_line",
-      "computed":  {
-        "expr":  "!(\"peer\" in root) || size(root.peer) == 0 ? \"\" :\n\t\t\t \"  peer: [\" + root.peer.map(p, '\"' + p + '\"').join(\", \") + \"]\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"peer\" in root) || size(root.peer) == 0 ? \"\" :\n\t\t\t \"  peer: [\" + root.peer.map(p, '\"' + p + '\"').join(\", \") + \"]\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered instance.peer"
+      "group": "Cluster",
+      "name": "peer_line",
+      "title": "Rendered instance.peer"
     },
     {
-      "name":  "failure_domain_line",
-      "computed":  {
-        "expr":  "!(\"failure_domain\" in root) || size(root.failure_domain) == 0 ? \"\" :\n\t\t\t \"  failure_domain: {\" + root.failure_domain.map(k, k + \": \" + string(root.failure_domain[k])).join(\", \") + \"}\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"failure_domain\" in root) || size(root.failure_domain) == 0 ? \"\" :\n\t\t\t \"  failure_domain: {\" + root.failure_domain.map(k, k + \": \" + string(root.failure_domain[k])).join(\", \") + \"}\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered instance.failure_domain"
+      "group": "Cluster",
+      "name": "failure_domain_line",
+      "title": "Rendered instance.failure_domain"
     },
     {
-      "name":  "custom_lines",
-      "computed":  {
-        "expr":  "!(\"custom\" in root) || size(root.custom) == 0 ? \"\" :\n\t\t\t root.custom.map(k, \"  \" + k + \": \" + string(root.custom[k])).join(\"\\n\")",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"custom\" in root) || size(root.custom) == 0 ? \"\" :\n\t\t\t root.custom.map(k, \"  \" + k + \": \" + string(root.custom[k])).join(\"\\n\")",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Custom",
-      "title":  "Rendered extra instance keys"
+      "group": "Custom",
+      "name": "custom_lines",
+      "title": "Rendered extra instance keys"
     },
     {
-      "name":  "identity_lines",
-      "computed":  {
-        "expr":  "((\"instance_name\" in root) ? \"  name: \" + root.instance_name + \"\\n\" : \"\") +\n\t\t\t\t ((\"replicaset_name\" in root) ? \"  replicaset_name: \" + root.replicaset_name + \"\\n\" : \"\") +\n\t\t\t\t ((\"tier\" in root) ? \"  tier: \" + root.tier + \"\\n\" : \"\") +\n\t\t\t\t ((\"iproto_advertise\" in root) ? \"  iproto_advertise: \" + root.iproto_advertise + \"\\n\" : \"\")",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "((\"instance_name\" in root) ? \"  name: \" + root.instance_name + \"\\n\" : \"\") +\n\t\t\t\t ((\"replicaset_name\" in root) ? \"  replicaset_name: \" + root.replicaset_name + \"\\n\" : \"\") +\n\t\t\t\t ((\"tier\" in root) ? \"  tier: \" + root.tier + \"\\n\" : \"\") +\n\t\t\t\t ((\"iproto_advertise\" in root) ? \"  iproto_advertise: \" + root.iproto_advertise + \"\\n\" : \"\")",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered instance identity"
+      "group": "Cluster",
+      "name": "identity_lines",
+      "title": "Rendered instance identity"
     },
     {
-      "name":  "pg_advertise_line",
-      "computed":  {
-        "expr":  "(\"pg_advertise\" in root) ? \"    advertise: \" + root.pg_advertise : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"pg_advertise\" in root) ? \"    advertise: \" + root.pg_advertise : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered the pg advertise address"
+      "group": "Cluster",
+      "name": "pg_advertise_line",
+      "title": "Rendered the pg advertise address"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "picodata.yaml",
+    "namespace": "cfg",
+    "version": "v25.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"tiers\" in root) || size(root.tiers) == 0 || root.tiers.exists(t, t.name == \"default\")",
-      "message":  "one tier must be named \"default\"",
-      "id":  "default-tier-required"
+      "expr": "!(\"tiers\" in root) || size(root.tiers) == 0 || root.tiers.exists(t, t.name == \"default\")",
+      "id": "default-tier-required",
+      "message": "one tier must be named \"default\""
     },
     {
-      "expr":  "!(\"tier\" in root) || !(\"tiers\" in root) || size(root.tiers) == 0 || root.tiers.exists(t, t.name == root.tier)",
-      "message":  "instance.tier must name one of the declared tiers",
-      "id":  "instance-tier-declared"
+      "expr": "!(\"tier\" in root) || !(\"tiers\" in root) || size(root.tiers) == 0 || root.tiers.exists(t, t.name == root.tier)",
+      "id": "instance-tier-declared",
+      "message": "instance.tier must name one of the declared tiers"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: {{{values.cluster_name}}}\n  default_replication_factor: {{{values.default_replication_factor}}}\n  default_bucket_count: {{{values.default_bucket_count}}}\n  shredding: {{{values.shredding}}}\n  tier:\n{{{values.tier_block}}}\ninstance:\n{{{values.identity_lines}}}  instance_dir: {{{values.instance_dir}}}\n  iproto_listen: {{{values.iproto_listen}}}\n{{#values.peer_line}}{{{values.peer_line}}}\n{{/values.peer_line}}  http_listen: {{{values.http_listen}}}\n  pg:\n    listen: {{{values.pg_listen}}}\n{{#values.pg_advertise_line}}{{{values.pg_advertise_line}}}\n{{/values.pg_advertise_line}}    ssl: {{{values.pg_ssl}}}\n  admin_socket: {{{values.admin_socket}}}\n  boot_timeout: {{{values.boot_timeout}}}\n{{#values.failure_domain_line}}{{{values.failure_domain_line}}}\n{{/values.failure_domain_line}}  memtx:\n    memory: {{{values.memtx_memory}}}\n    max_tuple_size: {{{values.memtx_max_tuple_size}}}\n  vinyl:\n    memory: {{{values.vinyl_memory}}}\n    cache: {{{values.vinyl_cache}}}\n    read_threads: {{{values.vinyl_read_threads}}}\n    write_threads: {{{values.vinyl_write_threads}}}\n  log:\n    level: {{{values.log_level}}}\n    format: {{{values.log_format}}}\n{{#values.log_destination}}    destination: {{{values.log_destination}}}\n{{/values.log_destination}}{{#values.audit}}  audit: {{{values.audit}}}\n{{/values.audit}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+  "strict": true,
+  "templates": {
+    "conf": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: {{{values.cluster_name}}}\n  default_replication_factor: {{{values.default_replication_factor}}}\n  default_bucket_count: {{{values.default_bucket_count}}}\n  shredding: {{{values.shredding}}}\n  tier:\n{{{values.tier_block}}}\ninstance:\n{{{values.identity_lines}}}  instance_dir: {{{values.instance_dir}}}\n  iproto_listen: {{{values.iproto_listen}}}\n{{#values.peer_line}}{{{values.peer_line}}}\n{{/values.peer_line}}  http_listen: {{{values.http_listen}}}\n  pg:\n    listen: {{{values.pg_listen}}}\n{{#values.pg_advertise_line}}{{{values.pg_advertise_line}}}\n{{/values.pg_advertise_line}}    ssl: {{{values.pg_ssl}}}\n  admin_socket: {{{values.admin_socket}}}\n  boot_timeout: {{{values.boot_timeout}}}\n{{#values.failure_domain_line}}{{{values.failure_domain_line}}}\n{{/values.failure_domain_line}}  memtx:\n    memory: {{{values.memtx_memory}}}\n    max_tuple_size: {{{values.memtx_max_tuple_size}}}\n  vinyl:\n    memory: {{{values.vinyl_memory}}}\n    cache: {{{values.vinyl_cache}}}\n    read_threads: {{{values.vinyl_read_threads}}}\n    write_threads: {{{values.vinyl_write_threads}}}\n  log:\n    level: {{{values.log_level}}}\n    format: {{{values.log_format}}}\n{{#values.log_destination}}    destination: {{{values.log_destination}}}\n{{/values.log_destination}}{{#values.audit}}  audit: {{{values.audit}}}\n{{/values.audit}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

@@ -27,7 +27,7 @@ func TestSegment(t *testing.T) {
 			"pacing":          true,
 			"retry_attempts":  int64(5),
 			"tx_isolation":    "repeatable_read",
-			"sql_file":        "custom.sql",
+			"sql_file":        "tpcc/ydb_no_indexes",
 		},
 		"run": map[string]any{
 			"executor":      "shared-iterations",
@@ -37,10 +37,6 @@ func TestSegment(t *testing.T) {
 		},
 		"steps":        []any{"create_schema", "load_data"},
 		"extra_params": map[string]any{"new-flag": "1"},
-		"files": []any{
-			map[string]any{"name": "custom.sql", "kind": "sql", "content": "--+ create_schema\ncreate table t(id int);"},
-			map[string]any{"name": "extra.sql", "kind": "sql", "ref": "artifact/abc"},
-		},
 		"thresholds": map[string]any{"p99_ms": 25.0, "error_rate": 0.01},
 		"warmup":     "30s",
 		"log_level":  "debug",
@@ -105,11 +101,6 @@ func TestSegment(t *testing.T) {
 				v["extra_params"] = map[string]any{"Bad_Key": "1"}
 				return v
 			}(), Code: "RULE_VIOLATED", Path: "extra_params"},
-			{Value: func() map[string]any {
-				v := minimalSegment("load")
-				v["files"] = []any{map[string]any{"name": "a.sql"}}
-				return v
-			}(), Code: "RULE_VIOLATED", Path: "files[0]"},
 			{Value: func() map[string]any { v := minimalSegment("load"); v["junk"] = 1; return v }(), Code: "UNKNOWN_FIELD", Path: "junk"},
 		},
 	})

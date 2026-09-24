@@ -21,7 +21,6 @@ func segment() spec.Segment {
 		Run:         spec.RunParams{Executor: spec.ExecutorConstantVUs, VUs: 16, Duration: spec.Duration(90 * time.Second), QueryTimeout: spec.Duration(5 * time.Second)},
 		Steps:       []string{"create_schema", "load_data"},
 		ExtraParams: map[string]string{"warehouse-start": "3"},
-		Files:       []spec.SegmentFile{{Name: "custom.sql", Content: "--+ create_schema\n"}},
 		Thresholds:  spec.Thresholds{P99Ms: 50, ErrorRate: func() *float64 { v := 0.01; return &v }()},
 		LogLevel:    "debug",
 	}
@@ -91,13 +90,14 @@ func TestConfig(t *testing.T) {
 
 func TestFileParamsAndExecutors(t *testing.T) {
 	seg := segment()
-	seg.Workload.Params["sql_file"] = "custom.sql"
+	seg.Workload.Params["sql_file"] = "tpcc/pico"
 	params, err := Params(seg)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if params["sqlFile"] != "/workspace/custom.sql" {
-		t.Errorf("shipped file not resolved: %v", params["sqlFile"])
+	// A file parameter is a stroppy preset id, passed through as written.
+	if params["sqlFile"] != "tpcc/pico" {
+		t.Errorf("preset id not passed through: %v", params["sqlFile"])
 	}
 
 	iter := spec.RunParams{Executor: spec.ExecutorSharedIterations, Iterations: 1000}

@@ -15,10 +15,9 @@ import (
 	"sort"
 	"strings"
 
-	"google.golang.org/protobuf/encoding/protojson"
-
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/schemajson"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/tsgen"
 )
 
@@ -50,11 +49,11 @@ func run(out string) error {
 	for _, s := range schemas.All() {
 		id := ids.Public(s.GetId())
 		file := strings.ReplaceAll(id, "@", "_v")
-		js, err := protojson.MarshalOptions{Multiline: true, Indent: "  "}.Marshal(s)
+		js, err := schemajson.Marshal(s)
 		if err != nil {
 			return err
 		}
-		if err := os.WriteFile(filepath.Join(out, file+".json"), append(js, '\n'), 0o644); err != nil { //nolint:gosec // generated source, world-readable by design
+		if err := os.WriteFile(filepath.Join(out, file+".json"), js, 0o644); err != nil { //nolint:gosec // generated source, world-readable by design
 			return err
 		}
 		types := strings.TrimRight(tsgen.Generate(s), "\n") + "\n"

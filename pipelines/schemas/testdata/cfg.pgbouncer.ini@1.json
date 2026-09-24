@@ -1,457 +1,457 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "pgbouncer.ini",
-    "version":  "v1.0.0"
+  "coerce": true,
+  "description": "pgbouncer.ini for PgBouncer 1.23/1.24 in front of the PostgreSQL primary.",
+  "fields": [
+    {
+      "description": "Name clients connect to; the left-hand side of the [databases] entry.",
+      "group": "Databases",
+      "name": "db_name",
+      "string": {
+        "default": "stroppy",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,62}$"
+      },
+      "title": "Pool name"
+    },
+    {
+      "description": "Host of the PostgreSQL primary the pool forwards to. Filled by the server from the topology.",
+      "group": "Cluster",
+      "name": "db_host",
+      "nullable": true,
+      "string": {
+        "maxLen": "255",
+        "minLen": "1"
+      },
+      "title": "Primary host"
+    },
+    {
+      "description": "Port of the PostgreSQL primary. Filled by the server from the topology.",
+      "group": "Cluster",
+      "int64": {
+        "default": "5432",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "db_port",
+      "title": "Primary port"
+    },
+    {
+      "description": "Database name on the primary; defaults to the pool name when unset.",
+      "group": "Databases",
+      "name": "db_dbname",
+      "string": {
+        "default": "stroppy",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]{0,62}$"
+      },
+      "title": "Target database"
+    },
+    {
+      "computed": {
+        "expr": "(\"db_host\" in root) \u0026\u0026 root.db_host != \"\" ? root.db_name + \" = host=\" + root.db_host + \" port=\" + string(root.db_port) + \" dbname=\" + root.db_dbname : \"\"",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "The [databases] entry, emitted only once the server has filled db_host.",
+      "group": "Cluster",
+      "name": "databases_rendered",
+      "title": "Rendered [databases]"
+    },
+    {
+      "description": "Addresses PgBouncer binds to. Product default '*': the load generator reaches the pooler over the network, unlike the upstream localhost-only default.",
+      "group": "Listen",
+      "name": "listen_addr",
+      "string": {
+        "default": "*",
+        "maxLen": "255",
+        "minLen": "1"
+      },
+      "title": "Listen address"
+    },
+    {
+      "description": "TCP port PgBouncer listens on.",
+      "group": "Listen",
+      "int64": {
+        "default": "6432",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "listen_port",
+      "title": "Listen port"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "scram-sha-256"
+        },
+        "options": [
+          {
+            "label": "scram-sha-256",
+            "value": {
+              "stringValue": "scram-sha-256"
+            }
+          },
+          {
+            "label": "md5",
+            "value": {
+              "stringValue": "md5"
+            }
+          },
+          {
+            "label": "plain",
+            "value": {
+              "stringValue": "plain"
+            }
+          },
+          {
+            "label": "trust",
+            "value": {
+              "stringValue": "trust"
+            }
+          },
+          {
+            "label": "cert",
+            "value": {
+              "stringValue": "cert"
+            }
+          },
+          {
+            "label": "hba",
+            "value": {
+              "stringValue": "hba"
+            }
+          },
+          {
+            "label": "any",
+            "value": {
+              "stringValue": "any"
+            }
+          }
+        ]
+      },
+      "description": "How PgBouncer authenticates clients. Product default scram-sha-256, matching PostgreSQL's own password_encryption default; upstream still defaults to md5.",
+      "group": "Authentication",
+      "name": "auth_type",
+      "title": "Auth type"
+    },
+    {
+      "description": "userlist.txt with the name/password pairs PgBouncer authenticates against.",
+      "group": "Authentication",
+      "name": "auth_file",
+      "string": {
+        "default": "/etc/pgbouncer/userlist.txt",
+        "pattern": "^/.+$"
+      },
+      "title": "Auth file"
+    },
+    {
+      "description": "Role auth_query runs as for users missing from auth_file.",
+      "group": "Authentication",
+      "name": "auth_user",
+      "nullable": true,
+      "string": {
+        "maxLen": "63",
+        "minLen": "1"
+      },
+      "title": "Auth user"
+    },
+    {
+      "description": "Query used to fetch a password when auth_user is set.",
+      "group": "Authentication",
+      "name": "auth_query",
+      "nullable": true,
+      "string": {
+        "maxLen": "1024",
+        "minLen": "1"
+      },
+      "title": "Auth query"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "transaction"
+        },
+        "options": [
+          {
+            "label": "session",
+            "value": {
+              "stringValue": "session"
+            }
+          },
+          {
+            "label": "transaction",
+            "value": {
+              "stringValue": "transaction"
+            }
+          },
+          {
+            "label": "statement",
+            "value": {
+              "stringValue": "statement"
+            }
+          }
+        ]
+      },
+      "description": "When a server connection is returned to the pool. Product default transaction: it is the mode a benchmark pooler is deployed for; upstream defaults to session.",
+      "group": "Pooling",
+      "name": "pool_mode",
+      "title": "Pool mode"
+    },
+    {
+      "description": "Maximum client connections PgBouncer accepts.",
+      "group": "Pooling",
+      "int64": {
+        "default": "100",
+        "gte": "1",
+        "lte": "1000000"
+      },
+      "name": "max_client_conn",
+      "title": "Max client connections"
+    },
+    {
+      "description": "Server connections per user/database pair.",
+      "group": "Pooling",
+      "int64": {
+        "default": "20",
+        "gte": "1",
+        "lte": "10000"
+      },
+      "name": "default_pool_size",
+      "title": "Default pool size"
+    },
+    {
+      "description": "Server connections kept open even when idle; 0 disables.",
+      "group": "Pooling",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "10000"
+      },
+      "name": "min_pool_size",
+      "title": "Min pool size"
+    },
+    {
+      "description": "Extra connections a pool may open once clients have waited reserve_pool_timeout; 0 disables.",
+      "group": "Pooling",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "10000"
+      },
+      "name": "reserve_pool_size",
+      "title": "Reserve pool size"
+    },
+    {
+      "description": "How long a client waits before the reserve pool is used; 0 disables.",
+      "double": {
+        "default": 5,
+        "gte": 0,
+        "lte": 3600
+      },
+      "group": "Pooling",
+      "name": "reserve_pool_timeout",
+      "title": "Reserve pool timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Cap on server connections per database across all pools; 0 is unlimited.",
+      "group": "Pooling",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "100000"
+      },
+      "name": "max_db_connections",
+      "title": "Max DB connections"
+    },
+    {
+      "description": "Cap on server connections per user across all pools; 0 is unlimited.",
+      "group": "Pooling",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "100000"
+      },
+      "name": "max_user_connections",
+      "title": "Max user connections"
+    },
+    {
+      "description": "Close a server connection idle longer than this; 0 disables.",
+      "double": {
+        "default": 600,
+        "gte": 0,
+        "lte": 86400
+      },
+      "group": "Timeouts",
+      "name": "server_idle_timeout",
+      "title": "Server idle timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Recycle a server connection older than this; 0 disables.",
+      "double": {
+        "default": 3600,
+        "gte": 0,
+        "lte": 604800
+      },
+      "group": "Timeouts",
+      "name": "server_lifetime",
+      "title": "Server lifetime",
+      "unit": "s"
+    },
+    {
+      "description": "Query run when a server connection is returned to the pool. Upstream default is `DISCARD ALL`, which is only valid in session pooling; the product default is empty because pool_mode defaults to transaction.",
+      "group": "Timeouts",
+      "name": "server_reset_query",
+      "string": {
+        "default": "",
+        "maxLen": "512"
+      },
+      "title": "Server reset query"
+    },
+    {
+      "description": "Longest a query may wait for a server connection before it is canceled; 0 disables.",
+      "double": {
+        "default": 120,
+        "gte": 0,
+        "lte": 86400
+      },
+      "group": "Timeouts",
+      "name": "query_wait_timeout",
+      "title": "Query wait timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Disconnect a client idle outside a transaction for longer than this; 0 disables.",
+      "double": {
+        "default": 0,
+        "gte": 0,
+        "lte": 86400
+      },
+      "group": "Timeouts",
+      "name": "client_idle_timeout",
+      "title": "Client idle timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Startup parameters PgBouncer accepts and ignores, e.g. extra_float_digits,options.",
+      "group": "Compatibility",
+      "name": "ignore_startup_parameters",
+      "string": {
+        "default": "",
+        "maxLen": "512"
+      },
+      "title": "Ignore startup parameters"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "1"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "1"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "0"
+            }
+          }
+        ]
+      },
+      "description": "Log each client connection.",
+      "group": "Logging",
+      "name": "log_connections",
+      "title": "Log connections"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "1"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "1"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "0"
+            }
+          }
+        ]
+      },
+      "description": "Log each client disconnection with its reason.",
+      "group": "Logging",
+      "name": "log_disconnections",
+      "title": "Log disconnections"
+    },
+    {
+      "description": "Interval between the aggregated statistics log lines.",
+      "group": "Logging",
+      "int64": {
+        "default": "60",
+        "gte": "1",
+        "lte": "86400"
+      },
+      "name": "stats_period",
+      "title": "Stats period",
+      "unit": "s"
+    },
+    {
+      "description": "Comma-separated roles allowed to run every command on the admin console.",
+      "group": "Logging",
+      "name": "admin_users",
+      "string": {
+        "default": "postgres",
+        "maxLen": "512"
+      },
+      "title": "Admin users"
+    },
+    {
+      "description": "Comma-separated roles allowed read-only access to the admin console; the exporter uses one of these.",
+      "group": "Logging",
+      "name": "stats_users",
+      "string": {
+        "default": "postgres",
+        "maxLen": "512"
+      },
+      "title": "Stats users"
+    }
+  ],
+  "id": {
+    "name": "pgbouncer.ini",
+    "namespace": "cfg",
+    "version": "v1.0.0"
   },
-  "description":  "pgbouncer.ini for PgBouncer 1.23/1.24 in front of the PostgreSQL primary.",
-  "fields":  [
+  "rules": [
     {
-      "name":  "db_name",
-      "description":  "Name clients connect to; the left-hand side of the [databases] entry.",
-      "string":  {
-        "default":  "stroppy",
-        "pattern":  "^[A-Za-z_][A-Za-z0-9_]{0,62}$"
-      },
-      "group":  "Databases",
-      "title":  "Pool name"
+      "expr": "root.pool_mode == \"session\" || root.server_reset_query == \"\"",
+      "id": "reset-query-vs-pool-mode",
+      "message": "server_reset_query must be empty in transaction or statement pooling"
     },
     {
-      "name":  "db_host",
-      "description":  "Host of the PostgreSQL primary the pool forwards to. Filled by the server from the topology.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "255"
-      },
-      "group":  "Cluster",
-      "title":  "Primary host"
+      "expr": "!(\"auth_query\" in root) || (\"auth_user\" in root)",
+      "id": "auth-query-needs-user",
+      "message": "auth_query requires auth_user"
     },
     {
-      "name":  "db_port",
-      "description":  "Port of the PostgreSQL primary. Filled by the server from the topology.",
-      "int64":  {
-        "default":  "5432",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Cluster",
-      "title":  "Primary port"
+      "expr": "int(root.default_pool_size) \u003c= int(root.max_client_conn)",
+      "id": "pool-vs-clients",
+      "message": "default_pool_size must not exceed max_client_conn"
     },
     {
-      "name":  "db_dbname",
-      "description":  "Database name on the primary; defaults to the pool name when unset.",
-      "string":  {
-        "default":  "stroppy",
-        "pattern":  "^[A-Za-z_][A-Za-z0-9_]{0,62}$"
-      },
-      "group":  "Databases",
-      "title":  "Target database"
-    },
-    {
-      "name":  "databases_rendered",
-      "description":  "The [databases] entry, emitted only once the server has filled db_host.",
-      "computed":  {
-        "expr":  "(\"db_host\" in root) && root.db_host != \"\" ? root.db_name + \" = host=\" + root.db_host + \" port=\" + string(root.db_port) + \" dbname=\" + root.db_dbname : \"\"",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Cluster",
-      "title":  "Rendered [databases]"
-    },
-    {
-      "name":  "listen_addr",
-      "description":  "Addresses PgBouncer binds to. Product default '*': the load generator reaches the pooler over the network, unlike the upstream localhost-only default.",
-      "string":  {
-        "default":  "*",
-        "minLen":  "1",
-        "maxLen":  "255"
-      },
-      "group":  "Listen",
-      "title":  "Listen address"
-    },
-    {
-      "name":  "listen_port",
-      "description":  "TCP port PgBouncer listens on.",
-      "int64":  {
-        "default":  "6432",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Listen",
-      "title":  "Listen port"
-    },
-    {
-      "name":  "auth_type",
-      "description":  "How PgBouncer authenticates clients. Product default scram-sha-256, matching PostgreSQL's own password_encryption default; upstream still defaults to md5.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "scram-sha-256"
-            },
-            "label":  "scram-sha-256"
-          },
-          {
-            "value":  {
-              "stringValue":  "md5"
-            },
-            "label":  "md5"
-          },
-          {
-            "value":  {
-              "stringValue":  "plain"
-            },
-            "label":  "plain"
-          },
-          {
-            "value":  {
-              "stringValue":  "trust"
-            },
-            "label":  "trust"
-          },
-          {
-            "value":  {
-              "stringValue":  "cert"
-            },
-            "label":  "cert"
-          },
-          {
-            "value":  {
-              "stringValue":  "hba"
-            },
-            "label":  "hba"
-          },
-          {
-            "value":  {
-              "stringValue":  "any"
-            },
-            "label":  "any"
-          }
-        ],
-        "default":  {
-          "stringValue":  "scram-sha-256"
-        }
-      },
-      "group":  "Authentication",
-      "title":  "Auth type"
-    },
-    {
-      "name":  "auth_file",
-      "description":  "userlist.txt with the name/password pairs PgBouncer authenticates against.",
-      "string":  {
-        "default":  "/etc/pgbouncer/userlist.txt",
-        "pattern":  "^/.+$"
-      },
-      "group":  "Authentication",
-      "title":  "Auth file"
-    },
-    {
-      "name":  "auth_user",
-      "description":  "Role auth_query runs as for users missing from auth_file.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "63"
-      },
-      "group":  "Authentication",
-      "title":  "Auth user"
-    },
-    {
-      "name":  "auth_query",
-      "description":  "Query used to fetch a password when auth_user is set.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "1024"
-      },
-      "group":  "Authentication",
-      "title":  "Auth query"
-    },
-    {
-      "name":  "pool_mode",
-      "description":  "When a server connection is returned to the pool. Product default transaction: it is the mode a benchmark pooler is deployed for; upstream defaults to session.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "session"
-            },
-            "label":  "session"
-          },
-          {
-            "value":  {
-              "stringValue":  "transaction"
-            },
-            "label":  "transaction"
-          },
-          {
-            "value":  {
-              "stringValue":  "statement"
-            },
-            "label":  "statement"
-          }
-        ],
-        "default":  {
-          "stringValue":  "transaction"
-        }
-      },
-      "group":  "Pooling",
-      "title":  "Pool mode"
-    },
-    {
-      "name":  "max_client_conn",
-      "description":  "Maximum client connections PgBouncer accepts.",
-      "int64":  {
-        "default":  "100",
-        "gte":  "1",
-        "lte":  "1000000"
-      },
-      "group":  "Pooling",
-      "title":  "Max client connections"
-    },
-    {
-      "name":  "default_pool_size",
-      "description":  "Server connections per user/database pair.",
-      "int64":  {
-        "default":  "20",
-        "gte":  "1",
-        "lte":  "10000"
-      },
-      "group":  "Pooling",
-      "title":  "Default pool size"
-    },
-    {
-      "name":  "min_pool_size",
-      "description":  "Server connections kept open even when idle; 0 disables.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "10000"
-      },
-      "group":  "Pooling",
-      "title":  "Min pool size"
-    },
-    {
-      "name":  "reserve_pool_size",
-      "description":  "Extra connections a pool may open once clients have waited reserve_pool_timeout; 0 disables.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "10000"
-      },
-      "group":  "Pooling",
-      "title":  "Reserve pool size"
-    },
-    {
-      "name":  "reserve_pool_timeout",
-      "description":  "How long a client waits before the reserve pool is used; 0 disables.",
-      "double":  {
-        "default":  5,
-        "gte":  0,
-        "lte":  3600
-      },
-      "group":  "Pooling",
-      "unit":  "s",
-      "title":  "Reserve pool timeout"
-    },
-    {
-      "name":  "max_db_connections",
-      "description":  "Cap on server connections per database across all pools; 0 is unlimited.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "100000"
-      },
-      "group":  "Pooling",
-      "title":  "Max DB connections"
-    },
-    {
-      "name":  "max_user_connections",
-      "description":  "Cap on server connections per user across all pools; 0 is unlimited.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "100000"
-      },
-      "group":  "Pooling",
-      "title":  "Max user connections"
-    },
-    {
-      "name":  "server_idle_timeout",
-      "description":  "Close a server connection idle longer than this; 0 disables.",
-      "double":  {
-        "default":  600,
-        "gte":  0,
-        "lte":  86400
-      },
-      "group":  "Timeouts",
-      "unit":  "s",
-      "title":  "Server idle timeout"
-    },
-    {
-      "name":  "server_lifetime",
-      "description":  "Recycle a server connection older than this; 0 disables.",
-      "double":  {
-        "default":  3600,
-        "gte":  0,
-        "lte":  604800
-      },
-      "group":  "Timeouts",
-      "unit":  "s",
-      "title":  "Server lifetime"
-    },
-    {
-      "name":  "server_reset_query",
-      "description":  "Query run when a server connection is returned to the pool. Upstream default is `DISCARD ALL`, which is only valid in session pooling; the product default is empty because pool_mode defaults to transaction.",
-      "string":  {
-        "default":  "",
-        "maxLen":  "512"
-      },
-      "group":  "Timeouts",
-      "title":  "Server reset query"
-    },
-    {
-      "name":  "query_wait_timeout",
-      "description":  "Longest a query may wait for a server connection before it is canceled; 0 disables.",
-      "double":  {
-        "default":  120,
-        "gte":  0,
-        "lte":  86400
-      },
-      "group":  "Timeouts",
-      "unit":  "s",
-      "title":  "Query wait timeout"
-    },
-    {
-      "name":  "client_idle_timeout",
-      "description":  "Disconnect a client idle outside a transaction for longer than this; 0 disables.",
-      "double":  {
-        "default":  0,
-        "gte":  0,
-        "lte":  86400
-      },
-      "group":  "Timeouts",
-      "unit":  "s",
-      "title":  "Client idle timeout"
-    },
-    {
-      "name":  "ignore_startup_parameters",
-      "description":  "Startup parameters PgBouncer accepts and ignores, e.g. extra_float_digits,options.",
-      "string":  {
-        "default":  "",
-        "maxLen":  "512"
-      },
-      "group":  "Compatibility",
-      "title":  "Ignore startup parameters"
-    },
-    {
-      "name":  "log_connections",
-      "description":  "Log each client connection.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "1"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "0"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "1"
-        }
-      },
-      "group":  "Logging",
-      "title":  "Log connections"
-    },
-    {
-      "name":  "log_disconnections",
-      "description":  "Log each client disconnection with its reason.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "1"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "0"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "1"
-        }
-      },
-      "group":  "Logging",
-      "title":  "Log disconnections"
-    },
-    {
-      "name":  "stats_period",
-      "description":  "Interval between the aggregated statistics log lines.",
-      "int64":  {
-        "default":  "60",
-        "gte":  "1",
-        "lte":  "86400"
-      },
-      "group":  "Logging",
-      "unit":  "s",
-      "title":  "Stats period"
-    },
-    {
-      "name":  "admin_users",
-      "description":  "Comma-separated roles allowed to run every command on the admin console.",
-      "string":  {
-        "default":  "postgres",
-        "maxLen":  "512"
-      },
-      "group":  "Logging",
-      "title":  "Admin users"
-    },
-    {
-      "name":  "stats_users",
-      "description":  "Comma-separated roles allowed read-only access to the admin console; the exporter uses one of these.",
-      "string":  {
-        "default":  "postgres",
-        "maxLen":  "512"
-      },
-      "group":  "Logging",
-      "title":  "Stats users"
+      "expr": "int(root.min_pool_size) \u003c= int(root.default_pool_size)",
+      "id": "min-vs-default-pool",
+      "message": "min_pool_size must not exceed default_pool_size"
     }
   ],
-  "rules":  [
-    {
-      "expr":  "root.pool_mode == \"session\" || root.server_reset_query == \"\"",
-      "message":  "server_reset_query must be empty in transaction or statement pooling",
-      "id":  "reset-query-vs-pool-mode"
-    },
-    {
-      "expr":  "!(\"auth_query\" in root) || (\"auth_user\" in root)",
-      "message":  "auth_query requires auth_user",
-      "id":  "auth-query-needs-user"
-    },
-    {
-      "expr":  "int(root.default_pool_size) <= int(root.max_client_conn)",
-      "message":  "default_pool_size must not exceed max_client_conn",
-      "id":  "pool-vs-clients"
-    },
-    {
-      "expr":  "int(root.min_pool_size) <= int(root.default_pool_size)",
-      "message":  "min_pool_size must not exceed default_pool_size",
-      "id":  "min-vs-default-pool"
-    }
-  ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "; pgbouncer.ini — generated by stroppy.\n[databases]\n{{#values.databases_rendered}}{{{values.databases_rendered}}}\n{{/values.databases_rendered}}\n[pgbouncer]\nlisten_addr = {{{values.listen_addr}}}\nlisten_port = {{{values.listen_port}}}\nauth_type = {{{values.auth_type}}}\nauth_file = {{{values.auth_file}}}\n{{#values.auth_user}}auth_user = {{{.}}}\n{{/values.auth_user}}{{#values.auth_query}}auth_query = {{{.}}}\n{{/values.auth_query}}pool_mode = {{{values.pool_mode}}}\nmax_client_conn = {{{values.max_client_conn}}}\ndefault_pool_size = {{{values.default_pool_size}}}\nmin_pool_size = {{{values.min_pool_size}}}\nreserve_pool_size = {{{values.reserve_pool_size}}}\nreserve_pool_timeout = {{{values.reserve_pool_timeout}}}\nmax_db_connections = {{{values.max_db_connections}}}\nmax_user_connections = {{{values.max_user_connections}}}\nserver_idle_timeout = {{{values.server_idle_timeout}}}\nserver_lifetime = {{{values.server_lifetime}}}\nserver_reset_query = {{{values.server_reset_query}}}\nquery_wait_timeout = {{{values.query_wait_timeout}}}\nclient_idle_timeout = {{{values.client_idle_timeout}}}\nignore_startup_parameters = {{{values.ignore_startup_parameters}}}\nlog_connections = {{{values.log_connections}}}\nlog_disconnections = {{{values.log_disconnections}}}\nstats_period = {{{values.stats_period}}}\nadmin_users = {{{values.admin_users}}}\nstats_users = {{{values.stats_users}}}\n"
+  "strict": true,
+  "templates": {
+    "conf": "; pgbouncer.ini — generated by stroppy.\n[databases]\n{{#values.databases_rendered}}{{{values.databases_rendered}}}\n{{/values.databases_rendered}}\n[pgbouncer]\nlisten_addr = {{{values.listen_addr}}}\nlisten_port = {{{values.listen_port}}}\nauth_type = {{{values.auth_type}}}\nauth_file = {{{values.auth_file}}}\n{{#values.auth_user}}auth_user = {{{.}}}\n{{/values.auth_user}}{{#values.auth_query}}auth_query = {{{.}}}\n{{/values.auth_query}}pool_mode = {{{values.pool_mode}}}\nmax_client_conn = {{{values.max_client_conn}}}\ndefault_pool_size = {{{values.default_pool_size}}}\nmin_pool_size = {{{values.min_pool_size}}}\nreserve_pool_size = {{{values.reserve_pool_size}}}\nreserve_pool_timeout = {{{values.reserve_pool_timeout}}}\nmax_db_connections = {{{values.max_db_connections}}}\nmax_user_connections = {{{values.max_user_connections}}}\nserver_idle_timeout = {{{values.server_idle_timeout}}}\nserver_lifetime = {{{values.server_lifetime}}}\nserver_reset_query = {{{values.server_reset_query}}}\nquery_wait_timeout = {{{values.query_wait_timeout}}}\nclient_idle_timeout = {{{values.client_idle_timeout}}}\nignore_startup_parameters = {{{values.ignore_startup_parameters}}}\nlog_connections = {{{values.log_connections}}}\nlog_disconnections = {{{values.log_disconnections}}}\nstats_period = {{{values.stats_period}}}\nadmin_users = {{{values.admin_users}}}\nstats_users = {{{values.stats_users}}}\n"
   }
 }

@@ -1,795 +1,795 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "maxscale.cnf",
-    "version":  "v25.0.0"
-  },
-  "description":  "MariaDB MaxScale 25.10 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.",
-  "fields":  [
+  "coerce": true,
+  "description": "MariaDB MaxScale 25.10 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.",
+  "fields": [
     {
-      "name":  "threads",
-      "description":  "Routing worker threads; `auto` means one per CPU core.",
-      "string":  {
-        "default":  "auto",
-        "maxLen":  "8",
-        "pattern":  "^(auto|[1-9][0-9]*)$"
+      "description": "Routing worker threads; `auto` means one per CPU core.",
+      "group": "MaxScale",
+      "name": "threads",
+      "string": {
+        "default": "auto",
+        "maxLen": "8",
+        "pattern": "^(auto|[1-9][0-9]*)$"
       },
-      "group":  "MaxScale",
-      "title":  "Worker threads"
+      "title": "Worker threads"
     },
     {
-      "name":  "admin_host",
-      "description":  "Address the REST API / GUI binds to; the default 127.0.0.1 keeps it local.",
-      "string":  {
-        "default":  "127.0.0.1",
-        "minLen":  "1",
-        "maxLen":  "255"
+      "description": "Address the REST API / GUI binds to; the default 127.0.0.1 keeps it local.",
+      "group": "MaxScale",
+      "name": "admin_host",
+      "string": {
+        "default": "127.0.0.1",
+        "maxLen": "255",
+        "minLen": "1"
       },
-      "group":  "MaxScale",
-      "title":  "Admin host"
+      "title": "Admin host"
     },
     {
-      "name":  "admin_port",
-      "description":  "Port of the REST API and the GUI.",
-      "int64":  {
-        "default":  "8989",
-        "gte":  "1",
-        "lte":  "65535"
+      "description": "Port of the REST API and the GUI.",
+      "group": "MaxScale",
+      "int64": {
+        "default": "8989",
+        "gte": "1",
+        "lte": "65535"
       },
-      "group":  "MaxScale",
-      "title":  "Admin port"
+      "name": "admin_port",
+      "title": "Admin port"
     },
     {
-      "name":  "admin_secure_gui",
-      "description":  "Serve the GUI over HTTPS only; turning it off needs admin_ssl_* to be unset.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "true"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "true"
-        }
+        ]
       },
-      "group":  "MaxScale",
-      "title":  "Secure GUI"
+      "description": "Serve the GUI over HTTPS only; turning it off needs admin_ssl_* to be unset.",
+      "group": "MaxScale",
+      "name": "admin_secure_gui",
+      "title": "Secure GUI"
     },
     {
-      "name":  "syslog",
-      "description":  "Also write the log to syslog.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "MaxScale",
-      "title":  "Log to syslog"
+      "description": "Also write the log to syslog.",
+      "group": "MaxScale",
+      "name": "syslog",
+      "title": "Log to syslog"
     },
     {
-      "name":  "maxlog",
-      "description":  "Write MaxScale's own log file.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "true"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "true"
-        }
+        ]
       },
-      "group":  "MaxScale",
-      "title":  "Log to maxscale.log"
+      "description": "Write MaxScale's own log file.",
+      "group": "MaxScale",
+      "name": "maxlog",
+      "title": "Log to maxscale.log"
     },
     {
-      "name":  "log_info",
-      "description":  "Log at INFO level — useful while bringing a cluster up, noisy under load.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "MaxScale",
-      "title":  "Info logging"
+      "description": "Log at INFO level — useful while bringing a cluster up, noisy under load.",
+      "group": "MaxScale",
+      "name": "log_info",
+      "title": "Info logging"
     },
     {
-      "name":  "monitor_module",
-      "description":  "mariadbmon for asynchronous/semisync replication, galeramon for a Galera cluster.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "mariadbmon"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "mariadbmon"
-            },
-            "label":  "mariadbmon (replication)"
+            "label": "mariadbmon (replication)",
+            "value": {
+              "stringValue": "mariadbmon"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "galeramon"
-            },
-            "label":  "galeramon (Galera)"
+            "label": "galeramon (Galera)",
+            "value": {
+              "stringValue": "galeramon"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "mariadbmon"
-        }
+        ]
       },
-      "group":  "Monitor",
-      "title":  "Monitor module"
+      "description": "mariadbmon for asynchronous/semisync replication, galeramon for a Galera cluster.",
+      "group": "Monitor",
+      "name": "monitor_module",
+      "title": "Monitor module"
     },
     {
-      "name":  "monitor_user",
-      "description":  "Backend account the monitor uses; needs REPLICATION CLIENT (and more for failover).",
-      "string":  {
-        "default":  "maxscale_monitor",
-        "minLen":  "1",
-        "maxLen":  "64"
+      "description": "Backend account the monitor uses; needs REPLICATION CLIENT (and more for failover).",
+      "group": "Monitor",
+      "name": "monitor_user",
+      "string": {
+        "default": "maxscale_monitor",
+        "maxLen": "64",
+        "minLen": "1"
       },
-      "group":  "Monitor",
-      "title":  "Monitor user"
+      "title": "Monitor user"
     },
     {
-      "name":  "monitor_password",
-      "description":  "Password of that account; filled by the server.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
+      "description": "Password of that account; filled by the server.",
+      "group": "Monitor",
+      "name": "monitor_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "255"
       },
-      "group":  "Monitor",
-      "title":  "Monitor password",
-      "secret":  true
+      "title": "Monitor password"
     },
     {
-      "name":  "monitor_interval",
-      "description":  "How often the monitor polls every backend. Rendered with an explicit ms suffix — unitless durations are deprecated.",
-      "int64":  {
-        "default":  "2000",
-        "gte":  "100",
-        "lte":  "3600000"
+      "description": "How often the monitor polls every backend. Rendered with an explicit ms suffix — unitless durations are deprecated.",
+      "group": "Monitor",
+      "int64": {
+        "default": "2000",
+        "gte": "100",
+        "lte": "3600000"
       },
-      "group":  "Monitor",
-      "unit":  "ms",
-      "title":  "Monitor interval"
+      "name": "monitor_interval",
+      "title": "Monitor interval",
+      "unit": "ms"
     },
     {
-      "name":  "backend_timeout",
-      "description":  "Connect, read and write timeout of one monitor check. Replaces the three backend_*_timeout parameters, which 25.10 deprecated.",
-      "int64":  {
-        "default":  "3000",
-        "gte":  "1000",
-        "lte":  "600000"
+      "description": "Connect, read and write timeout of one monitor check. Replaces the three backend_*_timeout parameters, which 25.10 deprecated.",
+      "group": "Monitor",
+      "int64": {
+        "default": "3000",
+        "gte": "1000",
+        "lte": "600000"
       },
-      "group":  "Monitor",
-      "unit":  "ms",
-      "title":  "Backend timeout"
+      "name": "backend_timeout",
+      "title": "Backend timeout",
+      "unit": "ms"
     },
     {
-      "name":  "auto_failover",
-      "description":  "Promote a replica when the primary is lost (mariadbmon only).",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Monitor",
-      "title":  "Auto failover"
+      "description": "Promote a replica when the primary is lost (mariadbmon only).",
+      "group": "Monitor",
+      "name": "auto_failover",
+      "title": "Auto failover"
     },
     {
-      "name":  "auto_rejoin",
-      "description":  "Re-attach an old primary as a replica once it comes back (mariadbmon only).",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Monitor",
-      "title":  "Auto rejoin"
+      "description": "Re-attach an old primary as a replica once it comes back (mariadbmon only).",
+      "group": "Monitor",
+      "name": "auto_rejoin",
+      "title": "Auto rejoin"
     },
     {
-      "name":  "enforce_read_only_slaves",
-      "description":  "Set read_only=1 on any writable replica. The wider enforce_read_only_servers also exists — this is not a rename.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Monitor",
-      "title":  "Enforce read_only on replicas"
+      "description": "Set read_only=1 on any writable replica. The wider enforce_read_only_servers also exists — this is not a rename.",
+      "group": "Monitor",
+      "name": "enforce_read_only_slaves",
+      "title": "Enforce read_only on replicas"
     },
     {
-      "name":  "failcount",
-      "description":  "Consecutive failed checks before the primary is declared down; 0 or 1 means immediately.",
-      "int64":  {
-        "default":  "5",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "Consecutive failed checks before the primary is declared down; 0 or 1 means immediately.",
+      "group": "Monitor",
+      "int64": {
+        "default": "5",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Monitor",
-      "title":  "Fail count"
+      "name": "failcount",
+      "title": "Fail count"
     },
     {
-      "name":  "replication_user",
-      "description":  "Account written into CHANGE MASTER TO during failover/rejoin.",
-      "string":  {
-        "default":  "maxscale_repl",
-        "minLen":  "1",
-        "maxLen":  "64"
+      "description": "Account written into CHANGE MASTER TO during failover/rejoin.",
+      "group": "Monitor",
+      "name": "replication_user",
+      "string": {
+        "default": "maxscale_repl",
+        "maxLen": "64",
+        "minLen": "1"
       },
-      "group":  "Monitor",
-      "title":  "Replication user"
+      "title": "Replication user"
     },
     {
-      "name":  "replication_password",
-      "description":  "Password of that account; filled by the server.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
+      "description": "Password of that account; filled by the server.",
+      "group": "Monitor",
+      "name": "replication_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "255"
       },
-      "group":  "Monitor",
-      "title":  "Replication password",
-      "secret":  true
+      "title": "Replication password"
     },
     {
-      "name":  "cooperative_monitoring_locks",
-      "description":  "Lets several MaxScale instances agree on who may run failover.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "none"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none"
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "majority_of_all"
-            },
-            "label":  "majority_of_all"
+            "label": "majority_of_all",
+            "value": {
+              "stringValue": "majority_of_all"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "majority_of_running"
-            },
-            "label":  "majority_of_running"
+            "label": "majority_of_running",
+            "value": {
+              "stringValue": "majority_of_running"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "none"
-        }
+        ]
       },
-      "group":  "Monitor",
-      "title":  "Cooperative monitoring locks"
+      "description": "Lets several MaxScale instances agree on who may run failover.",
+      "group": "Monitor",
+      "name": "cooperative_monitoring_locks",
+      "title": "Cooperative monitoring locks"
     },
     {
-      "name":  "service_user",
-      "description":  "Account MaxScale uses to read the backends' user tables.",
-      "string":  {
-        "default":  "maxscale_service",
-        "minLen":  "1",
-        "maxLen":  "64"
+      "description": "Account MaxScale uses to read the backends' user tables.",
+      "group": "Service",
+      "name": "service_user",
+      "string": {
+        "default": "maxscale_service",
+        "maxLen": "64",
+        "minLen": "1"
       },
-      "group":  "Service",
-      "title":  "Service user"
+      "title": "Service user"
     },
     {
-      "name":  "service_password",
-      "description":  "Password of that account; filled by the server.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
+      "description": "Password of that account; filled by the server.",
+      "group": "Service",
+      "name": "service_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "255"
       },
-      "group":  "Service",
-      "title":  "Service password",
-      "secret":  true
+      "title": "Service password"
     },
     {
-      "name":  "master_accept_reads",
-      "description":  "Send read traffic to the primary as well as the replicas.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Service",
-      "title":  "Primary accepts reads"
+      "description": "Send read traffic to the primary as well as the replicas.",
+      "group": "Service",
+      "name": "master_accept_reads",
+      "title": "Primary accepts reads"
     },
     {
-      "name":  "causal_reads",
-      "description":  "Read-your-own-writes guarantee level; anything but none costs a synchronization wait.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "none"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none"
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "local"
-            },
-            "label":  "local"
+            "label": "local",
+            "value": {
+              "stringValue": "local"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "global"
-            },
-            "label":  "global"
+            "label": "global",
+            "value": {
+              "stringValue": "global"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "fast"
-            },
-            "label":  "fast"
+            "label": "fast",
+            "value": {
+              "stringValue": "fast"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "fast_global"
-            },
-            "label":  "fast_global"
+            "label": "fast_global",
+            "value": {
+              "stringValue": "fast_global"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "universal"
-            },
-            "label":  "universal"
+            "label": "universal",
+            "value": {
+              "stringValue": "universal"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "fast_universal"
-            },
-            "label":  "fast_universal"
+            "label": "fast_universal",
+            "value": {
+              "stringValue": "fast_universal"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "none"
-        }
+        ]
       },
-      "group":  "Service",
-      "title":  "Causal reads"
+      "description": "Read-your-own-writes guarantee level; anything but none costs a synchronization wait.",
+      "group": "Service",
+      "name": "causal_reads",
+      "title": "Causal reads"
     },
     {
-      "name":  "causal_reads_timeout",
-      "description":  "How long a causal read waits for the replica to catch up before it falls back to the primary.",
-      "int64":  {
-        "default":  "10000",
-        "gte":  "100",
-        "lte":  "600000"
+      "description": "How long a causal read waits for the replica to catch up before it falls back to the primary.",
+      "group": "Service",
+      "int64": {
+        "default": "10000",
+        "gte": "100",
+        "lte": "600000"
       },
-      "group":  "Service",
-      "unit":  "ms",
-      "title":  "Causal reads timeout"
+      "name": "causal_reads_timeout",
+      "title": "Causal reads timeout",
+      "unit": "ms"
     },
     {
-      "name":  "transaction_replay",
-      "description":  "Replay an interrupted transaction on another server. Enabling it forces delayed_retry, master_reconnection and master_failure_mode=fail_on_write.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Service",
-      "title":  "Transaction replay"
+      "description": "Replay an interrupted transaction on another server. Enabling it forces delayed_retry, master_reconnection and master_failure_mode=fail_on_write.",
+      "group": "Service",
+      "name": "transaction_replay",
+      "title": "Transaction replay"
     },
     {
-      "name":  "transaction_replay_max_size",
-      "description":  "Largest transaction MaxScale will buffer for replay.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "1024"
+      "description": "Largest transaction MaxScale will buffer for replay.",
+      "group": "Service",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "1024"
       },
-      "group":  "Service",
-      "unit":  "MB",
-      "title":  "Transaction replay max size"
+      "name": "transaction_replay_max_size",
+      "title": "Transaction replay max size",
+      "unit": "MB"
     },
     {
-      "name":  "slave_selection_criteria",
-      "description":  "How a read is assigned to a replica.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "least_current_operations"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "least_current_operations"
-            },
-            "label":  "least current operations"
+            "label": "least current operations",
+            "value": {
+              "stringValue": "least_current_operations"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "adaptive_routing"
-            },
-            "label":  "adaptive routing"
+            "label": "adaptive routing",
+            "value": {
+              "stringValue": "adaptive_routing"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "least_behind_master"
-            },
-            "label":  "least behind master"
+            "label": "least behind master",
+            "value": {
+              "stringValue": "least_behind_master"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "least_router_connections"
-            },
-            "label":  "least router connections"
+            "label": "least router connections",
+            "value": {
+              "stringValue": "least_router_connections"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "least_global_connections"
-            },
-            "label":  "least global connections"
+            "label": "least global connections",
+            "value": {
+              "stringValue": "least_global_connections"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "least_current_operations"
-        }
+        ]
       },
-      "group":  "Service",
-      "title":  "Replica selection"
+      "description": "How a read is assigned to a replica.",
+      "group": "Service",
+      "name": "slave_selection_criteria",
+      "title": "Replica selection"
     },
     {
-      "name":  "max_slave_connections",
-      "description":  "How many replicas one session may hold connections to.",
-      "int64":  {
-        "default":  "255",
-        "gte":  "0",
-        "lte":  "1000"
+      "description": "How many replicas one session may hold connections to.",
+      "group": "Service",
+      "int64": {
+        "default": "255",
+        "gte": "0",
+        "lte": "1000"
       },
-      "group":  "Service",
-      "title":  "Max replica connections"
+      "name": "max_slave_connections",
+      "title": "Max replica connections"
     },
     {
-      "name":  "max_replication_lag",
-      "description":  "Replicas lagging more than this stop receiving reads; 0 disables the check. Whole seconds only.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "86400"
+      "description": "Replicas lagging more than this stop receiving reads; 0 disables the check. Whole seconds only.",
+      "group": "Service",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "86400"
       },
-      "group":  "Service",
-      "unit":  "s",
-      "title":  "Max replication lag"
+      "name": "max_replication_lag",
+      "title": "Max replication lag",
+      "unit": "s"
     },
     {
-      "name":  "master_failure_mode",
-      "description":  "What happens to a session when the primary disappears. 24.02 moved the default to fail_on_write, which is also what transaction_replay requires.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "fail_on_write"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "fail_instantly"
-            },
-            "label":  "fail_instantly"
+            "label": "fail_instantly",
+            "value": {
+              "stringValue": "fail_instantly"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "fail_on_write"
-            },
-            "label":  "fail_on_write"
+            "label": "fail_on_write",
+            "value": {
+              "stringValue": "fail_on_write"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "error_on_write"
-            },
-            "label":  "error_on_write"
+            "label": "error_on_write",
+            "value": {
+              "stringValue": "error_on_write"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "fail_on_write"
-        }
+        ]
       },
-      "group":  "Service",
-      "title":  "Primary failure mode"
+      "description": "What happens to a session when the primary disappears. 24.02 moved the default to fail_on_write, which is also what transaction_replay requires.",
+      "group": "Service",
+      "name": "master_failure_mode",
+      "title": "Primary failure mode"
     },
     {
-      "name":  "transaction_replay_timeout",
-      "description":  "How long MaxScale keeps retrying a replayed transaction before giving up; 0 falls back to the session's own timeouts.",
-      "int64":  {
-        "default":  "30000",
-        "gte":  "0",
-        "lte":  "600000"
+      "description": "How long MaxScale keeps retrying a replayed transaction before giving up; 0 falls back to the session's own timeouts.",
+      "group": "Service",
+      "int64": {
+        "default": "30000",
+        "gte": "0",
+        "lte": "600000"
       },
-      "group":  "Service",
-      "unit":  "ms",
-      "title":  "Transaction replay timeout"
+      "name": "transaction_replay_timeout",
+      "title": "Transaction replay timeout",
+      "unit": "ms"
     },
     {
-      "name":  "listener_port",
-      "description":  "Port clients connect to.",
-      "int64":  {
-        "default":  "4006",
-        "gte":  "1",
-        "lte":  "65535"
+      "description": "Port clients connect to.",
+      "group": "Listener",
+      "int64": {
+        "default": "4006",
+        "gte": "1",
+        "lte": "65535"
       },
-      "group":  "Listener",
-      "title":  "Listener port"
+      "name": "listener_port",
+      "title": "Listener port"
     },
     {
-      "name":  "listener_address",
-      "description":  "Address the listener binds to; :: means every interface.",
-      "string":  {
-        "default":  "::",
-        "minLen":  "1",
-        "maxLen":  "255"
+      "description": "Address the listener binds to; :: means every interface.",
+      "group": "Listener",
+      "name": "listener_address",
+      "string": {
+        "default": "::",
+        "maxLen": "255",
+        "minLen": "1"
       },
-      "group":  "Listener",
-      "title":  "Listener address"
+      "title": "Listener address"
     },
     {
-      "name":  "listener_protocol",
-      "description":  "Client protocol module. This is the only place `protocol` is valid — a [server] section has none.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "mariadb"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "mariadb"
-            },
-            "label":  "mariadb (MariaDBClient)"
+            "label": "mariadb (MariaDBClient)",
+            "value": {
+              "stringValue": "mariadb"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "mariadb"
-        }
+        ]
       },
-      "group":  "Listener",
-      "title":  "Listener protocol"
+      "description": "Client protocol module. This is the only place `protocol` is valid — a [server] section has none.",
+      "group": "Listener",
+      "name": "listener_protocol",
+      "title": "Listener protocol"
     },
     {
-      "name":  "servers",
-      "description":  "The [server] sections plus the servers= lists of the monitor and the service; filled by the server from topology.",
-      "nullable":  true,
-      "list":  {
-        "items":  [
+      "description": "The [server] sections plus the servers= lists of the monitor and the service; filled by the server from topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "description":  "Name of the [server] section, e.g. db-1.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "64"
+                    "description": "Name of the [server] section, e.g. db-1.",
+                    "name": "name",
+                    "required": true,
+                    "string": {
+                      "maxLen": "64",
+                      "minLen": "1"
                     },
-                    "title":  "Section name"
+                    "title": "Section name"
                   },
                   {
-                    "name":  "address",
-                    "description":  "Backend host or IP.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "255"
+                    "description": "Backend host or IP.",
+                    "name": "address",
+                    "required": true,
+                    "string": {
+                      "maxLen": "255",
+                      "minLen": "1"
                     },
-                    "title":  "Address"
+                    "title": "Address"
                   },
                   {
-                    "name":  "port",
-                    "description":  "Backend port.",
-                    "int64":  {
-                      "default":  "3306",
-                      "gte":  "1",
-                      "lte":  "65535"
+                    "description": "Backend port.",
+                    "int64": {
+                      "default": "3306",
+                      "gte": "1",
+                      "lte": "65535"
                     },
-                    "title":  "Port"
+                    "name": "port",
+                    "title": "Port"
                   },
                   {
-                    "name":  "priority",
-                    "description":  "galeramon only: lower wins when use_priority is on. Ignored by mariadbmon.",
-                    "int64":  {
-                      "default":  "0",
-                      "gte":  "0",
-                      "lte":  "1000"
+                    "description": "galeramon only: lower wins when use_priority is on. Ignored by mariadbmon.",
+                    "int64": {
+                      "default": "0",
+                      "gte": "0",
+                      "lte": "1000"
                     },
-                    "title":  "Priority"
+                    "name": "priority",
+                    "title": "Priority"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "64"
+        "maxItems": "64"
       },
-      "group":  "Cluster",
-      "title":  "Backends"
+      "name": "servers",
+      "nullable": true,
+      "title": "Backends"
     },
     {
-      "name":  "custom",
-      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map":  {
-        "maxEntries":  "64",
-        "valueField":  {
-          "name":  "value",
-          "string":  {}
+      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "maxEntries": "64",
+        "valueField": {
+          "name": "value",
+          "string": {}
         }
       },
-      "group":  "Custom",
-      "title":  "Extra settings"
+      "name": "custom",
+      "title": "Extra settings"
     },
     {
-      "name":  "server_sections",
-      "description":  "One [server] section per backend — with no protocol parameter, which MaxScale does not accept there.",
-      "computed":  {
-        "expr":  "((\"servers\" in root) && size(root.servers) > 0) ? root.servers.map(s,\n\t\t\t\t\t\"[\" + string(s.name) + \"]\\ntype=server\\naddress=\" + string(s.address) +\n\t\t\t\t\t\"\\nport=\" + ((\"port\" in s) ? string(s.port) : \"3306\") + \"\\npriority=\" + ((\"priority\" in s) ? string(s.priority) : \"0\") + \"\\n\").join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "((\"servers\" in root) \u0026\u0026 size(root.servers) \u003e 0) ? root.servers.map(s,\n\t\t\t\t\t\"[\" + string(s.name) + \"]\\ntype=server\\naddress=\" + string(s.address) +\n\t\t\t\t\t\"\\nport=\" + ((\"port\" in s) ? string(s.port) : \"3306\") + \"\\npriority=\" + ((\"priority\" in s) ? string(s.priority) : \"0\") + \"\\n\").join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Rendered",
-      "title":  "Server sections"
+      "description": "One [server] section per backend — with no protocol parameter, which MaxScale does not accept there.",
+      "group": "Rendered",
+      "name": "server_sections",
+      "title": "Server sections"
     },
     {
-      "name":  "server_names",
-      "description":  "Comma-separated section names for the monitor's and the service's servers= lines.",
-      "computed":  {
-        "expr":  "((\"servers\" in root) && size(root.servers) > 0) ? root.servers.map(s, string(s.name)).join(\",\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "((\"servers\" in root) \u0026\u0026 size(root.servers) \u003e 0) ? root.servers.map(s, string(s.name)).join(\",\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Rendered",
-      "title":  "Server names"
+      "description": "Comma-separated section names for the monitor's and the service's servers= lines.",
+      "group": "Rendered",
+      "name": "server_names",
+      "title": "Server names"
     },
     {
-      "name":  "monitor_extra",
-      "description":  "The mariadbmon-only failover parameters, or galeramon's use_priority.",
-      "computed":  {
-        "expr":  "(root.monitor_module == \"mariadbmon\") ?\n\t\t\t\t\t(\"auto_failover=\" + string(root.auto_failover) +\n\t\t\t\t\t\"\\nauto_rejoin=\" + string(root.auto_rejoin) +\n\t\t\t\t\t\"\\nenforce_read_only_slaves=\" + string(root.enforce_read_only_slaves) +\n\t\t\t\t\t\"\\nfailcount=\" + string(root.failcount) +\n\t\t\t\t\t\"\\nreplication_user=\" + string(root.replication_user) +\n\t\t\t\t\t\"\\nreplication_password=\" + ((\"replication_password\" in root) ? string(root.replication_password) : \"\") +\n\t\t\t\t\t\"\\ncooperative_monitoring_locks=\" + string(root.cooperative_monitoring_locks) + \"\\n\")\n\t\t\t\t\t: \"use_priority=true\\n\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(root.monitor_module == \"mariadbmon\") ?\n\t\t\t\t\t(\"auto_failover=\" + string(root.auto_failover) +\n\t\t\t\t\t\"\\nauto_rejoin=\" + string(root.auto_rejoin) +\n\t\t\t\t\t\"\\nenforce_read_only_slaves=\" + string(root.enforce_read_only_slaves) +\n\t\t\t\t\t\"\\nfailcount=\" + string(root.failcount) +\n\t\t\t\t\t\"\\nreplication_user=\" + string(root.replication_user) +\n\t\t\t\t\t\"\\nreplication_password=\" + ((\"replication_password\" in root) ? string(root.replication_password) : \"\") +\n\t\t\t\t\t\"\\ncooperative_monitoring_locks=\" + string(root.cooperative_monitoring_locks) + \"\\n\")\n\t\t\t\t\t: \"use_priority=true\\n\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Rendered",
-      "title":  "Monitor extras"
+      "description": "The mariadbmon-only failover parameters, or galeramon's use_priority.",
+      "group": "Rendered",
+      "name": "monitor_extra",
+      "title": "Monitor extras"
     },
     {
-      "name":  "custom_rendered",
-      "description":  "The `custom` map joined into extra key=value lines of the [rwsplit-service] section.",
-      "computed":  {
-        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \"=\" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Custom",
-      "title":  "Rendered extra service parameters"
+      "description": "The `custom` map joined into extra key=value lines of the [rwsplit-service] section.",
+      "group": "Custom",
+      "name": "custom_rendered",
+      "title": "Rendered extra service parameters"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "maxscale.cnf",
+    "namespace": "cfg",
+    "version": "v25.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"transaction_replay\" in root) || root.transaction_replay != \"true\" || !(\"master_failure_mode\" in root) || root.master_failure_mode == \"fail_on_write\"",
-      "message":  "transaction_replay forces master_failure_mode=fail_on_write — set it explicitly",
-      "id":  "replay-failure-mode"
+      "expr": "!(\"transaction_replay\" in root) || root.transaction_replay != \"true\" || !(\"master_failure_mode\" in root) || root.master_failure_mode == \"fail_on_write\"",
+      "id": "replay-failure-mode",
+      "message": "transaction_replay forces master_failure_mode=fail_on_write — set it explicitly"
     },
     {
-      "expr":  "!(\"monitor_module\" in root) || root.monitor_module != \"galeramon\" || !(\"auto_failover\" in root) || root.auto_failover == \"false\"",
-      "message":  "auto_failover is a mariadbmon parameter; galeramon has no failover",
-      "id":  "galera-no-failover"
+      "expr": "!(\"monitor_module\" in root) || root.monitor_module != \"galeramon\" || !(\"auto_failover\" in root) || root.auto_failover == \"false\"",
+      "id": "galera-no-failover",
+      "message": "auto_failover is a mariadbmon parameter; galeramon has no failover"
     },
     {
-      "expr":  "!(\"causal_reads_timeout\" in root) || !(\"monitor_interval\" in root) || int(root.causal_reads_timeout) >= int(root.monitor_interval)",
-      "message":  "causal_reads_timeout below monitor_interval makes causal reads fail before the monitor notices anything",
-      "id":  "causal-timeout"
+      "expr": "!(\"causal_reads_timeout\" in root) || !(\"monitor_interval\" in root) || int(root.causal_reads_timeout) \u003e= int(root.monitor_interval)",
+      "id": "causal-timeout",
+      "message": "causal_reads_timeout below monitor_interval makes causal reads fail before the monitor notices anything"
     },
     {
-      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id":  "custom-keys"
+      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "id": "custom-keys",
+      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# MaxScale 25.10 — generated by stroppy, do not edit by hand\n[maxscale]\nthreads={{{values.threads}}}\nadmin_host={{{values.admin_host}}}\nadmin_port={{{values.admin_port}}}\nadmin_secure_gui={{{values.admin_secure_gui}}}\nsyslog={{{values.syslog}}}\nmaxlog={{{values.maxlog}}}\nlog_info={{{values.log_info}}}\n\n{{{values.server_sections}}}\n[cluster-monitor]\ntype=monitor\nmodule={{{values.monitor_module}}}\nservers={{{values.server_names}}}\nuser={{{values.monitor_user}}}\npassword={{{values.monitor_password}}}\nmonitor_interval={{{values.monitor_interval}}}ms\nbackend_timeout={{{values.backend_timeout}}}ms\n{{{values.monitor_extra}}}\n[rwsplit-service]\ntype=service\nrouter=readwritesplit\nservers={{{values.server_names}}}\nuser={{{values.service_user}}}\npassword={{{values.service_password}}}\nmaster_accept_reads={{{values.master_accept_reads}}}\ncausal_reads={{{values.causal_reads}}}\ncausal_reads_timeout={{{values.causal_reads_timeout}}}ms\ntransaction_replay={{{values.transaction_replay}}}\ntransaction_replay_max_size={{{values.transaction_replay_max_size}}}Mi\ntransaction_replay_timeout={{{values.transaction_replay_timeout}}}ms\nslave_selection_criteria={{{values.slave_selection_criteria}}}\nmax_slave_connections={{{values.max_slave_connections}}}\nmax_replication_lag={{{values.max_replication_lag}}}s\nmaster_failure_mode={{{values.master_failure_mode}}}\n{{{values.custom_rendered}}}\n\n[rwsplit-listener]\ntype=listener\nservice=rwsplit-service\nprotocol={{{values.listener_protocol}}}\naddress={{{values.listener_address}}}\nport={{{values.listener_port}}}\n"
+  "strict": true,
+  "templates": {
+    "conf": "# MaxScale 25.10 — generated by stroppy, do not edit by hand\n[maxscale]\nthreads={{{values.threads}}}\nadmin_host={{{values.admin_host}}}\nadmin_port={{{values.admin_port}}}\nadmin_secure_gui={{{values.admin_secure_gui}}}\nsyslog={{{values.syslog}}}\nmaxlog={{{values.maxlog}}}\nlog_info={{{values.log_info}}}\n\n{{{values.server_sections}}}\n[cluster-monitor]\ntype=monitor\nmodule={{{values.monitor_module}}}\nservers={{{values.server_names}}}\nuser={{{values.monitor_user}}}\npassword={{{values.monitor_password}}}\nmonitor_interval={{{values.monitor_interval}}}ms\nbackend_timeout={{{values.backend_timeout}}}ms\n{{{values.monitor_extra}}}\n[rwsplit-service]\ntype=service\nrouter=readwritesplit\nservers={{{values.server_names}}}\nuser={{{values.service_user}}}\npassword={{{values.service_password}}}\nmaster_accept_reads={{{values.master_accept_reads}}}\ncausal_reads={{{values.causal_reads}}}\ncausal_reads_timeout={{{values.causal_reads_timeout}}}ms\ntransaction_replay={{{values.transaction_replay}}}\ntransaction_replay_max_size={{{values.transaction_replay_max_size}}}Mi\ntransaction_replay_timeout={{{values.transaction_replay_timeout}}}ms\nslave_selection_criteria={{{values.slave_selection_criteria}}}\nmax_slave_connections={{{values.max_slave_connections}}}\nmax_replication_lag={{{values.max_replication_lag}}}s\nmaster_failure_mode={{{values.master_failure_mode}}}\n{{{values.custom_rendered}}}\n\n[rwsplit-listener]\ntype=listener\nservice=rwsplit-service\nprotocol={{{values.listener_protocol}}}\naddress={{{values.listener_address}}}\nport={{{values.listener_port}}}\n"
   }
 }

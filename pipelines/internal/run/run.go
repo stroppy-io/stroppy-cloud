@@ -194,9 +194,6 @@ func validate(run spec.Run) error {
 		if _, err := stroppycfg.Config(stroppycfg.Input{Segment: segment, Workload: run.Workload}); err != nil {
 			return err
 		}
-		if err := stroppycfg.ValidateFiles(segment.Files); err != nil {
-			return err
-		}
 	}
 	return nil
 }

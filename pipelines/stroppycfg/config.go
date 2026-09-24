@@ -157,23 +157,10 @@ func Params(seg spec.Segment) (map[string]any, error) {
 			if s == "" {
 				continue
 			}
-			v = FilePath(seg, s)
 		}
 		out[key] = v
 	}
 	return out, nil
-}
-
-// FilePath resolves a file parameter: a name of a shipped segment file
-// becomes its absolute path inside the container, anything else (a stroppy
-// preset id like tpcc/pico) is passed through.
-func FilePath(seg spec.Segment, name string) string {
-	for _, f := range seg.Files {
-		if f.Name == name {
-			return path.Join(ContainerWorkspace, name)
-		}
-	}
-	return name
 }
 
 // RunObject renders the `run` object of the config.

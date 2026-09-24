@@ -1,148 +1,148 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "orioledb.params",
-    "version": "v1.0.0"
-  },
+  "coerce": true,
   "description": "OrioleDB (containerised PostgreSQL storage engine) topology and options.",
   "fields": [
     {
-      "name": "image_tag",
-      "description": "Tag of the orioledb/orioledb image; the pgNN suffix picks the PostgreSQL major the engine is patched into.",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "latest-pg18"
-            },
-            "label": "latest-pg18 (main, PG 18)"
-          },
-          {
-            "value": {
-              "stringValue": "latest-pg17"
-            },
-            "label": "latest-pg17 (main, PG 17)"
-          },
-          {
-            "value": {
-              "stringValue": "latest-pg16"
-            },
-            "label": "latest-pg16 (main, PG 16)"
-          },
-          {
-            "value": {
-              "stringValue": "beta17-pg18"
-            },
-            "label": "beta17-pg18 (release, PG 18)"
-          },
-          {
-            "value": {
-              "stringValue": "beta17-pg17"
-            },
-            "label": "beta17-pg17 (release, PG 17)"
-          },
-          {
-            "value": {
-              "stringValue": "beta17-pg16"
-            },
-            "label": "beta17-pg16 (release, PG 16)"
-          }
-        ],
         "default": {
           "stringValue": "beta17-pg17"
-        }
+        },
+        "options": [
+          {
+            "label": "latest-pg18 (main, PG 18)",
+            "value": {
+              "stringValue": "latest-pg18"
+            }
+          },
+          {
+            "label": "latest-pg17 (main, PG 17)",
+            "value": {
+              "stringValue": "latest-pg17"
+            }
+          },
+          {
+            "label": "latest-pg16 (main, PG 16)",
+            "value": {
+              "stringValue": "latest-pg16"
+            }
+          },
+          {
+            "label": "beta17-pg18 (release, PG 18)",
+            "value": {
+              "stringValue": "beta17-pg18"
+            }
+          },
+          {
+            "label": "beta17-pg17 (release, PG 17)",
+            "value": {
+              "stringValue": "beta17-pg17"
+            }
+          },
+          {
+            "label": "beta17-pg16 (release, PG 16)",
+            "value": {
+              "stringValue": "beta17-pg16"
+            }
+          }
+        ]
       },
+      "description": "Tag of the orioledb/orioledb image; the pgNN suffix picks the PostgreSQL major the engine is patched into.",
       "group": "Engine",
+      "name": "image_tag",
+      "required": true,
       "title": "Image tag"
     },
     {
-      "name": "ubuntu_base",
-      "description": "Use the -ubuntu flavor of the tag instead of the default Alpine one; needed when the workload wants glibc locales.",
       "bool": {
         "default": false
       },
+      "description": "Use the -ubuntu flavor of the tag instead of the default Alpine one; needed when the workload wants glibc locales.",
       "group": "Engine",
+      "name": "ubuntu_base",
       "title": "Ubuntu base image"
     },
     {
-      "name": "replicas",
       "description": "Physical async standbys; OrioleDB has no supported failover manager, so these never get promoted automatically.",
+      "group": "Topology",
       "int64": {
         "default": "0",
         "gte": "0",
         "lte": "8"
       },
-      "group": "Topology",
+      "name": "replicas",
       "title": "Streaming replicas"
     },
     {
-      "name": "haproxy",
       "description": "HAProxy instances in front of the master (and read-only backends for the replicas).",
+      "group": "Routing",
       "int64": {
         "default": "0",
         "gte": "0",
         "lte": "2"
       },
-      "group": "Routing",
+      "name": "haproxy",
       "title": "HAProxy nodes"
     },
     {
-      "name": "shared_buffers_mb",
       "description": "shared_buffers for the container; OrioleDB uses it as its primary page pool, so it should dominate the machine's RAM.",
+      "group": "Memory",
       "int64": {
         "default": "1024",
         "gte": "128",
         "lte": "1048576"
       },
-      "group": "Memory",
-      "unit": "MB",
-      "title": "Shared buffers"
+      "name": "shared_buffers_mb",
+      "title": "Shared buffers",
+      "unit": "MB"
     },
     {
-      "name": "initdb_locale",
       "description": "Locale passed to initdb inside the container; C.UTF-8 keeps collation cheap and image-independent.",
+      "group": "Initialization",
+      "name": "initdb_locale",
       "string": {
         "default": "C.UTF-8",
         "maxLen": "64",
         "pattern": "^[A-Za-z0-9_@.\\-]+$"
       },
-      "group": "Initialization",
       "title": "initdb locale"
     },
     {
-      "name": "default_table_access_method",
-      "description": "Set default_table_access_method = orioledb so unqualified CREATE TABLE lands on the OrioleDB engine rather than heap.",
       "bool": {
         "default": true
       },
+      "description": "Set default_table_access_method = orioledb so unqualified CREATE TABLE lands on the OrioleDB engine rather than heap.",
       "group": "Initialization",
+      "name": "default_table_access_method",
       "title": "OrioleDB by default"
     },
     {
-      "name": "init_sql",
       "description": "SQL executed on the master once the container is healthy, before the workload.",
+      "group": "Initialization",
+      "name": "init_sql",
       "string": {
         "maxLen": "65536"
       },
-      "group": "Initialization",
       "title": "Init SQL"
     }
   ],
+  "id": {
+    "name": "orioledb.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
   "rules": [
     {
-      "expr": "int(root.haproxy) == 0 || int(root.replicas) >= 1",
-      "message": "HAProxy in front of a single node only adds a hop",
+      "expr": "int(root.haproxy) == 0 || int(root.replicas) \u003e= 1",
       "id": "haproxy-pointless",
+      "message": "HAProxy in front of a single node only adds a hop",
       "severity": "SEVERITY_WARNING"
     },
     {
-      "expr": "int(root.shared_buffers_mb) >= 512 || int(root.replicas) == 0",
-      "message": "a replica set with a tiny page pool measures the disk, not the engine",
+      "expr": "int(root.shared_buffers_mb) \u003e= 512 || int(root.replicas) == 0",
       "id": "buffers-vs-replicas",
+      "message": "a replica set with a tiny page pool measures the disk, not the engine",
       "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict": true
 }

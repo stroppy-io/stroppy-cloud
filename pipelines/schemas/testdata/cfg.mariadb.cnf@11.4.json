@@ -1,1198 +1,1198 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "mariadb.cnf",
-    "version":  "v11.4.0"
+  "coerce": true,
+  "description": "MariaDB 11.4 server configuration rendered to /etc/mysql/mariadb.conf.d/50-server.cnf ([mariadb] section).",
+  "fields": [
+    {
+      "description": "InnoDB buffer pool. Upstream default 128M.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "128",
+        "gte": "5",
+        "lte": "4194304"
+      },
+      "name": "innodb_buffer_pool_size",
+      "title": "Buffer pool size",
+      "unit": "MB"
+    },
+    {
+      "description": "Size of the redo log. Unlike MySQL 8.0.30+, MariaDB keeps this variable — there is no innodb_redo_log_capacity.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "96",
+        "gte": "1",
+        "lte": "524288"
+      },
+      "name": "innodb_log_file_size",
+      "title": "Redo log size",
+      "unit": "MB"
+    },
+    {
+      "description": "In-memory redo buffer.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "16",
+        "gte": "1",
+        "lte": "2047"
+      },
+      "name": "innodb_log_buffer_size",
+      "title": "Log buffer size",
+      "unit": "MB"
+    },
+    {
+      "description": "1 = ACID, 2 = write on commit and fsync once a second, 0 = neither.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "1",
+        "in": [
+          "0",
+          "1",
+          "2"
+        ]
+      },
+      "name": "innodb_flush_log_at_trx_commit",
+      "title": "Flush log at commit"
+    },
+    {
+      "description": "Background flush budget in IOPS.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "200",
+        "gte": "100",
+        "lte": "1000000"
+      },
+      "name": "innodb_io_capacity",
+      "title": "I/O capacity",
+      "unit": "IOPS"
+    },
+    {
+      "description": "Catch-up flush budget; upstream default is max(2000, 2 x innodb_io_capacity).",
+      "group": "InnoDB",
+      "int64": {
+        "default": "2000",
+        "gte": "100",
+        "lte": "2000000"
+      },
+      "name": "innodb_io_capacity_max",
+      "title": "I/O capacity max",
+      "unit": "IOPS"
+    },
+    {
+      "description": "Background read threads.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "4",
+        "gte": "1",
+        "lte": "64"
+      },
+      "name": "innodb_read_io_threads",
+      "title": "Read I/O threads"
+    },
+    {
+      "description": "Background write threads.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "4",
+        "gte": "1",
+        "lte": "64"
+      },
+      "name": "innodb_write_io_threads",
+      "title": "Write I/O threads"
+    },
+    {
+      "description": "Row-lock wait before the statement is rolled back.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "50",
+        "gte": "1",
+        "lte": "1073741824"
+      },
+      "name": "innodb_lock_wait_timeout",
+      "title": "Lock wait timeout",
+      "unit": "s"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "ON"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Store each table in its own .ibd tablespace. Deprecated since 11.0.1 — the shared tablespace is on its way out.",
+      "group": "InnoDB",
+      "name": "innodb_file_per_table",
+      "title": "File per table"
+    },
+    {
+      "description": "0 = table lock, 1 = consecutive (the default), 2 = interleaved — the only mode Galera supports.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "1",
+        "in": [
+          "0",
+          "1",
+          "2"
+        ]
+      },
+      "name": "innodb_autoinc_lock_mode",
+      "title": "Auto-increment lock mode"
+    },
+    {
+      "description": "Base name of the binary logs; binary logging is off by default in MariaDB, setting this enables it.",
+      "group": "Binlog",
+      "name": "log_bin",
+      "string": {
+        "default": "binlog",
+        "maxLen": "200",
+        "minLen": "1"
+      },
+      "title": "Binary log base name"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "MIXED"
+        },
+        "options": [
+          {
+            "label": "MIXED",
+            "value": {
+              "stringValue": "MIXED"
+            }
+          },
+          {
+            "label": "ROW",
+            "value": {
+              "stringValue": "ROW"
+            }
+          },
+          {
+            "label": "STATEMENT",
+            "value": {
+              "stringValue": "STATEMENT"
+            }
+          }
+        ]
+      },
+      "description": "MariaDB's upstream default is MIXED; Galera requires ROW.",
+      "group": "Binlog",
+      "name": "binlog_format",
+      "title": "Binlog format"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "FULL"
+        },
+        "options": [
+          {
+            "label": "FULL",
+            "value": {
+              "stringValue": "FULL"
+            }
+          },
+          {
+            "label": "MINIMAL",
+            "value": {
+              "stringValue": "MINIMAL"
+            }
+          },
+          {
+            "label": "NOBLOB",
+            "value": {
+              "stringValue": "NOBLOB"
+            }
+          }
+        ]
+      },
+      "description": "How much of each row is logged.",
+      "group": "Binlog",
+      "name": "binlog_row_image",
+      "title": "Binlog row image"
+    },
+    {
+      "description": "fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS).",
+      "group": "Binlog",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4294967295"
+      },
+      "name": "sync_binlog",
+      "title": "Sync binlog"
+    },
+    {
+      "description": "Purge age of the binary logs; 0 disables purging. Takes precedence over expire_logs_days.",
+      "group": "Binlog",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4294967295"
+      },
+      "name": "binlog_expire_logs_seconds",
+      "title": "Binlog retention",
+      "unit": "s"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Write replicated events into this server's own binary log.",
+      "group": "Binlog",
+      "name": "log_slave_updates",
+      "title": "Log slave updates"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Refuse out-of-order GTIDs; MariaDB has no gtid_mode — GTIDs always exist.",
+      "group": "GTID",
+      "name": "gtid_strict_mode",
+      "title": "GTID strict mode"
+    },
+    {
+      "description": "Replication domain this server writes to; a multi-source or multi-writer setup needs distinct domains.",
+      "group": "GTID",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4294967295"
+      },
+      "name": "gtid_domain_id",
+      "title": "GTID domain id"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Skip events whose GTID was already applied in that domain.",
+      "group": "GTID",
+      "name": "gtid_ignore_duplicates",
+      "title": "Ignore duplicate GTIDs"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Semisynchronous primary side. MariaDB keeps the master/slave names and needs no plugin_load.",
+      "group": "Replication",
+      "name": "rpl_semi_sync_master_enabled",
+      "title": "Semisync master"
+    },
+    {
+      "description": "Wait for a replica ack before falling back to asynchronous.",
+      "group": "Replication",
+      "int64": {
+        "default": "10000",
+        "gte": "0",
+        "lte": "4294967295"
+      },
+      "name": "rpl_semi_sync_master_timeout",
+      "title": "Semisync timeout",
+      "unit": "ms"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "AFTER_COMMIT"
+        },
+        "options": [
+          {
+            "label": "AFTER_COMMIT",
+            "value": {
+              "stringValue": "AFTER_COMMIT"
+            }
+          },
+          {
+            "label": "AFTER_SYNC",
+            "value": {
+              "stringValue": "AFTER_SYNC"
+            }
+          }
+        ]
+      },
+      "description": "AFTER_SYNC acks before the storage commit, AFTER_COMMIT after it.",
+      "group": "Replication",
+      "name": "rpl_semi_sync_master_wait_point",
+      "title": "Semisync wait point"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Semisynchronous replica side.",
+      "group": "Replication",
+      "name": "rpl_semi_sync_slave_enabled",
+      "title": "Semisync slave"
+    },
+    {
+      "description": "Applier worker threads; 0 = single-threaded. MariaDB has no replica_parallel_workers.",
+      "group": "Replication",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "16383"
+      },
+      "name": "slave_parallel_threads",
+      "title": "Parallel applier threads"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "optimistic"
+        },
+        "options": [
+          {
+            "label": "optimistic",
+            "value": {
+              "stringValue": "optimistic"
+            }
+          },
+          {
+            "label": "conservative",
+            "value": {
+              "stringValue": "conservative"
+            }
+          },
+          {
+            "label": "aggressive",
+            "value": {
+              "stringValue": "aggressive"
+            }
+          },
+          {
+            "label": "minimal",
+            "value": {
+              "stringValue": "minimal"
+            }
+          },
+          {
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
+          }
+        ]
+      },
+      "description": "How aggressively the applier parallelizes.",
+      "group": "Replication",
+      "name": "slave_parallel_mode",
+      "title": "Parallel applier mode"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Reject writes from clients without SUPER — set on replicas.",
+      "group": "Replication",
+      "name": "read_only",
+      "title": "Read only"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Enable write-set replication; the whole wsrep_* block below is only rendered when this is ON.",
+      "group": "Galera",
+      "name": "wsrep_on",
+      "title": "Galera enabled"
+    },
+    {
+      "description": "Path to the Galera library.",
+      "group": "Galera",
+      "name": "wsrep_provider",
+      "string": {
+        "default": "/usr/lib/galera/libgalera_smm.so",
+        "maxLen": "255",
+        "minLen": "1"
+      },
+      "title": "Galera provider"
+    },
+    {
+      "description": "Logical cluster name; must be identical on every node.",
+      "group": "Galera",
+      "name": "wsrep_cluster_name",
+      "string": {
+        "default": "stroppy",
+        "maxLen": "64",
+        "minLen": "1"
+      },
+      "title": "Cluster name"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "mariabackup"
+        },
+        "options": [
+          {
+            "label": "mariabackup",
+            "value": {
+              "stringValue": "mariabackup"
+            }
+          },
+          {
+            "label": "rsync",
+            "value": {
+              "stringValue": "rsync"
+            }
+          },
+          {
+            "label": "mysqldump",
+            "value": {
+              "stringValue": "mysqldump"
+            }
+          }
+        ]
+      },
+      "description": "How a joiner gets a full state snapshot. mariabackup is non-blocking; rsync blocks the donor.",
+      "group": "Galera",
+      "name": "wsrep_sst_method",
+      "title": "SST method"
+    },
+    {
+      "description": "user:password for backup SST; filled by the server from topology, unused by rsync.",
+      "group": "Cluster",
+      "name": "wsrep_sst_auth",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "255"
+      },
+      "title": "SST credentials"
+    },
+    {
+      "description": "Threads applying write-sets from other nodes.",
+      "group": "Galera",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "512"
+      },
+      "name": "wsrep_slave_threads",
+      "title": "Galera applier threads"
+    },
+    {
+      "description": "Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT.",
+      "group": "Galera",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "15"
+      },
+      "name": "wsrep_sync_wait",
+      "title": "Sync wait bitmask"
+    },
+    {
+      "description": "Address mariadbd listens on.",
+      "group": "Connections",
+      "name": "bind_address",
+      "string": {
+        "default": "0.0.0.0",
+        "maxLen": "255",
+        "minLen": "1"
+      },
+      "title": "Bind address"
+    },
+    {
+      "description": "TCP port.",
+      "group": "Connections",
+      "int64": {
+        "default": "3306",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "port",
+      "title": "Port"
+    },
+    {
+      "description": "Maximum simultaneous client connections.",
+      "group": "Connections",
+      "int64": {
+        "default": "151",
+        "gte": "1",
+        "lte": "100000"
+      },
+      "name": "max_connections",
+      "title": "Max connections"
+    },
+    {
+      "description": "Failed handshakes from one host before it is blocked.",
+      "group": "Connections",
+      "int64": {
+        "default": "100",
+        "gte": "1",
+        "lte": "4294967295"
+      },
+      "name": "max_connect_errors",
+      "title": "Max connect errors"
+    },
+    {
+      "description": "Threads kept for reuse.",
+      "group": "Connections",
+      "int64": {
+        "default": "256",
+        "gte": "0",
+        "lte": "16384"
+      },
+      "name": "thread_cache_size",
+      "title": "Thread cache size"
+    },
+    {
+      "description": "Idle seconds before a non-interactive connection is closed.",
+      "group": "Connections",
+      "int64": {
+        "default": "28800",
+        "gte": "1",
+        "lte": "31536000"
+      },
+      "name": "wait_timeout",
+      "title": "Wait timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Idle seconds before an interactive connection is closed.",
+      "group": "Connections",
+      "int64": {
+        "default": "28800",
+        "gte": "1",
+        "lte": "31536000"
+      },
+      "name": "interactive_timeout",
+      "title": "Interactive timeout",
+      "unit": "s"
+    },
+    {
+      "description": "Largest single packet.",
+      "group": "Connections",
+      "int64": {
+        "default": "16",
+        "gte": "1",
+        "lte": "1024"
+      },
+      "name": "max_allowed_packet",
+      "title": "Max allowed packet",
+      "unit": "MB"
+    },
+    {
+      "description": "Open table handles cached across sessions.",
+      "group": "Tables",
+      "int64": {
+        "default": "2000",
+        "gte": "1",
+        "lte": "1048576"
+      },
+      "name": "table_open_cache",
+      "title": "Table open cache"
+    },
+    {
+      "description": "Cached table definitions.",
+      "group": "Tables",
+      "int64": {
+        "default": "400",
+        "gte": "256",
+        "lte": "524288"
+      },
+      "name": "table_definition_cache",
+      "title": "Table definition cache"
+    },
+    {
+      "description": "Largest in-memory internal temporary table.",
+      "group": "Tables",
+      "int64": {
+        "default": "16",
+        "gte": "1",
+        "lte": "65536"
+      },
+      "name": "tmp_table_size",
+      "title": "Temp table size",
+      "unit": "MB"
+    },
+    {
+      "description": "Largest MEMORY table; also caps tmp_table_size.",
+      "group": "Tables",
+      "int64": {
+        "default": "16",
+        "gte": "1",
+        "lte": "65536"
+      },
+      "name": "max_heap_table_size",
+      "title": "Max heap table size",
+      "unit": "MB"
+    },
+    {
+      "description": "File descriptors requested from the OS.",
+      "group": "Tables",
+      "int64": {
+        "default": "32768",
+        "gte": "1024",
+        "lte": "1048576"
+      },
+      "name": "open_files_limit",
+      "title": "Open files limit"
+    },
+    {
+      "description": "MariaDB's default (unchanged since 10.2.4 and identical in 10.11 and 11.4) still contains NO_AUTO_CREATE_USER, which MySQL 8 removed.",
+      "group": "SQL",
+      "name": "sql_mode",
+      "string": {
+        "default": "STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+        "maxLen": "1024"
+      },
+      "title": "SQL mode"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "utf8mb4"
+        },
+        "options": [
+          {
+            "label": "utf8mb4",
+            "value": {
+              "stringValue": "utf8mb4"
+            }
+          },
+          {
+            "label": "utf8mb3",
+            "value": {
+              "stringValue": "utf8mb3"
+            }
+          },
+          {
+            "label": "latin1",
+            "value": {
+              "stringValue": "latin1"
+            }
+          }
+        ]
+      },
+      "description": "MariaDB's upstream default is latin1 until 11.6; stroppy pins utf8mb4 so results are comparable with MySQL runs.",
+      "group": "SQL",
+      "name": "character_set_server",
+      "title": "Server character set"
+    },
+    {
+      "description": "Must belong to character_set_server. MariaDB's own default is latin1_swedish_ci up to 11.7 and utf8mb4_uca1400_ai_ci from 11.8; stroppy keeps utf8mb4_general_ci on every line so MariaDB runs stay comparable with each other and with MySQL.",
+      "group": "SQL",
+      "name": "collation_server",
+      "string": {
+        "default": "utf8mb4_general_ci",
+        "maxLen": "64",
+        "minLen": "1"
+      },
+      "title": "Server collation"
+    },
+    {
+      "description": "Server time zone; a fixed offset keeps benchmark timestamps reproducible.",
+      "group": "SQL",
+      "name": "default_time_zone",
+      "string": {
+        "default": "+00:00",
+        "maxLen": "64",
+        "minLen": "1"
+      },
+      "title": "Default time zone"
+    },
+    {
+      "description": "0 = as stored, 1 = lowercased, 2 = stored as given and compared lowercase. Fixed at datadir initialization.",
+      "group": "SQL",
+      "int64": {
+        "default": "0",
+        "in": [
+          "0",
+          "1",
+          "2"
+        ]
+      },
+      "name": "lower_case_table_names",
+      "title": "Lower case table names"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Instrumentation engine; off by default in MariaDB.",
+      "group": "Performance schema",
+      "name": "performance_schema",
+      "title": "Performance schema"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Log every statement — far too expensive during a load test.",
+      "group": "Logging",
+      "name": "general_log",
+      "title": "General log"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Log statements slower than log_slow_query_time. Renamed from slow_query_log in 10.11.",
+      "group": "Logging",
+      "name": "log_slow_query",
+      "title": "Slow query log"
+    },
+    {
+      "description": "Slow-query threshold in seconds; fractions allowed.",
+      "double": {
+        "default": 10,
+        "gte": 0,
+        "lte": 31536000
+      },
+      "group": "Logging",
+      "name": "log_slow_query_time",
+      "title": "Slow query threshold",
+      "unit": "s"
+    },
+    {
+      "description": "Comma-separated extras in the slow log (query_plan, innodb, explain, engine, warnings, full, all); empty by default.",
+      "group": "Logging",
+      "name": "log_slow_verbosity",
+      "string": {
+        "default": "",
+        "maxLen": "255"
+      },
+      "title": "Slow log verbosity"
+    },
+    {
+      "description": "Error-log verbosity. MariaDB has no log_error_verbosity; this is its equivalent.",
+      "group": "Logging",
+      "int64": {
+        "default": "2",
+        "gte": "0",
+        "lte": "11"
+      },
+      "name": "log_warnings",
+      "title": "Warning verbosity"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "ON"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          },
+          {
+            "label": "fast",
+            "value": {
+              "stringValue": "fast"
+            }
+          }
+        ]
+      },
+      "description": "Torn-page protection. 11.x adds `fast`, which skips the doublewrite fsync on already-durable storage.",
+      "group": "InnoDB",
+      "name": "innodb_doublewrite",
+      "title": "Doublewrite buffer"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Let the OS page cache buffer redo writes. Part of the set that replaced innodb_flush_method in 11.0.",
+      "group": "InnoDB",
+      "name": "innodb_log_file_buffering",
+      "title": "Buffer the redo log"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Let the OS page cache buffer data-file writes; OFF is the O_DIRECT equivalent.",
+      "group": "InnoDB",
+      "name": "innodb_data_file_buffering",
+      "title": "Buffer the data files"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "REPEATABLE-READ"
+        },
+        "options": [
+          {
+            "label": "READ UNCOMMITTED",
+            "value": {
+              "stringValue": "READ-UNCOMMITTED"
+            }
+          },
+          {
+            "label": "READ COMMITTED",
+            "value": {
+              "stringValue": "READ-COMMITTED"
+            }
+          },
+          {
+            "label": "REPEATABLE READ",
+            "value": {
+              "stringValue": "REPEATABLE-READ"
+            }
+          },
+          {
+            "label": "SERIALIZABLE",
+            "value": {
+              "stringValue": "SERIALIZABLE"
+            }
+          }
+        ]
+      },
+      "description": "Default isolation level; the MySQL-compatible name, available since 11.1. tx_isolation still works but is deprecated.",
+      "group": "SQL",
+      "name": "transaction_isolation",
+      "title": "Transaction isolation"
+    },
+    {
+      "description": "Unique replication id; filled by the server from topology.",
+      "group": "Cluster",
+      "int64": {
+        "gte": "1",
+        "lte": "4294967295"
+      },
+      "name": "server_id",
+      "nullable": true,
+      "title": "Server id"
+    },
+    {
+      "description": "Address this replica reports to its primary; filled by the server from topology.",
+      "group": "Cluster",
+      "name": "report_host",
+      "nullable": true,
+      "string": {
+        "maxLen": "255"
+      },
+      "title": "Report host"
+    },
+    {
+      "description": "gcomm:// URL listing the cluster members; filled by the server from topology.",
+      "group": "Cluster",
+      "name": "wsrep_cluster_address",
+      "nullable": true,
+      "string": {
+        "maxLen": "4096"
+      },
+      "title": "Galera cluster address"
+    },
+    {
+      "description": "This node's ip[:port] for group communication; filled by the server from topology.",
+      "group": "Cluster",
+      "name": "wsrep_node_address",
+      "nullable": true,
+      "string": {
+        "maxLen": "255"
+      },
+      "title": "Galera node address"
+    },
+    {
+      "description": "This node's name inside the cluster; filled by the server from topology.",
+      "group": "Cluster",
+      "name": "wsrep_node_name",
+      "nullable": true,
+      "string": {
+        "maxLen": "255"
+      },
+      "title": "Galera node name"
+    },
+    {
+      "description": "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "maxEntries": "128",
+        "valueField": {
+          "name": "value",
+          "string": {}
+        }
+      },
+      "name": "custom",
+      "title": "Extra settings"
+    },
+    {
+      "computed": {
+        "expr": "((\"server_id\" in root) ? \"server_id\" + \" = \" + string(root[\"server_id\"]) + \"\\n\" : \"\") +\n((\"report_host\" in root) ? \"report_host\" + \" = \" + string(root[\"report_host\"]) + \"\\n\" : \"\")",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "Rendered topology lines (server_id, report_host).",
+      "group": "Rendered",
+      "name": "cluster_lines",
+      "title": "Cluster lines"
+    },
+    {
+      "computed": {
+        "expr": "(((\"wsrep_on\" in root) \u0026\u0026 root.wsrep_on == \"ON\") ? (\"wsrep_on = ON\\n\" +\n((\"wsrep_provider\" in root) ? \"wsrep_provider\" + \" = \" + string(root[\"wsrep_provider\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_name\" in root) ? \"wsrep_cluster_name\" + \" = \" + string(root[\"wsrep_cluster_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_address\" in root) ? \"wsrep_cluster_address\" + \" = \" + string(root[\"wsrep_cluster_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_address\" in root) ? \"wsrep_node_address\" + \" = \" + string(root[\"wsrep_node_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_name\" in root) ? \"wsrep_node_name\" + \" = \" + string(root[\"wsrep_node_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_method\" in root) ? \"wsrep_sst_method\" + \" = \" + string(root[\"wsrep_sst_method\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_auth\" in root) ? \"wsrep_sst_auth\" + \" = \" + string(root[\"wsrep_sst_auth\"]) + \"\\n\" : \"\") +\n((\"wsrep_slave_threads\" in root) ? \"wsrep_slave_threads\" + \" = \" + string(root[\"wsrep_slave_threads\"]) + \"\\n\" : \"\") +\n((\"wsrep_sync_wait\" in root) ? \"wsrep_sync_wait\" + \" = \" + string(root[\"wsrep_sync_wait\"]) + \"\\n\" : \"\")) : \"wsrep_on = OFF\\n\")",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "The whole wsrep_* block, emitted only when wsrep_on is ON.",
+      "group": "Rendered",
+      "name": "galera_lines",
+      "title": "Galera lines"
+    },
+    {
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "The `custom` map joined into config lines; the template prints it at the end of the file.",
+      "group": "Custom",
+      "name": "custom_rendered",
+      "title": "Rendered extra settings"
+    }
+  ],
+  "id": {
+    "name": "mariadb.cnf",
+    "namespace": "cfg",
+    "version": "v11.4.0"
   },
-  "description":  "MariaDB 11.4 server configuration rendered to /etc/mysql/mariadb.conf.d/50-server.cnf ([mariadb] section).",
-  "fields":  [
+  "rules": [
     {
-      "name":  "innodb_buffer_pool_size",
-      "description":  "InnoDB buffer pool. Upstream default 128M.",
-      "int64":  {
-        "default":  "128",
-        "gte":  "5",
-        "lte":  "4194304"
-      },
-      "group":  "InnoDB",
-      "unit":  "MB",
-      "title":  "Buffer pool size"
+      "expr": "!(\"innodb_io_capacity\" in root) || !(\"innodb_io_capacity_max\" in root) || int(root.innodb_io_capacity_max) \u003e= int(root.innodb_io_capacity)",
+      "id": "io-capacity-order",
+      "message": "innodb_io_capacity_max must be \u003e= innodb_io_capacity"
     },
     {
-      "name":  "innodb_log_file_size",
-      "description":  "Size of the redo log. Unlike MySQL 8.0.30+, MariaDB keeps this variable — there is no innodb_redo_log_capacity.",
-      "int64":  {
-        "default":  "96",
-        "gte":  "1",
-        "lte":  "524288"
-      },
-      "group":  "InnoDB",
-      "unit":  "MB",
-      "title":  "Redo log size"
+      "expr": "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || (!(\"binlog_format\" in root) || root.binlog_format == \"ROW\")",
+      "id": "galera-binlog-format",
+      "message": "Galera requires binlog_format = ROW"
     },
     {
-      "name":  "innodb_log_buffer_size",
-      "description":  "In-memory redo buffer.",
-      "int64":  {
-        "default":  "16",
-        "gte":  "1",
-        "lte":  "2047"
-      },
-      "group":  "InnoDB",
-      "unit":  "MB",
-      "title":  "Log buffer size"
+      "expr": "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || ((\"innodb_autoinc_lock_mode\" in root) \u0026\u0026 int(root.innodb_autoinc_lock_mode) == 2)",
+      "id": "galera-autoinc-lock-mode",
+      "message": "Galera requires innodb_autoinc_lock_mode = 2"
     },
     {
-      "name":  "innodb_flush_log_at_trx_commit",
-      "description":  "1 = ACID, 2 = write on commit and fsync once a second, 0 = neither.",
-      "int64":  {
-        "default":  "1",
-        "in":  [
-          "0",
-          "1",
-          "2"
-        ]
-      },
-      "group":  "InnoDB",
-      "title":  "Flush log at commit"
+      "expr": "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || ((\"wsrep_provider\" in root) \u0026\u0026 string(root.wsrep_provider) != \"\")",
+      "id": "galera-provider",
+      "message": "Galera requires wsrep_provider"
     },
     {
-      "name":  "innodb_io_capacity",
-      "description":  "Background flush budget in IOPS.",
-      "int64":  {
-        "default":  "200",
-        "gte":  "100",
-        "lte":  "1000000"
-      },
-      "group":  "InnoDB",
-      "unit":  "IOPS",
-      "title":  "I/O capacity"
+      "expr": "!(\"max_heap_table_size\" in root) || !(\"tmp_table_size\" in root) || int(root.max_heap_table_size) \u003e= int(root.tmp_table_size)",
+      "id": "heap-ge-tmp",
+      "message": "max_heap_table_size must be \u003e= tmp_table_size"
     },
     {
-      "name":  "innodb_io_capacity_max",
-      "description":  "Catch-up flush budget; upstream default is max(2000, 2 x innodb_io_capacity).",
-      "int64":  {
-        "default":  "2000",
-        "gte":  "100",
-        "lte":  "2000000"
-      },
-      "group":  "InnoDB",
-      "unit":  "IOPS",
-      "title":  "I/O capacity max"
-    },
-    {
-      "name":  "innodb_read_io_threads",
-      "description":  "Background read threads.",
-      "int64":  {
-        "default":  "4",
-        "gte":  "1",
-        "lte":  "64"
-      },
-      "group":  "InnoDB",
-      "title":  "Read I/O threads"
-    },
-    {
-      "name":  "innodb_write_io_threads",
-      "description":  "Background write threads.",
-      "int64":  {
-        "default":  "4",
-        "gte":  "1",
-        "lte":  "64"
-      },
-      "group":  "InnoDB",
-      "title":  "Write I/O threads"
-    },
-    {
-      "name":  "innodb_lock_wait_timeout",
-      "description":  "Row-lock wait before the statement is rolled back.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "1",
-        "lte":  "1073741824"
-      },
-      "group":  "InnoDB",
-      "unit":  "s",
-      "title":  "Lock wait timeout"
-    },
-    {
-      "name":  "innodb_file_per_table",
-      "description":  "Store each table in its own .ibd tablespace. Deprecated since 11.0.1 — the shared tablespace is on its way out.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "ON"
-        }
-      },
-      "group":  "InnoDB",
-      "title":  "File per table"
-    },
-    {
-      "name":  "innodb_autoinc_lock_mode",
-      "description":  "0 = table lock, 1 = consecutive (the default), 2 = interleaved — the only mode Galera supports.",
-      "int64":  {
-        "default":  "1",
-        "in":  [
-          "0",
-          "1",
-          "2"
-        ]
-      },
-      "group":  "InnoDB",
-      "title":  "Auto-increment lock mode"
-    },
-    {
-      "name":  "log_bin",
-      "description":  "Base name of the binary logs; binary logging is off by default in MariaDB, setting this enables it.",
-      "string":  {
-        "default":  "binlog",
-        "minLen":  "1",
-        "maxLen":  "200"
-      },
-      "group":  "Binlog",
-      "title":  "Binary log base name"
-    },
-    {
-      "name":  "binlog_format",
-      "description":  "MariaDB's upstream default is MIXED; Galera requires ROW.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "MIXED"
-            },
-            "label":  "MIXED"
-          },
-          {
-            "value":  {
-              "stringValue":  "ROW"
-            },
-            "label":  "ROW"
-          },
-          {
-            "value":  {
-              "stringValue":  "STATEMENT"
-            },
-            "label":  "STATEMENT"
-          }
-        ],
-        "default":  {
-          "stringValue":  "MIXED"
-        }
-      },
-      "group":  "Binlog",
-      "title":  "Binlog format"
-    },
-    {
-      "name":  "binlog_row_image",
-      "description":  "How much of each row is logged.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "FULL"
-            },
-            "label":  "FULL"
-          },
-          {
-            "value":  {
-              "stringValue":  "MINIMAL"
-            },
-            "label":  "MINIMAL"
-          },
-          {
-            "value":  {
-              "stringValue":  "NOBLOB"
-            },
-            "label":  "NOBLOB"
-          }
-        ],
-        "default":  {
-          "stringValue":  "FULL"
-        }
-      },
-      "group":  "Binlog",
-      "title":  "Binlog row image"
-    },
-    {
-      "name":  "sync_binlog",
-      "description":  "fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS).",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4294967295"
-      },
-      "group":  "Binlog",
-      "title":  "Sync binlog"
-    },
-    {
-      "name":  "binlog_expire_logs_seconds",
-      "description":  "Purge age of the binary logs; 0 disables purging. Takes precedence over expire_logs_days.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4294967295"
-      },
-      "group":  "Binlog",
-      "unit":  "s",
-      "title":  "Binlog retention"
-    },
-    {
-      "name":  "log_slave_updates",
-      "description":  "Write replicated events into this server's own binary log.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Binlog",
-      "title":  "Log slave updates"
-    },
-    {
-      "name":  "gtid_strict_mode",
-      "description":  "Refuse out-of-order GTIDs; MariaDB has no gtid_mode — GTIDs always exist.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "GTID",
-      "title":  "GTID strict mode"
-    },
-    {
-      "name":  "gtid_domain_id",
-      "description":  "Replication domain this server writes to; a multi-source or multi-writer setup needs distinct domains.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4294967295"
-      },
-      "group":  "GTID",
-      "title":  "GTID domain id"
-    },
-    {
-      "name":  "gtid_ignore_duplicates",
-      "description":  "Skip events whose GTID was already applied in that domain.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "GTID",
-      "title":  "Ignore duplicate GTIDs"
-    },
-    {
-      "name":  "rpl_semi_sync_master_enabled",
-      "description":  "Semisynchronous primary side. MariaDB keeps the master/slave names and needs no plugin_load.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Replication",
-      "title":  "Semisync master"
-    },
-    {
-      "name":  "rpl_semi_sync_master_timeout",
-      "description":  "Wait for a replica ack before falling back to asynchronous.",
-      "int64":  {
-        "default":  "10000",
-        "gte":  "0",
-        "lte":  "4294967295"
-      },
-      "group":  "Replication",
-      "unit":  "ms",
-      "title":  "Semisync timeout"
-    },
-    {
-      "name":  "rpl_semi_sync_master_wait_point",
-      "description":  "AFTER_SYNC acks before the storage commit, AFTER_COMMIT after it.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "AFTER_COMMIT"
-            },
-            "label":  "AFTER_COMMIT"
-          },
-          {
-            "value":  {
-              "stringValue":  "AFTER_SYNC"
-            },
-            "label":  "AFTER_SYNC"
-          }
-        ],
-        "default":  {
-          "stringValue":  "AFTER_COMMIT"
-        }
-      },
-      "group":  "Replication",
-      "title":  "Semisync wait point"
-    },
-    {
-      "name":  "rpl_semi_sync_slave_enabled",
-      "description":  "Semisynchronous replica side.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Replication",
-      "title":  "Semisync slave"
-    },
-    {
-      "name":  "slave_parallel_threads",
-      "description":  "Applier worker threads; 0 = single-threaded. MariaDB has no replica_parallel_workers.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "16383"
-      },
-      "group":  "Replication",
-      "title":  "Parallel applier threads"
-    },
-    {
-      "name":  "slave_parallel_mode",
-      "description":  "How aggressively the applier parallelizes.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "optimistic"
-            },
-            "label":  "optimistic"
-          },
-          {
-            "value":  {
-              "stringValue":  "conservative"
-            },
-            "label":  "conservative"
-          },
-          {
-            "value":  {
-              "stringValue":  "aggressive"
-            },
-            "label":  "aggressive"
-          },
-          {
-            "value":  {
-              "stringValue":  "minimal"
-            },
-            "label":  "minimal"
-          },
-          {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none"
-          }
-        ],
-        "default":  {
-          "stringValue":  "optimistic"
-        }
-      },
-      "group":  "Replication",
-      "title":  "Parallel applier mode"
-    },
-    {
-      "name":  "read_only",
-      "description":  "Reject writes from clients without SUPER — set on replicas.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Replication",
-      "title":  "Read only"
-    },
-    {
-      "name":  "wsrep_on",
-      "description":  "Enable write-set replication; the whole wsrep_* block below is only rendered when this is ON.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Galera",
-      "title":  "Galera enabled"
-    },
-    {
-      "name":  "wsrep_provider",
-      "description":  "Path to the Galera library.",
-      "string":  {
-        "default":  "/usr/lib/galera/libgalera_smm.so",
-        "minLen":  "1",
-        "maxLen":  "255"
-      },
-      "group":  "Galera",
-      "title":  "Galera provider"
-    },
-    {
-      "name":  "wsrep_cluster_name",
-      "description":  "Logical cluster name; must be identical on every node.",
-      "string":  {
-        "default":  "stroppy",
-        "minLen":  "1",
-        "maxLen":  "64"
-      },
-      "group":  "Galera",
-      "title":  "Cluster name"
-    },
-    {
-      "name":  "wsrep_sst_method",
-      "description":  "How a joiner gets a full state snapshot. mariabackup is non-blocking; rsync blocks the donor.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "mariabackup"
-            },
-            "label":  "mariabackup"
-          },
-          {
-            "value":  {
-              "stringValue":  "rsync"
-            },
-            "label":  "rsync"
-          },
-          {
-            "value":  {
-              "stringValue":  "mysqldump"
-            },
-            "label":  "mysqldump"
-          }
-        ],
-        "default":  {
-          "stringValue":  "mariabackup"
-        }
-      },
-      "group":  "Galera",
-      "title":  "SST method"
-    },
-    {
-      "name":  "wsrep_sst_auth",
-      "description":  "user:password for backup SST; filled by the server from topology, unused by rsync.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
-      },
-      "group":  "Cluster",
-      "title":  "SST credentials",
-      "secret":  true
-    },
-    {
-      "name":  "wsrep_slave_threads",
-      "description":  "Threads applying write-sets from other nodes.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "512"
-      },
-      "group":  "Galera",
-      "title":  "Galera applier threads"
-    },
-    {
-      "name":  "wsrep_sync_wait",
-      "description":  "Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "15"
-      },
-      "group":  "Galera",
-      "title":  "Sync wait bitmask"
-    },
-    {
-      "name":  "bind_address",
-      "description":  "Address mariadbd listens on.",
-      "string":  {
-        "default":  "0.0.0.0",
-        "minLen":  "1",
-        "maxLen":  "255"
-      },
-      "group":  "Connections",
-      "title":  "Bind address"
-    },
-    {
-      "name":  "port",
-      "description":  "TCP port.",
-      "int64":  {
-        "default":  "3306",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Connections",
-      "title":  "Port"
-    },
-    {
-      "name":  "max_connections",
-      "description":  "Maximum simultaneous client connections.",
-      "int64":  {
-        "default":  "151",
-        "gte":  "1",
-        "lte":  "100000"
-      },
-      "group":  "Connections",
-      "title":  "Max connections"
-    },
-    {
-      "name":  "max_connect_errors",
-      "description":  "Failed handshakes from one host before it is blocked.",
-      "int64":  {
-        "default":  "100",
-        "gte":  "1",
-        "lte":  "4294967295"
-      },
-      "group":  "Connections",
-      "title":  "Max connect errors"
-    },
-    {
-      "name":  "thread_cache_size",
-      "description":  "Threads kept for reuse.",
-      "int64":  {
-        "default":  "256",
-        "gte":  "0",
-        "lte":  "16384"
-      },
-      "group":  "Connections",
-      "title":  "Thread cache size"
-    },
-    {
-      "name":  "wait_timeout",
-      "description":  "Idle seconds before a non-interactive connection is closed.",
-      "int64":  {
-        "default":  "28800",
-        "gte":  "1",
-        "lte":  "31536000"
-      },
-      "group":  "Connections",
-      "unit":  "s",
-      "title":  "Wait timeout"
-    },
-    {
-      "name":  "interactive_timeout",
-      "description":  "Idle seconds before an interactive connection is closed.",
-      "int64":  {
-        "default":  "28800",
-        "gte":  "1",
-        "lte":  "31536000"
-      },
-      "group":  "Connections",
-      "unit":  "s",
-      "title":  "Interactive timeout"
-    },
-    {
-      "name":  "max_allowed_packet",
-      "description":  "Largest single packet.",
-      "int64":  {
-        "default":  "16",
-        "gte":  "1",
-        "lte":  "1024"
-      },
-      "group":  "Connections",
-      "unit":  "MB",
-      "title":  "Max allowed packet"
-    },
-    {
-      "name":  "table_open_cache",
-      "description":  "Open table handles cached across sessions.",
-      "int64":  {
-        "default":  "2000",
-        "gte":  "1",
-        "lte":  "1048576"
-      },
-      "group":  "Tables",
-      "title":  "Table open cache"
-    },
-    {
-      "name":  "table_definition_cache",
-      "description":  "Cached table definitions.",
-      "int64":  {
-        "default":  "400",
-        "gte":  "256",
-        "lte":  "524288"
-      },
-      "group":  "Tables",
-      "title":  "Table definition cache"
-    },
-    {
-      "name":  "tmp_table_size",
-      "description":  "Largest in-memory internal temporary table.",
-      "int64":  {
-        "default":  "16",
-        "gte":  "1",
-        "lte":  "65536"
-      },
-      "group":  "Tables",
-      "unit":  "MB",
-      "title":  "Temp table size"
-    },
-    {
-      "name":  "max_heap_table_size",
-      "description":  "Largest MEMORY table; also caps tmp_table_size.",
-      "int64":  {
-        "default":  "16",
-        "gte":  "1",
-        "lte":  "65536"
-      },
-      "group":  "Tables",
-      "unit":  "MB",
-      "title":  "Max heap table size"
-    },
-    {
-      "name":  "open_files_limit",
-      "description":  "File descriptors requested from the OS.",
-      "int64":  {
-        "default":  "32768",
-        "gte":  "1024",
-        "lte":  "1048576"
-      },
-      "group":  "Tables",
-      "title":  "Open files limit"
-    },
-    {
-      "name":  "sql_mode",
-      "description":  "MariaDB's default (unchanged since 10.2.4 and identical in 10.11 and 11.4) still contains NO_AUTO_CREATE_USER, which MySQL 8 removed.",
-      "string":  {
-        "default":  "STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
-        "maxLen":  "1024"
-      },
-      "group":  "SQL",
-      "title":  "SQL mode"
-    },
-    {
-      "name":  "character_set_server",
-      "description":  "MariaDB's upstream default is latin1 until 11.6; stroppy pins utf8mb4 so results are comparable with MySQL runs.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "utf8mb4"
-            },
-            "label":  "utf8mb4"
-          },
-          {
-            "value":  {
-              "stringValue":  "utf8mb3"
-            },
-            "label":  "utf8mb3"
-          },
-          {
-            "value":  {
-              "stringValue":  "latin1"
-            },
-            "label":  "latin1"
-          }
-        ],
-        "default":  {
-          "stringValue":  "utf8mb4"
-        }
-      },
-      "group":  "SQL",
-      "title":  "Server character set"
-    },
-    {
-      "name":  "collation_server",
-      "description":  "Must belong to character_set_server. MariaDB's own default is latin1_swedish_ci up to 11.7 and utf8mb4_uca1400_ai_ci from 11.8; stroppy keeps utf8mb4_general_ci on every line so MariaDB runs stay comparable with each other and with MySQL.",
-      "string":  {
-        "default":  "utf8mb4_general_ci",
-        "minLen":  "1",
-        "maxLen":  "64"
-      },
-      "group":  "SQL",
-      "title":  "Server collation"
-    },
-    {
-      "name":  "default_time_zone",
-      "description":  "Server time zone; a fixed offset keeps benchmark timestamps reproducible.",
-      "string":  {
-        "default":  "+00:00",
-        "minLen":  "1",
-        "maxLen":  "64"
-      },
-      "group":  "SQL",
-      "title":  "Default time zone"
-    },
-    {
-      "name":  "lower_case_table_names",
-      "description":  "0 = as stored, 1 = lowercased, 2 = stored as given and compared lowercase. Fixed at datadir initialization.",
-      "int64":  {
-        "default":  "0",
-        "in":  [
-          "0",
-          "1",
-          "2"
-        ]
-      },
-      "group":  "SQL",
-      "title":  "Lower case table names"
-    },
-    {
-      "name":  "performance_schema",
-      "description":  "Instrumentation engine; off by default in MariaDB.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Performance schema",
-      "title":  "Performance schema"
-    },
-    {
-      "name":  "general_log",
-      "description":  "Log every statement — far too expensive during a load test.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Logging",
-      "title":  "General log"
-    },
-    {
-      "name":  "log_slow_query",
-      "description":  "Log statements slower than log_slow_query_time. Renamed from slow_query_log in 10.11.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "Logging",
-      "title":  "Slow query log"
-    },
-    {
-      "name":  "log_slow_query_time",
-      "description":  "Slow-query threshold in seconds; fractions allowed.",
-      "double":  {
-        "default":  10,
-        "gte":  0,
-        "lte":  31536000
-      },
-      "group":  "Logging",
-      "unit":  "s",
-      "title":  "Slow query threshold"
-    },
-    {
-      "name":  "log_slow_verbosity",
-      "description":  "Comma-separated extras in the slow log (query_plan, innodb, explain, engine, warnings, full, all); empty by default.",
-      "string":  {
-        "default":  "",
-        "maxLen":  "255"
-      },
-      "group":  "Logging",
-      "title":  "Slow log verbosity"
-    },
-    {
-      "name":  "log_warnings",
-      "description":  "Error-log verbosity. MariaDB has no log_error_verbosity; this is its equivalent.",
-      "int64":  {
-        "default":  "2",
-        "gte":  "0",
-        "lte":  "11"
-      },
-      "group":  "Logging",
-      "title":  "Warning verbosity"
-    },
-    {
-      "name":  "innodb_doublewrite",
-      "description":  "Torn-page protection. 11.x adds `fast`, which skips the doublewrite fsync on already-durable storage.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          },
-          {
-            "value":  {
-              "stringValue":  "fast"
-            },
-            "label":  "fast"
-          }
-        ],
-        "default":  {
-          "stringValue":  "ON"
-        }
-      },
-      "group":  "InnoDB",
-      "title":  "Doublewrite buffer"
-    },
-    {
-      "name":  "innodb_log_file_buffering",
-      "description":  "Let the OS page cache buffer redo writes. Part of the set that replaced innodb_flush_method in 11.0.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "InnoDB",
-      "title":  "Buffer the redo log"
-    },
-    {
-      "name":  "innodb_data_file_buffering",
-      "description":  "Let the OS page cache buffer data-file writes; OFF is the O_DIRECT equivalent.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ON"
-            },
-            "label":  "on"
-          },
-          {
-            "value":  {
-              "stringValue":  "OFF"
-            },
-            "label":  "off"
-          }
-        ],
-        "default":  {
-          "stringValue":  "OFF"
-        }
-      },
-      "group":  "InnoDB",
-      "title":  "Buffer the data files"
-    },
-    {
-      "name":  "transaction_isolation",
-      "description":  "Default isolation level; the MySQL-compatible name, available since 11.1. tx_isolation still works but is deprecated.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "READ-UNCOMMITTED"
-            },
-            "label":  "READ UNCOMMITTED"
-          },
-          {
-            "value":  {
-              "stringValue":  "READ-COMMITTED"
-            },
-            "label":  "READ COMMITTED"
-          },
-          {
-            "value":  {
-              "stringValue":  "REPEATABLE-READ"
-            },
-            "label":  "REPEATABLE READ"
-          },
-          {
-            "value":  {
-              "stringValue":  "SERIALIZABLE"
-            },
-            "label":  "SERIALIZABLE"
-          }
-        ],
-        "default":  {
-          "stringValue":  "REPEATABLE-READ"
-        }
-      },
-      "group":  "SQL",
-      "title":  "Transaction isolation"
-    },
-    {
-      "name":  "server_id",
-      "description":  "Unique replication id; filled by the server from topology.",
-      "nullable":  true,
-      "int64":  {
-        "gte":  "1",
-        "lte":  "4294967295"
-      },
-      "group":  "Cluster",
-      "title":  "Server id"
-    },
-    {
-      "name":  "report_host",
-      "description":  "Address this replica reports to its primary; filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
-      },
-      "group":  "Cluster",
-      "title":  "Report host"
-    },
-    {
-      "name":  "wsrep_cluster_address",
-      "description":  "gcomm:// URL listing the cluster members; filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "4096"
-      },
-      "group":  "Cluster",
-      "title":  "Galera cluster address"
-    },
-    {
-      "name":  "wsrep_node_address",
-      "description":  "This node's ip[:port] for group communication; filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
-      },
-      "group":  "Cluster",
-      "title":  "Galera node address"
-    },
-    {
-      "name":  "wsrep_node_name",
-      "description":  "This node's name inside the cluster; filled by the server from topology.",
-      "nullable":  true,
-      "string":  {
-        "maxLen":  "255"
-      },
-      "group":  "Cluster",
-      "title":  "Galera node name"
-    },
-    {
-      "name":  "custom",
-      "description":  "Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map":  {
-        "maxEntries":  "128",
-        "valueField":  {
-          "name":  "value",
-          "string":  {}
-        }
-      },
-      "group":  "Custom",
-      "title":  "Extra settings"
-    },
-    {
-      "name":  "cluster_lines",
-      "description":  "Rendered topology lines (server_id, report_host).",
-      "computed":  {
-        "expr":  "((\"server_id\" in root) ? \"server_id\" + \" = \" + string(root[\"server_id\"]) + \"\\n\" : \"\") +\n((\"report_host\" in root) ? \"report_host\" + \" = \" + string(root[\"report_host\"]) + \"\\n\" : \"\")",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Rendered",
-      "title":  "Cluster lines"
-    },
-    {
-      "name":  "galera_lines",
-      "description":  "The whole wsrep_* block, emitted only when wsrep_on is ON.",
-      "computed":  {
-        "expr":  "(((\"wsrep_on\" in root) && root.wsrep_on == \"ON\") ? (\"wsrep_on = ON\\n\" +\n((\"wsrep_provider\" in root) ? \"wsrep_provider\" + \" = \" + string(root[\"wsrep_provider\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_name\" in root) ? \"wsrep_cluster_name\" + \" = \" + string(root[\"wsrep_cluster_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_cluster_address\" in root) ? \"wsrep_cluster_address\" + \" = \" + string(root[\"wsrep_cluster_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_address\" in root) ? \"wsrep_node_address\" + \" = \" + string(root[\"wsrep_node_address\"]) + \"\\n\" : \"\") +\n((\"wsrep_node_name\" in root) ? \"wsrep_node_name\" + \" = \" + string(root[\"wsrep_node_name\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_method\" in root) ? \"wsrep_sst_method\" + \" = \" + string(root[\"wsrep_sst_method\"]) + \"\\n\" : \"\") +\n((\"wsrep_sst_auth\" in root) ? \"wsrep_sst_auth\" + \" = \" + string(root[\"wsrep_sst_auth\"]) + \"\\n\" : \"\") +\n((\"wsrep_slave_threads\" in root) ? \"wsrep_slave_threads\" + \" = \" + string(root[\"wsrep_slave_threads\"]) + \"\\n\" : \"\") +\n((\"wsrep_sync_wait\" in root) ? \"wsrep_sync_wait\" + \" = \" + string(root[\"wsrep_sync_wait\"]) + \"\\n\" : \"\")) : \"wsrep_on = OFF\\n\")",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Rendered",
-      "title":  "Galera lines"
-    },
-    {
-      "name":  "custom_rendered",
-      "description":  "The `custom` map joined into config lines; the template prints it at the end of the file.",
-      "computed":  {
-        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Custom",
-      "title":  "Rendered extra settings"
+      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "id": "custom-keys",
+      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$"
     }
   ],
-  "rules":  [
-    {
-      "expr":  "!(\"innodb_io_capacity\" in root) || !(\"innodb_io_capacity_max\" in root) || int(root.innodb_io_capacity_max) >= int(root.innodb_io_capacity)",
-      "message":  "innodb_io_capacity_max must be >= innodb_io_capacity",
-      "id":  "io-capacity-order"
-    },
-    {
-      "expr":  "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || (!(\"binlog_format\" in root) || root.binlog_format == \"ROW\")",
-      "message":  "Galera requires binlog_format = ROW",
-      "id":  "galera-binlog-format"
-    },
-    {
-      "expr":  "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || ((\"innodb_autoinc_lock_mode\" in root) && int(root.innodb_autoinc_lock_mode) == 2)",
-      "message":  "Galera requires innodb_autoinc_lock_mode = 2",
-      "id":  "galera-autoinc-lock-mode"
-    },
-    {
-      "expr":  "!(\"wsrep_on\" in root) || root.wsrep_on != \"ON\" || ((\"wsrep_provider\" in root) && string(root.wsrep_provider) != \"\")",
-      "message":  "Galera requires wsrep_provider",
-      "id":  "galera-provider"
-    },
-    {
-      "expr":  "!(\"max_heap_table_size\" in root) || !(\"tmp_table_size\" in root) || int(root.max_heap_table_size) >= int(root.tmp_table_size)",
-      "message":  "max_heap_table_size must be >= tmp_table_size",
-      "id":  "heap-ge-tmp"
-    },
-    {
-      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id":  "custom-keys"
-    }
-  ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# MariaDB 11.4 — generated by stroppy, do not edit by hand\n[mariadb]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\ninnodb_log_file_size = {{{values.innodb_log_file_size}}}M\ninnodb_log_buffer_size = {{{values.innodb_log_buffer_size}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_autoinc_lock_mode = {{{values.innodb_autoinc_lock_mode}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_log_file_buffering = {{{values.innodb_log_file_buffering}}}\ninnodb_data_file_buffering = {{{values.innodb_data_file_buffering}}}\n\n# Binary log\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\nlog_slave_updates = {{{values.log_slave_updates}}}\n{{{values.cluster_lines}}}\n# GTID\ngtid_strict_mode = {{{values.gtid_strict_mode}}}\ngtid_domain_id = {{{values.gtid_domain_id}}}\ngtid_ignore_duplicates = {{{values.gtid_ignore_duplicates}}}\n\n# Replication\nrpl_semi_sync_master_enabled = {{{values.rpl_semi_sync_master_enabled}}}\nrpl_semi_sync_master_timeout = {{{values.rpl_semi_sync_master_timeout}}}\nrpl_semi_sync_master_wait_point = {{{values.rpl_semi_sync_master_wait_point}}}\nrpl_semi_sync_slave_enabled = {{{values.rpl_semi_sync_slave_enabled}}}\nslave_parallel_threads = {{{values.slave_parallel_threads}}}\nslave_parallel_mode = {{{values.slave_parallel_mode}}}\nread_only = {{{values.read_only}}}\n\n# Galera\n{{{values.galera_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nlog_slow_query = {{{values.log_slow_query}}}\nlog_slow_query_time = {{{values.log_slow_query_time}}}\nlog_slow_verbosity = {{{values.log_slow_verbosity}}}\nlog_warnings = {{{values.log_warnings}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
+  "strict": true,
+  "templates": {
+    "conf": "# MariaDB 11.4 — generated by stroppy, do not edit by hand\n[mariadb]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\ninnodb_log_file_size = {{{values.innodb_log_file_size}}}M\ninnodb_log_buffer_size = {{{values.innodb_log_buffer_size}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_autoinc_lock_mode = {{{values.innodb_autoinc_lock_mode}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_log_file_buffering = {{{values.innodb_log_file_buffering}}}\ninnodb_data_file_buffering = {{{values.innodb_data_file_buffering}}}\n\n# Binary log\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\nlog_slave_updates = {{{values.log_slave_updates}}}\n{{{values.cluster_lines}}}\n# GTID\ngtid_strict_mode = {{{values.gtid_strict_mode}}}\ngtid_domain_id = {{{values.gtid_domain_id}}}\ngtid_ignore_duplicates = {{{values.gtid_ignore_duplicates}}}\n\n# Replication\nrpl_semi_sync_master_enabled = {{{values.rpl_semi_sync_master_enabled}}}\nrpl_semi_sync_master_timeout = {{{values.rpl_semi_sync_master_timeout}}}\nrpl_semi_sync_master_wait_point = {{{values.rpl_semi_sync_master_wait_point}}}\nrpl_semi_sync_slave_enabled = {{{values.rpl_semi_sync_slave_enabled}}}\nslave_parallel_threads = {{{values.slave_parallel_threads}}}\nslave_parallel_mode = {{{values.slave_parallel_mode}}}\nread_only = {{{values.read_only}}}\n\n# Galera\n{{{values.galera_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nlog_slow_query = {{{values.log_slow_query}}}\nlog_slow_query_time = {{{values.log_slow_query_time}}}\nlog_slow_verbosity = {{{values.log_slow_verbosity}}}\nlog_warnings = {{{values.log_warnings}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
   }
 }

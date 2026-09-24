@@ -15,6 +15,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/schemajson"
 )
 
 var update = flag.Bool("update", false, "rewrite golden files")
@@ -125,12 +126,12 @@ func golden(t *testing.T, s *schemapb.Schema) {
 	dir := findGoldenDir(t)
 	name := ids.Public(s.GetId()) + ".json"
 	path := filepath.Join(dir, name)
-	got, err := protojson.MarshalOptions{Multiline: true, Indent: "  "}.Marshal(s)
+	got, err := schemajson.Marshal(s)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if *update {
-		if err := os.WriteFile(path, append(got, '\n'), 0o644); err != nil { //nolint:gosec // golden file in the repo
+		if err := os.WriteFile(path, got, 0o644); err != nil { //nolint:gosec // golden file in the repo
 			t.Fatal(err)
 		}
 		return

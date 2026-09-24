@@ -1,82 +1,78 @@
 {
-  "id": {
-    "namespace": "provider",
-    "name": "yandex.settings",
-    "version": "v1.0.0"
-  },
+  "coerce": true,
   "description": "Yandex Cloud placement settings of a tenant provider profile (no secrets).",
   "fields": [
     {
-      "name": "cloud_id",
       "description": "Yandex Cloud cloud id owning the folder.",
-      "required": true,
-      "string": {
-        "pattern": "^[a-z0-9]{20}$"
-      },
-      "group": "Account",
-      "title": "Cloud id",
       "examples": [
         {
           "stringValue": "b1glku4lgd6gabcdefgh"
         }
-      ]
-    },
-    {
-      "name": "folder_id",
-      "description": "Folder every VM, disk and network of a run is created in.",
+      ],
+      "group": "Account",
+      "name": "cloud_id",
       "required": true,
       "string": {
         "pattern": "^[a-z0-9]{20}$"
       },
-      "group": "Account",
-      "title": "Folder id",
+      "title": "Cloud id"
+    },
+    {
+      "description": "Folder every VM, disk and network of a run is created in.",
       "examples": [
         {
           "stringValue": "b1gia87mbaomkfvsleds"
         }
-      ]
+      ],
+      "group": "Account",
+      "name": "folder_id",
+      "required": true,
+      "string": {
+        "pattern": "^[a-z0-9]{20}$"
+      },
+      "title": "Folder id"
     },
     {
-      "name": "zone",
-      "description": "Availability zone of ru-central1 the run is placed in.",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "ru-central1-a"
-            },
-            "label": "ru-central1-a"
-          },
-          {
-            "value": {
-              "stringValue": "ru-central1-b"
-            },
-            "label": "ru-central1-b"
-          },
-          {
-            "value": {
-              "stringValue": "ru-central1-d"
-            },
-            "label": "ru-central1-d (recommended)"
-          },
-          {
-            "value": {
-              "stringValue": "ru-central1-e"
-            },
-            "label": "ru-central1-e"
-          }
-        ],
         "default": {
           "stringValue": "ru-central1-d"
-        }
+        },
+        "options": [
+          {
+            "label": "ru-central1-a",
+            "value": {
+              "stringValue": "ru-central1-a"
+            }
+          },
+          {
+            "label": "ru-central1-b",
+            "value": {
+              "stringValue": "ru-central1-b"
+            }
+          },
+          {
+            "label": "ru-central1-d (recommended)",
+            "value": {
+              "stringValue": "ru-central1-d"
+            }
+          },
+          {
+            "label": "ru-central1-e",
+            "value": {
+              "stringValue": "ru-central1-e"
+            }
+          }
+        ]
       },
+      "description": "Availability zone of ru-central1 the run is placed in.",
       "group": "Placement",
+      "name": "zone",
+      "required": true,
       "title": "Zone"
     },
     {
-      "name": "zones",
       "description": "Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.",
+      "group": "Placement",
       "list": {
         "items": [
           {
@@ -85,80 +81,80 @@
             }
           }
         ],
-        "minItems": "3",
         "maxItems": "3",
+        "minItems": "3",
         "unique": true
       },
-      "group": "Placement",
+      "name": "zones",
       "title": "Distributed topology zones"
     },
     {
-      "name": "platform_id",
-      "description": "Compute platform (CPU generation) the machines are created on.",
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "standard-v1"
-            },
-            "label": "Intel Broadwell (standard-v1)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v2"
-            },
-            "label": "Intel Cascade Lake (standard-v2)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v3"
-            },
-            "label": "Intel Ice Lake (standard-v3)"
-          },
-          {
-            "value": {
-              "stringValue": "standard-v4a"
-            },
-            "label": "AMD Zen 4 (standard-v4a)"
-          },
-          {
-            "value": {
-              "stringValue": "amd-v1"
-            },
-            "label": "AMD Zen 3 (amd-v1)"
-          },
-          {
-            "value": {
-              "stringValue": "highfreq-v3"
-            },
-            "label": "Intel Ice Lake compute-optimized (highfreq-v3)"
-          },
-          {
-            "value": {
-              "stringValue": "highfreq-v4a"
-            },
-            "label": "AMD Zen 4 compute-optimized (highfreq-v4a)"
-          }
-        ],
         "default": {
           "stringValue": "standard-v3"
-        }
+        },
+        "options": [
+          {
+            "label": "Intel Broadwell (standard-v1)",
+            "value": {
+              "stringValue": "standard-v1"
+            }
+          },
+          {
+            "label": "Intel Cascade Lake (standard-v2)",
+            "value": {
+              "stringValue": "standard-v2"
+            }
+          },
+          {
+            "label": "Intel Ice Lake (standard-v3)",
+            "value": {
+              "stringValue": "standard-v3"
+            }
+          },
+          {
+            "label": "AMD Zen 4 (standard-v4a)",
+            "value": {
+              "stringValue": "standard-v4a"
+            }
+          },
+          {
+            "label": "AMD Zen 3 (amd-v1)",
+            "value": {
+              "stringValue": "amd-v1"
+            }
+          },
+          {
+            "label": "Intel Ice Lake compute-optimized (highfreq-v3)",
+            "value": {
+              "stringValue": "highfreq-v3"
+            }
+          },
+          {
+            "label": "AMD Zen 4 compute-optimized (highfreq-v4a)",
+            "value": {
+              "stringValue": "highfreq-v4a"
+            }
+          }
+        ]
       },
+      "description": "Compute platform (CPU generation) the machines are created on.",
       "group": "Placement",
+      "name": "platform_id",
       "title": "Platform"
     },
     {
-      "name": "network",
       "description": "Create a throwaway network for every run, or place runs into an existing one.",
-      "required": true,
+      "group": "Network",
+      "name": "network",
       "oneOf": {
         "discriminator": "kind",
         "variants": {
           "create": {
             "fields": [
               {
-                "name": "subnet_cidr",
                 "description": "IPv4 range of the subnet created for the run.",
+                "name": "subnet_cidr",
                 "string": {
                   "default": "10.130.0.0/24",
                   "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
@@ -170,8 +166,8 @@
           "existing": {
             "fields": [
               {
-                "name": "network_id",
                 "description": "Existing VPC network the machines join.",
+                "name": "network_id",
                 "required": true,
                 "string": {
                   "pattern": "^[a-z0-9]{20}$"
@@ -179,8 +175,8 @@
                 "title": "Network id"
               },
               {
-                "name": "subnet_id",
                 "description": "Existing subnet in the chosen zone.",
+                "name": "subnet_id",
                 "required": true,
                 "string": {
                   "pattern": "^[a-z0-9]{20}$"
@@ -188,8 +184,8 @@
                 "title": "Subnet id"
               },
               {
-                "name": "security_group_id",
                 "description": "Existing security group applied to every machine.",
+                "name": "security_group_id",
                 "string": {
                   "pattern": "^[a-z0-9]{20}$"
                 },
@@ -199,78 +195,82 @@
           }
         }
       },
-      "group": "Network",
+      "required": true,
       "title": "Network"
     },
     {
-      "name": "public_ips",
-      "description": "Assign a one-to-one NAT public address to every machine.",
       "bool": {
         "default": true
       },
+      "description": "Assign a one-to-one NAT public address to every machine.",
       "group": "Network",
+      "name": "public_ips",
       "title": "Public IPs"
     },
     {
-      "name": "image_family",
-      "description": "Boot image family from the standard-images folder.",
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "ubuntu-2404-lts"
-            },
-            "label": "Ubuntu 24.04 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "ubuntu-2204-lts"
-            },
-            "label": "Ubuntu 22.04 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "ubuntu-2004-lts"
-            },
-            "label": "Ubuntu 20.04 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "debian-12"
-            },
-            "label": "Debian 12"
-          },
-          {
-            "value": {
-              "stringValue": "centos-stream-9-oslogin"
-            },
-            "label": "CentOS Stream 9"
-          }
-        ],
         "default": {
           "stringValue": "ubuntu-2404-lts"
-        }
+        },
+        "options": [
+          {
+            "label": "Ubuntu 24.04 LTS",
+            "value": {
+              "stringValue": "ubuntu-2404-lts"
+            }
+          },
+          {
+            "label": "Ubuntu 22.04 LTS",
+            "value": {
+              "stringValue": "ubuntu-2204-lts"
+            }
+          },
+          {
+            "label": "Ubuntu 20.04 LTS",
+            "value": {
+              "stringValue": "ubuntu-2004-lts"
+            }
+          },
+          {
+            "label": "Debian 12",
+            "value": {
+              "stringValue": "debian-12"
+            }
+          },
+          {
+            "label": "CentOS Stream 9",
+            "value": {
+              "stringValue": "centos-stream-9-oslogin"
+            }
+          }
+        ]
       },
+      "description": "Boot image family from the standard-images folder.",
       "group": "Placement",
+      "name": "image_family",
       "title": "Image family"
     },
     {
-      "name": "preemptible",
-      "description": "Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete.",
       "bool": {
         "default": false
       },
+      "description": "Use preemptible VMs: much cheaper, but stopped after 24h or under pressure — do not use for a measurement that must complete.",
       "group": "Placement",
+      "name": "preemptible",
       "title": "Preemptible"
     }
   ],
+  "id": {
+    "name": "yandex.settings",
+    "namespace": "provider",
+    "version": "v1.0.0"
+  },
   "rules": [
     {
       "expr": "[this == null ? root : this].all(s, !(\"network\" in s) || s.network.kind == \"create\")",
-      "message": "existing networks are not implemented by the pipeline; use a run-owned network",
-      "id": "network-create-only"
+      "id": "network-create-only",
+      "message": "existing networks are not implemented by the pipeline; use a run-owned network"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict": true
 }

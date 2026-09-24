@@ -1,354 +1,354 @@
 {
-  "id":  {
-    "namespace":  "test",
-    "name":  "sizes",
-    "version":  "v1.0.0"
-  },
-  "description":  "Per-role machine sizing of a test: a T-shirt size and an optional disk override.",
-  "fields":  [
-    {
-      "name":  "roles",
-      "description":  "Keys are topology roles (db, db-replica, proxy, runner, coordinator); the server validates them against the database topology.",
-      "required":  true,
-      "map":  {
-        "valueSchema":  {
-          "fields":  [
-            {
-              "name":  "size",
-              "description":  "T-shirt size; the platform size table turns it into a machine.",
-              "required":  true,
-              "choice":  {
-                "options":  [
-                  {
-                    "value":  {
-                      "stringValue":  "XS"
-                    },
-                    "label":  "XS"
-                  },
-                  {
-                    "value":  {
-                      "stringValue":  "S"
-                    },
-                    "label":  "S"
-                  },
-                  {
-                    "value":  {
-                      "stringValue":  "M"
-                    },
-                    "label":  "M"
-                  },
-                  {
-                    "value":  {
-                      "stringValue":  "L"
-                    },
-                    "label":  "L"
-                  },
-                  {
-                    "value":  {
-                      "stringValue":  "XL"
-                    },
-                    "label":  "XL"
-                  }
-                ]
-              },
-              "title":  "Size"
-            },
-            {
-              "name":  "machine",
-              "description":  "Override any hardware field from the selected preset; explicit disks replace the preset disk list.",
-              "ref":  {
-                "name":  "machine"
-              },
-              "group":  "Sizing",
-              "title":  "Machine"
-            },
-            {
-              "name":  "disk",
-              "description":  "Overrides the disk the size table would pick; absent means take the default.",
-              "nullable":  true,
-              "object":  {
-                "schema":  {
-                  "fields":  [
-                    {
-                      "name":  "type",
-                      "description":  "Provider disk type id; empty keeps the size table's default.",
-                      "string":  {
-                        "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
-                      },
-                      "title":  "Disk type"
-                    },
-                    {
-                      "name":  "gb",
-                      "description":  "Data disk size; empty keeps the size table's default.",
-                      "int64":  {
-                        "gte":  "10",
-                        "lte":  "262144"
-                      },
-                      "unit":  "GB",
-                      "title":  "Size"
-                    }
-                  ],
-                  "strict":  true
-                }
-              },
-              "title":  "Disk"
-            }
-          ],
-          "strict":  true
-        },
-        "minEntries":  "1",
-        "maxEntries":  "16"
-      },
-      "group":  "Sizing",
-      "title":  "Roles"
-    }
-  ],
-  "strict":  true,
-  "coerce":  true,
-  "defs":  {
-    "machine":  {
-      "id":  {
-        "namespace":  "test",
-        "name":  "machine",
-        "version":  "v1.0.0"
-      },
-      "fields":  [
+  "coerce": true,
+  "defs": {
+    "machine": {
+      "fields": [
         {
-          "name":  "cpu",
-          "int64":  {
-            "gte":  "1",
-            "lte":  "288"
+          "int64": {
+            "gte": "1",
+            "lte": "288"
           },
-          "title":  "vCPU"
+          "name": "cpu",
+          "title": "vCPU"
         },
         {
-          "name":  "memory_gb",
-          "int64":  {
-            "gte":  "1",
-            "lte":  "4096"
+          "int64": {
+            "gte": "1",
+            "lte": "4096"
           },
-          "unit":  "GB",
-          "title":  "Memory"
+          "name": "memory_gb",
+          "title": "Memory",
+          "unit": "GB"
         },
         {
-          "name":  "boot_disk",
-          "description":  "Omit for a 40 GiB SSD OS disk.",
-          "nullable":  true,
-          "object":  {
-            "schema":  {
-              "fields":  [
+          "description": "Omit for a 40 GiB SSD OS disk.",
+          "group": "Storage",
+          "name": "boot_disk",
+          "nullable": true,
+          "object": {
+            "schema": {
+              "fields": [
                 {
-                  "name":  "block_size",
-                  "description":  "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
-                  "int64":  {
-                    "gte":  "4096",
-                    "lte":  "131072"
+                  "description": "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
+                  "group": "Storage",
+                  "int64": {
+                    "gte": "4096",
+                    "lte": "131072"
                   },
-                  "group":  "Storage",
-                  "unit":  "bytes",
-                  "title":  "Physical block size"
+                  "name": "block_size",
+                  "title": "Physical block size",
+                  "unit": "bytes"
                 },
                 {
-                  "name":  "gb",
-                  "description":  "OS disk size in GiB; must fit the selected image.",
-                  "required":  true,
-                  "int64":  {
-                    "gte":  "10",
-                    "lte":  "262144"
+                  "description": "OS disk size in GiB; must fit the selected image.",
+                  "group": "Storage",
+                  "int64": {
+                    "gte": "10",
+                    "lte": "262144"
                   },
-                  "group":  "Storage",
-                  "unit":  "GiB",
-                  "title":  "Size"
+                  "name": "gb",
+                  "required": true,
+                  "title": "Size",
+                  "unit": "GiB"
                 },
                 {
-                  "name":  "type",
-                  "description":  "Cloud disk type.",
-                  "required":  true,
-                  "string":  {
-                    "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                  "description": "Cloud disk type.",
+                  "group": "Storage",
+                  "name": "type",
+                  "required": true,
+                  "string": {
+                    "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                   },
-                  "group":  "Storage",
-                  "title":  "Type"
+                  "title": "Type"
                 }
               ],
-              "strict":  true
+              "strict": true
             }
           },
-          "group":  "Storage",
-          "title":  "Boot disk"
+          "title": "Boot disk"
         },
         {
-          "name":  "core_fraction",
-          "description":  "YC guaranteed CPU percentage; omission means 100. Unsupported on AWS.",
-          "int64":  {
-            "gte":  "5",
-            "lte":  "100"
+          "description": "YC guaranteed CPU percentage; omission means 100. Unsupported on AWS.",
+          "group": "Compute",
+          "int64": {
+            "gte": "5",
+            "lte": "100"
           },
-          "group":  "Compute",
-          "unit":  "%",
-          "title":  "Guaranteed CPU"
+          "name": "core_fraction",
+          "title": "Guaranteed CPU",
+          "unit": "%"
         },
         {
-          "name":  "preemptible",
-          "description":  "Override the provider profile's preemptible/spot setting; explicit false is preserved.",
-          "bool":  {},
-          "group":  "Compute",
-          "title":  "Preemptible"
+          "bool": {},
+          "description": "Override the provider profile's preemptible/spot setting; explicit false is preserved.",
+          "group": "Compute",
+          "name": "preemptible",
+          "title": "Preemptible"
         },
         {
-          "name":  "public_ip",
-          "description":  "Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls.",
-          "bool":  {},
-          "group":  "Network",
-          "title":  "Public IP"
+          "bool": {},
+          "description": "Override public addressing for this VM; outbound connectivity remains required for the agent and image pulls.",
+          "group": "Network",
+          "name": "public_ip",
+          "title": "Public IP"
         },
         {
-          "name":  "disks",
-          "description":  "Secondary disks beyond the boot disk.",
-          "list":  {
-            "items":  [
+          "description": "Secondary disks beyond the boot disk.",
+          "list": {
+            "items": [
               {
-                "object":  {
-                  "schema":  {
-                    "fields":  [
+                "object": {
+                  "schema": {
+                    "fields": [
                       {
-                        "name":  "block_size",
-                        "description":  "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
-                        "int64":  {
-                          "gte":  "4096",
-                          "lte":  "131072"
+                        "description": "YC physical block size in bytes (4096..131072 powers of two); omitted selects the smallest size that fits the disk. AWS does not expose this setting.",
+                        "group": "Storage",
+                        "int64": {
+                          "gte": "4096",
+                          "lte": "131072"
                         },
-                        "group":  "Storage",
-                        "unit":  "bytes",
-                        "title":  "Physical block size"
+                        "name": "block_size",
+                        "title": "Physical block size",
+                        "unit": "bytes"
                       },
                       {
-                        "name":  "name",
-                        "required":  true,
-                        "string":  {
-                          "pattern":  "^[a-z][a-z0-9-]{0,62}$"
+                        "name": "name",
+                        "required": true,
+                        "string": {
+                          "pattern": "^[a-z][a-z0-9-]{0,62}$"
                         },
-                        "title":  "Device name"
+                        "title": "Device name"
                       },
                       {
-                        "name":  "gb",
-                        "required":  true,
-                        "int64":  {
-                          "gte":  "1",
-                          "lte":  "262144"
+                        "int64": {
+                          "gte": "1",
+                          "lte": "262144"
                         },
-                        "unit":  "GB",
-                        "title":  "Size"
+                        "name": "gb",
+                        "required": true,
+                        "title": "Size",
+                        "unit": "GB"
                       },
                       {
-                        "name":  "type",
-                        "description":  "Provider disk type id, e.g. network-ssd (yandex) or gp3 (aws).",
-                        "required":  true,
-                        "string":  {
-                          "pattern":  "^[a-z0-9][a-z0-9-]{0,31}$"
+                        "description": "Provider disk type id, e.g. network-ssd (yandex) or gp3 (aws).",
+                        "name": "type",
+                        "required": true,
+                        "string": {
+                          "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
                         },
-                        "title":  "Disk type"
+                        "title": "Disk type"
                       },
                       {
-                        "name":  "filesystem",
-                        "description":  "Automatic filesystem for mounted YC disks; omit for ext4. No mount means a raw block device.",
-                        "choice":  {
-                          "options":  [
+                        "choice": {
+                          "options": [
                             {
-                              "value":  {
-                                "stringValue":  "ext4"
-                              },
-                              "label":  "ext4"
+                              "label": "ext4",
+                              "value": {
+                                "stringValue": "ext4"
+                              }
                             },
                             {
-                              "value":  {
-                                "stringValue":  "xfs"
-                              },
-                              "label":  "XFS"
+                              "label": "XFS",
+                              "value": {
+                                "stringValue": "xfs"
+                              }
                             }
                           ]
                         },
-                        "group":  "Storage",
-                        "title":  "Filesystem"
+                        "description": "Automatic filesystem for mounted YC disks; omit for ext4. No mount means a raw block device.",
+                        "group": "Storage",
+                        "name": "filesystem",
+                        "title": "Filesystem"
                       },
                       {
-                        "name":  "mount_options",
-                        "description":  "mount/fstab options, e.g. noatime; omission uses defaults.",
-                        "list":  {
-                          "items":  [
+                        "description": "mount/fstab options, e.g. noatime; omission uses defaults.",
+                        "group": "Storage",
+                        "list": {
+                          "items": [
                             {
-                              "string":  {
-                                "maxLen":  "128",
-                                "pattern":  "^[A-Za-z0-9_=.-]+$"
+                              "string": {
+                                "maxLen": "128",
+                                "pattern": "^[A-Za-z0-9_=.-]+$"
                               }
                             }
                           ],
-                          "maxItems":  "32"
+                          "maxItems": "32"
                         },
-                        "group":  "Storage",
-                        "title":  "Mount options"
+                        "name": "mount_options",
+                        "title": "Mount options"
                       },
                       {
-                        "name":  "mount",
-                        "description":  "Absolute path host_prep mounts the disk at; empty leaves it raw.",
-                        "string":  {
-                          "pattern":  "^/[A-Za-z0-9._/-]*$"
+                        "description": "Absolute path host_prep mounts the disk at; empty leaves it raw.",
+                        "name": "mount",
+                        "string": {
+                          "pattern": "^/[A-Za-z0-9._/-]*$"
                         },
-                        "title":  "Mount point"
+                        "title": "Mount point"
                       }
                     ],
-                    "strict":  true
+                    "strict": true
                   }
                 }
               }
             ],
-            "maxItems":  "16"
+            "maxItems": "16"
           },
-          "title":  "Extra disks"
+          "name": "disks",
+          "title": "Extra disks"
         },
         {
-          "name":  "image",
-          "description":  "Resolved boot image (family id, image id or AMI id).",
-          "string":  {
-            "minLen":  "1",
-            "maxLen":  "256"
+          "description": "Resolved boot image (family id, image id or AMI id).",
+          "name": "image",
+          "string": {
+            "maxLen": "256",
+            "minLen": "1"
           },
-          "title":  "Image"
+          "title": "Image"
         },
         {
-          "name":  "location",
-          "description":  "Zone (yandex) or availability zone (aws) the machine is created in.",
-          "string":  {
-            "minLen":  "1",
-            "maxLen":  "64"
+          "description": "Zone (yandex) or availability zone (aws) the machine is created in.",
+          "name": "location",
+          "string": {
+            "maxLen": "64",
+            "minLen": "1"
           },
-          "title":  "Location"
+          "title": "Location"
         },
         {
-          "name":  "instance_type",
-          "description":  "Platform id (yandex) or EC2 instance type (aws) from the size table.",
-          "string":  {
-            "minLen":  "1",
-            "maxLen":  "64"
+          "description": "Platform id (yandex) or EC2 instance type (aws) from the size table.",
+          "name": "instance_type",
+          "string": {
+            "maxLen": "64",
+            "minLen": "1"
           },
-          "title":  "Instance type"
+          "title": "Instance type"
         },
         {
-          "name":  "labels",
-          "description":  "Provider labels; the run and role labels are added by the pipeline.",
-          "map":  {
-            "maxEntries":  "32",
-            "valueField":  {
-              "name":  "value",
-              "string":  {
-                "maxLen":  "255"
+          "description": "Provider labels; the run and role labels are added by the pipeline.",
+          "map": {
+            "maxEntries": "32",
+            "valueField": {
+              "name": "value",
+              "string": {
+                "maxLen": "255"
               }
             }
           },
-          "title":  "Labels"
+          "name": "labels",
+          "title": "Labels"
         }
       ],
-      "strict":  true
+      "id": {
+        "name": "machine",
+        "namespace": "test",
+        "version": "v1.0.0"
+      },
+      "strict": true
     }
-  }
+  },
+  "description": "Per-role machine sizing of a test: a T-shirt size and an optional disk override.",
+  "fields": [
+    {
+      "description": "Keys are topology roles (db, db-replica, proxy, runner, coordinator); the server validates them against the database topology.",
+      "group": "Sizing",
+      "map": {
+        "maxEntries": "16",
+        "minEntries": "1",
+        "valueSchema": {
+          "fields": [
+            {
+              "choice": {
+                "options": [
+                  {
+                    "label": "XS",
+                    "value": {
+                      "stringValue": "XS"
+                    }
+                  },
+                  {
+                    "label": "S",
+                    "value": {
+                      "stringValue": "S"
+                    }
+                  },
+                  {
+                    "label": "M",
+                    "value": {
+                      "stringValue": "M"
+                    }
+                  },
+                  {
+                    "label": "L",
+                    "value": {
+                      "stringValue": "L"
+                    }
+                  },
+                  {
+                    "label": "XL",
+                    "value": {
+                      "stringValue": "XL"
+                    }
+                  }
+                ]
+              },
+              "description": "T-shirt size; the platform size table turns it into a machine.",
+              "name": "size",
+              "required": true,
+              "title": "Size"
+            },
+            {
+              "description": "Override any hardware field from the selected preset; explicit disks replace the preset disk list.",
+              "group": "Sizing",
+              "name": "machine",
+              "ref": {
+                "name": "machine"
+              },
+              "title": "Machine"
+            },
+            {
+              "description": "Overrides the disk the size table would pick; absent means take the default.",
+              "name": "disk",
+              "nullable": true,
+              "object": {
+                "schema": {
+                  "fields": [
+                    {
+                      "description": "Provider disk type id; empty keeps the size table's default.",
+                      "name": "type",
+                      "string": {
+                        "pattern": "^[a-z0-9][a-z0-9-]{0,31}$"
+                      },
+                      "title": "Disk type"
+                    },
+                    {
+                      "description": "Data disk size; empty keeps the size table's default.",
+                      "int64": {
+                        "gte": "10",
+                        "lte": "262144"
+                      },
+                      "name": "gb",
+                      "title": "Size",
+                      "unit": "GB"
+                    }
+                  ],
+                  "strict": true
+                }
+              },
+              "title": "Disk"
+            }
+          ],
+          "strict": true
+        }
+      },
+      "name": "roles",
+      "required": true,
+      "title": "Roles"
+    }
+  ],
+  "id": {
+    "name": "sizes",
+    "namespace": "test",
+    "version": "v1.0.0"
+  },
+  "strict": true
 }

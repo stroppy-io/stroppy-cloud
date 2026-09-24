@@ -1564,26 +1564,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/t/{slug}/runs/{id}:rerun-resume": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Resume from the failure point. When the stand is still alive (`stand_kept`) the new run adopts it
-         *     and restarts the workload from the failed segment; otherwise degrades to `rerun` (`resumed: false`).
-         */
-        post: operations["resumeRun"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/t/{slug}/runs/{id}:save-as-test": {
         parameters: {
             query?: never;
@@ -3573,13 +3553,26 @@ export interface components {
                 last_failure?: string;
             };
         };
+        /** @description A record of the run with what it owns and what it talks to — the run's topology, drawn from one call: nodes are the records (machines, containers, agents, artifacts), edges are their declared flows. A finished run keeps its records here, with phase `deleted`. */
         ResourceTree: {
             ref: string;
             kind: string;
             phase?: string;
+            /** @description Record markers. A container of a run carries `container`, `role`, `machine` and `kind` (database, proxy, coordinator, exporter, addon); an agent carries `role` and `machine`. */
             labels?: {
                 [key: string]: string;
             };
+            /** @description Declared outgoing edges of this record (intent, not observed traffic). */
+            flows?: {
+                /** @description Target record ref ("docker/<run>-db-1-postgres") or an external endpoint. */
+                to: string;
+                /** @description tcp, http, grpc, otlp, prometheus_pull, … — an open vocabulary. */
+                protocol?: string;
+                port?: number;
+                label?: string;
+                /** @description A system edge that always exists (agent↔server) */
+                virtual?: boolean;
+            }[];
             /** Format: date-time */
             keep_until?: string | null;
             children?: components["schemas"]["ResourceTree"][];
@@ -7350,42 +7343,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Run"];
-                };
-            };
-            default: components["responses"]["Problem"];
-        };
-    };
-    resumeRun: {
-        parameters: {
-            query?: never;
-            header?: {
-                "Idempotency-Key"?: components["parameters"]["idempotencyKey"];
-            };
-            path: {
-                /** @description Tenant slug. */
-                slug: components["parameters"]["slug"];
-                id: components["parameters"]["id"];
-            };
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "application/json": {
-                    /** @description Override the segment to restart from. */
-                    from_segment?: string;
-                };
-            };
-        };
-        responses: {
-            /** @description Run. */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Run"] & {
-                        resumed?: boolean;
-                    };
                 };
             };
             default: components["responses"]["Problem"];

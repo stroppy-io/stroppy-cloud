@@ -317,34 +317,6 @@ func (h *Handler) RerunRun(ctx context.Context, req oas.OptLaunchOverrides, para
 	return h.runOf(r, nil), nil
 }
 
-// ResumeRun — rerun from the failed segment; degrades to a rerun when the
-// stand is gone (resumed=false).
-func (h *Handler) ResumeRun(ctx context.Context, req oas.OptResumeRunReq, params oas.ResumeRunParams) (*oas.ResumeRunCreated, error) {
-	a, t, err := h.tenantOf(ctx, params.Slug)
-	if err != nil {
-		return nil, err
-	}
-	from := ""
-	if v, ok := req.Get(); ok {
-		from = v.FromSegment.Or("")
-	}
-	r, resumed, err := h.deps.Runs.Resume(ctx, a, t.ID, params.ID, from, params.IdempotencyKey.Or(""))
-	if err != nil {
-		return nil, err
-	}
-	base := h.runOf(r, nil)
-	raw, err := json.Marshal(base)
-	if err != nil {
-		return nil, err
-	}
-	out := &oas.ResumeRunCreated{}
-	if err := out.UnmarshalJSON(raw); err != nil {
-		return nil, err
-	}
-	out.Resumed = oas.NewOptBool(resumed)
-	return out, nil
-}
-
 // --- reads ------------------------------------------------------------------
 
 func runListQueryOf(p oas.ListRunsParams) (run.ListQuery, int, error) {

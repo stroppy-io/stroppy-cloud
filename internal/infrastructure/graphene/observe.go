@@ -1,6 +1,7 @@
 package graphene
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 
 	managementv1 "github.com/graphene-ci/graphene/pkg/proto/management/v1"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 )
 
@@ -183,10 +185,11 @@ func (c *Client) KeepRelease(ctx context.Context, held string) error {
 // artifactBatch is GetMany's ceiling.
 const artifactBatch = 100
 
-// Artifacts describes artifact records. Visibility (List) carries no
-// state, so the records are read: the spec names the media type, the
-// state the verified blob. A record already gone (retention) is missing
-// from the answer and skipped.
+// Artifacts describes the artifact records that can still be downloaded.
+// Visibility (List) carries no state, so the records are read: the spec
+// names the media type, the state the verified blob. A record already
+// gone (retention, keep release) is missing from the answer, deleted or
+// without a blob — none of those is offered.
 func (c *Client) Artifacts(ctx context.Context, refs []string) ([]run.Artifact, error) {
 	out := make([]run.Artifact, 0, len(refs))
 	for start := 0; start < len(refs); start += artifactBatch {
@@ -196,14 +199,18 @@ func (c *Client) Artifacts(ctx context.Context, refs []string) ([]run.Artifact, 
 			return nil, fmt.Errorf("graphene: artifacts: %w", err)
 		}
 		for _, r := range resp.Msg.GetResources() {
-			out = append(out, artifactOf(r))
+			if a, ok := artifactOf(r); ok {
+				out = append(out, a)
+			}
 		}
 	}
 	return out, nil
 }
 
-// artifactOf reads one artifact record.
-func artifactOf(r *managementv1.Resource) run.Artifact {
+// artifactOf reads one artifact record; ok is false when the record is
+// on its way out or holds no bytes, so the API never offers a download
+// that cannot answer.
+func artifactOf(r *managementv1.Resource) (run.Artifact, bool) {
 	ref := r.GetRef()
 	name := strings.TrimPrefix(ref, "artifact/")
 	a := run.Artifact{Ref: ref, Name: name, Kind: artifactKind(name)}
@@ -215,8 +222,9 @@ func artifactOf(r *managementv1.Resource) run.Artifact {
 	}
 	var state struct {
 		Blob struct {
-			Size   int64  `json:"size"`
-			Digest string `json:"digest"`
+			Size     int64  `json:"size"`
+			Digest   string `json:"digest"`
+			Location string `json:"location"`
 		} `json:"blob"`
 	}
 	if json.Unmarshal(r.GetState(), &state) == nil {
@@ -226,7 +234,8 @@ func artifactOf(r *managementv1.Resource) run.Artifact {
 		t := at.AsTime()
 		a.CreatedAt = &t
 	}
-	return a
+	live := !r.GetMarkedForDeletion() && r.GetPhase() != "deleted" && state.Blob.Location != ""
+	return a, live
 }
 
 // artifactKind classifies by the pipeline's names: <run8>-stroppy-<segment>-config,
@@ -241,15 +250,29 @@ func artifactKind(name string) string {
 	return "other"
 }
 
-// Download streams an artifact's bytes.
+// Download streams an artifact's bytes. Connect reports a server-stream
+// failure on the first Receive rather than on the call, so the first
+// chunk is pulled here: a download that cannot answer fails before the
+// handler has written a 200 with the bytes half sent.
 func (c *Client) Download(ctx context.Context, ref string) (io.ReadCloser, error) {
 	stream, err := c.Resources.Download(ctx, connect.NewRequest(&managementv1.DownloadRequest{Ref: ref}))
 	if err != nil {
-		return nil, fmt.Errorf("graphene: download %s: %w", ref, err)
+		return nil, downloadError(ref, err)
+	}
+	var first []byte
+	if stream.Receive() {
+		first = bytes.Clone(stream.Msg().GetData())
+	} else if err := stream.Err(); err != nil {
+		_ = stream.Close()
+		return nil, downloadError(ref, err)
 	}
 	pr, pw := io.Pipe()
 	go func() {
-		defer stream.Close()
+		defer func() { _ = stream.Close() }()
+		if _, err := pw.Write(first); err != nil {
+			pw.CloseWithError(err)
+			return
+		}
 		for stream.Receive() {
 			if _, err := pw.Write(stream.Msg().GetData()); err != nil {
 				pw.CloseWithError(err)
@@ -259,4 +282,19 @@ func (c *Client) Download(ctx context.Context, ref string) (io.ReadCloser, error
 		pw.CloseWithError(stream.Err())
 	}()
 	return pr, nil
+}
+
+// downloadError states what the caller can do about it: a record or blob
+// that is gone is a 404, bytes that are not there yet a 409, anything
+// else an upstream failure.
+func downloadError(ref string, err error) error {
+	name := strings.TrimPrefix(ref, "artifact/")
+	switch connect.CodeOf(err) { //nolint:exhaustive // three outcomes the caller can act on; the rest is upstream
+	case connect.CodeNotFound:
+		return errs.NotFound("artifact " + name)
+	case connect.CodeFailedPrecondition:
+		return errs.Conflict("artifact " + name + " has no downloadable bytes")
+	default:
+		return errs.Wrap(errs.CodeUnavailable, "download "+ref, err)
+	}
 }

@@ -155,15 +155,6 @@ func (s *Service) Rerun(ctx context.Context, actor auth.Actor, tenantID, runID u
 	return s.launch(ctx, actor, tenantID, spec, testRef, o, idempotencyKey)
 }
 
-// Resume reruns from the failed segment on the previous stand. Stand
-// reuse needs the pipeline to attach foreign resources (open item 14 of
-// the working doc); until then it degrades to a rerun and says so.
-func (s *Service) Resume(ctx context.Context, actor auth.Actor, tenantID, runID uuid.UUID, fromSegment, idempotencyKey string) (Run, bool, error) {
-	_ = fromSegment
-	r, err := s.Rerun(ctx, actor, tenantID, runID, Overrides{Trigger: TriggerManual}, idempotencyKey)
-	return r, false, err
-}
-
 // snapshotSpec rebuilds a test spec from the snapshot (inline copies, so
 // a later library edit does not change what is rerun).
 func (r Run) snapshotSpec() library.TestSpec {
@@ -619,7 +610,9 @@ func (s *Service) Tree(ctx context.Context, actor auth.Actor, tenantID, id uuid.
 		return TreeNode{}, err
 	}
 	// What the run kept moved to the pipeline's stand and left the run's
-	// tree; the stand names this run as the holder, so it comes back here.
+	// tree; the stand names this run as the holder, so it comes back
+	// here — the kept infrastructure and the artifacts alike, because
+	// the tree is what the run still has.
 	if r.StandKept {
 		held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
 		if err != nil {
@@ -637,6 +630,21 @@ func (s *Service) Tree(ctx context.Context, actor auth.Actor, tenantID, id uuid.
 		}
 	}
 	return tree, nil
+}
+
+// standHoldings are the infrastructure holdings of a run: what keep
+// extends and what release tears down. The run's artifacts sit on the
+// same stand so they outlive the run, but they are downloads, not a
+// stand — releasing the stand must not destroy what the run produced.
+func standHoldings(held []Holding) []Holding {
+	out := make([]Holding, 0, len(held))
+	for _, h := range held {
+		if strings.HasPrefix(h.Ref, "artifact/") {
+			continue
+		}
+		out = append(out, h)
+	}
+	return out
 }
 
 // artifactRefs are the artifact records the run published: the pipeline
@@ -770,6 +778,7 @@ func (s *Service) KeepExtend(ctx context.Context, actor auth.Actor, tenantID, id
 	if err != nil {
 		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
 	}
+	held = standHoldings(held)
 	if len(held) == 0 {
 		return Run{}, errs.Conflict("the stand holds nothing of this run any more")
 	}
@@ -803,7 +812,7 @@ func (s *Service) KeepRelease(ctx context.Context, actor auth.Actor, tenantID, i
 	if err != nil {
 		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
 	}
-	for _, h := range held {
+	for _, h := range standHoldings(held) {
 		if err := s.graphene.KeepRelease(sctx, h.Ref); err != nil {
 			return Run{}, errs.Wrap(errs.CodeUnavailable, "release", err)
 		}

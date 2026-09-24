@@ -16,8 +16,13 @@ func metrics() []Metric {
 	}
 	return []Metric{
 		{
-			Key: "tps", Title: "Throughput", Description: "Completed transactions per second over the workload.", Unit: "tps", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true,
-			Expr: `sum(rate(stroppy_iterations_total{$native}[1m]))`,
+			// Stroppy counts a transaction only where the workload has
+			// them: an iteration is not one (a TPC-C iteration is one
+			// business transaction, a query-set iteration is none), so
+			// the series is the transaction counter, not the iteration
+			// counter, and it is empty for workloads that commit nothing.
+			Key: "tps", Title: "Throughput", Description: "Committed transactions per second; workloads that run no transactions (query sets) report none.", Unit: "tps", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true,
+			Expr: `sum(rate(stroppy_successful_transactions_total{$native}[1m]))`,
 		},
 		{Key: "latency_p50_ms", Title: "Latency p50", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.5")},
 		{Key: "latency_p95_ms", Title: "Latency p95", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.95")},
@@ -27,6 +32,14 @@ func metrics() []Metric {
 			Expr: `sum(stroppy_failed_iterations_total{$native}) + sum(stroppy_failed_queries_total{$native})`,
 		},
 		{Key: "iterations_total", Title: "Iterations", Unit: "count", HigherIsBetter: true, Group: "Workload", Scope: "result", Expr: `sum(stroppy_iterations_total{$native})`},
+		{
+			Key: "iterations_per_second", Title: "Iterations per second", Description: "Workload iterations completed per second, whatever an iteration does.", Unit: "1/s", HigherIsBetter: true, Group: "Workload", Scope: "result",
+			Expr: `sum(rate(stroppy_iterations_total{$native}[1m]))`,
+		},
+		{
+			Key: "queries_per_second", Title: "Queries per second", Description: "Statements the workload sent to the database per second.", Unit: "1/s", HigherIsBetter: true, Group: "Workload", Scope: "result",
+			Expr: `sum(rate(stroppy_run_query_operations_total{$native}[1m]))`,
+		},
 		{Key: "failed_iterations_total", Title: "Failed iterations", Unit: "count", Group: "Workload", Scope: "result", Expr: `sum(stroppy_failed_iterations_total{$native})`},
 		{Key: "failed_queries_total", Title: "Failed queries", Unit: "count", Group: "Workload", Scope: "result", Expr: `sum(stroppy_failed_queries_total{$native})`},
 		{

@@ -379,6 +379,26 @@ func TestE2ERuns(t *testing.T) {
 		if !strings.Contains(cmds, "stand/stroppy-run extend") || !strings.Contains(cmds, "stand/stroppy-run release") {
 			t.Fatalf("commands %s", cmds)
 		}
+		// Releasing the stand tears down the infrastructure, never the
+		// results: the artifacts are on the same stand so they outlive
+		// the run, and they are still there to download.
+		var arts struct {
+			Data []struct {
+				ID string `json:"id"`
+			} `json:"data"`
+		}
+		e.want(e.req(http.MethodGet, base+"/runs/"+id+"/artifacts", nil, tok), http.StatusOK, &arts)
+		if len(arts.Data) == 0 {
+			t.Fatal("release destroyed the run's artifacts")
+		}
+		if r := e.req(http.MethodGet, base+"/runs/"+id+"/artifacts/"+arts.Data[0].ID, nil, tok); r.Status != http.StatusOK {
+			t.Fatalf("download after release %d %s", r.Status, r.Body)
+		}
+		// Bytes that retention took answer with a status, not with a 200
+		// whose body turns out to be an error.
+		e.graphene.dropBlobs(id)
+		e.problem(e.req(http.MethodGet, base+"/runs/"+id+"/artifacts/"+arts.Data[0].ID, nil, tok), http.StatusNotFound, "not_found")
+		e.problem(e.req(http.MethodGet, base+"/runs/"+id+"/artifacts/nothing-like-this", nil, tok), http.StatusNotFound, "not_found")
 	})
 
 	t.Run("list, facets, favorites, patch, export", func(t *testing.T) {
@@ -453,16 +473,6 @@ func TestE2ERuns(t *testing.T) {
 		if !strings.Contains(deleted, "run/"+second.ID) {
 			t.Fatalf("graphene delete %s", deleted)
 		}
-
-		var resumed struct {
-			ID      string `json:"id"`
-			Resumed bool   `json:"resumed"`
-		}
-		e.want(e.req(http.MethodPost, base+"/runs/"+launched.ID+":rerun-resume", map[string]any{}, tok), http.StatusCreated, &resumed)
-		if resumed.Resumed {
-			t.Fatalf("resume should degrade to rerun: %+v", resumed)
-		}
-		e.want(e.req(http.MethodPost, base+"/runs/"+resumed.ID+":cancel", nil, tok), http.StatusOK, nil)
 
 		var saved struct {
 			ID     string `json:"id"`

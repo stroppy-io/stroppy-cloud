@@ -20,7 +20,6 @@ type Segment struct {
 	// ExtraParams are typed stroppy flags by flag name (load-workers) the
 	// schema does not model; rendered as `--<name> <value>`.
 	ExtraParams map[string]string `json:"extra_params,omitempty"`
-	Files       []SegmentFile     `json:"files,omitempty"`
 	Thresholds  Thresholds        `json:"thresholds,omitempty,omitzero"`
 	Seed        *uint64           `json:"seed,omitempty"`
 	Timeout     Duration          `json:"timeout,omitempty"`
@@ -87,14 +86,6 @@ type Thresholds struct {
 	ErrorRate *float64 `json:"error_rate,omitempty"`
 }
 
-// SegmentFile is a file shipped next to the config.
-type SegmentFile struct {
-	Name    string `json:"name"`
-	Kind    string `json:"kind,omitempty"`
-	Content string `json:"content,omitempty"`
-	Ref     string `json:"ref,omitempty"`
-}
-
 // DecodeSegments parses the workload segments of a run; the raw value is
 // kept in Raw, so the pipeline tolerates schema growth.
 func DecodeSegments(raw []json.RawMessage) ([]Segment, error) {
@@ -114,17 +105,4 @@ func DecodeSegments(raw []json.RawMessage) ([]Segment, error) {
 		out = append(out, s)
 	}
 	return out, nil
-}
-
-// MarshalJSON preserves explicitly empty inline files while omitting content
-// for an artifact reference, matching the schema's exclusive source rule.
-func (f SegmentFile) MarshalJSON() ([]byte, error) {
-	type plain SegmentFile
-	if f.Ref != "" {
-		return json.Marshal(plain(f))
-	}
-	return json.Marshal(struct {
-		plain
-		Content string `json:"content"`
-	}{plain(f), f.Content})
 }

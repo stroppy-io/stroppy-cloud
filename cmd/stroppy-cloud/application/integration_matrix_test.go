@@ -10,10 +10,13 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 )
 
-// TestE2EDatabaseMatrix launches every topology template of every
-// deployable database kind through the API — the server's compiler, the
-// real pipeline, the projection and the telemetry — and reads what the UI
-// shows for it: overview, logs, metrics, tree, artifacts.
+// TestE2EDatabaseMatrix launches every version of every topology template
+// of every deployable database kind through the API — the server's
+// compiler, the real pipeline, the projection and the telemetry — and
+// reads what the UI shows for it: overview, logs, metrics, tree,
+// artifacts. Every workload script the database's protocol supports is
+// run too, as the segments of the kind's default combination, so each
+// script's parameters are rendered against each database at least once.
 func TestE2EDatabaseMatrix(t *testing.T) {
 	e := e2eServer(t)
 	// The biggest template (ydb mirror-3-dc) needs 50 vCPU.
@@ -49,153 +52,226 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 		} `json:"data"`
 	}
 	e.want(e.req(http.MethodGet, "/api/v1/catalog/databases", nil, tok), http.StatusOK, &catalog)
+
+	var stroppy struct {
+		Versions []struct {
+			Version string `json:"version"`
+			Default bool   `json:"default"`
+			Scripts []struct {
+				ID        string   `json:"id"`
+				Protocols []string `json:"protocols"`
+			} `json:"scripts"`
+		} `json:"versions"`
+	}
+	e.want(e.req(http.MethodGet, "/api/v1/catalog/stroppy", nil, tok), http.StatusOK, &stroppy)
+	build := stroppy.Versions[0]
+	for _, v := range stroppy.Versions {
+		if v.Default {
+			build = v
+		}
+	}
+
 	for _, db := range catalog.Data {
 		if !db.Deployable {
 			continue
 		}
-		version := db.Versions[0].Version
+		defaultVersion := db.Versions[0].Version
 		for _, v := range db.Versions {
 			if v.Default {
-				version = v.Version
+				defaultVersion = v.Version
 			}
 		}
-		for _, topo := range db.Topologies {
-			t.Run(db.Kind+"/"+topo.ID, func(t *testing.T) {
-				params := map[string]any{}
-				for k, v := range topo.Params {
-					params[k] = v
+		// Every script the database speaks, run as the segments of the
+		// kind's default combination; the rest of the matrix is about
+		// deploying the database, not about the workload.
+		var scripts []string
+		for _, sc := range build.Scripts {
+			for _, p := range sc.Protocols {
+				if p == db.Protocols[0] {
+					scripts = append(scripts, sc.ID)
+					break
 				}
-				for _, k := range []string{"version", "image_tag"} {
-					if _, ok := params[k]; ok {
-						params[k] = version
+			}
+		}
+		for _, dbVersion := range db.Versions {
+			for _, topo := range db.Topologies {
+				version := dbVersion.Version
+				segments := []any{smokeSegment("smoke")}
+				if version == defaultVersion && topo.ID == db.Topologies[0].ID {
+					segments = scriptSegments(db.Protocols[0], scripts)
+				}
+				t.Run(db.Kind+"/"+version+"/"+topo.ID, func(t *testing.T) {
+					params := map[string]any{}
+					for k, v := range topo.Params {
+						params[k] = v
 					}
-				}
-				var dbv, wl struct {
-					ID string `json:"id"`
-				}
-				e.want(e.req(http.MethodPost, base+"/databases", map[string]any{"name": slug(db.Kind + "-" + topo.ID), "kind": db.Kind, "version": version, "params": params}, tok), http.StatusCreated, &dbv)
-				e.want(e.req(http.MethodPost, base+"/workloads", map[string]any{
-					"name": slug("smoke"), "stroppy_version": "6.0.0", "protocol": db.Protocols[0],
-					"segments": []any{map[string]any{"name": "smoke", "workload": map[string]any{"script": "simple"}, "run": map[string]any{"executor": "constant-vus", "vus": 2, "duration": "30s"}}},
-				}, tok), http.StatusCreated, &wl)
-				type testView struct {
-					ID         string `json:"id"`
-					Status     string `json:"status"`
-					Validation struct {
-						Issues []struct {
-							Code      string         `json:"code"`
-							Path      string         `json:"path"`
-							Message   string         `json:"message"`
-							Severity  string         `json:"severity"`
-							Suggested map[string]any `json:"suggested"`
-						} `json:"issues"`
-					} `json:"validation"`
-				}
-				var test testView
-				e.want(e.req(http.MethodPost, base+"/tests", map[string]any{
-					"name": slug(db.Kind + " " + topo.ID), "database": map[string]any{"ref": map[string]any{"id": dbv.ID}}, "workload": map[string]any{"ref": map[string]any{"id": wl.ID}},
-					"provider_profile_id": profiles.Data[0].ID, "sizes": map[string]any{},
-				}, tok), http.StatusCreated, &test)
-				// Take the sizes the server suggests, as the form does.
-				sizes := map[string]any{}
-				for _, i := range test.Validation.Issues {
-					role, ok := strings.CutPrefix(i.Path, "sizes.")
-					if !ok || i.Code != "required" {
-						continue
-					}
-					if i.Suggested != nil {
-						sizes[role] = i.Suggested
-					} else {
-						sizes[role] = map[string]any{"size": "XS"}
-					}
-				}
-				e.want(e.req(http.MethodPatch, base+"/tests/"+test.ID, map[string]any{"sizes": sizes}, tok), http.StatusOK, &test)
-				if test.Status != "ready" {
-					t.Fatalf("test not ready with %v: %+v", sizes, test.Validation.Issues)
-				}
-				var r runView
-				launched := e.req(http.MethodPost, base+"/tests/"+test.ID+":launch", map[string]any{}, tok)
-				if launched.Status != http.StatusCreated {
-					t.Fatalf("launch %d %s", launched.Status, launched.Body)
-				}
-				e.want(launched, http.StatusCreated, &r)
-				if r = finishRun(t, e, base, tok, r.ID); r.Status != "completed" {
-					t.Fatalf("run %s: %s", r.Status, r.StatusReason)
-				}
-				var ov overviewView
-				e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/overview", nil, tok), http.StatusOK, &ov)
-				if len(ov.Machines) == 0 {
-					t.Fatalf("no machines %+v", ov)
-				}
-				for _, m := range ov.Machines {
-					if m.Status != "ready" {
-						t.Fatalf("machine %+v", m)
-					}
-				}
-				for _, c := range ov.Components {
-					if c.Status != "ready" {
-						t.Fatalf("component %+v", c)
-					}
-				}
-				if ov.segment("smoke") != "completed" {
-					t.Fatalf("segments %+v", ov.WorkloadSegments)
-				}
-				var m struct {
-					Series []struct {
-						Key string `json:"key"`
-					} `json:"series"`
-					Errors []map[string]string `json:"errors"`
-				}
-				e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/metrics", nil, tok), http.StatusOK, &m)
-				keys := map[string]bool{}
-				for _, s := range m.Series {
-					keys[s.Key] = true
-				}
-				if len(m.Errors) != 0 || !keys["tps"] || !keys["node_cpu_usage"] {
-					t.Fatalf("metrics keys %v errors %v", keys, m.Errors)
-				}
-				var logs struct {
-					Data []struct {
-						Container string `json:"container"`
-					} `json:"data"`
-				}
-				e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/logs?limit=200", nil, tok), http.StatusOK, &logs)
-				if len(logs.Data) == 0 {
-					t.Fatal("no logs")
-				}
-				if n := artifactCount(t, e, base, tok, r.ID); n < 2 {
-					t.Fatalf("artifacts %d", n)
-				}
-				// The run's tree is its topology: every container says what
-				// it is, and a topology whose parts talk to each other says
-				// so with edges between them.
-				tree := runTree(t, e, base, tok, r.ID)
-				containers, workload := 0, 0
-				for _, n := range tree.flatten() {
-					for _, f := range n.Flows {
-						if f.To == "" || f.Protocol == "" {
-							t.Fatalf("edge %+v of %s", f, n.Ref)
+					for _, k := range []string{"version", "image_tag"} {
+						if _, ok := params[k]; ok {
+							params[k] = version
 						}
 					}
-					switch {
-					case n.Labels["container"] != "":
-						containers++
-						if n.Labels["kind"] == "" {
-							t.Fatalf("container without a kind: %+v", n.Labels)
-						}
-					case strings.HasPrefix(n.Ref, "agent/") && n.Labels["role"] == "runner":
-						// Whatever the topology, the workload reaches the
-						// database (or its proxy) from the runner's agent.
-						workload += len(n.Flows)
+					var dbv, wl struct {
+						ID string `json:"id"`
 					}
-				}
-				if containers == 0 {
-					t.Fatalf("no containers in the tree of %s", r.ID)
-				}
-				if workload != 1 && db.Kind != "noop" {
-					t.Fatalf("workload edges = %d in %s", workload, r.ID)
-				}
-			})
+					e.want(e.req(http.MethodPost, base+"/databases", map[string]any{"name": slug(db.Kind + "-" + topo.ID), "kind": db.Kind, "version": version, "params": params}, tok), http.StatusCreated, &dbv)
+					e.want(e.req(http.MethodPost, base+"/workloads", map[string]any{
+						"name": slug("smoke"), "stroppy_version": build.Version, "protocol": db.Protocols[0],
+						"segments": segments,
+					}, tok), http.StatusCreated, &wl)
+					type testView struct {
+						ID         string `json:"id"`
+						Status     string `json:"status"`
+						Validation struct {
+							Issues []struct {
+								Code      string         `json:"code"`
+								Path      string         `json:"path"`
+								Message   string         `json:"message"`
+								Severity  string         `json:"severity"`
+								Suggested map[string]any `json:"suggested"`
+							} `json:"issues"`
+						} `json:"validation"`
+					}
+					var test testView
+					e.want(e.req(http.MethodPost, base+"/tests", map[string]any{
+						"name": slug(db.Kind + " " + topo.ID), "database": map[string]any{"ref": map[string]any{"id": dbv.ID}}, "workload": map[string]any{"ref": map[string]any{"id": wl.ID}},
+						"provider_profile_id": profiles.Data[0].ID, "sizes": map[string]any{},
+					}, tok), http.StatusCreated, &test)
+					// Take the sizes the server suggests, as the form does.
+					sizes := map[string]any{}
+					for _, i := range test.Validation.Issues {
+						role, ok := strings.CutPrefix(i.Path, "sizes.")
+						if !ok || i.Code != "required" {
+							continue
+						}
+						if i.Suggested != nil {
+							sizes[role] = i.Suggested
+						} else {
+							sizes[role] = map[string]any{"size": "XS"}
+						}
+					}
+					e.want(e.req(http.MethodPatch, base+"/tests/"+test.ID, map[string]any{"sizes": sizes}, tok), http.StatusOK, &test)
+					if test.Status != "ready" {
+						t.Fatalf("test not ready with %v: %+v", sizes, test.Validation.Issues)
+					}
+					var r runView
+					launched := e.req(http.MethodPost, base+"/tests/"+test.ID+":launch", map[string]any{}, tok)
+					if launched.Status != http.StatusCreated {
+						t.Fatalf("launch %d %s", launched.Status, launched.Body)
+					}
+					e.want(launched, http.StatusCreated, &r)
+					if r = finishRun(t, e, base, tok, r.ID); r.Status != "completed" {
+						t.Fatalf("run %s: %s", r.Status, r.StatusReason)
+					}
+					var ov overviewView
+					e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/overview", nil, tok), http.StatusOK, &ov)
+					if len(ov.Machines) == 0 {
+						t.Fatalf("no machines %+v", ov)
+					}
+					for _, m := range ov.Machines {
+						if m.Status != "ready" {
+							t.Fatalf("machine %+v", m)
+						}
+					}
+					for _, c := range ov.Components {
+						if c.Status != "ready" {
+							t.Fatalf("component %+v", c)
+						}
+					}
+					for _, seg := range segments {
+						name := seg.(map[string]any)["name"].(string)
+						if ov.segment(name) != "completed" {
+							t.Fatalf("segment %s: %+v", name, ov.WorkloadSegments)
+						}
+					}
+					var m struct {
+						Series []struct {
+							Key string `json:"key"`
+						} `json:"series"`
+						Errors []map[string]string `json:"errors"`
+					}
+					e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/metrics", nil, tok), http.StatusOK, &m)
+					keys := map[string]bool{}
+					for _, s := range m.Series {
+						keys[s.Key] = true
+					}
+					if len(m.Errors) != 0 || !keys["iterations_per_second"] || !keys["node_cpu_usage"] {
+						t.Fatalf("metrics keys %v errors %v", keys, m.Errors)
+					}
+					var logs struct {
+						Data []struct {
+							Container string `json:"container"`
+						} `json:"data"`
+					}
+					e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/logs?limit=200", nil, tok), http.StatusOK, &logs)
+					if len(logs.Data) == 0 {
+						t.Fatal("no logs")
+					}
+					if n := artifactCount(t, e, base, tok, r.ID); n < 2 {
+						t.Fatalf("artifacts %d", n)
+					}
+					// The run's tree is its topology: every container says what
+					// it is, and a topology whose parts talk to each other says
+					// so with edges between them.
+					tree := runTree(t, e, base, tok, r.ID)
+					containers, workload := 0, 0
+					for _, n := range tree.flatten() {
+						for _, f := range n.Flows {
+							if f.To == "" || f.Protocol == "" {
+								t.Fatalf("edge %+v of %s", f, n.Ref)
+							}
+						}
+						switch {
+						case n.Labels["container"] != "":
+							containers++
+							if n.Labels["kind"] == "" {
+								t.Fatalf("container without a kind: %+v", n.Labels)
+							}
+						case strings.HasPrefix(n.Ref, "agent/") && n.Labels["role"] == "runner":
+							// Whatever the topology, the workload reaches the
+							// database (or its proxy) from the runner's agent.
+							workload += len(n.Flows)
+						}
+					}
+					if containers == 0 {
+						t.Fatalf("no containers in the tree of %s", r.ID)
+					}
+					if workload != 1 && db.Kind != "noop" {
+						t.Fatalf("workload edges = %d in %s", workload, r.ID)
+					}
+				})
+			}
 		}
 	}
+}
+
+// smokeSegment is the shortest measurable segment.
+func smokeSegment(name string) any {
+	return map[string]any{"name": name, "workload": map[string]any{"script": "simple"}, "run": map[string]any{"executor": "constant-vus", "vus": 2, "duration": "30s"}}
+}
+
+// scriptSegments is one segment per script, with the parameters each one
+// needs and a data volume that fits the matrix's disks.
+func scriptSegments(protocol string, scripts []string) []any {
+	out := make([]any, 0, len(scripts))
+	for _, id := range scripts {
+		params := map[string]any{"script": id}
+		switch id {
+		case "tpch/tx", "tpcds":
+			// A scale factor of 1 is a gigabyte of generated data.
+			params["scale_factor"] = 0.01
+		case "execute_sql":
+			params["sql_body"] = "--= probe\nSELECT 1"
+		}
+		name := strings.NewReplacer("/", "-", "_", "-").Replace(id)
+		seg := map[string]any{
+			"name": name, "workload": params,
+			"run": map[string]any{"executor": "shared-iterations", "vus": 2, "iterations": 100},
+		}
+		// Picodata loads TPC-DS but cannot query it.
+		if protocol == "picodata" && id == "tpcds" {
+			seg["no_steps"] = []any{"workload"}
+		}
+		out = append(out, seg)
+	}
+	return out
 }

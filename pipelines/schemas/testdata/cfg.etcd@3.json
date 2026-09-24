@@ -1,298 +1,298 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "etcd",
-    "version":  "v3.0.0"
-  },
-  "description":  "etcd 3.5 configuration file for the Patroni DCS.",
-  "fields":  [
+  "coerce": true,
+  "description": "etcd 3.5 configuration file for the Patroni DCS.",
+  "fields": [
     {
-      "name":  "name",
-      "description":  "Human-readable name of this etcd member; must be unique in the cluster. Filled by the server from the node's role index.",
-      "string":  {
-        "default":  "default",
-        "pattern":  "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
+      "description": "Human-readable name of this etcd member; must be unique in the cluster. Filled by the server from the node's role index.",
+      "group": "Cluster",
+      "name": "name",
+      "string": {
+        "default": "default",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
       },
-      "group":  "Cluster",
-      "title":  "Member name"
+      "title": "Member name"
     },
     {
-      "name":  "data_dir",
-      "description":  "Path to the member's data directory (WAL and snapshots).",
-      "string":  {
-        "default":  "/var/lib/etcd",
-        "pattern":  "^/.+$"
+      "description": "Path to the member's data directory (WAL and snapshots).",
+      "group": "Storage",
+      "name": "data_dir",
+      "string": {
+        "default": "/var/lib/etcd",
+        "pattern": "^/.+$"
       },
-      "group":  "Storage",
-      "title":  "Data directory"
+      "title": "Data directory"
     },
     {
-      "name":  "listen_peer_urls",
-      "description":  "Comma-separated URLs this member listens on for peer traffic.",
-      "string":  {
-        "default":  "http://0.0.0.0:2380",
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "description": "Comma-separated URLs this member listens on for peer traffic.",
+      "group": "Listen",
+      "name": "listen_peer_urls",
+      "string": {
+        "default": "http://0.0.0.0:2380",
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group":  "Listen",
-      "title":  "Listen peer URLs"
+      "title": "Listen peer URLs"
     },
     {
-      "name":  "listen_client_urls",
-      "description":  "Comma-separated URLs this member listens on for client traffic.",
-      "string":  {
-        "default":  "http://0.0.0.0:2379",
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "description": "Comma-separated URLs this member listens on for client traffic.",
+      "group": "Listen",
+      "name": "listen_client_urls",
+      "string": {
+        "default": "http://0.0.0.0:2379",
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group":  "Listen",
-      "title":  "Listen client URLs"
+      "title": "Listen client URLs"
     },
     {
-      "name":  "initial_advertise_peer_urls",
-      "description":  "Peer URLs the other members use to reach this one. Filled by the server from the node's address.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "description": "Peer URLs the other members use to reach this one. Filled by the server from the node's address.",
+      "group": "Cluster",
+      "name": "initial_advertise_peer_urls",
+      "nullable": true,
+      "string": {
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group":  "Cluster",
-      "title":  "Advertise peer URLs"
+      "title": "Advertise peer URLs"
     },
     {
-      "name":  "advertise_client_urls",
-      "description":  "Client URLs Patroni uses to reach this member. Filled by the server from the node's address.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "1024"
+      "description": "Client URLs Patroni uses to reach this member. Filled by the server from the node's address.",
+      "group": "Cluster",
+      "name": "advertise_client_urls",
+      "nullable": true,
+      "string": {
+        "maxLen": "1024",
+        "minLen": "1"
       },
-      "group":  "Cluster",
-      "title":  "Advertise client URLs"
+      "title": "Advertise client URLs"
     },
     {
-      "name":  "initial_cluster",
-      "description":  "Bootstrap membership as `name=peerURL` entries. Filled by the server from the etcd topology.",
-      "nullable":  true,
-      "list":  {
-        "items":  [
+      "description": "Bootstrap membership as `name=peerURL` entries. Filled by the server from the etcd topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "name":  "member",
-            "string":  {
-              "minLen":  "3",
-              "maxLen":  "256"
+            "name": "member",
+            "string": {
+              "maxLen": "256",
+              "minLen": "3"
             }
           }
         ],
-        "maxItems":  "16",
-        "unique":  true
+        "maxItems": "16",
+        "unique": true
       },
-      "group":  "Cluster",
-      "title":  "Initial cluster"
+      "name": "initial_cluster",
+      "nullable": true,
+      "title": "Initial cluster"
     },
     {
-      "name":  "initial_cluster_rendered",
-      "description":  "The initial_cluster list joined with commas — the literal value of the etcd key.",
-      "computed":  {
-        "expr":  "(\"initial_cluster\" in root) ? root.initial_cluster.join(\",\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"initial_cluster\" in root) ? root.initial_cluster.join(\",\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered initial cluster"
+      "description": "The initial_cluster list joined with commas — the literal value of the etcd key.",
+      "group": "Cluster",
+      "name": "initial_cluster_rendered",
+      "title": "Rendered initial cluster"
     },
     {
-      "name":  "initial_cluster_state",
-      "description":  "`new` bootstraps a fresh cluster, `existing` joins one that already exists.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "new"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "new"
-            },
-            "label":  "new"
+            "label": "new",
+            "value": {
+              "stringValue": "new"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "existing"
-            },
-            "label":  "existing"
+            "label": "existing",
+            "value": {
+              "stringValue": "existing"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "new"
-        }
+        ]
       },
-      "group":  "Cluster",
-      "title":  "Initial cluster state"
+      "description": "`new` bootstraps a fresh cluster, `existing` joins one that already exists.",
+      "group": "Cluster",
+      "name": "initial_cluster_state",
+      "title": "Initial cluster state"
     },
     {
-      "name":  "initial_cluster_token",
-      "description":  "Token isolating this cluster from any other etcd cluster on the same network.",
-      "string":  {
-        "default":  "etcd-cluster",
-        "minLen":  "1",
-        "maxLen":  "128"
+      "description": "Token isolating this cluster from any other etcd cluster on the same network.",
+      "group": "Cluster",
+      "name": "initial_cluster_token",
+      "string": {
+        "default": "etcd-cluster",
+        "maxLen": "128",
+        "minLen": "1"
       },
-      "group":  "Cluster",
-      "title":  "Initial cluster token"
+      "title": "Initial cluster token"
     },
     {
-      "name":  "heartbeat_interval",
-      "description":  "Interval between leader heartbeats; roughly the round-trip time between members.",
-      "int64":  {
-        "default":  "100",
-        "gte":  "1",
-        "lte":  "60000"
+      "description": "Interval between leader heartbeats; roughly the round-trip time between members.",
+      "group": "Raft",
+      "int64": {
+        "default": "100",
+        "gte": "1",
+        "lte": "60000"
       },
-      "group":  "Raft",
-      "unit":  "ms",
-      "title":  "Heartbeat interval"
+      "name": "heartbeat_interval",
+      "title": "Heartbeat interval",
+      "unit": "ms"
     },
     {
-      "name":  "election_timeout",
-      "description":  "Time a follower waits without a heartbeat before starting an election; etcd recommends 10x the heartbeat interval.",
-      "int64":  {
-        "default":  "1000",
-        "gte":  "10",
-        "lte":  "600000"
+      "description": "Time a follower waits without a heartbeat before starting an election; etcd recommends 10x the heartbeat interval.",
+      "group": "Raft",
+      "int64": {
+        "default": "1000",
+        "gte": "10",
+        "lte": "600000"
       },
-      "group":  "Raft",
-      "unit":  "ms",
-      "title":  "Election timeout"
+      "name": "election_timeout",
+      "title": "Election timeout",
+      "unit": "ms"
     },
     {
-      "name":  "snapshot_count",
-      "description":  "Committed transactions between snapshots to disk.",
-      "int64":  {
-        "default":  "100000",
-        "gte":  "1",
-        "lte":  "100000000"
+      "description": "Committed transactions between snapshots to disk.",
+      "group": "Storage",
+      "int64": {
+        "default": "100000",
+        "gte": "1",
+        "lte": "100000000"
       },
-      "group":  "Storage",
-      "title":  "Snapshot count"
+      "name": "snapshot_count",
+      "title": "Snapshot count"
     },
     {
-      "name":  "quota_backend_bytes",
-      "description":  "Alarm threshold for the backend size; 0 keeps etcd's default of 2GB.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "68719476736"
+      "description": "Alarm threshold for the backend size; 0 keeps etcd's default of 2GB.",
+      "group": "Storage",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "68719476736"
       },
-      "group":  "Storage",
-      "unit":  "B",
-      "title":  "Backend quota"
+      "name": "quota_backend_bytes",
+      "title": "Backend quota",
+      "unit": "B"
     },
     {
-      "name":  "auto_compaction_mode",
-      "description":  "`periodic` interprets the retention as a time window, `revision` as a number of revisions.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "periodic"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "periodic"
-            },
-            "label":  "periodic"
+            "label": "periodic",
+            "value": {
+              "stringValue": "periodic"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "revision"
-            },
-            "label":  "revision"
+            "label": "revision",
+            "value": {
+              "stringValue": "revision"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "periodic"
-        }
+        ]
       },
-      "group":  "Storage",
-      "title":  "Auto compaction mode"
+      "description": "`periodic` interprets the retention as a time window, `revision` as a number of revisions.",
+      "group": "Storage",
+      "name": "auto_compaction_mode",
+      "title": "Auto compaction mode"
     },
     {
-      "name":  "auto_compaction_retention",
-      "description":  "Retention for automatic compaction: '0' disables it, '1h' or '1' mean one hour in periodic mode.",
-      "string":  {
-        "default":  "1h",
-        "pattern":  "^[0-9]+[hm]?$"
+      "description": "Retention for automatic compaction: '0' disables it, '1h' or '1' mean one hour in periodic mode.",
+      "group": "Storage",
+      "name": "auto_compaction_retention",
+      "string": {
+        "default": "1h",
+        "pattern": "^[0-9]+[hm]?$"
       },
-      "group":  "Storage",
-      "title":  "Auto compaction retention"
+      "title": "Auto compaction retention"
     },
     {
-      "name":  "max_request_bytes",
-      "description":  "Largest client request etcd accepts.",
-      "int64":  {
-        "default":  "1572864",
-        "gte":  "1024",
-        "lte":  "104857600"
+      "description": "Largest client request etcd accepts.",
+      "group": "Limits",
+      "int64": {
+        "default": "1572864",
+        "gte": "1024",
+        "lte": "104857600"
       },
-      "group":  "Limits",
-      "unit":  "B",
-      "title":  "Max request bytes"
+      "name": "max_request_bytes",
+      "title": "Max request bytes",
+      "unit": "B"
     },
     {
-      "name":  "enable_v2",
-      "description":  "The deprecated etcd v2 API. Off: Patroni 3.x uses etcd3 exclusively.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Limits",
-      "title":  "Enable v2 API"
+      "description": "The deprecated etcd v2 API. Off: Patroni 3.x uses etcd3 exclusively.",
+      "group": "Limits",
+      "name": "enable_v2",
+      "title": "Enable v2 API"
     },
     {
-      "name":  "custom",
-      "description":  "Raw top-level etcd YAML keys appended verbatim; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
-      "map":  {
-        "valueField":  {
-          "name":  "value",
-          "string":  {}
+      "description": "Raw top-level etcd YAML keys appended verbatim; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "valueField": {
+          "name": "value",
+          "string": {}
         }
       },
-      "group":  "Custom",
-      "title":  "Extra etcd keys"
+      "name": "custom",
+      "title": "Extra etcd keys"
     },
     {
-      "name":  "custom_rendered",
-      "description":  "The `custom` map joined into YAML lines appended at the end of the file.",
-      "computed":  {
-        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \": \" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \": \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Custom",
-      "title":  "Rendered extra keys"
+      "description": "The `custom` map joined into YAML lines appended at the end of the file.",
+      "group": "Custom",
+      "name": "custom_rendered",
+      "title": "Rendered extra keys"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "etcd",
+    "namespace": "cfg",
+    "version": "v3.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
-      "message":  "custom keys must match ^[a-z_][a-z0-9_.]*$",
-      "id":  "custom-keys"
+      "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",
+      "id": "custom-keys",
+      "message": "custom keys must match ^[a-z_][a-z0-9_.]*$"
     },
     {
-      "expr":  "int(root.election_timeout) >= 5 * int(root.heartbeat_interval)",
-      "message":  "election-timeout should be at least 5x heartbeat-interval (etcd recommends 10x)",
-      "id":  "election-vs-heartbeat"
+      "expr": "int(root.election_timeout) \u003e= 5 * int(root.heartbeat_interval)",
+      "id": "election-vs-heartbeat",
+      "message": "election-timeout should be at least 5x heartbeat-interval (etcd recommends 10x)"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# etcd 3.5 configuration — generated by stroppy.\nname: {{{values.name}}}\ndata-dir: {{{values.data_dir}}}\nlisten-peer-urls: {{{values.listen_peer_urls}}}\nlisten-client-urls: {{{values.listen_client_urls}}}\n{{#values.initial_advertise_peer_urls}}initial-advertise-peer-urls: {{{.}}}\n{{/values.initial_advertise_peer_urls}}{{#values.advertise_client_urls}}advertise-client-urls: {{{.}}}\n{{/values.advertise_client_urls}}{{#values.initial_cluster_rendered}}initial-cluster: {{{values.initial_cluster_rendered}}}\n{{/values.initial_cluster_rendered}}initial-cluster-state: {{{values.initial_cluster_state}}}\ninitial-cluster-token: {{{values.initial_cluster_token}}}\nheartbeat-interval: {{{values.heartbeat_interval}}}\nelection-timeout: {{{values.election_timeout}}}\nsnapshot-count: {{{values.snapshot_count}}}\nquota-backend-bytes: {{{values.quota_backend_bytes}}}\nauto-compaction-mode: {{{values.auto_compaction_mode}}}\nauto-compaction-retention: \"{{{values.auto_compaction_retention}}}\"\nmax-request-bytes: {{{values.max_request_bytes}}}\nenable-v2: {{{values.enable_v2}}}\n{{#values.custom_rendered}}{{{values.custom_rendered}}}\n{{/values.custom_rendered}}"
+  "strict": true,
+  "templates": {
+    "conf": "# etcd 3.5 configuration — generated by stroppy.\nname: {{{values.name}}}\ndata-dir: {{{values.data_dir}}}\nlisten-peer-urls: {{{values.listen_peer_urls}}}\nlisten-client-urls: {{{values.listen_client_urls}}}\n{{#values.initial_advertise_peer_urls}}initial-advertise-peer-urls: {{{.}}}\n{{/values.initial_advertise_peer_urls}}{{#values.advertise_client_urls}}advertise-client-urls: {{{.}}}\n{{/values.advertise_client_urls}}{{#values.initial_cluster_rendered}}initial-cluster: {{{values.initial_cluster_rendered}}}\n{{/values.initial_cluster_rendered}}initial-cluster-state: {{{values.initial_cluster_state}}}\ninitial-cluster-token: {{{values.initial_cluster_token}}}\nheartbeat-interval: {{{values.heartbeat_interval}}}\nelection-timeout: {{{values.election_timeout}}}\nsnapshot-count: {{{values.snapshot_count}}}\nquota-backend-bytes: {{{values.quota_backend_bytes}}}\nauto-compaction-mode: {{{values.auto_compaction_mode}}}\nauto-compaction-retention: \"{{{values.auto_compaction_retention}}}\"\nmax-request-bytes: {{{values.max_request_bytes}}}\nenable-v2: {{{values.enable_v2}}}\n{{#values.custom_rendered}}{{{values.custom_rendered}}}\n{{/values.custom_rendered}}"
   }
 }

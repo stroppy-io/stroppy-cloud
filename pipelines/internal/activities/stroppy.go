@@ -21,7 +21,6 @@ import (
 
 	"github.com/graphene-ci/pipeline/pkg/machine"
 	"github.com/graphene-ci/pipeline/pkg/obs"
-	"github.com/graphene-ci/pipeline/pkg/workerapi"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/stroppycfg"
@@ -44,9 +43,7 @@ const (
 
 // RunSegmentRequest runs one workload segment on the runner machine.
 type RunSegmentRequest struct {
-	// FileBlobs are artifact locations resolved in the workflow; bytes stay on the agent.
-	FileBlobs map[string]string `json:"file_blobs,omitempty"`
-	RunID     string            `json:"run_id"`
+	RunID string `json:"run_id"`
 	// Segment is the decoded workload.segment value.
 	Segment spec.Segment `json:"segment"`
 	// Index orders the segment inside the workload (directory name).
@@ -309,12 +306,9 @@ func shortID(id string) string {
 	return id
 }
 
-// writeSegmentInputs writes stroppy-config.json, the CA certificate and the
-// segment files; returns the config path.
-func writeSegmentInputsContext(ctx context.Context, dir string, req RunSegmentRequest) (string, error) {
-	if err := writeSegmentFiles(ctx, dir, req.Segment.Files, req.FileBlobs, workerapi.GetBlob); err != nil {
-		return "", err
-	}
+// writeSegmentInputs writes stroppy-config.json and the CA certificate;
+// returns the config path.
+func writeSegmentInputsContext(_ context.Context, dir string, req RunSegmentRequest) (string, error) {
 	cfg, err := stroppycfg.MarshalConfig(stroppycfg.Input{
 		RunID: req.RunID, Segment: req.Segment, Workload: req.Workload, URL: req.URL,
 		OTLPEndpoint: req.OTLPEndpoint, OTLPHeaders: req.OTLPHeaders, Labels: req.Labels,

@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/graphene-ci/pipeline/pkg/id"
 	"github.com/graphene-ci/pipeline/pkg/ref"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -16,7 +15,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
-func TestSimulatedWarmupAndArtifactInput(t *testing.T) {
+func TestSimulatedWarmupDelaysTheSegment(t *testing.T) {
 	s := newSim(t)
 	wf := pipelinetestWorkflow(s)
 	r := simRun()
@@ -27,12 +26,11 @@ func TestSimulatedWarmupAndArtifactInput(t *testing.T) {
 	r.Workload.Baseline = nil
 	r.Workload.DriverType = "noop"
 	r.Workload.URL = "noop://localhost"
-	r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"query","workload":{"script":"execute_sql","sql_file":"sql/query.sql"},"run":{"executor":"shared-iterations","iterations":1},"warmup":"10m","files":[{"name":"sql/query.sql","ref":"artifact/query-input"}]}`)}
-	input := s.w.SeedArtifact(id.ArtifactId("query-input"), []byte("--= q\nSELECT 1"))
+	r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"query","workload":{"script":"execute_sql","sql_body":"--= q\nSELECT 1"},"run":{"executor":"shared-iterations","iterations":1},"warmup":"10m"}`)}
 	s.converge(t, r, map[string]string{"runner-1": "10.130.0.20"})
 	start := s.w.Env.Now()
 	s.w.OnAgentActivity(s.agent(r, "runner-1"), activities.NameRunSegment, mock.Anything, mock.MatchedBy(func(req activities.RunSegmentRequest) bool {
-		return req.FileBlobs["sql/query.sql"] == input.Blob.Location
+		return req.Segment.Name == "query"
 	})).Run(func(mock.Arguments) { require.GreaterOrEqual(t, s.w.Env.Now().Sub(start), 10*time.Minute) }).Return(activities.RunSegmentResult{Result: spec.SegmentResult{Name: "query", Status: spec.SegmentCompleted}}, nil).Once()
 	s.w.Env.ExecuteWorkflow(wf, r)
 	require.NoError(t, s.w.Env.GetWorkflowError())
@@ -57,8 +55,8 @@ func TestSimulatedInputContractRejectsBeforeInfra(t *testing.T) {
 		{"unknown-step", "step must be an executable Stroppy step", func(r *spec.Run) {
 			r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"bad","workload":{"script":"simple"},"run":{"executor":"shared-iterations","iterations":1},"steps":["workload_queries"]}`)}
 		}},
-		{"overlapping-files", "cannot overwrite runtime files", func(r *spec.Run) {
-			r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"bad","workload":{"script":"simple"},"run":{"executor":"shared-iterations","iterations":1},"files":[{"name":"ca.pem/nested","content":"x"}]}`)}
+		{"unknown-segment-field", "files", func(r *spec.Run) {
+			r.Workload.Segments = []json.RawMessage{json.RawMessage(`{"name":"bad","workload":{"script":"simple"},"run":{"executor":"shared-iterations","iterations":1},"files":[{"name":"extra.sql","content":"x"}]}`)}
 		}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

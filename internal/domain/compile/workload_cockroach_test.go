@@ -14,11 +14,11 @@ func TestCockroachSQLDialectReachesStroppy(t *testing.T) {
 		{"tpcb/procs", "", "crdb.sql", "26.3"},
 		{"tpcc/tx", "", "crdb.sql", "26.3"},
 		{"tpcc/procs", "", "crdb.sql", "26.3"},
-		{"tpcc/tx", "custom.sql", "/workspace/custom.sql", "24.1"},
+		{"tpcc/tx", "tpcc/custom", "tpcc/custom", "24.1"},
 		{"tpcc/procs", "", "crdb24.sql", "24.1"},
 	} {
 		t.Run(tc.script+tc.override, func(t *testing.T) {
-			raw, err := json.Marshal(spec.Segment{Workload: spec.WorkloadParams{Script: tc.script, Params: map[string]any{"sql_file": tc.override}}, Files: []spec.SegmentFile{{Name: "custom.sql", Content: "SELECT 1"}}})
+			raw, err := json.Marshal(spec.Segment{Workload: spec.WorkloadParams{Script: tc.script, Params: map[string]any{"sql_file": tc.override}}})
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -1,62 +1,62 @@
 {
-  "id":  {
-    "namespace":  "spec",
-    "name":  "quotas",
-    "version":  "v1.0.0"
-  },
-  "description":  "Params of stroppy-quotas: read the provider limits and usage of one profile.",
-  "fields":  [
+  "coerce": true,
+  "description": "Params of stroppy-quotas: read the provider limits and usage of one profile.",
+  "fields": [
     {
-      "name":  "provider",
-      "description":  "Cloud the credentials belong to.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "choice": {
+        "options": [
           {
-            "value":  {
-              "stringValue":  "yandex"
-            },
-            "label":  "Yandex Cloud"
+            "label": "Yandex Cloud",
+            "value": {
+              "stringValue": "yandex"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "aws"
-            },
-            "label":  "AWS"
+            "label": "AWS",
+            "value": {
+              "stringValue": "aws"
+            }
           }
         ]
       },
-      "group":  "Provider",
-      "title":  "Provider"
+      "description": "Cloud the credentials belong to.",
+      "group": "Provider",
+      "name": "provider",
+      "required": true,
+      "title": "Provider"
     },
     {
-      "name":  "settings",
-      "description":  "Baked provider.<kind>.settings value; picks the folder or account to read.",
-      "required":  true,
-      "json":  {},
-      "group":  "Provider",
-      "title":  "Settings"
+      "description": "Baked provider.\u003ckind\u003e.settings value; picks the folder or account to read.",
+      "group": "Provider",
+      "json": {},
+      "name": "settings",
+      "required": true,
+      "title": "Settings"
     },
     {
-      "name":  "credentials_secret",
-      "description":  "Name of the Graphene secret holding the credentials — never the value.",
-      "required":  true,
-      "string":  {
-        "pattern":  "^[a-z0-9][a-z0-9._-]{0,62}$"
+      "description": "Name of the Graphene secret holding the credentials — never the value.",
+      "group": "Provider",
+      "name": "credentials_secret",
+      "required": true,
+      "string": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
       },
-      "group":  "Provider",
-      "title":  "Credentials secret"
+      "title": "Credentials secret"
     },
     {
-      "name":  "location",
-      "description":  "Zone (yandex) or region (aws) to read zone-scoped quotas for; empty reads all.",
-      "string":  {
-        "maxLen":  "64"
+      "description": "Zone (yandex) or region (aws) to read zone-scoped quotas for; empty reads all.",
+      "group": "Provider",
+      "name": "location",
+      "string": {
+        "maxLen": "64"
       },
-      "group":  "Provider",
-      "title":  "Location"
+      "title": "Location"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "id": {
+    "name": "quotas",
+    "namespace": "spec",
+    "version": "v1.0.0"
+  },
+  "strict": true
 }

@@ -454,6 +454,8 @@ func (t *telemetry) buildMetrics() {
 		}
 		from, to := seg.Start, seg.End
 		s.cumulative("stroppy_iterations_total", progress(iterations), from, to)
+		s.cumulative("stroppy_successful_transactions_total", progress(metricValue("successful_transactions_total")), from, to)
+		s.cumulative("stroppy_run_query_operations_total", progress(metricValue("run_query_operations_total")), from, to)
 		s.cumulative("stroppy_failed_iterations_total", progress(metricValue("failed_iterations_total")), from, to)
 		s.cumulative("stroppy_failed_queries_total", progress(metricValue("failed_queries_total")), from, to)
 		s.cumulative("stroppy_terminal_errors_total", progress(metricValue("terminal_errors_total")), from, to)

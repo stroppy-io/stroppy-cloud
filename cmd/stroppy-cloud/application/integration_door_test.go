@@ -340,6 +340,16 @@ func (f *fakeGraphene) advance(d time.Duration) {
 	f.advanced += d
 }
 
+// dropBlobs forgets the bytes of every artifact of a run, as retention
+// on the Graphene side eventually does, leaving the records behind.
+func (f *fakeGraphene) dropBlobs(runID string) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if r := f.runs[runID]; r != nil && r.rec != nil {
+		r.rec.Blobs = map[string][]byte{}
+	}
+}
+
 // cancel cancels the run at its current instant.
 func (f *fakeGraphene) cancel(r *doorRun) error {
 	if r.rec == nil || f.finished(r) {

@@ -643,9 +643,13 @@ func simSegmentMetrics(seg spec.Segment, d time.Duration, want float64) map[stri
 	}
 	n := func(v float64) spec.MetricValue { return spec.MetricValue{Value: v} }
 	return map[string]spec.MetricValue{
-		"tps":                    n(math.Round(tps*10) / 10),
-		"iterations_total":       n(iterations),
-		"iteration_duration_avg": ms(3.42), "iteration_duration_count": n(iterations),
+		"tps":                   n(math.Round(tps*10) / 10),
+		"iterations_per_second": n(math.Round(tps*10) / 10),
+		"queries_per_second":    n(math.Round(tps*4*10) / 10),
+		"iterations_total":      n(iterations),
+		// A tpcc-tx iteration is one business transaction.
+		"successful_transactions_total": n(iterations),
+		"iteration_duration_avg":        ms(3.42), "iteration_duration_count": n(iterations),
 		"iteration_duration_p50": ms(2.5), "iteration_duration_p90": ms(5), "iteration_duration_p95": ms(7.5), "iteration_duration_p99": ms(12.5),
 		"run_query_duration_avg": ms(0.41), "run_query_duration_count": n(iterations * 4),
 		"run_query_duration_p50": ms(0.5), "run_query_duration_p95": ms(1), "run_query_duration_p99": ms(2.5),

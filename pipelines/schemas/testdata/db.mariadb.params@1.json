@@ -1,171 +1,171 @@
 {
-  "id": {
-    "namespace": "db",
-    "name": "mariadb.params",
-    "version": "v1.0.0"
-  },
+  "coerce": true,
   "description": "MariaDB topology and options: version, replicas, replication mode (incl. Galera), proxies.",
   "fields": [
     {
-      "name": "version",
-      "description": "Server LTS series; packages come from the mariadb_repo_setup repository.",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "11.8"
-            },
-            "label": "11.8 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "11.4"
-            },
-            "label": "11.4 LTS"
-          },
-          {
-            "value": {
-              "stringValue": "10.11"
-            },
-            "label": "10.11 LTS"
-          }
-        ],
         "default": {
           "stringValue": "11.4"
-        }
+        },
+        "options": [
+          {
+            "label": "11.8 LTS",
+            "value": {
+              "stringValue": "11.8"
+            }
+          },
+          {
+            "label": "11.4 LTS",
+            "value": {
+              "stringValue": "11.4"
+            }
+          },
+          {
+            "label": "10.11 LTS",
+            "value": {
+              "stringValue": "10.11"
+            }
+          }
+        ]
       },
+      "description": "Server LTS series; packages come from the mariadb_repo_setup repository.",
       "group": "Engine",
+      "name": "version",
+      "required": true,
       "title": "MariaDB version"
     },
     {
-      "name": "replicas",
       "description": "Secondary servers behind the primary; not used in Galera mode, where the cluster is sized by galera_nodes instead.",
+      "group": "Topology",
       "int64": {
         "default": "0",
         "gte": "0",
         "lte": "8"
       },
-      "group": "Topology",
+      "name": "replicas",
       "title": "Replicas"
     },
     {
-      "name": "replication",
-      "description": "async/semi_sync = one primary with standard MariaDB replication; galera = a synchronous multi-master Galera cluster with no distinguished primary.",
-      "required": true,
       "choice": {
-        "options": [
-          {
-            "value": {
-              "stringValue": "async"
-            },
-            "label": "Asynchronous"
-          },
-          {
-            "value": {
-              "stringValue": "semi_sync"
-            },
-            "label": "Semi-synchronous"
-          },
-          {
-            "value": {
-              "stringValue": "galera"
-            },
-            "label": "Galera (multi-master)"
-          }
-        ],
         "default": {
           "stringValue": "async"
-        }
+        },
+        "options": [
+          {
+            "label": "Asynchronous",
+            "value": {
+              "stringValue": "async"
+            }
+          },
+          {
+            "label": "Semi-synchronous",
+            "value": {
+              "stringValue": "semi_sync"
+            }
+          },
+          {
+            "label": "Galera (multi-master)",
+            "value": {
+              "stringValue": "galera"
+            }
+          }
+        ]
       },
+      "description": "async/semi_sync = one primary with standard MariaDB replication; galera = a synchronous multi-master Galera cluster with no distinguished primary.",
       "group": "Replication",
+      "name": "replication",
+      "required": true,
       "title": "Replication mode"
     },
     {
-      "name": "galera_nodes",
-      "description": "Size of the Galera cluster; odd only, minimum 3 — quorum needs a strict majority of the last known membership.",
       "choice": {
-        "options": [
-          {
-            "value": {
-              "int64Value": "3"
-            },
-            "label": "3 (tolerates one loss)"
-          },
-          {
-            "value": {
-              "int64Value": "5"
-            },
-            "label": "5 (tolerates two losses)"
-          },
-          {
-            "value": {
-              "int64Value": "7"
-            },
-            "label": "7 (tolerates three losses)"
-          }
-        ],
         "default": {
           "int64Value": "3"
-        }
+        },
+        "options": [
+          {
+            "label": "3 (tolerates one loss)",
+            "value": {
+              "int64Value": "3"
+            }
+          },
+          {
+            "label": "5 (tolerates two losses)",
+            "value": {
+              "int64Value": "5"
+            }
+          },
+          {
+            "label": "7 (tolerates three losses)",
+            "value": {
+              "int64Value": "7"
+            }
+          }
+        ]
       },
+      "description": "Size of the Galera cluster; odd only, minimum 3 — quorum needs a strict majority of the last known membership.",
       "group": "Replication",
+      "name": "galera_nodes",
       "title": "Galera nodes",
       "when": "root.replication == \"galera\""
     },
     {
-      "name": "proxysql",
       "description": "ProxySQL instances in front of the cluster; mutually exclusive with MaxScale.",
+      "group": "Routing",
       "int64": {
         "default": "0",
         "gte": "0",
         "lte": "2"
       },
-      "group": "Routing",
+      "name": "proxysql",
       "title": "ProxySQL nodes"
     },
     {
-      "name": "maxscale",
-      "description": "Run MariaDB MaxScale (25.10 line) as the router instead of ProxySQL: read/write split and Galera monitoring out of the box.",
       "bool": {
         "default": false
       },
+      "description": "Run MariaDB MaxScale (25.10 line) as the router instead of ProxySQL: read/write split and Galera monitoring out of the box.",
       "group": "Routing",
+      "name": "maxscale",
       "title": "MaxScale"
     },
     {
-      "name": "init_sql",
       "description": "SQL executed on the primary (or the first Galera node) once the server is up, before the workload.",
+      "group": "Initialization",
+      "name": "init_sql",
       "string": {
         "maxLen": "65536"
       },
-      "group": "Initialization",
       "title": "Init SQL"
     }
   ],
+  "id": {
+    "name": "mariadb.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
   "rules": [
     {
       "expr": "root.replication != \"galera\" || int(root.replicas) == 0",
-      "message": "Galera has no replicas: size the cluster with galera_nodes",
-      "id": "galera-no-replicas"
+      "id": "galera-no-replicas",
+      "message": "Galera has no replicas: size the cluster with galera_nodes"
     },
     {
-      "expr": "root.replication != \"semi_sync\" || int(root.replicas) >= 1",
-      "message": "semi-synchronous replication needs at least one replica",
-      "id": "semisync-needs-replica"
+      "expr": "root.replication != \"semi_sync\" || int(root.replicas) \u003e= 1",
+      "id": "semisync-needs-replica",
+      "message": "semi-synchronous replication needs at least one replica"
     },
     {
-      "expr": "!(root.maxscale && int(root.proxysql) > 0)",
-      "message": "pick one router: MaxScale or ProxySQL, not both",
-      "id": "one-router"
+      "expr": "!(root.maxscale \u0026\u0026 int(root.proxysql) \u003e 0)",
+      "id": "one-router",
+      "message": "pick one router: MaxScale or ProxySQL, not both"
     },
     {
-      "expr": "int(root.proxysql) == 0 || root.replication == \"galera\" || int(root.replicas) >= 1",
-      "message": "ProxySQL in front of a single server only adds a hop",
+      "expr": "int(root.proxysql) == 0 || root.replication == \"galera\" || int(root.replicas) \u003e= 1",
       "id": "proxysql-pointless",
+      "message": "ProxySQL in front of a single server only adds a hop",
       "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict": true,
-  "coerce": true
+  "strict": true
 }

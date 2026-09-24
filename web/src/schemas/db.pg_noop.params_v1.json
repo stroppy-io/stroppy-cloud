@@ -1,85 +1,85 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "pg_noop.params",
-    "version":  "v1.0.0"
-  },
-  "description":  "PostgreSQL wire-protocol blackhole; measures the delivery ceiling with no storage engine behind it.",
-  "fields":  [
+  "coerce": true,
+  "description": "PostgreSQL wire-protocol blackhole; measures the delivery ceiling with no storage engine behind it.",
+  "fields": [
     {
-      "name":  "version",
-      "description":  "Build of the pg-noop server; the binary is served through the stroppy gateway.",
-      "required":  true,
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "0.1.2"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "0.1.2"
-            },
-            "label":  "0.1.2"
+            "label": "0.1.2",
+            "value": {
+              "stringValue": "0.1.2"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "0.1.2"
-        }
+        ]
       },
-      "group":  "Engine",
-      "title":  "pg-noop version"
+      "description": "Build of the pg-noop server; the binary is served through the stroppy gateway.",
+      "group": "Engine",
+      "name": "version",
+      "required": true,
+      "title": "pg-noop version"
     },
     {
-      "name":  "workers",
-      "description":  "Connection-handling workers; 0 = one per CPU of the machine.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "4096"
+      "description": "Connection-handling workers; 0 = one per CPU of the machine.",
+      "group": "Server",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "4096"
       },
-      "group":  "Server",
-      "title":  "Workers"
+      "name": "workers",
+      "title": "Workers"
     },
     {
-      "name":  "latency_ms",
-      "description":  "Artificial delay added before each response, to model a storage engine that is not free.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "60000"
+      "description": "Artificial delay added before each response, to model a storage engine that is not free.",
+      "group": "Behavior",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "60000"
       },
-      "group":  "Behavior",
-      "unit":  "ms",
-      "title":  "Injected latency"
+      "name": "latency_ms",
+      "title": "Injected latency",
+      "unit": "ms"
     },
     {
-      "name":  "error_rate",
-      "description":  "Fraction of statements answered with an ErrorResponse instead of a result, to exercise the driver's error path. 0 = never, 1 = always.",
-      "double":  {
-        "default":  0,
-        "gte":  0,
-        "lte":  1
+      "description": "Fraction of statements answered with an ErrorResponse instead of a result, to exercise the driver's error path. 0 = never, 1 = always.",
+      "double": {
+        "default": 0,
+        "gte": 0,
+        "lte": 1
       },
-      "group":  "Behavior",
-      "title":  "Error rate"
+      "group": "Behavior",
+      "name": "error_rate",
+      "title": "Error rate"
     },
     {
-      "name":  "port",
-      "description":  "TCP port the blackhole listens on.",
-      "int64":  {
-        "default":  "5432",
-        "gte":  "1",
-        "lte":  "65535"
+      "description": "TCP port the blackhole listens on.",
+      "group": "Server",
+      "int64": {
+        "default": "5432",
+        "gte": "1",
+        "lte": "65535"
       },
-      "group":  "Server",
-      "title":  "Port"
+      "name": "port",
+      "title": "Port"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "pg_noop.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
+  "rules": [
     {
-      "expr":  "root.error_rate == 0.0 || root.latency_ms == 0",
-      "message":  "injecting both latency and errors makes the ceiling unattributable",
-      "id":  "one-knob-at-a-time",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "root.error_rate == 0.0 || root.latency_ms == 0",
+      "id": "one-knob-at-a-time",
+      "message": "injecting both latency and errors makes the ceiling unattributable",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true
 }

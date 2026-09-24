@@ -1,595 +1,595 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "patroni.yml",
-    "version":  "v4.0.0"
-  },
-  "description":  "patroni.yml for Patroni 4.x with an etcd3 DCS.",
-  "fields":  [
+  "coerce": true,
+  "description": "patroni.yml for Patroni 4.x with an etcd3 DCS.",
+  "fields": [
     {
-      "name":  "scope",
-      "description":  "Cluster name; every member of one Patroni cluster shares it. Filled by the server from the run's topology.",
-      "string":  {
-        "default":  "stroppy",
-        "pattern":  "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
+      "description": "Cluster name; every member of one Patroni cluster shares it. Filled by the server from the run's topology.",
+      "group": "Cluster",
+      "name": "scope",
+      "string": {
+        "default": "stroppy",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
       },
-      "group":  "Cluster",
-      "title":  "Cluster scope"
+      "title": "Cluster scope"
     },
     {
-      "name":  "name",
-      "description":  "Unique member name inside the scope. Filled by the server from the node's role index.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
+      "description": "Unique member name inside the scope. Filled by the server from the node's role index.",
+      "group": "Cluster",
+      "name": "name",
+      "nullable": true,
+      "string": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,62}$"
       },
-      "group":  "Cluster",
-      "title":  "Node name"
+      "title": "Node name"
     },
     {
-      "name":  "dcs_namespace",
-      "description":  "Key prefix Patroni uses inside the DCS; rendered as the top-level `namespace` key (the field cannot be named `namespace`: it is a CEL reserved word).",
-      "string":  {
-        "default":  "/service/",
-        "pattern":  "^/.*$"
+      "description": "Key prefix Patroni uses inside the DCS; rendered as the top-level `namespace` key (the field cannot be named `namespace`: it is a CEL reserved word).",
+      "group": "Cluster",
+      "name": "dcs_namespace",
+      "string": {
+        "default": "/service/",
+        "pattern": "^/.*$"
       },
-      "group":  "Cluster",
-      "title":  "DCS namespace"
+      "title": "DCS namespace"
     },
     {
-      "name":  "restapi_listen",
-      "description":  "host:port the Patroni REST API binds to; rendered as restapi.listen.",
-      "string":  {
-        "default":  "0.0.0.0:8008",
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "host:port the Patroni REST API binds to; rendered as restapi.listen.",
+      "group": "REST API",
+      "name": "restapi_listen",
+      "string": {
+        "default": "0.0.0.0:8008",
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "REST API",
-      "title":  "REST API listen"
+      "title": "REST API listen"
     },
     {
-      "name":  "restapi_connect_address",
-      "description":  "host:port other members and haproxy use to reach this node's REST API. Filled by the server from the node's address.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "host:port other members and haproxy use to reach this node's REST API. Filled by the server from the node's address.",
+      "group": "Cluster",
+      "name": "restapi_connect_address",
+      "nullable": true,
+      "string": {
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Cluster",
-      "title":  "REST API connect address"
+      "title": "REST API connect address"
     },
     {
-      "name":  "etcd3_hosts",
-      "description":  "host:port list of the etcd v3 cluster backing the DCS. Filled by the server from the etcd topology.",
-      "nullable":  true,
-      "list":  {
-        "items":  [
+      "description": "host:port list of the etcd v3 cluster backing the DCS. Filled by the server from the etcd topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "name":  "host",
-            "string":  {
-              "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+            "name": "host",
+            "string": {
+              "pattern": "^[^\\s]+:[0-9]{1,5}$"
             }
           }
         ],
-        "maxItems":  "16",
-        "unique":  true
+        "maxItems": "16",
+        "unique": true
       },
-      "group":  "Cluster",
-      "title":  "etcd3 hosts"
+      "name": "etcd3_hosts",
+      "nullable": true,
+      "title": "etcd3 hosts"
     },
     {
-      "name":  "etcd3_hosts_rendered",
-      "description":  "The etcd3 host list as an indented YAML sequence (the render context does not expand lists).",
-      "computed":  {
-        "expr":  "(\"etcd3_hosts\" in root) ? root.etcd3_hosts.map(h, \"      - \" + h).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"etcd3_hosts\" in root) ? root.etcd3_hosts.map(h, \"      - \" + h).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered etcd3 hosts"
+      "description": "The etcd3 host list as an indented YAML sequence (the render context does not expand lists).",
+      "group": "Cluster",
+      "name": "etcd3_hosts_rendered",
+      "title": "Rendered etcd3 hosts"
     },
     {
-      "name":  "ttl",
-      "description":  "Lifetime of the leader lock: how long a leaderless cluster waits before failover.",
-      "int64":  {
-        "default":  "30",
-        "gte":  "20",
-        "lte":  "3600"
+      "description": "Lifetime of the leader lock: how long a leaderless cluster waits before failover.",
+      "group": "DCS",
+      "int64": {
+        "default": "30",
+        "gte": "20",
+        "lte": "3600"
       },
-      "group":  "DCS",
-      "unit":  "s",
-      "title":  "Leader TTL"
+      "name": "ttl",
+      "title": "Leader TTL",
+      "unit": "s"
     },
     {
-      "name":  "loop_wait",
-      "description":  "Sleep between Patroni's heartbeat cycles.",
-      "int64":  {
-        "default":  "10",
-        "gte":  "1",
-        "lte":  "600"
+      "description": "Sleep between Patroni's heartbeat cycles.",
+      "group": "DCS",
+      "int64": {
+        "default": "10",
+        "gte": "1",
+        "lte": "600"
       },
-      "group":  "DCS",
-      "unit":  "s",
-      "title":  "Loop wait"
+      "name": "loop_wait",
+      "title": "Loop wait",
+      "unit": "s"
     },
     {
-      "name":  "retry_timeout",
-      "description":  "Timeout for DCS and PostgreSQL operations before they are retried.",
-      "int64":  {
-        "default":  "10",
-        "gte":  "3",
-        "lte":  "600"
+      "description": "Timeout for DCS and PostgreSQL operations before they are retried.",
+      "group": "DCS",
+      "int64": {
+        "default": "10",
+        "gte": "3",
+        "lte": "600"
       },
-      "group":  "DCS",
-      "unit":  "s",
-      "title":  "Retry timeout"
+      "name": "retry_timeout",
+      "title": "Retry timeout",
+      "unit": "s"
     },
     {
-      "name":  "maximum_lag_on_failover",
-      "description":  "Replication lag, in bytes, above which a replica may not be promoted.",
-      "int64":  {
-        "default":  "1048576",
-        "gte":  "0",
-        "lte":  "1099511627776"
+      "description": "Replication lag, in bytes, above which a replica may not be promoted.",
+      "group": "DCS",
+      "int64": {
+        "default": "1048576",
+        "gte": "0",
+        "lte": "1099511627776"
       },
-      "group":  "DCS",
-      "unit":  "B",
-      "title":  "Maximum lag on failover"
+      "name": "maximum_lag_on_failover",
+      "title": "Maximum lag on failover",
+      "unit": "B"
     },
     {
-      "name":  "synchronous_mode",
-      "description":  "Synchronous replication mode. `quorum` (quorum-based commit) is the Patroni 3.x addition.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "off"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "on"
-            },
-            "label":  "on"
+            "label": "on",
+            "value": {
+              "stringValue": "on"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "quorum"
-            },
-            "label":  "quorum"
+            "label": "quorum",
+            "value": {
+              "stringValue": "quorum"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "off"
-        }
+        ]
       },
-      "group":  "DCS",
-      "title":  "Synchronous mode"
+      "description": "Synchronous replication mode. `quorum` (quorum-based commit) is the Patroni 3.x addition.",
+      "group": "DCS",
+      "name": "synchronous_mode",
+      "title": "Synchronous mode"
     },
     {
-      "name":  "synchronous_mode_strict",
-      "description":  "Never drop back to asynchronous replication, even with no healthy synchronous standby: writes stall instead.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "DCS",
-      "title":  "Synchronous mode strict"
+      "description": "Never drop back to asynchronous replication, even with no healthy synchronous standby: writes stall instead.",
+      "group": "DCS",
+      "name": "synchronous_mode_strict",
+      "title": "Synchronous mode strict"
     },
     {
-      "name":  "synchronous_node_count",
-      "description":  "Number of synchronous standbys Patroni maintains when synchronous_mode is on.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "16"
+      "description": "Number of synchronous standbys Patroni maintains when synchronous_mode is on.",
+      "group": "DCS",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "16"
       },
-      "group":  "DCS",
-      "title":  "Synchronous node count"
+      "name": "synchronous_node_count",
+      "title": "Synchronous node count"
     },
     {
-      "name":  "failsafe_mode",
-      "description":  "Keep the primary running when the DCS is unreachable but every member answers the failsafe endpoint. Patroni 3.0+.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "DCS",
-      "title":  "Failsafe mode"
+      "description": "Keep the primary running when the DCS is unreachable but every member answers the failsafe endpoint. Patroni 3.0+.",
+      "group": "DCS",
+      "name": "failsafe_mode",
+      "title": "Failsafe mode"
     },
     {
-      "name":  "use_pg_rewind",
-      "description":  "Rejoin a demoted primary with pg_rewind instead of a full basebackup. Product default true: a stroppy rerun must not spend a basebackup on every failover.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "true"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "true"
-        }
+        ]
       },
-      "group":  "DCS",
-      "title":  "Use pg_rewind"
+      "description": "Rejoin a demoted primary with pg_rewind instead of a full basebackup. Product default true: a stroppy rerun must not spend a basebackup on every failover.",
+      "group": "DCS",
+      "name": "use_pg_rewind",
+      "title": "Use pg_rewind"
     },
     {
-      "name":  "use_slots",
-      "description":  "Have Patroni manage physical replication slots for the members.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "true"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "true"
-        }
+        ]
       },
-      "group":  "DCS",
-      "title":  "Use replication slots"
+      "description": "Have Patroni manage physical replication slots for the members.",
+      "group": "DCS",
+      "name": "use_slots",
+      "title": "Use replication slots"
     },
     {
-      "name":  "postgresql_listen",
-      "description":  "host:port PostgreSQL binds to; rendered as postgresql.listen.",
-      "string":  {
-        "default":  "0.0.0.0:5432",
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "host:port PostgreSQL binds to; rendered as postgresql.listen.",
+      "group": "PostgreSQL",
+      "name": "postgresql_listen",
+      "string": {
+        "default": "0.0.0.0:5432",
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "PostgreSQL",
-      "title":  "PostgreSQL listen"
+      "title": "PostgreSQL listen"
     },
     {
-      "name":  "postgresql_connect_address",
-      "description":  "host:port other members use to reach this PostgreSQL. Filled by the server from the node's address.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^[^\\s]+:[0-9]{1,5}$"
+      "description": "host:port other members use to reach this PostgreSQL. Filled by the server from the node's address.",
+      "group": "Cluster",
+      "name": "postgresql_connect_address",
+      "nullable": true,
+      "string": {
+        "pattern": "^[^\\s]+:[0-9]{1,5}$"
       },
-      "group":  "Cluster",
-      "title":  "PostgreSQL connect address"
+      "title": "PostgreSQL connect address"
     },
     {
-      "name":  "data_dir",
-      "description":  "PGDATA directory Patroni initializes and manages.",
-      "string":  {
-        "default":  "/var/lib/postgresql/data",
-        "pattern":  "^/.+$"
+      "description": "PGDATA directory Patroni initializes and manages.",
+      "group": "PostgreSQL",
+      "name": "data_dir",
+      "string": {
+        "default": "/var/lib/postgresql/data",
+        "pattern": "^/.+$"
       },
-      "group":  "PostgreSQL",
-      "title":  "Data directory"
+      "title": "Data directory"
     },
     {
-      "name":  "bin_dir",
-      "description":  "Directory holding the PostgreSQL binaries; empty means look them up on PATH.",
-      "string":  {
-        "default":  "/usr/lib/postgresql/17/bin",
-        "pattern":  "^/.+$"
+      "description": "Directory holding the PostgreSQL binaries; empty means look them up on PATH.",
+      "group": "PostgreSQL",
+      "name": "bin_dir",
+      "string": {
+        "default": "/usr/lib/postgresql/17/bin",
+        "pattern": "^/.+$"
       },
-      "group":  "PostgreSQL",
-      "title":  "Binary directory"
+      "title": "Binary directory"
     },
     {
-      "name":  "pg_hba_path",
-      "description":  "Path of the pg_hba.conf rendered from cfg.pg_hba.conf@1. Patroni's inline `pg_hba` list is not used: the file is the single source.",
-      "nullable":  true,
-      "string":  {
-        "pattern":  "^/.+$"
+      "description": "Path of the pg_hba.conf rendered from cfg.pg_hba.conf@1. Patroni's inline `pg_hba` list is not used: the file is the single source.",
+      "group": "PostgreSQL",
+      "name": "pg_hba_path",
+      "nullable": true,
+      "string": {
+        "pattern": "^/.+$"
       },
-      "group":  "PostgreSQL",
-      "title":  "pg_hba.conf path"
+      "title": "pg_hba.conf path"
     },
     {
-      "name":  "superuser_username",
-      "description":  "Superuser role Patroni connects with.",
-      "string":  {
-        "default":  "postgres",
-        "minLen":  "1",
-        "maxLen":  "63"
+      "description": "Superuser role Patroni connects with.",
+      "group": "Authentication",
+      "name": "superuser_username",
+      "string": {
+        "default": "postgres",
+        "maxLen": "63",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Superuser"
+      "title": "Superuser"
     },
     {
-      "name":  "superuser_password",
-      "description":  "Password of the superuser role.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "256"
+      "description": "Password of the superuser role.",
+      "group": "Authentication",
+      "name": "superuser_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "256",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Superuser password",
-      "secret":  true
+      "title": "Superuser password"
     },
     {
-      "name":  "replication_username",
-      "description":  "Role used for streaming replication between members.",
-      "string":  {
-        "default":  "replicator",
-        "minLen":  "1",
-        "maxLen":  "63"
+      "description": "Role used for streaming replication between members.",
+      "group": "Authentication",
+      "name": "replication_username",
+      "string": {
+        "default": "replicator",
+        "maxLen": "63",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Replication user"
+      "title": "Replication user"
     },
     {
-      "name":  "replication_password",
-      "description":  "Password of the replication role.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "256"
+      "description": "Password of the replication role.",
+      "group": "Authentication",
+      "name": "replication_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "256",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Replication password",
-      "secret":  true
+      "title": "Replication password"
     },
     {
-      "name":  "rewind_username",
-      "description":  "Role pg_rewind runs as; only needed when use_pg_rewind is true and the superuser is not used.",
-      "string":  {
-        "default":  "rewind",
-        "minLen":  "1",
-        "maxLen":  "63"
+      "description": "Role pg_rewind runs as; only needed when use_pg_rewind is true and the superuser is not used.",
+      "group": "Authentication",
+      "name": "rewind_username",
+      "string": {
+        "default": "rewind",
+        "maxLen": "63",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Rewind user"
+      "title": "Rewind user"
     },
     {
-      "name":  "rewind_password",
-      "description":  "Password of the rewind role.",
-      "nullable":  true,
-      "string":  {
-        "minLen":  "1",
-        "maxLen":  "256"
+      "description": "Password of the rewind role.",
+      "group": "Authentication",
+      "name": "rewind_password",
+      "nullable": true,
+      "secret": true,
+      "string": {
+        "maxLen": "256",
+        "minLen": "1"
       },
-      "group":  "Authentication",
-      "title":  "Rewind password",
-      "secret":  true
+      "title": "Rewind password"
     },
     {
-      "name":  "tag_nofailover",
-      "description":  "Exclude this member from leader races.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Tags",
-      "title":  "nofailover"
+      "description": "Exclude this member from leader races.",
+      "group": "Tags",
+      "name": "tag_nofailover",
+      "title": "nofailover"
     },
     {
-      "name":  "tag_noloadbalance",
-      "description":  "Make the /replica REST endpoint return 503 so load balancers skip this member.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Tags",
-      "title":  "noloadbalance"
+      "description": "Make the /replica REST endpoint return 503 so load balancers skip this member.",
+      "group": "Tags",
+      "name": "tag_noloadbalance",
+      "title": "noloadbalance"
     },
     {
-      "name":  "tag_clonefrom",
-      "description":  "Prefer this member as the source of a basebackup for new replicas.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Tags",
-      "title":  "clonefrom"
+      "description": "Prefer this member as the source of a basebackup for new replicas.",
+      "group": "Tags",
+      "name": "tag_clonefrom",
+      "title": "clonefrom"
     },
     {
-      "name":  "tag_nosync",
-      "description":  "Never choose this member as a synchronous standby.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "false"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "true"
-            },
-            "label":  "true"
+            "label": "true",
+            "value": {
+              "stringValue": "true"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "false"
-            },
-            "label":  "false"
+            "label": "false",
+            "value": {
+              "stringValue": "false"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "false"
-        }
+        ]
       },
-      "group":  "Tags",
-      "title":  "nosync"
+      "description": "Never choose this member as a synchronous standby.",
+      "group": "Tags",
+      "name": "tag_nosync",
+      "title": "nosync"
     },
     {
-      "name":  "watchdog_mode",
-      "description":  "Watchdog use: `automatic` uses it when available, `required` refuses to promote without it, `off` disables it.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "automatic"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "off"
-            },
-            "label":  "off"
+            "label": "off",
+            "value": {
+              "stringValue": "off"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "automatic"
-            },
-            "label":  "automatic"
+            "label": "automatic",
+            "value": {
+              "stringValue": "automatic"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "required"
-            },
-            "label":  "required"
+            "label": "required",
+            "value": {
+              "stringValue": "required"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "automatic"
+        ]
+      },
+      "description": "Watchdog use: `automatic` uses it when available, `required` refuses to promote without it, `off` disables it.",
+      "group": "Watchdog",
+      "name": "watchdog_mode",
+      "title": "Watchdog mode"
+    },
+    {
+      "description": "Watchdog device node.",
+      "group": "Watchdog",
+      "name": "watchdog_device",
+      "string": {
+        "default": "/dev/watchdog",
+        "pattern": "^/.+$"
+      },
+      "title": "Watchdog device"
+    },
+    {
+      "description": "Seconds the watchdog must fire before the leader key expires; -1 keeps a fixed half-TTL margin.",
+      "group": "Watchdog",
+      "int64": {
+        "default": "5",
+        "gte": "-1",
+        "lte": "600"
+      },
+      "name": "watchdog_safety_margin",
+      "title": "Watchdog safety margin",
+      "unit": "s"
+    },
+    {
+      "description": "PostgreSQL parameters Patroni itself must manage in the DCS (the rest of postgresql.conf comes from cfg.postgresql.conf@\u003cmajor\u003e). Entry order is not preserved.",
+      "group": "Custom",
+      "map": {
+        "valueField": {
+          "name": "value",
+          "string": {}
         }
       },
-      "group":  "Watchdog",
-      "title":  "Watchdog mode"
+      "name": "postgresql_parameters",
+      "title": "Patroni-owned PostgreSQL parameters"
     },
     {
-      "name":  "watchdog_device",
-      "description":  "Watchdog device node.",
-      "string":  {
-        "default":  "/dev/watchdog",
-        "pattern":  "^/.+$"
+      "computed": {
+        "expr": "(\"postgresql_parameters\" in root) ? root.postgresql_parameters.map(k, \"        \" + k + \": \\\"\" + string(root.postgresql_parameters[k]) + \"\\\"\").join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Watchdog",
-      "title":  "Watchdog device"
-    },
-    {
-      "name":  "watchdog_safety_margin",
-      "description":  "Seconds the watchdog must fire before the leader key expires; -1 keeps a fixed half-TTL margin.",
-      "int64":  {
-        "default":  "5",
-        "gte":  "-1",
-        "lte":  "600"
-      },
-      "group":  "Watchdog",
-      "unit":  "s",
-      "title":  "Watchdog safety margin"
-    },
-    {
-      "name":  "postgresql_parameters",
-      "description":  "PostgreSQL parameters Patroni itself must manage in the DCS (the rest of postgresql.conf comes from cfg.postgresql.conf@<major>). Entry order is not preserved.",
-      "map":  {
-        "valueField":  {
-          "name":  "value",
-          "string":  {}
-        }
-      },
-      "group":  "Custom",
-      "title":  "Patroni-owned PostgreSQL parameters"
-    },
-    {
-      "name":  "postgresql_parameters_rendered",
-      "description":  "The postgresql_parameters map as an indented YAML mapping.",
-      "computed":  {
-        "expr":  "(\"postgresql_parameters\" in root) ? root.postgresql_parameters.map(k, \"        \" + k + \": \\\"\" + string(root.postgresql_parameters[k]) + \"\\\"\").join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
-      },
-      "group":  "Custom",
-      "title":  "Rendered parameters"
+      "description": "The postgresql_parameters map as an indented YAML mapping.",
+      "group": "Custom",
+      "name": "postgresql_parameters_rendered",
+      "title": "Rendered parameters"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "patroni.yml",
+    "namespace": "cfg",
+    "version": "v4.0.0"
+  },
+  "rules": [
     {
-      "expr":  "int(root.ttl) >= int(root.loop_wait) + int(root.retry_timeout) * 2",
-      "message":  "ttl must be at least loop_wait + 2 * retry_timeout, otherwise the leader key expires mid-cycle",
-      "id":  "ttl-vs-loop"
+      "expr": "int(root.ttl) \u003e= int(root.loop_wait) + int(root.retry_timeout) * 2",
+      "id": "ttl-vs-loop",
+      "message": "ttl must be at least loop_wait + 2 * retry_timeout, otherwise the leader key expires mid-cycle"
     },
     {
-      "expr":  "root.synchronous_mode != \"off\" || root.synchronous_mode_strict == \"false\"",
-      "message":  "synchronous_mode_strict requires synchronous_mode to be on or quorum",
-      "id":  "strict-needs-sync"
+      "expr": "root.synchronous_mode != \"off\" || root.synchronous_mode_strict == \"false\"",
+      "id": "strict-needs-sync",
+      "message": "synchronous_mode_strict requires synchronous_mode to be on or quorum"
     },
     {
-      "expr":  "root.watchdog_mode == \"off\" || int(root.watchdog_safety_margin) < int(root.ttl)",
-      "message":  "watchdog safety_margin must be below ttl",
-      "id":  "watchdog-margin"
+      "expr": "root.watchdog_mode == \"off\" || int(root.watchdog_safety_margin) \u003c int(root.ttl)",
+      "id": "watchdog-margin",
+      "message": "watchdog safety_margin must be below ttl"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# patroni.yml — generated by stroppy for Patroni 4.x.\nscope: {{{values.scope}}}\nnamespace: {{{values.dcs_namespace}}}\n{{#values.name}}name: {{{.}}}\n{{/values.name}}\nrestapi:\n  listen: {{{values.restapi_listen}}}\n{{#values.restapi_connect_address}}  connect_address: {{{.}}}\n{{/values.restapi_connect_address}}\n{{#values.etcd3_hosts_rendered}}etcd3:\n  hosts:\n{{{values.etcd3_hosts_rendered}}}\n{{/values.etcd3_hosts_rendered}}\nbootstrap:\n  dcs:\n    ttl: {{{values.ttl}}}\n    loop_wait: {{{values.loop_wait}}}\n    retry_timeout: {{{values.retry_timeout}}}\n    maximum_lag_on_failover: {{{values.maximum_lag_on_failover}}}\n    synchronous_mode: {{{values.synchronous_mode}}}\n    synchronous_mode_strict: {{{values.synchronous_mode_strict}}}\n    synchronous_node_count: {{{values.synchronous_node_count}}}\n    failsafe_mode: {{{values.failsafe_mode}}}\n    postgresql:\n      use_pg_rewind: {{{values.use_pg_rewind}}}\n      use_slots: {{{values.use_slots}}}\n{{#values.postgresql_parameters_rendered}}      parameters:\n{{{values.postgresql_parameters_rendered}}}\n{{/values.postgresql_parameters_rendered}}\npostgresql:\n  listen: {{{values.postgresql_listen}}}\n{{#values.postgresql_connect_address}}  connect_address: {{{.}}}\n{{/values.postgresql_connect_address}}  data_dir: {{{values.data_dir}}}\n  bin_dir: {{{values.bin_dir}}}\n{{#values.pg_hba_path}}  parameters:\n    hba_file: {{{.}}}\n{{/values.pg_hba_path}}  authentication:\n    superuser:\n      username: {{{values.superuser_username}}}\n{{#values.superuser_password}}      password: \"{{{.}}}\"\n{{/values.superuser_password}}    replication:\n      username: {{{values.replication_username}}}\n{{#values.replication_password}}      password: \"{{{.}}}\"\n{{/values.replication_password}}    rewind:\n      username: {{{values.rewind_username}}}\n{{#values.rewind_password}}      password: \"{{{.}}}\"\n{{/values.rewind_password}}\ntags:\n  nofailover: {{{values.tag_nofailover}}}\n  noloadbalance: {{{values.tag_noloadbalance}}}\n  clonefrom: {{{values.tag_clonefrom}}}\n  nosync: {{{values.tag_nosync}}}\n\nwatchdog:\n  mode: {{{values.watchdog_mode}}}\n  device: {{{values.watchdog_device}}}\n  safety_margin: {{{values.watchdog_safety_margin}}}\n"
+  "strict": true,
+  "templates": {
+    "conf": "# patroni.yml — generated by stroppy for Patroni 4.x.\nscope: {{{values.scope}}}\nnamespace: {{{values.dcs_namespace}}}\n{{#values.name}}name: {{{.}}}\n{{/values.name}}\nrestapi:\n  listen: {{{values.restapi_listen}}}\n{{#values.restapi_connect_address}}  connect_address: {{{.}}}\n{{/values.restapi_connect_address}}\n{{#values.etcd3_hosts_rendered}}etcd3:\n  hosts:\n{{{values.etcd3_hosts_rendered}}}\n{{/values.etcd3_hosts_rendered}}\nbootstrap:\n  dcs:\n    ttl: {{{values.ttl}}}\n    loop_wait: {{{values.loop_wait}}}\n    retry_timeout: {{{values.retry_timeout}}}\n    maximum_lag_on_failover: {{{values.maximum_lag_on_failover}}}\n    synchronous_mode: {{{values.synchronous_mode}}}\n    synchronous_mode_strict: {{{values.synchronous_mode_strict}}}\n    synchronous_node_count: {{{values.synchronous_node_count}}}\n    failsafe_mode: {{{values.failsafe_mode}}}\n    postgresql:\n      use_pg_rewind: {{{values.use_pg_rewind}}}\n      use_slots: {{{values.use_slots}}}\n{{#values.postgresql_parameters_rendered}}      parameters:\n{{{values.postgresql_parameters_rendered}}}\n{{/values.postgresql_parameters_rendered}}\npostgresql:\n  listen: {{{values.postgresql_listen}}}\n{{#values.postgresql_connect_address}}  connect_address: {{{.}}}\n{{/values.postgresql_connect_address}}  data_dir: {{{values.data_dir}}}\n  bin_dir: {{{values.bin_dir}}}\n{{#values.pg_hba_path}}  parameters:\n    hba_file: {{{.}}}\n{{/values.pg_hba_path}}  authentication:\n    superuser:\n      username: {{{values.superuser_username}}}\n{{#values.superuser_password}}      password: \"{{{.}}}\"\n{{/values.superuser_password}}    replication:\n      username: {{{values.replication_username}}}\n{{#values.replication_password}}      password: \"{{{.}}}\"\n{{/values.replication_password}}    rewind:\n      username: {{{values.rewind_username}}}\n{{#values.rewind_password}}      password: \"{{{.}}}\"\n{{/values.rewind_password}}\ntags:\n  nofailover: {{{values.tag_nofailover}}}\n  noloadbalance: {{{values.tag_noloadbalance}}}\n  clonefrom: {{{values.tag_clonefrom}}}\n  nosync: {{{values.tag_nosync}}}\n\nwatchdog:\n  mode: {{{values.watchdog_mode}}}\n  device: {{{values.watchdog_device}}}\n  safety_margin: {{{values.watchdog_safety_margin}}}\n"
   }
 }

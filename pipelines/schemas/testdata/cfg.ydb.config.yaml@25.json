@@ -1,801 +1,801 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "ydb.config.yaml",
-    "version":  "v25.0.0"
-  },
-  "description":  "YDB 25.x static cluster configuration (config.yaml, configuration V1).",
-  "fields":  [
+  "coerce": true,
+  "description": "YDB 25.x static cluster configuration (config.yaml, configuration V1).",
+  "fields": [
     {
-      "name":  "static_erasure",
-      "description":  "static_erasure — erasure scheme of the static blob-storage group, filled by the server from topology.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "none"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "none"
-            },
-            "label":  "none — no redundancy"
+            "label": "none — no redundancy",
+            "value": {
+              "stringValue": "none"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "block-4-2"
-            },
-            "label":  "block-4-2"
+            "label": "block-4-2",
+            "value": {
+              "stringValue": "block-4-2"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "mirror-3-dc"
-            },
-            "label":  "mirror-3-dc"
+            "label": "mirror-3-dc",
+            "value": {
+              "stringValue": "mirror-3-dc"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "none"
-        }
+        ]
       },
-      "group":  "Cluster",
-      "title":  "Static group fault tolerance"
+      "description": "static_erasure — erasure scheme of the static blob-storage group, filled by the server from topology.",
+      "group": "Cluster",
+      "name": "static_erasure",
+      "title": "Static group fault tolerance"
     },
     {
-      "name":  "drives",
-      "description":  "The pdisks of one host configuration. Filled by the server from pdisks_per_storage_node.",
-      "list":  {
-        "items":  [
+      "description": "The pdisks of one host configuration. Filled by the server from pdisks_per_storage_node.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "path",
-                    "description":  "host_configs[].drive[].path — the raw block device of one pdisk. Filled by the server from the machine's disks (cfg.host.disks raw mounts).",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "256"
-                    },
-                    "group":  "Cluster",
-                    "title":  "Device path",
-                    "examples":  [
+                    "description": "host_configs[].drive[].path — the raw block device of one pdisk. Filled by the server from the machine's disks (cfg.host.disks raw mounts).",
+                    "examples": [
                       {
-                        "stringValue":  "/dev/disk/by-partlabel/ydb_disk_ssd_01"
+                        "stringValue": "/dev/disk/by-partlabel/ydb_disk_ssd_01"
                       }
-                    ]
+                    ],
+                    "group": "Cluster",
+                    "name": "path",
+                    "required": true,
+                    "string": {
+                      "maxLen": "256",
+                      "minLen": "1"
+                    },
+                    "title": "Device path"
                   },
                   {
-                    "name":  "type",
-                    "description":  "host_configs[].drive[].type — the media class YDB assigns the pdisk to.",
-                    "choice":  {
-                      "options":  [
+                    "choice": {
+                      "default": {
+                        "stringValue": "ssd"
+                      },
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "ssd"
-                          },
-                          "label":  "SSD"
+                          "label": "SSD",
+                          "value": {
+                            "stringValue": "ssd"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "nvme"
-                          },
-                          "label":  "NVMe"
+                          "label": "NVMe",
+                          "value": {
+                            "stringValue": "nvme"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "rot"
-                          },
-                          "label":  "ROT — rotational disk"
+                          "label": "ROT — rotational disk",
+                          "value": {
+                            "stringValue": "rot"
+                          }
                         }
-                      ],
-                      "default":  {
-                        "stringValue":  "ssd"
-                      }
+                      ]
                     },
-                    "group":  "Storage",
-                    "title":  "Media type"
+                    "description": "host_configs[].drive[].type — the media class YDB assigns the pdisk to.",
+                    "group": "Storage",
+                    "name": "type",
+                    "title": "Media type"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "32"
+        "maxItems": "32"
       },
-      "group":  "Cluster",
-      "title":  "Drives"
+      "name": "drives",
+      "title": "Drives"
     },
     {
-      "name":  "host_config_id",
-      "description":  "host_configs[].host_config_id — the id every host references.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "1000"
+      "description": "host_configs[].host_config_id — the id every host references.",
+      "group": "Storage",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "1000"
       },
-      "group":  "Storage",
-      "title":  "Host config id"
+      "name": "host_config_id",
+      "title": "Host config id"
     },
     {
-      "name":  "hosts",
-      "description":  "Every storage node of the cluster. Filled by the server from topology.",
-      "list":  {
-        "items":  [
+      "description": "Every storage node of the cluster. Filled by the server from topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "host",
-                    "description":  "hosts[].host — FQDN or address of the storage node.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "256"
+                    "description": "hosts[].host — FQDN or address of the storage node.",
+                    "group": "Cluster",
+                    "name": "host",
+                    "required": true,
+                    "string": {
+                      "maxLen": "256",
+                      "minLen": "1"
                     },
-                    "group":  "Cluster",
-                    "title":  "Host"
+                    "title": "Host"
                   },
                   {
-                    "name":  "node_id",
-                    "description":  "hosts[].node_id — stable numeric id used by state_storage and the blob storage groups.",
-                    "required":  true,
-                    "int64":  {
-                      "gte":  "1",
-                      "lte":  "10000"
+                    "description": "hosts[].node_id — stable numeric id used by state_storage and the blob storage groups.",
+                    "group": "Cluster",
+                    "int64": {
+                      "gte": "1",
+                      "lte": "10000"
                     },
-                    "group":  "Cluster",
-                    "title":  "Node id"
+                    "name": "node_id",
+                    "required": true,
+                    "title": "Node id"
                   },
                   {
-                    "name":  "host_config_id",
-                    "description":  "hosts[].host_config_id — which host_configs entry describes this host's disks.",
-                    "int64":  {
-                      "default":  "1",
-                      "gte":  "1",
-                      "lte":  "1000"
+                    "description": "hosts[].host_config_id — which host_configs entry describes this host's disks.",
+                    "group": "Cluster",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "1000"
                     },
-                    "group":  "Cluster",
-                    "title":  "Host config id"
+                    "name": "host_config_id",
+                    "title": "Host config id"
                   },
                   {
-                    "name":  "port",
-                    "description":  "hosts[].port — the interconnect port (upstream default 19001).",
-                    "int64":  {
-                      "default":  "19001",
-                      "gte":  "1",
-                      "lte":  "65535"
+                    "description": "hosts[].port — the interconnect port (upstream default 19001).",
+                    "group": "Cluster",
+                    "int64": {
+                      "default": "19001",
+                      "gte": "1",
+                      "lte": "65535"
                     },
-                    "group":  "Cluster",
-                    "title":  "Interconnect port"
+                    "name": "port",
+                    "title": "Interconnect port"
                   },
                   {
-                    "name":  "data_center",
-                    "description":  "hosts[].location.data_center — the availability zone; mirror-3-dc spreads a group across three of them.",
-                    "string":  {
-                      "default":  "1",
-                      "maxLen":  "64"
+                    "description": "hosts[].location.data_center — the availability zone; mirror-3-dc spreads a group across three of them.",
+                    "group": "Cluster",
+                    "name": "data_center",
+                    "string": {
+                      "default": "1",
+                      "maxLen": "64"
                     },
-                    "group":  "Cluster",
-                    "title":  "Data center"
+                    "title": "Data center"
                   },
                   {
-                    "name":  "rack",
-                    "description":  "hosts[].location.rack — the fault domain inside a data center.",
-                    "string":  {
-                      "default":  "1",
-                      "maxLen":  "64"
+                    "description": "hosts[].location.rack — the fault domain inside a data center.",
+                    "group": "Cluster",
+                    "name": "rack",
+                    "string": {
+                      "default": "1",
+                      "maxLen": "64"
                     },
-                    "group":  "Cluster",
-                    "title":  "Rack"
+                    "title": "Rack"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "256"
+        "maxItems": "256"
       },
-      "group":  "Cluster",
-      "title":  "Hosts"
+      "name": "hosts",
+      "title": "Hosts"
     },
     {
-      "name":  "domain",
-      "description":  "domains_config.domain[].name — the root of the cluster's scheme (/<domain>).",
-      "string":  {
-        "default":  "Root",
-        "pattern":  "^[A-Za-z][A-Za-z0-9_-]{0,31}$"
+      "description": "domains_config.domain[].name — the root of the cluster's scheme (/\u003cdomain\u003e).",
+      "group": "Domain",
+      "name": "domain",
+      "string": {
+        "default": "Root",
+        "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,31}$"
       },
-      "group":  "Domain",
-      "title":  "Domain"
+      "title": "Domain"
     },
     {
-      "name":  "storage_pool_types",
-      "description":  "domains_config.domain[].storage_pool_types — filled by the server from the ydb params (fault_tolerance, default_disk_type).",
-      "list":  {
-        "items":  [
+      "description": "domains_config.domain[].storage_pool_types — filled by the server from the ydb params (fault_tolerance, default_disk_type).",
+      "group": "Domain",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "kind",
-                    "description":  "domains_config.domain[].storage_pool_types[].kind — the pool name a database asks for.",
-                    "string":  {
-                      "default":  "ssd",
-                      "pattern":  "^[a-z][a-z0-9_-]{0,31}$"
+                    "description": "domains_config.domain[].storage_pool_types[].kind — the pool name a database asks for.",
+                    "group": "Domain",
+                    "name": "kind",
+                    "string": {
+                      "default": "ssd",
+                      "pattern": "^[a-z][a-z0-9_-]{0,31}$"
                     },
-                    "group":  "Domain",
-                    "title":  "Kind"
+                    "title": "Kind"
                   },
                   {
-                    "name":  "erasure_species",
-                    "description":  "pool_config.erasure_species — none is a single copy (one node), block-4-2 survives two disk failures in one AZ, mirror-3-dc survives losing a whole data center.",
-                    "choice":  {
-                      "options":  [
+                    "choice": {
+                      "default": {
+                        "stringValue": "none"
+                      },
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "none"
-                          },
-                          "label":  "none — no redundancy"
+                          "label": "none — no redundancy",
+                          "value": {
+                            "stringValue": "none"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "block-4-2"
-                          },
-                          "label":  "block-4-2"
+                          "label": "block-4-2",
+                          "value": {
+                            "stringValue": "block-4-2"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "mirror-3-dc"
-                          },
-                          "label":  "mirror-3-dc"
+                          "label": "mirror-3-dc",
+                          "value": {
+                            "stringValue": "mirror-3-dc"
+                          }
                         }
-                      ],
-                      "default":  {
-                        "stringValue":  "none"
-                      }
+                      ]
                     },
-                    "group":  "Domain",
-                    "title":  "Fault tolerance"
+                    "description": "pool_config.erasure_species — none is a single copy (one node), block-4-2 survives two disk failures in one AZ, mirror-3-dc survives losing a whole data center.",
+                    "group": "Domain",
+                    "name": "erasure_species",
+                    "title": "Fault tolerance"
                   },
                   {
-                    "name":  "pdisk_type",
-                    "description":  "pool_config.pdisk_filter[].property[].type — which media class this pool draws pdisks from.",
-                    "choice":  {
-                      "options":  [
+                    "choice": {
+                      "default": {
+                        "stringValue": "SSD"
+                      },
+                      "options": [
                         {
-                          "value":  {
-                            "stringValue":  "SSD"
-                          },
-                          "label":  "SSD"
+                          "label": "SSD",
+                          "value": {
+                            "stringValue": "SSD"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "NVME"
-                          },
-                          "label":  "NVMe"
+                          "label": "NVMe",
+                          "value": {
+                            "stringValue": "NVME"
+                          }
                         },
                         {
-                          "value":  {
-                            "stringValue":  "ROT"
-                          },
-                          "label":  "ROT"
+                          "label": "ROT",
+                          "value": {
+                            "stringValue": "ROT"
+                          }
                         }
-                      ],
-                      "default":  {
-                        "stringValue":  "SSD"
-                      }
+                      ]
                     },
-                    "group":  "Domain",
-                    "title":  "PDisk type"
+                    "description": "pool_config.pdisk_filter[].property[].type — which media class this pool draws pdisks from.",
+                    "group": "Domain",
+                    "name": "pdisk_type",
+                    "title": "PDisk type"
                   },
                   {
-                    "name":  "vdisk_kind",
-                    "description":  "pool_config.vdisk_kind.",
-                    "string":  {
-                      "default":  "Default",
-                      "pattern":  "^[A-Za-z0-9_]{1,32}$"
+                    "description": "pool_config.vdisk_kind.",
+                    "group": "Domain",
+                    "name": "vdisk_kind",
+                    "string": {
+                      "default": "Default",
+                      "pattern": "^[A-Za-z0-9_]{1,32}$"
                     },
-                    "group":  "Domain",
-                    "title":  "VDisk kind"
+                    "title": "VDisk kind"
                   },
                   {
-                    "name":  "box_id",
-                    "description":  "pool_config.box_id — the hardware box the pool lives in.",
-                    "int64":  {
-                      "default":  "1",
-                      "gte":  "1",
-                      "lte":  "1000"
+                    "description": "pool_config.box_id — the hardware box the pool lives in.",
+                    "group": "Domain",
+                    "int64": {
+                      "default": "1",
+                      "gte": "1",
+                      "lte": "1000"
                     },
-                    "group":  "Domain",
-                    "title":  "Box id"
+                    "name": "box_id",
+                    "title": "Box id"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "8"
+        "maxItems": "8"
       },
-      "group":  "Domain",
-      "title":  "Storage pools"
+      "name": "storage_pool_types",
+      "title": "Storage pools"
     },
     {
-      "name":  "state_storage_nodes",
-      "description":  "domains_config.state_storage[].ring.node — the node ids holding the scheme state. Filled by the server from topology.",
-      "list":  {
-        "items":  [
+      "description": "domains_config.state_storage[].ring.node — the node ids holding the scheme state. Filled by the server from topology.",
+      "group": "Cluster",
+      "list": {
+        "items": [
           {
-            "int64":  {
-              "gte":  "1",
-              "lte":  "10000"
+            "int64": {
+              "gte": "1",
+              "lte": "10000"
             }
           }
         ],
-        "maxItems":  "64",
-        "unique":  true
+        "maxItems": "64",
+        "unique": true
       },
-      "group":  "Cluster",
-      "title":  "State storage ring"
+      "name": "state_storage_nodes",
+      "title": "State storage ring"
     },
     {
-      "name":  "state_storage_nto_select",
-      "description":  "domains_config.state_storage[].ring.nto_select — replicas of each state-storage key; must be odd and <= the ring size.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "9"
+      "description": "domains_config.state_storage[].ring.nto_select — replicas of each state-storage key; must be odd and \u003c= the ring size.",
+      "group": "Cluster",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "9"
       },
-      "group":  "Cluster",
-      "title":  "State storage nto_select"
+      "name": "state_storage_nto_select",
+      "title": "State storage nto_select"
     },
     {
-      "name":  "enforce_user_token_requirement",
-      "description":  "security_config.enforce_user_token_requirement — reject unauthenticated requests. Benchmark stands run inside a private network and leave it off.",
-      "bool":  {
-        "default":  false
+      "bool": {
+        "default": false
       },
-      "group":  "Security",
-      "title":  "Require user token"
+      "description": "security_config.enforce_user_token_requirement — reject unauthenticated requests. Benchmark stands run inside a private network and leave it off.",
+      "group": "Security",
+      "name": "enforce_user_token_requirement",
+      "title": "Require user token"
     },
     {
-      "name":  "blob_storage_service_set",
-      "description":  "blob_storage_config.service_set — the static group geometry (rings, fail domains, vdisk locations). Filled by the server from topology; emitted as flow-style YAML, which is valid YAML for the same document.",
-      "json":  {},
-      "group":  "Cluster",
-      "title":  "Blob storage service set"
+      "description": "blob_storage_config.service_set — the static group geometry (rings, fail domains, vdisk locations). Filled by the server from topology; emitted as flow-style YAML, which is valid YAML for the same document.",
+      "group": "Cluster",
+      "json": {},
+      "name": "blob_storage_service_set",
+      "title": "Blob storage service set"
     },
     {
-      "name":  "use_auto_config",
-      "description":  "actor_system_config.use_auto_config — let YDB size its executor pools from cpu_count instead of hand-written executor blocks.",
-      "bool":  {
-        "default":  true
+      "bool": {
+        "default": true
       },
-      "group":  "Actor system",
-      "title":  "Auto actor system"
+      "description": "actor_system_config.use_auto_config — let YDB size its executor pools from cpu_count instead of hand-written executor blocks.",
+      "group": "Actor system",
+      "name": "use_auto_config",
+      "title": "Auto actor system"
     },
     {
-      "name":  "node_type",
-      "description":  "actor_system_config.node_type — STORAGE for a storage node, COMPUTE for a database node, HYBRID for a single-role cluster.",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "stringValue": "HYBRID"
+        },
+        "options": [
           {
-            "value":  {
-              "stringValue":  "STORAGE"
-            },
-            "label":  "STORAGE"
+            "label": "STORAGE",
+            "value": {
+              "stringValue": "STORAGE"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "COMPUTE"
-            },
-            "label":  "COMPUTE"
+            "label": "COMPUTE",
+            "value": {
+              "stringValue": "COMPUTE"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "HYBRID"
-            },
-            "label":  "HYBRID"
+            "label": "HYBRID",
+            "value": {
+              "stringValue": "HYBRID"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "HYBRID"
+        ]
+      },
+      "description": "actor_system_config.node_type — STORAGE for a storage node, COMPUTE for a database node, HYBRID for a single-role cluster.",
+      "group": "Actor system",
+      "name": "node_type",
+      "title": "Node type"
+    },
+    {
+      "description": "actor_system_config.cpu_count — cores the actor system may use; the server fills it from the machine size.",
+      "group": "Actor system",
+      "int64": {
+        "default": "4",
+        "gte": "1",
+        "lte": "1024"
+      },
+      "name": "cpu_count",
+      "title": "CPU count"
+    },
+    {
+      "description": "grpc_config.port — the plaintext client endpoint (grpc://).",
+      "group": "Network",
+      "int64": {
+        "default": "2136",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "grpc_port",
+      "title": "gRPC port"
+    },
+    {
+      "bool": {
+        "default": false
+      },
+      "description": "Serve the TLS client endpoint as well; stroppy then connects with grpcs://.",
+      "group": "Network",
+      "name": "grpcs",
+      "title": "Enable grpcs"
+    },
+    {
+      "description": "grpc_config.ssl_port.",
+      "group": "Network",
+      "int64": {
+        "default": "2135",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "grpc_ssl_port",
+      "title": "gRPC TLS port",
+      "when": "root.grpcs"
+    },
+    {
+      "description": "grpc_config.ca — PEM path of the certificate authority.",
+      "group": "Network",
+      "name": "grpc_ca",
+      "string": {
+        "default": "/etc/ydb/certs/ca.pem",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
+      },
+      "title": "CA certificate",
+      "when": "root.grpcs"
+    },
+    {
+      "description": "grpc_config.cert — PEM path of the node certificate.",
+      "group": "Network",
+      "name": "grpc_cert",
+      "string": {
+        "default": "/etc/ydb/certs/node.crt",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
+      },
+      "title": "Certificate",
+      "when": "root.grpcs"
+    },
+    {
+      "description": "grpc_config.key — PEM path of the node private key.",
+      "group": "Network",
+      "name": "grpc_key",
+      "string": {
+        "default": "/etc/ydb/certs/node.key",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
+      },
+      "title": "Private key",
+      "when": "root.grpcs"
+    },
+    {
+      "description": "interconnect_config.start_tcp port — node-to-node traffic.",
+      "group": "Network",
+      "int64": {
+        "default": "19001",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "interconnect_port",
+      "title": "Interconnect port"
+    },
+    {
+      "description": "monitoring_config.monitoring_port — the embedded viewer and the /counters endpoint the run scrapes.",
+      "group": "Network",
+      "int64": {
+        "default": "8765",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "monitoring_port",
+      "title": "Monitoring port"
+    },
+    {
+      "bool": {
+        "default": true
+      },
+      "description": "table_service_config.enable_query_service_spilling — spill large intermediate results to disk instead of failing the query.",
+      "group": "Table service",
+      "name": "enable_query_service_spilling",
+      "title": "Query spilling"
+    },
+    {
+      "description": "table_service_config.spilling_service_config.local_file_config.root.",
+      "group": "Table service",
+      "name": "spilling_root",
+      "string": {
+        "default": "/var/lib/ydb/spilling",
+        "pattern": "^/[A-Za-z0-9._/-]*$"
+      },
+      "title": "Spilling directory"
+    },
+    {
+      "description": "table_service_config.spilling_service_config.local_file_config.max_total_size, in bytes.",
+      "group": "Table service",
+      "int64": {
+        "default": "21474836480",
+        "gte": "67108864",
+        "lte": "4398046511104"
+      },
+      "name": "spilling_max_total_size",
+      "title": "Spilling max size",
+      "unit": "bytes"
+    },
+    {
+      "description": "log_config.default_level — 0 EMERG, 1 ALERT, 2 CRIT, 3 ERROR, 4 WARN, 5 NOTICE, 6 INFO, 7 DEBUG, 8 TRACE.",
+      "group": "Logging",
+      "int64": {
+        "default": "5",
+        "gte": "0",
+        "lte": "8"
+      },
+      "name": "log_default_level",
+      "title": "Log level"
+    },
+    {
+      "bool": {
+        "default": false
+      },
+      "description": "log_config.sys_log — write to syslog instead of stderr. The agent collects stderr, so this stays off.",
+      "group": "Logging",
+      "name": "log_syslog",
+      "title": "Log to syslog"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "full"
+        },
+        "options": [
+          {
+            "label": "full",
+            "value": {
+              "stringValue": "full"
+            }
+          },
+          {
+            "label": "short",
+            "value": {
+              "stringValue": "short"
+            }
+          },
+          {
+            "label": "json",
+            "value": {
+              "stringValue": "json"
+            }
+          }
+        ]
+      },
+      "description": "log_config.format.",
+      "group": "Logging",
+      "name": "log_format",
+      "title": "Log format"
+    },
+    {
+      "description": "feature_flags — a flat map of flag name to bool (enable_views, enable_column_store, ...).",
+      "group": "Feature flags",
+      "map": {
+        "maxEntries": "64",
+        "valueField": {
+          "bool": {},
+          "name": "value"
         }
       },
-      "group":  "Actor system",
-      "title":  "Node type"
-    },
-    {
-      "name":  "cpu_count",
-      "description":  "actor_system_config.cpu_count — cores the actor system may use; the server fills it from the machine size.",
-      "int64":  {
-        "default":  "4",
-        "gte":  "1",
-        "lte":  "1024"
-      },
-      "group":  "Actor system",
-      "title":  "CPU count"
-    },
-    {
-      "name":  "grpc_port",
-      "description":  "grpc_config.port — the plaintext client endpoint (grpc://).",
-      "int64":  {
-        "default":  "2136",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Network",
-      "title":  "gRPC port"
-    },
-    {
-      "name":  "grpcs",
-      "description":  "Serve the TLS client endpoint as well; stroppy then connects with grpcs://.",
-      "bool":  {
-        "default":  false
-      },
-      "group":  "Network",
-      "title":  "Enable grpcs"
-    },
-    {
-      "name":  "grpc_ssl_port",
-      "description":  "grpc_config.ssl_port.",
-      "int64":  {
-        "default":  "2135",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Network",
-      "title":  "gRPC TLS port",
-      "when":  "root.grpcs"
-    },
-    {
-      "name":  "grpc_ca",
-      "description":  "grpc_config.ca — PEM path of the certificate authority.",
-      "string":  {
-        "default":  "/etc/ydb/certs/ca.pem",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
-      },
-      "group":  "Network",
-      "title":  "CA certificate",
-      "when":  "root.grpcs"
-    },
-    {
-      "name":  "grpc_cert",
-      "description":  "grpc_config.cert — PEM path of the node certificate.",
-      "string":  {
-        "default":  "/etc/ydb/certs/node.crt",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
-      },
-      "group":  "Network",
-      "title":  "Certificate",
-      "when":  "root.grpcs"
-    },
-    {
-      "name":  "grpc_key",
-      "description":  "grpc_config.key — PEM path of the node private key.",
-      "string":  {
-        "default":  "/etc/ydb/certs/node.key",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
-      },
-      "group":  "Network",
-      "title":  "Private key",
-      "when":  "root.grpcs"
-    },
-    {
-      "name":  "interconnect_port",
-      "description":  "interconnect_config.start_tcp port — node-to-node traffic.",
-      "int64":  {
-        "default":  "19001",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Network",
-      "title":  "Interconnect port"
-    },
-    {
-      "name":  "monitoring_port",
-      "description":  "monitoring_config.monitoring_port — the embedded viewer and the /counters endpoint the run scrapes.",
-      "int64":  {
-        "default":  "8765",
-        "gte":  "1",
-        "lte":  "65535"
-      },
-      "group":  "Network",
-      "title":  "Monitoring port"
-    },
-    {
-      "name":  "enable_query_service_spilling",
-      "description":  "table_service_config.enable_query_service_spilling — spill large intermediate results to disk instead of failing the query.",
-      "bool":  {
-        "default":  true
-      },
-      "group":  "Table service",
-      "title":  "Query spilling"
-    },
-    {
-      "name":  "spilling_root",
-      "description":  "table_service_config.spilling_service_config.local_file_config.root.",
-      "string":  {
-        "default":  "/var/lib/ydb/spilling",
-        "pattern":  "^/[A-Za-z0-9._/-]*$"
-      },
-      "group":  "Table service",
-      "title":  "Spilling directory"
-    },
-    {
-      "name":  "spilling_max_total_size",
-      "description":  "table_service_config.spilling_service_config.local_file_config.max_total_size, in bytes.",
-      "int64":  {
-        "default":  "21474836480",
-        "gte":  "67108864",
-        "lte":  "4398046511104"
-      },
-      "group":  "Table service",
-      "unit":  "bytes",
-      "title":  "Spilling max size"
-    },
-    {
-      "name":  "log_default_level",
-      "description":  "log_config.default_level — 0 EMERG, 1 ALERT, 2 CRIT, 3 ERROR, 4 WARN, 5 NOTICE, 6 INFO, 7 DEBUG, 8 TRACE.",
-      "int64":  {
-        "default":  "5",
-        "gte":  "0",
-        "lte":  "8"
-      },
-      "group":  "Logging",
-      "title":  "Log level"
-    },
-    {
-      "name":  "log_syslog",
-      "description":  "log_config.sys_log — write to syslog instead of stderr. The agent collects stderr, so this stays off.",
-      "bool":  {
-        "default":  false
-      },
-      "group":  "Logging",
-      "title":  "Log to syslog"
-    },
-    {
-      "name":  "log_format",
-      "description":  "log_config.format.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "full"
-            },
-            "label":  "full"
-          },
-          {
-            "value":  {
-              "stringValue":  "short"
-            },
-            "label":  "short"
-          },
-          {
-            "value":  {
-              "stringValue":  "json"
-            },
-            "label":  "json"
-          }
-        ],
-        "default":  {
-          "stringValue":  "full"
-        }
-      },
-      "group":  "Logging",
-      "title":  "Log format"
-    },
-    {
-      "name":  "feature_flags",
-      "description":  "feature_flags — a flat map of flag name to bool (enable_views, enable_column_store, ...).",
-      "rules":  [
+      "name": "feature_flags",
+      "rules": [
         {
-          "expr":  "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
-          "message":  "feature flag names are lower_snake identifiers",
-          "id":  "flag-name-shape"
+          "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
+          "id": "flag-name-shape",
+          "message": "feature flag names are lower_snake identifiers"
         }
       ],
-      "map":  {
-        "maxEntries":  "64",
-        "valueField":  {
-          "name":  "value",
-          "bool":  {}
-        }
-      },
-      "group":  "Feature flags",
-      "title":  "Feature flags"
+      "title": "Feature flags"
     },
     {
-      "name":  "custom",
-      "description":  "Any further top-level section: key → a flow-style YAML/JSON value, appended verbatim as `key: value` at the end of the document.",
-      "rules":  [
-        {
-          "expr":  "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
-          "message":  "section names are lower_snake identifiers",
-          "id":  "custom-key-shape"
-        }
-      ],
-      "map":  {
-        "maxEntries":  "32",
-        "valueField":  {
-          "name":  "value",
-          "string":  {
-            "maxLen":  "4096"
+      "description": "Any further top-level section: key → a flow-style YAML/JSON value, appended verbatim as `key: value` at the end of the document.",
+      "group": "Custom",
+      "map": {
+        "maxEntries": "32",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "maxLen": "4096"
           }
         }
       },
-      "group":  "Custom",
-      "title":  "Extra sections"
+      "name": "custom",
+      "rules": [
+        {
+          "expr": "this.all(k, k.matches(\"^[a-z][a-z0-9_]*$\"))",
+          "id": "custom-key-shape",
+          "message": "section names are lower_snake identifiers"
+        }
+      ],
+      "title": "Extra sections"
     },
     {
-      "name":  "memory_hard_limit_bytes",
-      "description":  "memory_controller_config.hard_limit_bytes — total memory the process may use. Unset lets YDB read the cgroup limit.",
-      "nullable":  true,
-      "int64":  {
-        "gte":  "1073741824"
+      "description": "memory_controller_config.hard_limit_bytes — total memory the process may use. Unset lets YDB read the cgroup limit.",
+      "group": "Memory controller",
+      "int64": {
+        "gte": "1073741824"
       },
-      "group":  "Memory controller",
-      "unit":  "bytes",
-      "title":  "Memory hard limit"
+      "name": "memory_hard_limit_bytes",
+      "nullable": true,
+      "title": "Memory hard limit",
+      "unit": "bytes"
     },
     {
-      "name":  "memory_soft_limit_percent",
-      "description":  "memory_controller_config.soft_limit_percent — percent of the hard limit at which YDB starts shrinking caches.",
-      "int64":  {
-        "default":  "75",
-        "gte":  "1",
-        "lte":  "100"
+      "description": "memory_controller_config.soft_limit_percent — percent of the hard limit at which YDB starts shrinking caches.",
+      "group": "Memory controller",
+      "int64": {
+        "default": "75",
+        "gte": "1",
+        "lte": "100"
       },
-      "group":  "Memory controller",
-      "unit":  "%",
-      "title":  "Soft limit"
+      "name": "memory_soft_limit_percent",
+      "title": "Soft limit",
+      "unit": "%"
     },
     {
-      "name":  "memory_target_utilization_percent",
-      "description":  "memory_controller_config.target_utilization_percent — the steady-state utilization the controller aims for.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "1",
-        "lte":  "100"
+      "description": "memory_controller_config.target_utilization_percent — the steady-state utilization the controller aims for.",
+      "group": "Memory controller",
+      "int64": {
+        "default": "50",
+        "gte": "1",
+        "lte": "100"
       },
-      "group":  "Memory controller",
-      "unit":  "%",
-      "title":  "Target utilization"
+      "name": "memory_target_utilization_percent",
+      "title": "Target utilization",
+      "unit": "%"
     },
     {
-      "name":  "memory_shared_cache_min_percent",
-      "description":  "memory_controller_config.shared_cache_min_percent — floor of the shared page cache.",
-      "int64":  {
-        "default":  "20",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "memory_controller_config.shared_cache_min_percent — floor of the shared page cache.",
+      "group": "Memory controller",
+      "int64": {
+        "default": "20",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Memory controller",
-      "unit":  "%",
-      "title":  "Shared cache min"
+      "name": "memory_shared_cache_min_percent",
+      "title": "Shared cache min",
+      "unit": "%"
     },
     {
-      "name":  "memory_shared_cache_max_percent",
-      "description":  "memory_controller_config.shared_cache_max_percent — ceiling of the shared page cache.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "memory_controller_config.shared_cache_max_percent — ceiling of the shared page cache.",
+      "group": "Memory controller",
+      "int64": {
+        "default": "50",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Memory controller",
-      "unit":  "%",
-      "title":  "Shared cache max"
+      "name": "memory_shared_cache_max_percent",
+      "title": "Shared cache max",
+      "unit": "%"
     },
     {
-      "name":  "memory_controller_block",
-      "computed":  {
-        "expr":  "\"memory_controller_config:\\n\" +\n\t\t\t\t ((\"memory_hard_limit_bytes\" in root) ? \"  hard_limit_bytes: \" + string(root.memory_hard_limit_bytes) + \"\\n\" : \"\") +\n\t\t\t\t \"  soft_limit_percent: \" + string(root.memory_soft_limit_percent) + \"\\n\" +\n\t\t\t\t \"  target_utilization_percent: \" + string(root.memory_target_utilization_percent) + \"\\n\" +\n\t\t\t\t \"  shared_cache_min_percent: \" + string(root.memory_shared_cache_min_percent) + \"\\n\" +\n\t\t\t\t \"  shared_cache_max_percent: \" + string(root.memory_shared_cache_max_percent)",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "\"memory_controller_config:\\n\" +\n\t\t\t\t ((\"memory_hard_limit_bytes\" in root) ? \"  hard_limit_bytes: \" + string(root.memory_hard_limit_bytes) + \"\\n\" : \"\") +\n\t\t\t\t \"  soft_limit_percent: \" + string(root.memory_soft_limit_percent) + \"\\n\" +\n\t\t\t\t \"  target_utilization_percent: \" + string(root.memory_target_utilization_percent) + \"\\n\" +\n\t\t\t\t \"  shared_cache_min_percent: \" + string(root.memory_shared_cache_min_percent) + \"\\n\" +\n\t\t\t\t \"  shared_cache_max_percent: \" + string(root.memory_shared_cache_max_percent)",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Memory controller",
-      "title":  "Rendered memory_controller_config"
+      "group": "Memory controller",
+      "name": "memory_controller_block",
+      "title": "Rendered memory_controller_config"
     },
     {
-      "name":  "drive_block",
-      "computed":  {
-        "expr":  "(\"drives\" in root) ? root.drives.map(d,\n\t\t\t\t\"  - path: \" + d.path + \"\\n    type: \" + d.type.upperAscii()\n\t\t\t).join(\"\\n\") : \"  []\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"drives\" in root) ? root.drives.map(d,\n\t\t\t\t\"  - path: \" + d.path + \"\\n    type: \" + d.type.upperAscii()\n\t\t\t).join(\"\\n\") : \"  []\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered host_configs[].drive"
+      "group": "Cluster",
+      "name": "drive_block",
+      "title": "Rendered host_configs[].drive"
     },
     {
-      "name":  "host_block",
-      "computed":  {
-        "expr":  "(\"hosts\" in root) ? root.hosts.map(h,\n\t\t\t\t\"- host: \" + h.host + \"\\n\" +\n\t\t\t\t\"  node_id: \" + string(h.node_id) + \"\\n\" +\n\t\t\t\t\"  host_config_id: \" + string(h.host_config_id) + \"\\n\" +\n\t\t\t\t\"  port: \" + string(h.port) + \"\\n\" +\n\t\t\t\t\"  location:\\n\" +\n\t\t\t\t\"    data_center: '\" + h.data_center + \"'\\n\" +\n\t\t\t\t\"    rack: '\" + h.rack + \"'\"\n\t\t\t).join(\"\\n\") : \"[]\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"hosts\" in root) ? root.hosts.map(h,\n\t\t\t\t\"- host: \" + h.host + \"\\n\" +\n\t\t\t\t\"  node_id: \" + string(h.node_id) + \"\\n\" +\n\t\t\t\t\"  host_config_id: \" + string(h.host_config_id) + \"\\n\" +\n\t\t\t\t\"  port: \" + string(h.port) + \"\\n\" +\n\t\t\t\t\"  location:\\n\" +\n\t\t\t\t\"    data_center: '\" + h.data_center + \"'\\n\" +\n\t\t\t\t\"    rack: '\" + h.rack + \"'\"\n\t\t\t).join(\"\\n\") : \"[]\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered hosts"
+      "group": "Cluster",
+      "name": "host_block",
+      "title": "Rendered hosts"
     },
     {
-      "name":  "storage_pool_block",
-      "computed":  {
-        "expr":  "(\"storage_pool_types\" in root) ? root.storage_pool_types.map(p,\n\t\t\t\t\"    - kind: \" + p.kind + \"\\n\" +\n\t\t\t\t\"      pool_config:\\n\" +\n\t\t\t\t\"        box_id: \" + string(p.box_id) + \"\\n\" +\n\t\t\t\t\"        erasure_species: \" + p.erasure_species + \"\\n\" +\n\t\t\t\t\"        kind: \" + p.kind + \"\\n\" +\n\t\t\t\t\"        pdisk_filter:\\n\" +\n\t\t\t\t\"        - property:\\n\" +\n\t\t\t\t\"          - type: \" + p.pdisk_type + \"\\n\" +\n\t\t\t\t\"        vdisk_kind: \" + p.vdisk_kind\n\t\t\t).join(\"\\n\") : \"    []\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"storage_pool_types\" in root) ? root.storage_pool_types.map(p,\n\t\t\t\t\"    - kind: \" + p.kind + \"\\n\" +\n\t\t\t\t\"      pool_config:\\n\" +\n\t\t\t\t\"        box_id: \" + string(p.box_id) + \"\\n\" +\n\t\t\t\t\"        erasure_species: \" + p.erasure_species + \"\\n\" +\n\t\t\t\t\"        kind: \" + p.kind + \"\\n\" +\n\t\t\t\t\"        pdisk_filter:\\n\" +\n\t\t\t\t\"        - property:\\n\" +\n\t\t\t\t\"          - type: \" + p.pdisk_type + \"\\n\" +\n\t\t\t\t\"        vdisk_kind: \" + p.vdisk_kind\n\t\t\t).join(\"\\n\") : \"    []\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Domain",
-      "title":  "Rendered storage_pool_types"
+      "group": "Domain",
+      "name": "storage_pool_block",
+      "title": "Rendered storage_pool_types"
     },
     {
-      "name":  "state_storage_block",
-      "computed":  {
-        "expr":  "!(\"state_storage_nodes\" in root) || size(root.state_storage_nodes) == 0 ? \"  []\" :\n\t\t\t \"  - ssid: 1\\n    ring:\\n      node: [\" +\n\t\t\t root.state_storage_nodes.map(n, string(n)).join(\", \") +\n\t\t\t \"]\\n      nto_select: \" + string(root.state_storage_nto_select)",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"state_storage_nodes\" in root) || size(root.state_storage_nodes) == 0 ? \"  []\" :\n\t\t\t \"  - ssid: 1\\n    ring:\\n      node: [\" +\n\t\t\t root.state_storage_nodes.map(n, string(n)).join(\", \") +\n\t\t\t \"]\\n      nto_select: \" + string(root.state_storage_nto_select)",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Cluster",
-      "title":  "Rendered state_storage"
+      "group": "Cluster",
+      "name": "state_storage_block",
+      "title": "Rendered state_storage"
     },
     {
-      "name":  "channel_profile_block",
-      "description":  "Three channels for system tablet profile 0, derived from the first configured storage pool.",
-      "computed":  {
-        "expr":  "[0, 1, 2].map(channel,\n\t\t\t \"    - erasure_species: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].erasure_species : root.static_erasure) + \"\\n\" +\n\t\t\t \"      pdisk_category: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? (root.storage_pool_types[0].pdisk_type == \"ROT\" ? \"0\" : (root.storage_pool_types[0].pdisk_type == \"NVME\" ? \"2\" : \"1\")) : \"1\") + \"\\n\" +\n\t\t\t \"      storage_pool_kind: \" +\n\t\t\t ((\"storage_pool_types\" in root && size(root.storage_pool_types) > 0) ? root.storage_pool_types[0].kind : \"ssd\")\n\t\t\t).join(\"\\n\")",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "[0, 1, 2].map(channel,\n\t\t\t \"    - erasure_species: \" +\n\t\t\t ((\"storage_pool_types\" in root \u0026\u0026 size(root.storage_pool_types) \u003e 0) ? root.storage_pool_types[0].erasure_species : root.static_erasure) + \"\\n\" +\n\t\t\t \"      pdisk_category: \" +\n\t\t\t ((\"storage_pool_types\" in root \u0026\u0026 size(root.storage_pool_types) \u003e 0) ? (root.storage_pool_types[0].pdisk_type == \"ROT\" ? \"0\" : (root.storage_pool_types[0].pdisk_type == \"NVME\" ? \"2\" : \"1\")) : \"1\") + \"\\n\" +\n\t\t\t \"      storage_pool_kind: \" +\n\t\t\t ((\"storage_pool_types\" in root \u0026\u0026 size(root.storage_pool_types) \u003e 0) ? root.storage_pool_types[0].kind : \"ssd\")\n\t\t\t).join(\"\\n\")",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Domain",
-      "title":  "Rendered system tablet channels"
+      "description": "Three channels for system tablet profile 0, derived from the first configured storage pool.",
+      "group": "Domain",
+      "name": "channel_profile_block",
+      "title": "Rendered system tablet channels"
     },
     {
-      "name":  "feature_flag_block",
-      "computed":  {
-        "expr":  "!(\"feature_flags\" in root) || size(root.feature_flags) == 0 ? \"\" :\n\t\t\t \"feature_flags:\\n\" +\n\t\t\t root.feature_flags.map(k, \"  \" + k + \": \" + (root.feature_flags[k] ? \"true\" : \"false\")).join(\"\\n\")",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"feature_flags\" in root) || size(root.feature_flags) == 0 ? \"\" :\n\t\t\t \"feature_flags:\\n\" +\n\t\t\t root.feature_flags.map(k, \"  \" + k + \": \" + (root.feature_flags[k] ? \"true\" : \"false\")).join(\"\\n\")",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Feature flags",
-      "title":  "Rendered feature_flags"
+      "group": "Feature flags",
+      "name": "feature_flag_block",
+      "title": "Rendered feature_flags"
     },
     {
-      "name":  "custom_lines",
-      "computed":  {
-        "expr":  "!(\"custom\" in root) || size(root.custom) == 0 ? \"\" :\n\t\t\t root.custom.map(k, k + \": \" + string(root.custom[k])).join(\"\\n\")",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!(\"custom\" in root) || size(root.custom) == 0 ? \"\" :\n\t\t\t root.custom.map(k, k + \": \" + string(root.custom[k])).join(\"\\n\")",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Custom",
-      "title":  "Rendered extra sections"
+      "group": "Custom",
+      "name": "custom_lines",
+      "title": "Rendered extra sections"
     },
     {
-      "name":  "grpc_tls_block",
-      "computed":  {
-        "expr":  "!root.grpcs ? \"\" :\n\t\t\t \"  ssl_port: \" + string(root.grpc_ssl_port) + \"\\n\" +\n\t\t\t \"  ca: \" + root.grpc_ca + \"\\n\" +\n\t\t\t \"  cert: \" + root.grpc_cert + \"\\n\" +\n\t\t\t \"  key: \" + root.grpc_key",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "!root.grpcs ? \"\" :\n\t\t\t \"  ssl_port: \" + string(root.grpc_ssl_port) + \"\\n\" +\n\t\t\t \"  ca: \" + root.grpc_ca + \"\\n\" +\n\t\t\t \"  cert: \" + root.grpc_cert + \"\\n\" +\n\t\t\t \"  key: \" + root.grpc_key",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Network",
-      "title":  "Rendered grpc_config TLS keys"
+      "group": "Network",
+      "name": "grpc_tls_block",
+      "title": "Rendered grpc_config TLS keys"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "ydb.config.yaml",
+    "namespace": "cfg",
+    "version": "v25.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"state_storage_nodes\" in root) || size(root.state_storage_nodes) == 0 || int(root.state_storage_nto_select) <= size(root.state_storage_nodes)",
-      "message":  "nto_select must not exceed the state storage ring size",
-      "id":  "nto-select-le-ring"
+      "expr": "!(\"state_storage_nodes\" in root) || size(root.state_storage_nodes) == 0 || int(root.state_storage_nto_select) \u003c= size(root.state_storage_nodes)",
+      "id": "nto-select-le-ring",
+      "message": "nto_select must not exceed the state storage ring size"
     },
     {
-      "expr":  "int(root.state_storage_nto_select) % 2 == 1",
-      "message":  "nto_select must be odd",
-      "id":  "nto-select-odd"
+      "expr": "int(root.state_storage_nto_select) % 2 == 1",
+      "id": "nto-select-odd",
+      "message": "nto_select must be odd"
     },
     {
-      "expr":  "!(\"storage_pool_types\" in root) || !(\"hosts\" in root) ||\n\t\t\t\troot.storage_pool_types.all(p, p.erasure_species != \"mirror-3-dc\" || size(root.hosts) >= 9)",
-      "message":  "mirror-3-dc needs at least 9 hosts (3 per data center)",
-      "id":  "mirror3dc-needs-9-hosts"
+      "expr": "!(\"storage_pool_types\" in root) || !(\"hosts\" in root) ||\n\t\t\t\troot.storage_pool_types.all(p, p.erasure_species != \"mirror-3-dc\" || size(root.hosts) \u003e= 9)",
+      "id": "mirror3dc-needs-9-hosts",
+      "message": "mirror-3-dc needs at least 9 hosts (3 per data center)"
     },
     {
-      "expr":  "!(\"storage_pool_types\" in root) || !(\"hosts\" in root) ||\n\t\t\t\troot.storage_pool_types.all(p, p.erasure_species != \"block-4-2\" || size(root.hosts) >= 8)",
-      "message":  "block-4-2 needs at least 8 hosts",
-      "id":  "block42-needs-8-hosts"
+      "expr": "!(\"storage_pool_types\" in root) || !(\"hosts\" in root) ||\n\t\t\t\troot.storage_pool_types.all(p, p.erasure_species != \"block-4-2\" || size(root.hosts) \u003e= 8)",
+      "id": "block42-needs-8-hosts",
+      "message": "block-4-2 needs at least 8 hosts"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# managed by stroppy-cloud — cfg.ydb.config.yaml@25\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+  "strict": true,
+  "templates": {
+    "conf": "# managed by stroppy-cloud — cfg.ydb.config.yaml@25\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

@@ -426,36 +426,6 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Run' }
         default: { $ref: '#/components/responses/Problem' }
-  /api/v1/t/{slug}/runs/{id}:rerun-resume:
-    post:
-      operationId: resumeRun
-      tags: [Runs]
-      parameters:
-        - $ref: '#/components/parameters/slug'
-        - $ref: '#/components/parameters/id'
-        - $ref: '#/components/parameters/idempotencyKey'
-      summary: |
-        Resume from the failure point. When the stand is still alive (`stand_kept`) the new run adopts it
-        and restarts the workload from the failed segment; otherwise degrades to `rerun` (`resumed: false`).
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                from_segment: { type: string, description: Override the segment to restart from. }
-      responses:
-        '201':
-          description: Run.
-          content:
-            application/json:
-              schema:
-                allOf:
-                  - $ref: '#/components/schemas/Run'
-                  - type: object
-                    properties:
-                      resumed: { type: boolean }
-        default: { $ref: '#/components/responses/Problem' }
   /api/v1/t/{slug}/runs/{id}:save-as-test:
     post:
       operationId: saveRunAsTest

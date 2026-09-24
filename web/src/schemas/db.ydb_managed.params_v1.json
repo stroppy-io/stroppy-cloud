@@ -1,302 +1,302 @@
 {
-  "id":  {
-    "namespace":  "db",
-    "name":  "ydb_managed.params",
-    "version":  "v1.0.0"
-  },
-  "description":  "Yandex Managed YDB: serverless or dedicated database, its presets, scaling and storage.",
-  "fields":  [
+  "coerce": true,
+  "description": "Yandex Managed YDB: serverless or dedicated database, its presets, scaling and storage.",
+  "fields": [
     {
-      "name":  "type",
-      "description":  "serverless = pay-per-request, YC-managed endpoint, no VPC; dedicated = a sized cluster in your network.",
-      "required":  true,
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "dedicated"
-            },
-            "label":  "Dedicated"
-          },
-          {
-            "value":  {
-              "stringValue":  "serverless"
-            },
-            "label":  "Serverless"
-          }
-        ],
-        "default":  {
-          "stringValue":  "dedicated"
-        }
-      },
-      "group":  "Engine",
-      "title":  "Database type"
-    },
-    {
-      "name":  "location_id",
-      "description":  "YC location the database is created in (location_id on both resources).",
-      "string":  {
-        "default":  "ru-central1",
-        "maxLen":  "32",
-        "pattern":  "^[a-z0-9\\-]+$"
-      },
-      "group":  "Engine",
-      "title":  "Availability zone group"
-    },
-    {
-      "name":  "resource_preset_id",
-      "description":  "VM configuration of one database node: vCPUs and RAM.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "medium"
-            },
-            "label":  "medium — 8 vCPU / 32 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "medium-m64"
-            },
-            "label":  "medium-m64 — 8 vCPU / 64 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "medium-m96"
-            },
-            "label":  "medium-m96 — 8 vCPU / 96 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "large"
-            },
-            "label":  "large — 12 vCPU / 48 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "xlarge"
-            },
-            "label":  "xlarge — 16 vCPU / 64 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "oltp-c16-m128"
-            },
-            "label":  "oltp-c16-m128 — 16 vCPU / 128 GB"
-          },
-          {
-            "value":  {
-              "stringValue":  "olap-c16-m128"
-            },
-            "label":  "olap-c16-m128 — 16 vCPU / 128 GB"
-          }
-        ],
-        "default":  {
-          "stringValue":  "medium"
+      "choice": {
+        "default": {
+          "stringValue": "dedicated"
         },
-        "open":  true
-      },
-      "group":  "Dedicated",
-      "title":  "Resource preset",
-      "when":  "root.type == \"dedicated\""
-    },
-    {
-      "name":  "scale_policy",
-      "description":  "fixed = a constant number of nodes; auto = YC scales between min and max on CPU utilization (a preview feature, needs the enable_autoscaling label).",
-      "choice":  {
-        "options":  [
+        "options": [
           {
-            "value":  {
-              "stringValue":  "fixed"
-            },
-            "label":  "Fixed size"
+            "label": "Dedicated",
+            "value": {
+              "stringValue": "dedicated"
+            }
           },
           {
-            "value":  {
-              "stringValue":  "auto"
-            },
-            "label":  "Auto scale (preview)"
+            "label": "Serverless",
+            "value": {
+              "stringValue": "serverless"
+            }
           }
-        ],
-        "default":  {
-          "stringValue":  "fixed"
-        }
+        ]
       },
-      "group":  "Dedicated",
-      "title":  "Scale policy",
-      "when":  "root.type == \"dedicated\""
+      "description": "serverless = pay-per-request, YC-managed endpoint, no VPC; dedicated = a sized cluster in your network.",
+      "group": "Engine",
+      "name": "type",
+      "required": true,
+      "title": "Database type"
     },
     {
-      "name":  "node_count",
-      "description":  "scale_policy.fixed_scale.size — database slots; production guidance is at least three.",
-      "int64":  {
-        "default":  "3",
-        "gte":  "1",
-        "lte":  "64"
+      "description": "YC location the database is created in (location_id on both resources).",
+      "group": "Engine",
+      "name": "location_id",
+      "string": {
+        "default": "ru-central1",
+        "maxLen": "32",
+        "pattern": "^[a-z0-9\\-]+$"
       },
-      "group":  "Dedicated",
-      "title":  "Nodes",
-      "when":  "root.type == \"dedicated\" && root.scale_policy == \"fixed\""
+      "title": "Availability zone group"
     },
     {
-      "name":  "auto_scale",
-      "description":  "Target-tracking autoscaling bounds; only read when scale_policy is auto.",
-      "object":  {
-        "schema":  {
-          "fields":  [
+      "choice": {
+        "default": {
+          "stringValue": "medium"
+        },
+        "open": true,
+        "options": [
+          {
+            "label": "medium — 8 vCPU / 32 GB",
+            "value": {
+              "stringValue": "medium"
+            }
+          },
+          {
+            "label": "medium-m64 — 8 vCPU / 64 GB",
+            "value": {
+              "stringValue": "medium-m64"
+            }
+          },
+          {
+            "label": "medium-m96 — 8 vCPU / 96 GB",
+            "value": {
+              "stringValue": "medium-m96"
+            }
+          },
+          {
+            "label": "large — 12 vCPU / 48 GB",
+            "value": {
+              "stringValue": "large"
+            }
+          },
+          {
+            "label": "xlarge — 16 vCPU / 64 GB",
+            "value": {
+              "stringValue": "xlarge"
+            }
+          },
+          {
+            "label": "oltp-c16-m128 — 16 vCPU / 128 GB",
+            "value": {
+              "stringValue": "oltp-c16-m128"
+            }
+          },
+          {
+            "label": "olap-c16-m128 — 16 vCPU / 128 GB",
+            "value": {
+              "stringValue": "olap-c16-m128"
+            }
+          }
+        ]
+      },
+      "description": "VM configuration of one database node: vCPUs and RAM.",
+      "group": "Dedicated",
+      "name": "resource_preset_id",
+      "title": "Resource preset",
+      "when": "root.type == \"dedicated\""
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "fixed"
+        },
+        "options": [
+          {
+            "label": "Fixed size",
+            "value": {
+              "stringValue": "fixed"
+            }
+          },
+          {
+            "label": "Auto scale (preview)",
+            "value": {
+              "stringValue": "auto"
+            }
+          }
+        ]
+      },
+      "description": "fixed = a constant number of nodes; auto = YC scales between min and max on CPU utilization (a preview feature, needs the enable_autoscaling label).",
+      "group": "Dedicated",
+      "name": "scale_policy",
+      "title": "Scale policy",
+      "when": "root.type == \"dedicated\""
+    },
+    {
+      "description": "scale_policy.fixed_scale.size — database slots; production guidance is at least three.",
+      "group": "Dedicated",
+      "int64": {
+        "default": "3",
+        "gte": "1",
+        "lte": "64"
+      },
+      "name": "node_count",
+      "title": "Nodes",
+      "when": "root.type == \"dedicated\" \u0026\u0026 root.scale_policy == \"fixed\""
+    },
+    {
+      "description": "Target-tracking autoscaling bounds; only read when scale_policy is auto.",
+      "group": "Dedicated",
+      "name": "auto_scale",
+      "object": {
+        "schema": {
+          "fields": [
             {
-              "name":  "min_size",
-              "description":  "scale_policy.auto_scale.min_size.",
-              "int64":  {
-                "default":  "2",
-                "gte":  "1",
-                "lte":  "64"
+              "description": "scale_policy.auto_scale.min_size.",
+              "group": "Dedicated",
+              "int64": {
+                "default": "2",
+                "gte": "1",
+                "lte": "64"
               },
-              "group":  "Dedicated",
-              "title":  "Min nodes"
+              "name": "min_size",
+              "title": "Min nodes"
             },
             {
-              "name":  "max_size",
-              "description":  "scale_policy.auto_scale.max_size.",
-              "int64":  {
-                "default":  "8",
-                "gte":  "1",
-                "lte":  "64"
+              "description": "scale_policy.auto_scale.max_size.",
+              "group": "Dedicated",
+              "int64": {
+                "default": "8",
+                "gte": "1",
+                "lte": "64"
               },
-              "group":  "Dedicated",
-              "title":  "Max nodes"
+              "name": "max_size",
+              "title": "Max nodes"
             },
             {
-              "name":  "cpu_utilization_percent",
-              "description":  "scale_policy.auto_scale.target_tracking.cpu_utilization_percent — the utilization YC scales to hold.",
-              "int64":  {
-                "default":  "70",
-                "gte":  "10",
-                "lte":  "100"
+              "description": "scale_policy.auto_scale.target_tracking.cpu_utilization_percent — the utilization YC scales to hold.",
+              "group": "Dedicated",
+              "int64": {
+                "default": "70",
+                "gte": "10",
+                "lte": "100"
               },
-              "group":  "Dedicated",
-              "unit":  "%",
-              "title":  "Target CPU"
+              "name": "cpu_utilization_percent",
+              "title": "Target CPU",
+              "unit": "%"
             }
           ],
-          "strict":  true
+          "strict": true
         }
       },
-      "group":  "Dedicated",
-      "title":  "Auto scale",
-      "when":  "root.type == \"dedicated\" && root.scale_policy == \"auto\""
+      "title": "Auto scale",
+      "when": "root.type == \"dedicated\" \u0026\u0026 root.scale_policy == \"auto\""
     },
     {
-      "name":  "storage_groups",
-      "description":  "storage_config.group_count — for the ssd type one group stores up to 100 GB, so size this from the dataset.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "1",
-        "lte":  "1024"
+      "description": "storage_config.group_count — for the ssd type one group stores up to 100 GB, so size this from the dataset.",
+      "group": "Dedicated",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "1024"
       },
-      "group":  "Dedicated",
-      "title":  "Storage groups",
-      "when":  "root.type == \"dedicated\""
+      "name": "storage_groups",
+      "title": "Storage groups",
+      "when": "root.type == \"dedicated\""
     },
     {
-      "name":  "storage_type",
-      "description":  "storage_config.storage_type_id; YC documents ssd by example and defers the full list to `yc ydb storage-type list`, so other ids are accepted.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "ssd"
-            },
-            "label":  "ssd"
-          }
-        ],
-        "default":  {
-          "stringValue":  "ssd"
+      "choice": {
+        "default": {
+          "stringValue": "ssd"
         },
-        "open":  true
+        "open": true,
+        "options": [
+          {
+            "label": "ssd",
+            "value": {
+              "stringValue": "ssd"
+            }
+          }
+        ]
       },
-      "group":  "Dedicated",
-      "title":  "Storage type",
-      "when":  "root.type == \"dedicated\""
+      "description": "storage_config.storage_type_id; YC documents ssd by example and defers the full list to `yc ydb storage-type list`, so other ids are accepted.",
+      "group": "Dedicated",
+      "name": "storage_type",
+      "title": "Storage type",
+      "when": "root.type == \"dedicated\""
     },
     {
-      "name":  "assign_public_ips",
-      "description":  "Give the dedicated database nodes public addresses; only meaningful for a dedicated database (serverless has no VPC attachment).",
-      "bool":  {
-        "default":  false
+      "bool": {
+        "default": false
       },
-      "group":  "Dedicated",
-      "title":  "Public IPs",
-      "when":  "root.type == \"dedicated\""
+      "description": "Give the dedicated database nodes public addresses; only meaningful for a dedicated database (serverless has no VPC attachment).",
+      "group": "Dedicated",
+      "name": "assign_public_ips",
+      "title": "Public IPs",
+      "when": "root.type == \"dedicated\""
     },
     {
-      "name":  "throttling_rcu_limit",
-      "description":  "serverless_database.throttling_rcu_limit — request units per second ceiling; 0 disables throttling.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "1000000"
+      "description": "serverless_database.throttling_rcu_limit — request units per second ceiling; 0 disables throttling.",
+      "group": "Serverless",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "1000000"
       },
-      "group":  "Serverless",
-      "unit":  "RU/s",
-      "title":  "Throttling RCU limit",
-      "when":  "root.type == \"serverless\""
+      "name": "throttling_rcu_limit",
+      "title": "Throttling RCU limit",
+      "unit": "RU/s",
+      "when": "root.type == \"serverless\""
     },
     {
-      "name":  "provisioned_rcu_limit",
-      "description":  "serverless_database.provisioned_rcu_limit — reserved RU/s billed hourly; 0 disables provisioned capacity.",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "1000000"
+      "description": "serverless_database.provisioned_rcu_limit — reserved RU/s billed hourly; 0 disables provisioned capacity.",
+      "group": "Serverless",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "1000000"
       },
-      "group":  "Serverless",
-      "unit":  "RU/s",
-      "title":  "Provisioned RCU limit",
-      "when":  "root.type == \"serverless\""
+      "name": "provisioned_rcu_limit",
+      "title": "Provisioned RCU limit",
+      "unit": "RU/s",
+      "when": "root.type == \"serverless\""
     },
     {
-      "name":  "storage_size_limit_gb",
-      "description":  "serverless_database.storage_size_limit — the database's data ceiling (YC default 50 GB).",
-      "int64":  {
-        "default":  "50",
-        "gte":  "1",
-        "lte":  "10000"
+      "description": "serverless_database.storage_size_limit — the database's data ceiling (YC default 50 GB).",
+      "group": "Serverless",
+      "int64": {
+        "default": "50",
+        "gte": "1",
+        "lte": "10000"
       },
-      "group":  "Serverless",
-      "unit":  "GB",
-      "title":  "Storage limit",
-      "when":  "root.type == \"serverless\""
+      "name": "storage_size_limit_gb",
+      "title": "Storage limit",
+      "unit": "GB",
+      "when": "root.type == \"serverless\""
     },
     {
-      "name":  "deletion_protection",
-      "description":  "Refuse terraform destroy on the database; a kept stand still tears down its VMs, so leave this off unless the data matters.",
-      "bool":  {
-        "default":  false
+      "bool": {
+        "default": false
       },
-      "group":  "Lifecycle",
-      "title":  "Deletion protection"
+      "description": "Refuse terraform destroy on the database; a kept stand still tears down its VMs, so leave this off unless the data matters.",
+      "group": "Lifecycle",
+      "name": "deletion_protection",
+      "title": "Deletion protection"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "ydb_managed.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"auto_scale\" in root) || int(root.auto_scale.min_size) <= int(root.auto_scale.max_size)",
-      "message":  "auto_scale.min_size must not exceed auto_scale.max_size",
-      "id":  "autoscale-min-le-max"
+      "expr": "!(\"auto_scale\" in root) || int(root.auto_scale.min_size) \u003c= int(root.auto_scale.max_size)",
+      "id": "autoscale-min-le-max",
+      "message": "auto_scale.min_size must not exceed auto_scale.max_size"
     },
     {
-      "expr":  "!(\"node_count\" in root) || int(root.node_count) >= 3",
-      "message":  "a dedicated database with fewer than three slots has no redundancy",
-      "id":  "dedicated-ha",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "!(\"node_count\" in root) || int(root.node_count) \u003e= 3",
+      "id": "dedicated-ha",
+      "message": "a dedicated database with fewer than three slots has no redundancy",
+      "severity": "SEVERITY_WARNING"
     },
     {
-      "expr":  "!(\"storage_groups\" in root) || root.storage_type != \"ssd\" || int(root.storage_groups) >= 2",
-      "message":  "one ssd storage group holds about 100 GB — a larger dataset needs more groups",
-      "id":  "ssd-group-capacity",
-      "severity":  "SEVERITY_WARNING"
+      "expr": "!(\"storage_groups\" in root) || root.storage_type != \"ssd\" || int(root.storage_groups) \u003e= 2",
+      "id": "ssd-group-capacity",
+      "message": "one ssd storage group holds about 100 GB — a larger dataset needs more groups",
+      "severity": "SEVERITY_WARNING"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true
 }

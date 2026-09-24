@@ -1,324 +1,324 @@
 {
-  "id":  {
-    "namespace":  "cfg",
-    "name":  "host.sysctl",
-    "version":  "v1.0.0"
-  },
-  "description":  "Kernel tunables (sysctl.d drop-in) applied to every machine of a run.",
-  "fields":  [
+  "coerce": true,
+  "description": "Kernel tunables (sysctl.d drop-in) applied to every machine of a run.",
+  "fields": [
     {
-      "name":  "vm_swappiness",
-      "description":  "Swap aggressiveness, 0..200 (kernel default 60). Benchmarks keep it at 1: swapping falsifies latency.",
-      "int64":  {
-        "default":  "1",
-        "gte":  "0",
-        "lte":  "200"
+      "description": "Swap aggressiveness, 0..200 (kernel default 60). Benchmarks keep it at 1: swapping falsifies latency.",
+      "group": "Memory",
+      "int64": {
+        "default": "1",
+        "gte": "0",
+        "lte": "200"
       },
-      "group":  "Memory",
-      "title":  "vm.swappiness"
+      "name": "vm_swappiness",
+      "title": "vm.swappiness"
     },
     {
-      "name":  "vm_overcommit_memory",
-      "description":  "0 = heuristic (kernel default), 1 = always overcommit, 2 = strict (CommitLimit = swap + ratio% RAM).",
-      "choice":  {
-        "options":  [
+      "choice": {
+        "default": {
+          "int64Value": "0"
+        },
+        "options": [
           {
-            "value":  {
-              "int64Value":  "0"
-            },
-            "label":  "0 — heuristic"
+            "label": "0 — heuristic",
+            "value": {
+              "int64Value": "0"
+            }
           },
           {
-            "value":  {
-              "int64Value":  "1"
-            },
-            "label":  "1 — always overcommit"
+            "label": "1 — always overcommit",
+            "value": {
+              "int64Value": "1"
+            }
           },
           {
-            "value":  {
-              "int64Value":  "2"
-            },
-            "label":  "2 — strict"
+            "label": "2 — strict",
+            "value": {
+              "int64Value": "2"
+            }
           }
-        ],
-        "default":  {
-          "int64Value":  "0"
-        }
+        ]
       },
-      "group":  "Memory",
-      "title":  "vm.overcommit_memory"
+      "description": "0 = heuristic (kernel default), 1 = always overcommit, 2 = strict (CommitLimit = swap + ratio% RAM).",
+      "group": "Memory",
+      "name": "vm_overcommit_memory",
+      "title": "vm.overcommit_memory"
     },
     {
-      "name":  "vm_overcommit_ratio",
-      "description":  "Percent of physical RAM added to swap to form CommitLimit; only read when vm.overcommit_memory = 2.",
-      "int64":  {
-        "default":  "50",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "Percent of physical RAM added to swap to form CommitLimit; only read when vm.overcommit_memory = 2.",
+      "group": "Memory",
+      "int64": {
+        "default": "50",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Memory",
-      "unit":  "%",
-      "title":  "vm.overcommit_ratio"
+      "name": "vm_overcommit_ratio",
+      "title": "vm.overcommit_ratio",
+      "unit": "%"
     },
     {
-      "name":  "vm_dirty_ratio",
-      "description":  "Percent of available memory of dirty pages at which a writing process itself starts writeback (kernel default 20).",
-      "int64":  {
-        "default":  "20",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "Percent of available memory of dirty pages at which a writing process itself starts writeback (kernel default 20).",
+      "group": "Writeback",
+      "int64": {
+        "default": "20",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Writeback",
-      "unit":  "%",
-      "title":  "vm.dirty_ratio"
+      "name": "vm_dirty_ratio",
+      "title": "vm.dirty_ratio",
+      "unit": "%"
     },
     {
-      "name":  "vm_dirty_background_ratio",
-      "description":  "Percent of available memory of dirty pages at which the background flusher starts (kernel default 10).",
-      "int64":  {
-        "default":  "10",
-        "gte":  "0",
-        "lte":  "100"
+      "description": "Percent of available memory of dirty pages at which the background flusher starts (kernel default 10).",
+      "group": "Writeback",
+      "int64": {
+        "default": "10",
+        "gte": "0",
+        "lte": "100"
       },
-      "group":  "Writeback",
-      "unit":  "%",
-      "title":  "vm.dirty_background_ratio"
+      "name": "vm_dirty_background_ratio",
+      "title": "vm.dirty_background_ratio",
+      "unit": "%"
     },
     {
-      "name":  "vm_max_map_count",
-      "description":  "Maximum number of memory-map areas per process (kernel default 65530).",
-      "int64":  {
-        "default":  "262144",
-        "gte":  "65530",
-        "lte":  "1048576"
+      "description": "Maximum number of memory-map areas per process (kernel default 65530).",
+      "group": "Memory",
+      "int64": {
+        "default": "262144",
+        "gte": "65530",
+        "lte": "1048576"
       },
-      "group":  "Memory",
-      "title":  "vm.max_map_count"
+      "name": "vm_max_map_count",
+      "title": "vm.max_map_count"
     },
     {
-      "name":  "vm_nr_hugepages",
-      "description":  "Number of pre-allocated persistent huge pages; 0 leaves huge pages unused (kernel default 0).",
-      "int64":  {
-        "default":  "0",
-        "gte":  "0",
-        "lte":  "1048576"
+      "description": "Number of pre-allocated persistent huge pages; 0 leaves huge pages unused (kernel default 0).",
+      "group": "Hugepages",
+      "int64": {
+        "default": "0",
+        "gte": "0",
+        "lte": "1048576"
       },
-      "group":  "Hugepages",
-      "title":  "vm.nr_hugepages"
+      "name": "vm_nr_hugepages",
+      "title": "vm.nr_hugepages"
     },
     {
-      "name":  "kernel_shmmax",
-      "description":  "Maximum size of one System V shared-memory segment, bytes. Unset leaves the kernel default (ULONG_MAX on 64-bit).",
-      "nullable":  true,
-      "int64":  {
-        "gte":  "1048576"
+      "description": "Maximum size of one System V shared-memory segment, bytes. Unset leaves the kernel default (ULONG_MAX on 64-bit).",
+      "group": "SysV IPC",
+      "int64": {
+        "gte": "1048576"
       },
-      "group":  "SysV IPC",
-      "unit":  "bytes",
-      "title":  "kernel.shmmax"
+      "name": "kernel_shmmax",
+      "nullable": true,
+      "title": "kernel.shmmax",
+      "unit": "bytes"
     },
     {
-      "name":  "kernel_shmall",
-      "description":  "Total System V shared memory the system may allocate, in PAGES (not bytes). Unset leaves the kernel default.",
-      "nullable":  true,
-      "int64":  {
-        "gte":  "1024"
+      "description": "Total System V shared memory the system may allocate, in PAGES (not bytes). Unset leaves the kernel default.",
+      "group": "SysV IPC",
+      "int64": {
+        "gte": "1024"
       },
-      "group":  "SysV IPC",
-      "unit":  "pages",
-      "title":  "kernel.shmall"
+      "name": "kernel_shmall",
+      "nullable": true,
+      "title": "kernel.shmall",
+      "unit": "pages"
     },
     {
-      "name":  "kernel_sem",
-      "description":  "System V semaphore limits, four integers \"SEMMSL SEMMNS SEMOPM SEMMNI\".",
-      "string":  {
-        "default":  "250 32000 100 128",
-        "pattern":  "^[0-9]+ [0-9]+ [0-9]+ [0-9]+$"
-      },
-      "group":  "SysV IPC",
-      "title":  "kernel.sem",
-      "examples":  [
+      "description": "System V semaphore limits, four integers \"SEMMSL SEMMNS SEMOPM SEMMNI\".",
+      "examples": [
         {
-          "stringValue":  "250 32000 100 128"
-        }
-      ]
-    },
-    {
-      "name":  "fs_file_max",
-      "description":  "System-wide maximum number of open file handles.",
-      "int64":  {
-        "default":  "2097152",
-        "gte":  "8192",
-        "lte":  "100000000"
-      },
-      "group":  "Filesystem",
-      "title":  "fs.file-max"
-    },
-    {
-      "name":  "fs_aio_max_nr",
-      "description":  "Maximum number of outstanding async I/O requests system-wide (kernel default 65536); raised for io_uring/AIO storage engines.",
-      "int64":  {
-        "default":  "1048576",
-        "gte":  "65536",
-        "lte":  "16777216"
-      },
-      "group":  "Filesystem",
-      "title":  "fs.aio-max-nr"
-    },
-    {
-      "name":  "net_core_somaxconn",
-      "description":  "Maximum accept-queue length per listening socket (kernel default 4096 since 5.4).",
-      "int64":  {
-        "default":  "4096",
-        "gte":  "128",
-        "lte":  "1048576"
-      },
-      "group":  "Network",
-      "title":  "net.core.somaxconn"
-    },
-    {
-      "name":  "net_core_rmem_max",
-      "description":  "Maximum receive socket buffer a program may request with SO_RCVBUF, bytes.",
-      "int64":  {
-        "default":  "16777216",
-        "gte":  "65536",
-        "lte":  "1073741824"
-      },
-      "group":  "Network",
-      "unit":  "bytes",
-      "title":  "net.core.rmem_max"
-    },
-    {
-      "name":  "net_core_wmem_max",
-      "description":  "Maximum send socket buffer a program may request with SO_SNDBUF, bytes.",
-      "int64":  {
-        "default":  "16777216",
-        "gte":  "65536",
-        "lte":  "1073741824"
-      },
-      "group":  "Network",
-      "unit":  "bytes",
-      "title":  "net.core.wmem_max"
-    },
-    {
-      "name":  "net_ipv4_tcp_keepalive_time",
-      "description":  "Seconds an idle TCP connection waits before the first keepalive probe (kernel default 7200).",
-      "int64":  {
-        "default":  "300",
-        "gte":  "30",
-        "lte":  "7200"
-      },
-      "group":  "Network",
-      "unit":  "s",
-      "title":  "net.ipv4.tcp_keepalive_time"
-    },
-    {
-      "name":  "net_ipv4_tcp_keepalive_intvl",
-      "description":  "Seconds between keepalive probes (kernel default 75).",
-      "int64":  {
-        "default":  "30",
-        "gte":  "1",
-        "lte":  "300"
-      },
-      "group":  "Network",
-      "unit":  "s",
-      "title":  "net.ipv4.tcp_keepalive_intvl"
-    },
-    {
-      "name":  "net_ipv4_tcp_keepalive_probes",
-      "description":  "Unacknowledged keepalive probes before the connection is dropped (kernel default 9).",
-      "int64":  {
-        "default":  "5",
-        "gte":  "1",
-        "lte":  "30"
-      },
-      "group":  "Network",
-      "title":  "net.ipv4.tcp_keepalive_probes"
-    },
-    {
-      "name":  "net_ipv4_ip_local_port_range",
-      "description":  "Ephemeral port range for outgoing connections, \"<first> <last>\" (kernel default \"32768 60999\").",
-      "string":  {
-        "default":  "1024 65000",
-        "pattern":  "^[0-9]{1,5} [0-9]{1,5}$"
-      },
-      "group":  "Network",
-      "title":  "net.ipv4.ip_local_port_range"
-    },
-    {
-      "name":  "transparent_hugepage",
-      "description":  "/sys/kernel/mm/transparent_hugepage/enabled. Databases with their own buffer pools want never or madvise.",
-      "choice":  {
-        "options":  [
-          {
-            "value":  {
-              "stringValue":  "never"
-            },
-            "label":  "never"
-          },
-          {
-            "value":  {
-              "stringValue":  "madvise"
-            },
-            "label":  "madvise"
-          },
-          {
-            "value":  {
-              "stringValue":  "always"
-            },
-            "label":  "always"
-          }
-        ],
-        "default":  {
-          "stringValue":  "never"
-        }
-      },
-      "group":  "Hugepages",
-      "title":  "Transparent hugepages"
-    },
-    {
-      "name":  "custom",
-      "description":  "Any further sysctl key → value, appended verbatim after the known keys.",
-      "rules":  [
-        {
-          "expr":  "this.all(k, k.matches(\"^[a-z0-9_]+([.][a-z0-9_-]+)+$\"))",
-          "message":  "sysctl keys look like net.ipv4.tcp_fastopen",
-          "id":  "custom-key-shape"
+          "stringValue": "250 32000 100 128"
         }
       ],
-      "map":  {
-        "maxEntries":  "64",
-        "valueField":  {
-          "name":  "value",
-          "string":  {
-            "maxLen":  "256"
+      "group": "SysV IPC",
+      "name": "kernel_sem",
+      "string": {
+        "default": "250 32000 100 128",
+        "pattern": "^[0-9]+ [0-9]+ [0-9]+ [0-9]+$"
+      },
+      "title": "kernel.sem"
+    },
+    {
+      "description": "System-wide maximum number of open file handles.",
+      "group": "Filesystem",
+      "int64": {
+        "default": "2097152",
+        "gte": "8192",
+        "lte": "100000000"
+      },
+      "name": "fs_file_max",
+      "title": "fs.file-max"
+    },
+    {
+      "description": "Maximum number of outstanding async I/O requests system-wide (kernel default 65536); raised for io_uring/AIO storage engines.",
+      "group": "Filesystem",
+      "int64": {
+        "default": "1048576",
+        "gte": "65536",
+        "lte": "16777216"
+      },
+      "name": "fs_aio_max_nr",
+      "title": "fs.aio-max-nr"
+    },
+    {
+      "description": "Maximum accept-queue length per listening socket (kernel default 4096 since 5.4).",
+      "group": "Network",
+      "int64": {
+        "default": "4096",
+        "gte": "128",
+        "lte": "1048576"
+      },
+      "name": "net_core_somaxconn",
+      "title": "net.core.somaxconn"
+    },
+    {
+      "description": "Maximum receive socket buffer a program may request with SO_RCVBUF, bytes.",
+      "group": "Network",
+      "int64": {
+        "default": "16777216",
+        "gte": "65536",
+        "lte": "1073741824"
+      },
+      "name": "net_core_rmem_max",
+      "title": "net.core.rmem_max",
+      "unit": "bytes"
+    },
+    {
+      "description": "Maximum send socket buffer a program may request with SO_SNDBUF, bytes.",
+      "group": "Network",
+      "int64": {
+        "default": "16777216",
+        "gte": "65536",
+        "lte": "1073741824"
+      },
+      "name": "net_core_wmem_max",
+      "title": "net.core.wmem_max",
+      "unit": "bytes"
+    },
+    {
+      "description": "Seconds an idle TCP connection waits before the first keepalive probe (kernel default 7200).",
+      "group": "Network",
+      "int64": {
+        "default": "300",
+        "gte": "30",
+        "lte": "7200"
+      },
+      "name": "net_ipv4_tcp_keepalive_time",
+      "title": "net.ipv4.tcp_keepalive_time",
+      "unit": "s"
+    },
+    {
+      "description": "Seconds between keepalive probes (kernel default 75).",
+      "group": "Network",
+      "int64": {
+        "default": "30",
+        "gte": "1",
+        "lte": "300"
+      },
+      "name": "net_ipv4_tcp_keepalive_intvl",
+      "title": "net.ipv4.tcp_keepalive_intvl",
+      "unit": "s"
+    },
+    {
+      "description": "Unacknowledged keepalive probes before the connection is dropped (kernel default 9).",
+      "group": "Network",
+      "int64": {
+        "default": "5",
+        "gte": "1",
+        "lte": "30"
+      },
+      "name": "net_ipv4_tcp_keepalive_probes",
+      "title": "net.ipv4.tcp_keepalive_probes"
+    },
+    {
+      "description": "Ephemeral port range for outgoing connections, \"\u003cfirst\u003e \u003clast\u003e\" (kernel default \"32768 60999\").",
+      "group": "Network",
+      "name": "net_ipv4_ip_local_port_range",
+      "string": {
+        "default": "1024 65000",
+        "pattern": "^[0-9]{1,5} [0-9]{1,5}$"
+      },
+      "title": "net.ipv4.ip_local_port_range"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "never"
+        },
+        "options": [
+          {
+            "label": "never",
+            "value": {
+              "stringValue": "never"
+            }
+          },
+          {
+            "label": "madvise",
+            "value": {
+              "stringValue": "madvise"
+            }
+          },
+          {
+            "label": "always",
+            "value": {
+              "stringValue": "always"
+            }
+          }
+        ]
+      },
+      "description": "/sys/kernel/mm/transparent_hugepage/enabled. Databases with their own buffer pools want never or madvise.",
+      "group": "Hugepages",
+      "name": "transparent_hugepage",
+      "title": "Transparent hugepages"
+    },
+    {
+      "description": "Any further sysctl key → value, appended verbatim after the known keys.",
+      "group": "Custom",
+      "map": {
+        "maxEntries": "64",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "maxLen": "256"
           }
         }
       },
-      "group":  "Custom",
-      "title":  "Extra sysctl keys"
+      "name": "custom",
+      "rules": [
+        {
+          "expr": "this.all(k, k.matches(\"^[a-z0-9_]+([.][a-z0-9_-]+)+$\"))",
+          "id": "custom-key-shape",
+          "message": "sysctl keys look like net.ipv4.tcp_fastopen"
+        }
+      ],
+      "title": "Extra sysctl keys"
     },
     {
-      "name":  "custom_lines",
-      "description":  "Derived: the custom map as sysctl.conf lines.",
-      "computed":  {
-        "expr":  "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
-        "result":  "RESULT_TYPE_STRING"
+      "computed": {
+        "expr": "(\"custom\" in root) ? root.custom.map(k, k + \" = \" + string(root.custom[k])).join(\"\\n\") : \"\"",
+        "result": "RESULT_TYPE_STRING"
       },
-      "group":  "Custom",
-      "title":  "Rendered custom lines"
+      "description": "Derived: the custom map as sysctl.conf lines.",
+      "group": "Custom",
+      "name": "custom_lines",
+      "title": "Rendered custom lines"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "host.sysctl",
+    "namespace": "cfg",
+    "version": "v1.0.0"
+  },
+  "rules": [
     {
-      "expr":  "int(root.vm_dirty_background_ratio) <= int(root.vm_dirty_ratio)",
-      "message":  "vm.dirty_background_ratio must be <= vm.dirty_ratio",
-      "id":  "dirty-bg-le-dirty"
+      "expr": "int(root.vm_dirty_background_ratio) \u003c= int(root.vm_dirty_ratio)",
+      "id": "dirty-bg-le-dirty",
+      "message": "vm.dirty_background_ratio must be \u003c= vm.dirty_ratio"
     }
   ],
-  "strict":  true,
-  "coerce":  true,
-  "templates":  {
-    "conf":  "# managed by stroppy-cloud — cfg.host.sysctl@1\nvm.swappiness = {{{values.vm_swappiness}}}\nvm.overcommit_memory = {{{values.vm_overcommit_memory}}}\nvm.overcommit_ratio = {{{values.vm_overcommit_ratio}}}\nvm.dirty_ratio = {{{values.vm_dirty_ratio}}}\nvm.dirty_background_ratio = {{{values.vm_dirty_background_ratio}}}\nvm.max_map_count = {{{values.vm_max_map_count}}}\nvm.nr_hugepages = {{{values.vm_nr_hugepages}}}\n{{#values.kernel_shmmax}}kernel.shmmax = {{{values.kernel_shmmax}}}\n{{/values.kernel_shmmax}}{{#values.kernel_shmall}}kernel.shmall = {{{values.kernel_shmall}}}\n{{/values.kernel_shmall}}kernel.sem = {{{values.kernel_sem}}}\nfs.file-max = {{{values.fs_file_max}}}\nfs.aio-max-nr = {{{values.fs_aio_max_nr}}}\nnet.core.somaxconn = {{{values.net_core_somaxconn}}}\nnet.core.rmem_max = {{{values.net_core_rmem_max}}}\nnet.core.wmem_max = {{{values.net_core_wmem_max}}}\nnet.ipv4.tcp_keepalive_time = {{{values.net_ipv4_tcp_keepalive_time}}}\nnet.ipv4.tcp_keepalive_intvl = {{{values.net_ipv4_tcp_keepalive_intvl}}}\nnet.ipv4.tcp_keepalive_probes = {{{values.net_ipv4_tcp_keepalive_probes}}}\nnet.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}\n{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}\n# not a sysctl — written to sysfs by the host-prep step:\n# echo {{{values.transparent_hugepage}}} > /sys/kernel/mm/transparent_hugepage/enabled\n"
+  "strict": true,
+  "templates": {
+    "conf": "# managed by stroppy-cloud — cfg.host.sysctl@1\nvm.swappiness = {{{values.vm_swappiness}}}\nvm.overcommit_memory = {{{values.vm_overcommit_memory}}}\nvm.overcommit_ratio = {{{values.vm_overcommit_ratio}}}\nvm.dirty_ratio = {{{values.vm_dirty_ratio}}}\nvm.dirty_background_ratio = {{{values.vm_dirty_background_ratio}}}\nvm.max_map_count = {{{values.vm_max_map_count}}}\nvm.nr_hugepages = {{{values.vm_nr_hugepages}}}\n{{#values.kernel_shmmax}}kernel.shmmax = {{{values.kernel_shmmax}}}\n{{/values.kernel_shmmax}}{{#values.kernel_shmall}}kernel.shmall = {{{values.kernel_shmall}}}\n{{/values.kernel_shmall}}kernel.sem = {{{values.kernel_sem}}}\nfs.file-max = {{{values.fs_file_max}}}\nfs.aio-max-nr = {{{values.fs_aio_max_nr}}}\nnet.core.somaxconn = {{{values.net_core_somaxconn}}}\nnet.core.rmem_max = {{{values.net_core_rmem_max}}}\nnet.core.wmem_max = {{{values.net_core_wmem_max}}}\nnet.ipv4.tcp_keepalive_time = {{{values.net_ipv4_tcp_keepalive_time}}}\nnet.ipv4.tcp_keepalive_intvl = {{{values.net_ipv4_tcp_keepalive_intvl}}}\nnet.ipv4.tcp_keepalive_probes = {{{values.net_ipv4_tcp_keepalive_probes}}}\nnet.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}\n{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}\n# not a sysctl — written to sysfs by the host-prep step:\n# echo {{{values.transparent_hugepage}}} \u003e /sys/kernel/mm/transparent_hugepage/enabled\n"
   }
 }

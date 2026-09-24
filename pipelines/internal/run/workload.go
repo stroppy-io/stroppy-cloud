@@ -3,7 +3,6 @@ package run
 import (
 	"fmt"
 	"maps"
-	"strings"
 	"time"
 
 	"go.temporal.io/sdk/workflow"
@@ -118,17 +117,6 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 			if err := workflow.Sleep(ctx.Context, seg.Warmup.Std()); err != nil {
 				return out, err
 			}
-		}
-		req.FileBlobs = map[string]string{}
-		for _, f := range seg.Files {
-			if f.Ref == "" {
-				continue
-			}
-			attached, err := pipeline.AttachArtifact(ctx, strings.TrimPrefix(f.Ref, "artifact/")).TryReady(ctx)
-			if err != nil {
-				return out, fmt.Errorf("segment %s file %s: %w", seg.Name, f.Name, err)
-			}
-			req.FileBlobs[f.Name] = attached.Blob.Location
 		}
 		res, err := activity.Activity(ctx, runner.Agent,
 			activity.Fn(activities.NameRunSegment, activities.RunSegment, req),

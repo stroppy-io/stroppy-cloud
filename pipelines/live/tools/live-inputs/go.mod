@@ -15,7 +15,7 @@ require (
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-faster/jx v1.2.0 // indirect
 	github.com/google/cel-go v0.30.0 // indirect
-	github.com/gopherex/schemapb/go v0.0.0-20260910140503-8839ac99233d // indirect
+	github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3 // indirect
 	github.com/gopherex/xlog v1.0.2 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect

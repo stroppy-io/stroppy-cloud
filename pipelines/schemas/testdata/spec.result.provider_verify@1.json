@@ -1,90 +1,90 @@
 {
-  "id":  {
-    "namespace":  "spec",
-    "name":  "result.provider_verify",
-    "version":  "v1.0.0"
-  },
-  "description":  "Result of stroppy-provider-verify: whether the profile is usable, and why not.",
-  "fields":  [
+  "coerce": true,
+  "description": "Result of stroppy-provider-verify: whether the profile is usable, and why not.",
+  "fields": [
     {
-      "name":  "ok",
-      "description":  "True when the credentials authenticate and carry the permissions a run needs.",
-      "required":  true,
-      "bool":  {},
-      "group":  "Result",
-      "title":  "Usable"
+      "bool": {},
+      "description": "True when the credentials authenticate and carry the permissions a run needs.",
+      "group": "Result",
+      "name": "ok",
+      "required": true,
+      "title": "Usable"
     },
     {
-      "name":  "account_id",
-      "description":  "Service account id (yandex) or IAM ARN / account id (aws) the credentials resolve to.",
-      "string":  {
-        "maxLen":  "256"
+      "description": "Service account id (yandex) or IAM ARN / account id (aws) the credentials resolve to.",
+      "group": "Result",
+      "name": "account_id",
+      "string": {
+        "maxLen": "256"
       },
-      "group":  "Result",
-      "title":  "Account"
+      "title": "Account"
     },
     {
-      "name":  "scope",
-      "description":  "Folder id (yandex) or region/project the check ran against.",
-      "string":  {
-        "maxLen":  "128"
+      "description": "Folder id (yandex) or region/project the check ran against.",
+      "group": "Result",
+      "name": "scope",
+      "string": {
+        "maxLen": "128"
       },
-      "group":  "Result",
-      "title":  "Scope"
+      "title": "Scope"
     },
     {
-      "name":  "permissions",
-      "description":  "Per-permission verdict; a missing one is why ok is false.",
-      "list":  {
-        "items":  [
+      "description": "Per-permission verdict; a missing one is why ok is false.",
+      "group": "Result",
+      "list": {
+        "items": [
           {
-            "object":  {
-              "schema":  {
-                "fields":  [
+            "object": {
+              "schema": {
+                "fields": [
                   {
-                    "name":  "name",
-                    "description":  "Provider permission or IAM action that was probed.",
-                    "required":  true,
-                    "string":  {
-                      "minLen":  "1",
-                      "maxLen":  "128"
+                    "description": "Provider permission or IAM action that was probed.",
+                    "name": "name",
+                    "required": true,
+                    "string": {
+                      "maxLen": "128",
+                      "minLen": "1"
                     },
-                    "title":  "Permission"
+                    "title": "Permission"
                   },
                   {
-                    "name":  "granted",
-                    "required":  true,
-                    "bool":  {},
-                    "title":  "Granted"
+                    "bool": {},
+                    "name": "granted",
+                    "required": true,
+                    "title": "Granted"
                   }
                 ],
-                "strict":  true
+                "strict": true
               }
             }
           }
         ],
-        "maxItems":  "64"
+        "maxItems": "64"
       },
-      "group":  "Result",
-      "title":  "Permissions"
+      "name": "permissions",
+      "title": "Permissions"
     },
     {
-      "name":  "error",
-      "description":  "Provider error text when ok is false; shown as the profile status reason.",
-      "string":  {
-        "maxLen":  "4096"
+      "description": "Provider error text when ok is false; shown as the profile status reason.",
+      "group": "Result",
+      "name": "error",
+      "string": {
+        "maxLen": "4096"
       },
-      "group":  "Result",
-      "title":  "Error"
+      "title": "Error"
     }
   ],
-  "rules":  [
+  "id": {
+    "name": "result.provider_verify",
+    "namespace": "spec",
+    "version": "v1.0.0"
+  },
+  "rules": [
     {
-      "expr":  "!(\"ok\" in root) || root.ok || (\"error\" in root)",
-      "message":  "a failed verification must say why",
-      "id":  "failure-has-reason"
+      "expr": "!(\"ok\" in root) || root.ok || (\"error\" in root)",
+      "id": "failure-has-reason",
+      "message": "a failed verification must say why"
     }
   ],
-  "strict":  true,
-  "coerce":  true
+  "strict": true
 }

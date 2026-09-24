@@ -180,7 +180,6 @@ var operationRolesBearerAuth = map[string][]string{
 	RenderSchemaValueOperation:       []string{},
 	ReplayWebhookDeliveryOperation:   []string{},
 	RerunRunOperation:                []string{},
-	ResumeRunOperation:               []string{},
 	ResumeScheduleOperation:          []string{},
 	ResyncPipelinesOperation:         []string{},
 	RetryFailedSuiteRunOperation:     []string{},

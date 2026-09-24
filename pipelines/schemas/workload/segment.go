@@ -27,8 +27,7 @@ const stepPattern = `^[a-z][a-z0-9_]*$`
 // doc: stroppy `run <workload> --help` — "--name VALUE"
 const flagPattern = `^[a-z][a-z0-9-]*$`
 
-// filePattern is a file name shipped next to the config or a stroppy preset
-// dialect id (tpcc/pico).
+// filePattern is a stroppy preset dialect id (tpcc/pico).
 const filePattern = `^[A-Za-z0-9._/-]+$`
 
 // Scripts stroppy 6.0.0 registers (`stroppy probe -o json` → workloads[].name).
@@ -139,7 +138,7 @@ func tpccFields() []schemapb.FieldDef {
 			Default(false),
 		retryAttempts(),
 		txIsolation(),
-		sqlFile("Dialect file override (sqlFile): a preset id like tpcc/ydb_no_indexes or a file shipped in files."),
+		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcc/ydb_no_indexes."),
 	}
 }
 
@@ -153,7 +152,7 @@ func tpcbFields() []schemapb.FieldDef {
 		loadWorkers(1),
 		retryAttempts(),
 		txIsolation(),
-		sqlFile("Dialect file override (sqlFile): a preset id like tpcb/pico or a file shipped in files."),
+		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpcb/pico."),
 	}
 }
 
@@ -167,7 +166,7 @@ func tpchFields() []schemapb.FieldDef {
 		loadWorkers(0).Desc("Workers used to load each table (loadWorkers); 0 = automatic."),
 		pgUnlogged(),
 		ydbStoreMode(),
-		sqlFile("Dialect file override (sqlFile): a preset id like tpch/pico or a file shipped in files."),
+		sqlFile("Dialect file override (sqlFile): a preset id shipped with stroppy, like tpch/pico."),
 	}
 }
 
@@ -190,9 +189,9 @@ func tpcdsFields() []schemapb.FieldDef {
 			Desc("Compare answers even when the scale factor is not 1 (validateForce).").Default(false),
 		ydbStoreMode(),
 		schemapb.Str("schema_file").Title("Schema file").Group("SQL").
-			Desc("Schema SQL override (schemaFile): a preset id like tpcds/schema.pico or a file shipped in files.").
+			Desc("Schema SQL override (schemaFile): a preset id shipped with stroppy, like tpcds/schema.pico.").
 			Pattern(filePattern).MaxLen(256).Nullable(),
-		sqlFile("Query SQL override (sqlFile): a preset id like tpcds/pico or a file shipped in files."),
+		sqlFile("Query SQL override (sqlFile): a preset id shipped with stroppy, like tpcds/pico."),
 	}
 }
 
@@ -213,19 +212,19 @@ func executeSQLFields() []schemapb.FieldDef {
 		schemapb.Str("sql_body").Title("Inline SQL").Group("SQL").
 			Desc("SQL text to execute (sqlBody); may start with a `--= name` marker to name the query.").
 			MaxLen(1 << 20).Nullable(),
-		sqlFile("SQL file to execute (sqlFile): a file shipped in files."),
+		sqlFile("SQL file to execute (sqlFile): a preset id shipped with stroppy; use sql_body for inline SQL."),
 	}
 }
 
 // Segment is workload.segment@1 — one `stroppy run` invocation: which
 // workload with which typed parameters, the scenario (executor/VUs/bound),
-// step filters, side files and what the pipeline checks afterwards.
+// step filters and what the pipeline checks afterwards.
 //
 // doc: stroppy `help config-file` — script, run{executor,vus,iterations,
 // duration,queryTimeout}, params{...}, steps/noSteps.
 func Segment() *schemapb.Schema {
 	return schemapb.NewSchema(ids.Workload("segment", 1)).
-		Descr("One stroppy load segment: workload, typed parameters, scenario, steps and files.").
+		Descr("One stroppy load segment: workload, typed parameters, scenario, steps and thresholds.").
 		Strict().Coerce().
 		Fields(
 			schemapb.Str("name").Title("Name").Group("Segment").
@@ -304,30 +303,6 @@ func Segment() *schemapb.Schema {
 					"extra parameter keys must be stroppy flag names (lower-kebab)",
 				).ID("extra-param-key-shape")),
 
-			schemapb.List("files",
-				schemapb.Object("",
-					schemapb.Str("name").Title("File name").
-						Desc("Name the file gets in the segment workspace; reference it from sql_file/schema_file.").
-						Pattern(`^[A-Za-z0-9_-][A-Za-z0-9._-]*(/[A-Za-z0-9_-][A-Za-z0-9._-]*)*$`).MinLen(1).MaxLen(128).Required(),
-					schemapb.Choice("kind").Title("Kind").
-						Desc("What the file is: a schema/DDL file, a config, or a data file.").
-						Opt(schemapb.StrV("sql"), "SQL / DDL").
-						Opt(schemapb.StrV("conf"), "Config").
-						Opt(schemapb.StrV("data"), "Data").
-						Default(schemapb.StrV("sql")),
-					schemapb.Str("content").Title("Content").
-						Desc("Inline file body, at most 1 MiB.").MaxLen(1<<20),
-					schemapb.Str("ref").Title("Reference").
-						Desc("Graphene artifact reference in the current namespace, artifact/<name>; fetched on the runner.").
-						Pattern(`^artifact/[a-zA-Z0-9][a-zA-Z0-9._-]*$`).MinLen(1).MaxLen(512),
-				).Strict().Rule(schemapb.Rule(
-					`("content" in this) != ("ref" in this)`,
-					"a file needs exactly one of content or ref",
-				).ID("file-content-xor-ref")),
-			).Title("Files").Group("Files").
-				Desc("Extra files (SQL dialects, schemas, data) shipped with the segment.").
-				MaxItems(32),
-
 			// Evaluated by the pipeline from the bench summary — stroppy 6 has
 			// no threshold engine of its own.
 			schemapb.Object("thresholds",
@@ -357,7 +332,6 @@ func Segment() *schemapb.Schema {
 		).
 		Rules(
 			segmentRule(stepFilterRule(), "step must be an executable Stroppy step of the selected workload").ID("known-workload-steps"),
-			segmentRule(`!("files" in this) || this.files.all(f, this.files.filter(x, x.name == f.name).size() == 1 && this.files.all(x, x.name == f.name || (!x.name.startsWith(f.name + "/") && !f.name.startsWith(x.name + "/"))) && ["stroppy-config.json", "ca.pem", "stroppy.log"].all(reserved, f.name != reserved && !f.name.startsWith(reserved + "/")))`, "file names must be unique and cannot overwrite runtime files").ID("segment-file-names"),
 			segmentRule(
 				`!("steps" in this) || !("no_steps" in this) || size(this.steps) == 0 || size(this.no_steps) == 0`,
 				"stroppy rejects --steps together with --no-steps",

@@ -159,7 +159,6 @@ const (
 	RenderSchemaValueOperation               OperationName = "RenderSchemaValue"
 	ReplayWebhookDeliveryOperation           OperationName = "ReplayWebhookDelivery"
 	RerunRunOperation                        OperationName = "RerunRun"
-	ResumeRunOperation                       OperationName = "ResumeRun"
 	ResumeScheduleOperation                  OperationName = "ResumeSchedule"
 	ResyncPipelinesOperation                 OperationName = "ResyncPipelines"
 	RetryFailedSuiteRunOperation             OperationName = "RetryFailedSuiteRun"
