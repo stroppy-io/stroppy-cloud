@@ -37,6 +37,7 @@ CREATE TABLE iam_webhook_events (
 -- others unlimited. graphene_namespace is t-<slug>, created with the row.
 -- Deleting is a soft delete: the namespace retires, the row keeps history.
 CREATE TABLE tenants (
+    retiring boolean NOT NULL DEFAULT false,
     id                 uuid        PRIMARY KEY,
     slug               text        NOT NULL,
     name               text        NOT NULL,

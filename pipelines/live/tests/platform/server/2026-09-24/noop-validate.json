@@ -1,0 +1,44 @@
+{
+  "observed_at": "2026-09-24T14:06:38.984164+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/tests:validate",
+  "http_status": 200,
+  "contract_version": "1.0.1",
+  "body": {
+    "status": "draft",
+    "validation": {
+      "fits": false,
+      "issues": [
+        {
+          "scope": "input",
+          "path": "execution",
+          "code": "preflight",
+          "severity": "ERROR",
+          "message": "invalid: sizes.runner: no size chosen"
+        },
+        {
+          "scope": "input",
+          "path": "sizes.runner",
+          "code": "required",
+          "severity": "ERROR",
+          "message": "choose a size for runner",
+          "suggested": {
+            "size": "XS"
+          }
+        }
+      ]
+    },
+    "requirements": {
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "resolved": {},
+    "estimated": {
+      "machines": []
+    }
+  }
+}

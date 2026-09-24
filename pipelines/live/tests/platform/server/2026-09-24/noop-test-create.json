@@ -1,0 +1,105 @@
+{
+  "observed_at": "2026-09-24T14:06:39.017869+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/tests",
+  "http_status": 201,
+  "contract_version": "1.0.1",
+  "body": {
+    "id": "bc5c5c42-545f-4108-a2ee-5d0d85466690",
+    "name": "server-noop-20s",
+    "description": "Server API acceptance: one runner, execute_sql 20s, teardown",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-24T14:06:39Z",
+    "updated_at": "0001-01-01T00:00:00Z",
+    "database": {
+      "inline": {
+        "kind": "noop",
+        "version": "builtin",
+        "params": {
+          "workers": 0
+        },
+        "schema": {
+          "id": "db.noop.params",
+          "version": "1"
+        }
+      }
+    },
+    "workload": {
+      "inline": {
+        "stroppy_version": "6.0.0",
+        "protocol": "noop",
+        "segments": [
+          {
+            "run": {
+              "duration": "20s",
+              "executor": "constant-vus",
+              "query_timeout": "0s",
+              "vus": 1
+            },
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1"
+            },
+            "log_level": "info",
+            "name": "main"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      }
+    },
+    "sizes": {},
+    "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "status": "draft",
+    "resolved": {},
+    "validation": {
+      "fits": false,
+      "issues": [
+        {
+          "scope": "input",
+          "path": "execution",
+          "code": "preflight",
+          "severity": "ERROR",
+          "message": "invalid: sizes.runner: no size chosen"
+        },
+        {
+          "scope": "input",
+          "path": "sizes.runner",
+          "code": "required",
+          "severity": "ERROR",
+          "message": "choose a size for runner",
+          "suggested": {
+            "size": "XS"
+          }
+        }
+      ]
+    },
+    "requirements": {
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "summary": {
+      "db_kind": "noop",
+      "db_version": "builtin",
+      "topology_label": "noop (runner only)",
+      "node_count": 1,
+      "protocol": "noop",
+      "stroppy_version": "6.0.0"
+    },
+    "usages": []
+  }
+}

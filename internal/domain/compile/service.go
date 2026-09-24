@@ -52,7 +52,7 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	out, err := Compile(ctx, s.renderer, Input{
 		RunID: req.RunID, Tenant: req.Tenant, Database: req.Database, Plan: req.Derived.Plan, EffectiveConfigs: req.Derived.EffectiveConfigs,
 		Workload: req.Workload, WorkloadBaked: baked, Sizes: req.Sizes, Execution: req.Execution, Provider: prov, ProviderKind: string(req.Profile.Kind),
-		ProviderSettings: req.Profile.Settings, CredentialsSecret: provider.CredentialsSecret(req.Profile.ID), ProviderConfigName: req.Namespace,
+		ProviderSettings: req.Profile.Settings, CredentialsSecret: provider.ActiveCredentials(req.Profile), ProviderConfigName: spec.ProviderConfigName(req.Namespace, req.Profile.ID.String()),
 		StroppyImage: s.StroppyImage, Keep: req.Keep, Observability: obs, Catalog: s.catalog, Labels: req.Labels,
 	})
 	if err != nil {

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "run_id": "5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+  "checked_at": "2026-09-24T15:24:51.609577+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server events confirm VM and agent ready; provisioning finished.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98/events.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "failed",
+      "reason": "Runner could not download the Stroppy image from GHCR: network timeout.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98/events.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "All four run-specific Crossplane resources are absent after pipeline cleanup.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-24/noop-failed-cleanup.json",
+        "pointer": "/instances.compute"
+      }
+    }
+  ]
+}

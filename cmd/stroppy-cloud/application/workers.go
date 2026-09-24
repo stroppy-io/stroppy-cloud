@@ -40,6 +40,15 @@ func (a *Application) startWorkers() {
 		})
 	}
 	a.shutdown.Go(func(ctx context.Context) {
+		recoverProviders := func(ctx context.Context) {
+			if err := a.services.Providers.RecoverPending(ctx); err != nil {
+				a.log.Ctx().Warn(ctx, "provider recovery failed", xlog.ErrorCause(err))
+			}
+		}
+		recoverProviders(ctx)
+		every(ctx, 15*time.Second, recoverProviders)
+	})
+	a.shutdown.Go(func(ctx context.Context) {
 		every(ctx, quotaSweep, func(ctx context.Context) {
 			if err := a.services.Providers.RefreshAllReady(ctx); err != nil {
 				a.log.Ctx().Warn(ctx, "quota sweep failed", xlog.ErrorCause(err))

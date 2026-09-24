@@ -23,6 +23,10 @@ are documented in [the integration handoff](pipelines/live/tests/platform/contra
 
 ## Development
 
+For the local server with embedded UI and PostgreSQL, see the
+[Docker Compose instructions](deployments/README.md). Run `make dev` after
+configuring `.env.compose`; this connects to an existing Graphene cluster.
+
 ```bash
 make configure
 make build

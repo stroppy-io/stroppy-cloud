@@ -17,15 +17,31 @@ import (
 
 // ProviderRepo stores provider profiles.
 type ProviderRepo struct {
-	q *db.Queries
+	q  *db.Queries
+	tx lifecycleTransactor
 }
 
 var _ provider.Repository = (*ProviderRepo)(nil)
 
 // NewProviderRepo builds the repo.
-func NewProviderRepo(database tx.DB) *ProviderRepo { return &ProviderRepo{q: db.New(database)} }
+func NewProviderRepo(database tx.DB, tr lifecycleTransactor) *ProviderRepo {
+	return &ProviderRepo{q: db.New(database), tx: tr}
+}
 
 func (r *ProviderRepo) Insert(ctx context.Context, p provider.Profile) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		tenant, err := r.q.LockTenantLifecycle(ctx, p.TenantID)
+		if err != nil {
+			return err
+		}
+		if tenant.Retiring {
+			return errs.Conflict("tenant is being deleted")
+		}
+		return r.insert(ctx, p)
+	})
+}
+
+func (r *ProviderRepo) insert(ctx context.Context, p provider.Profile) error {
 	names, _ := json.Marshal(p.SecretNames) //nolint:errcheck // []string always marshals
 	settings := p.Settings
 	if len(settings) == 0 {
@@ -33,7 +49,7 @@ func (r *ProviderRepo) Insert(ctx context.Context, p provider.Profile) error {
 	}
 	err := r.q.InsertProviderProfile(ctx, db.InsertProviderProfileParams{
 		ID: p.ID, TenantID: p.TenantID, Name: p.Name, Kind: string(p.Kind), Settings: settings,
-		SecretNames: names, Status: string(p.Status), CreatedBy: p.CreatedBy,
+		SecretNames: names, Status: string(p.Status), CreatedBy: p.CreatedBy, VerifyRunID: p.VerifyRunID,
 	})
 	if err != nil {
 		if isUnique(err) {
@@ -137,4 +153,93 @@ func profileOf(row db.ProviderProfileByIDRow) provider.Profile {
 		_ = json.Unmarshal(row.Quotas, &p.Quotas) //nolint:errcheck // stored by us
 	}
 	return p
+}
+
+func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status provider.Status, runID string) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		p, err := r.ByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		tenant, err := r.q.LockTenantLifecycle(ctx, p.TenantID)
+		if err != nil {
+			return err
+		}
+		if tenant.Retiring && status != provider.StatusDeleting {
+			return errs.Conflict("tenant is being deleted")
+		}
+		if _, err := r.q.LockProviderLifecycle(ctx, id); err != nil {
+			return err
+		}
+		st := string(status)
+		n, err := r.q.BeginProviderOperation(ctx, db.BeginProviderOperationParams{ID: id, Status: &st, RunID: runID})
+		if err != nil {
+			return infraf("provider: begin operation: %v", err)
+		}
+		if n == 0 {
+			return errs.Conflict("provider is busy, being deleted, or has active runs or kept stands")
+		}
+		return nil
+	})
+}
+
+func (r *ProviderRepo) FinishOperation(ctx context.Context, id uuid.UUID, runID string, status provider.Status, reason string) error {
+	st := string(status)
+	_, err := r.q.FinishProviderOperation(ctx, db.FinishProviderOperationParams{ID: id, RunID: runID, Status: &st, Reason: reason})
+	if err != nil {
+		return infraf("provider: finish operation: %v", err)
+	}
+	return nil
+}
+
+func (r *ProviderRepo) Pending(ctx context.Context) ([]provider.Profile, error) {
+	rows, err := r.q.PendingProviderOperations(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]provider.Profile, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, profileOf(db.ProviderProfileByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *ProviderRepo) BeginTenantDeletion(ctx context.Context, id uuid.UUID) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		if _, err := r.q.LockTenantLifecycle(ctx, id); err != nil {
+			return err
+		}
+		n, err := r.q.BeginTenantRetirement(ctx, id)
+		if err != nil {
+			return err
+		}
+		if n == 0 {
+			return errs.Conflict("tenant has active runs, kept stands or provider operations")
+		}
+		return nil
+	})
+}
+
+func (r *ProviderRepo) UpdateConfiguration(ctx context.Context, id uuid.UUID, name *string, settings json.RawMessage, credential, runID string) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		if err := r.BeginOperation(ctx, id, provider.StatusVerifying, runID); err != nil {
+			return err
+		}
+		if err := r.Update(ctx, id, name, settings); err != nil {
+			return err
+		}
+		if credential == "" {
+			return nil
+		}
+		p, err := r.ByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		names := append([]string{credential}, p.SecretNames...)
+		raw, err := json.Marshal(names)
+		if err != nil {
+			return err
+		}
+		return r.q.SetProviderSecretNames(ctx, db.SetProviderSecretNamesParams{ID: id, SecretNames: raw})
+	})
 }

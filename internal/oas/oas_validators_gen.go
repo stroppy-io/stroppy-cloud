@@ -4723,6 +4723,10 @@ func (s ProviderProfileStatus) Validate() error {
 		return nil
 	case "failed":
 		return nil
+	case "deleting":
+		return nil
+	case "delete_failed":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}

@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-24T15:23:26.518522+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/providers/3d31ff8d-f3a5-4405-896e-a7797b507cbe",
+  "http_status": 404,
+  "contract_version": "2.0.0",
+  "body": {
+    "type": "https://stroppy.io/problems/not_found",
+    "title": "Not found",
+    "status": 404,
+    "detail": "provider profile not found",
+    "code": "not_found",
+    "request_id": "68ca900d87ef/rml2tarStO-000019"
+  }
+}

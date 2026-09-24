@@ -1,0 +1,105 @@
+{
+  "keep": "0s",
+  "result_expectations": [
+    "iterations_total"
+  ],
+  "tenant": "server-live-20260924",
+  "provider": {
+    "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "kind": "yandex",
+    "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "image_family": "ubuntu-2404-lts",
+      "network": {
+        "kind": "create",
+        "subnet_cidr": "10.130.0.0/24"
+      },
+      "platform_id": "standard-v3",
+      "preemptible": false,
+      "public_ips": true,
+      "zone": "ru-central1-d"
+    }
+  },
+  "run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+  "machines": [
+    {
+      "cpu": 2,
+      "image": "ubuntu-2404-lts",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      },
+      "location": "ru-central1-d",
+      "memory_gb": 4,
+      "name": "runner-1",
+      "role": "runner"
+    }
+  ],
+  "observability": {
+    "labels": {
+      "stroppy_run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+      "stroppy_tenant": "server-live-20260924"
+    }
+  },
+  "network": {
+    "allow_public_ips": true,
+    "cidr": "10.130.0.0/24"
+  },
+  "workload": {
+    "driver_type": "noop",
+    "runner_role": "runner",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "main",
+        "run": {
+          "duration": "20s",
+          "executor": "constant-vus",
+          "query_timeout": "0s",
+          "vus": 1
+        },
+        "warmup": "0s",
+        "workload": {
+          "script": "execute_sql",
+          "sql_body": "SELECT 1"
+        }
+      }
+    ],
+    "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+    "url": "noop://localhost"
+  },
+  "containers": [
+    {
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "image": "quay.io/prometheus/node-exporter:v1.12.1",
+      "kind": "exporter",
+      "machine": "runner-1",
+      "mounts": [
+        {
+          "ro": true,
+          "source": "/",
+          "target": "/host"
+        }
+      ],
+      "name": "runner-1-node-exporter",
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "restart": "always",
+      "role": "runner",
+      "scrape": "/metrics"
+    }
+  ]
+}

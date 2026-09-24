@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-09-24T15:40:41.752490+00:00",
+  "run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "731d5ee3-stroppy-main-config",
+      "http_status": 200,
+      "size_bytes": 777,
+      "digest": "sha256:ab80e8e99cb09bc0393e3d87224518bb78c27de7fbccdb4957cbef1e1991b3c2",
+      "verified": true
+    },
+    {
+      "id": "731d5ee3-stroppy-main-log",
+      "http_status": 200,
+      "size_bytes": 6578236,
+      "digest": "sha256:7bd3015301a4dcb09489fc8565d800fc3c9fdff18048cd572aa79e05a58d20e9",
+      "verified": true
+    }
+  ]
+}

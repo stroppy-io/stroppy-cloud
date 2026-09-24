@@ -74,6 +74,8 @@ type fakeGraphene struct {
 	quotas                 []provider.Quota
 	quotaUnavailableReason string
 	quotaError             error
+	configResultError      error
+	configDeleteFailure    string
 }
 
 // doorRun is one run the door knows, with its replay state.
@@ -473,8 +475,18 @@ func (f *fakeGraphene) RunResult(ctx context.Context, req *connect.Request[manag
 func (f *fakeGraphene) probeResult(r *doorRun) (*connect.Response[managementv1.RunResultResponse], error) {
 	var result any
 	switch r.pipeline {
-	case graphene.PipelineProviderVerify:
+	case graphene.PipelineProviderVerify, graphene.PipelineProviderConfig:
 		result = provider.VerifyResult{OK: f.verifyOK, AccountID: "acc-1", Permissions: []provider.Permission{{Name: "compute.instances.list", Granted: f.verifyOK}}, Error: map[bool]string{true: "", false: "missing rights"}[f.verifyOK]}
+		if r.pipeline == graphene.PipelineProviderConfig {
+			if f.configResultError != nil {
+				return nil, f.configResultError
+			}
+			var p provider.ConfigureParams
+			_ = json.Unmarshal(r.params, &p)
+			if p.Action == "delete" {
+				result = provider.VerifyResult{OK: f.configDeleteFailure == "", Error: f.configDeleteFailure}
+			}
+		}
 	case graphene.PipelineQuotas:
 		if f.quotaError != nil {
 			return nil, f.quotaError

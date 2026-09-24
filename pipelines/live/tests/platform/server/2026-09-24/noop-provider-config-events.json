@@ -1,0 +1,65 @@
+{
+  "observed_at": "2026-09-24T15:25:08.328795+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98/events",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "data": [
+      {
+        "id": "6",
+        "at": "2026-09-24T15:21:18Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "7",
+        "at": "2026-09-24T15:21:21Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "8",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "machine": "runner-1",
+          "public_ip": "158.160.197.13",
+          "private_ip": "10.130.0.28",
+          "id": "fv41jicubr4ug1kqpcfa",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "9",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m39.132s"
+        }
+      },
+      {
+        "id": "10",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

@@ -29,9 +29,11 @@ type Status string
 
 // Statuses.
 const (
-	StatusVerifying Status = "verifying"
-	StatusReady     Status = "ready"
-	StatusFailed    Status = "failed"
+	StatusVerifying    Status = "verifying"
+	StatusReady        Status = "ready"
+	StatusFailed       Status = "failed"
+	StatusDeleting     Status = "deleting"
+	StatusDeleteFailed Status = "delete_failed"
 )
 
 // Profile is the record.
@@ -77,6 +79,11 @@ type Repository interface {
 	SetStatus(ctx context.Context, id uuid.UUID, status Status, reason, runID string) error
 	SetQuotas(ctx context.Context, id uuid.UUID, result QuotasResult) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
+	BeginOperation(ctx context.Context, id uuid.UUID, status Status, runID string) error
+	FinishOperation(ctx context.Context, id uuid.UUID, runID string, status Status, reason string) error
+	Pending(ctx context.Context) ([]Profile, error)
+	BeginTenantDeletion(ctx context.Context, id uuid.UUID) error
+	UpdateConfiguration(ctx context.Context, id uuid.UUID, name *string, settings json.RawMessage, credential string, runID string) error
 }
 
 // Secrets is the Graphene secret store of a tenant namespace.
@@ -113,6 +120,7 @@ type QuotasResult struct {
 // Pipelines runs the two probe pipelines in the tenant namespace and
 // waits for their results.
 type Pipelines interface {
+	Configure(ctx context.Context, runID string, params ConfigureParams) (VerifyResult, error)
 	Verify(ctx context.Context, runID string, params VerifyParams) (VerifyResult, error)
 	Quotas(ctx context.Context, runID string, params QuotasParams) (QuotasResult, error)
 }
@@ -143,3 +151,20 @@ type Validator interface {
 // Schema ids of a kind.
 func settingsSchema(k Kind) string    { return "provider." + string(k) + ".settings@1" }
 func credentialsSchema(k Kind) string { return "provider." + string(k) + ".credentials@1" }
+
+// ConfigureParams is the dedicated provider lifecycle pipeline input.
+type ConfigureParams struct {
+	Action            string          `json:"action"`
+	Provider          Kind            `json:"provider"`
+	ProfileID         string          `json:"profile_id"`
+	Settings          json.RawMessage `json:"settings,omitempty"`
+	CredentialsSecret string          `json:"credentials_secret"`
+}
+
+// ActiveCredentials is the immutable credential version selected by the profile.
+func ActiveCredentials(p Profile) string {
+	if len(p.SecretNames) > 0 {
+		return p.SecretNames[0]
+	}
+	return CredentialsSecret(p.ID)
+}

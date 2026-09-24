@@ -1,6 +1,6 @@
 // Package pipelines publishes the pipeline binaries shipped with the
-// server into every tenant namespace (§7): `stroppy-run push` and friends
-// run as subprocesses with the Graphene context in the environment; the
+// server into every tenant namespace (§7): binaries export their manifests,
+// then the SDK publishes their prebuilt images and registers the manifests. The
 // registry deduplicates the image, so after the first namespace only the
 // manifest is recorded. One server build = one revision; a namespace is
 // synced when it carries the running server's revision.
@@ -9,6 +9,7 @@ package pipelines
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -18,13 +19,14 @@ import (
 	"time"
 
 	"github.com/gopherex/xlog"
+	"github.com/graphene-ci/pipeline/pkg/selfbuild"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/build"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene"
 )
 
 // Pipelines are the binaries to push, in order.
-var Pipelines = []string{"stroppy-run", "stroppy-suite", "stroppy-provider-verify", "stroppy-quotas"}
+var Pipelines = []string{"stroppy-run", "stroppy-suite", "stroppy-provider-verify", "stroppy-quotas", "stroppy-provider-config"}
 
 // Runner executes one push of one pipeline into a namespace.
 type Runner interface {
@@ -156,8 +158,9 @@ func (p *Pusher) Run(ctx context.Context, interval time.Duration) {
 	}
 }
 
-// ExecRunner runs the shipped binaries: `<dir>/<pipeline> push` with the
-// Graphene context in the environment (cliconfig field overrides).
+// ExecRunner reads the shipped binaries' manifests and publishes those exact
+// binaries. The CLI's push command rebuilds from source and cannot run in the
+// distroless server image, which deliberately contains no Go toolchain.
 type ExecRunner struct {
 	Dir     string
 	Cfg     *graphene.Config
@@ -176,23 +179,43 @@ func (r ExecRunner) Push(ctx context.Context, pipeline, namespace string) error 
 	}
 	cctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	cmd := exec.CommandContext(cctx, bin, "push")
-	cmd.Env = append(os.Environ(),
-		"GRAPHENE_ADDRESS="+r.Cfg.Address,
-		"GRAPHENE_TOKEN="+r.Cfg.Token,
-		"GRAPHENE_NAMESPACE="+namespace,
-		fmt.Sprintf("GRAPHENE_INSECURE=%t", r.Cfg.Insecure),
-	)
+	manifestJSON, err := readManifest(cctx, bin, pipeline)
+	if err != nil {
+		return err
+	}
+	image, _, err := selfbuild.PushBinary(cctx, bin, selfbuild.Options{
+		Registry: r.Cfg.Address, Namespace: namespace, PipelineId: pipeline,
+		Token: r.Cfg.Token, Insecure: r.Cfg.Insecure,
+	})
+	if err != nil {
+		return fmt.Errorf("%s image: %w", pipeline, err)
+	}
+	return publishManifest(cctx, r.Cfg, namespace, image, manifestJSON)
+}
+
+func readManifest(ctx context.Context, bin, pipeline string) ([]byte, error) {
+	cmd := exec.CommandContext(ctx, bin)
+	cmd.Env = append(os.Environ(), "GRAPHENE_MANIFEST=1")
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
-	if err := cmd.Run(); err != nil {
+	raw, err := cmd.Output()
+	if err != nil {
 		tail := stderr.String()
 		if len(tail) > 2000 {
 			tail = tail[len(tail)-2000:]
 		}
-		return fmt.Errorf("%s push: %w: %s", pipeline, err, tail)
+		return nil, fmt.Errorf("%s manifest: %w: %s", pipeline, err, tail)
 	}
-	return nil
+	var header struct {
+		PipelineID string `json:"pipelineId"`
+	}
+	if err := json.Unmarshal(raw, &header); err != nil {
+		return nil, fmt.Errorf("%s manifest JSON: %w", pipeline, err)
+	}
+	if header.PipelineID != pipeline {
+		return nil, fmt.Errorf("%s manifest declares pipeline %q", pipeline, header.PipelineID)
+	}
+	return raw, nil
 }
 
 // ErrNoBinaries reports a missing binaries directory (dev runs without

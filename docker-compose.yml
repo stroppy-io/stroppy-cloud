@@ -1,0 +1,68 @@
+# Same packaging as IAM: the server serves its embedded UI; PostgreSQL is
+# the only local dependency. Graphene and run telemetry stay in the cluster.
+# Start with `make dev` (reads .env.compose, not the legacy root .env).
+name: stroppy-cloud-dev
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: stroppy
+      POSTGRES_USER: stroppy
+      POSTGRES_PASSWORD: ${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile
+      args:
+        VERSION: ${VERSION:-local}
+        COMMIT: ${COMMIT:-unknown}
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      STROPPY_HTTP_ADDR: :18347
+      STROPPY_HTTP_PUBLIC_URL: ${STROPPY_HTTP_PUBLIC_URL:-http://localhost:18347}
+      STROPPY_HTTP_CORS_ORIGINS: ${STROPPY_HTTP_CORS_ORIGINS:-http://localhost:5173}
+      STROPPY_LOG_LEVEL: ${STROPPY_LOG_LEVEL:-info}
+      STROPPY_LOG_FORMAT: console
+      STROPPY_TRACE_ENABLED: "false"
+      STROPPY_MIGRATE: "true"
+      STROPPY_INFRA_POSTGRES_HOST: postgres
+      STROPPY_INFRA_POSTGRES_PORT: "5432"
+      STROPPY_INFRA_POSTGRES_USER: stroppy
+      STROPPY_INFRA_POSTGRES_PASSWORD: ${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}
+      STROPPY_INFRA_POSTGRES_DATABASE: stroppy
+      STROPPY_INFRA_POSTGRES_SSLMODE: disable
+      STROPPY_INFRA_POSTGRES_POOL_MAX_CONNS: "10"
+      # Local login, like IAM's development master key. Loopback binding below.
+      STROPPY_DEV_USERS: ${STROPPY_DEV_USERS:-dev=dev@stroppy.local=Developer}
+      STROPPY_ADMIN_EMAILS: ${STROPPY_ADMIN_EMAILS:-dev@stroppy.local}
+      STROPPY_INFRA_GRAPHENE_ADDRESS: ${STROPPY_INFRA_GRAPHENE_ADDRESS:-graphene.stroppy.io:443}
+      STROPPY_INFRA_GRAPHENE_TOKEN: ${STROPPY_INFRA_GRAPHENE_TOKEN:?set the Graphene token in .env.compose}
+      STROPPY_INFRA_GRAPHENE_INSECURE: ${STROPPY_INFRA_GRAPHENE_INSECURE:-false}
+      STROPPY_INFRA_PIPELINES_DIR: /opt/stroppy/pipelines
+      STROPPY_INFRA_PIPELINES_INTERVAL: 10m
+      STROPPY_INFRA_OBSERVABILITY_OTLP_ENDPOINT: ${STROPPY_INFRA_OBSERVABILITY_OTLP_ENDPOINT:-}
+      STROPPY_INFRA_OBSERVABILITY_OTLP_HEADERS: ${STROPPY_INFRA_OBSERVABILITY_OTLP_HEADERS:-}
+      STROPPY_INFRA_VICTORIA_LOGS_URL: ${STROPPY_INFRA_VICTORIA_LOGS_URL:-}
+      STROPPY_INFRA_VICTORIA_METRICS_URL: ${STROPPY_INFRA_VICTORIA_METRICS_URL:-}
+      STROPPY_HTTP_GRAFANA_URL: ${STROPPY_HTTP_GRAFANA_URL:-}
+      STROPPY_HTTP_GRAFANA_DASHBOARDS: ${STROPPY_HTTP_GRAFANA_DASHBOARDS:-}
+    ports:
+      - "127.0.0.1:${STROPPY_LOCAL_PORT:-18347}:18347"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  pgdata:

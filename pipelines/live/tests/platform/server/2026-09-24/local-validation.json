@@ -1,0 +1,54 @@
+[
+  {
+    "check": "server integration",
+    "command": "go test -tags=integration ./cmd/... -count=1 -p 1",
+    "output_tail": [
+      "?   \tgithub.com/stroppy-io/stroppy-cloud/cmd/stroppy-cloud\t[no test files]",
+      "ok  \tgithub.com/stroppy-io/stroppy-cloud/cmd/stroppy-cloud/application\t373.340s"
+    ]
+  },
+  {
+    "check": "tenant cleanup failure and retry",
+    "command": "go test -tags=integration ./cmd/stroppy-cloud/application -run TestE2ETenantProviderCleanup -count=1",
+    "output_tail": [
+      "ok  \tgithub.com/stroppy-io/stroppy-cloud/cmd/stroppy-cloud/application\t6.781s"
+    ]
+  },
+  {
+    "check": "pipelines",
+    "command": "go test ./... -count=1 (pipelines module)",
+    "output_tail": [
+      "ok  \tgithub.com/stroppy-io/stroppy-cloud/pipelines/stroppycfg\t0.061s",
+      "?   \tgithub.com/stroppy-io/stroppy-cloud/pipelines/workflows\t[no test files]"
+    ]
+  },
+  {
+    "check": "server lint",
+    "command": "golangci-lint run ./...",
+    "output_tail": [
+      "level=warning msg=\"[runner/exclusion_rules] Skipped 0 issues by rules: [Path: \\\"_test\\\\\\\\.go\\\", Linters: \\\"errcheck, gosec, noctx\\\"]\"",
+      "0 issues."
+    ]
+  },
+  {
+    "check": "pipeline lint",
+    "command": "golangci-lint run ./... (pipelines module)",
+    "output_tail": [
+      "level=warning msg=\"[runner/exclusion_rules] Skipped 0 issues by rules: [Path: \\\"_test\\\\\\\\.go\\\", Linters: \\\"errcheck, gosec, noctx\\\"]\"",
+      "0 issues."
+    ]
+  },
+  {
+    "check": "integration lint",
+    "command": "golangci-lint run --build-tags integration ./cmd/stroppy-cloud/application",
+    "output_tail": [
+      "level=warning msg=\"[runner/exclusion_rules] Skipped 0 issues by rules: [Path: \\\"_test\\\\\\\\.go\\\", Linters: \\\"errcheck, gosec, noctx\\\"]\"",
+      "0 issues."
+    ]
+  },
+  {
+    "check": "provider controller metadata preservation",
+    "command": "go test ./internal/providerconfig -count=1 (pipelines module)",
+    "result": "passed; includes preservation of Crossplane finalizers during ensure/rotation"
+  }
+]

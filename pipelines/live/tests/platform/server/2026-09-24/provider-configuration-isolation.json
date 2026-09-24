@@ -1,0 +1,58 @@
+{
+  "providerconfigs.yandex-cloud.jet.crossplane.io": [
+    {
+      "name": "sc-52c2e4628883-3d31ff8d-f3a5-4405-896e-a7797b507cbe",
+      "labels": {
+        "app.kubernetes.io/managed-by": "stroppy-cloud",
+        "stroppy.io/graphene-namespace": "t-server-live-20260924",
+        "stroppy.io/provider-profile": "3d31ff8d-f3a5-4405-896e-a7797b507cbe"
+      },
+      "credentials": {
+        "cloudId": "b1gt6m4l9gfhaobcgb81",
+        "folderId": "b1ghttqg66t14ldkvfcq",
+        "secretRef": {
+          "key": "credentials",
+          "name": "sc-52c2e4628883-3d31ff8d-f3a5-4405-896e-a7797b507cbe",
+          "namespace": "stroppy-provider-credentials"
+        },
+        "source": "Secret"
+      }
+    },
+    {
+      "name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+      "labels": {
+        "app.kubernetes.io/managed-by": "stroppy-cloud",
+        "stroppy.io/graphene-namespace": "t-server-live-20260924",
+        "stroppy.io/provider-profile": "b413b185-61ca-4d81-abf2-0b760aa59ed5"
+      },
+      "credentials": {
+        "cloudId": "b1gt6m4l9gfhaobcgb81",
+        "folderId": "b1ghttqg66t14ldkvfcq",
+        "secretRef": {
+          "key": "credentials",
+          "name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "namespace": "stroppy-provider-credentials"
+        },
+        "source": "Secret"
+      }
+    }
+  ],
+  "secrets": [
+    {
+      "name": "sc-52c2e4628883-3d31ff8d-f3a5-4405-896e-a7797b507cbe",
+      "labels": {
+        "app.kubernetes.io/managed-by": "stroppy-cloud",
+        "stroppy.io/graphene-namespace": "t-server-live-20260924",
+        "stroppy.io/provider-profile": "3d31ff8d-f3a5-4405-896e-a7797b507cbe"
+      }
+    },
+    {
+      "name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+      "labels": {
+        "app.kubernetes.io/managed-by": "stroppy-cloud",
+        "stroppy.io/graphene-namespace": "t-server-live-20260924",
+        "stroppy.io/provider-profile": "b413b185-61ca-4d81-abf2-0b760aa59ed5"
+      }
+    }
+  ]
+}

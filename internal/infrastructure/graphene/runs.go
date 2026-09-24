@@ -16,6 +16,7 @@ const (
 	PipelineSuite          = "stroppy-suite"
 	PipelineProviderVerify = "stroppy-provider-verify"
 	PipelineQuotas         = "stroppy-quotas"
+	PipelineProviderConfig = "stroppy-provider-config"
 )
 
 // StartRun starts a run of a pipeline in the namespace of ctx.

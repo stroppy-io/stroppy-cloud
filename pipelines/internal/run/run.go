@@ -57,7 +57,7 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	if err != nil {
 		return spec.Result{}, err
 	}
-	k8s := k8slib.NewClientFromSecret(pipeline.Secret(ctx, activities.KubeconfigSecret), provider.Scheme())
+	k8s := k8slib.NewClientInCluster(provider.Scheme())
 
 	// --- provisioning ------------------------------------------------------
 	type provisioned struct {

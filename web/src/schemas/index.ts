@@ -101,6 +101,8 @@ import providerYandexCredentials1Schema from './provider.yandex.credentials_v1.j
 import type { ProviderYandexCredentials1 } from './provider.yandex.credentials_v1';
 import providerYandexSettings1Schema from './provider.yandex.settings_v1.json';
 import type { ProviderYandexSettings1 } from './provider.yandex.settings_v1';
+import specProviderConfig1Schema from './spec.provider_config_v1.json';
+import type { SpecProviderConfig1 } from './spec.provider_config_v1';
 import specProviderVerify1Schema from './spec.provider_verify_v1.json';
 import type { SpecProviderVerify1 } from './spec.provider_verify_v1';
 import specQuotas1Schema from './spec.quotas_v1.json';
@@ -185,6 +187,7 @@ export const schemaIds = [
   "provider.registry.credentials@1",
   "provider.yandex.credentials@1",
   "provider.yandex.settings@1",
+  "spec.provider_config@1",
   "spec.provider_verify@1",
   "spec.quotas@1",
   "spec.result.provider_verify@1",
@@ -256,6 +259,7 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "provider.registry.credentials@1" ? ProviderRegistryCredentials1 :
   Id extends "provider.yandex.credentials@1" ? ProviderYandexCredentials1 :
   Id extends "provider.yandex.settings@1" ? ProviderYandexSettings1 :
+  Id extends "spec.provider_config@1" ? SpecProviderConfig1 :
   Id extends "spec.provider_verify@1" ? SpecProviderVerify1 :
   Id extends "spec.quotas@1" ? SpecQuotas1 :
   Id extends "spec.result.provider_verify@1" ? SpecResultProviderVerify1 :
@@ -325,6 +329,7 @@ export const schemas: Record<SchemaId, unknown> = {
   "provider.registry.credentials@1": providerRegistryCredentials1Schema,
   "provider.yandex.credentials@1": providerYandexCredentials1Schema,
   "provider.yandex.settings@1": providerYandexSettings1Schema,
+  "spec.provider_config@1": specProviderConfig1Schema,
   "spec.provider_verify@1": specProviderVerify1Schema,
   "spec.quotas@1": specQuotas1Schema,
   "spec.result.provider_verify@1": specResultProviderVerify1Schema,
@@ -394,6 +399,7 @@ export type {
   ProviderRegistryCredentials1,
   ProviderYandexCredentials1,
   ProviderYandexSettings1,
+  SpecProviderConfig1,
   SpecProviderVerify1,
   SpecQuotas1,
   SpecResultProviderVerify1,

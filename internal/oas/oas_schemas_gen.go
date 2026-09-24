@@ -15736,9 +15736,11 @@ func (s *ProviderProfilePatch) SetCredentials(val OptSchemaValue) {
 type ProviderProfileStatus string
 
 const (
-	ProviderProfileStatusVerifying ProviderProfileStatus = "verifying"
-	ProviderProfileStatusReady     ProviderProfileStatus = "ready"
-	ProviderProfileStatusFailed    ProviderProfileStatus = "failed"
+	ProviderProfileStatusVerifying    ProviderProfileStatus = "verifying"
+	ProviderProfileStatusReady        ProviderProfileStatus = "ready"
+	ProviderProfileStatusFailed       ProviderProfileStatus = "failed"
+	ProviderProfileStatusDeleting     ProviderProfileStatus = "deleting"
+	ProviderProfileStatusDeleteFailed ProviderProfileStatus = "delete_failed"
 )
 
 // AllValues returns all ProviderProfileStatus values.
@@ -15747,6 +15749,8 @@ func (ProviderProfileStatus) AllValues() []ProviderProfileStatus {
 		ProviderProfileStatusVerifying,
 		ProviderProfileStatusReady,
 		ProviderProfileStatusFailed,
+		ProviderProfileStatusDeleting,
+		ProviderProfileStatusDeleteFailed,
 	}
 }
 
@@ -15758,6 +15762,10 @@ func (s ProviderProfileStatus) MarshalText() ([]byte, error) {
 	case ProviderProfileStatusReady:
 		return []byte(s), nil
 	case ProviderProfileStatusFailed:
+		return []byte(s), nil
+	case ProviderProfileStatusDeleting:
+		return []byte(s), nil
+	case ProviderProfileStatusDeleteFailed:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -15775,6 +15783,12 @@ func (s *ProviderProfileStatus) UnmarshalText(data []byte) error {
 		return nil
 	case ProviderProfileStatusFailed:
 		*s = ProviderProfileStatusFailed
+		return nil
+	case ProviderProfileStatusDeleting:
+		*s = ProviderProfileStatusDeleting
+		return nil
+	case ProviderProfileStatusDeleteFailed:
+		*s = ProviderProfileStatusDeleteFailed
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

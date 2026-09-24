@@ -15,11 +15,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // stroppy-server API + WS; prod serves the SPA from the same origin.
-      "/api": { target: "http://localhost:8080", changeOrigin: true, ws: true },
+      "/api": { target: "http://localhost:18347", changeOrigin: true, ws: true },
       // IAM, reverse-proxied by stroppy-server so auth stays same-origin.
-      "/v1": { target: "http://localhost:8080", changeOrigin: true },
+      "/v1": { target: "http://localhost:18347", changeOrigin: true },
       // embedded Grafana relay.
-      "/grafana": { target: "http://localhost:8080", changeOrigin: true },
+      "/grafana": { target: "http://localhost:18347", changeOrigin: true },
     },
   },
 });

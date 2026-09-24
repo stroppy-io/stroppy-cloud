@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-09-24T14:09:45.393851+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/bc94e0ff-2a4f-4e76-a85c-faf9e013e528/tree",
+  "http_status": 200,
+  "contract_version": "1.0.1",
+  "body": {
+    "ref": "run/bc94e0ff-2a4f-4e76-a85c-faf9e013e528",
+    "kind": "run",
+    "keep_until": null,
+    "children": []
+  }
+}

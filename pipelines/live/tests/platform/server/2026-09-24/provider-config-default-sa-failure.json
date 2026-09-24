@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-09-24T15:11:46.550392+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/providers/b413b185-61ca-4d81-abf2-0b760aa59ed5",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "name": "YC live acceptance",
+    "kind": "yandex",
+    "status": "failed",
+    "status_reason": "activity error (type: stroppy.provider.configure, scheduledEventID: 11, startedEventID: 12, identity: 1@graphene-run-t-server-live-20260924-d724881b-5-716f66dca8d756wh@): instances.compute.yandex-cloud.jet.crossplane.io is forbidden: User \"system:serviceaccount:graphene:default\" cannot list resource \"instances\" in API group \"compute.yandex-cloud.jet.crossplane.io\" at the cluster scope (type: StatusError, retryable: true)",
+    "verified_at": "2026-09-24T14:04:35Z",
+    "settings": {
+      "preemptible": false,
+      "public_ips": true,
+      "zone": "ru-central1-d",
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "image_family": "ubuntu-2404-lts",
+      "network": {
+        "kind": "create",
+        "subnet_cidr": "10.130.0.0/24"
+      },
+      "platform_id": "standard-v3"
+    },
+    "secret_names": [
+      "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5"
+    ],
+    "quotas_observed_at": "2026-09-24T15:03:05Z",
+    "created_at": "2026-09-24T14:04:29Z",
+    "created_by": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    }
+  }
+}

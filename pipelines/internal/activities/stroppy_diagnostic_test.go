@@ -2,9 +2,10 @@ package activities
 
 import (
 	"context"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"strings"
 	"testing"
+
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 func TestSegmentOutcomeRetainsCLIErrorBeforeUsage(t *testing.T) {

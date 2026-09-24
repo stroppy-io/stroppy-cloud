@@ -1,0 +1,92 @@
+{
+  "coerce": true,
+  "description": "Configure or delete a persistent cloud profile through the Graphene installation.",
+  "fields": [
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "Configure",
+            "value": {
+              "stringValue": "ensure"
+            }
+          },
+          {
+            "label": "Delete",
+            "value": {
+              "stringValue": "delete"
+            }
+          }
+        ]
+      },
+      "description": "Ensure validates credentials and applies configuration; delete waits for cleanup.",
+      "group": "Lifecycle",
+      "name": "action",
+      "required": true,
+      "title": "Action"
+    },
+    {
+      "choice": {
+        "options": [
+          {
+            "label": "Yandex Cloud",
+            "value": {
+              "stringValue": "yandex"
+            }
+          },
+          {
+            "label": "AWS",
+            "value": {
+              "stringValue": "aws"
+            }
+          }
+        ]
+      },
+      "description": "Cloud the credentials belong to.",
+      "group": "Provider",
+      "name": "provider",
+      "required": true,
+      "title": "Provider"
+    },
+    {
+      "description": "Canonical UUID of the provider profile; combined with the worker namespace for isolation.",
+      "group": "Provider",
+      "name": "profile_id",
+      "required": true,
+      "string": {
+        "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+      },
+      "title": "Profile ID"
+    },
+    {
+      "description": "Graphene secret name provider-\u003cprofile_id\u003e with optional immutable version suffix; no credential contents.",
+      "group": "Provider",
+      "name": "credentials_secret",
+      "required": true,
+      "string": {
+        "pattern": "^[a-z0-9][a-z0-9._-]{0,62}$"
+      },
+      "title": "Credentials reference"
+    },
+    {
+      "description": "Baked provider settings, required for ensure.",
+      "group": "Provider",
+      "json": {},
+      "name": "settings",
+      "title": "Settings"
+    }
+  ],
+  "id": {
+    "name": "provider_config",
+    "namespace": "spec",
+    "version": "v1.0.0"
+  },
+  "rules": [
+    {
+      "expr": "root.credentials_secret == 'provider-' + root.profile_id || root.credentials_secret.startsWith('provider-' + root.profile_id + '-')",
+      "id": "profile-credentials",
+      "message": "Credential reference must belong to this profile"
+    }
+  ],
+  "strict": true
+}

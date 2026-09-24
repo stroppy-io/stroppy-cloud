@@ -95,3 +95,9 @@ func wireValue(value any) any {
 		return value
 	}
 }
+
+func NormalizeProviderConfig(in ProviderConfig) (ProviderConfig, error) {
+	var out ProviderConfig
+	err := normalize(in, &out, specschema.ProviderConfig())
+	return out, err
+}

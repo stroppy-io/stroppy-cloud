@@ -1,0 +1,68 @@
+{
+  "observed_at": "2026-09-24T14:06:15.058325+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/tests:validate",
+  "http_status": 422,
+  "contract_version": "1.0.1",
+  "body": {
+    "type": "https://stroppy.io/problems/validation_failed",
+    "title": "Validation failed",
+    "status": 422,
+    "detail": "value does not fit workload.stroppy@1",
+    "code": "validation_failed",
+    "request_id": "203ea14e1f93/MXoHOCx9NM-000008",
+    "validation": {
+      "errors": [
+        {
+          "path": "segments[0].duration",
+          "code": "ERROR_CODE_UNKNOWN_FIELD",
+          "constraint": "strict",
+          "message": "unknown field",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].executor",
+          "code": "ERROR_CODE_UNKNOWN_FIELD",
+          "constraint": "strict",
+          "message": "unknown field",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].script",
+          "code": "ERROR_CODE_UNKNOWN_FIELD",
+          "constraint": "strict",
+          "message": "unknown field",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].sql_body",
+          "code": "ERROR_CODE_UNKNOWN_FIELD",
+          "constraint": "strict",
+          "message": "unknown field",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].vus",
+          "code": "ERROR_CODE_UNKNOWN_FIELD",
+          "constraint": "strict",
+          "message": "unknown field",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].workload",
+          "code": "ERROR_CODE_REQUIRED_MISSING",
+          "constraint": "required",
+          "message": "required",
+          "severity": "ERROR"
+        },
+        {
+          "path": "segments[0].run",
+          "code": "ERROR_CODE_REQUIRED_MISSING",
+          "constraint": "required",
+          "message": "required",
+          "severity": "ERROR"
+        }
+      ]
+    }
+  }
+}

@@ -10,6 +10,9 @@
 | `python3 pipelines/live/tools/live.py validate` | Проверить структуру и ссылки, без сети |
 | `python3 pipelines/live/tools/live.py progress` | Обновить единственную CSV и README случаев, без сети |
 | `python3 pipelines/live/tools/live.py resolve старое-имя.json` | Найти перенесённый файл |
+| `server_api.py /api/v1/... --evidence <файл>` | Вызвать локальный сервер на 18347, сохранить HTTP-ответ; `--method`, `--data <JSON-файл или ->`; запрос и bearer token не сохраняются |
+| `verify_server_artifacts.py --tenant <slug> --run-id <UUID> --evidence <файл>` | Скачать артефакты через API, проверить размер и SHA-256; содержимое конфигов и логов не сохраняется в evidence |
+| `record_server_case.py --tenant <slug> --run-id <UUID> --case <база/версия/топология/workload/preset> --workload <id>` | Добавить строку матрицы по API-прогону; `--append` сохраняет новую попытку и архивирует старые проверки, `--refresh` обновляет evidence выбранной попытки без изменения checks; непроверенные проверки не становятся успешными автоматически |
 | `prepare.py <input.json> --output <новый-файл>` | Подготовить вход с новыми UUID без запуска |
 | `bootstrap.py --help` | Настроить доступ по явно переданным operator/Graphene-конфигам |
 | `live-inputs/` | Скомпилировать входы через реальный серверный компилятор |
@@ -22,6 +25,12 @@
 Bootstrap-манифесты лежат в `bootstrap/`. Скрипт использует постоянный token Secret;
 значение токена и приватные конфиги в репозитории не хранятся. Команды bootstrap
 меняют контур только при явном запуске оператором.
+
+Серверные проверки используют `STROPPY_TEST_URL` (по умолчанию
+`http://localhost:18347`) и `STROPPY_TEST_TOKEN` (локальный `dev`). Запуск,
+повтор, отмена и наблюдение идут через API сервера; утилиты не запускают
+Graphene-пайплайны напрямую. Снимки первой кампании и ограничения настройки
+tenant находятся в [server/2026-09-24](../tests/platform/server/2026-09-24/README.md).
 
 `inspect_mysql_cluster_metrics.py` принимает **полный префикс файла**, например
 `/tmp/check/mysql-gr-84` для `/tmp/check/mysql-gr-84.metrics.json`; остальные
@@ -76,3 +85,16 @@ python3 pipelines/live/tools/live.py validate
 go -C pipelines/live/tools/live-inputs test ./...
 go -C pipelines test ./spec
 ```
+
+### Доступ Graphene к Crossplane
+
+`install_graphene_access.py --kubeconfig <operator-config>` показывает план;
+`--apply` для инсталляции без GitOps устанавливает RBAC YC и назначает `graphene-crossplane` в шаблоне
+воркеров Graphene. Подключение оператора используется только этой командой.
+Сервер Stroppy Cloud и пользовательские Graphene namespaces не получают kubeconfig.
+Манифест: `bootstrap/graphene-crossplane.yaml`. Реквизиты профилей изолированы
+от системных секретов Crossplane в `stroppy-provider-credentials`.
+`bootstrap.py` сохранён для воспроизводимости исторических прогонов 1.x.
+
+В текущем кластере источник настройки — `stroppy-io/cloud/k8s/apps/graphene`.
+Скрипт отказывается изменять Deployment под управлением ArgoCD.

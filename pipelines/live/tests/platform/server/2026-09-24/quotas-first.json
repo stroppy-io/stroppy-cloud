@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-09-24T14:05:20.301941+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/providers/b413b185-61ca-4d81-abf2-0b760aa59ed5/quotas",
+  "http_status": 200,
+  "contract_version": "1.0.1",
+  "body": {
+    "observed_at": "2026-09-24T14:04:38Z",
+    "stale": false,
+    "scope": "cloud:b1gt6m4l9gfhaobcgb81",
+    "quotas": [
+      {
+        "name": "compute.disks.count",
+        "unit": "disks",
+        "limit": 128,
+        "used": 23
+      },
+      {
+        "name": "compute.hddDisks.size",
+        "unit": "bytes",
+        "limit": 536870912000,
+        "used": 107374182400
+      },
+      {
+        "name": "compute.instanceCores.count",
+        "unit": "cores",
+        "limit": 1024,
+        "used": 56
+      },
+      {
+        "name": "compute.instanceMemory.size",
+        "unit": "bytes",
+        "limit": 4398046511104,
+        "used": 107374182400
+      },
+      {
+        "name": "compute.instances.count",
+        "unit": "instances",
+        "limit": 64,
+        "used": 15
+      },
+      {
+        "name": "compute.ssdDisks.size",
+        "unit": "bytes",
+        "limit": 21474836480000,
+        "used": 5557687681024
+      },
+      {
+        "name": "compute.ssdNonReplicatedDisks.size",
+        "unit": "bytes",
+        "limit": 107374182400000,
+        "used": 0
+      },
+      {
+        "name": "vpc.externalStaticAddresses.count",
+        "unit": "addresses",
+        "limit": 6,
+        "used": 6
+      },
+      {
+        "name": "vpc.networks.count",
+        "unit": "networks",
+        "limit": 6,
+        "used": 3
+      },
+      {
+        "name": "vpc.securityGroups.count",
+        "unit": "security-groups",
+        "limit": 32,
+        "used": 3
+      },
+      {
+        "name": "vpc.subnets.count",
+        "unit": "subnets",
+        "limit": 32,
+        "used": 5
+      }
+    ]
+  }
+}

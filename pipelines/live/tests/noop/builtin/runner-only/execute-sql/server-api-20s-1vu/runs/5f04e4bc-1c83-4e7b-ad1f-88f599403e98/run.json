@@ -1,0 +1,239 @@
+{
+  "observed_at": "2026-09-24T15:30:42.919054+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "id": "5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+    "name": "server-noop-20s",
+    "status": "failed",
+    "phase": "done",
+    "status_reason": "segment main: activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "bc5c5c42-545f-4108-a2ee-5d0d85466690",
+      "name": "server-noop-20s"
+    },
+    "snapshot": {
+      "execution": {},
+      "database": {
+        "kind": "noop",
+        "version": "builtin",
+        "params": {
+          "workers": 0
+        },
+        "schema": {
+          "id": "db.noop.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "noop",
+        "segments": [
+          {
+            "name": "main",
+            "run": {
+              "duration": "20s",
+              "executor": "constant-vus",
+              "query_timeout": "0s",
+              "vus": 1
+            },
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1"
+            },
+            "log_level": "info"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "runner": {
+          "size": "XS"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "machines": [
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "XS",
+          "cpu": 2,
+          "memory_gb": 4,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "id": "spec.run",
+        "version": "1"
+      },
+      "values": {
+        "containers": [
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "quay.io/prometheus/node-exporter:v1.12.1",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "keep": "0s",
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "tenant": "server-live-20260924",
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "machines": [
+          {
+            "cpu": 2,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 4,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "run_id": "5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+        "workload": {
+          "driver_type": "noop",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "main",
+              "run": {
+                "duration": "20s",
+                "executor": "constant-vus",
+                "query_timeout": "0s",
+                "vus": 1
+              },
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "SELECT 1"
+              }
+            }
+          ],
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy:v6.0.0.62",
+          "url": "noop://localhost"
+        }
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-24T15:21:17Z",
+    "started_at": "2026-09-24T15:21:18Z",
+    "finished_at": "2026-09-24T15:30:23Z",
+    "duration": "9m5s",
+    "summary": {
+      "db_kind": "noop",
+      "db_version": "builtin",
+      "protocol": "noop",
+      "stroppy_version": "6.0.0",
+      "topology_label": "noop (runner only)",
+      "node_count": 1,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "runner": {
+          "size": "XS"
+        }
+      },
+      "progress_pct": 0
+    },
+    "result": {
+      "segments": [
+        {
+          "name": "main",
+          "status": "failed",
+          "exit_code": -1,
+          "error": "activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout"
+        }
+      ],
+      "artifacts": []
+    },
+    "graphene": {
+      "run_ref": "run/5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

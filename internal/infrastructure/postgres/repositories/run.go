@@ -18,15 +18,38 @@ import (
 
 // RunRepo stores runs, their timeline and favorites.
 type RunRepo struct {
-	q *db.Queries
+	q  *db.Queries
+	tx lifecycleTransactor
 }
 
 var _ run.Repository = (*RunRepo)(nil)
 
 // NewRunRepo builds the repo.
-func NewRunRepo(database tx.DB) *RunRepo { return &RunRepo{q: db.New(database)} }
+func NewRunRepo(database tx.DB, tr lifecycleTransactor) *RunRepo {
+	return &RunRepo{q: db.New(database), tx: tr}
+}
 
 func (r *RunRepo) Insert(ctx context.Context, x run.Run, idempotencyKey string) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		tenant, err := r.q.LockTenantLifecycle(ctx, x.TenantID)
+		if err != nil {
+			return err
+		}
+		if tenant.Retiring {
+			return errs.Conflict("tenant is being deleted")
+		}
+		profile, err := r.q.LockProviderLifecycle(ctx, x.Snapshot.ProviderProfile.ID)
+		if err != nil {
+			return errs.Conflict("provider is unavailable")
+		}
+		if profile.Status != "ready" {
+			return errs.Conflict("provider is not ready")
+		}
+		return r.insert(ctx, x, idempotencyKey)
+	})
+}
+
+func (r *RunRepo) insert(ctx context.Context, x run.Run, idempotencyKey string) error {
 	snapshot, _ := json.Marshal(x.Snapshot) //nolint:errcheck // struct
 	summary, _ := json.Marshal(x.Summary)   //nolint:errcheck // struct
 	labels := tagsJSON(x.Labels)

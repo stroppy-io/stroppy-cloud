@@ -336,7 +336,7 @@ components:
         id: { type: string, format: uuid }
         name: { type: string }
         kind: { $ref: '#/components/schemas/ProviderKind' }
-        status: { type: string, enum: [verifying, ready, failed] }
+        status: { type: string, enum: [verifying, ready, failed, deleting, delete_failed] }
         status_reason: { type: string }
         verified_at: { type: [string, 'null'], format: date-time }
         settings:

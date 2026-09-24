@@ -217,6 +217,8 @@ github.com/graphene-ci/library/docker v0.3.2 h1:Zio94Lsw4oSDaMWXJePo85E0LWed7Sz8
 github.com/graphene-ci/library/docker v0.3.2/go.mod h1:xyNpr9vqMF5sEV/n0p9NGHEvejb+3JRc1T+/a7DyGaI=
 github.com/graphene-ci/library/k8s v0.3.0 h1:JLaRDJbIzHAGNpFVNSFIaCM+o6qaz6KN06eaeJSoBgk=
 github.com/graphene-ci/library/k8s v0.3.0/go.mod h1:GsqZ+00gqhDuFZQ4+xmI+ykxH5r95I62lZep/VnyD1A=
+github.com/graphene-ci/library/k8s v0.4.0 h1:Y67NV3IbGmDGR9HkxHPw0poOZMoJoEpyzmXn74ZryXY=
+github.com/graphene-ci/library/k8s v0.4.0/go.mod h1:GsqZ+00gqhDuFZQ4+xmI+ykxH5r95I62lZep/VnyD1A=
 github.com/graphene-ci/pipeline v0.2.11 h1:thwzc5FOcgV4svthdWkV8OgO2c/98q0JeyAuPaHO3Tw=
 github.com/graphene-ci/pipeline v0.2.11/go.mod h1:2YpDZtdO3LCkJ65oRzdAssnUO1mIewjMQoJ4auoYkko=
 github.com/graphene-ci/temporal-entity v0.0.0-20260824103956-3919c84e4abb h1:P8lPqznDjPIz4hghg8aVb/9tMrfVJxb6nJhcFWneCII=

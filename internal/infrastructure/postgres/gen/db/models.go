@@ -32,6 +32,7 @@ type IamWebhookEvents struct {
 }
 
 type Tenants struct {
+	Retiring          bool
 	ID                uuid.UUID
 	Slug              string
 	Name              string

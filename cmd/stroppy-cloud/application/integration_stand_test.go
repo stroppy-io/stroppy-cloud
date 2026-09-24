@@ -30,7 +30,7 @@ func TestLocalStand(t *testing.T) {
 	if os.Getenv("STROPPY_LOCAL_STAND") == "" {
 		t.Skip("set STROPPY_LOCAL_STAND=1 to start the local stand")
 	}
-	addr := envOr("STROPPY_LOCAL_STAND_ADDR", "127.0.0.1:8080")
+	addr := envOr("STROPPY_LOCAL_STAND_ADDR", "127.0.0.1:18347")
 	speed, err := strconv.ParseFloat(envOr("STROPPY_LOCAL_STAND_SPEED", "10"), 64)
 	if err != nil || speed <= 0 {
 		t.Fatalf("STROPPY_LOCAL_STAND_SPEED: %q", os.Getenv("STROPPY_LOCAL_STAND_SPEED"))

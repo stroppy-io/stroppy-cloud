@@ -2,8 +2,8 @@
 openapi: 3.1.0
 info:
   title: Stroppy Cloud API
-  version: 1.0.0
-  x-pipeline-contract-version: 1.0.0
+  version: 2.0.0
+  x-pipeline-contract-version: 2.0.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -23,7 +23,7 @@ info:
 servers:
 - url: https://cloud.stroppy.io
   description: Production
-- url: http://localhost:8080
+- url: http://localhost:18347
   description: Local server
 tags:
 - name: Public
@@ -5508,6 +5508,8 @@ components:
           - verifying
           - ready
           - failed
+          - deleting
+          - delete_failed
         status_reason:
           type: string
         verified_at:

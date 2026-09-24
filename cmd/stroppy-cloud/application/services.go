@@ -2,7 +2,10 @@ package application
 
 import (
 	"context"
+	"encoding/json"
 	"time"
+
+	"connectrpc.com/connect"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
@@ -90,17 +93,18 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	// background: detached work under the shutdown manager's context, so a
 	// stop waits for verifications in flight (bounded by its timeout).
 	background := func(fn func(ctx context.Context)) { manager.Go(fn) }
-	providerRepo := repositories.NewProviderRepo(db)
+	providerRepo := repositories.NewProviderRepo(db, tx)
 	providers := provider.NewService(
 		providerRepo, infra.Graphene, probePipelines{infra.Graphene}, registry,
 		tenants, graphene.WithNamespace, auditSvc, background,
 	)
+	tenants.WithProviderCleanup(providers)
 	settingsSvc := settings.NewService(repositories.NewSettingsRepo(db), tenants)
 	lib := library.NewService(repositories.NewLibraryRepo(db), registry, cat, tenants, providerRepo, keepLimit{settingsSvc}, auditSvc)
 	webhooks := webhook.NewService(webhookRepo, tenants, auditSvc)
 	compiler := compile.NewService(registry, cat, lib)
 	compiler.Observability = spec.Observability{OTLPEndpoint: cfg.Infra.Observability.OTLPEndpoint, OTLPHeaders: cfg.Infra.Observability.OTLPHeaders}
-	runRepo := repositories.NewRunRepo(db)
+	runRepo := repositories.NewRunRepo(db, tx)
 	runs := run.NewService(runRepo, infra.Graphene, tenants, lib, providers, settingsSvc, compiler, webhooks, auditSvc, graphene.WithNamespace)
 	projector := run.NewProjector(runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)
 	suiteRepo := repositories.NewSuiteRepo(db)
@@ -230,4 +234,21 @@ func nilMetrics(m *victoria.Metrics) observe.Metrics {
 		return nil
 	}
 	return m
+}
+
+func (p probePipelines) Configure(ctx context.Context, runID string, params provider.ConfigureParams) (provider.VerifyResult, error) {
+	err := p.c.StartRun(ctx, runID, graphene.PipelineProviderConfig, params, map[string]string{"stroppy.io/kind": "provider-config"})
+	if err != nil && connect.CodeOf(err) != connect.CodeAlreadyExists {
+		return provider.VerifyResult{}, err
+	}
+	raw, failure, err := p.c.RunClose(ctx, runID)
+	if err != nil {
+		return provider.VerifyResult{}, err
+	}
+	if failure != "" {
+		return provider.VerifyResult{OK: false, Error: failure}, nil
+	}
+	var out provider.VerifyResult
+	err = json.Unmarshal(raw, &out)
+	return out, err
 }

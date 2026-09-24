@@ -24758,6 +24758,10 @@ func (s *ProviderProfileStatus) Decode(d *jx.Decoder) error {
 		*s = ProviderProfileStatusReady
 	case ProviderProfileStatusFailed:
 		*s = ProviderProfileStatusFailed
+	case ProviderProfileStatusDeleting:
+		*s = ProviderProfileStatusDeleting
+	case ProviderProfileStatusDeleteFailed:
+		*s = ProviderProfileStatusDeleteFailed
 	default:
 		*s = ProviderProfileStatus(v)
 	}

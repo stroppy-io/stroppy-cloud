@@ -1,0 +1,187 @@
+{
+  "observed_at": "2026-09-24T15:30:42.978630+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98/events",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "data": [
+      {
+        "id": "6",
+        "at": "2026-09-24T15:21:18Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "7",
+        "at": "2026-09-24T15:21:21Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "8",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "machine": "runner-1",
+          "public_ip": "158.160.197.13",
+          "private_ip": "10.130.0.28",
+          "id": "fv41jicubr4ug1kqpcfa",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "9",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m39.132s"
+        }
+      },
+      {
+        "id": "10",
+        "at": "2026-09-24T15:24:00Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "11",
+        "at": "2026-09-24T15:27:42Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "layer": 0,
+          "machine": "runner-1",
+          "container": "runner-1-node-exporter",
+          "id": "61a3137ede886f655745142c58975024954938ce47c0f3253b15f02c53ec30be",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "12",
+        "at": "2026-09-24T15:27:42Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "3m41.879s"
+        }
+      },
+      {
+        "id": "13",
+        "at": "2026-09-24T15:27:42Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "14",
+        "at": "2026-09-24T15:27:42Z",
+        "kind": "segment.started",
+        "title": "Segment main started",
+        "subject": "main",
+        "payload": {
+          "index": 0,
+          "script": "execute_sql",
+          "segment": "main"
+        }
+      },
+      {
+        "id": "15",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "activity-failed",
+        "title": "Step failed: run",
+        "subject": "stroppy.segment.run",
+        "error": "pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout"
+      },
+      {
+        "id": "16",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "segment.failed",
+        "title": "Segment main failed",
+        "subject": "main",
+        "error": "activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout",
+        "payload": {
+          "error": "activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout",
+          "index": 0,
+          "segment": "main"
+        }
+      },
+      {
+        "id": "17",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "phase.failed",
+        "title": "Phase workload failed",
+        "subject": "workload",
+        "error": "segment main: activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout",
+        "payload": {
+          "error": "segment main: activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout",
+          "phase": "workload",
+          "elapsed": "1m3.716s"
+        }
+      },
+      {
+        "id": "18",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "19",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "degraded": true,
+          "missing": [
+            "iterations_total"
+          ]
+        }
+      },
+      {
+        "id": "20",
+        "at": "2026-09-24T15:28:46Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting",
+          "elapsed": "84ms"
+        }
+      },
+      {
+        "id": "21",
+        "at": "2026-09-24T15:30:23Z",
+        "kind": "run-failed",
+        "title": "Run failed",
+        "status": "failed",
+        "error": "segment main: activity error (type: stroppy.segment.run, scheduledEventID: 183, startedEventID: 184, identity: 1529@runner-1@): pull ghcr.io/stroppy-io/stroppy:v6.0.0.62: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout (type: wrapError, retryable: true): failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://ghcr.io/v2/stroppy-io/stroppy/blobs/sha256:fd88e38b9ecf2284198b7db7b30ede711078d0f9eedcccbaa8b8078b077daa0a\": dial tcp 140.82.121.33:443: i/o timeout"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

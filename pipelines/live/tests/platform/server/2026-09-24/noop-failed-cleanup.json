@@ -1,0 +1,6 @@
+{
+  "instances.compute": [],
+  "networks.vpc": [],
+  "subnets.vpc": [],
+  "securitygroups.vpc": []
+}

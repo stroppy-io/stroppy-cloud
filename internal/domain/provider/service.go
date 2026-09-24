@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -36,12 +37,14 @@ type Service struct {
 	audit     *audit.Service
 	// background runs the verification after the request returns.
 	background func(func(ctx context.Context))
+	mu         sync.Mutex
+	inflight   map[uuid.UUID]bool
 }
 
 // NewService builds the service. background runs detached work with a
 // process-scoped context (the application's shutdown manager).
 func NewService(repo Repository, secrets Secrets, pipelines Pipelines, validate Validator, access Access, scope Scoper, auditSvc *audit.Service, background func(func(ctx context.Context))) *Service {
-	return &Service{repo: repo, secrets: secrets, pipelines: pipelines, validate: validate, access: access, scope: scope, audit: auditSvc, background: background}
+	return &Service{repo: repo, secrets: secrets, pipelines: pipelines, validate: validate, access: access, scope: scope, audit: auditSvc, background: background, inflight: map[uuid.UUID]bool{}}
 }
 
 // Create is the request.
@@ -136,7 +139,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 	}
 	p := Profile{
 		ID: uuid.New(), TenantID: tenantID, Name: name, Kind: req.Kind, Settings: settings,
-		Status: StatusVerifying, CreatedAt: time.Now().UTC(),
+		VerifyRunID: uuid.NewString(), Status: StatusVerifying, CreatedAt: time.Now().UTC(),
 	}
 	p.SecretNames = []string{CredentialsSecret(p.ID)}
 	if !actor.IsAPIToken() {
@@ -147,6 +150,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return Profile{}, errs.Wrap(errs.CodeUnavailable, "graphene secret", err)
 	}
 	if err := s.repo.Insert(ctx, p); err != nil {
+		_ = s.secrets.DeleteSecret(s.scope(ctx, ns), p.SecretNames[0]) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
 		return Profile{}, err
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "provider.create", Target: audit.Target{Kind: "provider", ID: p.ID.String(), Name: name}, Details: map[string]any{"kind": req.Kind}}) //nolint:errcheck // audit never blocks
@@ -164,7 +168,9 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 	if err != nil {
 		return Profile{}, err
 	}
-	reverify := false
+	if p.Status == StatusDeleting || p.Status == StatusDeleteFailed {
+		return Profile{}, errs.Conflict("provider is being deleted")
+	}
 	if patch.Name != nil {
 		n := strings.TrimSpace(*patch.Name)
 		if n == "" || len(n) > 64 {
@@ -172,47 +178,55 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 		}
 		patch.Name = &n
 	}
-	var settings json.RawMessage
+	var settings, creds json.RawMessage
 	if patch.Settings != nil {
 		settings, err = s.validate.Bake(ctx, settingsSchema(p.Kind), patch.Settings)
 		if err != nil {
 			return Profile{}, err
 		}
-		reverify = true
+	}
+	if patch.Credentials != nil {
+		creds, err = s.validate.Bake(ctx, credentialsSchema(p.Kind), patch.Credentials)
+		if err != nil {
+			return Profile{}, err
+		}
 	}
 	ns, err := s.access.NamespaceOf(ctx, tenantID)
 	if err != nil {
 		return Profile{}, err
 	}
-	if patch.Credentials != nil {
-		creds, err := s.validate.Bake(ctx, credentialsSchema(p.Kind), patch.Credentials)
-		if err != nil {
+	reverify := patch.Settings != nil || patch.Credentials != nil
+	if reverify {
+		p.VerifyRunID = uuid.NewString()
+		staged := ""
+		if patch.Credentials != nil {
+			staged = CredentialsSecret(id) + "-" + strings.ReplaceAll(p.VerifyRunID, "-", "")[:16]
+			if err := s.secrets.SetSecret(s.scope(ctx, ns), staged, string(creds)); err != nil {
+				return Profile{}, err
+			}
+		}
+		if err := s.repo.UpdateConfiguration(ctx, id, patch.Name, settings, staged, p.VerifyRunID); err != nil {
+			if staged != "" {
+				_ = s.secrets.DeleteSecret(s.scope(ctx, ns), staged) //nolint:errcheck // preserve the original rejection
+			}
 			return Profile{}, err
 		}
-		if err := s.secrets.SetSecret(s.scope(ctx, ns), CredentialsSecret(p.ID), string(creds)); err != nil {
-			return Profile{}, errs.Wrap(errs.CodeUnavailable, "graphene secret", err)
-		}
-		reverify = true
-	}
-	if err := s.repo.Update(ctx, id, patch.Name, settings); err != nil {
+	} else if err := s.repo.Update(ctx, id, patch.Name, settings); err != nil {
 		return Profile{}, err
 	}
-	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "provider.update", Target: audit.Target{Kind: "provider", ID: id.String(), Name: p.Name}, Details: map[string]any{"reverify": reverify}}) //nolint:errcheck // audit never blocks
+	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "provider.update", Target: audit.Target{Kind: "provider", ID: id.String(), Name: p.Name}}) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
+	p, err = s.repo.ByID(ctx, id)
+	if err != nil {
+		return Profile{}, err
+	}
 	if reverify {
-		if err := s.repo.SetStatus(ctx, id, StatusVerifying, "", ""); err != nil {
-			return Profile{}, err
-		}
-		p, err = s.repo.ByID(ctx, id)
-		if err != nil {
-			return Profile{}, err
-		}
 		s.startVerify(ns, p)
 	}
-	return s.repo.ByID(ctx, id)
+	return p, nil
 }
 
-// Delete removes a profile and its secret (admin+; live-run guard is the
-// launch layer's — a run keeps its baked credentials reference).
+// Delete removes configuration before credentials and the profile. A failed
+// cleanup remains visible and can be retried; workloads cannot use it meanwhile.
 func (s *Service) Delete(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID) error {
 	if err := s.admin(ctx, actor, tenantID); err != nil {
 		return err
@@ -225,19 +239,52 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, tenantID, id uui
 	if err != nil {
 		return err
 	}
-	if err := s.repo.SoftDelete(ctx, id); err != nil {
-		return err
+	if p.Status != StatusDeleting {
+		p.VerifyRunID = uuid.NewString()
+		if err := s.repo.BeginOperation(ctx, id, StatusDeleting, p.VerifyRunID); err != nil {
+			return err
+		}
+		p, err = s.repo.ByID(ctx, id)
+		if err != nil {
+			return err
+		}
+	}
+	out, err := s.pipelines.Configure(s.scope(ctx, ns), p.VerifyRunID, configureParams(p, "delete"))
+	if err != nil {
+		return errs.Wrap(errs.CodeUnavailable, "provider cleanup pending; retry deletion", err)
+	}
+	if !out.OK {
+		_ = s.repo.FinishOperation(ctx, id, p.VerifyRunID, StatusDeleteFailed, out.Error) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
+		return errs.Conflict("provider cleanup failed: " + out.Error)
 	}
 	for _, name := range p.SecretNames {
 		if err := s.secrets.DeleteSecret(s.scope(ctx, ns), name); err != nil {
-			return errs.Wrap(errs.CodeUnavailable, "graphene secret", err)
+			return errs.Wrap(errs.CodeUnavailable, "provider credential cleanup pending", err)
 		}
+	}
+	if err := s.repo.SoftDelete(ctx, id); err != nil {
+		return err
 	}
 	return s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "provider.delete", Target: audit.Target{Kind: "provider", ID: id.String(), Name: p.Name}})
 }
 
-// Verify re-runs the verification (admin+) and returns the profile as
-// verifying; the result lands asynchronously.
+// DeleteTenant seals the tenant against new work before cleaning every profile.
+func (s *Service) DeleteTenant(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) error {
+	if err := s.repo.BeginTenantDeletion(ctx, tenantID); err != nil {
+		return err
+	}
+	profiles, err := s.repo.OfTenant(ctx, tenantID)
+	if err != nil {
+		return err
+	}
+	for _, p := range profiles {
+		if err := s.Delete(ctx, actor, tenantID, p.ID); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (s *Service) Verify(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID) (Profile, error) {
 	if err := s.admin(ctx, actor, tenantID); err != nil {
 		return Profile{}, err
@@ -250,30 +297,61 @@ func (s *Service) Verify(ctx context.Context, actor auth.Actor, tenantID, id uui
 	if err != nil {
 		return Profile{}, err
 	}
-	if err := s.repo.SetStatus(ctx, id, StatusVerifying, "", ""); err != nil {
+	p.VerifyRunID = uuid.NewString()
+	if err := s.repo.BeginOperation(ctx, id, StatusVerifying, p.VerifyRunID); err != nil {
+		return Profile{}, err
+	}
+	p, err = s.repo.ByID(ctx, id)
+	if err != nil {
 		return Profile{}, err
 	}
 	s.startVerify(ns, p)
 	return s.repo.ByID(ctx, id)
 }
 
-// startVerify runs the pipeline detached and records the outcome.
+func configureParams(p Profile, action string) ConfigureParams {
+	return ConfigureParams{Action: action, Provider: p.Kind, ProfileID: p.ID.String(), Settings: p.Settings, CredentialsSecret: ActiveCredentials(p)}
+}
+
 func (s *Service) startVerify(ns string, p Profile) {
+	s.mu.Lock()
+	if s.inflight[p.ID] {
+		s.mu.Unlock()
+		return
+	}
+	s.inflight[p.ID] = true
+	s.mu.Unlock()
 	s.background(func(ctx context.Context) {
-		runID := uuid.NewString()
-		res, err := s.pipelines.Verify(s.scope(ctx, ns), runID, VerifyParams{
-			Provider: p.Kind, Settings: p.Settings, CredentialsSecret: CredentialsSecret(p.ID), DryRun: true,
-		})
-		switch {
-		case err != nil:
-			_ = s.repo.SetStatus(ctx, p.ID, StatusFailed, "verification did not complete: "+err.Error(), runID) //nolint:errcheck // nothing else to do
-		case !res.OK:
-			_ = s.repo.SetStatus(ctx, p.ID, StatusFailed, res.Error, runID) //nolint:errcheck // nothing else to do
-		default:
-			_ = s.repo.SetStatus(ctx, p.ID, StatusReady, "", runID) //nolint:errcheck // nothing else to do
-			_ = s.refreshQuotas(ctx, ns, p)                         //nolint:errcheck // first quota snapshot is best-effort
+		defer func() { s.mu.Lock(); delete(s.inflight, p.ID); s.mu.Unlock() }()
+		out, err := s.pipelines.Configure(s.scope(ctx, ns), p.VerifyRunID, configureParams(p, "ensure"))
+		if err != nil {
+			return
+		} // transport/shutdown: reattach the same durable run later
+		if !out.OK {
+			_ = s.repo.FinishOperation(ctx, p.ID, p.VerifyRunID, StatusFailed, out.Error) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
+			return
 		}
+		if err := s.repo.FinishOperation(ctx, p.ID, p.VerifyRunID, StatusReady, ""); err != nil {
+			return
+		}
+		_ = s.refreshQuotas(ctx, ns, p) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
 	})
+}
+
+// RecoverPending reattaches provider verification/configuration after restart.
+func (s *Service) RecoverPending(ctx context.Context) error {
+	profiles, err := s.repo.Pending(ctx)
+	if err != nil {
+		return err
+	}
+	for _, p := range profiles {
+		ns, err := s.access.NamespaceOf(ctx, p.TenantID)
+		if err != nil {
+			return err
+		}
+		s.startVerify(ns, p)
+	}
+	return nil
 }
 
 // Quotas returns the cached quotas (any member); stale is the caller's to judge.
@@ -341,7 +419,7 @@ func (s *Service) RefreshAllReady(ctx context.Context) error {
 
 func (s *Service) refreshQuotas(ctx context.Context, ns string, p Profile) error {
 	res, err := s.pipelines.Quotas(s.scope(ctx, ns), uuid.NewString(), QuotasParams{
-		Provider: p.Kind, Settings: p.Settings, CredentialsSecret: CredentialsSecret(p.ID),
+		Provider: p.Kind, Settings: p.Settings, CredentialsSecret: ActiveCredentials(p),
 	})
 	if err != nil {
 		return err

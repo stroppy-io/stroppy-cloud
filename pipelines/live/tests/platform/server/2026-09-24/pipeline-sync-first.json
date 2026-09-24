@@ -1,0 +1,36 @@
+{
+  "version": "0.0.0-dev6-507-g7afd0e87-dirty",
+  "commit": "7afd0e87",
+  "started_at": "2026-09-24T13:48:34Z",
+  "components": {
+    "graphene": {
+      "status": "ok"
+    },
+    "postgres": {
+      "status": "ok"
+    }
+  },
+  "pipelines": {
+    "expected_revision": "0.0.0-dev6-507-g7afd0e87-dirty",
+    "namespaces": [
+      {
+        "namespace": "t-server-live-20260924",
+        "tenant_slug": "server-live-20260924",
+        "status": "failed",
+        "revision": "0.0.0-dev6-507-g7afd0e87-dirty",
+        "error": "stroppy-run: stroppy-run push: exit status 1: context env \u2192 graphene.stroppy.io:443\nbuilding github.com/stroppy-io/stroppy-cloud/pipelines/cmd/run for linux/amd64\npipeline: go build github.com/stroppy-io/stroppy-cloud/pipelines/cmd/run: exec: \"go\": executable file not found in $PATH (run from inside the pipeline's module)\n",
+        "pushed_at": null
+      }
+    ]
+  },
+  "runs": {
+    "running": 0,
+    "pending": 0,
+    "kept_stands": 0
+  },
+  "tenants": {
+    "active": 1,
+    "suspended": 0,
+    "orphaned": 0
+  }
+}

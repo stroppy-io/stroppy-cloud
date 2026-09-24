@@ -2754,7 +2754,7 @@ export interface components {
             name: string;
             kind: components["schemas"]["ProviderKind"];
             /** @enum {string} */
-            status: "verifying" | "ready" | "failed";
+            status: "verifying" | "ready" | "failed" | "deleting" | "delete_failed";
             status_reason?: string;
             /** Format: date-time */
             verified_at?: string | null;

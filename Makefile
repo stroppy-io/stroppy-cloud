@@ -17,6 +17,8 @@ GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v
 
 DOCKER_IMAGE := docker.stroppy.io/stroppy-io/stroppy-server
 DOCKER_TAG   := $(VERSION)
+COMPOSE_ENV ?= .env.compose
+COMPOSE := docker compose --env-file "$(COMPOSE_ENV)"
 
 # ============================================================
 # Help
@@ -48,6 +50,7 @@ build-pipelines: ## Build the graphene pipeline binaries (linux/amd64, shipped i
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-run ./cmd/run/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-suite ./cmd/suite/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-provider-verify ./cmd/provider-verify/
+	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-provider-config ./cmd/provider-config/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-quotas ./cmd/quotas/
 
 # ============================================================
@@ -131,7 +134,7 @@ fmt: ## Format Go code
 web-install: ## Install web dependencies
 	cd web && yarn install --frozen-lockfile
 
-web-dev: ## Start web dev server (proxies API to localhost:8080)
+web-dev: ## Start web dev server (proxies API to localhost:18347)
 	cd web && yarn dev
 
 web-build: ## Build web for production
@@ -152,6 +155,17 @@ docs-build: ## Build docs static site
 # ============================================================
 # Docker
 # ============================================================
+.PHONY: dev dev-down dev-logs
+dev: ## Build and start the local server with embedded UI and PostgreSQL
+	@test -f "$(COMPOSE_ENV)" || { echo "Copy .env.compose.example to $(COMPOSE_ENV) and set the Graphene token"; exit 1; }
+	VERSION=$(VERSION) COMMIT=$(COMMIT) $(COMPOSE) up --build -d
+
+dev-down: ## Stop the local stack, keeping PostgreSQL data and cloud resources
+	$(COMPOSE) down
+
+dev-logs: ## Follow local server logs
+	$(COMPOSE) logs -f server
+
 docker-build: ## Build the server image (server + pipeline binaries)
 	docker build --build-arg VERSION=$(VERSION) --build-arg COMMIT=$(COMMIT) -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f deployments/Dockerfile .
 

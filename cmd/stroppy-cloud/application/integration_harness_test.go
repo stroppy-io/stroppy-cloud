@@ -50,7 +50,7 @@ type e2e struct {
 	pushes *fakePusher
 }
 
-// fakePusher stands in for the `stroppy-* push` subprocesses.
+// fakePusher stands in for publication of the packaged pipeline binaries.
 type fakePusher struct {
 	mu    sync.Mutex
 	calls []string // "<namespace>/<pipeline>"

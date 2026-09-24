@@ -1,0 +1,96 @@
+{
+  "observed_at": "2026-09-24T15:32:10.112549+00:00",
+  "method": "PATCH",
+  "path": "/api/v1/t/server-live-20260924/tests/bc5c5c42-545f-4108-a2ee-5d0d85466690",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "id": "bc5c5c42-545f-4108-a2ee-5d0d85466690",
+    "name": "server-noop-20s",
+    "description": "Server API acceptance: one runner, execute_sql 20s, teardown",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-24T14:06:39Z",
+    "updated_at": "2026-09-24T15:32:09Z",
+    "execution": {
+      "workload": {
+        "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy:v6.0.0.62"
+      }
+    },
+    "database": {
+      "inline": {
+        "kind": "noop",
+        "version": "builtin",
+        "params": {
+          "workers": 0
+        },
+        "schema": {
+          "id": "db.noop.params",
+          "version": "1"
+        }
+      }
+    },
+    "workload": {
+      "inline": {
+        "stroppy_version": "6.0.0",
+        "protocol": "noop",
+        "segments": [
+          {
+            "name": "main",
+            "run": {
+              "duration": "20s",
+              "executor": "constant-vus",
+              "query_timeout": "0s",
+              "vus": 1
+            },
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1"
+            },
+            "log_level": "info"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      }
+    },
+    "sizes": {
+      "runner": {
+        "size": "XS"
+      }
+    },
+    "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "status": "ready",
+    "resolved": {},
+    "validation": {
+      "fits": true,
+      "issues": []
+    },
+    "requirements": {
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "summary": {
+      "db_kind": "noop",
+      "db_version": "builtin",
+      "topology_label": "noop (runner only)",
+      "node_count": 1,
+      "protocol": "noop",
+      "stroppy_version": "6.0.0"
+    },
+    "usages": []
+  }
+}

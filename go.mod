@@ -24,7 +24,7 @@ require (
 	github.com/gopherex/xtrace/contrib/sdk v1.0.2
 	github.com/graphene-ci/graphene v0.2.20
 	github.com/graphene-ci/library/docker v0.3.2
-	github.com/graphene-ci/library/k8s v0.3.0
+	github.com/graphene-ci/library/k8s v0.4.0
 	github.com/graphene-ci/pipeline v0.2.11
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/ogen-go/ogen v1.20.3

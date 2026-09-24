@@ -57,13 +57,13 @@ type TraceConfig struct {
 
 // HTTPConfig is the single public listener: API, SPA, IAM proxy, probes.
 type HTTPConfig struct {
-	Addr string `default:":8080" mapstructure:"addr" validate:"required"`
+	Addr string `default:":18347" mapstructure:"addr" validate:"required"`
 	// WSPoll is how often the WebSocket topics are refreshed from the
 	// projection.
 	WSPoll time.Duration `default:"2s" mapstructure:"ws_poll"`
 	// PublicURL is the origin the SPA is served from; used for absolute
 	// links (invites, share) and as the IAM proxy's cookie host.
-	PublicURL string `default:"http://localhost:8080" mapstructure:"public_url" validate:"required,url"`
+	PublicURL string `default:"http://localhost:18347" mapstructure:"public_url" validate:"required,url"`
 	// GrafanaURL is the installation's Grafana, relayed under /grafana.
 	// Empty disables the relay.
 	GrafanaURL string `mapstructure:"grafana_url" validate:"omitempty,url"`

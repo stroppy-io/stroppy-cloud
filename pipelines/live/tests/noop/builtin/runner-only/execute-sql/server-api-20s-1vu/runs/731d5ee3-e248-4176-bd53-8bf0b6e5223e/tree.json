@@ -1,0 +1,108 @@
+{
+  "observed_at": "2026-09-24T15:39:58.131924+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/tree",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "ref": "run/731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+    "kind": "run",
+    "keep_until": null,
+    "children": [
+      {
+        "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network/stroppy-server-live-20260924-731d5ee3-net",
+        "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network",
+        "phase": "deleted",
+        "labels": {
+          "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e"
+        },
+        "keep_until": null,
+        "children": [
+          {
+            "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup/stroppy-server-live-20260924-731d5ee3-sg",
+            "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup",
+            "phase": "deleted",
+            "labels": {
+              "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e"
+            },
+            "keep_until": null,
+            "children": [
+              {
+                "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet/stroppy-server-live-20260924-731d5ee3-subnet",
+                "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet",
+                "phase": "deleted",
+                "labels": {
+                  "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e"
+                },
+                "keep_until": null,
+                "children": [
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-731d5ee3-runner-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/731d5ee3-runner-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+                          "machine": "runner-1",
+                          "role": "runner",
+                          "stroppy-run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+                          "graphene.io/pipeline": "stroppy-run"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/731d5ee3-e248-4176-bd53-8bf0b6e5223e-runner-1-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "graphene.io/run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+                              "kind": "exporter",
+                              "machine": "runner-1",
+                              "role": "runner",
+                              "stroppy-run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+                              "container": "runner-1-node-exporter"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

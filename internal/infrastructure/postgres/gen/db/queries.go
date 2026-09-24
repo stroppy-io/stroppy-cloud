@@ -1290,8 +1290,8 @@ func (q *Queries) DeleteProfile(ctx context.Context, id uuid.UUID) (int64, error
 	return tag.RowsAffected(), err
 }
 
-const insertProviderProfileSQL = `INSERT INTO provider_profiles (id, tenant_id, name, kind, settings, secret_names, status, created_by)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8);`
+const insertProviderProfileSQL = `INSERT INTO provider_profiles (id, tenant_id, name, kind, settings, secret_names, status, created_by, verify_run_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);`
 
 type InsertProviderProfileParams struct {
 	ID          uuid.UUID
@@ -1302,10 +1302,11 @@ type InsertProviderProfileParams struct {
 	SecretNames json.RawMessage
 	Status      string
 	CreatedBy   *uuid.UUID
+	VerifyRunID string
 }
 
 func (q *Queries) InsertProviderProfile(ctx context.Context, arg InsertProviderProfileParams) error {
-	_, err := q.db.Exec(ctx, insertProviderProfileSQL, arg.ID, arg.TenantID, arg.Name, arg.Kind, arg.Settings, arg.SecretNames, arg.Status, arg.CreatedBy)
+	_, err := q.db.Exec(ctx, insertProviderProfileSQL, arg.ID, arg.TenantID, arg.Name, arg.Kind, arg.Settings, arg.SecretNames, arg.Status, arg.CreatedBy, arg.VerifyRunID)
 	return err
 }
 
@@ -1492,6 +1493,135 @@ const softDeleteProviderProfileSQL = `UPDATE provider_profiles SET deleted_at = 
 func (q *Queries) SoftDeleteProviderProfile(ctx context.Context, id uuid.UUID) (int64, error) {
 	tag, err := q.db.Exec(ctx, softDeleteProviderProfileSQL, id)
 	return tag.RowsAffected(), err
+}
+
+const beginProviderOperationSQL = `UPDATE provider_profiles p
+SET status = $1, status_reason = '', verify_run_id = $2, updated_at = now()
+WHERE p.id = $3 AND p.deleted_at IS NULL AND p.status IN ('ready', 'failed', 'delete_failed')
+ AND ($1::text = 'deleting' OR p.status <> 'delete_failed')
+ AND NOT EXISTS (
+  SELECT 1 FROM runs r WHERE r.tenant_id = p.tenant_id
+   AND r.snapshot->'provider_profile'->>'id' = p.id::text
+   AND (r.status IN ('pending','running','cancelling') OR r.stand_kept)
+ );`
+
+type BeginProviderOperationParams struct {
+	Status *string
+	RunID  string
+	ID     uuid.UUID
+}
+
+func (q *Queries) BeginProviderOperation(ctx context.Context, arg BeginProviderOperationParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, beginProviderOperationSQL, arg.Status, arg.RunID, arg.ID)
+	return tag.RowsAffected(), err
+}
+
+const finishProviderOperationSQL = `UPDATE provider_profiles SET status = $1, status_reason = $2,
+ verified_at = CASE WHEN $1::text = 'ready' THEN now() ELSE verified_at END, updated_at=now()
+WHERE id=$3 AND verify_run_id=$4 AND deleted_at IS NULL;`
+
+type FinishProviderOperationParams struct {
+	Status *string
+	Reason string
+	ID     uuid.UUID
+	RunID  string
+}
+
+func (q *Queries) FinishProviderOperation(ctx context.Context, arg FinishProviderOperationParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, finishProviderOperationSQL, arg.Status, arg.Reason, arg.ID, arg.RunID)
+	return tag.RowsAffected(), err
+}
+
+const pendingProviderOperationsSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
+ quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
+FROM provider_profiles WHERE deleted_at IS NULL AND status='verifying' AND verify_run_id<>'';`
+
+type PendingProviderOperationsRow struct {
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+}
+
+func (q *Queries) PendingProviderOperations(ctx context.Context) ([]PendingProviderOperationsRow, error) {
+	rows, err := q.db.Query(ctx, pendingProviderOperationsSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []PendingProviderOperationsRow
+	for rows.Next() {
+		var i PendingProviderOperationsRow
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const lockProviderLifecycleSQL = `SELECT status FROM provider_profiles WHERE id=$1 AND deleted_at IS NULL FOR UPDATE;`
+
+type LockProviderLifecycleRow struct {
+	Status string
+}
+
+func (q *Queries) LockProviderLifecycle(ctx context.Context, id uuid.UUID) (LockProviderLifecycleRow, error) {
+	row := q.db.QueryRow(ctx, lockProviderLifecycleSQL, id)
+	var i LockProviderLifecycleRow
+	err := row.Scan(&i.Status)
+	return i, err
+}
+
+const lockTenantLifecycleSQL = `SELECT retiring FROM tenants WHERE id=$1 AND deleted_at IS NULL FOR UPDATE;`
+
+type LockTenantLifecycleRow struct {
+	Retiring bool
+}
+
+func (q *Queries) LockTenantLifecycle(ctx context.Context, id uuid.UUID) (LockTenantLifecycleRow, error) {
+	row := q.db.QueryRow(ctx, lockTenantLifecycleSQL, id)
+	var i LockTenantLifecycleRow
+	err := row.Scan(&i.Retiring)
+	return i, err
+}
+
+const beginTenantRetirementSQL = `UPDATE tenants SET retiring=true, updated_at=now()
+WHERE id=$1 AND deleted_at IS NULL
+ AND NOT EXISTS (SELECT 1 FROM runs WHERE tenant_id=$1 AND (status IN ('pending','running','cancelling') OR stand_kept))
+ AND NOT EXISTS (SELECT 1 FROM provider_profiles WHERE tenant_id=$1 AND deleted_at IS NULL AND status='verifying');`
+
+func (q *Queries) BeginTenantRetirement(ctx context.Context, id uuid.UUID) (int64, error) {
+	tag, err := q.db.Exec(ctx, beginTenantRetirementSQL, id)
+	return tag.RowsAffected(), err
+}
+
+const setProviderSecretNamesSQL = `UPDATE provider_profiles SET secret_names=$1 WHERE id=$2 AND deleted_at IS NULL;`
+
+type SetProviderSecretNamesParams struct {
+	SecretNames json.RawMessage
+	ID          uuid.UUID
+}
+
+func (q *Queries) SetProviderSecretNames(ctx context.Context, arg SetProviderSecretNamesParams) error {
+	_, err := q.db.Exec(ctx, setProviderSecretNamesSQL, arg.SecretNames, arg.ID)
+	return err
 }
 
 const insertRunSQL = `INSERT INTO runs (id, tenant_id, name, status, phase, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "run_id": "bc94e0ff-2a4f-4e76-a85c-faf9e013e528",
+  "checked_at": "2026-09-24T14:11:28.197293+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/bc94e0ff-2a4f-4e76-a85c-faf9e013e528/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "failed",
+      "reason": "provider config: activity error (type: stroppy.provider.ensure-config, scheduledEventID: 21, startedEventID: 22, identity: 1@graphene-run-t-server-live-20260924-bc94e0ff-2-81c4985cbf0wqtwg@): kubernetes config secret \"kubeconfig\": secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: Error, retryable: true)",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/bc94e0ff-2a4f-4e76-a85c-faf9e013e528/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "blocked",
+      "reason": "Provisioning failed before workload execution.",
+      "evidence": null
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "blocked",
+      "reason": "Provisioning failed before workload execution.",
+      "evidence": null
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "blocked",
+      "reason": "Provisioning failed before workload execution.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "blocked",
+      "reason": "Provisioning failed before workload execution.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "blocked",
+      "reason": "Provisioning failed before workload execution.",
+      "evidence": null
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    }
+  ]
+}

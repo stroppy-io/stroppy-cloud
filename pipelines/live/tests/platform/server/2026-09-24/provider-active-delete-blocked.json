@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-24T15:21:43.147036+00:00",
+  "method": "DELETE",
+  "path": "/api/v1/t/server-live-20260924/providers/b413b185-61ca-4d81-abf2-0b760aa59ed5",
+  "http_status": 409,
+  "contract_version": "2.0.0",
+  "body": {
+    "type": "https://stroppy.io/problems/conflict",
+    "title": "Conflict",
+    "status": 409,
+    "detail": "provider is busy, being deleted, or has active runs or kept stands",
+    "code": "conflict",
+    "request_id": "68ca900d87ef/rml2tarStO-000010"
+  }
+}

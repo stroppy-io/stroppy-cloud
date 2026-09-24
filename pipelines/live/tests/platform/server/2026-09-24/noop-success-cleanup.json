@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-09-24T15:41:05.770501+00:00",
+  "run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+  "remaining_crossplane": {
+    "instances.compute": [],
+    "networks.vpc": [],
+    "subnets.vpc": [],
+    "securitygroups.vpc": []
+  },
+  "yc_instance_id": "fv493mf2rbcl9ahr4o8a",
+  "yc_not_found": true
+}

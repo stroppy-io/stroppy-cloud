@@ -1,0 +1,59 @@
+{
+  "observed_at": "2026-09-24T14:11:28.263282+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/bc94e0ff-2a4f-4e76-a85c-faf9e013e528/events",
+  "http_status": 200,
+  "contract_version": "1.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "1",
+        "at": "2026-09-24T14:07:03Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "2",
+        "at": "2026-09-24T14:07:08Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "3",
+        "at": "2026-09-24T14:07:38Z",
+        "kind": "activity-failed",
+        "title": "Step failed: ensure-config",
+        "subject": "stroppy.provider.ensure-config",
+        "error": "kubernetes config secret \"kubeconfig\": secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\""
+      },
+      {
+        "id": "4",
+        "at": "2026-09-24T14:07:38Z",
+        "kind": "phase.failed",
+        "title": "Phase provisioning failed",
+        "subject": "provisioning",
+        "error": "provider config: activity error (type: stroppy.provider.ensure-config, scheduledEventID: 21, startedEventID: 22, identity: 1@graphene-run-t-server-live-20260924-bc94e0ff-2-81c4985cbf0wqtwg@): kubernetes config secret \"kubeconfig\": secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: Error, retryable: true)",
+        "payload": {
+          "error": "provider config: activity error (type: stroppy.provider.ensure-config, scheduledEventID: 21, startedEventID: 22, identity: 1@graphene-run-t-server-live-20260924-bc94e0ff-2-81c4985cbf0wqtwg@): kubernetes config secret \"kubeconfig\": secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: Error, retryable: true)",
+          "phase": "provisioning",
+          "elapsed": "30.457s"
+        }
+      },
+      {
+        "id": "5",
+        "at": "2026-09-24T14:07:38Z",
+        "kind": "run-failed",
+        "title": "Run failed",
+        "status": "failed",
+        "error": "provider config: activity error (type: stroppy.provider.ensure-config, scheduledEventID: 21, startedEventID: 22, identity: 1@graphene-run-t-server-live-20260924-bc94e0ff-2-81c4985cbf0wqtwg@): kubernetes config secret \"kubeconfig\": secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): secret \"kubeconfig\": rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: wrapError, retryable: true): rpc error: code = NotFound desc = secret \"kubeconfig\" is not configured in \"t-server-live-20260924\" (type: Error, retryable: true)"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

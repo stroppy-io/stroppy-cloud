@@ -1,0 +1,33 @@
+{
+  "name": "server-noop-20s",
+  "description": "Server API acceptance: one runner, execute_sql 20s, teardown",
+  "database": {
+    "inline": {
+      "kind": "noop",
+      "version": "builtin",
+      "params": {}
+    }
+  },
+  "workload": {
+    "inline": {
+      "stroppy_version": "6.0.0",
+      "protocol": "noop",
+      "segments": [
+        {
+          "name": "main",
+          "workload": {
+            "script": "execute_sql",
+            "sql_body": "SELECT 1"
+          },
+          "run": {
+            "executor": "constant-vus",
+            "vus": 1,
+            "duration": "20s"
+          }
+        }
+      ]
+    }
+  },
+  "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+  "keep": "0s"
+}

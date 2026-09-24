@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+  "checked_at": "2026-09-24T15:41:05.770501+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server events confirm one YC VM and agent became ready.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/events.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "Native Stroppy completed the 20s noop segment with exit code 0, 3521195 iterations and no failed queries/iterations.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/run.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
+      "evidence": null
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Config and log are downloadable through the server after run cleanup; byte sizes and SHA-256 digests match.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-24/noop-artifact-downloads.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Crossplane resources are absent and YC reports the benchmark VM as not found; provider configuration persists.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-24/noop-success-cleanup.json",
+        "pointer": "/yc_not_found"
+      }
+    }
+  ]
+}

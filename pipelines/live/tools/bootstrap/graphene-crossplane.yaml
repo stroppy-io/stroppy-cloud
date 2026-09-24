@@ -1,0 +1,69 @@
+# Installation-owned identity for trusted Graphene pipeline workers.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stroppy-provider-credentials
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: graphene-crossplane
+  namespace: graphene
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: graphene-crossplane-yandex
+rules:
+  - apiGroups: [compute.yandex-cloud.jet.crossplane.io]
+    resources: [instances, disks]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [vpc.yandex-cloud.jet.crossplane.io]
+    resources: [networks, subnets, securitygroups, gateways, routetables]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [ydb.yandex-cloud.jet.crossplane.io]
+    resources: [databaseserverlesses, databasededicateds]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [yandex-cloud.jet.crossplane.io]
+    resources: [providerconfigs]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [yandex-cloud.jet.crossplane.io]
+    resources: [providerconfigusages]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: graphene-crossplane-yandex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: graphene-crossplane-yandex
+subjects:
+  - kind: ServiceAccount
+    name: graphene-crossplane
+    namespace: graphene
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: graphene-provider-credentials
+  namespace: stroppy-provider-credentials
+rules:
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, create, update, patch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: graphene-provider-credentials
+  namespace: stroppy-provider-credentials
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: graphene-provider-credentials
+subjects:
+  - kind: ServiceAccount
+    name: graphene-crossplane
+    namespace: graphene

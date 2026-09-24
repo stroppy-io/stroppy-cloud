@@ -22,7 +22,7 @@ def snapshot():
     patterns = [
         "pipelines/schemas/testdata/*.json", "web/src/schemas/*.json", "web/src/schemas/*.ts",
         "pipelines/spec/spec.go", "pipelines/spec/segment.go", "pipelines/spec/result.go",
-        "pipelines/spec/contract_version.go", "pipelines/go.mod",
+        "pipelines/spec/contract_version.go", "pipelines/spec/provider_config.go", "pipelines/go.mod",
         "pipelines/stroppycfg/testdata/*.json", "openapi/openapi.yaml",
         "web/src/api/schema.d.ts", "web/src/api/json.ts",
         "pipelines/live/tests/platform/contracts/result-complete.json",

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"context"
 	"errors"
 
 	"github.com/jackc/pgx/v5/pgconn"
@@ -13,3 +14,7 @@ func isUnique(err error) bool {
 }
 
 func ptrInt64(v int64) *int64 { return &v }
+
+type lifecycleTransactor interface {
+	Do(context.Context, func(context.Context) error) error
+}

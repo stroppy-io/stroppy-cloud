@@ -20,14 +20,25 @@ const InviteTTL = 7 * 24 * time.Hour
 // Service is the tenant use cases. Every mutation checks the caller's role
 // here — the API only forwards.
 type Service struct {
-	repo   Repository
-	ns     Namespaces
-	tokens Tokens
-	tx     Transactor
-	audit  *audit.Service
-	runs   LiveRuns
-	mail   Mailer
-	push   Pipelines
+	repo      Repository
+	ns        Namespaces
+	tokens    Tokens
+	tx        Transactor
+	audit     *audit.Service
+	runs      LiveRuns
+	mail      Mailer
+	push      Pipelines
+	providers interface {
+		DeleteTenant(context.Context, auth.Actor, uuid.UUID) error
+	}
+}
+
+func (s *Service) WithProviderCleanup(p interface {
+	DeleteTenant(context.Context, auth.Actor, uuid.UUID) error
+},
+) *Service {
+	s.providers = p
+	return s
 }
 
 // WithPipelines registers the pipeline push on tenant creation.
@@ -209,6 +220,11 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, slug string) err
 		}
 		if live {
 			return errs.Conflict("tenant has live runs")
+		}
+	}
+	if s.providers != nil {
+		if err := s.providers.DeleteTenant(ctx, actor, t.ID); err != nil {
+			return err
 		}
 	}
 	if err := s.ns.DeleteNamespace(ctx, t.GrapheneNamespace); err != nil {

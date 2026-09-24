@@ -1,6 +1,8 @@
 .idea
 .env
 .env.production
+.env.compose
+.local/
 bin
 web/node_modules
 web/dist

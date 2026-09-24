@@ -23,7 +23,7 @@ func recordingWalk(ctx pipeline.Context) {
 	activities.Register(ctx)
 	events.Register(ctx)
 	for _, p := range provision.Default() {
-		k8s := k8slib.NewClientFromSecret(pipeline.Secret(ctx, activities.KubeconfigSecret), p.Scheme())
+		k8s := k8slib.NewClientInCluster(p.Scheme())
 		p.Record(ctx, k8s)
 	}
 	agent := pipeline.NewAgent(ctx, "record-agent")

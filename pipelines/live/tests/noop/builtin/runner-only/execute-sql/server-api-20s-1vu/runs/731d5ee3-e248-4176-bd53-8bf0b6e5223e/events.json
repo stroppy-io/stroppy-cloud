@@ -1,0 +1,181 @@
+{
+  "observed_at": "2026-09-24T15:39:58.149575+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/events",
+  "http_status": 200,
+  "contract_version": "2.0.0",
+  "body": {
+    "data": [
+      {
+        "id": "22",
+        "at": "2026-09-24T15:33:38Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "23",
+        "at": "2026-09-24T15:33:44Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "24",
+        "at": "2026-09-24T15:36:24Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "private_ip": "10.130.0.18",
+          "id": "fv493mf2rbcl9ahr4o8a",
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.182.49"
+        }
+      },
+      {
+        "id": "25",
+        "at": "2026-09-24T15:36:24Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m39.399s"
+        }
+      },
+      {
+        "id": "26",
+        "at": "2026-09-24T15:36:24Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "27",
+        "at": "2026-09-24T15:37:17Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "layer": 0,
+          "machine": "runner-1",
+          "container": "runner-1-node-exporter",
+          "id": "f3eba2e87c2a9cf042e04b0f19eab35c752d94226da4c3732f80d78929a4d095",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "28",
+        "at": "2026-09-24T15:37:17Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "53.152s"
+        }
+      },
+      {
+        "id": "29",
+        "at": "2026-09-24T15:37:17Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "30",
+        "at": "2026-09-24T15:37:17Z",
+        "kind": "segment.started",
+        "title": "Segment main started",
+        "subject": "main",
+        "payload": {
+          "script": "execute_sql",
+          "segment": "main",
+          "index": 0
+        }
+      },
+      {
+        "id": "31",
+        "at": "2026-09-24T15:37:44Z",
+        "kind": "segment.finished",
+        "title": "Segment main finished",
+        "subject": "main",
+        "payload": {
+          "metrics": {
+            "failed_iterations_total": 0,
+            "iteration_duration_p50": 0.005,
+            "iteration_duration_p95": 0.01,
+            "iteration_duration_p99": 0.025,
+            "iterations_total": 3521195
+          },
+          "segment": "main",
+          "started_at": "2026-09-24T15:37:17.593236342Z",
+          "finished_at": "2026-09-24T15:37:44.425717438Z",
+          "index": 0,
+          "status": "completed"
+        }
+      },
+      {
+        "id": "32",
+        "at": "2026-09-24T15:37:44Z",
+        "kind": "phase.finished",
+        "title": "Phase workload finished",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload",
+          "elapsed": "27.083s"
+        }
+      },
+      {
+        "id": "33",
+        "at": "2026-09-24T15:37:44Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "34",
+        "at": "2026-09-24T15:37:47Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "segments": 1
+        }
+      },
+      {
+        "id": "35",
+        "at": "2026-09-24T15:37:47Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting",
+          "elapsed": "2.894s"
+        }
+      },
+      {
+        "id": "36",
+        "at": "2026-09-24T15:39:22Z",
+        "kind": "run-completed",
+        "title": "Run completed",
+        "status": "completed"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

@@ -6,6 +6,7 @@ import schemapb "github.com/gopherex/schemapb/go/schemapb"
 func All() []*schemapb.Schema {
 	return []*schemapb.Schema{
 		ProviderVerify(),
+		ProviderConfig(),
 		Quotas(),
 		ResultProviderVerify(),
 		ResultQuotas(),

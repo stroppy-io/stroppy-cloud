@@ -2,13 +2,14 @@
 
 Отдельный Go-модуль `github.com/stroppy-io/stroppy-cloud/pipelines`. Без
 go.work: сервер подключает `schemas`/`spec` как обычную зависимость по версии
-(тег `pipelines/vX.Y.Z`). Четыре бинарника, каждый — один `pipeline.Main`:
+(тег `pipelines/vX.Y.Z`). Пять бинарников, каждый — один `pipeline.Main`:
 
 | Бинарник | id | Что делает |
 |---|---|---|
 | `cmd/run` | `stroppy-run` | RunSpec → машины (Crossplane yc/aws) → агенты → контейнеры → stroppy-сегменты → Result |
 | `cmd/suite` | `stroppy-suite` | Suite → child-run `stroppy-run` на каждую ячейку (`RunAll`), сводка |
 | `cmd/provider-verify` | `stroppy-provider-verify` | Проверка ключа/прав провайдера, read-only, ничего не создаёт |
+| `cmd/provider-config` | `stroppy-provider-config` | Проверка YC/AWS + постоянная конфигурация профиля; удаление с проверкой использования |
 | `cmd/quotas` | `stroppy-quotas` | Квоты и usage compute/vpc провайдера |
 
 Все входы/выходы — `spec/` (Go-зеркало схем `schemas/spec/*`), протестировано
@@ -78,16 +79,21 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 - Агентские activities работают в run-workspace агента
   (`machine.Workspace()`); относительный `Dir` резолвится от него, путь
   одинаков на хосте, в контейнере агента и для docker daemon (bind-mount).
-- `EnsureProviderConfig` — единственная, что ходит в k8s напрямую: пишет
-  Secret + ProviderConfig `t-<tenant>` в `crossplane-system`. Не
-  graphene-ресурс (общий на тенанта). Kubeconfig: graphene-секрет
-  `kubeconfig` в ns тенанта, тот же кластер и identity, что у `k8slib`.
-  Учётка run-пода не подменяет явно заданные реквизиты.
-  Live bootstrap использует постоянный token Secret `graphene/stroppy-live-api-token`
-  существующей SA `stroppy-live`. Повторная настройка повторно использует этот
-  токен; `--sync-token-only` (старый алиас `--refresh-token-only`) не выдаёт
-  восьмичасовой токен и не меняет RBAC. Конфигурация и проверка — `live/tools/bootstrap.py`,
-  `live/tools/bootstrap/bootstrap-token.yaml`, `live/tests/platform/credentials/persistent-kubeconfig-check.json`.
+- Kubernetes-доступ принадлежит инсталляции Graphene: `k8slib.NewClientInCluster`
+  использует projected ServiceAccount воркера, назначенную через
+  `managed.pod_template`. Сервер Stroppy Cloud не имеет Kubernetes-клиента или
+  kubeconfig. Настройка YC-инсталляции: `live/tools/install_graphene_access.py`.
+- `stroppy-provider-config` проверяет cloud-реквизиты и создаёт через activity
+  адаптера постоянные `ProviderConfig` и Secret профиля. Имя включает хеш
+  namespace и UUID профиля; Secret живёт в `stroppy-provider-credentials`.
+  Реквизиты разрешаются в activity; в Temporal передаются только ссылки.
+- Обычный run выполняет `stroppy.provider.check-config`, без записи конфигурации.
+  Завершение run не удаляет настройки профиля. Удаление профиля — отдельный
+  lifecycle run: проверка отсутствия managed resources/usages, удаление
+  ProviderConfig с ожиданием финализаторов, затем Secret. После успеха сервер
+  удаляет Graphene-секреты и запись профиля. Чужие ресурсы не перезаписываются.
+- `bootstrap.py` и `bootstrap-token.yaml` относятся к историческим прогонам
+  контракта 1.x. Новым tenant не нужны kubeconfig и постоянные K8s-токены.
 
 ## Плейсхолдеры и env (контракт с сервером)
 
@@ -122,10 +128,10 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 cleanup/stand) с адаптерами `library/k8s/k8stest` (Crossplane-объекты
 становятся Ready фикстурами в виртуальном времени) и
 `library/docker/dockertest`. Activities машин — моки `OnAgentActivity` по
-агенту; run-queue контракты (`ensure-config`, события) — `Handle1`. Ни
+агенту; run-queue контракты (`check-config`, события) — `Handle1`. Ни
 облака, ни docker, ни сервера: `go test ./internal/run -run TestSimulated`.
 Покрыто (`sim_test.go`, `sim_more_test.go`, 16 сценариев): happy path
-postgres/yandex и noop/aws; неизвестный провайдер и отказ `ensure-config`
+postgres/yandex и noop/aws; неизвестный провайдер и отказ `check-config`
 (ничего не создано); отказ VM (квота) и агент без коннекта (таймаут) —
 чистый каскад; healthcheck-fail останавливает deploy; слои `depends_on` на
 двух машинах, `${ip:<m>}`/`${ips:role}`; baseline-fail и артефакт-fail

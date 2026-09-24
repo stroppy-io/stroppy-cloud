@@ -1,0 +1,8 @@
+{
+  "observed_at": "2026-09-24T15:22:58.292870+00:00",
+  "method": "DELETE",
+  "path": "/api/v1/t/server-live-20260924/providers/3d31ff8d-f3a5-4405-896e-a7797b507cbe",
+  "http_status": 204,
+  "contract_version": "2.0.0",
+  "body": null
+}
