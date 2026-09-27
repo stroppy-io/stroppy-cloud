@@ -1,0 +1,12 @@
+{
+  "test": "TestCompletedStreamingRowsIgnoreOwnTimeoutCleanup",
+  "before": {
+    "exit_code": 1,
+    "error": "completed query 5 changed to an error after cleanup: context canceled"
+  },
+  "after": {
+    "command": "go test -race ./pkg/driver/sqldriver ./pkg/driver/ydb -count=1",
+    "exit_code": 0
+  },
+  "cause": "database/sql awaitDone may record caller cleanup cancellation after a fully drained multi-result cursor. Stroppy now snapshots terminal outcome before releasing its query timeout; real iteration and close errors remain errors."
+}

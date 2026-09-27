@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-25T14:21:00.093292+00:00",
+  "action": "restart",
+  "action_performed": true,
+  "run_id": "43efd586-7ce9-451a-8cbe-666faaf22392",
+  "status": "completed",
+  "same_graphene_run": true,
+  "verified": true
+}

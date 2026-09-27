@@ -22,10 +22,10 @@ require (
 	github.com/gopherex/xprobe v1.0.0
 	github.com/gopherex/xshutdown v1.0.0
 	github.com/gopherex/xtrace/contrib/sdk v1.0.2
-	github.com/graphene-ci/graphene v0.2.20
-	github.com/graphene-ci/library/docker v0.3.2
+	github.com/graphene-ci/graphene v0.2.27
+	github.com/graphene-ci/library/docker v0.3.4
 	github.com/graphene-ci/library/k8s v0.4.0
-	github.com/graphene-ci/pipeline v0.2.11
+	github.com/graphene-ci/pipeline v0.2.13
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/ogen-go/ogen v1.20.3
 	github.com/robfig/cron/v3 v3.0.1

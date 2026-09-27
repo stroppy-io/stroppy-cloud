@@ -1,0 +1,16 @@
+{
+  "base_commit": "f658fd8b",
+  "source_files": {
+    "pipelines/internal/activities/docker.go": "23dbb968f552bd0384061a0830553afce5dae3ba9479edddfbd2537ab1757e57",
+    "pipelines/internal/activities/docker_test.go": "2b82dbb248661ea3dbe37b503005932bdfcbdd1ae3ebbc4d2aa15f52ccfd48f2"
+  },
+  "checks": {
+    "pull_and_progress_regression": "passed",
+    "workflow_simulations": "passed",
+    "pull_and_progress_race": "passed",
+    "activities_lint": "passed, 0 issues",
+    "compose_build": "passed"
+  },
+  "server_version": "0.0.0-dev-f658fd8b-pull-heartbeat-20260927",
+  "compose_image_manifest": "sha256:9b86250358aa5916823d0c6cb759bc9de89c3edbbc322f98087ec6f1fdb5271e"
+}

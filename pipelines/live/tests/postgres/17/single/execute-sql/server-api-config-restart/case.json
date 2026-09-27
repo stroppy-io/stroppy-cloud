@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/17/single/execute-sql/server-api-config-restart",
+  "database": "postgres",
+  "version": "17",
+  "topology": "single",
+  "workload": "execute/sql",
+  "preset": "server-api-config-restart",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "43efd586-7ce9-451a-8cbe-666faaf22392",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-25T14:36:18.806304+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/43efd586-7ce9-451a-8cbe-666faaf22392"
+  ],
+  "source": {
+    "path": "tests/postgres/17/single/execute-sql/server-api-config-restart/runs/43efd586-7ce9-451a-8cbe-666faaf22392/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "warn",
+      "name": "verify-config",
+      "run": {
+        "duration": "1m30s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "SELECT 1 / ((current_setting('max_connections')::int = 123)::int);"
+      }
+    }
+  ]
+}

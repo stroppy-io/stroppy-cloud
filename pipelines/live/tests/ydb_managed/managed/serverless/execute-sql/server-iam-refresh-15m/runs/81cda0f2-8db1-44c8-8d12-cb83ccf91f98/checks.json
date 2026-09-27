@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": "81cda0f2-8db1-44c8-8d12-cb83ccf91f98",
+  "checked_at": "2026-09-27T20:51:10.899693+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/81cda0f2-8db1-44c8-8d12-cb83ccf91f98/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Managed resource explicitly ready during workload.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ydb-iam-refresh-retry-20260927/managed-ready.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "failed",
+      "reason": "15m segment completed, real IAM refresh/reload observed, but 35 false SQL cursor cancellation errors violated the unchanged zero-error threshold. Fixed in next Stroppy image.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ydb-iam-refresh-retry-20260927/final.json",
+        "pointer": "/body/result/segments/0"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "All saved config/log artifacts retained after failed-run cleanup and match their SHA and size.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ydb-iam-refresh-retry-20260927/artifacts.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Failed run fully cleaned with no kept stand.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ydb-iam-refresh-retry-20260927/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

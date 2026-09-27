@@ -1,0 +1,207 @@
+{
+  "observed_at": "2026-09-27T18:37:50.820834+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/829fe228-d91a-421f-94c7-ebc12b00da90/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "mysql_up",
+            "graphene.activity": "docker.container.observe",
+            "graphene.agent": "829fe228-db-1",
+            "graphene.attempt": "1",
+            "graphene.entity": "docker/829fe228-d91a-421f-94c7-ebc12b00da90-db-1-mysqld-exporter",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "machine",
+            "graphene.run": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "scope.name": "graphene.obs",
+            "scope.version": "unknown",
+            "service.name": "graphene-pipeline",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.46.0"
+          },
+          "values": [
+            [
+              1790534195,
+              "1"
+            ],
+            [
+              1790534200,
+              "1"
+            ],
+            [
+              1790534205,
+              "1"
+            ],
+            [
+              1790534210,
+              "1"
+            ],
+            [
+              1790534215,
+              "1"
+            ],
+            [
+              1790534220,
+              "1"
+            ],
+            [
+              1790534225,
+              "1"
+            ],
+            [
+              1790534230,
+              "1"
+            ],
+            [
+              1790534235,
+              "1"
+            ],
+            [
+              1790534240,
+              "1"
+            ],
+            [
+              1790534245,
+              "1"
+            ],
+            [
+              1790534250,
+              "1"
+            ],
+            [
+              1790534255,
+              "1"
+            ],
+            [
+              1790534260,
+              "1"
+            ],
+            [
+              1790534265,
+              "1"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "mysql_up",
+            "graphene.activity": "docker.container.observe",
+            "graphene.agent": "829fe228-db-replica-1",
+            "graphene.attempt": "1",
+            "graphene.entity": "docker/829fe228-d91a-421f-94c7-ebc12b00da90-db-replica-1-mysqld-exporter",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "machine",
+            "graphene.run": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "scope.name": "graphene.obs",
+            "scope.version": "unknown",
+            "service.name": "graphene-pipeline",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.46.0"
+          },
+          "values": [
+            [
+              1790534215,
+              "1"
+            ],
+            [
+              1790534220,
+              "1"
+            ],
+            [
+              1790534225,
+              "1"
+            ],
+            [
+              1790534230,
+              "1"
+            ],
+            [
+              1790534235,
+              "1"
+            ],
+            [
+              1790534240,
+              "1"
+            ],
+            [
+              1790534245,
+              "1"
+            ],
+            [
+              1790534250,
+              "1"
+            ],
+            [
+              1790534255,
+              "1"
+            ],
+            [
+              1790534260,
+              "1"
+            ],
+            [
+              1790534265,
+              "1"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "mysql_up",
+            "graphene.activity": "docker.container.observe",
+            "graphene.agent": "829fe228-db-replica-2",
+            "graphene.attempt": "1",
+            "graphene.entity": "docker/829fe228-d91a-421f-94c7-ebc12b00da90-db-replica-2-mysqld-exporter",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "machine",
+            "graphene.run": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "scope.name": "graphene.obs",
+            "scope.version": "unknown",
+            "service.name": "graphene-pipeline",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.46.0"
+          },
+          "values": [
+            [
+              1790534240,
+              "1"
+            ],
+            [
+              1790534245,
+              "1"
+            ],
+            [
+              1790534250,
+              "1"
+            ],
+            [
+              1790534255,
+              "1"
+            ],
+            [
+              1790534260,
+              "1"
+            ],
+            [
+              1790534265,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "seriesFetched": "3",
+      "executionTimeMsec": 1
+    },
+    "status": "success"
+  }
+}

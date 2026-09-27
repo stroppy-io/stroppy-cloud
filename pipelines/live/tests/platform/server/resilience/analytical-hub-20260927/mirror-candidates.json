@@ -1,0 +1,38 @@
+[
+  {
+    "source": "mirror.gcr.io/library/postgres:17",
+    "returncode": 0,
+    "digest": "sha256:d74eeac9a635390a49bc21bd49fccd973de707e2a53a76ac49b552b8712ec46f",
+    "error": ""
+  },
+  {
+    "source": "mirror.gcr.io/library/mysql:8.4",
+    "returncode": 0,
+    "digest": "sha256:0744ee5ef89ce6ccfa13de3e579fe6b9e27f93dd70da9c06d2c908b1b193fb8d",
+    "error": ""
+  },
+  {
+    "source": "mirror.gcr.io/library/mariadb:11.8",
+    "returncode": 0,
+    "digest": "sha256:79d59758afc91b89b120b0a8904d637f5a3b3e1c4900f29b740d6d46c72fef68",
+    "error": ""
+  },
+  {
+    "source": "mirror.gcr.io/prom/mysqld-exporter:v0.19.0",
+    "returncode": 0,
+    "digest": "sha256:eacb4b18e2ec1e0abdf2d64851b68526c964f6d9cb3e9458fb5d5f5062ea94c1",
+    "error": ""
+  },
+  {
+    "source": "mirror.gcr.io/proxysql/proxysql:2.7.3",
+    "returncode": 0,
+    "digest": "sha256:a4d6c35c29498b294d771898f747e2143bc5c8f8b338a58324b1152144f970bb",
+    "error": ""
+  },
+  {
+    "source": "mirror.gcr.io/prometheuscommunity/postgres-exporter:v0.18.1",
+    "returncode": 0,
+    "digest": "sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d",
+    "error": ""
+  }
+]

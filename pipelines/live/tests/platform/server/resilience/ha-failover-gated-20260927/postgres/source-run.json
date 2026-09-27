@@ -1,0 +1,1163 @@
+{
+  "observed_at": "2026-09-27T20:03:10.884573+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+    "name": "server analytical pg17 tpcds generated mirror sf001 analytical-generated-q88-20260927",
+    "status": "completed",
+    "phase": "done",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "11374fec-dad3-4406-b14e-1e88b187d29a",
+      "name": "server analytical pg17 tpcds generated mirror sf001 analytical-generated-q88-20260927"
+    },
+    "snapshot": {
+      "execution": {
+        "workload": {
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624"
+        },
+        "containers": [
+          {
+            "name": "db-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "runner-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-1-postgres",
+            "set": {
+              "image": "mirror.gcr.io/library/postgres@sha256:d74eeac9a635390a49bc21bd49fccd973de707e2a53a76ac49b552b8712ec46f"
+            }
+          },
+          {
+            "name": "db-1-postgres-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+            }
+          }
+        ]
+      },
+      "database": {
+        "kind": "postgres",
+        "version": "17",
+        "params": {
+          "replicas": 0,
+          "sync_replicas": 0,
+          "version": "17",
+          "wal_archive": false,
+          "ha": "none",
+          "haproxy": 0,
+          "locale": "C.UTF-8",
+          "pgbouncer": false
+        },
+        "schema": {
+          "id": "db.postgres.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "pg",
+        "segments": [
+          {
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "1m0s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "25m0s",
+            "warmup": "0s",
+            "workload": {
+              "load_workers": 2,
+              "pg_unlogged": false,
+              "query_seed": 19620718,
+              "query_stream": 0,
+              "scale_factor": 0.01,
+              "script": "tpcds",
+              "streams": 1,
+              "validate_force": false,
+              "ydb_store_mode": "column"
+            },
+            "log_level": "info",
+            "name": "tpcds-generated"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "db": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "effective_configs": {
+        "db-replica": {
+          "cfg.patroni.yml@4": {
+            "schema": {
+              "version": "4",
+              "id": "cfg.patroni.yml"
+            },
+            "values": {
+              "postgresql_parameters_rendered": "",
+              "rewind_username": "rewind",
+              "synchronous_node_count": 1,
+              "watchdog_safety_margin": 5,
+              "postgresql_listen": "0.0.0.0:5432",
+              "synchronous_mode_strict": "false",
+              "use_slots": "true",
+              "data_dir": "/var/lib/postgresql/data",
+              "loop_wait": 10,
+              "tag_clonefrom": "false",
+              "tag_noloadbalance": "false",
+              "retry_timeout": 10,
+              "etcd3_hosts_rendered": "",
+              "restapi_listen": "0.0.0.0:8008",
+              "scope": "stroppy",
+              "maximum_lag_on_failover": 1048576,
+              "superuser_username": "postgres",
+              "watchdog_mode": "automatic",
+              "ttl": 30,
+              "use_pg_rewind": "true",
+              "replication_username": "replicator",
+              "synchronous_mode": "off",
+              "watchdog_device": "/dev/watchdog",
+              "tag_nofailover": "false",
+              "failsafe_mode": "false",
+              "dcs_namespace": "/service/",
+              "tag_nosync": "false",
+              "bin_dir": "/usr/lib/postgresql/17/bin"
+            }
+          },
+          "cfg.pg_hba.conf@1": {
+            "schema": {
+              "id": "cfg.pg_hba.conf",
+              "version": "1"
+            },
+            "values": {
+              "include_cluster_defaults": "yes",
+              "rules_rendered": "",
+              "cluster_defaults_rendered": "local\tall\tpostgres\t\tpeer"
+            }
+          },
+          "cfg.postgresql.conf@17": {
+            "schema": {
+              "id": "cfg.postgresql.conf",
+              "version": "17"
+            },
+            "values": {
+              "max_parallel_workers_per_gather": 2,
+              "reserved_connections": 0,
+              "autovacuum_vacuum_insert_threshold": 1000,
+              "pg_stat_statements_rendered": "pg_stat_statements.max = 5000\npg_stat_statements.track = top",
+              "timezone": "UTC",
+              "log_disconnections": "off",
+              "maintenance_work_mem": 64,
+              "transaction_timeout": 0,
+              "max_replication_slots": 10,
+              "autovacuum_vacuum_cost_delay": 2,
+              "max_parallel_workers": 8,
+              "log_autovacuum_min_duration": 600000,
+              "log_temp_files": -1,
+              "checkpoint_completion_target": 0.9,
+              "log_line_prefix": "%m [%p] ",
+              "autovacuum_analyze_scale_factor": 0.1,
+              "logging_collector": "off",
+              "max_wal_senders": 10,
+              "pg_stat_statements_max": 5000,
+              "seq_page_cost": 1,
+              "ssl": "off",
+              "wal_writer_delay": 200,
+              "vacuum_cost_page_dirty": 20,
+              "deadlock_timeout": 1000,
+              "idle_in_transaction_session_timeout": 0,
+              "extensions": [
+                "pg_stat_statements"
+              ],
+              "max_wal_size": 1024,
+              "autovacuum_analyze_threshold": 50,
+              "autovacuum_vacuum_cost_limit": -1,
+              "wal_keep_size": 0,
+              "wal_level": "replica",
+              "log_checkpoints": "on",
+              "work_mem": 4,
+              "vacuum_cost_page_hit": 1,
+              "autovacuum_naptime": 60,
+              "hot_standby": "on",
+              "jit": "on",
+              "tcp_keepalives_count": 0,
+              "autovacuum_max_workers": 3,
+              "hot_standby_feedback": "off",
+              "vacuum_cost_limit": 200,
+              "effective_cache_size": 4096,
+              "max_parallel_maintenance_workers": 2,
+              "wal_buffers": "-1",
+              "tcp_keepalives_idle": 0,
+              "autovacuum_vacuum_scale_factor": 0.2,
+              "vacuum_cost_delay": 0,
+              "listen_addresses": "*",
+              "default_statistics_target": 100,
+              "fsync": "on",
+              "autovacuum": "on",
+              "max_connections": 100,
+              "random_page_cost": 4,
+              "shared_buffers": 128,
+              "tcp_keepalives_interval": 0,
+              "log_min_duration_statement": -1,
+              "autovacuum_vacuum_insert_scale_factor": 0.2,
+              "log_destination": "stderr",
+              "statement_timeout": 0,
+              "max_locks_per_transaction": 64,
+              "pg_stat_statements_track": "top",
+              "default_text_search_config": "pg_catalog.simple",
+              "shared_preload_libraries": "pg_stat_statements",
+              "checkpoint_timeout": 300,
+              "superuser_reserved_connections": 3,
+              "effective_io_concurrency": 1,
+              "log_connections": "off",
+              "port": 5432,
+              "autovacuum_vacuum_threshold": 50,
+              "hash_mem_multiplier": 2,
+              "custom_rendered": "",
+              "vacuum_cost_page_miss": 2,
+              "wal_compression": "off",
+              "full_page_writes": "on",
+              "lc_messages": "C",
+              "max_worker_processes": 8,
+              "min_wal_size": 80,
+              "log_lock_waits": "off",
+              "temp_buffers": 8,
+              "lock_timeout": 0,
+              "log_statement": "none",
+              "synchronous_commit": "on",
+              "huge_pages": "try"
+            }
+          }
+        },
+        "db": {
+          "cfg.exporter.postgres@1": {
+            "schema": {
+              "id": "cfg.exporter.postgres",
+              "version": "1"
+            },
+            "values": {
+              "disable_default_metrics": "off",
+              "collector_stat_archiver": "on",
+              "exclude_databases": "template0,template1",
+              "collector_buffercache_summary": "off",
+              "collector_replication": "on",
+              "collector_stat_user_tables": "on",
+              "collector_postmaster": "off",
+              "collector_long_running_transactions": "off",
+              "collector_stat_database": "on",
+              "include_databases": "",
+              "collector_database_wraparound": "off",
+              "collection_timeout": "1m",
+              "collector_replication_slots": "on",
+              "web_listen_port": 9187,
+              "collector_wal": "on",
+              "collector_statio_user_indexes": "off",
+              "metric_prefix": "pg",
+              "collector_flags": "--collector.database --no-collector.database_wraparound --collector.locks --no-collector.long_running_transactions --no-collector.postmaster --no-collector.process_idle --collector.replication --collector.replication_slots --collector.roles --collector.settings --collector.stat_activity --no-collector.stat_activity_autovacuum --collector.stat_archiver --collector.stat_bgwriter --no-collector.stat_checkpointer --collector.stat_database --collector.stat_progress_vacuum --collector.stat_replication --collector.stat_statements --collector.stat_user_tables --no-collector.stat_wal_receiver --no-collector.statio_user_indexes --collector.statio_user_tables --collector.wal --no-collector.xlog_location --no-collector.buffercache_summary",
+              "collector_stat_progress_vacuum": "on",
+              "collector_settings": "on",
+              "opts": "--web.listen-address=:9187 --web.telemetry-path=/metrics --log.level=info --log.format=logfmt --metric-prefix=pg --collection-timeout=1m --exclude-databases=template0,template1 --collector.database --no-collector.database_wraparound --collector.locks --no-collector.long_running_transactions --no-collector.postmaster --no-collector.process_idle --collector.replication --collector.replication_slots --collector.roles --collector.settings --collector.stat_activity --no-collector.stat_activity_autovacuum --collector.stat_archiver --collector.stat_bgwriter --no-collector.stat_checkpointer --collector.stat_database --collector.stat_progress_vacuum --collector.stat_replication --collector.stat_statements --collector.stat_user_tables --no-collector.stat_wal_receiver --no-collector.statio_user_indexes --collector.statio_user_tables --collector.wal --no-collector.xlog_location --no-collector.buffercache_summary",
+              "collector_roles": "on",
+              "collector_stat_statements": "on",
+              "collector_stat_activity_autovacuum": "off",
+              "collector_locks": "on",
+              "auto_discover_databases": "off",
+              "collector_database": "on",
+              "log_level": "info",
+              "collector_process_idle": "off",
+              "collector_statio_user_tables": "on",
+              "collector_xlog_location": "off",
+              "collector_stat_checkpointer": "off",
+              "log_format": "logfmt",
+              "collector_stat_bgwriter": "on",
+              "collector_stat_replication": "on",
+              "web_telemetry_path": "/metrics",
+              "collector_stat_wal_receiver": "off",
+              "collector_stat_activity": "on"
+            }
+          },
+          "cfg.patroni.yml@4": {
+            "schema": {
+              "id": "cfg.patroni.yml",
+              "version": "4"
+            },
+            "values": {
+              "ttl": 30,
+              "restapi_listen": "0.0.0.0:8008",
+              "watchdog_safety_margin": 5,
+              "etcd3_hosts_rendered": "",
+              "tag_clonefrom": "false",
+              "dcs_namespace": "/service/",
+              "tag_nosync": "false",
+              "loop_wait": 10,
+              "use_slots": "true",
+              "failsafe_mode": "false",
+              "bin_dir": "/usr/lib/postgresql/17/bin",
+              "scope": "stroppy",
+              "synchronous_node_count": 1,
+              "data_dir": "/var/lib/postgresql/data",
+              "tag_nofailover": "false",
+              "watchdog_mode": "automatic",
+              "rewind_username": "rewind",
+              "postgresql_parameters_rendered": "",
+              "retry_timeout": 10,
+              "synchronous_mode_strict": "false",
+              "tag_noloadbalance": "false",
+              "use_pg_rewind": "true",
+              "synchronous_mode": "off",
+              "watchdog_device": "/dev/watchdog",
+              "maximum_lag_on_failover": 1048576,
+              "postgresql_listen": "0.0.0.0:5432",
+              "replication_username": "replicator",
+              "superuser_username": "postgres"
+            }
+          },
+          "cfg.pg_hba.conf@1": {
+            "schema": {
+              "id": "cfg.pg_hba.conf",
+              "version": "1"
+            },
+            "values": {
+              "include_cluster_defaults": "yes",
+              "rules_rendered": "",
+              "cluster_defaults_rendered": "local\tall\tpostgres\t\tpeer"
+            }
+          },
+          "cfg.postgresql.conf@17": {
+            "schema": {
+              "id": "cfg.postgresql.conf",
+              "version": "17"
+            },
+            "values": {
+              "tcp_keepalives_interval": 0,
+              "port": 5432,
+              "vacuum_cost_page_miss": 2,
+              "vacuum_cost_page_hit": 1,
+              "wal_writer_delay": 200,
+              "lock_timeout": 0,
+              "ssl": "off",
+              "autovacuum_max_workers": 3,
+              "synchronous_commit": "on",
+              "checkpoint_completion_target": 0.9,
+              "custom_rendered": "",
+              "vacuum_cost_limit": 200,
+              "log_connections": "off",
+              "listen_addresses": "*",
+              "vacuum_cost_page_dirty": 20,
+              "max_wal_senders": 10,
+              "effective_cache_size": 4096,
+              "shared_preload_libraries": "pg_stat_statements",
+              "huge_pages": "try",
+              "pg_stat_statements_max": 5000,
+              "shared_buffers": 128,
+              "superuser_reserved_connections": 3,
+              "hash_mem_multiplier": 2,
+              "autovacuum_analyze_threshold": 50,
+              "log_min_duration_statement": -1,
+              "reserved_connections": 0,
+              "log_disconnections": "off",
+              "max_worker_processes": 8,
+              "checkpoint_timeout": 300,
+              "timezone": "UTC",
+              "autovacuum_vacuum_scale_factor": 0.2,
+              "jit": "on",
+              "hot_standby_feedback": "off",
+              "full_page_writes": "on",
+              "hot_standby": "on",
+              "fsync": "on",
+              "log_checkpoints": "on",
+              "log_line_prefix": "%m [%p] ",
+              "lc_messages": "C",
+              "max_wal_size": 1024,
+              "deadlock_timeout": 1000,
+              "extensions": [
+                "pg_stat_statements"
+              ],
+              "log_lock_waits": "off",
+              "max_locks_per_transaction": 64,
+              "log_statement": "none",
+              "effective_io_concurrency": 1,
+              "autovacuum_vacuum_insert_scale_factor": 0.2,
+              "pg_stat_statements_track": "top",
+              "work_mem": 4,
+              "autovacuum_analyze_scale_factor": 0.1,
+              "default_text_search_config": "pg_catalog.simple",
+              "max_replication_slots": 10,
+              "tcp_keepalives_idle": 0,
+              "autovacuum_vacuum_cost_limit": -1,
+              "idle_in_transaction_session_timeout": 0,
+              "min_wal_size": 80,
+              "autovacuum_vacuum_threshold": 50,
+              "autovacuum_vacuum_insert_threshold": 1000,
+              "max_parallel_workers_per_gather": 2,
+              "default_statistics_target": 100,
+              "wal_level": "replica",
+              "log_destination": "stderr",
+              "seq_page_cost": 1,
+              "wal_keep_size": 0,
+              "temp_buffers": 8,
+              "log_temp_files": -1,
+              "max_connections": 100,
+              "maintenance_work_mem": 64,
+              "pg_stat_statements_rendered": "pg_stat_statements.max = 5000\npg_stat_statements.track = top",
+              "max_parallel_maintenance_workers": 2,
+              "max_parallel_workers": 8,
+              "transaction_timeout": 0,
+              "log_autovacuum_min_duration": 600000,
+              "wal_buffers": "-1",
+              "autovacuum": "on",
+              "random_page_cost": 4,
+              "tcp_keepalives_count": 0,
+              "autovacuum_vacuum_cost_delay": 2,
+              "autovacuum_naptime": 60,
+              "logging_collector": "off",
+              "statement_timeout": 0,
+              "vacuum_cost_delay": 0,
+              "wal_compression": "off"
+            }
+          }
+        },
+        "etcd": {
+          "cfg.etcd@3": {
+            "schema": {
+              "id": "cfg.etcd",
+              "version": "3"
+            },
+            "values": {
+              "initial_cluster_rendered": "",
+              "data_dir": "/var/lib/etcd",
+              "quota_backend_bytes": 0,
+              "snapshot_count": 100000,
+              "auto_compaction_retention": "1h",
+              "custom_rendered": "",
+              "enable_v2": "false",
+              "listen_peer_urls": "http://0.0.0.0:2380",
+              "initial_cluster_state": "new",
+              "max_request_bytes": 1572864,
+              "auto_compaction_mode": "periodic",
+              "election_timeout": 1000,
+              "listen_client_urls": "http://0.0.0.0:2379",
+              "name": "default",
+              "initial_cluster_token": "etcd-cluster",
+              "heartbeat_interval": 100
+            }
+          }
+        },
+        "proxy": {
+          "cfg.haproxy.cfg@2": {
+            "schema": {
+              "version": "2",
+              "id": "cfg.haproxy.cfg"
+            },
+            "values": {
+              "stats_port": 8404,
+              "stats_enabled": true,
+              "defaults_extra": "    log global\n    option tcplog\n",
+              "timeout_connect": 4,
+              "maxconn": 20000,
+              "option_tcplog": true,
+              "stats_auth": "",
+              "stats_block": "listen stats\n    bind *:8404\n    mode http\n    stats enable\n    stats uri /stats\n    stats refresh 5s",
+              "stats_socket": "/var/run/haproxy.sock",
+              "global_extra": "    log /dev/log local0 info\n    stats socket /var/run/haproxy.sock mode 660 level admin\n",
+              "listener_blocks": "",
+              "log": "/dev/log local0 info",
+              "timeout_client": 1800,
+              "mode": "tcp",
+              "retries": 2,
+              "timeout_check": 5,
+              "timeout_server": 1800,
+              "nbthread": 0,
+              "log_format": "",
+              "stats_uri": "/stats"
+            }
+          },
+          "cfg.pgbouncer.ini@1": {
+            "schema": {
+              "id": "cfg.pgbouncer.ini",
+              "version": "1"
+            },
+            "values": {
+              "server_lifetime": 3600,
+              "client_idle_timeout": 0,
+              "db_port": 5432,
+              "max_client_conn": 100,
+              "default_pool_size": 20,
+              "server_reset_query": "",
+              "ignore_startup_parameters": "",
+              "log_connections": "1",
+              "min_pool_size": 0,
+              "auth_type": "scram-sha-256",
+              "listen_port": 6432,
+              "max_db_connections": 0,
+              "pool_mode": "transaction",
+              "stats_period": 60,
+              "log_disconnections": "1",
+              "stats_users": "postgres",
+              "listen_addr": "*",
+              "admin_users": "postgres",
+              "max_user_connections": 0,
+              "query_wait_timeout": 120,
+              "reserve_pool_size": 0,
+              "reserve_pool_timeout": 5,
+              "auth_file": "/etc/pgbouncer/userlist.txt",
+              "db_name": "stroppy",
+              "databases_rendered": "",
+              "db_dbname": "stroppy",
+              "server_idle_timeout": 600
+            }
+          }
+        }
+      },
+      "machines": [
+        {
+          "name": "db-1",
+          "role": "db",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "version": "1",
+        "id": "spec.run"
+      },
+      "values": {
+        "run_id": "aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+        "workload": {
+          "driver_type": "postgres",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "tpcds-generated",
+              "run": {
+                "executor": "shared-iterations",
+                "iterations": 1,
+                "query_timeout": "1m0s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "25m0s",
+              "warmup": "0s",
+              "workload": {
+                "load_workers": 2,
+                "pg_unlogged": false,
+                "query_seed": 19620718,
+                "query_stream": 0,
+                "scale_factor": 0.01,
+                "script": "tpcds",
+                "streams": 1,
+                "validate_force": false,
+                "ydb_store_mode": "column"
+              }
+            }
+          ],
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624",
+          "url": "postgresql://postgres:stroppy_postgres@${ip:role:db}:5432/postgres?sslmode=disable"
+        },
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "tenant": "server-live-20260924",
+        "containers": [
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "postgres",
+              "-c",
+              "config_file=/etc/stroppy/postgresql.conf",
+              "-c",
+              "hba_file=/etc/stroppy/pg_hba.conf"
+            ],
+            "env": {
+              "PGDATA": "/var/lib/postgresql/data",
+              "POSTGRES_DB": "postgres",
+              "POSTGRES_HOST_AUTH_METHOD": "scram-sha-256",
+              "POSTGRES_INITDB_ARGS": "--data-checksums --locale=C.UTF-8",
+              "POSTGRES_PASSWORD": "stroppy_postgres",
+              "POSTGRES_USER": "postgres"
+            },
+            "files": [
+              {
+                "content": "# postgresql.conf for PostgreSQL 17 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@17 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 1\njit = on\ndefault_statistics_target = 100\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = off\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/postgresql.conf"
+              },
+              {
+                "content": "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/pg_hba.conf"
+              },
+              {
+                "content": "CREATE ROLE replicator WITH REPLICATION LOGIN PASSWORD 'stroppy_replication';\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\n",
+                "mode": "0644",
+                "path": "/docker-entrypoint-initdb.d/00-stroppy.sql"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "pg_isready -h 127.0.0.1 -p 5432 -U postgres"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "mirror.gcr.io/library/postgres@sha256:d74eeac9a635390a49bc21bd49fccd973de707e2a53a76ac49b552b8712ec46f",
+            "kind": "database",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/pg",
+                "target": "/var/lib/postgresql/data"
+              }
+            ],
+            "name": "db-1-postgres",
+            "ports": [
+              {
+                "container": 5432,
+                "host": 5432
+              }
+            ],
+            "restart": "always",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--collector.postmaster",
+              "--collector.stat_statements",
+              "--web.listen-address=:9187"
+            ],
+            "depends_on": [
+              "db-1-postgres"
+            ],
+            "env": {
+              "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+            },
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d",
+            "kind": "exporter",
+            "machine": "db-1",
+            "name": "db-1-postgres-exporter",
+            "ports": [
+              {
+                "container": 9187,
+                "host": 9187
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "flows": [
+          {
+            "from_role": "runner",
+            "label": "pg",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          }
+        ],
+        "host_prep": [
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-1",
+            "role": "db"
+          }
+        ],
+        "keep": "0s",
+        "machines": [
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "postgres",
+              "stroppy.io/role": "db"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-1",
+            "role": "db"
+          },
+          {
+            "cpu": 4,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        }
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-27T19:02:43Z",
+    "started_at": "2026-09-27T19:02:43Z",
+    "finished_at": "2026-09-27T19:10:43Z",
+    "duration": "8m0s",
+    "summary": {
+      "db_kind": "postgres",
+      "db_version": "17",
+      "protocol": "pg",
+      "stroppy_version": "6.0.0",
+      "topology_label": "postgres",
+      "node_count": 2,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "db": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        }
+      },
+      "progress_pct": 100,
+      "headline": {
+        "tpcds-generated.run_query_duration_p99": 2500,
+        "tpcds-generated.insert_operations_total": 24,
+        "tpcds-generated.iteration_duration_p99": 20000,
+        "tpcds-generated.run_query_duration_p95": 250,
+        "tpcds-generated.failed_iterations_total": 0,
+        "tpcds-generated.iteration_duration_count": 1,
+        "tpcds-generated.run_query_duration_count": 239,
+        "tpcds-generated.insert_rows_total": 2658555,
+        "tpcds-generated.insert_duration_p50": 100,
+        "tpcds-generated.insert_duration_p90": 2500,
+        "tpcds-generated.measurement_seconds": 12.441,
+        "tpcds-generated.iteration_duration_p95": 20000,
+        "tpcds-generated.queries_per_second": 8.279,
+        "tpcds-generated.iterations_per_second": 0.08,
+        "tpcds-generated.iteration_duration_p50": 20000,
+        "tpcds-generated.run_query_duration_p90": 250,
+        "tpcds-generated.run_query_operations_total": 239,
+        "tpcds-generated.iterations_total": 1,
+        "tpcds-generated.insert_duration_p99": 10000,
+        "tpcds-generated.run_query_duration_avg": 79.007,
+        "tpcds-generated.insert_progress_rows_total": 2608765,
+        "latency_p95_ms": 20000,
+        "tpcds-generated.insert_duration_avg": 1379.884,
+        "tpcds-generated.insert_duration_count": 24,
+        "tpcds-generated.insert_progress_rows_per_second": 1017814.12,
+        "latency_p50_ms": 20000,
+        "latency_p99_ms": 20000,
+        "tpcds-generated.insert_duration_p95": 10000,
+        "tpcds-generated.failed_queries_total": 0,
+        "tpcds-generated.retry_attempts_total": 0,
+        "tpcds-generated.terminal_errors_total": 0,
+        "tpcds-generated.iteration_duration_avg": 12441.189,
+        "tpcds-generated.iteration_duration_p90": 20000,
+        "tpcds-generated.run_query_duration_p50": 10
+      }
+    },
+    "result": {
+      "metrics": {
+        "tpcds-generated.queries_per_second": {
+          "value": 8.279,
+          "unit": "queries/s"
+        },
+        "tpcds-generated.insert_duration_avg": {
+          "value": 1379.884,
+          "unit": "ms"
+        },
+        "tpcds-generated.measurement_seconds": {
+          "value": 12.441,
+          "unit": "s"
+        },
+        "tpcds-generated.terminal_errors_total": {
+          "value": 0
+        },
+        "tpcds-generated.iteration_duration_p90": {
+          "value": 20000,
+          "unit": "ms"
+        },
+        "tpcds-generated.iteration_duration_p95": {
+          "value": 20000,
+          "unit": "ms"
+        },
+        "tpcds-generated.insert_duration_p50": {
+          "value": 100,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_p95": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_operations_total": {
+          "value": 239
+        },
+        "tpcds-generated.iterations_total": {
+          "value": 1
+        },
+        "tpcds-generated.insert_duration_p99": {
+          "value": 10000,
+          "unit": "ms"
+        },
+        "tpcds-generated.iterations_per_second": {
+          "value": 0.08,
+          "unit": "iterations/s"
+        },
+        "tpcds-generated.iteration_duration_p99": {
+          "value": 20000,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_p90": {
+          "value": 250,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_count": {
+          "value": 239
+        },
+        "tpcds-generated.insert_progress_rows_per_second": {
+          "value": 1017814.12
+        },
+        "tpcds-generated.insert_rows_total": {
+          "value": 2658555
+        },
+        "tpcds-generated.failed_queries_total": {
+          "value": 0
+        },
+        "tpcds-generated.retry_attempts_total": {
+          "value": 0
+        },
+        "tpcds-generated.iteration_duration_p50": {
+          "value": 20000,
+          "unit": "ms"
+        },
+        "tpcds-generated.insert_operations_total": {
+          "value": 24
+        },
+        "tpcds-generated.iteration_duration_avg": {
+          "value": 12441.189,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_p99": {
+          "value": 2500,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_avg": {
+          "value": 79.007,
+          "unit": "ms"
+        },
+        "tpcds-generated.run_query_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "tpcds-generated.failed_iterations_total": {
+          "value": 0
+        },
+        "tpcds-generated.insert_duration_p95": {
+          "value": 10000,
+          "unit": "ms"
+        },
+        "tpcds-generated.insert_duration_count": {
+          "value": 24
+        },
+        "tpcds-generated.iteration_duration_count": {
+          "value": 1
+        },
+        "tpcds-generated.insert_progress_rows_total": {
+          "value": 2608765
+        },
+        "tpcds-generated.insert_duration_p90": {
+          "value": 2500,
+          "unit": "ms"
+        }
+      },
+      "segments": [
+        {
+          "name": "tpcds-generated",
+          "status": "completed",
+          "started_at": "2026-09-27T19:06:43Z",
+          "finished_at": "2026-09-27T19:07:45Z",
+          "exit_code": 0,
+          "metrics": {
+            "terminal_errors_total": {
+              "value": 0
+            },
+            "insert_duration_p50": {
+              "value": 100,
+              "unit": "ms"
+            },
+            "failed_queries_total": {
+              "value": 0
+            },
+            "iteration_duration_p50": {
+              "value": 20000,
+              "unit": "ms"
+            },
+            "queries_per_second": {
+              "value": 8.279,
+              "unit": "queries/s"
+            },
+            "insert_duration_p90": {
+              "value": 2500,
+              "unit": "ms"
+            },
+            "iteration_duration_p90": {
+              "value": 20000,
+              "unit": "ms"
+            },
+            "iteration_duration_p99": {
+              "value": 20000,
+              "unit": "ms"
+            },
+            "run_query_duration_p90": {
+              "value": 250,
+              "unit": "ms"
+            },
+            "insert_progress_rows_per_second": {
+              "value": 1017814.12
+            },
+            "iterations_total": {
+              "value": 1
+            },
+            "insert_rows_total": {
+              "value": 2658555
+            },
+            "insert_duration_p95": {
+              "value": 10000,
+              "unit": "ms"
+            },
+            "insert_duration_p99": {
+              "value": 10000,
+              "unit": "ms"
+            },
+            "retry_attempts_total": {
+              "value": 0
+            },
+            "insert_duration_count": {
+              "value": 24
+            },
+            "run_query_duration_p95": {
+              "value": 250,
+              "unit": "ms"
+            },
+            "iteration_duration_count": {
+              "value": 1
+            },
+            "insert_duration_avg": {
+              "value": 1379.884,
+              "unit": "ms"
+            },
+            "insert_progress_rows_total": {
+              "value": 2608765
+            },
+            "run_query_operations_total": {
+              "value": 239
+            },
+            "iteration_duration_avg": {
+              "value": 12441.189,
+              "unit": "ms"
+            },
+            "iteration_duration_p95": {
+              "value": 20000,
+              "unit": "ms"
+            },
+            "failed_iterations_total": {
+              "value": 0
+            },
+            "iterations_per_second": {
+              "value": 0.08,
+              "unit": "iterations/s"
+            },
+            "insert_operations_total": {
+              "value": 24
+            },
+            "measurement_seconds": {
+              "value": 12.441,
+              "unit": "s"
+            },
+            "run_query_duration_avg": {
+              "value": 79.007,
+              "unit": "ms"
+            },
+            "run_query_duration_p50": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "run_query_duration_p99": {
+              "value": 2500,
+              "unit": "ms"
+            },
+            "run_query_duration_count": {
+              "value": 239
+            }
+          }
+        }
+      ],
+      "artifacts": [
+        "artifact/aa231dc7-stroppy-tpcds-generated-config",
+        "artifact/aa231dc7-stroppy-tpcds-generated-log"
+      ],
+      "summary": {
+        "latency_p50_ms": 20000,
+        "latency_p95_ms": 20000,
+        "latency_p99_ms": 20000,
+        "duration": "1m1.21943267s"
+      }
+    },
+    "graphene": {
+      "run_ref": "run/aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "421dd494-143c-43b0-8d37-62b0a4811c73",
+  "case_paths": [
+    "tests/mysql/8.4/group-proxysql/lifecycle/server-cancel-deploy"
+  ],
+  "execution": {
+    "status": "cancelled",
+    "observed_at": "2026-09-27T19:14:33.547886+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/mysql/8.4/group-proxysql/lifecycle/server-cancel-deploy/runs/421dd494-143c-43b0-8d37-62b0a4811c73/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

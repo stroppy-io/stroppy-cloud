@@ -273,6 +273,41 @@ func (s *Service) Metrics(ctx context.Context, actor auth.Actor, tenantID, runID
 	if err != nil {
 		return nil, nil, Window{}, err
 	}
+	return s.metricsForRun(ctx, r, keys, segment, start, end, step)
+}
+
+// SharedRuns validates a share token and returns only its authorized run.
+type SharedRuns interface {
+	MetricsRun(context.Context, string) (run.Run, error)
+}
+
+// SharedMetrics exposes only catalog metrics inside the published run window.
+// Public callers cannot select another run, namespace or a raw expression.
+func (s *Service) SharedMetrics(ctx context.Context, shares SharedRuns, token string, start, end time.Time) ([]Series, []error, Window, error) {
+	r, err := shares.MetricsRun(ctx, token)
+	if err != nil {
+		return nil, nil, Window{}, err
+	}
+	bounds, err := WindowOf(r, "", time.Time{}, time.Time{})
+	if err != nil {
+		return nil, nil, Window{}, err
+	}
+	if start.IsZero() || start.Before(bounds.Start) {
+		start = bounds.Start
+	}
+	if end.IsZero() || end.After(bounds.End) {
+		end = bounds.End
+	}
+	if !end.After(start) {
+		return nil, nil, Window{}, errs.Invalid("window does not overlap the shared run")
+	}
+	return s.metricsForRun(ctx, r, nil, "", start, end, 0)
+}
+
+func (s *Service) metricsForRun(ctx context.Context, r run.Run, keys []string, segment string, start, end time.Time, step time.Duration) ([]Series, []error, Window, error) {
+	if s.metrics == nil {
+		return nil, nil, Window{}, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+	}
 	w, err := WindowOf(r, segment, start, end)
 	if err != nil {
 		return nil, nil, Window{}, err
@@ -357,9 +392,9 @@ func (s Scope) Matchers() (component, native string) {
 	return component, native
 }
 
-// KeyExpr is the MetricsQL of a catalog metric inside the run scope:
-// `$run` is the component matcher, `$native` Stroppy's.
-func KeyExpr(m catalog.Metric, scope Scope) string {
-	component, native := scope.Matchers()
-	return strings.NewReplacer("$run", component, "$native", native).Replace(m.Expr)
+// KeyExpr renders a catalog expression for Graphene's scoped Metrics RPC.
+// Graphene applies namespace/run constraints to every selector. Keeping a
+// second spelling-specific constraint here would hide otherwise valid OTLP.
+func KeyExpr(m catalog.Metric, _ Scope) string {
+	return strings.NewReplacer("$run,", "", ",$run", "", "$run", "", "$native,", "", ",$native", "", "$native", "").Replace(m.Expr)
 }

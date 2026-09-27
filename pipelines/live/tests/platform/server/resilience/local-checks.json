@@ -1,0 +1,98 @@
+{
+  "observed_at": "2026-09-27T12:20:26.589030+00:00",
+  "source_sha256_before": "56298931683b3e3bc2dd74c53a3d760928e1aebd8c7871c262961cfc5e4bc5f4",
+  "source_sha256_after": "56298931683b3e3bc2dd74c53a3d760928e1aebd8c7871c262961cfc5e4bc5f4",
+  "checks": {
+    "recovery-race": {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-race",
+        "-count=1",
+        "./internal/domain/run",
+        "./internal/domain/suite",
+        "./internal/infrastructure/graphene",
+        "-run",
+        "^(TestRecovery|TestRunRecovery)"
+      ],
+      "exit_code": 0,
+      "tests": {
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryResultBeforeTerminal/rpc": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryResultBeforeTerminal/database": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryResultBeforeTerminal": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/suite/TestRecoverySuiteReplaysPersistedCellsInOriginalOrder": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoverySubmissionSameIdentity": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryNeverSubmitsSuiteCell": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryCancellationDelivery": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryKeepUsesRemoteDeadline": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/run/TestRecoveryOldMissingIdentityIsNotRelaunched": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/domain/suite/TestRecoverySuiteStatusOutageDoesNotCancelChildren": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/not_found": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/unavailable": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/deadline_exceeded": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/canceled": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/permission_denied": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/invalid_argument": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/already_exists": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/internal": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning/unknown": "pass",
+        "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene/TestRunRecoveryErrorMeaning": "pass"
+      }
+    },
+    "yc-auth-local": {
+      "command": [
+        "go",
+        "test",
+        "-json",
+        "-count=1",
+        "./internal/cloud",
+        "./internal/activities",
+        "-run",
+        "Test.*(Yandex|Token|Runtime|YDB)"
+      ],
+      "exit_code": 0,
+      "tests": {
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestResolveYandexImagesPinsFamiliesOnce": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestResolveYandexImagesDoesNotHideErrors": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasPaginationAndScope": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasPermissionDenied/1": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasPermissionDenied/2": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasPermissionDenied/3": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasPermissionDenied": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors/Unauthenticated": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors/Unavailable": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors/DeadlineExceeded": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors/Canceled": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors/InvalidArgument": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/cloud/TestYandexQuotasOperationalErrorsRemainErrors": "pass",
+        "github.com/stroppy-io/stroppy-cloud/pipelines/internal/activities/TestYDBRuntimeCredentialDoesNotEnterArtifact": "pass"
+      }
+    },
+    "integration-compile": {
+      "command": [
+        "go",
+        "test",
+        "-c",
+        "-tags=integration",
+        "-o",
+        "/home/yaroher/devel/github/stroppy-io/stroppy-cloud/.local/server-resilience/integration.test",
+        "./cmd/stroppy-cloud/application"
+      ],
+      "exit_code": 0,
+      "tests": {}
+    },
+    "lint": {
+      "command": [
+        "golangci-lint",
+        "run",
+        "./..."
+      ],
+      "exit_code": 0,
+      "tests": {}
+    }
+  },
+  "integration_execution": "not_run: current environment denies Docker socket and listening sockets",
+  "live_execution": "not_run: deployment and network access unavailable in current environment",
+  "yc_token_renewal_live": "not_run: local credential-file checks do not prove renewal against IAM/Crossplane"
+}

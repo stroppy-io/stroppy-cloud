@@ -1,0 +1,56 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-mysql-clusters-fixed-babb0afe-mysql-gr-84",
+  "input_run_id": "0a2dab20-de44-431d-a489-4a8ae3851f4b",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "0a2dab20-db-1",
+      "entity": "docker/0a2dab20-de44-431d-a489-4a8ae3851f4b-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-1",
+      "agent": "0a2dab20-db-replica-1",
+      "entity": "docker/0a2dab20-de44-431d-a489-4a8ae3851f4b-db-replica-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-2",
+      "agent": "0a2dab20-db-replica-2",
+      "entity": "docker/0a2dab20-de44-431d-a489-4a8ae3851f4b-db-replica-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "0a2dab20-proxy-1",
+      "entity": "docker/0a2dab20-de44-431d-a489-4a8ae3851f4b-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "0a2dab20-runner-1",
+      "entity": "docker/0a2dab20-de44-431d-a489-4a8ae3851f4b-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/mysql/8.4/group-replication/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql-clusters-fixed-babb0afe-mysql-gr-84/input.json",
+      "sha256": "10f1f4eddf9578a52a3f8c2ebc609e07cf85d65f157b0645622c164fbe72e3c8"
+    },
+    {
+      "path": "tests/mysql/8.4/group-replication/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql-clusters-fixed-babb0afe-mysql-gr-84/metrics.json",
+      "sha256": "d28dac09b801a7d6d7094955d7d698dee1c0003d75de085e6fff870b0c64b3c9"
+    }
+  ]
+}

@@ -3,9 +3,11 @@
 package application
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"reflect"
 	"slices"
 	"sort"
 	"strings"
@@ -239,9 +241,14 @@ func (f *fakeGraphene) wallOf(d time.Duration) time.Duration {
 func (f *fakeGraphene) StartRun(_ context.Context, req *connect.Request[managementv1.StartRunRequest]) (*connect.Response[managementv1.StartRunResponse], error) {
 	id, pipelineID, params := req.Msg.GetRunId(), req.Msg.GetPipeline(), req.Msg.GetParams()
 	f.mu.Lock()
-	if _, exists := f.runs[id]; exists {
+	if prev, exists := f.runs[id]; exists {
 		f.mu.Unlock()
-		return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("run/%s already exists", id))
+		// Graphene 0.2.24 replays identical submissions in every state;
+		// a failed execution is never restarted under its old identity.
+		if prev.namespace != nsOf(req) || prev.pipeline != pipelineID || !sameRunParams(prev.params, params) {
+			return nil, connect.NewError(connect.CodeAlreadyExists, fmt.Errorf("run/%s names another request", id))
+		}
+		return connect.NewResponse(&managementv1.StartRunResponse{WorkflowId: "run/" + id, RunId: id, Decision: "exists"}), nil
 	}
 	r := &doorRun{id: id, namespace: nsOf(req), pipeline: pipelineID, params: params, labels: req.Msg.GetLabels(), hold: -1}
 	f.runs[id] = r
@@ -273,7 +280,20 @@ func (f *fakeGraphene) StartRun(_ context.Context, req *connect.Request[manageme
 		f.mu.Unlock()
 		f.notify(r)
 	}
-	return connect.NewResponse(&managementv1.StartRunResponse{WorkflowId: "run/" + id}), nil
+	return connect.NewResponse(&managementv1.StartRunResponse{WorkflowId: "run/" + id, RunId: id, Decision: "started"}), nil
+}
+
+func sameRunParams(a, b []byte) bool {
+	decode := func(raw []byte) (any, error) {
+		d := json.NewDecoder(bytes.NewReader(raw))
+		d.UseNumber()
+		var v any
+		err := d.Decode(&v)
+		return v, err
+	}
+	av, ae := decode(a)
+	bv, be := decode(b)
+	return ae == nil && be == nil && reflect.DeepEqual(av, bv)
 }
 
 // notify tells the observer about a run and its children.

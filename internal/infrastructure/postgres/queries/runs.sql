@@ -72,9 +72,9 @@ FROM runs WHERE test_id = @test_id AND deleted_at IS NULL
 ORDER BY created_at DESC LIMIT @lim OFFSET @off;
 
 -- name: LiveRuns :many
--- Every run the projection must follow (across tenants).
+-- Active workflows and terminal runs whose kept infrastructure still needs reconciliation.
 SELECT id, tenant_id, graphene_namespace, last_event_id, status
-FROM runs WHERE deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') ORDER BY created_at;
+FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept) ORDER BY created_at;
 
 -- name: RunsOfSuiteRun :many
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
@@ -103,7 +103,9 @@ WHERE id = @id AND deleted_at IS NULL;
 
 -- name: SetRunStatus :exec
 UPDATE runs
-SET status = @status, phase = @phase, status_reason = @status_reason,
+SET status = CASE WHEN status = 'cancelling' AND @status IN ('pending', 'running') THEN status ELSE @status END,
+    phase = @phase,
+    status_reason = CASE WHEN status = 'cancelling' AND @status IN ('pending', 'running') THEN status_reason ELSE @status_reason END,
     started_at  = COALESCE(started_at, @started_at),
     finished_at = COALESCE(@finished_at, finished_at),
     duration_seconds = CASE WHEN @finished_at IS NOT NULL AND started_at IS NOT NULL THEN EXTRACT(EPOCH FROM (@finished_at - started_at)) ELSE duration_seconds END,

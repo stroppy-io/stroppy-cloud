@@ -1,0 +1,64 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 188B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 ...
+
+#3 [auth] library/alpine:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 DONE 2.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.1s
+
+#5 [1/4] FROM docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8
+#5 resolve docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8 0.1s done
+#5 ...
+
+#6 [internal] load build context
+#6 transferring context: 37.51MB 0.1s done
+#6 DONE 0.3s
+
+#5 [1/4] FROM docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8
+#5 sha256:53f8f5e03afd86ade91b7aa57a749f5a3d1419c113be5d8c10e7ee61bb5ab887 0B / 3.79MB 0.2s
+#5 sha256:53f8f5e03afd86ade91b7aa57a749f5a3d1419c113be5d8c10e7ee61bb5ab887 1.05MB / 3.79MB 0.3s
+#5 sha256:53f8f5e03afd86ade91b7aa57a749f5a3d1419c113be5d8c10e7ee61bb5ab887 3.79MB / 3.79MB 0.4s done
+#5 DONE 0.7s
+
+#5 [1/4] FROM docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8
+#5 extracting sha256:53f8f5e03afd86ade91b7aa57a749f5a3d1419c113be5d8c10e7ee61bb5ab887 0.1s done
+#5 DONE 0.8s
+
+#7 [2/4] RUN apk add --no-cache ca-certificates
+#7 0.227 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/main/x86_64/APKINDEX.tar.gz
+#7 0.560 fetch https://dl-cdn.alpinelinux.org/alpine/v3.22/community/x86_64/APKINDEX.tar.gz
+#7 0.782 (1/1) Installing ca-certificates (20260909-r0)
+#7 0.832 Executing busybox-1.37.0-r20.trigger
+#7 0.835 Executing ca-certificates-20260909-r0.trigger
+#7 0.850 OK: 8 MiB in 17 packages
+#7 DONE 1.0s
+
+#8 [3/4] WORKDIR /workspace
+#8 DONE 0.2s
+
+#9 [4/4] COPY stroppy /usr/local/bin/stroppy
+#9 DONE 0.2s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 2.1s done
+#10 exporting manifest sha256:4d7f05209288cec41bbe6ff67f434d6720e1ef85a59972363e18833599b61e51 0.0s done
+#10 exporting config sha256:085d9cbbe91c66aaaf66b860f3e502d6fa7870d106a403dac02f70ce48162ada 0.0s done
+#10 exporting attestation manifest sha256:ebb9a5a6172d5936d9c227836dd85e5f50700b7d90123eb6f6cb02d25f8ffa28
+#10 exporting attestation manifest sha256:ebb9a5a6172d5936d9c227836dd85e5f50700b7d90123eb6f6cb02d25f8ffa28 0.1s done
+#10 exporting manifest list sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624 0.0s done
+#10 naming to ghcr.io/stroppy-io/stroppy:dev-tpcds-b788c6435564 0.0s done
+#10 unpacking to ghcr.io/stroppy-io/stroppy:dev-tpcds-b788c6435564
+#10 unpacking to ghcr.io/stroppy-io/stroppy:dev-tpcds-b788c6435564 0.3s done
+#10 DONE 2.6s

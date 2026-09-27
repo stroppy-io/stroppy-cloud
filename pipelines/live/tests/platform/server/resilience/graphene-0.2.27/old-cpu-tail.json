@@ -1,0 +1,36 @@
+{
+  "observed_at": "2026-09-27T18:20:48.358713+00:00",
+  "run_id": "09e86d6e-3eab-4e5d-ac47-621d19accff3",
+  "query": {
+    "query": "100 * (1 - avg by (\"graphene.agent\") (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))",
+    "start": "2026-09-27T17:04:33Z",
+    "end": "2026-09-27T17:15:00+00:00",
+    "step": "5s"
+  },
+  "http_status": 200,
+  "series": [
+    {
+      "agent": "09e86d6e-db-1",
+      "points": 36,
+      "min": 4.952582543042383,
+      "max": 100.0,
+      "verified": true
+    },
+    {
+      "agent": "09e86d6e-runner-1",
+      "points": 21,
+      "min": -75.16666666666664,
+      "max": 100.0,
+      "verified": false
+    }
+  ],
+  "expected_agents": [
+    "09e86d6e-db-1",
+    "09e86d6e-runner-1"
+  ],
+  "observed_agents": [
+    "09e86d6e-db-1",
+    "09e86d6e-runner-1"
+  ],
+  "verified": false
+}

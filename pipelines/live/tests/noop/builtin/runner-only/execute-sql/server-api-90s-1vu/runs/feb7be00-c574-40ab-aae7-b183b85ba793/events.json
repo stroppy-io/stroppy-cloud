@@ -1,0 +1,180 @@
+{
+  "observed_at": "2026-09-25T13:39:08.174402+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/feb7be00-c574-40ab-aae7-b183b85ba793/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "52",
+        "at": "2026-09-25T13:27:06Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "53",
+        "at": "2026-09-25T13:27:08Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "54",
+        "at": "2026-09-25T13:29:35Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "machine": "runner-1",
+          "public_ip": "158.160.180.41",
+          "private_ip": "10.130.0.3",
+          "id": "fv4jgv1drv6acqmvhl27",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "55",
+        "at": "2026-09-25T13:29:35Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m27.615s"
+        }
+      },
+      {
+        "id": "56",
+        "at": "2026-09-25T13:29:35Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "57",
+        "at": "2026-09-25T13:30:35Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "machine": "runner-1",
+          "container": "runner-1-node-exporter",
+          "id": "ddf159014437bc1057a55c8b4b230a6fa2204320ef3d776df834877a94975c58",
+          "role": "runner",
+          "layer": 0
+        }
+      },
+      {
+        "id": "58",
+        "at": "2026-09-25T13:30:35Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "59.788s"
+        }
+      },
+      {
+        "id": "59",
+        "at": "2026-09-25T13:30:35Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "60",
+        "at": "2026-09-25T13:30:35Z",
+        "kind": "segment.started",
+        "title": "Segment main started",
+        "subject": "main",
+        "payload": {
+          "index": 0,
+          "script": "execute_sql",
+          "segment": "main"
+        }
+      },
+      {
+        "id": "61",
+        "at": "2026-09-25T13:32:11Z",
+        "kind": "segment.failed",
+        "title": "Segment main failed",
+        "subject": "main",
+        "error": "stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000",
+        "payload": {
+          "error": "stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000",
+          "index": 0,
+          "status": "failed",
+          "segment": "main"
+        }
+      },
+      {
+        "id": "62",
+        "at": "2026-09-25T13:32:11Z",
+        "kind": "phase.failed",
+        "title": "Phase workload failed",
+        "subject": "workload",
+        "error": "segment main failed: stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000",
+        "payload": {
+          "error": "segment main failed: stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000",
+          "phase": "workload",
+          "elapsed": "1m35.422s"
+        }
+      },
+      {
+        "id": "63",
+        "at": "2026-09-25T13:32:11Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "64",
+        "at": "2026-09-25T13:32:14Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "missing": [
+            "iterations_total"
+          ],
+          "degraded": true
+        }
+      },
+      {
+        "id": "65",
+        "at": "2026-09-25T13:32:14Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting",
+          "elapsed": "3.827s"
+        }
+      },
+      {
+        "id": "66",
+        "at": "2026-09-25T13:33:46Z",
+        "kind": "run-failed",
+        "title": "Run failed",
+        "status": "failed",
+        "error": "segment main failed: stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

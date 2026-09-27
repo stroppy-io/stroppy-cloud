@@ -1,0 +1,169 @@
+[
+  {
+    "name": "baseline",
+    "workload": {
+      "script": "baseline",
+      "load_workers": 2,
+      "rows": 1234,
+      "tx_isolation": "read_committed"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "execute-sql",
+    "workload": {
+      "script": "execute_sql",
+      "sql_body": "SELECT 1"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "simple",
+    "workload": {
+      "script": "simple"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcb-procs",
+    "workload": {
+      "script": "tpcb/procs",
+      "scale_factor": 2,
+      "load_workers": 2,
+      "retry_attempts": 4,
+      "tx_isolation": "read_committed",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcb-tx",
+    "workload": {
+      "script": "tpcb/tx",
+      "scale_factor": 2,
+      "load_workers": 2,
+      "retry_attempts": 4,
+      "tx_isolation": "read_committed",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcc-procs",
+    "workload": {
+      "script": "tpcc/procs",
+      "scale_factor": 2,
+      "warehouse_start": 2,
+      "load_items": false,
+      "load_workers": 2,
+      "pg_unlogged": true,
+      "pacing": true,
+      "retry_attempts": 4,
+      "tx_isolation": "read_committed",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcc-tx",
+    "workload": {
+      "script": "tpcc/tx",
+      "scale_factor": 2,
+      "warehouse_start": 2,
+      "load_items": false,
+      "load_workers": 2,
+      "pg_unlogged": true,
+      "pacing": true,
+      "retry_attempts": 4,
+      "tx_isolation": "read_committed",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpcds",
+    "workload": {
+      "script": "tpcds",
+      "scale_factor": 0.01,
+      "load_workers": 2,
+      "pg_unlogged": true,
+      "streams": 2,
+      "query_stream": 0,
+      "query_seed": 123,
+      "validate_force": true,
+      "ydb_store_mode": "row",
+      "schema_file": "tpcds/postgres",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "tpch-tx",
+    "workload": {
+      "script": "tpch/tx",
+      "scale_factor": 0.01,
+      "load_workers": 2,
+      "pg_unlogged": true,
+      "ydb_store_mode": "row",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "shared-iterations",
+      "vus": 1,
+      "iterations": 3,
+      "query_timeout": "2s"
+    }
+  },
+  {
+    "name": "sql-file",
+    "workload": {
+      "script": "execute_sql",
+      "sql_file": "tpcc/postgres"
+    },
+    "run": {
+      "executor": "constant-vus",
+      "vus": 1,
+      "duration": "2s"
+    }
+  }
+]

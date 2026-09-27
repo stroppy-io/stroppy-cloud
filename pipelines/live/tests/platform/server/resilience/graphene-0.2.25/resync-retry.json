@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-09-27T15:38:18.631638+00:00",
+  "method": "POST",
+  "path": "/api/v1/admin/pipelines:resync",
+  "http_status": 202,
+  "contract_version": "2.0.1",
+  "body": {
+    "namespaces": [
+      "t-server-live-20260924"
+    ]
+  }
+}

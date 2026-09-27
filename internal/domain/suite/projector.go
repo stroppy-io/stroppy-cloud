@@ -2,7 +2,9 @@ package suite
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"sync"
 	"time"
 
@@ -10,6 +12,7 @@ import (
 	"github.com/gopherex/xlog"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // Projector follows the event stream of every live suite run: the suite's
@@ -88,11 +91,32 @@ func (p *Projector) Following(id uuid.UUID) bool {
 var errFinished = errors.New("suite finished")
 
 func (p *Projector) follow(ctx context.Context, l run.Live) {
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
 	r, err := p.repo.RunByID(ctx, l.ID)
 	if err != nil || r.Status.Terminal() {
 		return
 	}
 	sctx := p.scope(ctx, r.GrapheneNamespace)
+	if r.Status == run.StatusPending || (r.Status == run.StatusCancelling && r.StartedAt == nil) {
+		params, err := p.submission(ctx, r)
+		if err != nil {
+			p.log.Warn("suite projector: submission snapshot", xlog.Error("error", err))
+			return
+		}
+		labels := map[string]string{"stroppy.io/tenant": params.Tenant, "stroppy.io/suite-run": r.ID.String()}
+		if err := run.Submit(sctx, p.graphene, r.CreatedAt, r.ID.String(), Pipeline, params, labels); err != nil {
+			if errors.Is(err, run.ErrStartRejected) {
+				p.finish(ctx, r, run.StatusFailed, "start: "+err.Error(), time.Now().UTC())
+			}
+			return
+		}
+	}
+	if r.Status == run.StatusCancelling {
+		if err := p.graphene.CancelRun(sctx, r.ID.String()); err != nil {
+			p.log.Debug("suite projector: cancel delivery", xlog.String("suite_run", r.ID.String()), xlog.Error("error", err))
+		}
+	}
 	lastID, status := r.LastEventID, r.Status
 	finished := false
 	err = p.graphene.Events(sctx, r.ID.String(), lastID, true, func(e run.RawEvent) error {
@@ -100,7 +124,9 @@ func (p *Projector) follow(ctx context.Context, l run.Live) {
 			return nil
 		}
 		lastID = e.ID
-		_ = p.repo.SetRunEvent(ctx, r.ID, lastID) //nolint:errcheck // best-effort
+		if err := p.repo.SetRunEvent(ctx, r.ID, lastID); err != nil {
+			return err
+		}
 		switch e.Kind {
 		case "run-started":
 			if status == run.StatusPending {
@@ -144,28 +170,36 @@ func (p *Projector) follow(ctx context.Context, l run.Live) {
 // finish records the terminal status; a failed suite with every cell
 // completed is a partial failure of the pipeline, not of the cells.
 func (p *Projector) finish(ctx context.Context, r SuiteRun, status run.Status, reason string, at time.Time) {
-	if err := p.repo.SetRunStatus(ctx, r.ID, status, reason, nil, ptr(at)); err != nil {
-		p.log.Warn("suite projector: finish", xlog.String("suite_run", r.ID.String()), xlog.Error("error", err))
-		return
-	}
 	// Cells the pipeline never started (Graphene does not know them) would
 	// stay pending forever; cells Graphene knows are finished by their own
 	// follower from their own events.
 	sctx := p.scope(ctx, r.GrapheneNamespace)
-	if children, err := p.runRepo.OfSuiteRun(ctx, r.ID); err == nil {
-		for _, c := range children {
-			if c.Status.Terminal() {
-				continue
-			}
-			if _, err := p.graphene.RunStatus(sctx, c.GrapheneID()); err == nil {
-				continue
-			}
-			final := run.StatusCancelled
-			if status == run.StatusFailed && c.Status == run.StatusPending {
-				final = run.StatusFailed
-			}
-			_ = p.runRepo.SetStatus(ctx, c.ID, final, run.PhaseDone, "suite "+string(status), nil, ptr(at)) //nolint:errcheck // best-effort
+	children, err := p.runRepo.OfSuiteRun(ctx, r.ID)
+	if err != nil {
+		return
+	}
+	for _, c := range children {
+		if c.Status.Terminal() {
+			continue
 		}
+		_, err := p.graphene.RunStatus(sctx, c.GrapheneID())
+		if err == nil {
+			continue
+		}
+		if !errors.Is(err, run.ErrRemoteNotFound) {
+			return // An outage never means that a child did not start.
+		}
+		final := run.StatusCancelled
+		if status == run.StatusFailed && c.Status == run.StatusPending {
+			final = run.StatusFailed
+		}
+		if err := p.runRepo.SetStatus(ctx, c.ID, final, run.PhaseDone, "suite "+string(status), nil, ptr(at)); err != nil {
+			return
+		}
+	}
+	if err := p.repo.SetRunStatus(ctx, r.ID, status, reason, nil, ptr(at)); err != nil {
+		p.log.Warn("suite projector: finish", xlog.String("suite_run", r.ID.String()), xlog.Error("error", err))
+		return
 	}
 	if p.publisher == nil {
 		return
@@ -181,6 +215,33 @@ func (p *Projector) finish(ctx context.Context, r SuiteRun, status run.Status, r
 	}
 	pr := cur.Progress()
 	_ = p.publisher.Publish(ctx, r.TenantID, event, map[string]any{"id": cur.ID, "name": cur.Name, "status": status, "status_reason": reason, "suite_id": cur.SuiteID, "progress": map[string]int{"total": pr.Total, "done": pr.Done, "failed": pr.Failed, "cancelled": pr.Cancelled}}) //nolint:errcheck // best-effort
+}
+
+// submission reconstructs the exact request from the committed suite and child
+// snapshots, in the original cell order. Library edits cannot affect recovery.
+func (p *Projector) submission(ctx context.Context, r SuiteRun) (spec.Suite, error) {
+	children, err := p.runRepo.OfSuiteRun(ctx, r.ID)
+	if err != nil {
+		return spec.Suite{}, err
+	}
+	byID := make(map[uuid.UUID]run.Run, len(children))
+	for _, c := range children {
+		byID[c.ID] = c
+	}
+	params := spec.Suite{SuiteRunID: r.ID.String(), Concurrency: r.Concurrency, Defaults: spec.SuiteDefaults{ContinueOnFailure: true, Labels: r.Labels}}
+	for _, cell := range r.Cells {
+		c, ok := byID[cell.RunID]
+		if !ok {
+			return spec.Suite{}, fmt.Errorf("missing persisted cell %s", cell.CellID)
+		}
+		var rs spec.Run
+		if err := json.Unmarshal(c.RunSpec, &rs); err != nil {
+			return spec.Suite{}, err
+		}
+		params.Tenant = rs.Tenant
+		params.Cells = append(params.Cells, spec.SuiteCell{ID: cell.CellID, RunSpec: rs})
+	}
+	return params, nil
 }
 
 func ptr(t time.Time) *time.Time { return &t }

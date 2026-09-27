@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	cerrdefs "github.com/containerd/errdefs"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
@@ -47,11 +48,22 @@ type PullImageResult struct {
 // the daemon. Credentials resolve here, at the point of use, and never
 // enter workflow history.
 func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, error) {
+	stopHeartbeat := pullHeartbeat(ctx)
+	defer stopHeartbeat()
 	cli, err := dockerclient.NewClientWithOpts(dockerclient.FromEnv, dockerclient.WithAPIVersionNegotiation())
 	if err != nil {
 		return PullImageResult{}, err
 	}
 	defer func() { _ = cli.Close() }()
+	// A digest is immutable. Readiness and the auth-version probe share this
+	// image with the workload and must not depend on the registry again.
+	if strings.Contains(req.Image, "@sha256:") {
+		if _, err := cli.ImageInspect(ctx, req.Image); err == nil {
+			return PullImageResult{Image: req.Image}, nil
+		} else if !cerrdefs.IsNotFound(err) {
+			return PullImageResult{}, fmt.Errorf("inspect pinned image %s: %w", req.Image, err)
+		}
+	}
 	opts := image.PullOptions{}
 	if req.RegistrySecret != "" {
 		auth, err := registryAuth(ctx, req.RegistrySecret)
@@ -60,22 +72,77 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 		}
 		opts.RegistryAuth = auth
 	}
-	rc, err := cli.ImagePull(ctx, req.Image, opts)
-	if err != nil {
-		return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, err)
+	for attempt := 1; attempt <= 3; attempt++ {
+		rc, pullErr := cli.ImagePull(ctx, req.Image, opts)
+		if pullErr == nil {
+			pullErr = readPullProgress(rc)
+			_ = rc.Close()
+		}
+		if pullErr == nil {
+			obs.Info(ctx, "image pulled", obs.Str("image", req.Image))
+			return PullImageResult{Image: req.Image}, nil
+		}
+		if attempt == 3 || ctx.Err() != nil || !transientRegistryError(pullErr) {
+			return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, pullErr)
+		}
+		obs.Warn(ctx, "transient registry error; retrying image pull", obs.Str("image", req.Image))
+		timer := time.NewTimer(time.Duration(attempt) * 2 * time.Second)
+		select {
+		case <-ctx.Done():
+			timer.Stop()
+			return PullImageResult{}, ctx.Err()
+		case <-timer.C:
+		}
 	}
-	defer func() { _ = rc.Close() }()
-	if err := readPullProgress(ctx, rc); err != nil {
-		return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, err)
+	panic("unreachable image pull retry loop")
+}
+
+func transientRegistryError(err error) bool {
+	message := strings.ToLower(err.Error())
+	for _, marker := range []string{"i/o timeout", "tls handshake timeout", "connection reset by peer", "connection refused", "unexpected eof", "temporary failure", "service unavailable", "bad gateway", "too many requests"} {
+		if strings.Contains(message, marker) {
+			return true
+		}
 	}
-	obs.Info(ctx, "image pulled", obs.Str("image", req.Image))
-	return PullImageResult{Image: req.Image}, nil
+	return false
+}
+
+// Docker may be silent during registry authentication, layer download or
+// extraction. Keep the activity alive independently of its progress stream,
+// including the initial ImagePull call. The activity's overall deadline still
+// bounds the operation; stopping waits for the heartbeat goroutine to exit.
+func pullHeartbeat(ctx context.Context) func() {
+	return operationHeartbeat(ctx, "pulling image")
+}
+
+func operationHeartbeat(ctx context.Context, message string) func() {
+	if !activity.IsActivity(ctx) {
+		return func() {}
+	}
+	recordHeartbeat(ctx, message)
+	stop, done := make(chan struct{}), make(chan struct{})
+	go func() {
+		defer close(done)
+		ticker := time.NewTicker(15 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-stop:
+				return
+			case <-ticker.C:
+				recordHeartbeat(ctx, message)
+			}
+		}
+	}()
+	return func() { close(stop); <-done }
 }
 
 // Docker can return HTTP 200 and report a failed pull in the JSON stream.
 // Decode messages instead of discarding their bytes so callers never create
 // a container from an image whose download or extraction failed.
-func readPullProgress(ctx context.Context, r io.Reader) error {
+func readPullProgress(r io.Reader) error {
 	dec := json.NewDecoder(r)
 	for {
 		var message struct {
@@ -95,9 +162,6 @@ func readPullProgress(ctx context.Context, r io.Reader) error {
 		}
 		if message.Error != "" {
 			return errors.New(message.Error)
-		}
-		if activity.IsActivity(ctx) {
-			activity.RecordHeartbeat(ctx, "pulling image")
 		}
 	}
 }
@@ -191,7 +255,7 @@ func WaitHealthy(ctx context.Context, req WaitHealthyRequest) (WaitHealthyResult
 			lastOut = err.Error() + ": " + lastOut
 		}
 		if activity.IsActivity(ctx) {
-			activity.RecordHeartbeat(ctx, fmt.Sprintf("%s: attempt %d/%d", req.Container, attempt, retries))
+			recordHeartbeat(ctx, fmt.Sprintf("%s: attempt %d/%d", req.Container, attempt, retries))
 		}
 		select {
 		case <-ctx.Done():

@@ -77,26 +77,25 @@ To change the published port, update both `STROPPY_LOCAL_PORT` and
 
 ## Run telemetry
 
-Graphene, YC resources and run telemetry remain external dependencies.
-Compose does not deploy them or alter their retention settings.
-The example leaves telemetry endpoints empty; configure these before testing
-complete run observability:
+Run logs and metrics are read through the authenticated Graphene Observe API.
+The server needs only `STROPPY_INFRA_GRAPHENE_ADDRESS` and its service-account
+credential; it has no VictoriaLogs, VictoriaMetrics, Grafana or workload OTLP
+backend configuration. Graphene 0.2.23 or newer is required for scoped queries,
+log paging/facets and consistent text filtering. Graphene owns backend access,
+query isolation and existing retention settings.
 
-| Variable | Required network access |
-| --- | --- |
-| `STROPPY_INFRA_VICTORIA_LOGS_URL` | Server container to VictoriaLogs HTTP API |
-| `STROPPY_INFRA_VICTORIA_METRICS_URL` | Server container to VictoriaMetrics HTTP API |
-| `STROPPY_HTTP_GRAFANA_URL` | Browser to Grafana |
-| `STROPPY_HTTP_GRAFANA_DASHBOARDS` | Dashboard mapping used for Grafana links |
-| `STROPPY_INFRA_OBSERVABILITY_OTLP_ENDPOINT` | YC runner VMs to the OTLP collector |
-| `STROPPY_INFRA_OBSERVABILITY_OTLP_HEADERS` | Collector authorization headers |
+Pipeline executors (pipeline 0.2.12, library/docker 0.3.3) supply a local OTLP
+intake. Stroppy receives that address at execution time, without a backend
+address or Graphene credential. Historical explicit OTLP overrides in standalone
+RunSpecs remain supported; the server does not populate them.
 
-A Kubernetes `*.svc.cluster.local` address normally cannot be resolved from a
-local container or browser. For an existing host-side tunnel the container can
-use `host.docker.internal`; the tunnel must listen on a Docker-reachable host
-address. A tunnel listening only on host `127.0.0.1` is not reachable there on
-Linux. Do not substitute a local tunnel for the OTLP export endpoint: workload
-VMs need their own network route to the collector.
+The Grafana session endpoints report unavailable until Graphene exposes that
+capability. The server does not relay Grafana directly. Logs and metrics panels
+use the server API backed by Graphene.
+
+Log cursors are opaque and bound to the run, filters and direction. Older pages
+retain their original time window. Forward polling retains Graphene's page
+position so equal timestamps are not discarded between pages.
 
 ## Image and frontend development
 

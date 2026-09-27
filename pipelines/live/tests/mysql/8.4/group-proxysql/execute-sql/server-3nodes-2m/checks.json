@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "run_id": "829fe228-d91a-421f-94c7-ebc12b00da90",
+  "checked_at": "2026-09-27T18:48:28.843054+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m/runs/829fe228-d91a-421f-94c7-ebc12b00da90/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Five machines deployed and workload completed; exact hardware SKU not asserted.",
+      "evidence": {
+        "path": "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m/runs/829fe228-d91a-421f-94c7-ebc12b00da90/run.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "Membership assertions and writes through ProxySQL succeeded without query errors.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/verification.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "execute_sql reports queries/s, not logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Native Stroppy metrics with correct run/namespace scope.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/telemetry.json",
+        "pointer": "/native_verified"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "CPU valid for all five machines including shutdown; all three MySQL exporters healthy.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/cpu-tail.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Component logs, facets and pagination available.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/telemetry.json",
+        "pointer": "/logs_verified"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed MySQL.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Config/log downloads match SHA-256 and size after teardown.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/artifacts.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_run",
+      "reason": "Three ONLINE members, one PRIMARY, writes via ProxySQL; per-replica row comparison and failover untested.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/verification.json",
+        "pointer": "/scope"
+      }
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Terminal completed, no remaining infrastructure or kept stand.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-mirror-20260927/mysql/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

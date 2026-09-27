@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-09-27T19:58:03.051952+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/9ecc21d6-5a9c-451f-aab5-b1196ed07944/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "9ecc21d6-stroppy-start-ha-probe-config",
+        "name": "9ecc21d6-stroppy-start-ha-probe-config",
+        "kind": "config",
+        "size_bytes": 1067,
+        "digest": "sha256:7da415a9377e681aae591dbf5f5efbac61cced9614780bb5d82ca072cd122c7e"
+      },
+      {
+        "id": "9ecc21d6-stroppy-start-ha-probe-log",
+        "name": "9ecc21d6-stroppy-start-ha-probe-log",
+        "kind": "log_bundle",
+        "size_bytes": 1046,
+        "digest": "sha256:0ab897ac14368e976df2e8bef608467bbf3f985f67229bfbf6c20899104bfea8"
+      },
+      {
+        "id": "9ecc21d6-stroppy-during-failover-config",
+        "name": "9ecc21d6-stroppy-during-failover-config",
+        "kind": "config",
+        "size_bytes": 1010,
+        "digest": "sha256:17c8d1e579e99a1608ceb57c9bed294757d64be4f072b6d3c5a60aae9b0baef9"
+      },
+      {
+        "id": "9ecc21d6-stroppy-during-failover-log",
+        "name": "9ecc21d6-stroppy-during-failover-log",
+        "kind": "log_bundle",
+        "size_bytes": 5291202,
+        "digest": "sha256:a5125bb9acd16731a5006ffd2234f3d7f46d5056ca568cd0cf60953e48b0a483"
+      },
+      {
+        "id": "9ecc21d6-stroppy-verify-ha-probe-config",
+        "name": "9ecc21d6-stroppy-verify-ha-probe-config",
+        "kind": "config",
+        "size_bytes": 1025,
+        "digest": "sha256:4a7cc93795cae1893c9799dca5825703e6d2d1ecb5a09f32b2df31c815419277"
+      },
+      {
+        "id": "9ecc21d6-stroppy-verify-ha-probe-log",
+        "name": "9ecc21d6-stroppy-verify-ha-probe-log",
+        "kind": "log_bundle",
+        "size_bytes": 1038,
+        "digest": "sha256:1d53ca791ed30980743a2d723e252ee4ffff4056c5e8231314aeb08f366e8657"
+      }
+    ]
+  }
+}

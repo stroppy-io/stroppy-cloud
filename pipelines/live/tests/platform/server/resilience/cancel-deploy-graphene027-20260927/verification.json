@@ -1,0 +1,15 @@
+{
+  "run_id": "421dd494-143c-43b0-8d37-62b0a4811c73",
+  "verified": true,
+  "ready_machines": [
+    "db-1",
+    "db-replica-1",
+    "db-replica-2",
+    "proxy-1",
+    "runner-1"
+  ],
+  "cancelled_phase": "deploying",
+  "terminal_status": "cancelled",
+  "cleanup_verified": true,
+  "scope": "Multi-machine deployment cancellation only. SQL, replication and workload telemetry were not exercised."
+}

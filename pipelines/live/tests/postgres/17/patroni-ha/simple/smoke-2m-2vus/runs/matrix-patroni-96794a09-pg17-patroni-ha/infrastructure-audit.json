@@ -1,0 +1,80 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-patroni-96794a09-pg17-patroni-ha",
+  "input_run_id": "2addd63f-986a-4ed4-9591-36a9ce8cd35f",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "2addd63f-db-1",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-1",
+      "agent": "2addd63f-db-replica-1",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-2",
+      "agent": "2addd63f-db-replica-2",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-db-replica-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "etcd-1",
+      "agent": "2addd63f-etcd-1",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "etcd-2",
+      "agent": "2addd63f-etcd-2",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "etcd-3",
+      "agent": "2addd63f-etcd-3",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-etcd-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "2addd63f-proxy-1",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "2addd63f-runner-1",
+      "entity": "docker/2addd63f-986a-4ed4-9591-36a9ce8cd35f-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/postgres/17/patroni-ha/simple/smoke-2m-2vus/runs/matrix-patroni-96794a09-pg17-patroni-ha/input.json",
+      "sha256": "4c0498381c0df0acf81ea0dfc1b510dcf7e67d6f4f442fe83f785c2465aa468a"
+    },
+    {
+      "path": "tests/postgres/17/patroni-ha/simple/smoke-2m-2vus/runs/matrix-patroni-96794a09-pg17-patroni-ha/metrics.json",
+      "sha256": "9fa0c7eac5891ed8bd964f2fca870d782f7f271b3dc457e0c22eb3cf714aaebf"
+    }
+  ]
+}

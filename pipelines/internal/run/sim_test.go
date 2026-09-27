@@ -85,7 +85,8 @@ type sim struct {
 	// configErr makes ensure-config fail (bad credentials).
 	configErr error
 	// degraded is what result.published reported.
-	degraded bool
+	degraded        bool
+	teardownStarted bool
 }
 
 func pipelinetestWorkflow(s *sim) func(workflow.Context, spec.Run) (spec.Result, error) {
@@ -124,6 +125,9 @@ func newSim(t *testing.T) *sim {
 			return nil, err
 		}
 		s.events = append(s.events, req.Name)
+		if req.Name == events.PhaseStarted && req.Payload["phase"] == PhaseTeardown {
+			s.teardownStarted = true
+		}
 		if req.Name == events.ResultPublished {
 			s.degraded, _ = req.Payload["degraded"].(bool)
 		}
@@ -257,7 +261,9 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 		events.PhaseStarted, events.ContainerReady, events.PhaseFinished,
 		events.PhaseStarted, events.BaselineStarted, events.BaselineFinished, events.SegmentStarted, events.SegmentFinished, events.PhaseFinished,
 		events.PhaseStarted, events.ResultPublished, events.PhaseFinished,
+		events.PhaseStarted,
 	}, s.events)
+	require.True(t, s.teardownStarted)
 
 	// Infrastructure is gone; artifact records survive independently until TTL.
 	require.Equal(t, "success", s.w.Outcome(ref.OwnerRef("run/test-"+string(PipelineID))))
@@ -344,6 +350,7 @@ func TestSimulatedRunSegmentFailureStopsAndCleans(t *testing.T) {
 
 	s.w.Env.ExecuteWorkflow(wf, run)
 	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "segment first failed")
+	require.True(t, s.teardownStarted)
 	s.w.Env.AssertExpectations(t) // the second segment never ran
 	require.Contains(t, s.events, events.SegmentFailed)
 	require.Contains(t, s.events, events.PhaseFailed)

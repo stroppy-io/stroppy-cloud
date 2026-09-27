@@ -1,0 +1,381 @@
+{
+  "observed_at": "2026-09-27T19:28:12.510654+00:00",
+  "method": "PATCH",
+  "path": "/api/v1/t/server-live-20260924/tests/12c4ccc5-71d5-4d5a-8db7-e93f192eb295",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "12c4ccc5-71d5-4d5a-8db7-e93f192eb295",
+    "name": "server mariadb primary outage and exact replica rows",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-27T19:28:11Z",
+    "updated_at": "2026-09-27T19:28:12Z",
+    "execution": {
+      "flows": [
+        {
+          "from_role": "db",
+          "label": "ha-probe",
+          "port": 6033,
+          "protocol": "tcp",
+          "to_role": "proxy"
+        },
+        {
+          "from_role": "db",
+          "label": "ha-probe",
+          "port": 3306,
+          "protocol": "tcp",
+          "to_role": "db"
+        }
+      ],
+      "workload": {
+        "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945"
+      },
+      "additional_containers": [
+        {
+          "depends_on": [
+            "db-1-mariadb",
+            "db-2-mariadb",
+            "db-3-mariadb",
+            "proxy-1-proxysql"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-2},${ip:db-3}",
+            "DB_KIND": "mariadb",
+            "DB_PASSWORD": "stroppy_mysql",
+            "DB_USER": "root",
+            "LOCAL_HOST": "${ip:db-1}",
+            "PROBE_CONTAINER": "db-1-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "PROXY_PASSWORD": "stroppy_mysql",
+            "PROXY_USER": "root",
+            "TARGET_CONTAINER": "db-1-mariadb"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:4c9ef564975119d7d89a6ed4fa4d250fbacd7bb4b737d6f67ded6c73f665fcc3",
+          "kind": "addon",
+          "machine": "db-1",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-1-ha-probe",
+          "restart": "no",
+          "role": "db"
+        },
+        {
+          "depends_on": [
+            "db-1-mariadb",
+            "db-2-mariadb",
+            "db-3-mariadb",
+            "proxy-1-proxysql"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-2},${ip:db-3}",
+            "DB_KIND": "mariadb",
+            "DB_PASSWORD": "stroppy_mysql",
+            "DB_USER": "root",
+            "LOCAL_HOST": "${ip:db-2}",
+            "PROBE_CONTAINER": "db-2-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "PROXY_PASSWORD": "stroppy_mysql",
+            "PROXY_USER": "root",
+            "TARGET_CONTAINER": "db-2-mariadb"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:4c9ef564975119d7d89a6ed4fa4d250fbacd7bb4b737d6f67ded6c73f665fcc3",
+          "kind": "addon",
+          "machine": "db-2",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-2-ha-probe",
+          "restart": "no",
+          "role": "db"
+        },
+        {
+          "depends_on": [
+            "db-1-mariadb",
+            "db-2-mariadb",
+            "db-3-mariadb",
+            "proxy-1-proxysql"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-2},${ip:db-3}",
+            "DB_KIND": "mariadb",
+            "DB_PASSWORD": "stroppy_mysql",
+            "DB_USER": "root",
+            "LOCAL_HOST": "${ip:db-3}",
+            "PROBE_CONTAINER": "db-3-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "PROXY_PASSWORD": "stroppy_mysql",
+            "PROXY_USER": "root",
+            "TARGET_CONTAINER": "db-3-mariadb"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:4c9ef564975119d7d89a6ed4fa4d250fbacd7bb4b737d6f67ded6c73f665fcc3",
+          "kind": "addon",
+          "machine": "db-3",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-3-ha-probe",
+          "restart": "no",
+          "role": "db"
+        }
+      ],
+      "containers": [
+        {
+          "name": "db-1-mariadb",
+          "set": {
+            "image": "mirror.gcr.io/library/mariadb@sha256:79d59758afc91b89b120b0a8904d637f5a3b3e1c4900f29b740d6d46c72fef68"
+          }
+        },
+        {
+          "name": "db-1-mysqld-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/mysqld-exporter@sha256:eacb4b18e2ec1e0abdf2d64851b68526c964f6d9cb3e9458fb5d5f5062ea94c1"
+          }
+        },
+        {
+          "name": "db-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "db-2-mariadb",
+          "set": {
+            "image": "mirror.gcr.io/library/mariadb@sha256:79d59758afc91b89b120b0a8904d637f5a3b3e1c4900f29b740d6d46c72fef68"
+          }
+        },
+        {
+          "name": "db-2-mysqld-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/mysqld-exporter@sha256:eacb4b18e2ec1e0abdf2d64851b68526c964f6d9cb3e9458fb5d5f5062ea94c1"
+          }
+        },
+        {
+          "name": "db-2-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "db-3-mariadb",
+          "set": {
+            "image": "mirror.gcr.io/library/mariadb@sha256:79d59758afc91b89b120b0a8904d637f5a3b3e1c4900f29b740d6d46c72fef68"
+          }
+        },
+        {
+          "name": "db-3-mysqld-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/mysqld-exporter@sha256:eacb4b18e2ec1e0abdf2d64851b68526c964f6d9cb3e9458fb5d5f5062ea94c1"
+          }
+        },
+        {
+          "name": "db-3-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "proxy-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "proxy-1-proxysql",
+          "set": {
+            "image": "mirror.gcr.io/proxysql/proxysql@sha256:a4d6c35c29498b294d771898f747e2143bc5c8f8b338a58324b1152144f970bb"
+          }
+        },
+        {
+          "name": "runner-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        }
+      ]
+    },
+    "database": {
+      "inline": {
+        "kind": "mariadb",
+        "version": "11.8",
+        "params": {
+          "galera_nodes": 3,
+          "init_sql": "USE stroppy;\nCREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0);\nDELIMITER //\nCREATE PROCEDURE live_ha_verify()\nBEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='HA failover probe did not complete';\n  END IF;\nEND//\nDELIMITER ;\n",
+          "maxscale": false,
+          "proxysql": 1,
+          "replicas": 0,
+          "replication": "galera",
+          "version": "11.8"
+        },
+        "schema": {
+          "id": "db.mariadb.params",
+          "version": "1"
+        }
+      }
+    },
+    "workload": {
+      "inline": {
+        "stroppy_version": "6.0.0",
+        "protocol": "mysql",
+        "segments": [
+          {
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',@@hostname);"
+            },
+            "log_level": "info",
+            "name": "start-ha-probe",
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "8m0s"
+          },
+          {
+            "name": "during-failover",
+            "run": {
+              "duration": "4m0s",
+              "executor": "constant-vus",
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 1
+            },
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1;"
+            },
+            "log_level": "info"
+          },
+          {
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_ha_verify();"
+            },
+            "log_level": "info",
+            "name": "verify-ha-probe"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      }
+    },
+    "sizes": {
+      "db": {
+        "size": "S"
+      },
+      "proxy": {
+        "size": "S"
+      },
+      "runner": {
+        "size": "S"
+      }
+    },
+    "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "status": "ready",
+    "resolved": {},
+    "validation": {
+      "fits": true,
+      "issues": [
+        {
+          "scope": "run_spec",
+          "path": "workload.segments",
+          "code": "capacity_unknown",
+          "severity": "WARNING",
+          "message": "custom SQL/simple or schema overrides prevent a complete storage estimate; built-in population estimates do not cover arbitrary writes"
+        }
+      ]
+    },
+    "requirements": {
+      "proxy": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 10,
+        "reason": "proxy"
+      },
+      "db": {
+        "cpu": 2,
+        "memory_gb": 4,
+        "disk_gb": 20,
+        "reason": "mariadb baseline"
+      },
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "summary": {
+      "db_kind": "mariadb",
+      "db_version": "11.8",
+      "topology_label": "galera ×3 + proxysql",
+      "node_count": 5,
+      "protocol": "mysql",
+      "stroppy_version": "6.0.0"
+    },
+    "usages": []
+  }
+}

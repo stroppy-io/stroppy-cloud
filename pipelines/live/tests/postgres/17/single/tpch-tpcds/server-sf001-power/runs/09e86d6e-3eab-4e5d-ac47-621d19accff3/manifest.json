@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "09e86d6e-3eab-4e5d-ac47-621d19accff3",
+  "case_paths": [
+    "tests/postgres/17/single/tpch-tpcds/server-sf001-power"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T17:14:11.531089+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/09e86d6e-3eab-4e5d-ac47-621d19accff3/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

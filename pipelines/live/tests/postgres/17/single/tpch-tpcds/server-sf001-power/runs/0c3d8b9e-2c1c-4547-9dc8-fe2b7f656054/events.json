@@ -1,0 +1,86 @@
+{
+  "observed_at": "2026-09-27T16:18:54.819188+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "183",
+        "at": "2026-09-27T16:01:45Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "184",
+        "at": "2026-09-27T16:01:47Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "192",
+        "at": "2026-09-27T16:04:20Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.187.81",
+          "private_ip": "10.130.0.20",
+          "id": "fv48vc3lur5me4uv4d3i"
+        }
+      },
+      {
+        "id": "193",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "machine.ready",
+        "title": "Machine db-1 ready",
+        "subject": "db-1",
+        "payload": {
+          "id": "fv48gmg9ilbujbtq516b",
+          "role": "db",
+          "machine": "db-1",
+          "public_ip": "51.250.45.53",
+          "private_ip": "10.130.0.14"
+        }
+      },
+      {
+        "id": "194",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "elapsed": "2m43.373s",
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "195",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "207",
+        "at": "2026-09-27T16:17:28Z",
+        "kind": "run-canceled",
+        "title": "Run cancelled",
+        "status": "canceled"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

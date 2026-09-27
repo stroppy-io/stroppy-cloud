@@ -1,0 +1,7 @@
+{
+  "verified": true,
+  "suite_id": "20582790-09e3-4566-bb1b-3d036a34afb3",
+  "source_run": "164f7af4-2166-4e0b-8753-9fc9d2445ffb",
+  "rerun_id": "9e776590-fffd-4ecf-a721-e7cac403b851",
+  "expected": "one successful cell, one SQL failure with partial result; rerun repeats the same failing snapshot under a new Graphene run"
+}

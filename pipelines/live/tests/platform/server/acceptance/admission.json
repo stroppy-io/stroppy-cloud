@@ -1,0 +1,229 @@
+{
+  "started_at": "2026-09-25T14:32:27.102327+00:00",
+  "finished_at": "2026-09-25T14:33:26.835178+00:00",
+  "seconds": 59.733,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(ConcurrentLaunch|SuitesAndSchedules)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "795a20ee032e0b4afa7c6cc7410806f30badffcfcb8819acd866a9fe85c33da7",
+  "source_sha256_after": "36f7781648c3dedd49d949fcbe7ad43c5602a826ed5509415b7d7c4d72313ad9",
+  "source_changed_during_run": true,
+  "exit_code": 0,
+  "tests": {
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "status": "pass",
+      "seconds": 2.41
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "status": "pass",
+      "seconds": 5.08
+    },
+    "TestE2EConcurrentLaunch": {
+      "status": "pass",
+      "seconds": 7.48
+    },
+    "TestE2ESuitesAndSchedules/preview_and_create_materialise_the_matrix": {
+      "status": "pass",
+      "seconds": 6.38
+    },
+    "TestE2ESuitesAndSchedules/manual_cell_edits_survive_regeneration": {
+      "status": "pass",
+      "seconds": 4.41
+    },
+    "TestE2ESuitesAndSchedules/launch_prepares_every_cell_and_starts_stroppy-suite": {
+      "status": "pass",
+      "seconds": 3.25
+    },
+    "TestE2ESuitesAndSchedules/children_and_the_suite_are_projected_to_completion": {
+      "status": "pass",
+      "seconds": 2.58
+    },
+    "TestE2ESuitesAndSchedules/cancel_cascades,_retry-failed_relaunches_cancelled_cells,_compare_shows_regression": {
+      "status": "pass",
+      "seconds": 6.96
+    },
+    "TestE2ESuitesAndSchedules/schedules_fire_tests_and_suites": {
+      "status": "pass",
+      "seconds": 12
+    },
+    "TestE2ESuitesAndSchedules/viewer_cannot_write,_delete_suite_keeps_runs": {
+      "status": "pass",
+      "seconds": 2.43
+    },
+    "TestE2ESuitesAndSchedules": {
+      "status": "pass",
+      "seconds": 38.63
+    }
+  },
+  "http_observations": {
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 6
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 7
+      },
+      "launchTest": {
+        "201": 3,
+        "422": 3
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2ESuitesAndSchedules": {
+      "cancelRun": {
+        "200": 1
+      },
+      "cancelSuiteRun": {
+        "200": 1,
+        "409": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 2,
+        "422": 1
+      },
+      "createSuite": {
+        "201": 1,
+        "409": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSchedule": {
+        "204": 2
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteSuiteRun": {
+        "204": 1,
+        "422": 1
+      },
+      "deleteTest": {
+        "204": 1,
+        "409": 2
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 2
+      },
+      "getSchedule": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuite": {
+        "200": 3,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 11,
+        "404": 1
+      },
+      "getSuiteRunSummary": {
+        "200": 2
+      },
+      "launchSuite": {
+        "201": 2,
+        "403": 1
+      },
+      "listRuns": {
+        "200": 2
+      },
+      "listScheduleHistory": {
+        "200": 1
+      },
+      "listSchedules": {
+        "200": 2
+      },
+      "listSuiteRuns": {
+        "200": 1
+      },
+      "listSuites": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 2
+      },
+      "pauseSchedule": {
+        "200": 1
+      },
+      "previewSuite": {
+        "200": 1
+      },
+      "resumeSchedule": {
+        "200": 1
+      },
+      "retryFailedSuiteRun": {
+        "201": 1,
+        "409": 1
+      },
+      "runScheduleNow": {
+        "201": 2
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

@@ -1,0 +1,30 @@
+{
+  "verified": true,
+  "workload_verified": true,
+  "run_id": "eb2a84f5-aaa8-4ca2-97fb-0a6c05679208",
+  "native_workload_query_counts": {
+    "tpcds": 103.0,
+    "tpch": 22.0
+  },
+  "segments": [
+    {
+      "name": "tpch",
+      "status": "completed",
+      "failed_queries": 0,
+      "native_queries_per_second": {
+        "value": 99.974,
+        "unit": "queries/s"
+      }
+    },
+    {
+      "name": "tpcds",
+      "status": "completed",
+      "failed_queries": 0,
+      "native_queries_per_second": {
+        "value": 8.664,
+        "unit": "queries/s"
+      }
+    }
+  ],
+  "note": "Small-scale functional acceptance; not TPC benchmark certification. Throughput copied from Stroppy, never calculated here."
+}

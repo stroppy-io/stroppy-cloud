@@ -1,0 +1,35 @@
+{
+  "recorded_at": "2026-09-25T14:50:18.840130+00:00",
+  "checks": [
+    {
+      "command": "make contract-check",
+      "exit_code": 0,
+      "result": "contract 2.0.1: 218 artifacts match; 3 browser contract tests pass"
+    },
+    {
+      "command": "make lint",
+      "exit_code": 0,
+      "result": "0 issues"
+    },
+    {
+      "command": "make lint-pipelines",
+      "exit_code": 0,
+      "result": "0 issues"
+    },
+    {
+      "command": "go test -race ./internal/domain/run ./internal/domain/suite ./internal/domain/share ./internal/domain/observe ./internal/api ./internal/infrastructure/postgres/repositories ./internal/infrastructure/graphene",
+      "exit_code": 0,
+      "result": "all packages pass or have no standalone test files"
+    },
+    {
+      "command": "cd pipelines && go test ./internal/run ./internal/suite -count=1",
+      "exit_code": 0,
+      "result": "both packages pass after teardown phase correction"
+    },
+    {
+      "command": "python3 pipelines/live/tools/live.py validate",
+      "exit_code": 0,
+      "result": "273 cases validated"
+    }
+  ]
+}

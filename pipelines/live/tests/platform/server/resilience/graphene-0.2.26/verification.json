@@ -1,0 +1,11 @@
+{
+  "verified": true,
+  "same_records": true,
+  "unfiltered_errors": 10,
+  "filtered_errors": 10,
+  "warn_or_error": 10,
+  "time_window": [
+    "2026-09-27T16:08:00Z",
+    "2026-09-27T16:14:30Z"
+  ]
+}

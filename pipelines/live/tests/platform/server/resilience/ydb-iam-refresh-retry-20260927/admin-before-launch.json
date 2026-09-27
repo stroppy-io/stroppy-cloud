@@ -1,0 +1,42 @@
+{
+  "observed_at": "2026-09-27T20:28:12.934402+00:00",
+  "method": "GET",
+  "path": "/api/v1/admin/status",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "version": "0.0.0-dev-f658fd8b-iam-heartbeat2-20260927",
+    "commit": "f658fd8b",
+    "started_at": "2026-09-27T20:27:12Z",
+    "components": {
+      "graphene": {
+        "status": "ok"
+      },
+      "postgres": {
+        "status": "ok"
+      }
+    },
+    "pipelines": {
+      "expected_revision": "0.0.0-dev-f658fd8b-iam-heartbeat2-20260927",
+      "namespaces": [
+        {
+          "namespace": "t-server-live-20260924",
+          "tenant_slug": "server-live-20260924",
+          "status": "pending",
+          "revision": "0.0.0-dev-f658fd8b-iam-heartbeat2-20260927",
+          "pushed_at": "2026-09-27T20:28:09Z"
+        }
+      ]
+    },
+    "runs": {
+      "running": 0,
+      "pending": 0,
+      "kept_stands": 0
+    },
+    "tenants": {
+      "active": 1,
+      "suspended": 0,
+      "orphaned": 0
+    }
+  }
+}

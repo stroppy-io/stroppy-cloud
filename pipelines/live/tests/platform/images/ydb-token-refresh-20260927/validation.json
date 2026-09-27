@@ -1,0 +1,10 @@
+{
+  "source_hash_verified_after_tests": true,
+  "checks": {
+    "make linter": "passed; 0 issues",
+    "make tests TEST_FLAGS=-short": "passed with race detector",
+    "make integration": "passed; 51.548s",
+    "go test -race ./pkg/driver/ydb ./pkg/config ./cmd/stroppy/commands/run": "passed"
+  },
+  "anonymous_registry_read": "passed"
+}

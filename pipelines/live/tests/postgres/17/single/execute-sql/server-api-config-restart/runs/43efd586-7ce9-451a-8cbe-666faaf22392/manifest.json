@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "43efd586-7ce9-451a-8cbe-666faaf22392",
+  "case_paths": [
+    "tests/postgres/17/single/execute-sql/server-api-config-restart"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-25T14:36:18.806304+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/postgres/17/single/execute-sql/server-api-config-restart/runs/43efd586-7ce9-451a-8cbe-666faaf22392/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

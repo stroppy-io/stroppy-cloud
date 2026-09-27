@@ -1,0 +1,34 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-single-26.1",
+  "input_run_id": "9098ca70-5427-4e79-af22-43dd97577b49",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "9098ca70-db-1",
+      "entity": "docker/9098ca70-5427-4e79-af22-43dd97577b49-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "9098ca70-runner-1",
+      "entity": "docker/9098ca70-5427-4e79-af22-43dd97577b49-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/picodata/26.1/single/tpcc-tx/native-otlp-20s-2vus/runs/matrix-picodata-metrics-85175d12-picodata-single-26.1/input.json",
+      "sha256": "854aea038559f8d3c78b01d9fc727cb47d8705dbaa523fd414cc0eceb258dbe4"
+    },
+    {
+      "path": "tests/picodata/26.1/single/tpcc-tx/native-otlp-20s-2vus/runs/matrix-picodata-metrics-85175d12-picodata-single-26.1/metrics.json",
+      "sha256": "885eabb2b83b82d591af1e5fe4d9a1825b59b6ceac3c874ed52d4dd1e7905c9a"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-27T16:07:36.154319+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/e3e18f98-f2b4-40dc-93da-e035ff75814f:cancel",
+  "http_status": 503,
+  "contract_version": "2.0.1",
+  "body": {
+    "type": "https://stroppy.io/problems/unavailable",
+    "title": "Temporarily unavailable",
+    "status": 503,
+    "detail": "cancel",
+    "code": "unavailable",
+    "request_id": "e21736f8a6d9/gxNbAP0ZCV-000275"
+  }
+}

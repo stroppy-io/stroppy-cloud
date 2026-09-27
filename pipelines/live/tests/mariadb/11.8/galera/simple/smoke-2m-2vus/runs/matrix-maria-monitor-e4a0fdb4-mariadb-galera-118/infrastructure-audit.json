@@ -1,0 +1,56 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118",
+  "input_run_id": "d54f146d-ff94-4cfd-b6e8-d5596a6c7446",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "d54f146d-db-1",
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-2",
+      "agent": "d54f146d-db-2",
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-3",
+      "agent": "d54f146d-db-3",
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-db-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "d54f146d-proxy-1",
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "d54f146d-runner-1",
+      "entity": "docker/d54f146d-ff94-4cfd-b6e8-d5596a6c7446-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/mariadb/11.8/galera/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-maria-monitor-e4a0fdb4-mariadb-galera-118/input.json",
+      "sha256": "56ac9af050f9b9f447dab6cd123d19f5a46a591576e98d6e45140239d8f7fbee"
+    },
+    {
+      "path": "tests/mariadb/11.8/galera/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-maria-monitor-e4a0fdb4-mariadb-galera-118/metrics.json",
+      "sha256": "0afd0a099b3bff2106df8f3ce00ff2e9300a2d4a93875f4c1c20aef24bd01038"
+    }
+  ]
+}

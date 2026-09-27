@@ -1,0 +1,268 @@
+{
+  "observed_at": "2026-09-27T16:08:55.367434+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/be40ddab-2f06-4904-9d51-999359b45653/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "173",
+        "at": "2026-09-27T15:57:18Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "175",
+        "at": "2026-09-27T15:57:26Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "176",
+        "at": "2026-09-27T16:00:19Z",
+        "kind": "machine.ready",
+        "title": "Machine db-1 ready",
+        "subject": "db-1",
+        "payload": {
+          "public_ip": "158.160.217.182",
+          "private_ip": "10.130.0.32",
+          "id": "fv47kghksmeel8udvchr",
+          "role": "db",
+          "machine": "db-1"
+        }
+      },
+      {
+        "id": "180",
+        "at": "2026-09-27T16:00:29Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "private_ip": "10.130.0.5",
+          "id": "fv47lj7thagoprnc12n4",
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.232.240"
+        }
+      },
+      {
+        "id": "181",
+        "at": "2026-09-27T16:00:29Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "3m3.487s"
+        }
+      },
+      {
+        "id": "182",
+        "at": "2026-09-27T16:00:29Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "185",
+        "at": "2026-09-27T16:01:52Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "role": "runner",
+          "layer": 0,
+          "machine": "runner-1",
+          "container": "runner-1-node-exporter",
+          "id": "e189052c76fcd14c9bfc3233eb45a5e2bac2c88f817e1c7be08a6cb19effce49"
+        }
+      },
+      {
+        "id": "186",
+        "at": "2026-09-27T16:02:11Z",
+        "kind": "container.ready",
+        "title": "Container db-1-node-exporter ready",
+        "subject": "db-1",
+        "payload": {
+          "role": "db",
+          "layer": 0,
+          "machine": "db-1",
+          "container": "db-1-node-exporter",
+          "id": "3124677f8f5cba4dc1cac7a3dbbcef61ec2bfe5e14ba93352d2343e9a6a3a1c7"
+        }
+      },
+      {
+        "id": "187",
+        "at": "2026-09-27T16:02:16Z",
+        "kind": "container.ready",
+        "title": "Container db-1-postgres ready",
+        "subject": "db-1",
+        "payload": {
+          "layer": 0,
+          "machine": "db-1",
+          "container": "db-1-postgres",
+          "id": "ede1d93180c3e7dfbbba8b42bd73fd9419acb74df08308350bfdee130d7e050a",
+          "role": "db"
+        }
+      },
+      {
+        "id": "188",
+        "at": "2026-09-27T16:02:21Z",
+        "kind": "container.ready",
+        "title": "Container db-1-postgres-exporter ready",
+        "subject": "db-1",
+        "payload": {
+          "id": "0c768e6f85553c59bc09c60e2d7a76082c9a6a67e3d8963f19953aca397d418b",
+          "role": "db",
+          "layer": 1,
+          "machine": "db-1",
+          "container": "db-1-postgres-exporter"
+        }
+      },
+      {
+        "id": "189",
+        "at": "2026-09-27T16:02:21Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "1m52.387s"
+        }
+      },
+      {
+        "id": "190",
+        "at": "2026-09-27T16:02:21Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "191",
+        "at": "2026-09-27T16:02:21Z",
+        "kind": "segment.started",
+        "title": "Segment verify-config started",
+        "subject": "verify-config",
+        "payload": {
+          "segment": "verify-config",
+          "index": 0,
+          "script": "execute_sql"
+        }
+      },
+      {
+        "id": "196",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "segment.finished",
+        "title": "Segment verify-config finished",
+        "subject": "verify-config",
+        "payload": {
+          "finished_at": "2026-09-27T16:04:30.587224417Z",
+          "index": 0,
+          "status": "completed",
+          "metrics": {
+            "failed_iterations_total": 0,
+            "iteration_duration_p50": 0.25,
+            "iteration_duration_p95": 0.5,
+            "iteration_duration_p99": 0.5,
+            "iterations_total": 493387
+          },
+          "segment": "verify-config",
+          "started_at": "2026-09-27T16:02:22.081332294Z"
+        }
+      },
+      {
+        "id": "197",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "phase.finished",
+        "title": "Phase workload finished",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload",
+          "elapsed": "2m8.862s"
+        }
+      },
+      {
+        "id": "198",
+        "at": "2026-09-27T16:04:30Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "199",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "segments": 1
+        }
+      },
+      {
+        "id": "200",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "elapsed": "2.628s",
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "201",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "phase.started",
+        "title": "Phase teardown started",
+        "subject": "teardown",
+        "payload": {
+          "phase": "teardown"
+        }
+      },
+      {
+        "id": "202",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "stand.kept",
+        "title": "Stand kept for 1m0s",
+        "payload": {
+          "keep": "1m0s",
+          "root": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network/stroppy-server-live-20260924-be40ddab-net"
+        }
+      },
+      {
+        "id": "203",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "phase.finished",
+        "title": "Phase teardown finished",
+        "subject": "teardown",
+        "payload": {
+          "phase": "teardown",
+          "elapsed": "168ms"
+        }
+      },
+      {
+        "id": "204",
+        "at": "2026-09-27T16:04:33Z",
+        "kind": "run-completed",
+        "title": "Run completed",
+        "status": "completed"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

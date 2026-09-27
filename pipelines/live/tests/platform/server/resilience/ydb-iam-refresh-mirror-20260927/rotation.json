@@ -1,0 +1,146 @@
+{
+  "run_id": "d740c071-1aae-462d-a014-559d9cb143a8",
+  "verified": true,
+  "renewal_verified": true,
+  "rotation_verified": false,
+  "events": [
+    {
+      "message": "YDB IAM token refreshed",
+      "time": "2026-09-27T21:20:29Z",
+      "activity": "stroppy.segment.run",
+      "machine": "runner-1",
+      "credential_state": "unchanged",
+      "previous_expires_at": "2026-09-28T08:26:42Z",
+      "expires_at": "2026-09-28T08:26:42Z"
+    },
+    {
+      "message": "YDB authentication token loaded from file",
+      "time": "2026-09-27T21:10:29Z",
+      "activity": "stroppy.segment.run",
+      "machine": "runner-1"
+    }
+  ],
+  "segment": {
+    "name": "iam-refresh",
+    "status": "completed",
+    "started_at": "2026-09-27T21:10:29Z",
+    "finished_at": "2026-09-27T21:25:31Z",
+    "exit_code": 0,
+    "metrics": {
+      "terminal_errors_total": {
+        "value": 0
+      },
+      "iteration_duration_avg": {
+        "value": 11.478,
+        "unit": "ms"
+      },
+      "failed_iterations_total": {
+        "value": 0
+      },
+      "run_query_duration_count": {
+        "value": 78391
+      },
+      "retry_attempts_total": {
+        "value": 0
+      },
+      "iterations_per_second": {
+        "value": 87.1,
+        "unit": "iterations/s"
+      },
+      "iteration_duration_p90": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "iteration_duration_p99": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_duration_p95": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_duration_p99": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_operations_total": {
+        "value": 78391
+      },
+      "iteration_duration_p50": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "iteration_duration_p95": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_duration_p50": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "iteration_duration_count": {
+        "value": 78391
+      },
+      "iterations_total": {
+        "value": 78391
+      },
+      "queries_per_second": {
+        "value": 87.1,
+        "unit": "queries/s"
+      },
+      "measurement_seconds": {
+        "value": 900.007,
+        "unit": "s"
+      },
+      "failed_queries_total": {
+        "value": 0
+      },
+      "run_query_duration_avg": {
+        "value": 11.339,
+        "unit": "ms"
+      },
+      "run_query_duration_p90": {
+        "value": 25,
+        "unit": "ms"
+      }
+    }
+  },
+  "queries_after_refresh": [
+    {
+      "labels": {
+        "__name__": "stroppy_run_query_operations_total",
+        "graphene.agent": "d740c071-runner-1",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "workload",
+        "graphene.run": "d740c071-1aae-462d-a014-559d9cb143a8",
+        "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+        "scope.version": "unknown",
+        "service.instance.id": "9667c408-cf62-4a94-8f85-21db4a0f3be8",
+        "service.name": "stroppy",
+        "service.version": "dev-iam-rows-beea29efd327",
+        "step": "workload",
+        "stroppy.run.id": "d740c071-1aae-462d-a014-559d9cb143a8",
+        "stroppy.segment": "iam-refresh",
+        "stroppy.tenant": "server-live-20260924",
+        "stroppy_run_id": "d740c071-1aae-462d-a014-559d9cb143a8",
+        "stroppy_tenant": "server-live-20260924",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.44.0"
+      },
+      "first": [
+        1790544025,
+        "51361"
+      ],
+      "last": [
+        1790544325,
+        "77398"
+      ]
+    }
+  ],
+  "public_configs_without_token": [
+    "d740c071-managed-ydb-readiness-config",
+    "d740c071-stroppy-iam-refresh-config"
+  ],
+  "scope": "Real YC renewal response and continuing queries during one continuous 15-minute segment. Same-token responses do not prove credential replacement; expiry/failure branches tested locally."
+}

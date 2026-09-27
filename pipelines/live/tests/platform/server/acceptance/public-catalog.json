@@ -1,0 +1,154 @@
+{
+  "observed_at": "2026-09-25T14:34:59.121437+00:00",
+  "method": "GET",
+  "path": "/api/v1/public/catalog",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "databases": [
+      {
+        "kind": "postgres",
+        "title": "PostgreSQL",
+        "versions": [
+          "18",
+          "17",
+          "16",
+          "15"
+        ],
+        "topologies": [
+          "single",
+          "primary-replica",
+          "patroni-ha",
+          "pgbouncer"
+        ]
+      },
+      {
+        "kind": "orioledb",
+        "title": "OrioleDB",
+        "versions": [
+          "beta17-pg18",
+          "beta17-pg17",
+          "beta17-pg16"
+        ],
+        "topologies": [
+          "single",
+          "primary-replica"
+        ]
+      },
+      {
+        "kind": "mysql",
+        "title": "MySQL",
+        "versions": [
+          "8.4",
+          "8.0"
+        ],
+        "topologies": [
+          "single",
+          "semi-sync",
+          "group-replication"
+        ]
+      },
+      {
+        "kind": "mariadb",
+        "title": "MariaDB",
+        "versions": [
+          "11.8",
+          "11.4",
+          "10.11"
+        ],
+        "topologies": [
+          "single",
+          "galera"
+        ]
+      },
+      {
+        "kind": "picodata",
+        "title": "Picodata",
+        "versions": [
+          "26.2",
+          "26.1",
+          "25.3"
+        ],
+        "topologies": [
+          "single",
+          "three-node"
+        ]
+      },
+      {
+        "kind": "ydb",
+        "title": "YDB",
+        "versions": [
+          "26.3",
+          "26.2",
+          "26.1",
+          "25.4"
+        ],
+        "topologies": [
+          "single",
+          "mirror-3-dc"
+        ]
+      },
+      {
+        "kind": "ydb_managed",
+        "title": "YDB (Yandex Managed)",
+        "versions": [
+          "managed"
+        ],
+        "topologies": [
+          "dedicated-medium",
+          "serverless"
+        ]
+      },
+      {
+        "kind": "cockroach",
+        "title": "CockroachDB",
+        "versions": [
+          "26.3",
+          "26.2",
+          "25.4",
+          "25.2",
+          "24.3",
+          "24.1"
+        ],
+        "topologies": [
+          "single",
+          "three-node"
+        ]
+      },
+      {
+        "kind": "pg_noop",
+        "title": "pg-noop",
+        "versions": [
+          "0.1.2"
+        ],
+        "topologies": [
+          "single"
+        ]
+      },
+      {
+        "kind": "noop",
+        "title": "Noop",
+        "versions": [
+          "builtin"
+        ],
+        "topologies": [
+          "runner-only"
+        ]
+      },
+      {
+        "kind": "external",
+        "title": "External database",
+        "versions": [
+          "external"
+        ],
+        "topologies": [
+          "dsn"
+        ]
+      }
+    ],
+    "providers": [
+      "yandex",
+      "aws"
+    ]
+  }
+}

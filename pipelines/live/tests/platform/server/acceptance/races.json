@@ -1,0 +1,372 @@
+{
+  "started_at": "2026-09-25T14:44:36.012277+00:00",
+  "finished_at": "2026-09-25T14:53:03.256195+00:00",
+  "seconds": 507.244,
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(ConcurrentLaunch|KeptStandRecovery|ObserverRecovery|SharedMetrics|SuitesAndSchedules)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "51bfe266c343a0d6c2c8e204b1abda6170a66f5f2078c02ea8882caa010cae36",
+  "source_sha256_after": "51bfe266c343a0d6c2c8e204b1abda6170a66f5f2078c02ea8882caa010cae36",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2ESharedMetrics": {
+      "status": "pass",
+      "seconds": 24.48
+    },
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "status": "pass",
+      "seconds": 16.2
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "status": "pass",
+      "seconds": 37.3
+    },
+    "TestE2EConcurrentLaunch": {
+      "status": "pass",
+      "seconds": 53.49
+    },
+    "TestE2EObserverRecovery": {
+      "status": "pass",
+      "seconds": 14.29
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "status": "pass",
+      "seconds": 14.45
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "status": "pass",
+      "seconds": 14.2
+    },
+    "TestE2EKeptStandRecovery": {
+      "status": "pass",
+      "seconds": 28.65
+    },
+    "TestE2ESuitesAndSchedules/preview_and_create_materialise_the_matrix": {
+      "status": "pass",
+      "seconds": 49.67
+    },
+    "TestE2ESuitesAndSchedules/manual_cell_edits_survive_regeneration": {
+      "status": "pass",
+      "seconds": 34.58
+    },
+    "TestE2ESuitesAndSchedules/launch_prepares_every_cell_and_starts_stroppy-suite": {
+      "status": "pass",
+      "seconds": 25.23
+    },
+    "TestE2ESuitesAndSchedules/children_and_the_suite_are_projected_to_completion": {
+      "status": "pass",
+      "seconds": 19.54
+    },
+    "TestE2ESuitesAndSchedules/cancel_cascades,_retry-failed_relaunches_cancelled_cells,_compare_shows_regression": {
+      "status": "pass",
+      "seconds": 52.19
+    },
+    "TestE2ESuitesAndSchedules/schedules_fire_tests_and_suites": {
+      "status": "pass",
+      "seconds": 87.73
+    },
+    "TestE2ESuitesAndSchedules/viewer_cannot_write,_delete_suite_keeps_runs": {
+      "status": "pass",
+      "seconds": 19.06
+    },
+    "TestE2ESuitesAndSchedules": {
+      "status": "pass",
+      "seconds": 292.47
+    }
+  },
+  "http_observations": {
+    "TestE2ESharedMetrics": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createPublicShareGrafanaSession": {
+        "503": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getPublicShareMetrics": {
+        "200": 1,
+        "403": 1,
+        "404": 1,
+        "422": 1
+      },
+      "getRun": {
+        "200": 6
+      },
+      "launchTest": {
+        "201": 2
+      },
+      "patchShare": {
+        "200": 2
+      },
+      "revokeShare": {
+        "204": 1
+      },
+      "shareRun": {
+        "201": 1
+      }
+    },
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 5
+      },
+      "launchTest": {
+        "201": 6
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 11
+      },
+      "launchTest": {
+        "201": 3,
+        "422": 3
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EObserverRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 6
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunEvents": {
+        "200": 1
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 6
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 5
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2ESuitesAndSchedules": {
+      "cancelRun": {
+        "200": 1
+      },
+      "cancelSuiteRun": {
+        "200": 1,
+        "409": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 2,
+        "422": 1
+      },
+      "createSuite": {
+        "201": 1,
+        "409": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSchedule": {
+        "204": 2
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteSuiteRun": {
+        "204": 1,
+        "422": 1
+      },
+      "deleteTest": {
+        "204": 1,
+        "409": 2
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 2
+      },
+      "getSchedule": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuite": {
+        "200": 3,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 12,
+        "404": 1
+      },
+      "getSuiteRunSummary": {
+        "200": 2
+      },
+      "launchSuite": {
+        "201": 2,
+        "403": 1
+      },
+      "listRuns": {
+        "200": 2
+      },
+      "listScheduleHistory": {
+        "200": 1
+      },
+      "listSchedules": {
+        "200": 2
+      },
+      "listSuiteRuns": {
+        "200": 1
+      },
+      "listSuites": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 2
+      },
+      "pauseSchedule": {
+        "200": 1
+      },
+      "previewSuite": {
+        "200": 1
+      },
+      "resumeSchedule": {
+        "200": 1
+      },
+      "retryFailedSuiteRun": {
+        "201": 1,
+        "409": 1
+      },
+      "runScheduleNow": {
+        "201": 2
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

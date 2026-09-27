@@ -1,0 +1,7 @@
+{
+  "http_status": 200,
+  "run_id": "d7003247-6d13-4c77-92b2-6267e1c63281",
+  "endpoint": "127.0.0.1:38393",
+  "insecure": true,
+  "has_auth_headers": false
+}

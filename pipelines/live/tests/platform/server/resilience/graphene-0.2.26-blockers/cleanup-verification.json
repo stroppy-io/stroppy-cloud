@@ -1,0 +1,103 @@
+{
+  "observed_at": "2026-09-27T17:27:33.951809+00:00",
+  "run_id": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+  "server_status": "cancelling",
+  "resource_count": 16,
+  "all_resources_deleted": true,
+  "resources": [
+    {
+      "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network/stroppy-server-live-20260924-22a00ddf-net",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup/stroppy-server-live-20260924-22a00ddf-sg",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet/stroppy-server-live-20260924-22a00ddf-subnet",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-1-data",
+      "phase": "deleted"
+    },
+    {
+      "ref": "agent/22a00ddf-db-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-runner-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "agent/22a00ddf-runner-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-replica-2",
+      "phase": "deleted"
+    },
+    {
+      "ref": "agent/22a00ddf-db-replica-2",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-replica-2-data",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-replica-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "agent/22a00ddf-db-replica-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-replica-1-data",
+      "phase": "deleted"
+    },
+    {
+      "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-proxy-1",
+      "phase": "deleted"
+    },
+    {
+      "ref": "agent/22a00ddf-proxy-1",
+      "phase": "deleted"
+    }
+  ],
+  "cleanup_retries": [
+    {
+      "at": "2026-09-27T17:27:19Z",
+      "attempt": "8"
+    },
+    {
+      "at": "2026-09-27T17:25:19Z",
+      "attempt": "7"
+    },
+    {
+      "at": "2026-09-27T17:23:47Z",
+      "attempt": "6"
+    },
+    {
+      "at": "2026-09-27T17:22:31Z",
+      "attempt": "5"
+    },
+    {
+      "at": "2026-09-27T17:21:23Z",
+      "attempt": "4"
+    },
+    {
+      "at": "2026-09-27T17:20:19Z",
+      "attempt": "3"
+    },
+    {
+      "at": "2026-09-27T17:19:17Z",
+      "attempt": "2"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "observed_at": "2026-09-27T17:23:43.047210+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "cpu": "0",
+            "graphene.activity": "docker.container.observe",
+            "graphene.agent": "5fc7ddd6-db-2",
+            "graphene.attempt": "1",
+            "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-node-exporter",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "machine",
+            "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+            "mode": "idle",
+            "scope.name": "graphene.obs",
+            "scope.version": "unknown",
+            "service.name": "graphene-pipeline",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.46.0"
+          },
+          "values": [
+            [
+              1790529180,
+              "4"
+            ],
+            [
+              1790529185,
+              "4"
+            ],
+            [
+              1790529190,
+              "4"
+            ],
+            [
+              1790529195,
+              "4"
+            ],
+            [
+              1790529200,
+              "4"
+            ],
+            [
+              1790529205,
+              "4"
+            ],
+            [
+              1790529210,
+              "4"
+            ],
+            [
+              1790529215,
+              "4"
+            ],
+            [
+              1790529220,
+              "4"
+            ],
+            [
+              1790529225,
+              "4"
+            ],
+            [
+              1790529230,
+              "4"
+            ],
+            [
+              1790529235,
+              "4"
+            ],
+            [
+              1790529240,
+              "4"
+            ],
+            [
+              1790529245,
+              "3"
+            ],
+            [
+              1790529250,
+              "3"
+            ],
+            [
+              1790529255,
+              "3"
+            ],
+            [
+              1790529260,
+              "2"
+            ],
+            [
+              1790529265,
+              "2"
+            ],
+            [
+              1790529270,
+              "2"
+            ],
+            [
+              1790529275,
+              "1"
+            ],
+            [
+              1790529280,
+              "1"
+            ],
+            [
+              1790529285,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "seriesFetched": "1",
+      "executionTimeMsec": 0
+    }
+  }
+}

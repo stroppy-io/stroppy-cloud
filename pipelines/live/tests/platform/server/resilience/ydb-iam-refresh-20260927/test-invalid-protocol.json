@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-27T20:14:55.773061+00:00",
+  "method": "PATCH",
+  "path": "/api/v1/t/server-live-20260924/tests/8aaa78ea-6381-4aa9-b4b7-f1a7113c3c08",
+  "http_status": 422,
+  "contract_version": "2.0.2",
+  "body": {
+    "type": "https://stroppy.io/problems/invalid",
+    "title": "Invalid request",
+    "status": 422,
+    "detail": "operation PatchTest: decode request: validate: invalid: workload (invalid: inline (invalid: protocol (invalid value: ydb)))",
+    "code": "invalid",
+    "request_id": "3848c11e9bff/xAmN7xbZpc-000005"
+  }
+}

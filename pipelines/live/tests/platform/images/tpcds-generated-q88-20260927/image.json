@@ -1,0 +1,21 @@
+{
+  "base_commit": "790763d71ad61e74923da06815b929c5838ad196",
+  "files": {
+    "CHANGELOG.md": "914d58beb312b9ad052e591f4a1b8583b677b74ad3e76cba58e630958fd03b8d",
+    "test/integration/tpcds_generated_test.go": "993fd98185020fe812e62c9759b45c26cd09a4f56e79acc29123ccbb400b4230",
+    "third_party/gotpcds/dsqgen/eval_test.go": "a312e9f5e43706a647e363340626392a1437ccb0b37feb2cab9c1fc32f0ccaf4",
+    "third_party/gotpcds/dsqgen/generate.go": "58a6efa44b192ac8f32a7b60be91f4a409cabaed3226c264ebba82a788cb2fd3",
+    "third_party/gotpcds/dsqgen/templates/query88.tpl": "337d2833890a82af177064b9726e5721da272675e43731e19d4a64e9a3f74454",
+    "workloads/tpcds/README.md": "ef0d74f9163b0083f2be3a0d05e9d59fa60df9319a86ff634104097ece8ea36e",
+    "workloads/tpcds/generated_test.go": "f175f3a6b3941f9504437dd5008f2fce011eac88fdaf591f3f9bab26582a8b78",
+    "workloads/tpcds/tpcds.go": "e279ff233ffb92b037516846d00531682bcae2b0fe6d8bf87b80d3237e5d3d46"
+  },
+  "source_hash": "b788c6435564a46752ee030d0b2b4a3df6f8f85f8369df589fb1f130bd96f76e",
+  "version": "dev-tpcds-b788c6435564",
+  "source_archive_sha256": "1bf843fccf013259ce4a6fdb02b885b74b7fb1619c477067a2935be5df5c261f",
+  "binary_sha256": "5d8ad004dd89a9e83ea9ba6df846851bffd4bc18a056dd3091f94e3574930574",
+  "tag": "ghcr.io/stroppy-io/stroppy:dev-tpcds-b788c6435564",
+  "image_id": "sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624",
+  "pinned": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624",
+  "digest": "sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624"
+}

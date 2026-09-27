@@ -1,0 +1,8 @@
+{
+  "observed_at": "2026-09-25T13:41:34.847997+00:00",
+  "image_id": "sha256:cacaa5cb2a18a52099884a4d85065220e48b61e1265247e7aba99081e1f44ab0",
+  "version": "0.0.0-dev-f658fd8b-observe3-20260925",
+  "forbidden_backend_env_names": [],
+  "mount_count": 0,
+  "verified": true
+}

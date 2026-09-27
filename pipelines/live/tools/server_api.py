@@ -16,16 +16,17 @@ class Client:
         self.base = (base or os.environ.get("STROPPY_TEST_URL", "http://localhost:18347")).rstrip("/")
         self.token = token or os.environ.get("STROPPY_TEST_TOKEN", "dev")
 
-    def request(self, path, method="GET", data=None, evidence=None, timeout=120):
+    def request(self, path, method="GET", data=None, evidence=None, timeout=120, idempotency_key=None):
         if not path.startswith("/api/v1/"):
             raise ValueError("use an absolute Stroppy Cloud API path")
         # Minted API tokens are readable once and must never become public evidence.
         if evidence and "/tokens" in path:
             raise ValueError("token endpoints cannot be recorded as public evidence")
         body = None if data is None else json.dumps(data).encode()
-        req = urllib.request.Request(self.base + path, data=body, method=method,
-                                     headers={"Authorization": "Bearer " + self.token,
-                                              "Content-Type": "application/json"})
+        headers = {"Authorization": "Bearer " + self.token, "Content-Type": "application/json"}
+        if idempotency_key:
+            headers["Idempotency-Key"] = idempotency_key
+        req = urllib.request.Request(self.base + path, data=body, method=method, headers=headers)
         try:
             response = urllib.request.urlopen(req, timeout=timeout)
         except urllib.error.HTTPError as error:

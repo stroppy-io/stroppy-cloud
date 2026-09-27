@@ -1,0 +1,7 @@
+{
+  "observed_at": "2026-09-25T14:52:52.097699+00:00",
+  "run_id": "9e776590-fffd-4ecf-a721-e7cac403b851",
+  "verified": true,
+  "evidence": "rerun-events.json",
+  "assertion": "teardown phase starts after collection and before terminal closure"
+}

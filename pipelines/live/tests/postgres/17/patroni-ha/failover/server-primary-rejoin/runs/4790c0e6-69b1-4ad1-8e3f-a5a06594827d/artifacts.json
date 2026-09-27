@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-09-27T20:27:05.254216+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/4790c0e6-69b1-4ad1-8e3f-a5a06594827d/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "data": [
+      {
+        "id": "4790c0e6-stroppy-start-ha-probe-config",
+        "name": "4790c0e6-stroppy-start-ha-probe-config",
+        "kind": "config",
+        "size_bytes": 1116,
+        "digest": "sha256:2ddc711385ca4126cb06126bb939af96124c912e58a337b05bc571cd60730489"
+      },
+      {
+        "id": "4790c0e6-stroppy-start-ha-probe-log",
+        "name": "4790c0e6-stroppy-start-ha-probe-log",
+        "kind": "log_bundle",
+        "size_bytes": 1038,
+        "digest": "sha256:27dec95fe0d224dd70f05f3790dc2255130c17a32ded16c167c93a647700f3be"
+      },
+      {
+        "id": "4790c0e6-stroppy-during-failover-config",
+        "name": "4790c0e6-stroppy-during-failover-config",
+        "kind": "config",
+        "size_bytes": 1056,
+        "digest": "sha256:d23efea6163a46e5a31f4084a2a9c9ba8d711a7b01fde40d250af42101766981"
+      },
+      {
+        "id": "4790c0e6-stroppy-during-failover-log",
+        "name": "4790c0e6-stroppy-during-failover-log",
+        "kind": "log_bundle",
+        "size_bytes": 5538210,
+        "digest": "sha256:0df690caf3a0ece5847076a502aba7c633b0032cc9999dfc9e2559ed03003404"
+      },
+      {
+        "id": "4790c0e6-stroppy-verify-ha-probe-config",
+        "name": "4790c0e6-stroppy-verify-ha-probe-config",
+        "kind": "config",
+        "size_bytes": 1060,
+        "digest": "sha256:74bc012b2247cbdc5694db8333e3e1f60b17e93f04a91ba0e494913473afc22a"
+      },
+      {
+        "id": "4790c0e6-stroppy-verify-ha-probe-log",
+        "name": "4790c0e6-stroppy-verify-ha-probe-log",
+        "kind": "log_bundle",
+        "size_bytes": 1038,
+        "digest": "sha256:48d704b08021c5060c8e92fc37b3d8d355511e558b993e1c7211850c6958041e"
+      }
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "run_id": "829fe228-d91a-421f-94c7-ebc12b00da90",
+  "verified": true,
+  "successful_calls": 9919,
+  "failed_queries": 0,
+  "mysql_up": {
+    "829fe228-db-1": 1.0,
+    "829fe228-db-replica-1": 1.0,
+    "829fe228-db-replica-2": 1.0
+  },
+  "native_queries_per_second": {
+    "value": 82.648,
+    "unit": "queries/s"
+  },
+  "scope": "Three ONLINE members, one PRIMARY, writes via ProxySQL; per-replica row comparison and failover untested."
+}

@@ -1,0 +1,144 @@
+{
+  "observed_at": "2026-09-27T18:42:22.144127+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/829fe228-d91a-421f-94c7-ebc12b00da90/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "stats": {
+      "seriesFetched": "1",
+      "executionTimeMsec": 1
+    },
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "829fe228-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "e98ef3ef-c48a-4cd7-9ad4-2fb64182cb75",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "workload",
+            "stroppy.run.id": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "stroppy.segment": "cluster-health-writes",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "829fe228-d91a-421f-94c7-ebc12b00da90",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790534225,
+              "773"
+            ],
+            [
+              1790534230,
+              "773"
+            ],
+            [
+              1790534235,
+              "1608"
+            ],
+            [
+              1790534240,
+              "1608"
+            ],
+            [
+              1790534245,
+              "2378"
+            ],
+            [
+              1790534250,
+              "2378"
+            ],
+            [
+              1790534255,
+              "3165"
+            ],
+            [
+              1790534260,
+              "3165"
+            ],
+            [
+              1790534265,
+              "4112"
+            ],
+            [
+              1790534270,
+              "4112"
+            ],
+            [
+              1790534275,
+              "4949"
+            ],
+            [
+              1790534280,
+              "4949"
+            ],
+            [
+              1790534285,
+              "5718"
+            ],
+            [
+              1790534290,
+              "5718"
+            ],
+            [
+              1790534295,
+              "6582"
+            ],
+            [
+              1790534300,
+              "6582"
+            ],
+            [
+              1790534305,
+              "7426"
+            ],
+            [
+              1790534310,
+              "7426"
+            ],
+            [
+              1790534315,
+              "8318"
+            ],
+            [
+              1790534320,
+              "8318"
+            ],
+            [
+              1790534325,
+              "9141"
+            ],
+            [
+              1790534330,
+              "9141"
+            ],
+            [
+              1790534335,
+              "9919"
+            ],
+            [
+              1790534340,
+              "9919"
+            ],
+            [
+              1790534345,
+              "9919"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

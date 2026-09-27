@@ -29,6 +29,19 @@ func NewRunRepo(database tx.DB, tr lifecycleTransactor) *RunRepo {
 	return &RunRepo{q: db.New(database), tx: tr}
 }
 
+func (r *RunRepo) Admit(ctx context.Context, tenantID uuid.UUID, fn func(context.Context) error) error {
+	return r.tx.Do(ctx, func(ctx context.Context) error {
+		tenant, err := r.q.LockTenantLifecycle(ctx, tenantID)
+		if err != nil {
+			return err
+		}
+		if tenant.Retiring {
+			return errs.Conflict("tenant is being deleted")
+		}
+		return fn(ctx)
+	})
+}
+
 func (r *RunRepo) Insert(ctx context.Context, x run.Run, idempotencyKey string) error {
 	return r.tx.Do(ctx, func(ctx context.Context) error {
 		tenant, err := r.q.LockTenantLifecycle(ctx, x.TenantID)
@@ -260,7 +273,8 @@ func (r *RunRepo) UpdateMeta(ctx context.Context, id uuid.UUID, p run.MetaPatch)
 }
 
 func (r *RunRepo) SetStatus(ctx context.Context, id uuid.UUID, status run.Status, phase run.Phase, reason string, startedAt, finishedAt *time.Time) error {
-	if err := r.q.SetRunStatus(ctx, db.SetRunStatusParams{ID: id, Status: string(status), Phase: string(phase), StatusReason: reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
+	value := string(status)
+	if err := r.q.SetRunStatus(ctx, db.SetRunStatusParams{ID: id, Status: &value, Phase: string(phase), StatusReason: &reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
 		return infraf("run: set status: %v", err)
 	}
 	return nil

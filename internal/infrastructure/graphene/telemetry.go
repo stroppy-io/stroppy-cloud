@@ -1,0 +1,271 @@
+package graphene
+
+import (
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"math"
+	"slices"
+	"strconv"
+	"strings"
+	"time"
+
+	"connectrpc.com/connect"
+	managementv1 "github.com/graphene-ci/graphene/pkg/proto/management/v1"
+
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/observe"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
+)
+
+// Logs and Metrics use the same authenticated Graphene door as run control.
+// Every request carries both the tenant namespace and the run ref. Graphene
+// authorizes and scopes the expression; this client never issues global reads.
+type Logs struct{ c *Client }
+
+// Metrics reads metric snapshots through Graphene.
+type Metrics struct{ c *Client }
+
+func NewLogs(c *Client) *Logs       { return &Logs{c: c} }
+func NewMetrics(c *Client) *Metrics { return &Metrics{c: c} }
+
+// logCursor keeps Graphene's page token opaque. An exhausted forward page
+// is replayed on the next poll, skipping the records already delivered. This
+// preserves equal timestamps without inventing a Graphene cursor. Older
+// pages retain their original time window; forward pages extend its end.
+type logCursor struct {
+	Token     string        `json:"p,omitempty"`
+	Skip      int           `json:"n,omitempty"`
+	Start     int64         `json:"s"`
+	End       int64         `json:"e,omitempty"`
+	Direction string        `json:"d"`
+	Scope     observe.Scope `json:"scope"`
+	Filter    string        `json:"f"`
+}
+
+func encodeLogCursor(c logCursor) string {
+	b, _ := json.Marshal(c) //nolint:errcheck // scalar fields
+	return base64.RawURLEncoding.EncodeToString(b)
+}
+
+func typedLogFilter(q observe.LogQuery) string {
+	var parts []string
+	for _, f := range []struct {
+		name   string
+		values []string
+	}{
+		{spec.AttrAgent, q.Agents}, {spec.AttrEntity, q.Entities}, {"stream", q.Streams},
+	} {
+		if len(f.values) == 0 {
+			continue
+		}
+		values := make([]string, len(f.values))
+		for i, v := range f.values {
+			values[i] = strconv.Quote(v)
+		}
+		parts = append(parts, fmt.Sprintf("%q:in(%s)", f.name, strings.Join(values, ",")))
+	}
+	return strings.Join(parts, " AND ")
+}
+
+func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, error) {
+	direction := q.Direction
+	if direction == "" {
+		direction = "older"
+	}
+	if direction != "older" && direction != "newer" {
+		return observe.LogPage{}, errs.Invalid("invalid log direction")
+	}
+	req := &managementv1.LogsRequest{
+		Ref: "run/" + q.Scope.Run, Query: typedLogFilter(q), Text: q.Text, Severities: q.Levels,
+		SinceUnixNano: q.Start.UnixNano(), UntilUnixNano: q.End.UnixNano(), Order: "desc",
+	}
+	if direction == "newer" {
+		req.Order = "asc"
+	}
+	identity, _ := json.Marshal([]any{req.Query, req.Text, req.Severities}) //nolint:errcheck // strings only
+	cursor := logCursor{Start: req.SinceUnixNano, End: req.UntilUnixNano, Direction: direction, Scope: q.Scope, Filter: string(identity)}
+	if q.Cursor != "" {
+		b, err := base64.RawURLEncoding.DecodeString(q.Cursor)
+		if err != nil || json.Unmarshal(b, &cursor) != nil || cursor.Direction != direction || cursor.Scope != q.Scope || cursor.Filter != string(identity) || cursor.Skip < 0 || cursor.Skip > 10000 {
+			return observe.LogPage{}, errs.Invalid("invalid log cursor for this selection")
+		}
+		req.PageToken, req.SinceUnixNano = cursor.Token, cursor.Start
+		if direction == "older" {
+			req.UntilUnixNano = cursor.End
+		}
+	}
+	limit := q.Limit
+	if limit <= 0 || limit > 1000 {
+		limit = 200
+	}
+	req.Limit = int32(min(cursor.Skip+limit, 10000)) //nolint:gosec // bounded above
+	page, next, err := l.read(ctx, q.Scope, req)
+	if err != nil {
+		return observe.LogPage{}, err
+	}
+	if cursor.Skip == len(page.Lines) && next != "" {
+		cursor.Token, cursor.Skip = next, 0
+		req.PageToken, req.Limit = next, int32(limit)
+		page, next, err = l.read(ctx, q.Scope, req)
+		if err != nil {
+			return observe.LogPage{}, err
+		}
+	}
+	read := len(page.Lines)
+	page.Lines = page.Lines[min(cursor.Skip, read):]
+	if next != "" {
+		cursor.Token, cursor.Skip = next, 0
+	} else {
+		cursor.Skip = read
+	}
+	if direction == "newer" {
+		page.Newer = encodeLogCursor(cursor)
+		slices.Reverse(page.Lines)
+	} else if next != "" {
+		page.Older = encodeLogCursor(cursor)
+	}
+	return page, nil
+}
+
+func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.LogsRequest) (observe.LogPage, string, error) {
+	if scope.Namespace == "" || scope.Run == "" {
+		return observe.LogPage{}, "", errs.Invalid("telemetry requires a run scope")
+	}
+	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
+	defer cancel()
+	stream, err := l.c.Observe.Logs(ctx, connect.NewRequest(req))
+	if err != nil {
+		return observe.LogPage{}, "", telemetryError(err)
+	}
+	defer stream.Close()
+	page := observe.LogPage{Lines: []observe.LogLine{}}
+	var next string
+	for stream.Receive() {
+		chunk := stream.Msg()
+		if rec := chunk.GetRecord(); rec != nil {
+			fields := rec.GetAttributes()
+			seq, _ := strconv.Atoi(fields["seq"]) //nolint:errcheck // optional metadata
+			page.Lines = append(page.Lines, observe.LogLine{Time: time.Unix(0, rec.GetTimeUnixNano()).UTC(), Message: rec.GetBody(), Level: strings.ToLower(rec.GetSeverity()), Stream: fields["stream"], Seq: seq, Fields: fields})
+		}
+		if p := chunk.GetPage(); p != nil {
+			page.Truncated, next = p.GetTruncated(), p.GetNextPageToken()
+		}
+		if chunk.GetDropped() > 0 {
+			return observe.LogPage{}, "", errs.New(errs.CodeUnavailable, "Graphene dropped log records")
+		}
+	}
+	if err := stream.Err(); err != nil {
+		return observe.LogPage{}, "", telemetryError(err)
+	}
+	return page, next, nil
+}
+
+func (l *Logs) Raw(ctx context.Context, scope observe.Scope, query string, start, end time.Time, limit int) (observe.LogPage, error) {
+	page, _, err := l.read(ctx, scope, &managementv1.LogsRequest{Ref: "run/" + scope.Run, Query: query, SinceUnixNano: start.UnixNano(), UntilUnixNano: end.UnixNano(), Limit: int32(limit), Order: "desc"}) //nolint:gosec // service bounds limit
+	return page, err
+}
+
+func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.Time) ([]run.Facet, error) {
+	if scope.Namespace == "" || scope.Run == "" {
+		return nil, errs.Invalid("telemetry requires a run scope")
+	}
+	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
+	defer cancel()
+	res, err := l.c.Observe.LogFacets(ctx, connect.NewRequest(&managementv1.LogFacetsRequest{
+		Selection: &managementv1.LogsRequest{Ref: "run/" + scope.Run, SinceUnixNano: start.UnixNano(), UntilUnixNano: end.UnixNano()},
+		Fields:    []string{spec.AttrAgent, spec.AttrEntity, "stream", "severity_text"}, Limit: 50,
+	}))
+	if err != nil {
+		return nil, telemetryError(err)
+	}
+	out := []run.Facet{}
+	for _, f := range res.Msg.GetFacets() {
+		field := f.GetField()
+		if field == "severity_text" || field == "severity" {
+			field = "level"
+		}
+		facet := run.Facet{Field: field, Values: []run.FacetValue{}}
+		for _, v := range f.GetValues() {
+			value := v.GetValue()
+			if field == "level" {
+				value = strings.ToLower(value)
+			}
+			index := slices.IndexFunc(facet.Values, func(x run.FacetValue) bool { return x.Value == value })
+			if index >= 0 {
+				facet.Values[index].Count += int(v.GetHits())
+			} else {
+				facet.Values = append(facet.Values, run.FacetValue{Value: value, Count: int(v.GetHits())})
+			}
+		}
+		out = append(out, facet)
+	}
+	return out, nil
+}
+
+func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.Series, []error, error) {
+	var out []observe.Series
+	var failures []error
+	for _, def := range q.Metrics {
+		raw, err := m.Raw(ctx, q.Scope, observe.KeyExpr(def, q.Scope), q.Start, q.End, q.Step)
+		if err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", def.Key, err))
+			continue
+		}
+		series, err := seriesOf(raw, def.Key, def.Title, def.Unit)
+		if err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", def.Key, err))
+			continue
+		}
+		out = append(out, series...)
+	}
+	return out, failures, nil
+}
+
+func (m *Metrics) Raw(ctx context.Context, scope observe.Scope, query string, start, end time.Time, step time.Duration) (json.RawMessage, error) {
+	if scope.Namespace == "" || scope.Run == "" {
+		return nil, errs.Invalid("telemetry requires a run scope")
+	}
+	seconds := math.Ceil(step.Seconds())
+	if seconds < 0 || seconds > math.MaxInt32 {
+		return nil, errs.Invalid("invalid metric step")
+	}
+	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
+	defer cancel()
+	stream, err := m.c.Observe.Metrics(ctx, connect.NewRequest(&managementv1.MetricsRequest{Ref: "run/" + scope.Run, Query: query, StartUnixNano: start.UnixNano(), EndUnixNano: end.UnixNano(), StepSeconds: int32(seconds)}))
+	if err != nil {
+		return nil, telemetryError(err)
+	}
+	defer stream.Close()
+	var snapshot json.RawMessage
+	for stream.Receive() {
+		if s := stream.Msg().GetSnapshot(); s != nil {
+			snapshot = slices.Clone(s)
+		}
+		if stream.Msg().GetDropped() > 0 {
+			return nil, errs.New(errs.CodeUnavailable, "Graphene dropped metric records")
+		}
+	}
+	if err := stream.Err(); err != nil {
+		return nil, telemetryError(err)
+	}
+	if !json.Valid(snapshot) {
+		return nil, errs.New(errs.CodeUnavailable, "Graphene returned no valid metric snapshot")
+	}
+	return snapshot, nil
+}
+
+func telemetryError(err error) error {
+	switch connect.CodeOf(err) { //nolint:exhaustive // remaining codes are upstream failures
+	case connect.CodeInvalidArgument:
+		return errs.Wrap(errs.CodeInvalid, "Graphene telemetry query", err)
+	case connect.CodeNotFound:
+		return errs.NotFound("Graphene telemetry run")
+	case connect.CodePermissionDenied, connect.CodeUnauthenticated:
+		return errs.Wrap(errs.CodeForbidden, "Graphene telemetry access", err)
+	default:
+		return errs.Wrap(errs.CodeUnavailable, "Graphene telemetry", err)
+	}
+}

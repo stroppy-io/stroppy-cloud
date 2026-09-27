@@ -26,7 +26,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/graphene"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/repositories"
-	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
 )
 
 /*
@@ -43,11 +42,14 @@ type e2e struct {
 	ts       *httptest.Server
 	app      *Application
 	graphene *fakeGraphene
+	faults   *rpcFaults
 	// ctx is the application's lifetime: workers ticked by tests must use
 	// it so their followers stop at cleanup.
 	ctx context.Context
 	// pushes records the pipeline pushes the server asked for.
-	pushes *fakePusher
+	pushes         *fakePusher
+	acceptanceMu   sync.Mutex
+	acceptanceHTTP map[string]map[int]int
 }
 
 // fakePusher stands in for publication of the packaged pipeline binaries.
@@ -109,7 +111,8 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 	mux.Handle(managementv1connect.NewRunsAPIHandler(fake))
 	mux.Handle(managementv1connect.NewRbacAPIHandler(fake))
 	mux.Handle(managementv1connect.NewObserveAPIHandler(fake))
-	door := httptest.NewServer(mux)
+	faults := &rpcFaults{}
+	door := httptest.NewServer(faults.wrap(mux))
 	t.Cleanup(door.Close)
 
 	cfg := &Config{}
@@ -130,15 +133,12 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 	pushes := &fakePusher{}
 	cfg.Infra.Pipelines.Runner = pushes
 	cfg.Infra.Graphene = graphene.Config{Address: door.Listener.Addr().String(), Token: "test", Insecure: true}
-	cfg.Infra.Victoria = victoria.Config{LogsURL: victoriaLogsURL, MetricsURL: victoriaMetricsURL, Timeout: 10 * time.Second}
 	// Every simulated run leaves its telemetry in the real stores.
 	fake.recorded = func(r *doorRun) {
 		if err := pushTelemetry(context.Background(), victoriaLogsURL, victoriaMetricsURL, r); err != nil {
 			t.Errorf("telemetry of %s: %v", r.id, err)
 		}
 	}
-	cfg.HTTP.GrafanaURL = "http://grafana.test"
-	cfg.HTTP.GrafanaDashboards = []string{"stroppy-run=Run overview", "stroppy-machine=Machine:per_machine"}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	manager := xshutdown.New(ctx, xshutdown.WithTimeout(10*time.Second))
@@ -182,7 +182,9 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 		cancel()
 		_ = manager.Stop()
 	})
-	return &e2e{t: t, ts: ts, app: app, graphene: fake, ctx: ctx, pushes: pushes}
+	e := &e2e{t: t, ts: ts, app: app, graphene: fake, faults: faults, ctx: ctx, pushes: pushes}
+	t.Cleanup(e.reportAcceptanceHTTP)
+	return e
 }
 
 // person seeds a profile and returns an actor for direct service calls.
@@ -274,6 +276,7 @@ func (e *e2e) req(method, path string, body any, token string) resp {
 	}
 	defer res.Body.Close()
 	raw, _ := io.ReadAll(res.Body)
+	e.recordAcceptanceHTTP(method, path, res.StatusCode)
 	return resp{Status: res.StatusCode, Body: raw}
 }
 
@@ -294,6 +297,7 @@ func (e *e2e) reqAccept(method, path, accept, token string) resp {
 	}
 	defer res.Body.Close()
 	raw, _ := io.ReadAll(res.Body)
+	e.recordAcceptanceHTTP(method, path, res.StatusCode)
 	return resp{Status: res.StatusCode, Body: raw}
 }
 

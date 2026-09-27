@@ -51,8 +51,15 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   `dockerlib.Install()` на первом runner и всех машинах с контейнерами.
   Установка идемпотентна, машины готовятся параллельно; ошибка останавливает
   deploy и запускает cleanup. Входу не нужны install-скрипты для Docker.
-  Docker library 0.2.3 отправляет heartbeat сразу и каждые 15 секунд;
+  Docker library 0.3.4 отправляет heartbeat сразу и каждые 15 секунд;
   pipeline задаёт минутный heartbeat timeout и 15 минут на попытку установки.
+- Уже скачанный образ с `@sha256:` используется локально без обращения
+  в registry; mutable tag всегда обновляется. Сетевые ошибки pull повторяются
+  максимум три раза в пределах activity deadline; auth/manifest ошибки не
+  превращаются в бесконечные повторы.
+- Загрузка образа отправляет heartbeat сразу и каждые 15 секунд независимо
+  от Docker progress, включая ожидание HTTP-ответа registry. Молчание Docker
+  не означает потерю activity; общий deadline загрузки продолжает действовать.
 - Node-exporter читает rootfs, procfs, sysfs и udev машины через read-only
   `/host`; `--path.rootfs` сам по себе не перенаправляет остальные пути.
   Версия 1.12.1 читает `ID_SERIAL` virtio-дисков YC, включая имя `data`.
@@ -62,6 +69,14 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 - Managed YDB перед workload проверяется тем же образом Stroppy: TCP, TLS/IAM
   и read-only SELECT 1. Readiness ограничена пятью минутами, не входит в нагрузку;
   её конфиг и журнал попыток сохраняются отдельными артефактами с общим retention.
+- IAM внутри сегмента обновляется activity на runner: образ с capability
+  `ydb_token_file=1` получает приватный token-файл 0600, который заменяется
+  атомарно каждые 10 минут или через половину оставшегося TTL. Временный отказ
+  выдачи сохраняет ещё действующий токен; истечение без обновления завершает
+  workload с failed. Публичный конфиг и артефакты токена не содержат. Для старых
+  образов deadline activity должен заканчиваться минимум за минуту до expiry;
+  иначе запуск отклоняется до workload. Возможность проверяется через
+  `stroppy version --json`, а не по имени тега.
 - Сегменты workload — последовательно, `AtMostOnce`, таймаут
   `duration*1.5 + warmup + 30m` по умолчанию; явный segment.timeout
   задаёт deadline activity после отдельного idle wait warmup.
@@ -73,6 +88,10 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 
 ## Правила activities (`internal/activities`)
 
+- Heartbeat вложенных Docker/auth/readiness-операций использует исходный
+  контекст activity. Temporal сохраняет первый контекст для отложенной отправки;
+  отмена краткого probe не должна отменять всю activity. Bind выполняется
+  один раз, дочерние операции сохраняют собственные deadline.
 - Тело = чистая функция `(ctx, Req) (Res, error)`; `Res` обязателен
   (`activity.Fn`). Ошибка = ретрай по политике, поэтому «плохой результат»
   (нет прав, сломан профиль) возвращается В результате с `nil` err.
@@ -178,6 +197,9 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
   мс) и `=== bench completed with errors ===`, плюс stdout-строку
   `{"compliance": …}` (TPC-C). Nonfatal-ошибки = exit 0 (учтены в `errors`),
   130/143 — cancel, 1 — ошибка. Пороги (`thresholds`) применяет пайплайн.
+  Итоги читаются потоком из полного файла лога: лимит 8 MiB на диагностическую
+  копию в памяти не обрезает summary/compliance длительных прогонов. Ошибки
+  чтения или записи лога делают результат неуспешным.
 - Baseline: `stroppy baseline --json --no-save --download always [...]` до
   сегментов на runner-машине; отчёт schema 1 → `result.baseline`; fail
   вердикта не валит прогон.
@@ -186,6 +208,10 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
   `extra_params` как типизированные флаги.
 
 ## Native workload metrics
+
+When no explicit standalone OTLP override is supplied, activities resolve the
+executor-local `machine.OTLPEndpoint(false)` while rendering the Stroppy config.
+The server does not configure telemetry backend addresses or credentials.
 
 The workflow stamps the actual Graphene namespace/run and tenant; config rendering
 adds the segment name without mutating caller labels. Explicit workload parameters
@@ -242,3 +268,8 @@ segments, native driver options and machine baseline. See
 for server/UI mapping, validation evidence and explicit execution limits.
 `live/tools/check_contract.py` checks against a local Stroppy binary on noop;
 it does not deploy or start cloud resources.
+
+Docker library 0.3.4 and pipeline SDK 0.2.13 ship scraped metrics as samples
+with their original timestamps and kinds. Do not route scraped counters through
+periodically re-exported gauges. Live CPU acceptance includes exporter shutdown
+and the interval after teardown, not only the workload phase.

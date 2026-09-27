@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/catalog_cells/15`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](../../execute-sql/native-otlp-2m-2vus/runs/matrix-pgnoop-f4eb20b2-pg-noop-single/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/catalog_cells/15`) |
 | native_tps | not_applicable | No logical transactions for this workload. |
 | native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/catalog_cells/15`) |

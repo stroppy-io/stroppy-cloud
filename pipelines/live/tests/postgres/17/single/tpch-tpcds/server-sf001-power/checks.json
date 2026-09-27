@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "eb2a84f5-aaa8-4ca2-97fb-0a6c05679208",
+  "checked_at": "2026-09-27T18:28:51.847744+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/eb2a84f5-aaa8-4ca2-97fb-0a6c05679208/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Successful workload on both prepared hosts. Exact CPU and disk SKU conformance is not asserted.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/eb2a84f5-aaa8-4ca2-97fb-0a6c05679208/run.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "All analytical segments completed without query/iteration failures; native workload counters match the full query set.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/verification.json",
+        "pointer": "/workload_verified"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "Analytical workload reports queries/s and iterations/s rather than logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Native Stroppy metrics retrieved through the server with correct run/namespace scope.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/telemetry.json",
+        "pointer": "/native_verified"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Host CPU/memory and PostgreSQL exporter series retrieved through the server.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/database-metrics.json",
+        "pointer": "/series_count"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Logs, pagination and facets include the database and exporters.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/telemetry.json",
+        "pointer": "/facets"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed PostgreSQL.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "All configs/logs downloaded after completion and matched their sizes and SHA-256.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/artifacts.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Single PostgreSQL instance.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "No infrastructure remains in the server resource tree.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-graphene027-20260927/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

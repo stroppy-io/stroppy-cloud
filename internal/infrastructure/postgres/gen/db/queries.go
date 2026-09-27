@@ -1839,9 +1839,9 @@ func (q *Queries) RunsOfTest(ctx context.Context, arg RunsOfTestParams) ([]RunsO
 	return items, nil
 }
 
-const liveRunsSQL = `-- Every run the projection must follow (across tenants).
+const liveRunsSQL = `-- Active workflows and terminal runs whose kept infrastructure still needs reconciliation.
 SELECT id, tenant_id, graphene_namespace, last_event_id, status
-FROM runs WHERE deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') ORDER BY created_at;`
+FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept) ORDER BY created_at;`
 
 type LiveRunsRow struct {
 	ID                uuid.UUID
@@ -2020,7 +2020,9 @@ func (q *Queries) UpdateRunMeta(ctx context.Context, arg UpdateRunMetaParams) (i
 }
 
 const setRunStatusSQL = `UPDATE runs
-SET status = $1, phase = $2, status_reason = $3,
+SET status = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') THEN status ELSE $1 END,
+    phase = $2,
+    status_reason = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') THEN status_reason ELSE $3 END,
     started_at  = COALESCE(started_at, $4),
     finished_at = COALESCE($5, finished_at),
     duration_seconds = CASE WHEN $5 IS NOT NULL AND started_at IS NOT NULL THEN EXTRACT(EPOCH FROM ($5 - started_at)) ELSE duration_seconds END,
@@ -2028,9 +2030,9 @@ SET status = $1, phase = $2, status_reason = $3,
 WHERE id = $6 AND status NOT IN ('completed', 'failed', 'cancelled');`
 
 type SetRunStatusParams struct {
-	Status       string
+	Status       *string
 	Phase        string
-	StatusReason string
+	StatusReason *string
 	StartedAt    *time.Time
 	FinishedAt   *time.Time
 	ID           uuid.UUID
@@ -2930,7 +2932,8 @@ func (q *Queries) LiveSuiteRuns(ctx context.Context) ([]LiveSuiteRunsRow, error)
 }
 
 const setSuiteRunStatusSQL = `UPDATE suite_runs
-SET status = $1, status_reason = $2,
+SET status = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') THEN status ELSE $1 END,
+    status_reason = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') THEN status_reason ELSE $2 END,
     started_at  = COALESCE(started_at, $3),
     finished_at = COALESCE($4, finished_at),
     duration_seconds = CASE WHEN $4 IS NOT NULL AND started_at IS NOT NULL THEN EXTRACT(EPOCH FROM ($4 - started_at)) ELSE duration_seconds END,
@@ -2938,8 +2941,8 @@ SET status = $1, status_reason = $2,
 WHERE id = $5 AND status NOT IN ('completed', 'failed', 'cancelled');`
 
 type SetSuiteRunStatusParams struct {
-	Status       string
-	StatusReason string
+	Status       *string
+	StatusReason *string
 	StartedAt    *time.Time
 	FinishedAt   *time.Time
 	ID           uuid.UUID

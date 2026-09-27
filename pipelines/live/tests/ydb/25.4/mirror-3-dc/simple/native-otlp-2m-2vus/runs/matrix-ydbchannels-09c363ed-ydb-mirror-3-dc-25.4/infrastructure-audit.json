@@ -1,0 +1,122 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4",
+  "input_run_id": "b87935f2-29a9-40cd-934d-109bd7090170",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "b87935f2-db-1",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-2",
+      "agent": "b87935f2-db-2",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-3",
+      "agent": "b87935f2-db-3",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-4",
+      "agent": "b87935f2-db-4",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-4-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-5",
+      "agent": "b87935f2-db-5",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-5-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-6",
+      "agent": "b87935f2-db-6",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-6-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-7",
+      "agent": "b87935f2-db-7",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-7-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-8",
+      "agent": "b87935f2-db-8",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-8-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-9",
+      "agent": "b87935f2-db-9",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-9-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-compute-1",
+      "agent": "b87935f2-db-compute-1",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-compute-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-compute-2",
+      "agent": "b87935f2-db-compute-2",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-compute-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-compute-3",
+      "agent": "b87935f2-db-compute-3",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-db-compute-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "b87935f2-runner-1",
+      "entity": "docker/b87935f2-29a9-40cd-934d-109bd7090170-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/ydb/25.4/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus/runs/matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4/input.json",
+      "sha256": "20a0017cb5d33b74cf64172754f1144487aa1995f66f61b4261475db02fc68cb"
+    },
+    {
+      "path": "tests/ydb/25.4/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus/runs/matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4/metrics.json",
+      "sha256": "01c0054a3864f557a8e3cb2fc6da97a30f328159d4995ad8476de0206febc4d0"
+    }
+  ]
+}

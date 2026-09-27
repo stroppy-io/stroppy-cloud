@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/5`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](runs/matrix-mysql-family-19fb11ff-mysql80-semi-sync/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/5`) |
 | native_tps | not_applicable | No logical transactions for this workload. |
 | native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/mysql-family-check.json) (`/catalog_cells/5`) |

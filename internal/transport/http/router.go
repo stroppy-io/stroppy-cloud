@@ -1,5 +1,5 @@
 // Package http is the single public listener: the ogen API under /api/v1,
-// the IAM reverse proxy under /v1, the Grafana relay under /grafana, the
+// the IAM reverse proxy under /v1, the
 // IAM webhook, probes under /healthz and the SPA for everything else.
 package http
 
@@ -29,8 +29,6 @@ type Deps struct {
 	// IAMURL is the IAM base URL proxied under /v1 (same-origin for the
 	// SPA; Set-Cookie domains are rewritten to this host).
 	IAMURL string
-	// GrafanaURL is relayed under /grafana; empty = not mounted.
-	GrafanaURL string
 	// Webhook is the IAM webhook handler at WebhookPath; nil = not mounted.
 	Webhook     http.Handler
 	WebhookPath string
@@ -48,7 +46,6 @@ type Deps struct {
 
 const (
 	iamPrefix         = "/v1"
-	grafanaPrefix     = "/grafana"
 	apiPrefix         = "/api"
 	readHeaderTimeout = 10 * time.Second
 )
@@ -83,14 +80,6 @@ func New(d Deps) (http.Handler, error) {
 			return nil, fmt.Errorf("iam proxy: %w", err)
 		}
 		r.Handle(iamPrefix+"/*", iam)
-	}
-
-	if d.GrafanaURL != "" {
-		grafana, err := reverseProxy(d.GrafanaURL, false)
-		if err != nil {
-			return nil, fmt.Errorf("grafana proxy: %w", err)
-		}
-		r.Handle(grafanaPrefix+"/*", grafana)
 	}
 
 	// The socket lives beside the API (the upgrade bypasses ogen; the log

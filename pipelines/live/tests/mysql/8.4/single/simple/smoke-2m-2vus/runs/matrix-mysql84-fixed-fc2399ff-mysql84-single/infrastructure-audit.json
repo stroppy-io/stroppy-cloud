@@ -1,0 +1,34 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-mysql84-fixed-fc2399ff-mysql84-single",
+  "input_run_id": "91c89bfa-1e35-4e2c-b308-206bd992ad4d",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "91c89bfa-db-1",
+      "entity": "docker/91c89bfa-1e35-4e2c-b308-206bd992ad4d-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "91c89bfa-runner-1",
+      "entity": "docker/91c89bfa-1e35-4e2c-b308-206bd992ad4d-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/mysql/8.4/single/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql84-fixed-fc2399ff-mysql84-single/input.json",
+      "sha256": "7e93b2d5ac601e36103c827ef5aaa936a96d49e1648ff5e6ed1365c1fd328fec"
+    },
+    {
+      "path": "tests/mysql/8.4/single/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql84-fixed-fc2399ff-mysql84-single/metrics.json",
+      "sha256": "ed88dbbeabfab77ccb0087dba45e21d7fd50dde28308dfd01930b11d6a5c09c9"
+    }
+  ]
+}

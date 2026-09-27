@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-09-27T17:20:04.477141+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "5fc7ddd6-stroppy-cluster-health-writes-config",
+        "name": "5fc7ddd6-stroppy-cluster-health-writes-config",
+        "kind": "config",
+        "size_bytes": 1035,
+        "digest": "sha256:9879251009a0349f55ece9bc58ef9466c8cda598a7e80832ddcaa68b2fa6af28"
+      },
+      {
+        "id": "5fc7ddd6-stroppy-cluster-health-writes-log",
+        "name": "5fc7ddd6-stroppy-cluster-health-writes-log",
+        "kind": "log_bundle",
+        "size_bytes": 3634304,
+        "digest": "sha256:decc2b0795826e1af95ac7ebd231b4c43fda06afa21bd1cb1cf2a927ce3210c2"
+      }
+    ]
+  }
+}

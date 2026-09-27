@@ -1,0 +1,506 @@
+{
+  "audited_at": "2026-09-27T21:30:05.188659+00:00",
+  "applied": false,
+  "cases": 284,
+  "unknown_before": {
+    "infrastructure_provisioning": 8
+  },
+  "provisioning_proven_cases": 233,
+  "provisioning_proven_unique_runs": 62,
+  "resolved_cases": [
+    "tests/cockroach/24.1/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/24.1/single/simple/smoke-2m-2vus",
+    "tests/cockroach/24.1/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/24.1/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/24.1/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.1/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/24.3/single/simple/smoke-2m-2vus",
+    "tests/cockroach/24.3/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/24.3/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/24.3/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/24.3/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/25.2/single/simple/smoke-2m-2vus",
+    "tests/cockroach/25.2/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/25.2/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/25.2/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.2/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/25.4/single/simple/smoke-2m-2vus",
+    "tests/cockroach/25.4/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/25.4/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/25.4/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/25.4/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/26.2/single/simple/smoke-2m-2vus",
+    "tests/cockroach/26.2/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/26.2/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/26.2/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.2/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/single/simple/native-otlp-2m-2vus",
+    "tests/cockroach/26.3/single/simple/smoke-2m-2vus",
+    "tests/cockroach/26.3/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/three-node/simple/native-otlp-2m-2vus",
+    "tests/cockroach/26.3/three-node/simple/smoke-2m-2vus",
+    "tests/cockroach/26.3/three-node/tpcb-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/three-node/tpcc-procs/native-otlp-20s-2vus",
+    "tests/cockroach/26.3/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/external/external/dsn/execute_sql/native-otlp-2m-2vus",
+    "tests/external/external/dsn/execute_sql/smoke-2m-2vus",
+    "tests/mariadb/10.11/galera/simple/smoke-2m-2vus",
+    "tests/mariadb/10.11/galera/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/10.11/galera/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/10.11/galera/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/10.11/galera/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/10.11/single/simple/smoke-2m-2vus",
+    "tests/mariadb/10.11/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/10.11/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/10.11/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/10.11/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.4/galera/simple/smoke-2m-2vus",
+    "tests/mariadb/11.4/galera/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/11.4/galera/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/11.4/galera/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.4/galera/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.4/single/simple/smoke-2m-2vus",
+    "tests/mariadb/11.4/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/11.4/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/11.4/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.4/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.8/galera/simple/smoke-2m-2vus",
+    "tests/mariadb/11.8/galera/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/11.8/galera/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/11.8/galera/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.8/galera/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.8/single/simple/smoke-2m-2vus",
+    "tests/mariadb/11.8/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mariadb/11.8/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mariadb/11.8/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mariadb/11.8/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/group-replication/simple/smoke-2m-2vus",
+    "tests/mysql/8.0/group-replication/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.0/group-replication/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.0/group-replication/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/group-replication/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/semi-sync/simple/smoke-2m-2vus",
+    "tests/mysql/8.0/semi-sync/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.0/semi-sync/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.0/semi-sync/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/semi-sync/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/single/simple/smoke-2m-2vus",
+    "tests/mysql/8.0/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.0/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.0/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.0/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/group-replication/simple/smoke-2m-2vus",
+    "tests/mysql/8.4/group-replication/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.4/group-replication/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.4/group-replication/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/group-replication/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/semi-sync/simple/smoke-2m-2vus",
+    "tests/mysql/8.4/semi-sync/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.4/semi-sync/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.4/semi-sync/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/semi-sync/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/single/simple/smoke-2m-2vus",
+    "tests/mysql/8.4/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/mysql/8.4/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/mysql/8.4/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/mysql/8.4/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/noop/builtin/runner-only/execute-sql/native-otlp-2m-2vus",
+    "tests/noop/builtin/runner-only/execute_sql/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg16/primary-replica/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg16/primary-replica/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/primary-replica/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/primary-replica/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/primary-replica/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/single/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg16/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg16/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/primary-replica/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg17/primary-replica/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/primary-replica/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/primary-replica/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/primary-replica/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/single/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg17/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg17/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/primary-replica/tpcc-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/single/simple/smoke-2m-2vus",
+    "tests/orioledb/beta17-pg18/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/single/tpcc-procs/native-otlp-20s-2vus",
+    "tests/orioledb/beta17-pg18/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/pg_noop/0.1.2/single/execute-sql/native-otlp-2m-2vus",
+    "tests/pg_noop/0.1.2/single/execute_sql/smoke-2m-2vus",
+    "tests/picodata/25.3/single/simple/native-otlp-2m-2vus",
+    "tests/picodata/25.3/single/simple/smoke-2m-2vus",
+    "tests/picodata/25.3/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/25.3/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/picodata/25.3/three-node/simple/native-otlp-2m-2vus",
+    "tests/picodata/25.3/three-node/simple/smoke-2m-2vus",
+    "tests/picodata/25.3/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/25.3/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.1/single/simple/native-otlp-2m-2vus",
+    "tests/picodata/26.1/single/simple/smoke-2m-2vus",
+    "tests/picodata/26.1/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.1/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.1/three-node/simple/native-otlp-2m-2vus",
+    "tests/picodata/26.1/three-node/simple/smoke-2m-2vus",
+    "tests/picodata/26.1/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.1/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.2/single/simple/native-otlp-2m-2vus",
+    "tests/picodata/26.2/single/simple/smoke-2m-2vus",
+    "tests/picodata/26.2/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.2/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.2/three-node/simple/native-otlp-2m-2vus",
+    "tests/picodata/26.2/three-node/simple/smoke-2m-2vus",
+    "tests/picodata/26.2/three-node/tpcb-tx/native-otlp-20s-2vus",
+    "tests/picodata/26.2/three-node/tpcc-tx/native-otlp-20s-2vus",
+    "tests/postgres/15/patroni-ha/simple/smoke-2m-2vus",
+    "tests/postgres/15/pgbouncer/simple/smoke-2m-2vus",
+    "tests/postgres/15/primary-replica/simple/smoke-2m-2vus",
+    "tests/postgres/15/single/simple/smoke-2m-2vus",
+    "tests/postgres/16/patroni-ha/simple/smoke-2m-2vus",
+    "tests/postgres/16/pgbouncer/simple/smoke-2m-2vus",
+    "tests/postgres/16/primary-replica/simple/smoke-2m-2vus",
+    "tests/postgres/16/single/simple/smoke-2m-2vus",
+    "tests/postgres/17/patroni-ha/simple/smoke-2m-2vus",
+    "tests/postgres/17/pgbouncer/simple/smoke-2m-2vus",
+    "tests/postgres/17/primary-replica/simple/smoke-2m-2vus",
+    "tests/postgres/17/single/simple/native-otlp-20s-2vus",
+    "tests/postgres/17/single/simple/smoke-2m-2vus",
+    "tests/postgres/17/single/tpcb-procs/native-otlp-20s-2vus",
+    "tests/postgres/17/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/postgres/17/single/tpcc-procs/native-otlp-20s-2vus-retry50",
+    "tests/postgres/17/single/tpcc-tx/native-otlp-20s-2vus-retry50",
+    "tests/postgres/18/patroni-ha/simple/smoke-2m-2vus",
+    "tests/postgres/18/pgbouncer/simple/smoke-2m-2vus",
+    "tests/postgres/18/primary-replica/simple/smoke-2m-2vus",
+    "tests/postgres/18/single/simple/smoke-2m-2vus",
+    "tests/ydb/25.4/mirror-3-dc/simple/native-otlp-2m-2vus",
+    "tests/ydb/25.4/mirror-3-dc/simple/smoke-2m-2vus",
+    "tests/ydb/25.4/mirror-3-dc/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/25.4/mirror-3-dc/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/25.4/single/simple/native-otlp-2m-2vus",
+    "tests/ydb/25.4/single/simple/smoke-2m-2vus",
+    "tests/ydb/25.4/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/25.4/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.1/single/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.1/single/simple/smoke-2m-2vus",
+    "tests/ydb/26.1/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.1/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.2/single/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.2/single/simple/smoke-2m-2vus",
+    "tests/ydb/26.2/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.2/single/tpcc-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.3/single/simple/native-otlp-2m-2vus",
+    "tests/ydb/26.3/single/simple/smoke-2m-2vus",
+    "tests/ydb/26.3/single/tpcb-tx/native-otlp-20s-2vus",
+    "tests/ydb/26.3/single/tpcc-tx/native-otlp-20s-2vus"
+  ],
+  "remaining_unknown": [
+    {
+      "case": "tests/ydb_managed/managed/dedicated-medium/simple/native-otlp-2m-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/dedicated-medium/simple/smoke-2m-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/dedicated-medium/tpcb-tx/native-otlp-20s-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/dedicated-medium/tpcc-tx/native-otlp-20s-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/serverless/simple/native-otlp-2m-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/serverless/simple/smoke-2m-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/serverless/tpcb-tx/native-otlp-20s-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    },
+    {
+      "case": "tests/ydb_managed/managed/serverless/tpcc-tx/native-otlp-20s-2vus",
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence"
+    }
+  ],
+  "workloads_in_completed_run_inputs": {
+    "tpcc/tx": 47,
+    "tpch/tx": 1,
+    "simple": 63,
+    "tpcb/procs": 31,
+    "execute_sql": 13,
+    "tpcb/tx": 47,
+    "tpcc/procs": 31,
+    "tpcds": 2
+  },
+  "historical_topologies": {
+    "cockroach/24.1/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-24.1"
+    ],
+    "cockroach/24.1/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-24.1"
+    ],
+    "cockroach/24.3/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-24.3"
+    ],
+    "cockroach/24.3/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-24.3"
+    ],
+    "cockroach/25.2/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-25.2"
+    ],
+    "cockroach/25.2/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-25.2"
+    ],
+    "cockroach/25.4/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-25.4"
+    ],
+    "cockroach/25.4/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-25.4"
+    ],
+    "cockroach/26.2/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-26.2"
+    ],
+    "cockroach/26.2/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-26.2"
+    ],
+    "cockroach/26.3/single": [
+      "matrix-cockroach-74ee56ed-cockroach-single-26.3"
+    ],
+    "cockroach/26.3/three-node": [
+      "matrix-cockroach-74ee56ed-cockroach-three-node-26.3"
+    ],
+    "external/external/dsn": [
+      "external-dsn-7383cd13"
+    ],
+    "mariadb/10.11/galera": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-galera-1011"
+    ],
+    "mariadb/10.11/single": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-single-1011"
+    ],
+    "mariadb/11.4/galera": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-galera-114"
+    ],
+    "mariadb/11.4/single": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-single-114"
+    ],
+    "mariadb/11.8/galera": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-galera-118"
+    ],
+    "mariadb/11.8/galera-proxysql": [
+      "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+      "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+    ],
+    "mariadb/11.8/single": [
+      "matrix-maria-monitor-e4a0fdb4-mariadb-single-118"
+    ],
+    "mysql/8.0/group-replication": [
+      "matrix-mysql-clusters-fixed-babb0afe-mysql-gr-80"
+    ],
+    "mysql/8.0/semi-sync": [
+      "matrix-mysql-family-19fb11ff-mysql80-semi-sync"
+    ],
+    "mysql/8.0/single": [
+      "matrix-mysql-fixed-2a83f8e4-mysql80-single"
+    ],
+    "mysql/8.4/group-proxysql": [
+      "829fe228-d91a-421f-94c7-ebc12b00da90",
+      "d1c531ed-2199-4049-98b2-44ccfa07a05e"
+    ],
+    "mysql/8.4/group-replication": [
+      "matrix-mysql-clusters-fixed-babb0afe-mysql-gr-84"
+    ],
+    "mysql/8.4/semi-sync": [
+      "matrix-mysql-family-19fb11ff-mysql84-semi-sync"
+    ],
+    "mysql/8.4/single": [
+      "matrix-mysql84-fixed-fc2399ff-mysql84-single"
+    ],
+    "noop/builtin/runner-only": [
+      "d7003247-6d13-4c77-92b2-6267e1c63281",
+      "d92548ed-af3a-425f-a896-14a90f58bf01",
+      "matrix-aux-30be9f55-noop-runner-only"
+    ],
+    "orioledb/beta17-pg16/primary-replica": [
+      "matrix-oriole-retry-86dd0e6a-orioledb-primary-replica-pg16"
+    ],
+    "orioledb/beta17-pg16/single": [
+      "matrix-oriole-retry-86dd0e6a-orioledb-single-pg16"
+    ],
+    "orioledb/beta17-pg17/primary-replica": [
+      "matrix-oriole-retry-86dd0e6a-orioledb-primary-replica-pg17"
+    ],
+    "orioledb/beta17-pg17/single": [
+      "matrix-oriole-0d49e1e2-managed-orioledb-single-pg17"
+    ],
+    "orioledb/beta17-pg18/primary-replica": [
+      "matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg18"
+    ],
+    "orioledb/beta17-pg18/single": [
+      "matrix-oriole-0d49e1e2-managed-orioledb-single-pg18"
+    ],
+    "pg_noop/0.1.2/single": [
+      "matrix-pgnoop-f4eb20b2-pg-noop-single"
+    ],
+    "picodata/25.3/single": [
+      "matrix-picodata-metrics-85175d12-picodata-single-25.3"
+    ],
+    "picodata/25.3/three-node": [
+      "matrix-picodata-metrics-85175d12-picodata-three-node-25.3"
+    ],
+    "picodata/26.1/single": [
+      "matrix-picodata-metrics-85175d12-picodata-single-26.1"
+    ],
+    "picodata/26.1/three-node": [
+      "matrix-picodata-metrics-85175d12-picodata-three-node-26.1"
+    ],
+    "picodata/26.2/single": [
+      "matrix-picodata-metrics-85175d12-picodata-single-26.2"
+    ],
+    "picodata/26.2/three-node": [
+      "matrix-picodata-metrics-85175d12-picodata-three-node-26.2"
+    ],
+    "postgres/15/patroni-ha": [
+      "matrix-patroni-96794a09-pg15-patroni-ha"
+    ],
+    "postgres/15/pgbouncer": [
+      "matrix-pg-final-951a642e-pg15-pgbouncer"
+    ],
+    "postgres/15/primary-replica": [
+      "matrix-pg-retry-daaf3554-pg15-primary-replica"
+    ],
+    "postgres/15/single": [
+      "matrix-pg-versions-ed460e6f-pg15-single"
+    ],
+    "postgres/16/patroni-ha": [
+      "matrix-patroni-96794a09-pg16-patroni-ha"
+    ],
+    "postgres/16/pgbouncer": [
+      "matrix-pg-final-951a642e-pg16-pgbouncer"
+    ],
+    "postgres/16/primary-replica": [
+      "matrix-pg-final-951a642e-pg16-primary-replica"
+    ],
+    "postgres/16/single": [
+      "matrix-pg-retry-daaf3554-pg16-single"
+    ],
+    "postgres/17/patroni-ha": [
+      "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+      "matrix-patroni-96794a09-pg17-patroni-ha"
+    ],
+    "postgres/17/pgbouncer": [
+      "matrix-pg-final-951a642e-pg17-pgbouncer"
+    ],
+    "postgres/17/primary-replica": [
+      "matrix-pg-final-951a642e-pg17-primary-replica"
+    ],
+    "postgres/17/single": [
+      "43efd586-7ce9-451a-8cbe-666faaf22392",
+      "aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+      "be40ddab-2f06-4904-9d51-999359b45653",
+      "eb2a84f5-aaa8-4ca2-97fb-0a6c05679208",
+      "matrix-pg-versions-ed460e6f-pg17-single",
+      "native-exports-74979a8a-tpcb",
+      "native-tpcc-77fa0211-tpcc"
+    ],
+    "postgres/18/patroni-ha": [
+      "matrix-patroni-96794a09-pg18-patroni-ha"
+    ],
+    "postgres/18/pgbouncer": [
+      "matrix-pg-versions-ed460e6f-pg18-pgbouncer"
+    ],
+    "postgres/18/primary-replica": [
+      "matrix-pg-final-951a642e-pg18-primary-replica"
+    ],
+    "postgres/18/single": [
+      "matrix-pg-retry-daaf3554-pg18-single"
+    ],
+    "ydb/25.4/mirror-3-dc": [
+      "matrix-ydbchannels-09c363ed-ydb-mirror-3-dc-25.4"
+    ],
+    "ydb/25.4/single": [
+      "matrix-ydbmetrics-4f28bec5-ydb-single-25.4"
+    ],
+    "ydb/26.1/mirror-3-dc": [
+      "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.1-autonomous"
+    ],
+    "ydb/26.1/single": [
+      "matrix-ydbmetrics-4f28bec5-ydb-single-26.1"
+    ],
+    "ydb/26.2/mirror-3-dc": [
+      "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.2-autonomous"
+    ],
+    "ydb/26.2/single": [
+      "matrix-ydbmetrics-4f28bec5-ydb-single-26.2"
+    ],
+    "ydb/26.3/mirror-3-dc": [
+      "matrix-ydbautonomous-73a81601-ydb-mirror-3-dc-26.3-autonomous"
+    ],
+    "ydb/26.3/single": [
+      "matrix-ydbmetrics-4f28bec5-ydb-single-26.3"
+    ],
+    "ydb_managed/managed/dedicated-medium": [
+      "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium"
+    ],
+    "ydb_managed/managed/serverless": [
+      "d740c071-1aae-462d-a014-559d9cb143a8",
+      "matrix-ydbready-cd74e12d-ydb-managed-serverless"
+    ]
+  },
+  "missing_analytical_evidence": [],
+  "limits": "Workload inventory is input evidence, not a new execution assertion. Historical topology evidence does not prove failover under faults. All new runs must use server API; AWS excluded. The project still has one progress.csv."
+}

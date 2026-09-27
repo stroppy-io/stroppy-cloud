@@ -58,6 +58,14 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		return spec.Result{}, err
 	}
 	k8s := k8slib.NewClientInCluster(provider.Scheme())
+	kept := false
+	defer func() {
+		if !kept && ctx.Err() == nil {
+			// The SDK cleans resources after this body returns. Announce that
+			// work before returning; run closure supplies its completion time.
+			events.Emit(ctx, events.PhaseStarted, events.Payload{"phase": PhaseTeardown})
+		}
+	}()
 
 	// --- provisioning ------------------------------------------------------
 	type provisioned struct {
@@ -147,6 +155,7 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		if err != nil {
 			return result, err
 		}
+		kept = true
 	}
 	// keep == 0: the run returns and Graphene's cleanup cascades the tree.
 	return result, nil

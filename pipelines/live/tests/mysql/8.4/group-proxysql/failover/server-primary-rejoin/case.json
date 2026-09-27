@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "id": "tests/mysql/8.4/group-proxysql/failover/server-primary-rejoin",
+  "database": "mysql",
+  "version": "8.4",
+  "topology": "group-proxysql",
+  "workload": "execute/sql",
+  "preset": "server-primary-rejoin",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T19:57:52.426862+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/d1c531ed-2199-4049-98b2-44ccfa07a05e"
+  ],
+  "source": {
+    "path": "tests/mysql/8.4/group-proxysql/failover/server-primary-rejoin/runs/d1c531ed-2199-4049-98b2-44ccfa07a05e/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "start-ha-probe",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',@@server_uuid);"
+      }
+    },
+    {
+      "log_level": "info",
+      "name": "during-failover",
+      "run": {
+        "duration": "4m0s",
+        "executor": "constant-vus",
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 1
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "SELECT 1;"
+      }
+    },
+    {
+      "log_level": "info",
+      "name": "verify-ha-probe",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "CALL live_ha_verify();"
+      }
+    }
+  ]
+}

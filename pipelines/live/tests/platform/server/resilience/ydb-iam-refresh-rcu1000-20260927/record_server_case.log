@@ -1,0 +1,3 @@
+usage: record_server_case.py [-h] --tenant TENANT --run-id RUN_ID --case CASE
+                             --workload WORKLOAD [--append | --refresh]
+record_server_case.py: error: refresh requires the selected run of an existing case

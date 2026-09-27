@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-09-27T17:25:18.020489+00:00",
+  "run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "7b3d8ae2-stroppy-tpcds-generated-config",
+      "http_status": 200,
+      "size_bytes": 1200,
+      "digest": "sha256:b7de1a2eea1aeabe026f66f9f5f2596ac0cdffc3993e58721fbdd10757b90f22",
+      "verified": true
+    },
+    {
+      "id": "7b3d8ae2-stroppy-tpcds-generated-log",
+      "http_status": 200,
+      "size_bytes": 33481,
+      "digest": "sha256:9da8c2a7de1165903b524d50303e86ee806f349662ac465c4f069393ee8a9c78",
+      "verified": true
+    }
+  ]
+}

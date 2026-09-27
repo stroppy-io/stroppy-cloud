@@ -1,0 +1,6 @@
+{
+  "race_scope_tests_passed": true,
+  "command": "go test -race ha_failover_probe.go ha_failover_probe_test.go",
+  "anonymous_image_pull_verified": true,
+  "postgres_test_validation": "../../server/resilience/ha-failover-20260927/postgres/test.json"
+}

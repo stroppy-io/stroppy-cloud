@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-27T17:14:12.002448+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/09e86d6e-3eab-4e5d-ac47-621d19accff3/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "09e86d6e-stroppy-tpch-config",
+        "name": "09e86d6e-stroppy-tpch-config",
+        "kind": "config",
+        "size_bytes": 1096,
+        "digest": "sha256:d777bf51c6f9245186314cbc73e7d495bb2e7ae0b9b41df84a5cca3c82ecda1a"
+      },
+      {
+        "id": "09e86d6e-stroppy-tpch-log",
+        "name": "09e86d6e-stroppy-tpch-log",
+        "kind": "log_bundle",
+        "size_bytes": 15816,
+        "digest": "sha256:c5ab95a30035df5379be686d48ec4d593c191ebb6be4859ad4de57b0c114a95c"
+      },
+      {
+        "id": "09e86d6e-stroppy-tpcds-config",
+        "name": "09e86d6e-stroppy-tpcds-config",
+        "kind": "config",
+        "size_bytes": 1168,
+        "digest": "sha256:d5d7d2bcc3282357befe63ab90fc50e0f22a74071c21b9dfbcc1b2a40be00c98"
+      },
+      {
+        "id": "09e86d6e-stroppy-tpcds-log",
+        "name": "09e86d6e-stroppy-tpcds-log",
+        "kind": "log_bundle",
+        "size_bytes": 34090,
+        "digest": "sha256:61446b4aa37f84c0b5d2ea8defc639863c00b993c2cfaf90d86d724c565ce7db"
+      }
+    ]
+  }
+}

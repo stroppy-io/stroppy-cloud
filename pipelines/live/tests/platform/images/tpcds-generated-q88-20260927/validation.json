@@ -1,0 +1,41 @@
+{
+  "version": "dev-tpcds-b788c6435564",
+  "binary_sha256": "5d8ad004dd89a9e83ea9ba6df846851bffd4bc18a056dd3091f94e3574930574",
+  "checks": [
+    {
+      "command": "go test ./workloads/tpcds ./third_party/gotpcds/dsqgen -count=1",
+      "exit_code": 0
+    },
+    {
+      "command": "go test -race ./workloads/tpcds ./third_party/gotpcds/dsqgen -count=1",
+      "exit_code": 0
+    },
+    {
+      "command": "make tests TEST_FLAGS=-short",
+      "exit_code": 0
+    },
+    {
+      "command": "make integration",
+      "exit_code": 0,
+      "seconds": 45.927
+    },
+    {
+      "command": "go test -tags=integration ./test/integration -run '^TestTPCDS' -count=1 -timeout=5m -v",
+      "exit_code": 0,
+      "seconds": 26.002
+    },
+    {
+      "command": "make linter",
+      "exit_code": 0
+    }
+  ],
+  "tagged_integration_lint": {
+    "exit_code": 1,
+    "new_test_issues": 0,
+    "note": "Existing tagged integration files have lint findings; unrelated files were not reformatted."
+  },
+  "post_build_test_formatting": {
+    "test/integration/tpcds_generated_test.go": "aade7828158725625ac69232fda3dd14193f10cc3e63b96f29df87c07267b2a0"
+  },
+  "anonymous_pull_verified": true
+}

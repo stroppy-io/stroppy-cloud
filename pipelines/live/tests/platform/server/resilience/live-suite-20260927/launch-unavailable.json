@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-27T15:56:31.212026+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/suites/76102fad-66d1-450a-89ae-ad22ef2ff709:launch",
+  "http_status": 503,
+  "contract_version": "2.0.1",
+  "body": {
+    "type": "https://stroppy.io/problems/unavailable",
+    "title": "Temporarily unavailable",
+    "status": 503,
+    "detail": "cell 41e5775f-a16e7c9a: provider quotas",
+    "code": "unavailable",
+    "request_id": "e21736f8a6d9/F3e6ZmNr09-000006"
+  }
+}

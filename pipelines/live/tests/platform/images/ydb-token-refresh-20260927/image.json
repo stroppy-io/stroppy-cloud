@@ -1,0 +1,28 @@
+{
+  "base_commit": "790763d71ad61e74923da06815b929c5838ad196",
+  "files": {
+    "CHANGELOG.md": "83ea0cdc39d1757cb28ee896fb38402dc98df252fe4a281334af76edec7fce17",
+    "cmd/stroppy/commands/help/topic_drivers.go": "c1b7e88c2a2cf26ed1ac6fc827fb0eb2a612b103c14223fae0619929fe91efb0",
+    "cmd/stroppy/commands/root.go": "43bc23cbe50586d4b742255213d645219691f13635b1ddbc39d7b6c743c720df",
+    "cmd/stroppy/commands/run/run.go": "9f513fe7cd8ffcd9f04d7fa7cd8ffaef2c104478579a2c8b3e91eda8d951d1d7",
+    "docs/jsonschema/run.schema.json": "241e1112bfb01729c76efd5a5bc0f6d6ac48dcd7600898c0515a6486bbe4ac48",
+    "pkg/config/config.go": "f89197f006c477edbd93b3eba5ee7e96287a76f8d913429871450c7aaf2d66c3",
+    "pkg/driver/ydb/driver.go": "075f4b3b434bd3b80f3bc1a58f268502572900dbe3590d0397da43c3afdf645e",
+    "pkg/driver/ydb/token_file.go": "2cde013d5e29aaa0a7200943eee7f414f6c0815a6e8f1078703ea5c03bdf0208",
+    "pkg/driver/ydb/token_file_test.go": "c231b886e9d687da5a04355759b9d47832e3a2fa2705992df5d0625f5ce587d9",
+    "test/integration/tpcds_generated_test.go": "aade7828158725625ac69232fda3dd14193f10cc3e63b96f29df87c07267b2a0",
+    "third_party/gotpcds/dsqgen/eval_test.go": "a312e9f5e43706a647e363340626392a1437ccb0b37feb2cab9c1fc32f0ccaf4",
+    "third_party/gotpcds/dsqgen/generate.go": "58a6efa44b192ac8f32a7b60be91f4a409cabaed3226c264ebba82a788cb2fd3",
+    "third_party/gotpcds/dsqgen/templates/query88.tpl": "337d2833890a82af177064b9726e5721da272675e43731e19d4a64e9a3f74454",
+    "workloads/tpcds/README.md": "ef0d74f9163b0083f2be3a0d05e9d59fa60df9319a86ff634104097ece8ea36e",
+    "workloads/tpcds/generated_test.go": "f175f3a6b3941f9504437dd5008f2fce011eac88fdaf591f3f9bab26582a8b78",
+    "workloads/tpcds/tpcds.go": "e279ff233ffb92b037516846d00531682bcae2b0fe6d8bf87b80d3237e5d3d46"
+  },
+  "source_hash": "e621e2612d9330d42a8f98d21e3e65a9a655a41ae2e829c15ddb6826d5f5dfe1",
+  "version": "dev-iam-e621e2612d93",
+  "source_archive_sha256": "6834fd518c6c468e30b4496e5273efe64d5bac275ff6aab1522e4bcbef7a7155",
+  "binary_sha256": "efdef34411aeb7515ed4691fcf5b4e698ee8c47fdfc801716718f57810fc5fab",
+  "tag": "ghcr.io/stroppy-io/stroppy:dev-iam-e621e2612d93",
+  "image_id": "sha256:9dd1a203fc94d53df223e724362c20678b1c38b6dc6cc92a9d4889473286110f",
+  "pinned_image": "ghcr.io/stroppy-io/stroppy@sha256:9dd1a203fc94d53df223e724362c20678b1c38b6dc6cc92a9d4889473286110f"
+}

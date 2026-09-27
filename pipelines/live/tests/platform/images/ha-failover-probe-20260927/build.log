@@ -1,0 +1,42 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 103B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 ...
+
+#3 [auth] library/alpine:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 DONE 1.4s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.1s
+
+#5 [1/2] FROM docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8
+#5 resolve docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8 0.1s done
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 9.89MB 0.0s done
+#6 DONE 0.2s
+
+#7 [2/2] COPY ha-probe /ha-probe
+#7 DONE 0.2s
+
+#8 exporting to image
+#8 exporting layers
+#8 exporting layers 0.7s done
+#8 exporting manifest sha256:f7bcea242a35a2fd490369821bd4140aa6d8cea7a792357bd70f7e535a2aaa6b 0.0s done
+#8 exporting config sha256:137806bc8c0596f67762d4689827e1ec72695071894ddb8189b84e44b0c82dc8 0.0s done
+#8 exporting attestation manifest sha256:2733fb30310e0f52cdb0420a6be042a7420a15075747204c4768d5a7bf71c441
+#8 exporting attestation manifest sha256:2733fb30310e0f52cdb0420a6be042a7420a15075747204c4768d5a7bf71c441 0.1s done
+#8 exporting manifest list sha256:4c9ef564975119d7d89a6ed4fa4d250fbacd7bb4b737d6f67ded6c73f665fcc3 0.0s done
+#8 naming to ghcr.io/stroppy-io/stroppy:dev-ha-probe-b2649b8a1256 0.0s done
+#8 unpacking to ghcr.io/stroppy-io/stroppy:dev-ha-probe-b2649b8a1256
+#8 unpacking to ghcr.io/stroppy-io/stroppy:dev-ha-probe-b2649b8a1256 0.1s done
+#8 DONE 1.1s

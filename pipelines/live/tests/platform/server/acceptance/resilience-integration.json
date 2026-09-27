@@ -1,0 +1,436 @@
+{
+  "started_at": "2026-09-27T12:30:55.371568+00:00",
+  "finished_at": "2026-09-27T12:32:13.645623+00:00",
+  "seconds": 78.274,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(SubmissionFaultRecovery|ResultOutageRecovery|CancelCommandSurvivesStaleProjection|ObserverRecovery|KeptStandRecovery|SuitesAndSchedules)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "11c62ebc5c800f5e9b6e8c8ff816e5800faa3e4ff9631e0d815971368a16f441",
+  "source_sha256_after": "11c62ebc5c800f5e9b6e8c8ff816e5800faa3e4ff9631e0d815971368a16f441",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2ESubmissionFaultRecovery/run_unavailable_before_acceptance": {
+      "status": "pass",
+      "seconds": 3.1
+    },
+    "TestE2ESubmissionFaultRecovery/run_accepted_but_answer_lost": {
+      "status": "pass",
+      "seconds": 2.85
+    },
+    "TestE2ESubmissionFaultRecovery/suite_unavailable_before_acceptance": {
+      "status": "pass",
+      "seconds": 5.52
+    },
+    "TestE2ESubmissionFaultRecovery/suite_accepted_but_answer_lost": {
+      "status": "pass",
+      "seconds": 5.34
+    },
+    "TestE2ESubmissionFaultRecovery": {
+      "status": "pass",
+      "seconds": 16.8
+    },
+    "TestE2EResultOutageRecovery": {
+      "status": "pass",
+      "seconds": 2.84
+    },
+    "TestE2ECancelCommandSurvivesStaleProjection": {
+      "status": "pass",
+      "seconds": 2.77
+    },
+    "TestE2EObserverRecovery": {
+      "status": "pass",
+      "seconds": 1.93
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "status": "pass",
+      "seconds": 1.88
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "status": "pass",
+      "seconds": 1.94
+    },
+    "TestE2EKeptStandRecovery": {
+      "status": "pass",
+      "seconds": 3.82
+    },
+    "TestE2ESuitesAndSchedules/preview_and_create_materialise_the_matrix": {
+      "status": "pass",
+      "seconds": 6.24
+    },
+    "TestE2ESuitesAndSchedules/manual_cell_edits_survive_regeneration": {
+      "status": "pass",
+      "seconds": 4.4
+    },
+    "TestE2ESuitesAndSchedules/launch_prepares_every_cell_and_starts_stroppy-suite": {
+      "status": "pass",
+      "seconds": 3.24
+    },
+    "TestE2ESuitesAndSchedules/children_and_the_suite_are_projected_to_completion": {
+      "status": "pass",
+      "seconds": 2.56
+    },
+    "TestE2ESuitesAndSchedules/cancel_cascades,_retry-failed_relaunches_cancelled_cells,_compare_shows_regression": {
+      "status": "pass",
+      "seconds": 6.79
+    },
+    "TestE2ESuitesAndSchedules/schedules_fire_tests_and_suites": {
+      "status": "pass",
+      "seconds": 11.39
+    },
+    "TestE2ESuitesAndSchedules/viewer_cannot_write,_delete_suite_keeps_runs": {
+      "status": "pass",
+      "seconds": 2.64
+    },
+    "TestE2ESuitesAndSchedules": {
+      "status": "pass",
+      "seconds": 37.84
+    }
+  },
+  "http_observations": {
+    "TestE2ESubmissionFaultRecovery/run_unavailable_before_acceptance": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 7
+      },
+      "launchTest": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/run_accepted_but_answer_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 2
+      },
+      "launchTest": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/suite_unavailable_before_acceptance": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getSuiteRun": {
+        "200": 8
+      },
+      "launchSuite": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/suite_accepted_but_answer_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getSuiteRun": {
+        "200": 2
+      },
+      "launchSuite": {
+        "201": 2
+      }
+    },
+    "TestE2EResultOutageRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 1
+      }
+    },
+    "TestE2ECancelCommandSurvivesStaleProjection": {
+      "cancelRun": {
+        "503": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 1
+      }
+    },
+    "TestE2EObserverRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunEvents": {
+        "200": 1
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2ESuitesAndSchedules": {
+      "cancelRun": {
+        "200": 1
+      },
+      "cancelSuiteRun": {
+        "200": 1,
+        "409": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 2,
+        "422": 1
+      },
+      "createSuite": {
+        "201": 1,
+        "409": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSchedule": {
+        "204": 2
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteSuiteRun": {
+        "204": 1,
+        "422": 1
+      },
+      "deleteTest": {
+        "204": 1,
+        "409": 2
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 2
+      },
+      "getSchedule": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuite": {
+        "200": 3,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 10,
+        "404": 1
+      },
+      "getSuiteRunSummary": {
+        "200": 2
+      },
+      "launchSuite": {
+        "201": 2,
+        "403": 1
+      },
+      "listRuns": {
+        "200": 2
+      },
+      "listScheduleHistory": {
+        "200": 1
+      },
+      "listSchedules": {
+        "200": 2
+      },
+      "listSuiteRuns": {
+        "200": 1
+      },
+      "listSuites": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 2
+      },
+      "pauseSchedule": {
+        "200": 1
+      },
+      "previewSuite": {
+        "200": 1
+      },
+      "resumeSchedule": {
+        "200": 1
+      },
+      "retryFailedSuiteRun": {
+        "201": 1,
+        "409": 1
+      },
+      "runScheduleNow": {
+        "201": 2
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

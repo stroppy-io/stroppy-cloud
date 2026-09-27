@@ -1,0 +1,48 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg18",
+  "input_run_id": "45cfaf1e-d7f6-4672-85e0-66ae324bdeab",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "45cfaf1e-db-1",
+      "entity": "docker/45cfaf1e-d7f6-4672-85e0-66ae324bdeab-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-1",
+      "agent": "45cfaf1e-db-replica-1",
+      "entity": "docker/45cfaf1e-d7f6-4672-85e0-66ae324bdeab-db-replica-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "45cfaf1e-proxy-1",
+      "entity": "docker/45cfaf1e-d7f6-4672-85e0-66ae324bdeab-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "45cfaf1e-runner-1",
+      "entity": "docker/45cfaf1e-d7f6-4672-85e0-66ae324bdeab-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/orioledb/beta17-pg18/primary-replica/tpcc-tx/native-otlp-20s-2vus/runs/matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg18/input.json",
+      "sha256": "9e135ced910fc1cee099f64ec46c75ae0011bcff00ef37b4da6ea9b101980722"
+    },
+    {
+      "path": "tests/orioledb/beta17-pg18/primary-replica/tpcc-tx/native-otlp-20s-2vus/runs/matrix-oriole-0d49e1e2-managed-orioledb-primary-replica-pg18/metrics.json",
+      "sha256": "5970bbfd50071620c5b23a436a076782041c5afd4a0f320529484123bd4e9fe3"
+    }
+  ]
+}

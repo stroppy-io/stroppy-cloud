@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-09-27T12:21:42.499250+00:00",
+  "docker": {
+    "command": "docker compose --env-file .env.compose ps --format json",
+    "error": "permission denied while trying to connect to the docker API at unix:///var/run/docker.sock"
+  },
+  "local_http_tests": {
+    "command": "go test ./internal/infrastructure/graphene",
+    "error": "httptest: failed to listen on a port: listen tcp6 [::1]:0: socket: operation not permitted"
+  },
+  "interpretation": "Execution environment restriction; not evidence of a Graphene or YC outage. No security boundary workaround attempted.",
+  "live_deployed_version_verified": false
+}

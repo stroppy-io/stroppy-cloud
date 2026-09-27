@@ -1,0 +1,151 @@
+{
+  "observed_at": "2026-09-25T14:46:07.839689+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/suite-runs/20582790-09e3-4566-bb1b-3d036a34afb3",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "20582790-09e3-4566-bb1b-3d036a34afb3",
+    "name": "server acceptance mixed outcome",
+    "suite": {
+      "id": "3d41ebf5-610f-406e-863a-8d3de69803ca",
+      "name": "server acceptance mixed outcome"
+    },
+    "status": "completed",
+    "trigger": "suite",
+    "concurrency": 2,
+    "progress": {
+      "total": 2,
+      "done": 1,
+      "failed": 1,
+      "running": 0,
+      "pending": 0,
+      "cancelled": 0,
+      "pct": 100
+    },
+    "cells": [
+      {
+        "cell_id": "787eba5b-44ca2fbf",
+        "name": "server-acceptance-success",
+        "run": {
+          "id": "215c494a-a655-48fc-9939-df9e1ceee86d",
+          "name": "server acceptance mixed outcome · server-acceptance-success",
+          "status": "completed",
+          "started_at": "2026-09-25T14:35:16Z"
+        },
+        "status": "completed",
+        "summary": {
+          "db_kind": "noop",
+          "db_version": "builtin",
+          "protocol": "noop",
+          "stroppy_version": "6.0.0",
+          "topology_label": "noop (runner only)",
+          "node_count": 1,
+          "provider_kind": "yandex",
+          "provider_profile": {
+            "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+            "name": "YC live acceptance"
+          },
+          "sizes": {
+            "runner": {
+              "size": "XS"
+            }
+          },
+          "progress_pct": 100,
+          "headline": {
+            "main.iteration_duration_count": 5515522,
+            "main.iterations_total": 5515522,
+            "main.measurement_seconds": 20,
+            "main.failed_iterations_total": 0,
+            "latency_p50_ms": 0.005,
+            "main.failed_queries_total": 0,
+            "main.retry_attempts_total": 0,
+            "main.iteration_duration_avg": 0.003,
+            "main.iteration_duration_p50": 0.005,
+            "main.run_query_duration_p95": 0.005,
+            "main.run_query_duration_p99": 0.005,
+            "latency_p95_ms": 0.01,
+            "main.iterations_per_second": 275772.656,
+            "main.iteration_duration_p95": 0.01,
+            "main.iteration_duration_p99": 0.025,
+            "main.run_query_duration_p90": 0.005,
+            "main.run_query_duration_count": 5515522,
+            "main.run_query_operations_total": 5515522,
+            "main.iteration_duration_p90": 0.005,
+            "latency_p99_ms": 0.025,
+            "main.queries_per_second": 275772.656,
+            "main.terminal_errors_total": 0,
+            "main.run_query_duration_avg": 0,
+            "main.run_query_duration_p50": 0.005
+          }
+        }
+      },
+      {
+        "cell_id": "c8576e1a-7d0374a6",
+        "name": "server-acceptance-sql-failure",
+        "run": {
+          "id": "164f7af4-2166-4e0b-8753-9fc9d2445ffb",
+          "name": "server acceptance mixed outcome · server-acceptance-sql-failure",
+          "status": "failed",
+          "started_at": "2026-09-25T14:35:16Z"
+        },
+        "status": "failed",
+        "summary": {
+          "db_kind": "postgres",
+          "db_version": "17",
+          "protocol": "pg",
+          "stroppy_version": "6.0.0",
+          "topology_label": "postgres",
+          "node_count": 2,
+          "provider_kind": "yandex",
+          "provider_profile": {
+            "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+            "name": "YC live acceptance"
+          },
+          "sizes": {
+            "db": {
+              "size": "XS"
+            },
+            "runner": {
+              "size": "XS"
+            }
+          },
+          "progress_pct": 0,
+          "headline": {
+            "verify-config.iteration_duration_count": 23748,
+            "verify-config.queries_per_second": 0,
+            "verify-config.iterations_per_second": 1187.346,
+            "verify-config.iteration_duration_p95": 2.5,
+            "verify-config.iteration_duration_p99": 2.5,
+            "verify-config.iteration_duration_p90": 1,
+            "latency_p50_ms": 1,
+            "verify-config.measurement_seconds": 20.001,
+            "verify-config.failed_queries_total": 23748,
+            "verify-config.retry_attempts_total": 0,
+            "verify-config.failed_iterations_total": 0,
+            "verify-config.run_query_operations_total": 23748,
+            "latency_p99_ms": 2.5,
+            "verify-config.iteration_duration_avg": 0.84,
+            "verify-config.iteration_duration_p50": 1,
+            "verify-config.run_query_errors_total": 23748,
+            "errors": 23748,
+            "latency_p95_ms": 2.5,
+            "verify-config.iterations_total": 23748,
+            "verify-config.terminal_errors_total": 23748
+          }
+        }
+      }
+    ],
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "labels": {},
+    "created_at": "2026-09-25T14:35:05Z",
+    "started_at": "2026-09-25T14:35:09Z",
+    "finished_at": "2026-09-25T14:46:04Z",
+    "duration": "10m55s",
+    "graphene": {
+      "run_ref": "run/20582790-09e3-4566-bb1b-3d036a34afb3"
+    }
+  }
+}

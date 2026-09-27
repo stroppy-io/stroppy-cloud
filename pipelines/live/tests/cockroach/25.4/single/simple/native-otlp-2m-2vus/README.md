@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/native_cells/65`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](runs/matrix-cockroach-74ee56ed-cockroach-single-25.4/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/native_cells/65`) |
 | native_tps | not_applicable | No logical transactions for this workload. |
 | native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/catalog-functional-check.json) (`/native_cells/65`) |

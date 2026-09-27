@@ -1,0 +1,6 @@
+{
+  "STROPPY_INFRA_GRAPHENE_ADDRESS": "graphene.stroppy.io:443",
+  "STROPPY_INFRA_GRAPHENE_INSECURE": "false",
+  "HTTPS_PROXY": null,
+  "HTTP_PROXY": null
+}

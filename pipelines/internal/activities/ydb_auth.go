@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"time"
 
 	"github.com/graphene-ci/pipeline/pkg/workerapi"
 
@@ -17,19 +18,47 @@ import (
 // Resolve credentials only on the runner agent. The persistent config artifact
 // stays credential-free; the container reads a separate mode-0600 runtime file
 // which is removed after execution, including error and cancellation paths.
-func ydbRuntimeArgs(ctx context.Context, configPath, secret string, args []string) (updated []string, remove func(), err error) {
+func ydbRuntimeArgs(ctx context.Context, configPath, secret string, args []string, probe stroppyContainer) (runCtx context.Context, updated []string, remove func(), err error) {
 	if secret == "" {
-		return args, func() {}, nil
+		return ctx, args, func() {}, nil
 	}
 	raw, err := workerapi.GetSecret(ctx, secret)
 	if err != nil {
-		return nil, nil, fmt.Errorf("resolve YDB credentials: %w", err)
+		return nil, nil, nil, fmt.Errorf("resolve YDB credentials: %w", err)
 	}
-	token, err := (cloud.Yandex{}).IAMToken(ctx, raw)
+	probeCtx, cancelProbe := context.WithTimeout(ctx, 5*time.Minute)
+	version, err := runStroppy(probeCtx, probe)
+	cancelProbe()
 	if err != nil {
-		return nil, nil, fmt.Errorf("create YDB IAM token: %w", err)
+		return nil, nil, nil, fmt.Errorf("check Stroppy authentication capabilities: %w", err)
 	}
-	return runtimeTokenConfig(configPath, token, args)
+	var capabilities map[string]string
+	canRefresh := version.ExitCode == 0 && json.Unmarshal(version.Log, &capabilities) == nil && capabilities["ydb_token_file"] == "1"
+	issue := func(ctx context.Context) (cloud.IAMCredential, error) {
+		return (cloud.Yandex{}).IAMTokenWithExpiration(ctx, raw)
+	}
+	first, err := issue(ctx)
+	if err != nil {
+		return nil, nil, nil, fmt.Errorf("create YDB IAM token: %w", err)
+	}
+	if canRefresh {
+		return renewingRuntimeConfig(ctx, configPath, first, issue, args)
+	}
+	// Preserve old images for bounded short segments, but never imply renewal
+	// support by silently passing a field that an old binary might ignore.
+	if err := validateLegacyIAMDeadline(ctx, first.ExpiresAt); err != nil {
+		return nil, nil, nil, err
+	}
+	updated, remove, err = runtimeTokenConfig(configPath, first.Token, args)
+	return ctx, updated, remove, err
+}
+
+func validateLegacyIAMDeadline(ctx context.Context, expiry time.Time) error {
+	deadline, ok := ctx.Deadline()
+	if !ok || !deadline.Before(expiry.Add(-time.Minute)) {
+		return fmt.Errorf("selected Stroppy image does not support renewable YDB token-file authentication; use an image advertising ydb_token_file=1 for this segment deadline")
+	}
+	return nil
 }
 
 func runtimeTokenConfig(configPath, token string, args []string) (updated []string, remove func(), err error) {

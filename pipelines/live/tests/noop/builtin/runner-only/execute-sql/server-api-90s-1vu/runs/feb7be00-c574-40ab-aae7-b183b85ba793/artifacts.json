@@ -1,0 +1,25 @@
+{
+  "observed_at": "2026-09-25T13:39:08.217212+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/feb7be00-c574-40ab-aae7-b183b85ba793/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "feb7be00-stroppy-main-config",
+        "name": "feb7be00-stroppy-main-config",
+        "kind": "config",
+        "size_bytes": 940,
+        "digest": "sha256:0268ad03170e04069f445f3ee46b2c311ef074b6d2c19278a2a1e1f63342d94f"
+      },
+      {
+        "id": "feb7be00-stroppy-main-log",
+        "name": "feb7be00-stroppy-main-log",
+        "kind": "log_bundle",
+        "size_bytes": 28460453,
+        "digest": "sha256:40d8ec9ff1d5a7329e944b71c267b9a007c26f6701d5f5f0c3a687d81bc3636d"
+      }
+    ]
+  }
+}

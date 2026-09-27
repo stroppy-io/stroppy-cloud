@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/17/single/tpcds/server-sf001-generated",
+  "database": "postgres",
+  "version": "17",
+  "topology": "single",
+  "workload": "tpcds",
+  "preset": "server-sf001-generated",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "aa231dc7-16ec-44e9-9d3c-00d0235d02bc",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T19:11:09.985044+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+    "runs/aa231dc7-16ec-44e9-9d3c-00d0235d02bc"
+  ],
+  "source": {
+    "path": "tests/postgres/17/single/tpcds/server-sf001-generated/runs/aa231dc7-16ec-44e9-9d3c-00d0235d02bc/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "tpcds-generated",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "1m0s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "25m0s",
+      "warmup": "0s",
+      "workload": {
+        "load_workers": 2,
+        "pg_unlogged": false,
+        "query_seed": 19620718,
+        "query_stream": 0,
+        "scale_factor": 0.01,
+        "script": "tpcds",
+        "streams": 1,
+        "validate_force": false,
+        "ydb_store_mode": "column"
+      }
+    }
+  ]
+}

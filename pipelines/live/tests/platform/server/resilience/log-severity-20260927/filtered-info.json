@@ -1,0 +1,65 @@
+{
+  "observed_at": "2026-09-27T16:15:59.168036+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/logs?level=info&limit=3",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T16:08:38Z",
+        "message": "image graphene.stroppy.io:443/t-server-live-20260924/stroppy-run:bc5cedbec831c021 already present, skipping pull",
+        "level": "info",
+        "stream": "pull",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "graphene.role": "agent",
+          "graphene.namespace": "t-server-live-20260924",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "service.name": "graphene-agent",
+          "severity_number": "9",
+          "stream": "pull",
+          "graphene.agent": "0c3d8b9e-runner-1"
+        }
+      },
+      {
+        "time": "2026-09-27T16:05:36Z",
+        "message": "image graphene.stroppy.io:443/t-server-live-20260924/stroppy-run:bc5cedbec831c021 already present, skipping pull",
+        "level": "info",
+        "stream": "pull",
+        "role": "db",
+        "machine": "db-1",
+        "fields": {
+          "service.name": "graphene-agent",
+          "severity_number": "9",
+          "graphene.agent": "0c3d8b9e-db-1",
+          "graphene.namespace": "t-server-live-20260924",
+          "stream": "pull",
+          "graphene.role": "agent",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054"
+        }
+      },
+      {
+        "time": "2026-09-27T16:05:34Z",
+        "message": "image graphene.stroppy.io:443/t-server-live-20260924/stroppy-run:bc5cedbec831c021 already present, skipping pull",
+        "level": "info",
+        "stream": "pull",
+        "role": "db",
+        "machine": "db-1",
+        "fields": {
+          "severity_number": "9",
+          "stream": "pull",
+          "graphene.agent": "0c3d8b9e-db-1",
+          "graphene.role": "agent",
+          "service.name": "graphene-agent",
+          "graphene.namespace": "t-server-live-20260924",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054"
+        }
+      }
+    ],
+    "older": "eyJwIjoiTVRjNU1EVXlOVEV6TkRBNE9ESTVNVGN6T0RveCIsInMiOjE3OTA1MjQ5MDU1MTQwMzUwMDAsImUiOjE3OTA1MjU3NTkxNTY4MzAwNDQsImQiOiJvbGRlciIsInNjb3BlIjp7Ik5hbWVzcGFjZSI6InQtc2VydmVyLWxpdmUtMjAyNjA5MjQiLCJSdW4iOiIwYzNkOGI5ZS0yYzFjLTQ1NDctOWRjOC1mZTJiN2Y2NTYwNTQifSwiZiI6IltcIlwiLFwiXCIsW1wiSU5GT1wiXV0ifQ",
+    "newer": null,
+    "truncated": true
+  }
+}

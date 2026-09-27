@@ -1,0 +1,98 @@
+{
+  "observed_at": "2026-09-27T16:13:58.207459+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/logs?q=activity+failed&limit=3",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T16:13:13Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "service.name": "graphene-pipeline",
+          "graphene.activity": "stroppy.image.pull",
+          "telemetry.sdk.version": "1.46.0",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "graphene.namespace": "t-server-live-20260924",
+          "scope.version": "unknown",
+          "graphene.role": "machine",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "severity_number": "17",
+          "telemetry.sdk.language": "go",
+          "activity": "stroppy.image.pull",
+          "telemetry.sdk.name": "opentelemetry",
+          "contour": "machine",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "span_id": "12cdb08a4f8ad841",
+          "scope.name": "graphene.obs",
+          "graphene.attempt": "9",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to resolve reference \"quay.io/prometheus/node-exporter:v1.12.1\": failed to do request: Head \"https://quay.io/v2/prometheus/node-exporter/manifests/v1.12.1\": net/http: TLS handshake timeout"
+        }
+      },
+      {
+        "time": "2026-09-27T16:12:03Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "telemetry.sdk.language": "go",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to resolve reference \"quay.io/prometheus/node-exporter:v1.12.1\": failed to do request: Head \"https://quay.io/v2/prometheus/node-exporter/manifests/v1.12.1\": net/http: TLS handshake timeout",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "telemetry.sdk.name": "opentelemetry",
+          "contour": "machine",
+          "graphene.activity": "stroppy.image.pull",
+          "graphene.namespace": "t-server-live-20260924",
+          "service.name": "graphene-pipeline",
+          "severity_number": "17",
+          "graphene.role": "machine",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "activity": "stroppy.image.pull",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "scope.name": "graphene.obs",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "span_id": "38521303d83a554f",
+          "scope.version": "unknown",
+          "graphene.attempt": "8"
+        }
+      },
+      {
+        "time": "2026-09-27T16:10:53Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "telemetry.sdk.name": "opentelemetry",
+          "activity": "stroppy.image.pull",
+          "graphene.activity": "stroppy.image.pull",
+          "scope.version": "unknown",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "telemetry.sdk.language": "go",
+          "graphene.namespace": "t-server-live-20260924",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to copy: httpReadSeeker: failed open: failed to do request: Get \"https://quay.io/v2/prometheus/node-exporter/manifests/sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0\": net/http: TLS handshake timeout",
+          "severity_number": "17",
+          "service.name": "graphene-pipeline",
+          "span_id": "7d67443b8cc837b3",
+          "scope.name": "graphene.obs",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "graphene.role": "machine",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "contour": "machine",
+          "graphene.attempt": "7"
+        }
+      }
+    ],
+    "older": "eyJwIjoiTVRjNU1EVXlOVFExTXpFNU1qSTJNVFU1T1RveCIsInMiOjE3OTA1MjQ5MDU1MTQwMzUwMDAsImUiOjE3OTA1MjU2MzgxODkwNTM3OTIsImQiOiJvbGRlciIsInNjb3BlIjp7Ik5hbWVzcGFjZSI6InQtc2VydmVyLWxpdmUtMjAyNjA5MjQiLCJSdW4iOiIwYzNkOGI5ZS0yYzFjLTQ1NDctOWRjOC1mZTJiN2Y2NTYwNTQifSwiZiI6IltcIlwiLFwiYWN0aXZpdHkgZmFpbGVkXCIsbnVsbF0ifQ",
+    "newer": null,
+    "truncated": true
+  }
+}

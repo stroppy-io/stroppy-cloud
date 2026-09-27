@@ -1,0 +1,63 @@
+{
+  "observed_at": "2026-09-27T19:58:00.343907+00:00",
+  "run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+  "query": {
+    "query": "100 * (1 - avg by (\"graphene.agent\") (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))",
+    "start": "2026-09-27T19:26:41Z",
+    "end": "2026-09-27T19:47:58+00:00",
+    "step": "5s"
+  },
+  "http_status": 200,
+  "series": [
+    {
+      "agent": "d1c531ed-db-1",
+      "points": 103,
+      "min": 0.4203495713432148,
+      "max": 7.894081307293755,
+      "verified": true
+    },
+    {
+      "agent": "d1c531ed-db-replica-1",
+      "points": 66,
+      "min": 0.48896956614172815,
+      "max": 2.0205206534732345,
+      "verified": true
+    },
+    {
+      "agent": "d1c531ed-db-replica-2",
+      "points": 139,
+      "min": 0.3488951653098704,
+      "max": 11.600650752016994,
+      "verified": true
+    },
+    {
+      "agent": "d1c531ed-proxy-1",
+      "points": 114,
+      "min": 0.4317502490866154,
+      "max": 13.00883192775084,
+      "verified": true
+    },
+    {
+      "agent": "d1c531ed-runner-1",
+      "points": 78,
+      "min": 0.14850581578644828,
+      "max": 12.942055454092639,
+      "verified": true
+    }
+  ],
+  "expected_agents": [
+    "d1c531ed-db-1",
+    "d1c531ed-db-replica-1",
+    "d1c531ed-db-replica-2",
+    "d1c531ed-proxy-1",
+    "d1c531ed-runner-1"
+  ],
+  "observed_agents": [
+    "d1c531ed-db-1",
+    "d1c531ed-db-replica-1",
+    "d1c531ed-db-replica-2",
+    "d1c531ed-proxy-1",
+    "d1c531ed-runner-1"
+  ],
+  "verified": true
+}

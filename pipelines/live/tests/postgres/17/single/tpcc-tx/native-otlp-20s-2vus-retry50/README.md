@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/native-export-check.json) (`/cells/3`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](../../tpcc-procs/native-otlp-20s-2vus-retry50/runs/native-tpcc-77fa0211-tpcc/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/native-export-check.json) (`/cells/3`) |
 | native_tps | passed | [доказательство](../../../../../platform/catalog/native-export-check.json) (`/cells/3`) |
 | native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/native-export-check.json) (`/cells/3`) |

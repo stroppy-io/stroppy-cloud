@@ -1,0 +1,98 @@
+{
+  "observed_at": "2026-09-27T16:18:55.071884+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/logs?q=activity+failed&limit=3",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T16:14:23Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "telemetry.sdk.name": "opentelemetry",
+          "contour": "machine",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "activity": "stroppy.image.pull",
+          "graphene.role": "machine",
+          "service.name": "graphene-pipeline",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "graphene.attempt": "10",
+          "telemetry.sdk.language": "go",
+          "span_id": "0da757a517c77a1d",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "graphene.activity": "stroppy.image.pull",
+          "graphene.namespace": "t-server-live-20260924",
+          "severity_number": "17",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to resolve reference \"quay.io/prometheus/node-exporter:v1.12.1\": failed to do request: Head \"https://quay.io/v2/prometheus/node-exporter/manifests/v1.12.1\": net/http: TLS handshake timeout"
+        }
+      },
+      {
+        "time": "2026-09-27T16:13:13Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "service.name": "graphene-pipeline",
+          "graphene.role": "machine",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "severity_number": "17",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "telemetry.sdk.language": "go",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.activity": "stroppy.image.pull",
+          "span_id": "12cdb08a4f8ad841",
+          "telemetry.sdk.name": "opentelemetry",
+          "graphene.namespace": "t-server-live-20260924",
+          "graphene.attempt": "9",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "contour": "machine",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to resolve reference \"quay.io/prometheus/node-exporter:v1.12.1\": failed to do request: Head \"https://quay.io/v2/prometheus/node-exporter/manifests/v1.12.1\": net/http: TLS handshake timeout",
+          "activity": "stroppy.image.pull"
+        }
+      },
+      {
+        "time": "2026-09-27T16:12:03Z",
+        "message": "activity failed",
+        "level": "error",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.namespace": "t-server-live-20260924",
+          "scope.version": "unknown",
+          "telemetry.sdk.language": "go",
+          "trace_id": "0f92e1052320a24fc6f0974d67f4fc56",
+          "graphene.role": "machine",
+          "graphene.agent": "0c3d8b9e-runner-1",
+          "scope.name": "graphene.obs",
+          "service.name": "graphene-pipeline",
+          "severity_number": "17",
+          "error": "pull quay.io/prometheus/node-exporter:v1.12.1: Error response from daemon: failed to resolve reference \"quay.io/prometheus/node-exporter:v1.12.1\": failed to do request: Head \"https://quay.io/v2/prometheus/node-exporter/manifests/v1.12.1\": net/http: TLS handshake timeout",
+          "telemetry.sdk.name": "opentelemetry",
+          "graphene.activity": "stroppy.image.pull",
+          "graphene.attempt": "8",
+          "contour": "machine",
+          "activity": "stroppy.image.pull",
+          "graphene.run": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+          "span_id": "38521303d83a554f",
+          "graphene.entity": "run/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054"
+        }
+      }
+    ],
+    "older": "eyJwIjoiTVRjNU1EVXlOVFV5TXpNMk1ETTFOelV6TVRveCIsInMiOjE3OTA1MjQ5MDU1MTQwMzUwMDAsImUiOjE3OTA1MjU4NDg0ODg1MTIwMDAsImQiOiJvbGRlciIsInNjb3BlIjp7Ik5hbWVzcGFjZSI6InQtc2VydmVyLWxpdmUtMjAyNjA5MjQiLCJSdW4iOiIwYzNkOGI5ZS0yYzFjLTQ1NDctOWRjOC1mZTJiN2Y2NTYwNTQifSwiZiI6IltcIlwiLFwiYWN0aXZpdHkgZmFpbGVkXCIsbnVsbF0ifQ",
+    "newer": null,
+    "truncated": true
+  }
+}

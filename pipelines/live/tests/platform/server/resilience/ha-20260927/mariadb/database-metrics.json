@@ -1,0 +1,4111 @@
+{
+  "run_id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+  "http_status": 200,
+  "series_count": 171,
+  "series": [
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_applier_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_applier_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_applier_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_waits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_waits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_waits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_apply_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_causal_reads",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "57"
+      ],
+      "max": 57.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_causal_reads",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "52"
+      ],
+      "max": 52.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_causal_reads",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "48"
+      ],
+      "max": 48.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_deps_distance",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_deps_distance",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_deps_distance",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_index_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_index_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_index_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_interval",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_interval",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cert_interval",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_conf_id",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_conf_id",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_conf_id",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_size",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_status",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_status",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_status",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_weight",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_weight",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_cluster_weight",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oooe",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_oool",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_commit_window",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_connected",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_connected",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_connected",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_desync_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_desync_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_desync_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0.000352142"
+      ],
+      "max": 0.00100153
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0.000379566"
+      ],
+      "max": 0.00126228
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0.000420983"
+      ],
+      "max": 0.00188765
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused_ns",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "98135230"
+      ],
+      "max": 98135230.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused_ns",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "98098115"
+      ],
+      "max": 98098115.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_paused_ns",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "97876939"
+      ],
+      "max": 97876939.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_recv",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_recv",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_recv",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_sent",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_sent",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_flow_control_sent",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_gmcast_segment",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_gmcast_segment",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_gmcast_segment",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_last_committed",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "20553"
+      ],
+      "max": 20553.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_last_committed",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "20553"
+      ],
+      "max": 20553.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_last_committed",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "20553"
+      ],
+      "max": 20553.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_bf_aborts",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_bf_aborts",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_bf_aborts",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cached_downto",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cached_downto",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cached_downto",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "3"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cert_failures",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cert_failures",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_cert_failures",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_commits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_commits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "20550"
+      ],
+      "max": 20550.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_commits",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_index",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_index",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_index",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 3.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0.334459"
+      ],
+      "max": 1.021
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0.62917"
+      ],
+      "max": 1.84384
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "25"
+      ],
+      "max": 25.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "29"
+      ],
+      "max": 29.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_recv_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_replays",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_replays",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_replays",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0.0000482789"
+      ],
+      "max": 0.333333
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_avg",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0.00613497"
+      ],
+      "max": 0.0277778
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_max",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_send_queue_min",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_state",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_state",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_local_state",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_connections",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_connections",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_connections",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_transactions",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_transactions",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_open_transactions",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_application",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_application",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_application",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "4"
+      ],
+      "max": 4.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_gcs",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "6"
+      ],
+      "max": 6.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_gcs",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "6"
+      ],
+      "max": 6.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_gcs",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "6"
+      ],
+      "max": 6.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_replicator",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_replicator",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_replicator",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_version",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_version",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_protocol_version",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "11"
+      ],
+      "max": 11.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_ready",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_ready",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_ready",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "20720"
+      ],
+      "max": 20720.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "164"
+      ],
+      "max": 164.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "20713"
+      ],
+      "max": 20713.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "7564564"
+      ],
+      "max": 7564564.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1768"
+      ],
+      "max": 1768.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_received_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "7563952"
+      ],
+      "max": 7563952.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_data_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_data_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "4993636"
+      ],
+      "max": 4993636.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_data_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "82200"
+      ],
+      "max": 82200.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1150800"
+      ],
+      "max": 1150800.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_keys_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_other_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_other_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_repl_other_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "20550"
+      ],
+      "max": 20550.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "7562384"
+      ],
+      "max": 7562384.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_replicated_bytes",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "0"
+      ],
+      "max": 0.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_rollbacker_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_rollbacker_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_rollbacker_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_global_status_wsrep_thread_count",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "2"
+      ],
+      "max": 2.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_up",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-1",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-1-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 55,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_up",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-2",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 52,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    },
+    {
+      "metric": {
+        "__name__": "mysql_up",
+        "graphene.activity": "docker.container.observe",
+        "graphene.agent": "5fc7ddd6-db-3",
+        "graphene.attempt": "1",
+        "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-3-mysqld-exporter",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "machine",
+        "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "scope.name": "graphene.obs",
+        "scope.version": "unknown",
+        "service.name": "graphene-pipeline",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.46.0"
+      },
+      "points": 43,
+      "last": [
+        1790529245,
+        "1"
+      ],
+      "max": 1.0
+    }
+  ]
+}

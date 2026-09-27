@@ -3,11 +3,14 @@ package graphene
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"connectrpc.com/connect"
 
 	managementv1 "github.com/graphene-ci/graphene/pkg/proto/management/v1"
+
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 )
 
 // Pipeline ids of the product pipelines (one image, four binaries).
@@ -29,6 +32,9 @@ func (c *Client) StartRun(ctx context.Context, runID, pipeline string, params an
 		RunId: runID, Pipeline: pipeline, Params: raw, Labels: labels,
 	}))
 	if err != nil {
+		if connect.CodeOf(err) == connect.CodeInvalidArgument || connect.CodeOf(err) == connect.CodeAlreadyExists {
+			err = errors.Join(run.ErrStartRejected, err)
+		}
 		return fmt.Errorf("graphene: start %s/%s: %w", pipeline, runID, err)
 	}
 	return nil
@@ -76,6 +82,9 @@ func (c *Client) RunOnce(ctx context.Context, runID, pipeline string, params, ou
 func (c *Client) RunStatus(ctx context.Context, runID string) (string, error) {
 	resp, err := c.Runs.GetRun(ctx, connect.NewRequest(&managementv1.GetRunRequest{RunId: runID}))
 	if err != nil {
+		if IsNotFound(err) {
+			err = errors.Join(run.ErrRemoteNotFound, err)
+		}
 		return "", fmt.Errorf("graphene: get %s: %w", runID, err)
 	}
 	return resp.Msg.GetStatus(), nil

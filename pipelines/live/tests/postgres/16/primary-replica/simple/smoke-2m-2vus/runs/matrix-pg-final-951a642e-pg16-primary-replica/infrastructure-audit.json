@@ -1,0 +1,47 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-pg-final-951a642e-pg16-primary-replica",
+  "input_run_id": "859883b4-55c1-4142-be02-bf42e39a3c3d",
+  "input_resolution": "executed suite cell; original per-run snapshot is a pre-launch template",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "859883b4-db-1",
+      "entity": "docker/859883b4-55c1-4142-be02-bf42e39a3c3d-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-1",
+      "agent": "859883b4-db-replica-1",
+      "entity": "docker/859883b4-55c1-4142-be02-bf42e39a3c3d-db-replica-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "859883b4-runner-1",
+      "entity": "docker/859883b4-55c1-4142-be02-bf42e39a3c3d-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/postgres/16/primary-replica/simple/smoke-2m-2vus/runs/matrix-pg-final-951a642e-pg16-primary-replica/input.json",
+      "sha256": "dc6cdbe1f470fa537420fd50417d1cf95d90d9fb0624ed3e4e44f7d81f26712f"
+    },
+    {
+      "path": "tests/postgres/16/primary-replica/simple/smoke-2m-2vus/runs/matrix-pg-final-951a642e-pg16-primary-replica/metrics.json",
+      "sha256": "adf80c9b55b0fbf4c77e5fa98cca342a4bb2367eea46ba2372dc0a9f1149ebd8"
+    },
+    {
+      "path": "tests/platform/suites/suite-postgres-versions-final.json",
+      "pointer": "/cells/0/run_spec",
+      "sha256": "c976f3fd173304a070e027c738803afee2dbfe211d5e1d1c1219194cad634f3d"
+    }
+  ]
+}

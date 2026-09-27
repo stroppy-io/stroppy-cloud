@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "d92548ed-af3a-425f-a896-14a90f58bf01",
+  "case_paths": [
+    "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-25T13:50:43.351825+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu/runs/d92548ed-af3a-425f-a896-14a90f58bf01/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

@@ -34,7 +34,7 @@ const (
 
 const (
 	// stdoutCaptureLimit bounds the in-memory copy of stdout the parsers
-	// read (the compliance JSON line, the baseline report); the full output
+	// read for CLI diagnostics and the baseline report; the full output
 	// always goes to the log file.
 	stdoutCaptureLimit = 8 << 20
 	// errTailLines is how much of the log a failure message quotes.
@@ -52,7 +52,7 @@ type RunSegmentRequest struct {
 	Workload spec.Workload `json:"workload"`
 	// URL is the connection URL with address placeholders expanded.
 	URL string `json:"url"`
-	// OTLPEndpoint receives stroppy metrics; empty disables the exporter.
+	// OTLPEndpoint overrides the executor-local intake for stroppy metrics.
 	OTLPEndpoint string `json:"otlp_endpoint,omitempty"`
 	// OTLPHeaders is the comma-separated key=value list stroppy sends.
 	OTLPHeaders string `json:"otlp_headers,omitempty"`
@@ -81,6 +81,7 @@ type RunSegmentResult struct {
 // doc: stroppy Dockerfile — ENTRYPOINT stroppy, WORKDIR /workspace;
 // README "Docker Usage" — --network host to reach the databases.
 func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, error) {
+	ctx = bindHeartbeatContext(ctx)
 	seg := req.Segment
 	dir, err := workspaceSubdir("stroppy", segmentSlug(req.Index, seg.Name))
 	if err != nil {
@@ -90,13 +91,18 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
-	args, cleanup, err := ydbRuntimeArgs(ctx, cfgPath, req.Workload.YDBIAMCredentialsSecret, stroppycfg.Args(seg))
+	runCtx, args, cleanup, err := ydbRuntimeArgs(ctx, cfgPath, req.Workload.YDBIAMCredentialsSecret, stroppycfg.Args(seg), stroppyContainer{
+		Name:  "stroppy-auth-version-" + segmentSlug(req.Index, seg.Name),
+		Image: req.Workload.StroppyImage, RegistrySecret: req.RegistrySecret,
+		Dir: dir, Args: []string{"version", "--json"}, LogName: seg.Name + "-auth-capabilities",
+		Labels: map[string]string{"stroppy-run": req.RunID, "stroppy-segment": seg.Name},
+	})
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
 	defer cleanup()
 	started := time.Now().UTC()
-	out, err := runStroppy(ctx, stroppyContainer{
+	out, err := runStroppy(runCtx, stroppyContainer{
 		Name:           "stroppy-" + segmentSlug(req.Index, seg.Name),
 		Image:          req.Workload.StroppyImage,
 		RegistrySecret: req.RegistrySecret,
@@ -106,6 +112,12 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		LogName:        seg.Name,
 	})
 	if err != nil {
+		if ctx.Err() == nil && errors.Is(context.Cause(runCtx), errIAMExpired) {
+			return RunSegmentResult{
+				ConfigPath: cfgPath, LogPath: out.LogPath,
+				Result: spec.SegmentResult{Name: seg.Name, StartedAt: started, FinishedAt: time.Now().UTC(), Status: spec.SegmentFailed, ExitCode: 1, Error: errIAMExpired.Error()},
+			}, nil
+		}
 		return RunSegmentResult{}, err
 	}
 	finished := time.Now().UTC()
@@ -115,6 +127,9 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		LogPath:    out.LogPath,
 	}
 	res.Result.Status, res.Result.Error = segmentOutcome(ctx, &seg, &out, &res.Result)
+	if ctx.Err() == nil && errors.Is(context.Cause(runCtx), errIAMExpired) {
+		res.Result.Status, res.Result.Error = spec.SegmentFailed, errIAMExpired.Error()
+	}
 	return res, nil
 }
 
@@ -125,6 +140,16 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 // validation, teardown, fatal or other command errors.
 func segmentOutcome(ctx context.Context, seg *spec.Segment, out *stroppyOutput, r *spec.SegmentResult) (status spec.SegmentStatus, reason string) {
 	summary := stroppycfg.ParseOutput(out.Log)
+	var summaryErr error
+	if out.LogPath != "" {
+		f, err := os.Open(out.LogPath)
+		if err != nil {
+			summaryErr = err
+		} else {
+			summary, summaryErr = stroppycfg.ParseOutputReader(f)
+			_ = f.Close()
+		}
+	}
 	if summary.Found {
 		r.Metrics = summary.Metrics
 		r.Errors = summary.Errors
@@ -148,6 +173,9 @@ func segmentOutcome(ctx context.Context, seg *spec.Segment, out *stroppyOutput, 
 			}
 		}
 		return spec.SegmentFailed, fmt.Sprintf("stroppy %s: %s", text, tail(lastLines(out.LogPath), errTailBytes))
+	}
+	if summaryErr != nil {
+		return spec.SegmentFailed, fmt.Sprintf("read stroppy summary: %v", summaryErr)
 	}
 	if !summary.Found {
 		return spec.SegmentFailed, "stroppy exited 0 without a bench summary: " + tail(lastLines(out.LogPath), errTailBytes)
@@ -235,6 +263,10 @@ type stroppyOutput struct {
 // runs stroppy with the directory mounted as /workspace on the host network
 // and streams its output until exit.
 func runStroppy(ctx context.Context, c stroppyContainer) (stroppyOutput, error) {
+	// A query can legitimately run without emitting any log lines. Liveness
+	// must not depend on log level or on every fiftieth output line.
+	stopHeartbeat := operationHeartbeat(ctx, c.LogName+": running workload")
+	defer stopHeartbeat()
 	cli, err := dockerclient.NewClientWithOpts(dockerclient.FromEnv, dockerclient.WithAPIVersionNegotiation())
 	if err != nil {
 		return stroppyOutput{}, err
@@ -267,7 +299,7 @@ func runStroppy(ctx context.Context, c stroppyContainer) (stroppyOutput, error) 
 	}
 	obs.Info(ctx, "stroppy started", obs.Str("name", c.LogName), obs.Str("args", strings.Join(c.Args, " ")))
 	if activity.IsActivity(ctx) {
-		activity.RecordHeartbeat(ctx, c.LogName+": running workload")
+		recordHeartbeat(ctx, c.LogName+": running workload")
 	}
 
 	out := stroppyOutput{LogPath: filepath.Join(c.Dir, "stroppy.log")}
@@ -309,9 +341,17 @@ func shortID(id string) string {
 // writeSegmentInputs writes stroppy-config.json and the CA certificate;
 // returns the config path.
 func writeSegmentInputsContext(_ context.Context, dir string, req RunSegmentRequest) (string, error) {
+	endpoint, headers := req.OTLPEndpoint, req.OTLPHeaders
+	if endpoint == "" {
+		endpoint = machine.OTLPEndpoint(false)
+		if endpoint != "" {
+			endpoint = "http://" + endpoint
+		}
+		headers = ""
+	}
 	cfg, err := stroppycfg.MarshalConfig(stroppycfg.Input{
 		RunID: req.RunID, Segment: req.Segment, Workload: req.Workload, URL: req.URL,
-		OTLPEndpoint: req.OTLPEndpoint, OTLPHeaders: req.OTLPHeaders, Labels: req.Labels,
+		OTLPEndpoint: endpoint, OTLPHeaders: headers, Labels: req.Labels,
 	})
 	if err != nil {
 		return "", err
@@ -332,7 +372,8 @@ func writeSegmentInputsContext(_ context.Context, dir string, req RunSegmentRequ
 
 // streamAndWait copies the container's output to obs and the log file
 // until it exits, heartbeating on every line, and keeps a bounded copy of
-// the whole log and of stdout for the parsers. Returns the exit code.
+// the log prefix for diagnostics and stdout for baseline JSON. Segment
+// summaries are parsed from the complete log file. Returns the exit code.
 func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, name string) (exitCode int, log, stdout []byte, err error) {
 	logs, err := cli.ContainerLogs(ctx, id, container.LogsOptions{ShowStdout: true, ShowStderr: true, Follow: true})
 	if err != nil {
@@ -350,18 +391,23 @@ func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, n
 		stdoutBuf bytes.Buffer
 	)
 	pr, pw := io.Pipe()
+	defer func() { _ = pr.Close() }()
+	copyDone := make(chan struct{})
 	outTee := io.MultiWriter(pw, &limitedWriter{w: &stdoutBuf, limit: stdoutCaptureLimit})
 	go func() {
+		defer close(copyDone)
 		_, cerr := stdcopy.StdCopy(outTee, pw, logs)
 		_ = pw.CloseWithError(cerr)
 	}()
 	sc := bufio.NewScanner(pr)
 	sc.Buffer(make([]byte, 0, 64*1024), 1<<20)
 	lines := 0
+	var writeErr error
 	for sc.Scan() {
 		line := sc.Text()
 		if _, werr := f.WriteString(line + "\n"); werr != nil {
-			obs.Warn(ctx, "log file write failed", obs.Err(werr))
+			writeErr = fmt.Errorf("write stroppy log: %w", werr)
+			break
 		}
 		if logBuf.Len() < stdoutCaptureLimit {
 			logBuf.WriteString(line)
@@ -370,8 +416,17 @@ func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, n
 		obs.Info(ctx, line, obs.Str("segment", name), obs.Str("stream", "stroppy"))
 		lines++
 		if lines%50 == 0 && activity.IsActivity(ctx) {
-			activity.RecordHeartbeat(ctx, fmt.Sprintf("%s: %d lines", name, lines))
+			recordHeartbeat(ctx, fmt.Sprintf("%s: %d lines", name, lines))
 		}
+	}
+	streamErr := errors.Join(writeErr, sc.Err())
+	if streamErr != nil {
+		_ = pr.CloseWithError(streamErr)
+		_ = logs.Close()
+	}
+	<-copyDone // stdout must no longer be modified before returning its bytes.
+	if streamErr != nil {
+		return -1, logBuf.Bytes(), stdoutBuf.Bytes(), fmt.Errorf("read stroppy logs: %w", streamErr)
 	}
 	waitCh, errCh := cli.ContainerWait(ctx, id, container.WaitConditionNotRunning)
 	select {
@@ -406,7 +461,17 @@ func (l *limitedWriter) Write(p []byte) (int, error) {
 
 func lastLines(path string) string {
 	const n = errTailLines
-	raw, err := os.ReadFile(path)
+	f, err := os.Open(path)
+	if err != nil {
+		return ""
+	}
+	defer func() { _ = f.Close() }()
+	info, err := f.Stat()
+	if err != nil {
+		return ""
+	}
+	start := max(int64(0), info.Size()-int64(errTailBytes))
+	raw, err := io.ReadAll(io.NewSectionReader(f, start, int64(errTailBytes)))
 	if err != nil {
 		return ""
 	}

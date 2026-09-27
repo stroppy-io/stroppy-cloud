@@ -1,0 +1,50 @@
+[
+  {
+    "at": "2026-09-27T17:15:06.730265+00:00",
+    "state": [
+      "pending",
+      "queued",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T17:15:11.759118+00:00",
+    "state": [
+      "running",
+      "provisioning",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T17:17:57.764328+00:00",
+    "state": [
+      "running",
+      "deploying",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T17:19:33.293070+00:00",
+    "state": [
+      "running",
+      "workload",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T17:20:23.576591+00:00",
+    "state": [
+      "running",
+      "teardown",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T17:23:44.738521+00:00",
+    "state": [
+      "completed",
+      "done",
+      null
+    ]
+  }
+]

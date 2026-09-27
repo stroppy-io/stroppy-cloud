@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"regexp"
 	"sort"
 	"strconv"
@@ -51,8 +52,15 @@ type Summary struct {
 
 // ParseOutput reads the merged stdout/stderr of a stroppy run.
 func ParseOutput(out []byte) Summary {
+	s, _ := ParseOutputReader(bytes.NewReader(out)) //nolint:errcheck // Legacy byte parser returns partial output; file callers use the error-returning reader.
+	return s
+}
+
+// ParseOutputReader reads the complete output without retaining the full log.
+// A read failure is returned even when a partial summary has already arrived.
+func ParseOutputReader(r io.Reader) (Summary, error) {
 	s := Summary{Metrics: map[string]spec.MetricValue{}}
-	sc := bufio.NewScanner(bytes.NewReader(out))
+	sc := bufio.NewScanner(r)
 	sc.Buffer(make([]byte, 0, 64*1024), 16<<20)
 	section := ""
 	for sc.Scan() {
@@ -112,7 +120,7 @@ func ParseOutput(out []byte) Summary {
 			}
 		}
 	}
-	return s
+	return s, sc.Err()
 }
 
 func parseSummaryLine(line string, into map[string]spec.MetricValue) bool {

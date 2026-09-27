@@ -1,0 +1,94 @@
+{
+  "observed_at": "2026-09-27T17:04:30.249119+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/f019770c-bb58-4436-9bcb-8d28cced6fd2/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "208",
+        "at": "2026-09-27T16:49:21Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "209",
+        "at": "2026-09-27T16:49:23Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "210",
+        "at": "2026-09-27T16:51:56Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "81.26.188.19",
+          "private_ip": "10.130.0.17",
+          "id": "fv4i82uhiapv7oiv94o0"
+        }
+      },
+      {
+        "id": "211",
+        "at": "2026-09-27T16:52:12Z",
+        "kind": "machine.ready",
+        "title": "Machine db-1 ready",
+        "subject": "db-1",
+        "payload": {
+          "id": "fv4mrst2pia1j5m04kba",
+          "role": "db",
+          "machine": "db-1",
+          "public_ip": "158.160.200.81",
+          "private_ip": "10.130.0.25"
+        }
+      },
+      {
+        "id": "212",
+        "at": "2026-09-27T16:52:12Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m49.276s"
+        }
+      },
+      {
+        "id": "213",
+        "at": "2026-09-27T16:52:12Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "219",
+        "at": "2026-09-27T17:00:56Z",
+        "kind": "activity-failed",
+        "title": "Step failed: pull",
+        "subject": "stroppy.image.pull",
+        "error": "pull docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0: Error response from daemon: failed to resolve reference \"docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0\": failed to authorize: failed to fetch anonymous token: Get \"https://auth.docker.io/token?scope=repository%3Aprom%2Fnode-exporter%3Apull&service=registry.docker.io\": dial tcp 172.64.144.78:443: i/o timeout"
+      },
+      {
+        "id": "230",
+        "at": "2026-09-27T17:04:04Z",
+        "kind": "run-canceled",
+        "title": "Run cancelled",
+        "status": "canceled"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

@@ -325,19 +325,15 @@ func (h *Handler) GetPublicShare(ctx context.Context, params oas.GetPublicShareP
 	return &oas.ShareSnapshotHeaders{XRobotsTag: oas.NewOptString("noindex"), Response: h.snapshotOf(s)}, nil
 }
 
-// GetPublicShareMetrics — metrics of a shared run (scope metrics); the
-// metrics adapter is not wired yet, so the window is reported empty.
+// GetPublicShareMetrics exposes catalog series within the published run window.
 func (h *Handler) GetPublicShareMetrics(ctx context.Context, params oas.GetPublicShareMetricsParams) (*oas.RunMetrics, error) {
-	s, err := h.deps.Shares.Public(ctx, params.Token)
+	series, perKey, window, err := h.deps.Observe.SharedMetrics(ctx, h.deps.Shares, params.Token, params.Start.Or(time.Time{}), params.End.Or(time.Time{}))
 	if err != nil {
 		return nil, err
 	}
-	if s.Scope == share.ScopeOverview {
-		return nil, errs.Forbidden("this share does not include metrics")
-	}
-	out := &oas.RunMetrics{Series: []oas.RunMetricsSeriesItem{}, Errors: []oas.RunMetricsErrorsItem{{Key: oas.NewOptString("*"), Error: oas.NewOptString("metrics store is not connected")}}}
-	if s.Snapshot.Run != nil && s.Snapshot.Run.StartedAt != nil && s.Snapshot.Run.FinishedAt != nil {
-		out.Window = oas.RunMetricsWindow{Start: *s.Snapshot.Run.StartedAt, End: *s.Snapshot.Run.FinishedAt}
+	out := &oas.RunMetrics{Window: oas.RunMetricsWindow{Start: window.Start, End: window.End}, Series: seriesOf(series), Errors: []oas.RunMetricsErrorsItem{}}
+	for _, err := range perKey {
+		out.Errors = append(out.Errors, oas.RunMetricsErrorsItem{Error: oas.NewOptString(err.Error())})
 	}
 	return out, nil
 }

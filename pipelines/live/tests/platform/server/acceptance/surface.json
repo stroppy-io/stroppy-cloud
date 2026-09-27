@@ -1,0 +1,240 @@
+{
+  "started_at": "2026-09-25T14:23:24.913241+00:00",
+  "finished_at": "2026-09-25T14:23:58.815371+00:00",
+  "seconds": 33.902,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(PortableLibrary|IdentityHTTP|SharedMetrics)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "bf18e2c6d2a31ec3b277b20714bcf8392b3bb324ac932cfa7934b80a24a835a8",
+  "source_sha256_after": "bf18e2c6d2a31ec3b277b20714bcf8392b3bb324ac932cfa7934b80a24a835a8",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2EPortableLibrary/workloads": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EPortableLibrary/tests": {
+      "status": "pass",
+      "seconds": 4.66
+    },
+    "TestE2EPortableLibrary/suites": {
+      "status": "pass",
+      "seconds": 6.94
+    },
+    "TestE2EPortableLibrary": {
+      "status": "pass",
+      "seconds": 17.49
+    },
+    "TestE2EIdentityHTTP": {
+      "status": "pass",
+      "seconds": 0.32
+    },
+    "TestE2ESharedMetrics": {
+      "status": "pass",
+      "seconds": 3.29
+    }
+  },
+  "http_observations": {
+    "TestE2EPortableLibrary": {
+      "addFavorite": {
+        "204": 1
+      },
+      "cloneSuite": {
+        "201": 1
+      },
+      "cloneTest": {
+        "201": 1
+      },
+      "cloneWorkload": {
+        "201": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteTest": {
+        "204": 1
+      },
+      "deleteWorkload": {
+        "204": 1
+      },
+      "diffTests": {
+        "200": 1
+      },
+      "diffWorkloads": {
+        "200": 1
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "exportTest": {
+        "200": 1
+      },
+      "exportWorkload": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getShare": {
+        "200": 1
+      },
+      "getSuite": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 3
+      },
+      "getTest": {
+        "200": 2,
+        "404": 1
+      },
+      "getWorkload": {
+        "200": 1,
+        "404": 1
+      },
+      "importSuite": {
+        "200": 1
+      },
+      "importTest": {
+        "200": 1
+      },
+      "importWorkload": {
+        "200": 1
+      },
+      "launchSuite": {
+        "201": 1
+      },
+      "listSuiteRunsOfSuite": {
+        "200": 1
+      },
+      "listWebhooks": {
+        "200": 1
+      },
+      "patchSchedule": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 1
+      },
+      "patchTest": {
+        "200": 1
+      },
+      "patchWorkload": {
+        "200": 1
+      },
+      "removeFavorite": {
+        "204": 1
+      },
+      "shareSuiteRun": {
+        "201": 1
+      }
+    },
+    "TestE2EIdentityHTTP": {
+      "acceptInvite": {
+        "200": 1
+      },
+      "adminDeleteTenant": {
+        "204": 2
+      },
+      "createInvite": {
+        "201": 2
+      },
+      "createMyToken": {
+        "201": 1
+      },
+      "createTenant": {
+        "201": 2
+      },
+      "declineInvite": {
+        "204": 1
+      },
+      "deleteTenant": {
+        "403": 1
+      },
+      "getMe": {
+        "200": 1
+      },
+      "getPublicCatalog": {
+        "200": 1
+      },
+      "getTenant": {
+        "200": 2
+      },
+      "listMyInvites": {
+        "200": 2
+      }
+    },
+    "TestE2ESharedMetrics": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createPublicShareGrafanaSession": {
+        "503": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getPublicShareMetrics": {
+        "200": 1,
+        "403": 1,
+        "404": 1,
+        "422": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 2
+      },
+      "patchShare": {
+        "200": 2
+      },
+      "revokeShare": {
+        "204": 1
+      },
+      "shareRun": {
+        "201": 1
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

@@ -1,0 +1,390 @@
+{
+  "observed_at": "2026-09-27T17:31:51.067390+00:00",
+  "run_id": "09e86d6e-3eab-4e5d-ac47-621d19accff3",
+  "run_status": "completed",
+  "contract_version": "2.0.1",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 4,
+      "machine": null,
+      "aggregates": {
+        "avg": 1,
+        "min": 1,
+        "max": 1,
+        "last": 1,
+        "p95": 1
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 3,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 0.051414274177760004,
+        "min": 0,
+        "max": 0.07712141126664,
+        "last": 0.07712141126664,
+        "p95": 0.07712141126664
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 4.444463703787,
+        "min": 4.444463703787,
+        "max": 4.444463703787,
+        "last": 4.444463703787,
+        "p95": 4.444463703787
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 3,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 6.729811213880001,
+        "min": 4.302422920712,
+        "max": 7.943505360464,
+        "last": 7.943505360464,
+        "p95": 7.943505360464
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 97.7782014833,
+        "min": 97.7782014833,
+        "max": 97.7782014833,
+        "last": 97.7782014833,
+        "p95": 97.7782014833
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 36,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 49.571506043233434,
+        "min": 4.952582543042383,
+        "max": 100,
+        "last": 100,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 21,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 24.81280590149144,
+        "min": -75.16666666666664,
+        "max": 100,
+        "last": -75.16666666666664,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 32,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 912553216,
+        "min": 769437696,
+        "max": 986783744,
+        "last": 929124352,
+        "p95": 986783744
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 17,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 646489509.6470588,
+        "min": 619454464,
+        "max": 682127360,
+        "last": 619454464,
+        "p95": 682127360
+      }
+    }
+  ],
+  "native_series_count": 1916,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_insert_duration_bucket",
+    "stroppy_insert_duration_count",
+    "stroppy_insert_duration_sum",
+    "stroppy_insert_operations_total",
+    "stroppy_insert_progress_rows_per_second",
+    "stroppy_insert_progress_rows_total",
+    "stroppy_insert_rows_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total",
+    "stroppy_tpch_q10_duration_bucket",
+    "stroppy_tpch_q10_duration_count",
+    "stroppy_tpch_q10_duration_sum",
+    "stroppy_tpch_q10_elapsed_total",
+    "stroppy_tpch_q10_runs",
+    "stroppy_tpch_q11_duration_bucket",
+    "stroppy_tpch_q11_duration_count",
+    "stroppy_tpch_q11_duration_sum",
+    "stroppy_tpch_q11_elapsed_total",
+    "stroppy_tpch_q11_runs",
+    "stroppy_tpch_q12_duration_bucket",
+    "stroppy_tpch_q12_duration_count",
+    "stroppy_tpch_q12_duration_sum",
+    "stroppy_tpch_q12_elapsed_total",
+    "stroppy_tpch_q12_runs",
+    "stroppy_tpch_q13_duration_bucket",
+    "stroppy_tpch_q13_duration_count",
+    "stroppy_tpch_q13_duration_sum",
+    "stroppy_tpch_q13_elapsed_total",
+    "stroppy_tpch_q13_runs",
+    "stroppy_tpch_q14_duration_bucket",
+    "stroppy_tpch_q14_duration_count",
+    "stroppy_tpch_q14_duration_sum",
+    "stroppy_tpch_q14_elapsed_total",
+    "stroppy_tpch_q14_runs",
+    "stroppy_tpch_q15_duration_bucket",
+    "stroppy_tpch_q15_duration_count",
+    "stroppy_tpch_q15_duration_sum",
+    "stroppy_tpch_q15_elapsed_total",
+    "stroppy_tpch_q15_runs",
+    "stroppy_tpch_q16_duration_bucket",
+    "stroppy_tpch_q16_duration_count",
+    "stroppy_tpch_q16_duration_sum",
+    "stroppy_tpch_q16_elapsed_total",
+    "stroppy_tpch_q16_runs",
+    "stroppy_tpch_q17_duration_bucket",
+    "stroppy_tpch_q17_duration_count",
+    "stroppy_tpch_q17_duration_sum",
+    "stroppy_tpch_q17_elapsed_total",
+    "stroppy_tpch_q17_runs",
+    "stroppy_tpch_q18_duration_bucket",
+    "stroppy_tpch_q18_duration_count",
+    "stroppy_tpch_q18_duration_sum",
+    "stroppy_tpch_q18_elapsed_total",
+    "stroppy_tpch_q18_runs",
+    "stroppy_tpch_q19_duration_bucket",
+    "stroppy_tpch_q19_duration_count",
+    "stroppy_tpch_q19_duration_sum",
+    "stroppy_tpch_q19_elapsed_total",
+    "stroppy_tpch_q19_runs",
+    "stroppy_tpch_q1_duration_bucket",
+    "stroppy_tpch_q1_duration_count",
+    "stroppy_tpch_q1_duration_sum",
+    "stroppy_tpch_q1_elapsed_total",
+    "stroppy_tpch_q1_runs",
+    "stroppy_tpch_q20_duration_bucket",
+    "stroppy_tpch_q20_duration_count",
+    "stroppy_tpch_q20_duration_sum",
+    "stroppy_tpch_q20_elapsed_total",
+    "stroppy_tpch_q20_runs",
+    "stroppy_tpch_q21_duration_bucket",
+    "stroppy_tpch_q21_duration_count",
+    "stroppy_tpch_q21_duration_sum",
+    "stroppy_tpch_q21_elapsed_total",
+    "stroppy_tpch_q21_runs",
+    "stroppy_tpch_q22_duration_bucket",
+    "stroppy_tpch_q22_duration_count",
+    "stroppy_tpch_q22_duration_sum",
+    "stroppy_tpch_q22_elapsed_total",
+    "stroppy_tpch_q22_runs",
+    "stroppy_tpch_q2_duration_bucket",
+    "stroppy_tpch_q2_duration_count",
+    "stroppy_tpch_q2_duration_sum",
+    "stroppy_tpch_q2_elapsed_total",
+    "stroppy_tpch_q2_runs",
+    "stroppy_tpch_q3_duration_bucket",
+    "stroppy_tpch_q3_duration_count",
+    "stroppy_tpch_q3_duration_sum",
+    "stroppy_tpch_q3_elapsed_total",
+    "stroppy_tpch_q3_runs",
+    "stroppy_tpch_q4_duration_bucket",
+    "stroppy_tpch_q4_duration_count",
+    "stroppy_tpch_q4_duration_sum",
+    "stroppy_tpch_q4_elapsed_total",
+    "stroppy_tpch_q4_runs",
+    "stroppy_tpch_q5_duration_bucket",
+    "stroppy_tpch_q5_duration_count",
+    "stroppy_tpch_q5_duration_sum",
+    "stroppy_tpch_q5_elapsed_total",
+    "stroppy_tpch_q5_runs",
+    "stroppy_tpch_q6_duration_bucket",
+    "stroppy_tpch_q6_duration_count",
+    "stroppy_tpch_q6_duration_sum",
+    "stroppy_tpch_q6_elapsed_total",
+    "stroppy_tpch_q6_runs",
+    "stroppy_tpch_q7_duration_bucket",
+    "stroppy_tpch_q7_duration_count",
+    "stroppy_tpch_q7_duration_sum",
+    "stroppy_tpch_q7_elapsed_total",
+    "stroppy_tpch_q7_runs",
+    "stroppy_tpch_q8_duration_bucket",
+    "stroppy_tpch_q8_duration_count",
+    "stroppy_tpch_q8_duration_sum",
+    "stroppy_tpch_q8_elapsed_total",
+    "stroppy_tpch_q8_runs",
+    "stroppy_tpch_q9_duration_bucket",
+    "stroppy_tpch_q9_duration_count",
+    "stroppy_tpch_q9_duration_sum",
+    "stroppy_tpch_q9_elapsed_total",
+    "stroppy_tpch_q9_runs"
+  ],
+  "native_scope_mismatches": [],
+  "invalid_metric_values": [
+    {
+      "key": "node_cpu_usage",
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 24.81280590149144,
+        "min": -75.16666666666664,
+        "max": 100,
+        "last": -75.16666666666664,
+        "p95": 100
+      }
+    }
+  ],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "db-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-postgres",
+          "count": 56
+        },
+        {
+          "value": "db-1-postgres-exporter",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 657
+        },
+        {
+          "value": "unspecified",
+          "count": 44
+        },
+        {
+          "value": "warn",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "runner-1",
+          "count": 439
+        },
+        {
+          "value": "db-1",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "runner",
+          "count": 439
+        },
+        {
+          "value": "db",
+          "count": 250
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "stroppy",
+          "count": 288
+        },
+        {
+          "value": "container",
+          "count": 220
+        },
+        {
+          "value": "stdout",
+          "count": 88
+        },
+        {
+          "value": "stderr",
+          "count": 51
+        },
+        {
+          "value": "pull",
+          "count": 31
+        },
+        {
+          "value": "",
+          "count": 27
+        },
+        {
+          "value": "runc",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "logs_verified": true,
+  "native_verified": true,
+  "components_verified": false,
+  "verified": false
+}

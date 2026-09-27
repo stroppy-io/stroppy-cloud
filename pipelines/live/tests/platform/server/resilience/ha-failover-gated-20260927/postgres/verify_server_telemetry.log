@@ -1,0 +1,534 @@
+{
+  "observed_at": "2026-09-27T20:27:12.378777+00:00",
+  "run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+  "run_status": "completed",
+  "contract_version": "2.0.2",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 51,
+      "machine": null,
+      "aggregates": {
+        "avg": 263445.50980392157,
+        "min": 1,
+        "max": 563922,
+        "last": 563921,
+        "p95": 537038
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 257.5684559002,
+        "min": 257.5684559002,
+        "max": 257.5684559002,
+        "last": 257.5684559002,
+        "p95": 257.5684559002
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 49,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 1925.1352903090556,
+        "min": 149.9140513121,
+        "max": 2349.6660358733,
+        "last": 2349.6660358733,
+        "p95": 2335.03117015
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 355.0840039982,
+        "min": 355.0840039982,
+        "max": 355.0840039982,
+        "last": 355.0840039982,
+        "p95": 355.0840039982
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 257.5684559002,
+        "min": 257.5684559002,
+        "max": 257.5684559002,
+        "last": 257.5684559002,
+        "p95": 257.5684559002
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 49,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 1924.4417761167692,
+        "min": 145.5107013403,
+        "max": 2349.4785362561,
+        "last": 2349.4785362561,
+        "p95": 2334.8355109939
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 355.0840039982,
+        "min": 355.0840039982,
+        "max": 355.0840039982,
+        "last": 355.0840039982,
+        "p95": 355.0840039982
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 168,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 1.2544639352384308,
+        "min": 0.2624671916011123,
+        "max": 3.88768898488121,
+        "last": 0.2723619091904328,
+        "p95": 3.8742690058479856
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 156,
+      "machine": "db-replica-1",
+      "aggregates": {
+        "avg": 0.31704903991040906,
+        "min": 0.26085367272004056,
+        "max": 0.6791312433580998,
+        "last": 0.3503470262013364,
+        "p95": 0.48910516176181584
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 90,
+      "machine": "db-replica-2",
+      "aggregates": {
+        "avg": 0.470624224088352,
+        "min": 0.2699559764099968,
+        "max": 1.8385039527004432,
+        "last": 0.3604531410917322,
+        "p95": 1.8385039527004432
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 138,
+      "machine": "etcd-1",
+      "aggregates": {
+        "avg": 8.149105717499834,
+        "min": 0.6811762751288031,
+        "max": 54.45488659382994,
+        "last": 0.6811762751288031,
+        "p95": 54.24207205711441
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 114,
+      "machine": "etcd-2",
+      "aggregates": {
+        "avg": 0.987947430005026,
+        "min": 0.7874538990597202,
+        "max": 1.9191181353342746,
+        "last": 1.9191181353342746,
+        "p95": 1.35359574821452
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 72,
+      "machine": "etcd-3",
+      "aggregates": {
+        "avg": 1.04099610034435,
+        "min": 0.7707769232047301,
+        "max": 2.093023255813864,
+        "last": 2.093023255813864,
+        "p95": 2.093023255813864
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 127,
+      "machine": "proxy-1",
+      "aggregates": {
+        "avg": 10.941669927824593,
+        "min": 0.2092814669635512,
+        "max": 63.4476459353981,
+        "last": 0.24908668216550023,
+        "p95": 55.02491694352156
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 61,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 7.264949282175371,
+        "min": 3.4406031018564542,
+        "max": 8.769977074126967,
+        "last": 7.111997341309406,
+        "p95": 8.683878256246658
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 170,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 757460317.3647059,
+        "min": 747577344,
+        "max": 784330752,
+        "last": 754073600,
+        "p95": 783327232
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 158,
+      "machine": "db-replica-1",
+      "aggregates": {
+        "avg": 761859784.9113925,
+        "min": 744648704,
+        "max": 793755648,
+        "last": 754376704,
+        "p95": 792195072
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 92,
+      "machine": "db-replica-2",
+      "aggregates": {
+        "avg": 777588825.0434783,
+        "min": 721620992,
+        "max": 818302976,
+        "last": 721620992,
+        "p95": 818302976
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 140,
+      "machine": "etcd-1",
+      "aggregates": {
+        "avg": 684635867.4285715,
+        "min": 646295552,
+        "max": 853438464,
+        "last": 652746752,
+        "p95": 845017088
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 116,
+      "machine": "etcd-2",
+      "aggregates": {
+        "avg": 613117175.1724138,
+        "min": 597266432,
+        "max": 631144448,
+        "last": 602222592,
+        "p95": 630927360
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 74,
+      "machine": "etcd-3",
+      "aggregates": {
+        "avg": 602697063.7837838,
+        "min": 570601472,
+        "max": 613797888,
+        "last": 570601472,
+        "p95": 613797888
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 128,
+      "machine": "proxy-1",
+      "aggregates": {
+        "avg": 649006688,
+        "min": 559480832,
+        "max": 843608064,
+        "last": 625827840,
+        "p95": 806289408
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 62,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 626710329.8064516,
+        "min": 567840768,
+        "max": 643039232,
+        "last": 615026688,
+        "p95": 643039232
+      }
+    }
+  ],
+  "native_series_count": 188,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_errors_total",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total"
+  ],
+  "native_scope_mismatches": [],
+  "invalid_metric_values": [],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "etcd-1-etcd",
+          "count": 2067
+        },
+        {
+          "value": "db-replica-1-postgres",
+          "count": 905
+        },
+        {
+          "value": "db-1-postgres",
+          "count": 662
+        },
+        {
+          "value": "db-replica-2-postgres",
+          "count": 256
+        },
+        {
+          "value": "etcd-2-etcd",
+          "count": 196
+        },
+        {
+          "value": "etcd-3-etcd",
+          "count": 121
+        },
+        {
+          "value": "db-replica-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "etcd-2-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-replica-2-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "etcd-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "proxy-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "etcd-3-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "proxy-1-haproxy",
+          "count": 14
+        },
+        {
+          "value": "db-1-postgres-exporter",
+          "count": 9
+        },
+        {
+          "value": "db-replica-2-ha-probe",
+          "count": 8
+        },
+        {
+          "value": "db-replica-1-postgres-exporter",
+          "count": 6
+        },
+        {
+          "value": "db-replica-2-postgres-exporter",
+          "count": 6
+        },
+        {
+          "value": "db-replica-1-ha-probe",
+          "count": 2
+        },
+        {
+          "value": "db-1-ha-probe",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 36809
+        },
+        {
+          "value": "unspecified",
+          "count": 933
+        },
+        {
+          "value": "warn",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "runner-1",
+          "count": 31480
+        },
+        {
+          "value": "etcd-1",
+          "count": 2317
+        },
+        {
+          "value": "db-replica-1",
+          "count": 1289
+        },
+        {
+          "value": "db-1",
+          "count": 1070
+        },
+        {
+          "value": "db-replica-2",
+          "count": 558
+        },
+        {
+          "value": "etcd-2",
+          "count": 430
+        },
+        {
+          "value": "etcd-3",
+          "count": 327
+        },
+        {
+          "value": "proxy-1",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "runner",
+          "count": 31480
+        },
+        {
+          "value": "etcd",
+          "count": 3074
+        },
+        {
+          "value": "db-replica",
+          "count": 1847
+        },
+        {
+          "value": "db",
+          "count": 1070
+        },
+        {
+          "value": "proxy",
+          "count": 240
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "stroppy",
+          "count": 31310
+        },
+        {
+          "value": "container",
+          "count": 5640
+        },
+        {
+          "value": "stdout",
+          "count": 376
+        },
+        {
+          "value": "stderr",
+          "count": 206
+        },
+        {
+          "value": "pull",
+          "count": 131
+        },
+        {
+          "value": "",
+          "count": 91
+        },
+        {
+          "value": "runc",
+          "count": 8
+        }
+      ]
+    }
+  ],
+  "logs_verified": true,
+  "native_verified": true,
+  "components_verified": true,
+  "verified": true
+}

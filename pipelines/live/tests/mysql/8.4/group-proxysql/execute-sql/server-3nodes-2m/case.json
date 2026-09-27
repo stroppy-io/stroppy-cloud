@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m",
+  "database": "mysql",
+  "version": "8.4",
+  "topology": "group-proxysql",
+  "workload": "execute/sql",
+  "preset": "server-3nodes-2m",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "829fe228-d91a-421f-94c7-ebc12b00da90",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T18:47:05.898174+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/22a00ddf-a390-4e89-b04a-a2eac80894bc",
+    "runs/829fe228-d91a-421f-94c7-ebc12b00da90"
+  ],
+  "source": {
+    "path": "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m/runs/829fe228-d91a-421f-94c7-ebc12b00da90/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "cluster-health-writes",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "10s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "5m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "CALL live_assert_cluster();"
+      }
+    }
+  ]
+}

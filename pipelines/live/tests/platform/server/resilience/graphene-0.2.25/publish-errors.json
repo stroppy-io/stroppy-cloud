@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-27T15:38:20.822931+00:00",
+  "source": "local server Compose logs; only pipeline publication failure lines",
+  "lines": [
+    "server-1  | 15:34:37 WARN  pipelines: push failed version=\"0.0.0-dev-f658fd8b-resilience1-20260927\" commit=\"f658fd8b\" instance_id=\"b0601c3442c1\" namespace=\"t-server-live-20260924\" pipeline=\"stroppy-quotas\" error=\"publish manifest: rpc error: code = FailedPrecondition desc = failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state.\" logger=\"stroppy-cloud\"",
+    "server-1  | 15:36:45 WARN  pipelines: push failed version=\"0.0.0-dev-f658fd8b-resilience1-20260927\" commit=\"f658fd8b\" instance_id=\"b0601c3442c1\" namespace=\"t-server-live-20260924\" pipeline=\"stroppy-quotas\" error=\"publish manifest: rpc error: code = FailedPrecondition desc = failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state.\" logger=\"stroppy-cloud\"",
+    "server-1  | 15:38:20 WARN  pipelines: push failed version=\"0.0.0-dev-f658fd8b-resilience1-20260927\" commit=\"f658fd8b\" instance_id=\"b0601c3442c1\" namespace=\"t-server-live-20260924\" pipeline=\"stroppy-quotas\" error=\"publish manifest: rpc error: code = FailedPrecondition desc = failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state.\" logger=\"stroppy-cloud\""
+  ]
+}

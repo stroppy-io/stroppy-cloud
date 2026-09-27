@@ -18,9 +18,13 @@
       "id": "infrastructure_provisioning",
       "group": "deployment",
       "status": "unknown",
-      "reason": "No explicit retained verification for this check.",
-      "evidence": null,
-      "legacy_status": "not_recorded"
+      "reason": "Missing observations: managed YDB resource readiness requires separate evidence",
+      "evidence": {
+        "path": "tests/ydb_managed/managed/dedicated-medium/tpcc-tx/native-otlp-20s-2vus/runs/matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium/infrastructure-audit.json",
+        "pointer": "/status"
+      },
+      "legacy_status": "not_recorded",
+      "audited_at": "2026-09-27T19:39:14.336036+00:00"
     },
     {
       "id": "smoke",

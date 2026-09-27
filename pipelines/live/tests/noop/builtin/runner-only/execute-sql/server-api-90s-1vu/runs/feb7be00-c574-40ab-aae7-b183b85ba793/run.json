@@ -1,0 +1,248 @@
+{
+  "observed_at": "2026-09-25T13:39:08.076246+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/feb7be00-c574-40ab-aae7-b183b85ba793",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "feb7be00-c574-40ab-aae7-b183b85ba793",
+    "name": "server-noop-90s-graphene-otlp",
+    "status": "failed",
+    "phase": "done",
+    "status_reason": "segment main failed: stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "0bae3342-5c1c-4c4e-9105-decf257caa68",
+      "name": "server-noop-90s-graphene-otlp"
+    },
+    "snapshot": {
+      "execution": {
+        "workload": {
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945"
+        }
+      },
+      "database": {
+        "kind": "noop",
+        "version": "builtin",
+        "params": {
+          "workers": 0
+        },
+        "schema": {
+          "id": "db.noop.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "noop",
+        "segments": [
+          {
+            "name": "main",
+            "run": {
+              "duration": "1m30s",
+              "executor": "constant-vus",
+              "query_timeout": "0s",
+              "vus": 1
+            },
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1"
+            },
+            "log_level": "info"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "runner": {
+          "size": "XS"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "machines": [
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "XS",
+          "cpu": 2,
+          "memory_gb": 4,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "version": "1",
+        "id": "spec.run"
+      },
+      "values": {
+        "workload": {
+          "driver_type": "noop",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "main",
+              "run": {
+                "duration": "1m30s",
+                "executor": "constant-vus",
+                "query_timeout": "0s",
+                "vus": 1
+              },
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "SELECT 1"
+              }
+            }
+          ],
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+          "url": "noop://localhost"
+        },
+        "machines": [
+          {
+            "cpu": 2,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 4,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "feb7be00-c574-40ab-aae7-b183b85ba793",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        },
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "tenant": "server-live-20260924",
+        "containers": [
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "quay.io/prometheus/node-exporter:v1.12.1",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "run_id": "feb7be00-c574-40ab-aae7-b183b85ba793",
+        "keep": "0s"
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-25T13:27:06Z",
+    "started_at": "2026-09-25T13:27:06Z",
+    "finished_at": "2026-09-25T13:33:46Z",
+    "duration": "6m40s",
+    "summary": {
+      "db_kind": "noop",
+      "db_version": "builtin",
+      "protocol": "noop",
+      "stroppy_version": "6.0.0",
+      "topology_label": "noop (runner only)",
+      "node_count": 1,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "runner": {
+          "size": "XS"
+        }
+      },
+      "progress_pct": 0
+    },
+    "result": {
+      "segments": [
+        {
+          "name": "main",
+          "status": "failed",
+          "started_at": "2026-09-25T13:30:35Z",
+          "finished_at": "2026-09-25T13:32:10Z",
+          "exit_code": 0,
+          "error": "stroppy exited 0 without a bench summary: {\"level\":\"info\",\"ts\":1790343130.8253763,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.825762,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8262234,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8266954,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8272023,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8276513,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n{\"level\":\"info\",\"ts\":1790343130.8281753,\"logger\":\"workload\",\"caller\":\"execute_sql/execute_sql.go:127\",\"msg\":\"[execute_sql] inline: ok in 0ms\",\"workload\":\"execute_sql\",\"VUID\":1}\n\n=== bench summary ===\n  iterations_per_second                    168927.203\n  queries_per_second                       168927.203\n  measurement_seconds                      90.001\n  run_query_operations_total               15203535.000\n  run_query_duration                       count=15203535 avg=0.000 p(50)~=0.005 p(90)~=0.005 p(95)~=0.005 p(99)~=0.005\n  iteration_duration                       count=15203535 avg=0.005 p(50)~=0.005 p(90)~=0.010 p(95)~=0.025 p(99)~=0.025\n  iterations_total                         15203535.000\n  terminal_errors_total                    0.000\n  failed_iterations_total                  0.000\n  failed_queries_total                     0.000\n  retry_attempts_total                     0.000"
+        }
+      ],
+      "artifacts": [
+        "artifact/feb7be00-stroppy-main-config",
+        "artifact/feb7be00-stroppy-main-log"
+      ]
+    },
+    "graphene": {
+      "run_ref": "run/feb7be00-c574-40ab-aae7-b183b85ba793",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

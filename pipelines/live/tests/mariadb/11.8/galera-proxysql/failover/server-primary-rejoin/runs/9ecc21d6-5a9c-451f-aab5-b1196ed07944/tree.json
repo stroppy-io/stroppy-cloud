@@ -1,0 +1,554 @@
+{
+  "observed_at": "2026-09-27T19:58:02.962266+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/9ecc21d6-5a9c-451f-aab5-b1196ed07944/tree",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "ref": "run/9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+    "kind": "run",
+    "keep_until": null,
+    "children": [
+      {
+        "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network/stroppy-server-live-20260924-9ecc21d6-net",
+        "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network",
+        "phase": "deleted",
+        "labels": {
+          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+        },
+        "keep_until": null,
+        "children": [
+          {
+            "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup/stroppy-server-live-20260924-9ecc21d6-sg",
+            "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup",
+            "phase": "deleted",
+            "labels": {
+              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+            },
+            "keep_until": null,
+            "children": [
+              {
+                "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet/stroppy-server-live-20260924-9ecc21d6-subnet",
+                "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet",
+                "phase": "deleted",
+                "labels": {
+                  "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                },
+                "keep_until": null,
+                "children": [
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-9ecc21d6-runner-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/9ecc21d6-runner-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "machine": "runner-1",
+                          "role": "runner",
+                          "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                        },
+                        "flows": [
+                          {
+                            "to": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-proxy-1-proxysql",
+                            "protocol": "tcp",
+                            "port": 6033,
+                            "label": "mysql"
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-runner-1-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "runner-1-node-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "runner-1",
+                              "role": "runner"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-9ecc21d6-db-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-9ecc21d6-db-1-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      },
+                      {
+                        "ref": "agent/9ecc21d6-db-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "role": "db",
+                          "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "machine": "db-1"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-1-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-1-node-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "db-1",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-1-mariadb",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-1-mariadb",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "database",
+                              "machine": "db-1"
+                            },
+                            "flows": [
+                              {
+                                "to": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-proxy-1-proxysql",
+                                "protocol": "tcp",
+                                "port": 6033,
+                                "label": "ha-probe"
+                              }
+                            ],
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-1-mysqld-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "kind": "exporter",
+                              "machine": "db-1",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-1-mysqld-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-1-ha-probe",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-1-ha-probe",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "addon",
+                              "machine": "db-1",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-9ecc21d6-db-3",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/9ecc21d6-db-3",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "machine": "db-3",
+                          "role": "db"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-3-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-3-node-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "db-3",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-3-mariadb",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-3-mariadb",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "database",
+                              "machine": "db-3",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-3-mysqld-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-3-mysqld-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "db-3",
+                              "role": "db"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-3-ha-probe",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "addon",
+                              "machine": "db-3",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-3-ha-probe"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-9ecc21d6-db-3-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-9ecc21d6-proxy-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/9ecc21d6-proxy-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "machine": "proxy-1",
+                          "role": "proxy",
+                          "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-proxy-1-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "proxy-1-node-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "proxy-1",
+                              "role": "proxy"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-proxy-1-proxysql",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "proxy",
+                              "machine": "proxy-1",
+                              "role": "proxy",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "proxy-1-proxysql"
+                            },
+                            "flows": [
+                              {
+                                "to": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-1-mariadb",
+                                "protocol": "tcp",
+                                "port": 3306,
+                                "label": "mysql"
+                              }
+                            ],
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-9ecc21d6-db-2",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/9ecc21d6-db-2",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "role": "db",
+                          "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                          "machine": "db-2"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": [
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-2-node-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-2-node-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "db-2",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-2-mariadb",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-2-mariadb",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "database",
+                              "machine": "db-2",
+                              "role": "db"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-2-mysqld-exporter",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "container": "db-2-mysqld-exporter",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "exporter",
+                              "machine": "db-2",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          },
+                          {
+                            "ref": "docker/9ecc21d6-5a9c-451f-aab5-b1196ed07944-db-2-ha-probe",
+                            "kind": "docker",
+                            "phase": "deleted",
+                            "labels": {
+                              "machine": "db-2",
+                              "role": "db",
+                              "stroppy-run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "container": "db-2-ha-probe",
+                              "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+                              "kind": "addon"
+                            },
+                            "keep_until": null,
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-9ecc21d6-db-2-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "9ecc21d6-5a9c-451f-aab5-b1196ed07944"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

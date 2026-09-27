@@ -1,0 +1,23 @@
+{
+  "source_hash": "beea29efd3275c99f8c3211435d6292131bce4ebdfa76f173edefd9486e9f02c",
+  "checks": [
+    {
+      "command": "make tests TEST_FLAGS=-short",
+      "status": "passed"
+    },
+    {
+      "command": "make linter",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make integration",
+      "status": "passed",
+      "seconds": 45.867
+    },
+    {
+      "command": "go test -race ./pkg/driver/sqldriver ./pkg/driver/ydb -count=1",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,2285 @@
+{
+  "started_at": "2026-09-25T14:43:59.310339+00:00",
+  "finished_at": "2026-09-25T14:51:24.344340+00:00",
+  "seconds": 445.034,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "Test"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "51bfe266c343a0d6c2c8e204b1abda6170a66f5f2078c02ea8882caa010cae36",
+  "source_sha256_after": "51bfe266c343a0d6c2c8e204b1abda6170a66f5f2078c02ea8882caa010cae36",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2EPortableLibrary/workloads": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EPortableLibrary/tests": {
+      "status": "pass",
+      "seconds": 4.62
+    },
+    "TestE2EPortableLibrary/suites": {
+      "status": "pass",
+      "seconds": 7.19
+    },
+    "TestE2EPortableLibrary": {
+      "status": "pass",
+      "seconds": 17.74
+    },
+    "TestE2EIdentityHTTP": {
+      "status": "pass",
+      "seconds": 0.28
+    },
+    "TestE2ESharedMetrics": {
+      "status": "pass",
+      "seconds": 3.25
+    },
+    "TestAcceptanceRouteInventory": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EAdmin/only_platform_admins_pass": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EAdmin/tenants:_list,_details,_limits,_suspend/resume,_assign_owner": {
+      "status": "pass",
+      "seconds": 2.27
+    },
+    "TestE2EAdmin/system_settings_drive_public_config_and_tenant_creation": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EAdmin/status,_resync_and_the_global_audit": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EAdmin": {
+      "status": "pass",
+      "seconds": 2.92
+    },
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "status": "pass",
+      "seconds": 2.31
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "status": "pass",
+      "seconds": 5.72
+    },
+    "TestE2EConcurrentLaunch": {
+      "status": "pass",
+      "seconds": 8.03
+    },
+    "TestE2ECatalog/databases": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog/providers_carry_the_size_table": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog/stroppy": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog/schemas:_list,_get,_validate,_render": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog/metrics_per_kind": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog/catalog_needs_a_caller": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ECatalog": {
+      "status": "pass",
+      "seconds": 0.28
+    },
+    "TestE2EContractHandoff": {
+      "status": "pass",
+      "seconds": 7.18
+    },
+    "TestE2EDevMode": {
+      "status": "pass",
+      "seconds": 0.27
+    },
+    "TestE2EExamples/clone_every_kind_into_the_library": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EExamples/quick-run_needs_a_provider_and_launches_without_cloning": {
+      "status": "pass",
+      "seconds": 0.12
+    },
+    "TestE2EExamples": {
+      "status": "pass",
+      "seconds": 0.74
+    },
+    "TestE2EIAMWebhook/signature_and_project_are_enforced": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EIAMWebhook/session.revoked_lands_on_the_denylist_once": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EIAMWebhook/email.changed_and_user.deleted_reach_the_profile": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EIAMWebhook": {
+      "status": "pass",
+      "seconds": 0.28
+    },
+    "TestE2ELibrary/database:_create_derives_topology_and_effective_configs": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ELibrary/database:_bad_params_are_a_validation_problem,_bad_kind_is_invalid": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ELibrary/database:_preview,_list,_patch,_clone,_export,_diff": {
+      "status": "pass",
+      "seconds": 0.81
+    },
+    "TestE2ELibrary/database:_import_creates_then_updates_by_name;_yaml_round-trips": {
+      "status": "pass",
+      "seconds": 0.22
+    },
+    "TestE2ELibrary/workload:_create,_requirements,_script_checks": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2ELibrary/test:_draft_\u2192_ready,_fit_issues_with_suggestions": {
+      "status": "pass",
+      "seconds": 4.19
+    },
+    "TestE2ELibrary/test:_validate_live_form,_export/import,_viewer_cannot_write": {
+      "status": "pass",
+      "seconds": 0.69
+    },
+    "TestE2ELibrary": {
+      "status": "pass",
+      "seconds": 6.21
+    },
+    "TestE2EDatabaseMatrix/postgres/18/single": {
+      "status": "pass",
+      "seconds": 2.65
+    },
+    "TestE2EDatabaseMatrix/postgres/18/primary-replica": {
+      "status": "pass",
+      "seconds": 3.31
+    },
+    "TestE2EDatabaseMatrix/postgres/18/patroni-ha": {
+      "status": "pass",
+      "seconds": 6.53
+    },
+    "TestE2EDatabaseMatrix/postgres/18/pgbouncer": {
+      "status": "pass",
+      "seconds": 3.23
+    },
+    "TestE2EDatabaseMatrix/postgres/17/single": {
+      "status": "pass",
+      "seconds": 2.9
+    },
+    "TestE2EDatabaseMatrix/postgres/17/primary-replica": {
+      "status": "pass",
+      "seconds": 3.22
+    },
+    "TestE2EDatabaseMatrix/postgres/17/patroni-ha": {
+      "status": "pass",
+      "seconds": 6.65
+    },
+    "TestE2EDatabaseMatrix/postgres/17/pgbouncer": {
+      "status": "pass",
+      "seconds": 3.25
+    },
+    "TestE2EDatabaseMatrix/postgres/16/single": {
+      "status": "pass",
+      "seconds": 2.57
+    },
+    "TestE2EDatabaseMatrix/postgres/16/primary-replica": {
+      "status": "pass",
+      "seconds": 3.26
+    },
+    "TestE2EDatabaseMatrix/postgres/16/patroni-ha": {
+      "status": "pass",
+      "seconds": 6.55
+    },
+    "TestE2EDatabaseMatrix/postgres/16/pgbouncer": {
+      "status": "pass",
+      "seconds": 3.35
+    },
+    "TestE2EDatabaseMatrix/postgres/15/single": {
+      "status": "pass",
+      "seconds": 2.7
+    },
+    "TestE2EDatabaseMatrix/postgres/15/primary-replica": {
+      "status": "pass",
+      "seconds": 3.44
+    },
+    "TestE2EDatabaseMatrix/postgres/15/patroni-ha": {
+      "status": "pass",
+      "seconds": 6.6
+    },
+    "TestE2EDatabaseMatrix/postgres/15/pgbouncer": {
+      "status": "pass",
+      "seconds": 3.26
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg18/single": {
+      "status": "pass",
+      "seconds": 2.47
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg18/primary-replica": {
+      "status": "pass",
+      "seconds": 3.74
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg17/single": {
+      "status": "pass",
+      "seconds": 2.93
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg17/primary-replica": {
+      "status": "pass",
+      "seconds": 3.94
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg16/single": {
+      "status": "pass",
+      "seconds": 2.55
+    },
+    "TestE2EDatabaseMatrix/orioledb/beta17-pg16/primary-replica": {
+      "status": "pass",
+      "seconds": 3.77
+    },
+    "TestE2EDatabaseMatrix/mysql/8.4/single": {
+      "status": "pass",
+      "seconds": 2.83
+    },
+    "TestE2EDatabaseMatrix/mysql/8.4/semi-sync": {
+      "status": "pass",
+      "seconds": 3.15
+    },
+    "TestE2EDatabaseMatrix/mysql/8.4/group-replication": {
+      "status": "pass",
+      "seconds": 4.43
+    },
+    "TestE2EDatabaseMatrix/mysql/8.0/single": {
+      "status": "pass",
+      "seconds": 2.55
+    },
+    "TestE2EDatabaseMatrix/mysql/8.0/semi-sync": {
+      "status": "pass",
+      "seconds": 3.22
+    },
+    "TestE2EDatabaseMatrix/mysql/8.0/group-replication": {
+      "status": "pass",
+      "seconds": 4.99
+    },
+    "TestE2EDatabaseMatrix/mariadb/11.8/single": {
+      "status": "pass",
+      "seconds": 2.52
+    },
+    "TestE2EDatabaseMatrix/mariadb/11.8/galera": {
+      "status": "pass",
+      "seconds": 4.37
+    },
+    "TestE2EDatabaseMatrix/mariadb/11.4/single": {
+      "status": "pass",
+      "seconds": 2.79
+    },
+    "TestE2EDatabaseMatrix/mariadb/11.4/galera": {
+      "status": "pass",
+      "seconds": 4.7
+    },
+    "TestE2EDatabaseMatrix/mariadb/10.11/single": {
+      "status": "pass",
+      "seconds": 2.65
+    },
+    "TestE2EDatabaseMatrix/mariadb/10.11/galera": {
+      "status": "pass",
+      "seconds": 4.38
+    },
+    "TestE2EDatabaseMatrix/picodata/26.2/single": {
+      "status": "pass",
+      "seconds": 2.52
+    },
+    "TestE2EDatabaseMatrix/picodata/26.2/three-node": {
+      "status": "pass",
+      "seconds": 4.42
+    },
+    "TestE2EDatabaseMatrix/picodata/26.1/single": {
+      "status": "pass",
+      "seconds": 2.79
+    },
+    "TestE2EDatabaseMatrix/picodata/26.1/three-node": {
+      "status": "pass",
+      "seconds": 4.31
+    },
+    "TestE2EDatabaseMatrix/picodata/25.3/single": {
+      "status": "pass",
+      "seconds": 2.44
+    },
+    "TestE2EDatabaseMatrix/picodata/25.3/three-node": {
+      "status": "pass",
+      "seconds": 4.25
+    },
+    "TestE2EDatabaseMatrix/ydb/26.3/single": {
+      "status": "pass",
+      "seconds": 3.09
+    },
+    "TestE2EDatabaseMatrix/ydb/26.3/mirror-3-dc": {
+      "status": "pass",
+      "seconds": 9.76
+    },
+    "TestE2EDatabaseMatrix/ydb/26.2/single": {
+      "status": "pass",
+      "seconds": 3.28
+    },
+    "TestE2EDatabaseMatrix/ydb/26.2/mirror-3-dc": {
+      "status": "pass",
+      "seconds": 9.88
+    },
+    "TestE2EDatabaseMatrix/ydb/26.1/single": {
+      "status": "pass",
+      "seconds": 3.11
+    },
+    "TestE2EDatabaseMatrix/ydb/26.1/mirror-3-dc": {
+      "status": "pass",
+      "seconds": 9.94
+    },
+    "TestE2EDatabaseMatrix/ydb/25.4/single": {
+      "status": "pass",
+      "seconds": 3.06
+    },
+    "TestE2EDatabaseMatrix/ydb/25.4/mirror-3-dc": {
+      "status": "pass",
+      "seconds": 9.73
+    },
+    "TestE2EDatabaseMatrix/ydb_managed/managed/dedicated-medium": {
+      "status": "pass",
+      "seconds": 2.07
+    },
+    "TestE2EDatabaseMatrix/ydb_managed/managed/serverless": {
+      "status": "pass",
+      "seconds": 1.84
+    },
+    "TestE2EDatabaseMatrix/cockroach/26.3/single": {
+      "status": "pass",
+      "seconds": 2.41
+    },
+    "TestE2EDatabaseMatrix/cockroach/26.3/three-node": {
+      "status": "pass",
+      "seconds": 4.25
+    },
+    "TestE2EDatabaseMatrix/cockroach/26.2/single": {
+      "status": "pass",
+      "seconds": 2.47
+    },
+    "TestE2EDatabaseMatrix/cockroach/26.2/three-node": {
+      "status": "pass",
+      "seconds": 4.21
+    },
+    "TestE2EDatabaseMatrix/cockroach/25.4/single": {
+      "status": "pass",
+      "seconds": 2.71
+    },
+    "TestE2EDatabaseMatrix/cockroach/25.4/three-node": {
+      "status": "pass",
+      "seconds": 4.28
+    },
+    "TestE2EDatabaseMatrix/cockroach/25.2/single": {
+      "status": "pass",
+      "seconds": 2.43
+    },
+    "TestE2EDatabaseMatrix/cockroach/25.2/three-node": {
+      "status": "pass",
+      "seconds": 4.28
+    },
+    "TestE2EDatabaseMatrix/cockroach/24.3/single": {
+      "status": "pass",
+      "seconds": 2.49
+    },
+    "TestE2EDatabaseMatrix/cockroach/24.3/three-node": {
+      "status": "pass",
+      "seconds": 4.25
+    },
+    "TestE2EDatabaseMatrix/cockroach/24.1/single": {
+      "status": "pass",
+      "seconds": 2.46
+    },
+    "TestE2EDatabaseMatrix/cockroach/24.1/three-node": {
+      "status": "pass",
+      "seconds": 4.22
+    },
+    "TestE2EDatabaseMatrix/pg_noop/0.1.2/single": {
+      "status": "pass",
+      "seconds": 2.7
+    },
+    "TestE2EDatabaseMatrix/noop/builtin/runner-only": {
+      "status": "pass",
+      "seconds": 2.14
+    },
+    "TestE2EDatabaseMatrix": {
+      "status": "pass",
+      "seconds": 247.85
+    },
+    "TestE2EObserve/typed_logs:_the_run's_components,_translated_back_to_the_plan": {
+      "status": "pass",
+      "seconds": 0.03
+    },
+    "TestE2EObserve/metrics:_every_catalog_expression_over_the_real_stores": {
+      "status": "pass",
+      "seconds": 0.03
+    },
+    "TestE2EObserve/grafana_has_no_direct_backend": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EObserve/ws_log_tail_and_metrics_topics": {
+      "status": "pass",
+      "seconds": 0.02
+    },
+    "TestE2EObserve": {
+      "status": "pass",
+      "seconds": 1.94
+    },
+    "TestE2EPipelinePush/a_new_tenant_gets_every_pipeline_pushed": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EPipelinePush/resync_forces_a_push_and_a_failure_is_visible": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EPipelinePush": {
+      "status": "pass",
+      "seconds": 0.27
+    },
+    "TestE2EProviderLifecycle/transport_failure_reattaches_durable_setup": {
+      "status": "pass",
+      "seconds": 0.05
+    },
+    "TestE2EProviderLifecycle/rotation_selects_a_schema-valid_immutable_credential_version": {
+      "status": "pass",
+      "seconds": 0.05
+    },
+    "TestE2EProviderLifecycle/active_runs_and_kept_stands_protect_the_profile": {
+      "status": "pass",
+      "seconds": 1.29
+    },
+    "TestE2EProviderLifecycle/failed_cleanup_keeps_credentials_and_blocks_new_runs": {
+      "status": "pass",
+      "seconds": 1
+    },
+    "TestE2EProviderLifecycle": {
+      "status": "pass",
+      "seconds": 2.97
+    },
+    "TestE2ETenantProviderCleanup": {
+      "status": "pass",
+      "seconds": 1.1
+    },
+    "TestE2EQuotaVisibility": {
+      "status": "pass",
+      "seconds": 5.04
+    },
+    "TestE2EObserverRecovery": {
+      "status": "pass",
+      "seconds": 2.02
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "status": "pass",
+      "seconds": 2
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "status": "pass",
+      "seconds": 2.12
+    },
+    "TestE2EKeptStandRecovery": {
+      "status": "pass",
+      "seconds": 4.12
+    },
+    "TestE2ERuns/launch_compiles_the_RunSpec_and_starts_the_pipeline": {
+      "status": "pass",
+      "seconds": 1.25
+    },
+    "TestE2ERuns/idempotency_key_replays_the_same_run": {
+      "status": "pass",
+      "seconds": 1.31
+    },
+    "TestE2ERuns/projection_follows_the_real_pipeline_to_completion": {
+      "status": "pass",
+      "seconds": 0.13
+    },
+    "TestE2ERuns/keep_extend_and_release_go_to_the_stand": {
+      "status": "pass",
+      "seconds": 0.03
+    },
+    "TestE2ERuns/list,_facets,_favorites,_patch,_export": {
+      "status": "pass",
+      "seconds": 0.02
+    },
+    "TestE2ERuns/cancel,_delete,_rerun,_save-as-test": {
+      "status": "pass",
+      "seconds": 1.52
+    },
+    "TestE2ERuns/limits:_concurrent_runs_and_viewer_access": {
+      "status": "pass",
+      "seconds": 5.81
+    },
+    "TestE2ERuns": {
+      "status": "pass",
+      "seconds": 10.68
+    },
+    "TestE2ECompleteRuntimeRoundtrip": {
+      "status": "pass",
+      "seconds": 5.65
+    },
+    "TestE2EWorkloadParameterTransport": {
+      "status": "pass",
+      "seconds": 4.43
+    },
+    "TestE2EInvalidExecutionNeverLaunches/path_traversal": {
+      "status": "pass",
+      "seconds": 3.09
+    },
+    "TestE2EInvalidExecutionNeverLaunches/conflicting_sql_source": {
+      "status": "pass",
+      "seconds": 1.14
+    },
+    "TestE2EInvalidExecutionNeverLaunches/unknown_field": {
+      "status": "pass",
+      "seconds": 1.11
+    },
+    "TestE2EInvalidExecutionNeverLaunches/impossible_disk_granularity": {
+      "status": "pass",
+      "seconds": 3.07
+    },
+    "TestE2EInvalidExecutionNeverLaunches/unknown_flow_target": {
+      "status": "pass",
+      "seconds": 3.07
+    },
+    "TestE2EInvalidExecutionNeverLaunches": {
+      "status": "pass",
+      "seconds": 12.05
+    },
+    "TestE2ERuntimeOverrides": {
+      "status": "pass",
+      "seconds": 4.93
+    },
+    "TestE2EScenarios/completes": {
+      "status": "pass",
+      "seconds": 1.42
+    },
+    "TestE2EScenarios/segment_fails": {
+      "status": "pass",
+      "seconds": 1.39
+    },
+    "TestE2EScenarios/segment_activity_lost": {
+      "status": "pass",
+      "seconds": 1.39
+    },
+    "TestE2EScenarios/baseline_fails,_run_goes_on": {
+      "status": "pass",
+      "seconds": 1.4
+    },
+    "TestE2EScenarios/database_never_healthy": {
+      "status": "pass",
+      "seconds": 1.33
+    },
+    "TestE2EScenarios/docker_install_fails": {
+      "status": "pass",
+      "seconds": 1.31
+    },
+    "TestE2EScenarios/provider_credentials_rejected": {
+      "status": "pass",
+      "seconds": 1.26
+    },
+    "TestE2EScenarios/machine_never_converges": {
+      "status": "pass",
+      "seconds": 1.34
+    },
+    "TestE2EScenarios/agents_never_connect": {
+      "status": "pass",
+      "seconds": 1.31
+    },
+    "TestE2EScenarios/artifact_uploads_fail,_run_completes": {
+      "status": "pass",
+      "seconds": 1.42
+    },
+    "TestE2EScenarios/cancelled_while_provisioning": {
+      "status": "pass",
+      "seconds": 1.4
+    },
+    "TestE2EScenarios/cancelled_during_the_workload": {
+      "status": "pass",
+      "seconds": 1.47
+    },
+    "TestE2EScenarios": {
+      "status": "pass",
+      "seconds": 17
+    },
+    "TestE2ESettingsAndLimits": {
+      "status": "pass",
+      "seconds": 0.26
+    },
+    "TestE2EProviderProfiles/schema_validation_is_a_Problem_with_details": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EProviderProfiles/verification_lands_ready_with_quotas": {
+      "status": "pass",
+      "seconds": 0.05
+    },
+    "TestE2EProviderProfiles/failed_verification_carries_the_reason": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EProviderProfiles/duplicate_name_is_409,_delete_removes_the_secret": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EProviderProfiles": {
+      "status": "pass",
+      "seconds": 0.35
+    },
+    "TestE2EWebhooks/publish,_dispatch,_verify_signature": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EWebhooks/rotation_keeps_the_old_secret_verifying": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EWebhooks/failure_is_retried_and_replayable": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EWebhooks/disable_and_delete": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EWebhooks": {
+      "status": "pass",
+      "seconds": 0.28
+    },
+    "TestE2EShareCompareRating/compare:_verdicts_and_spec_diff": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EShareCompareRating/share_a_run,_read_it_anonymously,_configs_scope_masks_secrets": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EShareCompareRating/share_lifecycle:_patch,_rebuild,_list,_revoke": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EShareCompareRating/comparison_share_carries_both_runs": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EShareCompareRating/rating:_tenant_and_public_leagues": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EShareCompareRating/dashboard_aggregates_the_tenant": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EShareCompareRating": {
+      "status": "pass",
+      "seconds": 3.3
+    },
+    "TestSimLiveRunSpecs": {
+      "status": "pass",
+      "seconds": 19.6
+    },
+    "TestLocalStand": {
+      "status": "skip",
+      "seconds": 0
+    },
+    "TestE2ESuitesAndSchedules/preview_and_create_materialise_the_matrix": {
+      "status": "pass",
+      "seconds": 6.34
+    },
+    "TestE2ESuitesAndSchedules/manual_cell_edits_survive_regeneration": {
+      "status": "pass",
+      "seconds": 4.39
+    },
+    "TestE2ESuitesAndSchedules/launch_prepares_every_cell_and_starts_stroppy-suite": {
+      "status": "pass",
+      "seconds": 3.26
+    },
+    "TestE2ESuitesAndSchedules/children_and_the_suite_are_projected_to_completion": {
+      "status": "pass",
+      "seconds": 2.56
+    },
+    "TestE2ESuitesAndSchedules/cancel_cascades,_retry-failed_relaunches_cancelled_cells,_compare_shows_regression": {
+      "status": "pass",
+      "seconds": 6.82
+    },
+    "TestE2ESuitesAndSchedules/schedules_fire_tests_and_suites": {
+      "status": "pass",
+      "seconds": 11.51
+    },
+    "TestE2ESuitesAndSchedules/viewer_cannot_write,_delete_suite_keeps_runs": {
+      "status": "pass",
+      "seconds": 2.46
+    },
+    "TestE2ESuitesAndSchedules": {
+      "status": "pass",
+      "seconds": 37.94
+    },
+    "TestE2ETenantLifecycle/get_as_owner": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/patch": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/unknown_tenant_is_404": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/no_token_is_401": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/garbage_token_is_401": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/second_owned_tenant_is_409": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/my_tenants_lists_it": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle/delete_retires_the_namespace": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETenantLifecycle": {
+      "status": "pass",
+      "seconds": 0.24
+    },
+    "TestE2EMembersAndRoles/members_listed_with_roles": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/viewer_cannot_change_roles": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/service_token_is_confined_to_its_role": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/owner_promotes_bob_to_admin": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/owner_role_only_by_transfer": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/transfer_ownership": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/owner_cannot_be_removed;_admin_can_leave": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles/audit_has_the_trail": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMembersAndRoles": {
+      "status": "pass",
+      "seconds": 0.27
+    },
+    "TestE2EInvites/duplicate_pending_invite_is_409": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EInvites/listed_for_the_tenant": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EInvites/accepted_by_the_invitee": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EInvites/pending_invite_applies_on_first_login": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EInvites/revoke": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EInvites": {
+      "status": "pass",
+      "seconds": 0.27
+    },
+    "TestE2ETokens/tokens_cannot_mint_tokens": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETokens/personal_token_with_weaker_role": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETokens/service_token_role_is_bounded": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2ETokens": {
+      "status": "pass",
+      "seconds": 0.27
+    },
+    "TestE2EMeAndPublic/me": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMeAndPublic/public_config_and_health": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EMeAndPublic": {
+      "status": "pass",
+      "seconds": 0.26
+    },
+    "TestE2EWebSocket/rejects_missing_and_bad_tokens": {
+      "status": "pass",
+      "seconds": 0
+    },
+    "TestE2EWebSocket/overview_and_events_follow_the_projection": {
+      "status": "pass",
+      "seconds": 0.4
+    },
+    "TestE2EWebSocket/tenant.runs,_suite_run,_access_and_unknown_topics": {
+      "status": "pass",
+      "seconds": 0.01
+    },
+    "TestE2EWebSocket": {
+      "status": "pass",
+      "seconds": 2.19
+    }
+  },
+  "http_observations": {
+    "TestE2EPortableLibrary": {
+      "addFavorite": {
+        "204": 1
+      },
+      "cloneSuite": {
+        "201": 1
+      },
+      "cloneTest": {
+        "201": 1
+      },
+      "cloneWorkload": {
+        "201": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteTest": {
+        "204": 1
+      },
+      "deleteWorkload": {
+        "204": 1
+      },
+      "diffTests": {
+        "200": 1
+      },
+      "diffWorkloads": {
+        "200": 1
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "exportTest": {
+        "200": 1
+      },
+      "exportWorkload": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getShare": {
+        "200": 1
+      },
+      "getSuite": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 3
+      },
+      "getTest": {
+        "200": 2,
+        "404": 1
+      },
+      "getWorkload": {
+        "200": 1,
+        "404": 1
+      },
+      "importSuite": {
+        "200": 1
+      },
+      "importTest": {
+        "200": 1
+      },
+      "importWorkload": {
+        "200": 1
+      },
+      "launchSuite": {
+        "201": 1
+      },
+      "listSuiteRunsOfSuite": {
+        "200": 1
+      },
+      "listWebhooks": {
+        "200": 1
+      },
+      "patchSchedule": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 1
+      },
+      "patchTest": {
+        "200": 1
+      },
+      "patchWorkload": {
+        "200": 1
+      },
+      "removeFavorite": {
+        "204": 1
+      },
+      "shareSuiteRun": {
+        "201": 1
+      }
+    },
+    "TestE2EIdentityHTTP": {
+      "acceptInvite": {
+        "200": 1
+      },
+      "adminDeleteTenant": {
+        "204": 2
+      },
+      "createInvite": {
+        "201": 2
+      },
+      "createMyToken": {
+        "201": 1
+      },
+      "createTenant": {
+        "201": 2
+      },
+      "declineInvite": {
+        "204": 1
+      },
+      "deleteTenant": {
+        "403": 1
+      },
+      "getMe": {
+        "200": 1
+      },
+      "getPublicCatalog": {
+        "200": 1
+      },
+      "getTenant": {
+        "200": 1
+      },
+      "listMyInvites": {
+        "200": 2
+      },
+      "suggestTenantName": {
+        "200": 1
+      }
+    },
+    "TestE2ESharedMetrics": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createPublicShareGrafanaSession": {
+        "503": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getPublicShareMetrics": {
+        "200": 1,
+        "403": 1,
+        "404": 1,
+        "422": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 2
+      },
+      "patchShare": {
+        "200": 2
+      },
+      "revokeShare": {
+        "204": 1
+      },
+      "shareRun": {
+        "201": 1
+      }
+    },
+    "TestE2EAdmin": {
+      "adminAssignOwner": {
+        "200": 1,
+        "409": 1
+      },
+      "adminCancelRun": {
+        "200": 1
+      },
+      "adminGetTenant": {
+        "200": 1
+      },
+      "adminListAudit": {
+        "200": 2
+      },
+      "adminListRuns": {
+        "200": 1
+      },
+      "adminListTenants": {
+        "200": 3,
+        "403": 2
+      },
+      "adminListUsers": {
+        "200": 1
+      },
+      "adminPatchUser": {
+        "200": 1
+      },
+      "adminResumeTenant": {
+        "200": 1
+      },
+      "adminSetTenantLimits": {
+        "200": 2
+      },
+      "adminSuspendTenant": {
+        "200": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTenant": {
+        "403": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getAdminStatus": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getPublicConfig": {
+        "200": 1
+      },
+      "getPublicRating": {
+        "404": 1
+      },
+      "getSystemSettings": {
+        "200": 1
+      },
+      "getTenantLimits": {
+        "200": 2
+      },
+      "launchTest": {
+        "201": 1,
+        "422": 1
+      },
+      "listRuns": {
+        "200": 1,
+        "403": 1
+      },
+      "patchSystemSettings": {
+        "200": 2
+      },
+      "resyncPipelines": {
+        "202": 1
+      }
+    },
+    "TestE2EConcurrentLaunch/same_idempotency_key": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 6
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EConcurrentLaunch/tenant_limit": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 7
+      },
+      "launchTest": {
+        "201": 3,
+        "422": 3
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2ECatalog": {
+      "getCatalogDatabases": {
+        "200": 1,
+        "401": 1
+      },
+      "getCatalogMetrics": {
+        "200": 2
+      },
+      "getCatalogProviders": {
+        "200": 1
+      },
+      "getCatalogStroppy": {
+        "200": 1,
+        "404": 1
+      },
+      "getSchema": {
+        "200": 1,
+        "404": 1
+      },
+      "listSchemas": {
+        "200": 1
+      },
+      "renderSchemaValue": {
+        "200": 1
+      },
+      "validateSchemaValue": {
+        "200": 2
+      }
+    },
+    "TestE2EContractHandoff": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 3
+      },
+      "getTest": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1,
+        "422": 1
+      },
+      "patchTest": {
+        "200": 3
+      }
+    },
+    "TestE2EDevMode": {
+      "adminSetTenantLimits": {
+        "200": 1
+      },
+      "createTenant": {
+        "201": 1
+      },
+      "getMe": {
+        "200": 3,
+        "401": 1
+      },
+      "getTenantLimits": {
+        "200": 1
+      }
+    },
+    "TestE2EExamples": {
+      "cancelRun": {
+        "200": 1
+      },
+      "cloneExample": {
+        "201": 5,
+        "404": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "listExamples": {
+        "200": 2
+      },
+      "listProviderProfiles": {
+        "200": 1
+      },
+      "listSuites": {
+        "200": 1
+      },
+      "quickRunExample": {
+        "201": 1,
+        "422": 2
+      }
+    },
+    "TestE2ELibrary": {
+      "cloneDatabase": {
+        "201": 1
+      },
+      "createDatabase": {
+        "201": 1,
+        "409": 1,
+        "422": 2
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1,
+        "403": 1
+      },
+      "createWorkload": {
+        "201": 1,
+        "422": 2
+      },
+      "deleteDatabase": {
+        "204": 1,
+        "409": 1
+      },
+      "diffDatabases": {
+        "200": 1
+      },
+      "exportDatabase": {
+        "200": 2
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getTest": {
+        "200": 2
+      },
+      "importDatabase": {
+        "200": 2
+      },
+      "listDatabases": {
+        "200": 1
+      },
+      "listTests": {
+        "200": 1
+      },
+      "listWorkloads": {
+        "200": 1
+      },
+      "patchDatabase": {
+        "200": 3,
+        "422": 1
+      },
+      "patchTest": {
+        "200": 2
+      },
+      "previewDatabase": {
+        "200": 1
+      },
+      "previewWorkload": {
+        "200": 1
+      },
+      "validateTest": {
+        "200": 1
+      }
+    },
+    "TestE2EDatabaseMatrix": {
+      "adminSetTenantLimits": {
+        "200": 1
+      },
+      "createDatabase": {
+        "201": 65
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 65
+      },
+      "createWorkload": {
+        "201": 65
+      },
+      "getCatalogDatabases": {
+        "200": 1
+      },
+      "getCatalogStroppy": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 313
+      },
+      "getRunMetrics": {
+        "200": 64
+      },
+      "getRunOverview": {
+        "200": 64
+      },
+      "getRunTree": {
+        "200": 64
+      },
+      "launchTest": {
+        "201": 64
+      },
+      "listProviderProfiles": {
+        "200": 1
+      },
+      "listRunArtifacts": {
+        "200": 64
+      },
+      "patchTest": {
+        "200": 64
+      },
+      "queryRunLogs": {
+        "200": 64
+      }
+    },
+    "TestE2EObserve": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createRunGrafanaSession": {
+        "503": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 2
+      },
+      "getRunLogFacets": {
+        "200": 1
+      },
+      "getRunMetrics": {
+        "200": 2,
+        "404": 1,
+        "422": 1
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "queryRunLogs": {
+        "200": 4
+      },
+      "queryRunLogsRaw": {
+        "200": 1,
+        "422": 1
+      },
+      "queryRunMetricsRaw": {
+        "200": 2,
+        "422": 1
+      }
+    },
+    "TestE2EPipelinePush": {
+      "getAdminStatus": {
+        "200": 5
+      },
+      "resyncPipelines": {
+        "202": 1
+      }
+    },
+    "TestE2EProviderLifecycle": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteProviderProfile": {
+        "204": 1,
+        "409": 3
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 2
+      },
+      "launchTest": {
+        "201": 1,
+        "422": 1
+      },
+      "listProviderProfiles": {
+        "200": 1
+      },
+      "patchProviderProfile": {
+        "200": 1,
+        "409": 1
+      },
+      "releaseRunKeep": {
+        "200": 1
+      },
+      "verifyProviderProfile": {
+        "202": 1,
+        "409": 1
+      }
+    },
+    "TestE2ETenantProviderCleanup": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1,
+        "409": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteTenant": {
+        "204": 1,
+        "409": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "launchTest": {
+        "409": 1
+      },
+      "listProviderProfiles": {
+        "200": 1
+      }
+    },
+    "TestE2EQuotaVisibility": {
+      "cancelRun": {
+        "200": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getProviderQuotas": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1,
+        "422": 2
+      },
+      "listProviderProfiles": {
+        "200": 1
+      },
+      "refreshProviderQuotas": {
+        "200": 3,
+        "503": 1
+      }
+    },
+    "TestE2EObserverRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunEvents": {
+        "200": 1
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/expired": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 5
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 5
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunArtifacts": {
+        "200": 1
+      }
+    },
+    "TestE2ERuns": {
+      "addFavorite": {
+        "204": 1
+      },
+      "cancelRun": {
+        "200": 5,
+        "409": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteRun": {
+        "204": 1,
+        "409": 1
+      },
+      "downloadRunArtifact": {
+        "200": 2,
+        "404": 2
+      },
+      "exportRun": {
+        "200": 1
+      },
+      "extendRunKeep": {
+        "200": 1,
+        "422": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 6,
+        "404": 1
+      },
+      "getRunFacets": {
+        "200": 1
+      },
+      "getRunOverview": {
+        "200": 1
+      },
+      "getRunTree": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 4,
+        "403": 1,
+        "422": 2
+      },
+      "listRunArtifacts": {
+        "200": 2
+      },
+      "listRunEvents": {
+        "200": 1
+      },
+      "listRuns": {
+        "200": 4
+      },
+      "listTestRuns": {
+        "200": 1
+      },
+      "patchRun": {
+        "200": 1
+      },
+      "releaseRunKeep": {
+        "200": 1,
+        "409": 1
+      },
+      "rerunRun": {
+        "201": 1
+      },
+      "saveRunAsTest": {
+        "201": 1
+      }
+    },
+    "TestE2ECompleteRuntimeRoundtrip": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "getTest": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "patchTest": {
+        "200": 3
+      }
+    },
+    "TestE2EWorkloadParameterTransport": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 7
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "patchTest": {
+        "200": 2
+      }
+    },
+    "TestE2EInvalidExecutionNeverLaunches": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "launchTest": {
+        "422": 3
+      },
+      "listRuns": {
+        "200": 1
+      },
+      "patchTest": {
+        "200": 8,
+        "422": 2
+      }
+    },
+    "TestE2ERuntimeOverrides": {
+      "createDatabase": {
+        "201": 2
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getDatabase": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getTest": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "patchTest": {
+        "200": 2
+      }
+    },
+    "TestE2EScenarios": {
+      "cancelRun": {
+        "200": 2
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 35
+      },
+      "getRunLogFacets": {
+        "200": 12
+      },
+      "getRunMetrics": {
+        "200": 12
+      },
+      "getRunOverview": {
+        "200": 12
+      },
+      "getRunTree": {
+        "200": 12
+      },
+      "launchTest": {
+        "201": 12
+      },
+      "listRunArtifacts": {
+        "200": 14
+      },
+      "listRunEvents": {
+        "200": 12
+      },
+      "queryRunLogs": {
+        "200": 12
+      }
+    },
+    "TestE2ESettingsAndLimits": {
+      "getTenantLimits": {
+        "200": 1
+      },
+      "getTenantSettings": {
+        "200": 1
+      },
+      "patchTenantSettings": {
+        "200": 1,
+        "422": 1
+      }
+    },
+    "TestE2EProviderProfiles": {
+      "createProviderProfile": {
+        "201": 1,
+        "409": 1,
+        "422": 1
+      },
+      "deleteProviderProfile": {
+        "204": 1
+      },
+      "getProviderProfile": {
+        "200": 3,
+        "404": 1
+      },
+      "getProviderQuotas": {
+        "200": 1
+      },
+      "refreshProviderQuotas": {
+        "409": 1
+      },
+      "verifyProviderProfile": {
+        "202": 1
+      }
+    },
+    "TestE2EWebhooks": {
+      "createWebhook": {
+        "201": 1,
+        "422": 1
+      },
+      "deleteWebhook": {
+        "204": 1
+      },
+      "listWebhookDeliveries": {
+        "200": 3,
+        "404": 1
+      },
+      "patchWebhook": {
+        "200": 1
+      },
+      "replayWebhookDelivery": {
+        "202": 1
+      },
+      "rotateWebhookSecret": {
+        "200": 1
+      }
+    },
+    "TestE2EShareCompareRating": {
+      "compareRuns": {
+        "200": 1,
+        "422": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "exportPublicShare": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getPublicRating": {
+        "200": 1
+      },
+      "getPublicShare": {
+        "200": 2,
+        "404": 1
+      },
+      "getPublicShareMetrics": {
+        "403": 1
+      },
+      "getRun": {
+        "200": 5
+      },
+      "getTenantDashboard": {
+        "200": 1
+      },
+      "getTenantRating": {
+        "200": 3,
+        "422": 1
+      },
+      "launchTest": {
+        "201": 2
+      },
+      "listShares": {
+        "200": 1
+      },
+      "patchShare": {
+        "200": 1
+      },
+      "patchTenant": {
+        "200": 1
+      },
+      "rebuildShare": {
+        "200": 1
+      },
+      "revokeShare": {
+        "204": 1,
+        "409": 1
+      },
+      "shareComparison": {
+        "201": 1
+      },
+      "shareRun": {
+        "201": 2
+      }
+    },
+    "TestE2ESuitesAndSchedules": {
+      "cancelRun": {
+        "200": 1
+      },
+      "cancelSuiteRun": {
+        "200": 1,
+        "409": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSchedule": {
+        "201": 2,
+        "422": 1
+      },
+      "createSuite": {
+        "201": 1,
+        "409": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "deleteSchedule": {
+        "204": 2
+      },
+      "deleteSuite": {
+        "204": 1
+      },
+      "deleteSuiteRun": {
+        "204": 1,
+        "422": 1
+      },
+      "deleteTest": {
+        "204": 1,
+        "409": 2
+      },
+      "exportSuite": {
+        "200": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 2
+      },
+      "getSchedule": {
+        "200": 1,
+        "404": 1
+      },
+      "getSuite": {
+        "200": 3,
+        "404": 1
+      },
+      "getSuiteRun": {
+        "200": 10,
+        "404": 1
+      },
+      "getSuiteRunSummary": {
+        "200": 2
+      },
+      "launchSuite": {
+        "201": 2,
+        "403": 1
+      },
+      "listRuns": {
+        "200": 2
+      },
+      "listScheduleHistory": {
+        "200": 1
+      },
+      "listSchedules": {
+        "200": 2
+      },
+      "listSuiteRuns": {
+        "200": 1
+      },
+      "listSuites": {
+        "200": 1
+      },
+      "patchSuite": {
+        "200": 2
+      },
+      "pauseSchedule": {
+        "200": 1
+      },
+      "previewSuite": {
+        "200": 1
+      },
+      "resumeSchedule": {
+        "200": 1
+      },
+      "retryFailedSuiteRun": {
+        "201": 1,
+        "409": 1
+      },
+      "runScheduleNow": {
+        "201": 2
+      }
+    },
+    "TestE2ETenantLifecycle": {
+      "createTenant": {
+        "403": 1
+      },
+      "deleteTenant": {
+        "204": 1
+      },
+      "getTenant": {
+        "200": 1,
+        "401": 3,
+        "404": 1
+      },
+      "listMyTenants": {
+        "200": 1
+      },
+      "patchTenant": {
+        "200": 1
+      }
+    },
+    "TestE2EMembersAndRoles": {
+      "createInvite": {
+        "403": 1
+      },
+      "getTenant": {
+        "200": 1,
+        "401": 1
+      },
+      "listMembers": {
+        "200": 1
+      },
+      "listTenantAudit": {
+        "200": 1
+      },
+      "patchMember": {
+        "200": 1,
+        "403": 1,
+        "422": 1
+      },
+      "removeMember": {
+        "204": 1,
+        "403": 1
+      },
+      "transferTenant": {
+        "200": 1,
+        "403": 1
+      }
+    },
+    "TestE2EInvites": {
+      "createInvite": {
+        "201": 3,
+        "409": 1
+      },
+      "getTenant": {
+        "200": 1
+      },
+      "listInvites": {
+        "200": 1
+      },
+      "listMyTenants": {
+        "200": 1
+      },
+      "revokeInvite": {
+        "204": 1,
+        "409": 1
+      }
+    },
+    "TestE2ETokens": {
+      "createInvite": {
+        "403": 1
+      },
+      "createMyToken": {
+        "403": 1
+      },
+      "createTenantToken": {
+        "201": 1,
+        "422": 1
+      },
+      "getTenant": {
+        "401": 2
+      },
+      "listMyTokens": {
+        "200": 1
+      },
+      "listTenantTokens": {
+        "200": 1
+      },
+      "revokeMyToken": {
+        "204": 1
+      },
+      "revokeTenantToken": {
+        "204": 1
+      }
+    },
+    "TestE2EMeAndPublic": {
+      "getMe": {
+        "200": 1
+      },
+      "getPublicConfig": {
+        "200": 1
+      },
+      "getPublicHealth": {
+        "200": 1
+      },
+      "patchMe": {
+        "200": 1
+      }
+    },
+    "TestE2EWebSocket": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

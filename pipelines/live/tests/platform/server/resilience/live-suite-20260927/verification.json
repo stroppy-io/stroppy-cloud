@@ -1,0 +1,12 @@
+{
+  "verified": true,
+  "same_server_and_graphene_references": true,
+  "server_restarted": true,
+  "suite_id": "7af25d36-2e74-4165-a314-2f9e80f9177d",
+  "intentional_cancellation": {
+    "run_id": "e3e18f98-f2b4-40dc-93da-e035ff75814f",
+    "at": "2026-09-27T16:07:35.230243+00:00",
+    "reason": "Exercise durable cancellation during deployment. Slow image pull remains unqualified."
+  },
+  "note": "PostgreSQL success/keep expiry and optional noop deployment cancellation; resource cleanup through server tree. Temporal execution UUID is not exposed by this API."
+}

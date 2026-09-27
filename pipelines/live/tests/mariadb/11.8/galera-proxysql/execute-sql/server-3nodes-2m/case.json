@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "id": "tests/mariadb/11.8/galera-proxysql/execute-sql/server-3nodes-2m",
+  "database": "mariadb",
+  "version": "11.8",
+  "topology": "galera-proxysql",
+  "workload": "execute/sql",
+  "preset": "server-3nodes-2m",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T17:20:02.318861+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540"
+  ],
+  "source": {
+    "path": "tests/mariadb/11.8/galera-proxysql/execute-sql/server-3nodes-2m/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "cluster-health-writes",
+      "run": {
+        "duration": "2m0s",
+        "executor": "constant-vus",
+        "query_timeout": "10s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "5m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "CALL live_assert_cluster();"
+      }
+    }
+  ]
+}

@@ -1,0 +1,463 @@
+{
+  "observed_at": "2026-09-27T20:03:13.134481+00:00",
+  "method": "PATCH",
+  "path": "/api/v1/t/server-live-20260924/tests/87dbcbf2-af72-40c7-8788-581c55daf635",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "87dbcbf2-af72-40c7-8788-581c55daf635",
+    "name": "server Patroni primary outage after workload gate",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-27T20:03:11Z",
+    "updated_at": "2026-09-27T20:03:12Z",
+    "execution": {
+      "workload": {
+        "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624"
+      },
+      "additional_containers": [
+        {
+          "depends_on": [
+            "db-1-postgres",
+            "db-replica-1-postgres",
+            "db-replica-2-postgres",
+            "proxy-1-haproxy"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+            "DB_KIND": "postgres",
+            "DB_PASSWORD": "stroppy_postgres",
+            "DB_USER": "postgres",
+            "LOCAL_HOST": "${ip:db-1}",
+            "PROBE_CONTAINER": "db-1-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "TARGET_CONTAINER": "db-1-postgres",
+            "WAIT_FOR_LOAD_GATE": "1"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+          "kind": "addon",
+          "machine": "db-1",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-1-ha-probe",
+          "restart": "no",
+          "role": "db"
+        },
+        {
+          "depends_on": [
+            "db-1-postgres",
+            "db-replica-1-postgres",
+            "db-replica-2-postgres",
+            "proxy-1-haproxy"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+            "DB_KIND": "postgres",
+            "DB_PASSWORD": "stroppy_postgres",
+            "DB_USER": "postgres",
+            "LOCAL_HOST": "${ip:db-replica-1}",
+            "PROBE_CONTAINER": "db-replica-1-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "TARGET_CONTAINER": "db-replica-1-postgres",
+            "WAIT_FOR_LOAD_GATE": "1"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+          "kind": "addon",
+          "machine": "db-replica-1",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-replica-1-ha-probe",
+          "restart": "no",
+          "role": "db-replica"
+        },
+        {
+          "depends_on": [
+            "db-1-postgres",
+            "db-replica-1-postgres",
+            "db-replica-2-postgres",
+            "proxy-1-haproxy"
+          ],
+          "env": {
+            "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+            "DB_KIND": "postgres",
+            "DB_PASSWORD": "stroppy_postgres",
+            "DB_USER": "postgres",
+            "LOCAL_HOST": "${ip:db-replica-2}",
+            "PROBE_CONTAINER": "db-replica-2-ha-probe",
+            "PROXY_HOST": "${ip:proxy-1}",
+            "TARGET_CONTAINER": "db-replica-2-postgres",
+            "WAIT_FOR_LOAD_GATE": "1"
+          },
+          "healthcheck": {
+            "cmd": [
+              "/ha-probe",
+              "health"
+            ],
+            "interval": "1s",
+            "retries": 10
+          },
+          "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+          "kind": "addon",
+          "machine": "db-replica-2",
+          "mounts": [
+            {
+              "source": "/var/run/docker.sock",
+              "target": "/var/run/docker.sock"
+            }
+          ],
+          "name": "db-replica-2-ha-probe",
+          "restart": "no",
+          "role": "db-replica"
+        }
+      ],
+      "containers": [
+        {
+          "name": "db-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "db-replica-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "db-replica-2-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "etcd-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "etcd-2-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "etcd-3-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "proxy-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "runner-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        },
+        {
+          "name": "db-1-postgres",
+          "set": {
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+          }
+        },
+        {
+          "name": "db-1-postgres-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+          }
+        },
+        {
+          "name": "db-replica-1-postgres",
+          "set": {
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+          }
+        },
+        {
+          "name": "db-replica-1-postgres-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+          }
+        },
+        {
+          "name": "db-replica-2-postgres",
+          "set": {
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+          }
+        },
+        {
+          "name": "db-replica-2-postgres-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+          }
+        },
+        {
+          "name": "proxy-1-haproxy",
+          "set": {
+            "image": "mirror.gcr.io/library/haproxy@sha256:ff001ac3d6df60921a5e53a9ba1ec9d4fa0edd701b4f851cecbd46b42fa92f66"
+          }
+        },
+        {
+          "name": "etcd-1-etcd",
+          "set": {
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+          }
+        },
+        {
+          "name": "etcd-2-etcd",
+          "set": {
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+          }
+        },
+        {
+          "name": "etcd-3-etcd",
+          "set": {
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+          }
+        }
+      ],
+      "flows": [
+        {
+          "from_role": "db",
+          "label": "ha-probe",
+          "port": 5432,
+          "protocol": "tcp",
+          "to_role": "db"
+        },
+        {
+          "from_role": "db",
+          "label": "ha-probe",
+          "port": 5432,
+          "protocol": "tcp",
+          "to_role": "db-replica"
+        },
+        {
+          "from_role": "db",
+          "label": "ha-probe",
+          "port": 5000,
+          "protocol": "tcp",
+          "to_role": "proxy"
+        },
+        {
+          "from_role": "db-replica",
+          "label": "ha-probe",
+          "port": 5432,
+          "protocol": "tcp",
+          "to_role": "db"
+        },
+        {
+          "from_role": "db-replica",
+          "label": "ha-probe",
+          "port": 5432,
+          "protocol": "tcp",
+          "to_role": "db-replica"
+        },
+        {
+          "from_role": "db-replica",
+          "label": "ha-probe",
+          "port": 5000,
+          "protocol": "tcp",
+          "to_role": "proxy"
+        }
+      ]
+    },
+    "database": {
+      "inline": {
+        "kind": "postgres",
+        "version": "17",
+        "params": {
+          "pgbouncer": false,
+          "replicas": 2,
+          "sync_replicas": 0,
+          "etcd_nodes": 3,
+          "haproxy": 1,
+          "locale": "C.UTF-8",
+          "wal_archive": false,
+          "ha": "patroni",
+          "init_sql": "CREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL, started INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0,0);\nCREATE PROCEDURE live_ha_tick() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT started FROM live_ha_control WHERE id=1) = 0 THEN\n    UPDATE live_ha_control SET started=1 WHERE id=1;\n  END IF;\nEND; $$;\nCREATE PROCEDURE live_ha_verify() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    RAISE EXCEPTION 'HA failover probe did not complete';\n  END IF;\nEND; $$;\n",
+          "version": "17"
+        },
+        "schema": {
+          "id": "db.postgres.params",
+          "version": "1"
+        }
+      }
+    },
+    "workload": {
+      "inline": {
+        "stroppy_version": "6.0.0",
+        "protocol": "pg",
+        "segments": [
+          {
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',inet_server_addr()::text);"
+            },
+            "log_level": "info",
+            "name": "start-ha-probe",
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            }
+          },
+          {
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_ha_tick();"
+            },
+            "log_level": "info",
+            "name": "during-failover",
+            "run": {
+              "duration": "4m0s",
+              "executor": "constant-vus",
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 1
+            }
+          },
+          {
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_ha_verify();"
+            },
+            "log_level": "info",
+            "name": "verify-ha-probe"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      }
+    },
+    "sizes": {
+      "proxy": {
+        "size": "S"
+      },
+      "runner": {
+        "size": "S"
+      },
+      "db-replica": {
+        "size": "S"
+      },
+      "db": {
+        "size": "S"
+      },
+      "etcd": {
+        "size": "S"
+      }
+    },
+    "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "status": "ready",
+    "resolved": {},
+    "validation": {
+      "fits": true,
+      "issues": [
+        {
+          "scope": "run_spec",
+          "path": "workload.segments",
+          "code": "capacity_unknown",
+          "severity": "WARNING",
+          "message": "custom SQL/simple or schema overrides prevent a complete storage estimate; built-in population estimates do not cover arbitrary writes"
+        }
+      ]
+    },
+    "requirements": {
+      "etcd": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 10,
+        "reason": "etcd"
+      },
+      "proxy": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 10,
+        "reason": "haproxy"
+      },
+      "db": {
+        "cpu": 2,
+        "memory_gb": 4,
+        "disk_gb": 20,
+        "reason": "postgres baseline"
+      },
+      "db-replica": {
+        "cpu": 2,
+        "memory_gb": 4,
+        "disk_gb": 20,
+        "reason": "postgres baseline"
+      },
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "summary": {
+      "db_kind": "postgres",
+      "db_version": "17",
+      "topology_label": "postgres + 2 replicas + patroni + haproxy",
+      "node_count": 8,
+      "protocol": "pg",
+      "stroppy_version": "6.0.0"
+    },
+    "usages": []
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "run_id": "f019770c-bb58-4436-9bcb-8d28cced6fd2",
+  "checked_at": "2026-09-27T17:05:26.593889+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/f019770c-bb58-4436-9bcb-8d28cced6fd2/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Resource and agent readiness completed before deployment. Exact hardware SKU is not asserted.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/f019770c-bb58-4436-9bcb-8d28cced6fd2/events.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "blocked",
+      "reason": "Image pull repeatedly timed out; cancelled before any workload segment executed.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-hub-20260927/registry-errors.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "blocked",
+      "reason": "Image pull repeatedly timed out; cancelled before any workload segment executed.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-hub-20260927/registry-errors.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "blocked",
+      "reason": "Image pull repeatedly timed out; cancelled before any workload segment executed.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-hub-20260927/registry-errors.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Cancellation finished; server resource tree has no remaining infrastructure.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-hub-20260927/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

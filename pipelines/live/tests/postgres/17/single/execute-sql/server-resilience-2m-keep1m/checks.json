@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "be40ddab-2f06-4904-9d51-999359b45653",
+  "checked_at": "2026-09-27T16:11:11.523610+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/postgres/17/single/execute-sql/server-resilience-2m-keep1m/runs/be40ddab-2f06-4904-9d51-999359b45653/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Provisioning phase completed after resource/agent readiness. Exact hardware SKU conformance is not asserted.",
+      "evidence": {
+        "path": "tests/postgres/17/single/execute-sql/server-resilience-2m-keep1m/runs/be40ddab-2f06-4904-9d51-999359b45653/events.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "PostgreSQL config SQL assertion completed for 120 seconds with zero failed queries after server restart.",
+      "evidence": {
+        "path": "tests/postgres/17/single/execute-sql/server-resilience-2m-keep1m/runs/be40ddab-2f06-4904-9d51-999359b45653/run.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "61 native Stroppy series with the correct namespace/run, retrieved through the server.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/live-suite-20260927/telemetry-postgres.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Host CPU/memory on both machines and 73 PostgreSQL exporter series available through the server.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/live-suite-20260927/database-metrics-postgres.json",
+        "pointer": "/series_count"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Log pagination and facets include PostgreSQL, PostgreSQL exporter and both node exporters.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/live-suite-20260927/telemetry-postgres.json",
+        "pointer": "/facets"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed PostgreSQL.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Config and log downloaded after keep deadline; sizes and SHA-256 match.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/live-suite-20260927/artifacts-postgres.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Single PostgreSQL node; replication is absent from this case.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Server tree has no remaining infrastructure; config/log artifacts are independent.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/live-suite-20260927/cleanup-be40ddab-2f06-4904-9d51-999359b45653.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

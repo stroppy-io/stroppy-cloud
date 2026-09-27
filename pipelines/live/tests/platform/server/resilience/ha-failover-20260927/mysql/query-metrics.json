@@ -1,0 +1,306 @@
+{
+  "observed_at": "2026-09-27T19:57:59.948184+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/d1c531ed-2199-4049-98b2-44ccfa07a05e/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "d1c531ed-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "37b92fc7-29b4-4292-8434-0fc546702683",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "workload",
+            "stroppy.run.id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy.segment": "during-failover",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790537665,
+              "20718"
+            ],
+            [
+              1790537670,
+              "20718"
+            ],
+            [
+              1790537675,
+              "41189"
+            ],
+            [
+              1790537680,
+              "41189"
+            ],
+            [
+              1790537685,
+              "61802"
+            ],
+            [
+              1790537690,
+              "61802"
+            ],
+            [
+              1790537695,
+              "82450"
+            ],
+            [
+              1790537700,
+              "82450"
+            ],
+            [
+              1790537705,
+              "102019"
+            ],
+            [
+              1790537710,
+              "102019"
+            ],
+            [
+              1790537715,
+              "122124"
+            ],
+            [
+              1790537720,
+              "122124"
+            ],
+            [
+              1790537725,
+              "142684"
+            ],
+            [
+              1790537730,
+              "142684"
+            ],
+            [
+              1790537735,
+              "162943"
+            ],
+            [
+              1790537740,
+              "162943"
+            ],
+            [
+              1790537745,
+              "183586"
+            ],
+            [
+              1790537750,
+              "183586"
+            ],
+            [
+              1790537755,
+              "204050"
+            ],
+            [
+              1790537760,
+              "204050"
+            ],
+            [
+              1790537765,
+              "224396"
+            ],
+            [
+              1790537770,
+              "224396"
+            ],
+            [
+              1790537775,
+              "245010"
+            ],
+            [
+              1790537780,
+              "245010"
+            ],
+            [
+              1790537785,
+              "265651"
+            ],
+            [
+              1790537790,
+              "265651"
+            ],
+            [
+              1790537795,
+              "285836"
+            ],
+            [
+              1790537800,
+              "285836"
+            ],
+            [
+              1790537805,
+              "305993"
+            ],
+            [
+              1790537810,
+              "305993"
+            ],
+            [
+              1790537815,
+              "326624"
+            ],
+            [
+              1790537820,
+              "326624"
+            ],
+            [
+              1790537825,
+              "346889"
+            ],
+            [
+              1790537830,
+              "346889"
+            ],
+            [
+              1790537835,
+              "367120"
+            ],
+            [
+              1790537840,
+              "367120"
+            ],
+            [
+              1790537845,
+              "388070"
+            ],
+            [
+              1790537850,
+              "388070"
+            ],
+            [
+              1790537855,
+              "408944"
+            ],
+            [
+              1790537860,
+              "408944"
+            ],
+            [
+              1790537865,
+              "429302"
+            ],
+            [
+              1790537870,
+              "429302"
+            ],
+            [
+              1790537875,
+              "449994"
+            ],
+            [
+              1790537880,
+              "449994"
+            ],
+            [
+              1790537885,
+              "470341"
+            ],
+            [
+              1790537890,
+              "470341"
+            ],
+            [
+              1790537895,
+              "490641"
+            ],
+            [
+              1790537900,
+              "490641"
+            ],
+            [
+              1790537905,
+              "490641"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "d1c531ed-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "d47bb0f2-4e2e-41ab-bc27-1e92c80d64b9",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "workload",
+            "stroppy.run.id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy.segment": "verify-ha-probe",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790537895,
+              "1"
+            ],
+            [
+              1790537900,
+              "1"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "d1c531ed-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "f2285d03-288e-41c1-8b6f-326db986e2e9",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "workload",
+            "stroppy.run.id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy.segment": "start-ha-probe",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790537655,
+              "1"
+            ],
+            [
+              1790537660,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "seriesFetched": "5",
+      "executionTimeMsec": 0
+    }
+  }
+}

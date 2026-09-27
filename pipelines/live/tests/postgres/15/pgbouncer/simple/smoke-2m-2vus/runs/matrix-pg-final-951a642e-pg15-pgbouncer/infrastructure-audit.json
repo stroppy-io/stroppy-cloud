@@ -1,0 +1,45 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-pg-final-951a642e-pg15-pgbouncer",
+  "input_run_id": "0279766d-cfe9-4b07-b597-7f6fdcd14d42",
+  "input_resolution": "executed suite cell; original per-run snapshot is a pre-launch template",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "0279766d-db-1",
+      "entity": "docker/0279766d-cfe9-4b07-b597-7f6fdcd14d42-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "0279766d-proxy-1",
+      "entity": "docker/0279766d-cfe9-4b07-b597-7f6fdcd14d42-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "0279766d-runner-1",
+      "entity": "docker/0279766d-cfe9-4b07-b597-7f6fdcd14d42-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/postgres/15/pgbouncer/simple/smoke-2m-2vus/runs/matrix-pg-final-951a642e-pg15-pgbouncer/input.json",
+      "sha256": "c4ce020aac248656536986ca2756602051539d3e97b820244eb65d2492362d7e"
+    },
+    {
+      "path": "tests/postgres/15/pgbouncer/simple/smoke-2m-2vus/runs/matrix-pg-final-951a642e-pg15-pgbouncer/metrics.json",
+      "sha256": "273f777bdfda25166b4b640dfb3725a5ef3223373acf6d3bab57e90a87a9e58d"
+    },
+    {
+      "path": "tests/platform/suites/suite-postgres-versions-final.json",
+      "pointer": "/cells/3/run_spec",
+      "sha256": "c976f3fd173304a070e027c738803afee2dbfe211d5e1d1c1219194cad634f3d"
+    }
+  ]
+}

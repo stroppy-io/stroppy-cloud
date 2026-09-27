@@ -1,0 +1,122 @@
+{
+  "id": "7af25d36-2e74-4165-a314-2f9e80f9177d",
+  "name": "resilience outage restart keep 20260927",
+  "suite": {
+    "id": "76102fad-66d1-450a-89ae-ad22ef2ff709",
+    "name": "resilience outage restart keep 20260927"
+  },
+  "status": "completed",
+  "trigger": "suite",
+  "concurrency": 2,
+  "progress": {
+    "total": 2,
+    "done": 1,
+    "failed": 0,
+    "running": 0,
+    "pending": 0,
+    "cancelled": 1,
+    "pct": 100
+  },
+  "cells": [
+    {
+      "cell_id": "41e5775f-a16e7c9a",
+      "name": "resilience-20260927-noop",
+      "run": {
+        "id": "e3e18f98-f2b4-40dc-93da-e035ff75814f",
+        "name": "resilience outage restart keep 20260927 \u00b7 resilience-20260927-noop",
+        "status": "cancelled",
+        "started_at": "2026-09-27T15:57:18Z"
+      },
+      "status": "cancelled",
+      "summary": {
+        "db_kind": "noop",
+        "db_version": "builtin",
+        "protocol": "noop",
+        "stroppy_version": "6.0.0",
+        "topology_label": "noop (runner only)",
+        "node_count": 1,
+        "provider_kind": "yandex",
+        "provider_profile": {
+          "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "name": "YC live acceptance"
+        },
+        "sizes": {
+          "runner": {
+            "size": "XS"
+          }
+        },
+        "progress_pct": 0
+      }
+    },
+    {
+      "cell_id": "28975b65-0e1a5bd9",
+      "name": "resilience-20260927-postgres",
+      "run": {
+        "id": "be40ddab-2f06-4904-9d51-999359b45653",
+        "name": "resilience outage restart keep 20260927 \u00b7 resilience-20260927-postgres",
+        "status": "completed",
+        "started_at": "2026-09-27T15:57:18Z"
+      },
+      "status": "completed",
+      "summary": {
+        "db_kind": "postgres",
+        "db_version": "17",
+        "protocol": "pg",
+        "stroppy_version": "6.0.0",
+        "topology_label": "postgres",
+        "node_count": 2,
+        "provider_kind": "yandex",
+        "provider_profile": {
+          "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "name": "YC live acceptance"
+        },
+        "sizes": {
+          "runner": {
+            "size": "XS"
+          },
+          "db": {
+            "size": "XS"
+          }
+        },
+        "progress_pct": 100,
+        "headline": {
+          "verify-config.run_query_duration_p95": 0.5,
+          "latency_p50_ms": 0.25,
+          "latency_p95_ms": 0.5,
+          "verify-config.measurement_seconds": 120,
+          "verify-config.failed_queries_total": 0,
+          "verify-config.iteration_duration_p95": 0.5,
+          "verify-config.run_query_duration_p50": 0.25,
+          "verify-config.run_query_duration_p99": 0.5,
+          "verify-config.iteration_duration_count": 493387,
+          "verify-config.queries_per_second": 4111.547,
+          "verify-config.iteration_duration_p99": 0.5,
+          "verify-config.run_query_duration_p90": 0.5,
+          "verify-config.run_query_duration_count": 493387,
+          "verify-config.run_query_operations_total": 493387,
+          "verify-config.iterations_total": 493387,
+          "verify-config.retry_attempts_total": 0,
+          "verify-config.iterations_per_second": 4111.547,
+          "verify-config.terminal_errors_total": 0,
+          "verify-config.iteration_duration_p90": 0.5,
+          "verify-config.run_query_duration_avg": 0.23,
+          "verify-config.failed_iterations_total": 0,
+          "latency_p99_ms": 0.5,
+          "verify-config.iteration_duration_avg": 0.242,
+          "verify-config.iteration_duration_p50": 0.25
+        }
+      }
+    }
+  ],
+  "author": {
+    "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+  },
+  "labels": {},
+  "created_at": "2026-09-27T15:57:09Z",
+  "started_at": "2026-09-27T15:57:13Z",
+  "finished_at": "2026-09-27T16:09:02Z",
+  "duration": "11m49s",
+  "graphene": {
+    "run_ref": "run/7af25d36-2e74-4165-a314-2f9e80f9177d"
+  }
+}

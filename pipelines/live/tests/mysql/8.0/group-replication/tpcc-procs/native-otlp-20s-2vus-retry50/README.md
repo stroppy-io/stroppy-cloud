@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/mysql-clusters-check.json) (`/native_cells/7`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](../../simple/smoke-2m-2vus/runs/matrix-mysql-clusters-fixed-babb0afe-mysql-gr-80/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/mysql-clusters-check.json) (`/native_cells/7`) |
 | native_tps | passed | [доказательство](../../../../../platform/catalog/mysql-clusters-check.json) (`/native_cells/7`) |
 | native_otlp_metrics | passed | [доказательство](../../../../../platform/catalog/mysql-clusters-check.json) (`/native_cells/7`) |

@@ -12,7 +12,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/mail"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/pipelines"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
-	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
 )
 
 /*
@@ -64,11 +63,6 @@ type HTTPConfig struct {
 	// PublicURL is the origin the SPA is served from; used for absolute
 	// links (invites, share) and as the IAM proxy's cookie host.
 	PublicURL string `default:"http://localhost:18347" mapstructure:"public_url" validate:"required,url"`
-	// GrafanaURL is the installation's Grafana, relayed under /grafana.
-	// Empty disables the relay.
-	GrafanaURL string `mapstructure:"grafana_url" validate:"omitempty,url"`
-	// GrafanaDashboards are the run-detail dashboards, `uid=Title[:per_machine]`.
-	GrafanaDashboards []string `mapstructure:"grafana_dashboards"`
 	// CORSOrigins are extra origins allowed to call the API (the Vite dev
 	// server); the public URL's origin is always allowed.
 	CORSOrigins []string `mapstructure:"cors_origins"`
@@ -76,14 +70,11 @@ type HTTPConfig struct {
 
 // InfraConfig groups every external system under `infra.*`.
 type InfraConfig struct {
-	Postgres      postgres.Config     `mapstructure:"postgres"`
-	Graphene      graphene.Config     `mapstructure:"graphene"`
-	Observability ObservabilityConfig `mapstructure:"observability"`
+	Postgres postgres.Config `mapstructure:"postgres"`
+	Graphene graphene.Config `mapstructure:"graphene"`
 	// Pipelines is where the pipeline binaries shipped with the server
 	// live (pushed into every tenant namespace, §7); empty = no push.
 	Pipelines PipelinesConfig `mapstructure:"pipelines"`
-	// Victoria is the telemetry stores (logs/metrics of runs).
-	Victoria victoria.Config `mapstructure:"victoria"`
 }
 
 // PipelinesConfig is the pipeline push worker.
@@ -95,15 +86,6 @@ type PipelinesConfig struct {
 	PushTimeout time.Duration `default:"10m" mapstructure:"push_timeout"`
 	// Runner replaces the subprocess runner (tests); never configured.
 	Runner pipelines.Runner `mapstructure:"-"`
-}
-
-// ObservabilityConfig is where the runs send telemetry (the agent-side
-// OTLP collector of the installation); empty leaves runs without export.
-type ObservabilityConfig struct {
-	OTLPEndpoint string `mapstructure:"otlp_endpoint" validate:"omitempty,url"`
-	// OTLPHeaders is the comma-separated key=value list sent with every
-	// export (collector auth).
-	OTLPHeaders string `mapstructure:"otlp_headers"`
 }
 
 // LoadConfig reads defaults, .env and the environment (environment wins).

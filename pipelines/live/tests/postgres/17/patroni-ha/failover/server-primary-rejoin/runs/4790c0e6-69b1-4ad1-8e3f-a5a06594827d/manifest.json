@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+  "case_paths": [
+    "tests/postgres/17/patroni-ha/failover/server-primary-rejoin"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T20:27:01.342858+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/postgres/17/patroni-ha/failover/server-primary-rejoin/runs/4790c0e6-69b1-4ad1-8e3f-a5a06594827d/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

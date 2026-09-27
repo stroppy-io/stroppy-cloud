@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"go.temporal.io/sdk/activity"
-
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -45,7 +43,7 @@ func probeManagedDatabase(ctx context.Context, req WaitDatabaseRequest) (WaitDat
 	}
 	defer log.Close()
 	result := waitDatabaseQueries(ctx, 2*time.Second, func(ctx context.Context, attempt int) (RunSegmentResult, error) {
-		activity.RecordHeartbeat(ctx, attempt)
+		recordHeartbeat(ctx, attempt)
 		attemptCtx, cancel := context.WithTimeout(ctx, 20*time.Second)
 		defer cancel()
 		res, err := RunSegment(attemptCtx, databaseProbeRequest(req))

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+  "case_paths": [
+    "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m"
+  ],
+  "execution": {
+    "status": "cancelled",
+    "observed_at": "2026-09-27T18:17:05.287356+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/mysql/8.4/group-proxysql/execute-sql/server-3nodes-2m/runs/22a00ddf-a390-4e89-b04a-a2eac80894bc/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

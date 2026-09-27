@@ -25,6 +25,15 @@ type State struct {
 	ObservedAt time.Time   `json:"observed_at"`
 	// Degraded lists why the projection may lag (stream lost, …).
 	Degraded []string `json:"degraded,omitempty"`
+	// Close preserves terminal event metadata while result storage retries.
+	// This is internal projection state, not an additional public API field.
+	Close *CloseState `json:"close,omitempty"`
+}
+
+type CloseState struct {
+	Status Status    `json:"status"`
+	Reason string    `json:"reason,omitempty"`
+	At     time.Time `json:"at"`
 }
 
 // StandState is the kept infrastructure: the pipeline moved its root

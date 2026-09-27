@@ -1,0 +1,490 @@
+{
+  "observed_at": "2026-09-27T17:01:26.813280+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/overview",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "run_id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+    "status": "running",
+    "phase": "provisioning",
+    "progress_pct": 10,
+    "source": "persisted",
+    "observed_at": "2026-09-27T17:00:54Z",
+    "degraded_reasons": [],
+    "phases": [
+      {
+        "id": "provisioning",
+        "title": "provisioning",
+        "status": "running",
+        "started_at": "2026-09-27T16:57:59Z",
+        "finished_at": null,
+        "steps": [
+          {
+            "id": "5",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:59Z",
+            "finished_at": "2026-09-27T16:57:59Z"
+          },
+          {
+            "id": "15",
+            "title": "resolve-yandex-images",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:59Z",
+            "finished_at": "2026-09-27T16:57:59Z"
+          },
+          {
+            "id": "21",
+            "title": "check-config",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:59Z",
+            "finished_at": "2026-09-27T16:57:59Z"
+          },
+          {
+            "id": "27",
+            "title": "declare",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "28",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:00Z"
+          },
+          {
+            "id": "29",
+            "title": "declare",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "30",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:00Z"
+          },
+          {
+            "id": "31",
+            "title": "declare",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "32",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:00Z"
+          },
+          {
+            "id": "33",
+            "title": "declare",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "34",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:00Z"
+          },
+          {
+            "id": "35",
+            "title": "declare",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "36",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:00Z"
+          },
+          {
+            "id": "37",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:59:14Z"
+          },
+          {
+            "id": "38",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:59:56Z"
+          },
+          {
+            "id": "39",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:59:50Z"
+          },
+          {
+            "id": "40",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:59:26Z"
+          },
+          {
+            "id": "54",
+            "title": "transfer",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "55",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T17:00:41Z"
+          },
+          {
+            "id": "56",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:58:53Z"
+          },
+          {
+            "id": "57",
+            "title": "transfer",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "58",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T17:00:48Z",
+            "finished_at": "2026-09-27T17:00:54Z"
+          },
+          {
+            "id": "59",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T16:59:30Z"
+          },
+          {
+            "id": "60",
+            "title": "transfer",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "61",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T17:00:41Z"
+          },
+          {
+            "id": "62",
+            "title": "transfer",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "63",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T17:00:33Z"
+          },
+          {
+            "id": "64",
+            "title": "transfer",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "65",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:58:00Z",
+            "finished_at": "2026-09-27T17:00:52Z"
+          }
+        ]
+      }
+    ],
+    "components": [
+      {
+        "id": "db-1-mariadb",
+        "role": "db",
+        "image": "mariadb:11.8",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 4567
+          },
+          {
+            "port": 4568
+          },
+          {
+            "port": 4444
+          }
+        ]
+      },
+      {
+        "id": "db-1-mysqld-exporter",
+        "role": "db",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-1-node-exporter",
+        "role": "db",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-2-mariadb",
+        "role": "db",
+        "image": "mariadb:11.8",
+        "machine": "db-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 4567
+          },
+          {
+            "port": 4568
+          },
+          {
+            "port": 4444
+          }
+        ]
+      },
+      {
+        "id": "db-2-mysqld-exporter",
+        "role": "db",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-2-node-exporter",
+        "role": "db",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-3-mariadb",
+        "role": "db",
+        "image": "mariadb:11.8",
+        "machine": "db-3",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 4567
+          },
+          {
+            "port": 4568
+          },
+          {
+            "port": 4444
+          }
+        ]
+      },
+      {
+        "id": "db-3-mysqld-exporter",
+        "role": "db",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-3",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-3-node-exporter",
+        "role": "db",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-3",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "proxy-1-node-exporter",
+        "role": "proxy",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "proxy-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "proxy-1-proxysql",
+        "role": "proxy",
+        "image": "proxysql/proxysql:2.7.3",
+        "machine": "proxy-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 6070
+          },
+          {
+            "port": 6033
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "runner-1-node-exporter",
+        "role": "runner",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "runner-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      }
+    ],
+    "machines": [
+      {
+        "name": "db-1",
+        "role": "db",
+        "status": "pending",
+        "presence": "offline",
+        "size": "S",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "db-2",
+        "role": "db",
+        "status": "pending",
+        "presence": "offline",
+        "size": "S",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "db-3",
+        "role": "db",
+        "status": "pending",
+        "presence": "offline",
+        "size": "S",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "proxy-1",
+        "role": "proxy",
+        "status": "pending",
+        "presence": "offline",
+        "size": "S",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "runner-1",
+        "role": "runner",
+        "status": "pending",
+        "presence": "offline",
+        "size": "S",
+        "last_heartbeat_at": null
+      }
+    ],
+    "flows": [
+      {
+        "from": "db",
+        "to": "db",
+        "protocol": "galera",
+        "port": 4567
+      },
+      {
+        "from": "db",
+        "to": "db",
+        "protocol": "galera-ist",
+        "port": 4568
+      },
+      {
+        "from": "db",
+        "to": "db",
+        "protocol": "galera-sst",
+        "port": 4444
+      },
+      {
+        "from": "proxy",
+        "to": "db",
+        "protocol": "mysql",
+        "port": 3306
+      },
+      {
+        "from": "runner",
+        "to": "proxy",
+        "protocol": "mysql",
+        "port": 6033
+      }
+    ],
+    "workload_segments": []
+  }
+}

@@ -19,7 +19,7 @@ import (
 
 // Streams is the WebSocket source over the same mappers the REST
 // endpoints use: run.overview/{id}, run.events/{id}, suite_run/{id},
-// tenant.runs/{slug}. Logs, metrics and pty are not connected yet.
+// tenant.runs/{slug}, run.logs/{id}, run.metrics/{id}. PTY is not connected.
 type Streams struct{ h *Handler }
 
 // NewStreams builds the source.
@@ -129,7 +129,7 @@ func (s *Streams) Snapshot(ctx context.Context, actor auth.Actor, topic string) 
 }
 
 // Events answers run.events/{id} after a cursor (event id) and
-// run.logs/{id} after a cursor (timestamp): the tail.
+// run.logs/{id} after an opaque Graphene-backed cursor: the tail.
 func (s *Streams) Events(ctx context.Context, actor auth.Actor, topic, cursor string) (events []any, next string, err error) {
 	kind, arg, err := splitTopic(topic)
 	if err != nil {
@@ -142,7 +142,7 @@ func (s *Streams) Events(ctx context.Context, actor auth.Actor, topic, cursor st
 	if kind == "run.logs" {
 		q := observe.LogQuery{RunID: r.ID, Cursor: cursor, Direction: "newer", Limit: 200}
 		if cursor == "" {
-			q.Cursor = time.Now().UTC().Add(-time.Minute).Format(time.RFC3339Nano)
+			q.Start = time.Now().UTC().Add(-time.Minute)
 		}
 		page, _, err := s.h.deps.Observe.Logs(ctx, actor, r.TenantID, q)
 		if err != nil {

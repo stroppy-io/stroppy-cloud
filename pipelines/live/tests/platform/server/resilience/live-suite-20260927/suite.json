@@ -1,0 +1,78 @@
+{
+  "observed_at": "2026-09-27T15:56:29.279829+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/suites",
+  "http_status": 201,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "76102fad-66d1-450a-89ae-ad22ef2ff709",
+    "name": "resilience outage restart keep 20260927",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-27T15:56:27Z",
+    "updated_at": "2026-09-27T15:56:27Z",
+    "deleted_at": null,
+    "tests": [
+      {
+        "ref": {
+          "id": "41e5775f-2b68-4c3a-90dd-6c404ff099f5",
+          "name": "resilience-20260927-noop"
+        }
+      },
+      {
+        "ref": {
+          "id": "28975b65-1af0-4ea8-9683-13c954f17d7a",
+          "name": "resilience-20260927-postgres"
+        }
+      }
+    ],
+    "cells": [],
+    "concurrency": 2,
+    "computed_cells": [
+      {
+        "id": "41e5775f-a16e7c9a",
+        "name": "resilience-20260927-noop",
+        "test": {
+          "id": "41e5775f-2b68-4c3a-90dd-6c404ff099f5",
+          "name": "resilience-20260927-noop"
+        },
+        "enabled": true,
+        "generated": true,
+        "validation": {
+          "fits": true,
+          "issues": []
+        }
+      },
+      {
+        "id": "28975b65-0e1a5bd9",
+        "name": "resilience-20260927-postgres",
+        "test": {
+          "id": "28975b65-1af0-4ea8-9683-13c954f17d7a",
+          "name": "resilience-20260927-postgres"
+        },
+        "enabled": true,
+        "generated": true,
+        "validation": {
+          "fits": true,
+          "issues": [
+            {
+              "scope": "run_spec",
+              "path": "workload.segments",
+              "code": "capacity_unknown",
+              "severity": "WARNING",
+              "message": "custom SQL/simple or schema overrides prevent a complete storage estimate; built-in population estimates do not cover arbitrary writes"
+            }
+          ]
+        }
+      }
+    ],
+    "summary": {
+      "cell_count": 2,
+      "enabled_cell_count": 2,
+      "run_count": 0,
+      "schedules": []
+    }
+  }
+}

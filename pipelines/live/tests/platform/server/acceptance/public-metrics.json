@@ -1,0 +1,11 @@
+{
+  "observed_at": "2026-09-25T14:36:17.127672+00:00",
+  "run_id": "43efd586-7ce9-451a-8cbe-666faaf22392",
+  "http_status": 200,
+  "series_count": 26,
+  "metric_errors": [],
+  "has_points": true,
+  "revoke_status": 204,
+  "revoked_read_status": 404,
+  "verified": true
+}

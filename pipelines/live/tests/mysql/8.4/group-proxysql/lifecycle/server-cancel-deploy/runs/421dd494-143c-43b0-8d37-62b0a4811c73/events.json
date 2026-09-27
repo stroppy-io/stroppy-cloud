@@ -1,0 +1,128 @@
+{
+  "observed_at": "2026-09-27T19:14:35.968029+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/421dd494-143c-43b0-8d37-62b0a4811c73/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "354",
+        "at": "2026-09-27T19:04:29Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "355",
+        "at": "2026-09-27T19:04:31Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "367",
+        "at": "2026-09-27T19:07:14Z",
+        "kind": "machine.ready",
+        "title": "Machine db-replica-1 ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "role": "db-replica",
+          "machine": "db-replica-1",
+          "public_ip": "158.160.231.67",
+          "private_ip": "10.130.0.7",
+          "id": "fv45sgjgbb3ed94fpu7p"
+        }
+      },
+      {
+        "id": "368",
+        "at": "2026-09-27T19:07:20Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "private_ip": "10.130.0.34",
+          "id": "fv40vekul5ekd2u949h9",
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.214.110"
+        }
+      },
+      {
+        "id": "369",
+        "at": "2026-09-27T19:07:20Z",
+        "kind": "machine.ready",
+        "title": "Machine proxy-1 ready",
+        "subject": "proxy-1",
+        "payload": {
+          "private_ip": "10.130.0.19",
+          "id": "fv4lojgjmkn2e6vl560i",
+          "role": "proxy",
+          "machine": "proxy-1",
+          "public_ip": "158.160.216.184"
+        }
+      },
+      {
+        "id": "370",
+        "at": "2026-09-27T19:07:30Z",
+        "kind": "machine.ready",
+        "title": "Machine db-1 ready",
+        "subject": "db-1",
+        "payload": {
+          "role": "db",
+          "machine": "db-1",
+          "public_ip": "158.160.226.83",
+          "private_ip": "10.130.0.5",
+          "id": "fv4ju51qr1g5677st5ds"
+        }
+      },
+      {
+        "id": "371",
+        "at": "2026-09-27T19:07:30Z",
+        "kind": "machine.ready",
+        "title": "Machine db-replica-2 ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "public_ip": "158.160.229.79",
+          "private_ip": "10.130.0.35",
+          "id": "fv4k991tpsca7l0q1443",
+          "role": "db-replica",
+          "machine": "db-replica-2"
+        }
+      },
+      {
+        "id": "372",
+        "at": "2026-09-27T19:07:30Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m59.283s"
+        }
+      },
+      {
+        "id": "373",
+        "at": "2026-09-27T19:07:30Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "381",
+        "at": "2026-09-27T19:13:47Z",
+        "kind": "run-canceled",
+        "title": "Run cancelled",
+        "status": "canceled"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

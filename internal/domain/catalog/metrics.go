@@ -12,17 +12,17 @@ func metrics() []Metric {
 	pg := []DatabaseKind{Postgres, OrioleDB, PgNoop}
 	mysql := []DatabaseKind{MySQL, MariaDB}
 	quantile := func(q string) string {
-		return `histogram_quantile(` + q + `, sum by (le) (rate(stroppy_iteration_duration_milliseconds_bucket{$native}[1m])))`
+		return `histogram_quantile(` + q + `, sum by (le) ((rate(stroppy_iteration_duration_bucket{$native}[1m]) or rate(stroppy_iteration_duration_milliseconds_bucket{$native}[1m]))))`
 	}
 	return []Metric{
 		{
 			// Stroppy counts a transaction only where the workload has
 			// them: an iteration is not one (a TPC-C iteration is one
 			// business transaction, a query-set iteration is none), so
-			// the series is the transaction counter, not the iteration
-			// counter, and it is empty for workloads that commit nothing.
+			// the native throughput gauge is empty for workloads that
+			// commit nothing. Throughput is calculated by Stroppy alone.
 			Key: "tps", Title: "Throughput", Description: "Committed transactions per second; workloads that run no transactions (query sets) report none.", Unit: "tps", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true,
-			Expr: `sum(rate(stroppy_successful_transactions_total{$native}[1m]))`,
+			Expr: `stroppy_tps{$native}`,
 		},
 		{Key: "latency_p50_ms", Title: "Latency p50", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.5")},
 		{Key: "latency_p95_ms", Title: "Latency p95", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.95")},
@@ -34,17 +34,17 @@ func metrics() []Metric {
 		{Key: "iterations_total", Title: "Iterations", Unit: "count", HigherIsBetter: true, Group: "Workload", Scope: "result", Expr: `sum(stroppy_iterations_total{$native})`},
 		{
 			Key: "iterations_per_second", Title: "Iterations per second", Description: "Workload iterations completed per second, whatever an iteration does.", Unit: "1/s", HigherIsBetter: true, Group: "Workload", Scope: "result",
-			Expr: `sum(rate(stroppy_iterations_total{$native}[1m]))`,
+			Expr: `stroppy_iterations_per_second{$native}`,
 		},
 		{
 			Key: "queries_per_second", Title: "Queries per second", Description: "Statements the workload sent to the database per second.", Unit: "1/s", HigherIsBetter: true, Group: "Workload", Scope: "result",
-			Expr: `sum(rate(stroppy_run_query_operations_total{$native}[1m]))`,
+			Expr: `stroppy_queries_per_second{$native}`,
 		},
 		{Key: "failed_iterations_total", Title: "Failed iterations", Unit: "count", Group: "Workload", Scope: "result", Expr: `sum(stroppy_failed_iterations_total{$native})`},
 		{Key: "failed_queries_total", Title: "Failed queries", Unit: "count", Group: "Workload", Scope: "result", Expr: `sum(stroppy_failed_queries_total{$native})`},
 		{
 			Key: "iteration_duration_avg", Title: "Iteration duration, avg", Unit: "ms", Group: "Workload", Scope: "result",
-			Expr: `sum(rate(stroppy_iteration_duration_milliseconds_sum{$native}[1m])) / sum(rate(stroppy_iteration_duration_milliseconds_count{$native}[1m]))`,
+			Expr: `sum((rate(stroppy_iteration_duration_sum{$native}[1m]) or rate(stroppy_iteration_duration_milliseconds_sum{$native}[1m]))) / sum((rate(stroppy_iteration_duration_count{$native}[1m]) or rate(stroppy_iteration_duration_milliseconds_count{$native}[1m])))`,
 		},
 		{Key: "iteration_duration_p90", Title: "Iteration duration, p90", Unit: "ms", Group: "Workload", Scope: "result", Expr: quantile("0.9")},
 		{Key: "iteration_duration_p99", Title: "Iteration duration, p99", Unit: "ms", Group: "Workload", Scope: "result", Expr: quantile("0.99")},

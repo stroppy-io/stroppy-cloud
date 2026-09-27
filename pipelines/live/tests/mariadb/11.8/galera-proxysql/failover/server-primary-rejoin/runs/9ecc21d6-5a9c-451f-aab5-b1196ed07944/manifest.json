@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+  "case_paths": [
+    "tests/mariadb/11.8/galera-proxysql/failover/server-primary-rejoin"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T19:58:00.473399+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/mariadb/11.8/galera-proxysql/failover/server-primary-rejoin/runs/9ecc21d6-5a9c-451f-aab5-b1196ed07944/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

@@ -1,15 +1,15 @@
 {
   "schema_version": 1,
-  "run_id": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
-  "checked_at": "2026-09-24T15:41:05.770501+00:00",
+  "run_id": "d7003247-6d13-4c77-92b2-6267e1c63281",
+  "checked_at": "2026-09-25T13:18:39.608615+00:00",
   "checks": [
     {
       "id": "compile",
       "group": "deployment",
       "status": "passed",
-      "reason": "Server validated and compiled the test before launch.",
+      "reason": "Server validated and compiled the saved test.",
       "evidence": {
-        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/run.json",
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/d7003247-6d13-4c77-92b2-6267e1c63281/run.json",
         "pointer": "/body"
       }
     },
@@ -17,19 +17,19 @@
       "id": "infrastructure_provisioning",
       "group": "deployment",
       "status": "passed",
-      "reason": "Server events confirm one YC VM and agent became ready.",
+      "reason": "Real YC runner and Graphene agent became ready; the server reports completion.",
       "evidence": {
-        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/events.json",
-        "pointer": "/body/data"
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/d7003247-6d13-4c77-92b2-6267e1c63281/run.json",
+        "pointer": "/body/status"
       }
     },
     {
       "id": "smoke",
       "group": "workload_check",
       "status": "passed",
-      "reason": "Native Stroppy completed the 20s noop segment with exit code 0, 3521195 iterations and no failed queries/iterations.",
+      "reason": "Native Stroppy completed the 20s noop workload successfully.",
       "evidence": {
-        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/run.json",
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/d7003247-6d13-4c77-92b2-6267e1c63281/run.json",
         "pointer": "/body/result"
       }
     },
@@ -43,23 +43,32 @@
     {
       "id": "native_otlp_metrics",
       "group": "native_metrics",
-      "status": "not_run",
-      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
-      "evidence": null
+      "status": "passed",
+      "reason": "61 native Stroppy series reached Graphene and were read through the server; all scope labels match.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-telemetry.json",
+        "pointer": "/native_series_count"
+      }
     },
     {
       "id": "component_metrics",
       "group": "telemetry",
-      "status": "not_run",
-      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
-      "evidence": null
+      "status": "failed",
+      "reason": "No node-exporter series observed for this 20s run; a separate 90s case checks multiple observation intervals.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-telemetry.json",
+        "pointer": "/metric_series"
+      }
     },
     {
       "id": "component_logs",
       "group": "telemetry",
-      "status": "not_run",
-      "reason": "This acceptance run has no configured OTLP endpoint or Victoria store. Native result metrics and Stroppy log are verified separately.",
-      "evidence": null
+      "status": "passed",
+      "reason": "Container and runner log pages and facets are readable through Graphene via the server.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-telemetry.json",
+        "pointer": "/log_page_sizes"
+      }
     },
     {
       "id": "pipeline_traces",
@@ -86,9 +95,9 @@
       "id": "artifacts",
       "group": "artifacts",
       "status": "passed",
-      "reason": "Config and log are downloadable through the server after run cleanup; byte sizes and SHA-256 digests match.",
+      "reason": "Config and log remain downloadable after cleanup; size and SHA-256 verified.",
       "evidence": {
-        "path": "tests/platform/server/2026-09-24/noop-artifact-downloads.json",
+        "path": "tests/platform/server/2026-09-25/noop-artifact-downloads.json",
         "pointer": "/verified"
       }
     },
@@ -103,10 +112,10 @@
       "id": "cleanup",
       "group": "cleanup",
       "status": "passed",
-      "reason": "Crossplane resources are absent and YC reports the benchmark VM as not found; provider configuration persists.",
+      "reason": "The server Graphene tree reports VM, network, subnet, security group, agent and container deleted; no direct YC check in this server-only acceptance.",
       "evidence": {
-        "path": "tests/platform/server/2026-09-24/noop-success-cleanup.json",
-        "pointer": "/yc_not_found"
+        "path": "tests/platform/server/2026-09-25/noop-cleanup-tree.json",
+        "pointer": "/body"
       }
     }
   ]

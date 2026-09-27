@@ -1,0 +1,361 @@
+{
+  "observed_at": "2026-09-27T18:47:08.177844+00:00",
+  "run_id": "829fe228-d91a-421f-94c7-ebc12b00da90",
+  "run_status": "completed",
+  "contract_version": "2.0.1",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 25,
+      "machine": null,
+      "aggregates": {
+        "avg": 5523.88,
+        "min": 773,
+        "max": 9919,
+        "last": 9919,
+        "p95": 9919
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 25,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 81.406837647792,
+        "min": 77.3148970575,
+        "max": 83.1812908796,
+        "last": 82.64822583,
+        "p95": 83.1016946309
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 25,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 81.406837647792,
+        "min": 77.3148970575,
+        "max": 83.1812908796,
+        "last": 82.64822583,
+        "p95": 83.1016946309
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 103,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 6.630916702417875,
+        "min": 0.3671340288391334,
+        "max": 26.997874248513654,
+        "last": 0.5035062647479105,
+        "p95": 26.955655206776274
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 66,
+      "machine": "db-replica-1",
+      "aggregates": {
+        "avg": 10.689768727162026,
+        "min": 0.4833003936157598,
+        "max": 26.27859076790193,
+        "last": 0.5814919421830878,
+        "p95": 26.27859076790193
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 84,
+      "machine": "db-replica-2",
+      "aggregates": {
+        "avg": 9.118784947701698,
+        "min": 0.41271528458253215,
+        "max": 27.174346367230328,
+        "last": 0.4202099388784797,
+        "p95": 27.174346367230328
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 48,
+      "machine": "proxy-1",
+      "aggregates": {
+        "avg": 1.44837886570215,
+        "min": 0.16937331872073358,
+        "max": 2.848321880290805,
+        "last": 0.4352737905369386,
+        "p95": 2.848321880290805
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 36,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 2.762498250423624,
+        "min": 1.9037809821250473,
+        "max": 4.067498214552678,
+        "last": 2.2688768561272443,
+        "p95": 4.067498214552678
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 104,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 1341059780.9230769,
+        "min": 1300000768,
+        "max": 1352990720,
+        "last": 1345617920,
+        "p95": 1352990720
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 68,
+      "machine": "db-replica-1",
+      "aggregates": {
+        "avg": 1415629763.764706,
+        "min": 1180626944,
+        "max": 1454088192,
+        "last": 1434247168,
+        "p95": 1454088192
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 86,
+      "machine": "db-replica-2",
+      "aggregates": {
+        "avg": 1391846519.0697675,
+        "min": 690245632,
+        "max": 1471705088,
+        "last": 1471705088,
+        "p95": 1471705088
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 50,
+      "machine": "proxy-1",
+      "aggregates": {
+        "avg": 609279180.8,
+        "min": 580988928,
+        "max": 640659456,
+        "last": 637718528,
+        "p95": 640659456
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 37,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 690176885.6216216,
+        "min": 630542336,
+        "max": 837476352,
+        "last": 673816576,
+        "p95": 837476352
+      }
+    }
+  ],
+  "native_series_count": 61,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total"
+  ],
+  "native_scope_mismatches": [],
+  "invalid_metric_values": [],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "proxy-1-proxysql",
+          "count": 154
+        },
+        {
+          "value": "db-1-mysql",
+          "count": 113
+        },
+        {
+          "value": "db-replica-2-mysql",
+          "count": 91
+        },
+        {
+          "value": "db-replica-1-mysql",
+          "count": 82
+        },
+        {
+          "value": "db-replica-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-replica-2-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "proxy-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-mysqld-exporter",
+          "count": 21
+        },
+        {
+          "value": "db-replica-1-mysqld-exporter",
+          "count": 12
+        },
+        {
+          "value": "db-replica-2-mysqld-exporter",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 11175
+        },
+        {
+          "value": "unspecified",
+          "count": 319
+        },
+        {
+          "value": "warn",
+          "count": 13
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "runner-1",
+          "count": 10085
+        },
+        {
+          "value": "db-1",
+          "count": 398
+        },
+        {
+          "value": "db-replica-2",
+          "count": 345
+        },
+        {
+          "value": "proxy-1",
+          "count": 326
+        },
+        {
+          "value": "db-replica-1",
+          "count": 320
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "runner",
+          "count": 10085
+        },
+        {
+          "value": "db-replica",
+          "count": 665
+        },
+        {
+          "value": "db",
+          "count": 398
+        },
+        {
+          "value": "proxy",
+          "count": 326
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "stroppy",
+          "count": 9933
+        },
+        {
+          "value": "container",
+          "count": 1087
+        },
+        {
+          "value": "stdout",
+          "count": 226
+        },
+        {
+          "value": "stderr",
+          "count": 128
+        },
+        {
+          "value": "pull",
+          "count": 75
+        },
+        {
+          "value": "",
+          "count": 53
+        },
+        {
+          "value": "runc",
+          "count": 5
+        }
+      ]
+    }
+  ],
+  "logs_verified": true,
+  "native_verified": true,
+  "components_verified": true,
+  "verified": true
+}

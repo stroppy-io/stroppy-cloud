@@ -1,0 +1,56 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-picodata-metrics-85175d12-picodata-three-node-26.1",
+  "input_run_id": "58061896-98c5-4882-9929-99f9085876fb",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "58061896-db-1",
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-2",
+      "agent": "58061896-db-2",
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-3",
+      "agent": "58061896-db-3",
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-db-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "58061896-proxy-1",
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "58061896-runner-1",
+      "entity": "docker/58061896-98c5-4882-9929-99f9085876fb-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/picodata/26.1/three-node/tpcc-tx/native-otlp-20s-2vus/runs/matrix-picodata-metrics-85175d12-picodata-three-node-26.1/input.json",
+      "sha256": "14f361c3529a4d9194d9ab1ca41b70872958c4079844815c5f136fd02465b5b6"
+    },
+    {
+      "path": "tests/picodata/26.1/three-node/tpcc-tx/native-otlp-20s-2vus/runs/matrix-picodata-metrics-85175d12-picodata-three-node-26.1/metrics.json",
+      "sha256": "d7c8987709154581af9125bfe260725fc7f3dcaa5a18b7369b6db711c103c7a3"
+    }
+  ]
+}

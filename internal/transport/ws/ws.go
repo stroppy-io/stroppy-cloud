@@ -167,12 +167,16 @@ func (s *session) subscribe(ctx context.Context, f Frame) {
 	s.mu.Unlock()
 	// First answer synchronously: access errors reach the client at once.
 	if err := s.tick(sctx, sub, true); err != nil {
+		cancel()
 		s.unsubscribe(sub.id)
 		s.fail(ctx, sub.id, err)
 		return
 	}
 	s.send(ctx, Frame{Type: "ack", SubID: sub.id, Topic: sub.topic})
-	go s.poll(sctx, sub)
+	go func() {
+		defer cancel()
+		s.poll(sctx, sub)
+	}()
 }
 
 func (s *session) unsubscribe(id string) {

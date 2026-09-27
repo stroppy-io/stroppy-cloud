@@ -1,0 +1,41 @@
+{
+  "contract_version": "2.0.2",
+  "cloud_build": "0.0.0-dev-f658fd8b-iam-refresh-20260927",
+  "checks": [
+    {
+      "command": "go test ./... -count=1 -race",
+      "cwd": "stroppy-cloud",
+      "status": "passed"
+    },
+    {
+      "command": "go test -tags=integration ./cmd/... -count=1 -p 1 -timeout=20m",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "seconds": 511.19
+    },
+    {
+      "command": "go test ./... -count=1",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed"
+    },
+    {
+      "command": "go test -race ./internal/activities ./internal/cloud",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed"
+    },
+    {
+      "command": "make lint lint-pipelines",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make contract-check",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "artifacts": 218,
+      "browser_tests": 3
+    }
+  ],
+  "compatibility": "Patch 2.0.2 records the pipeline SDK/docker dependency update; public JSON shapes unchanged. No Graphene source changes."
+}

@@ -453,6 +453,13 @@ func (t *telemetry) buildMetrics() {
 			}
 		}
 		from, to := seg.Start, seg.End
+		for _, key := range []string{"tps", "iterations_per_second", "queries_per_second"} {
+			value := metricValue(key)
+			if key == "tps" && value == 0 {
+				continue
+			}
+			s.gauge("stroppy_"+key, nil, func(time.Duration, int) float64 { return value }, from, to)
+		}
 		s.cumulative("stroppy_iterations_total", progress(iterations), from, to)
 		s.cumulative("stroppy_successful_transactions_total", progress(metricValue("successful_transactions_total")), from, to)
 		s.cumulative("stroppy_run_query_operations_total", progress(metricValue("run_query_operations_total")), from, to)

@@ -1,0 +1,217 @@
+{
+  "observed_at": "2026-09-27T21:28:04.497109+00:00",
+  "run_id": "d740c071-1aae-462d-a014-559d9cb143a8",
+  "run_status": "completed",
+  "contract_version": "2.0.2",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 184,
+      "machine": null,
+      "aggregates": {
+        "avg": 39715.64673913043,
+        "min": 1,
+        "max": 78391,
+        "last": 78391,
+        "p95": 74807
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 182,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 88.80334838978516,
+        "min": 87.0084657557,
+        "max": 97.4727702942,
+        "last": 87.1004448134,
+        "p95": 95.6411859289
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 40.8292185647,
+        "min": 40.8292185647,
+        "max": 40.8292185647,
+        "last": 40.8292185647,
+        "p95": 40.8292185647
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 182,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 88.80334838978516,
+        "min": 87.0084657557,
+        "max": 97.4727702942,
+        "last": 87.1004448134,
+        "p95": 95.6411859289
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 2,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 40.8292185647,
+        "min": 40.8292185647,
+        "max": 40.8292185647,
+        "last": 40.8292185647,
+        "p95": 40.8292185647
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 187,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 3.1442384696937737,
+        "min": 2.8839125523290488,
+        "max": 5.01029968768697,
+        "last": 5.01029968768697,
+        "p95": 4.063921672051141
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 189,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 643718344.4656085,
+        "min": 612290560,
+        "max": 673837056,
+        "last": 622706688,
+        "p95": 672837632
+      }
+    }
+  ],
+  "native_series_count": 122,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total"
+  ],
+  "native_scope_mismatches": [],
+  "invalid_metric_values": [],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 78588
+        },
+        {
+          "value": "unspecified",
+          "count": 66
+        },
+        {
+          "value": "warn",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "runner-1",
+          "count": 78644
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "runner",
+          "count": 78644
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "stroppy",
+          "count": 78434
+        },
+        {
+          "value": "container",
+          "count": 123
+        },
+        {
+          "value": "stdout",
+          "count": 38
+        },
+        {
+          "value": "stderr",
+          "count": 25
+        },
+        {
+          "value": "",
+          "count": 23
+        },
+        {
+          "value": "pull",
+          "count": 15
+        },
+        {
+          "value": "runc",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "logs_verified": true,
+  "native_verified": true,
+  "components_verified": true,
+  "verified": true
+}

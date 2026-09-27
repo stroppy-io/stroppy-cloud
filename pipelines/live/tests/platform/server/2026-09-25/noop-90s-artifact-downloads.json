@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-09-25T13:39:44.761725+00:00",
+  "run_id": "feb7be00-c574-40ab-aae7-b183b85ba793",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "feb7be00-stroppy-main-config",
+      "http_status": 200,
+      "size_bytes": 940,
+      "digest": "sha256:0268ad03170e04069f445f3ee46b2c311ef074b6d2c19278a2a1e1f63342d94f",
+      "verified": true
+    },
+    {
+      "id": "feb7be00-stroppy-main-log",
+      "http_status": 200,
+      "size_bytes": 28460453,
+      "digest": "sha256:40d8ec9ff1d5a7329e944b71c267b9a007c26f6701d5f5f0c3a687d81bc3636d",
+      "verified": true
+    }
+  ]
+}

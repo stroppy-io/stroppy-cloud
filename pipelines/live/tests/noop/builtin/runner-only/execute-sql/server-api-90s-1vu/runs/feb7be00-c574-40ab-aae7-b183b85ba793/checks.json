@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "feb7be00-c574-40ab-aae7-b183b85ba793",
+  "checked_at": "2026-09-25T13:40:23.852421+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu/runs/feb7be00-c574-40ab-aae7-b183b85ba793/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Real YC runner provisioned; workload exited 0.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-cleanup-tree.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "failed",
+      "reason": "Stroppy exited 0 and printed its summary after 28 MB of output; pipeline parsed only the first 8 MiB and incorrectly failed the run. Fix pending rerun.",
+      "evidence": {
+        "path": "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu/runs/feb7be00-c574-40ab-aae7-b183b85ba793/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "The workload has no logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "61 native series with correct run and namespace; native throughput and histograms returned through Graphene.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-telemetry.json",
+        "pointer": "/native_series_count"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Runner CPU and memory metrics returned through Graphene.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-telemetry.json",
+        "pointer": "/metric_series"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Two pages of logs and component facets returned through Graphene.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-telemetry.json",
+        "pointer": "/facets"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Config and 28 MB log downloaded with matching digests after cleanup.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-artifact-downloads.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Runner-only test has no database.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Server Graphene tree reports all provisioned resources deleted.",
+      "evidence": {
+        "path": "tests/platform/server/2026-09-25/noop-90s-cleanup-tree.json",
+        "pointer": "/body"
+      }
+    }
+  ]
+}

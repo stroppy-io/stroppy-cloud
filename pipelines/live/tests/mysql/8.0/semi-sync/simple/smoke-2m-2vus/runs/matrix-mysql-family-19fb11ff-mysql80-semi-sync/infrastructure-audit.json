@@ -1,0 +1,42 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-mysql-family-19fb11ff-mysql80-semi-sync",
+  "input_run_id": "26e39f3d-aaeb-4b09-8a20-896f597c71dd",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "26e39f3d-db-1",
+      "entity": "docker/26e39f3d-aaeb-4b09-8a20-896f597c71dd-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-replica-1",
+      "agent": "26e39f3d-db-replica-1",
+      "entity": "docker/26e39f3d-aaeb-4b09-8a20-896f597c71dd-db-replica-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "26e39f3d-runner-1",
+      "entity": "docker/26e39f3d-aaeb-4b09-8a20-896f597c71dd-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/mysql/8.0/semi-sync/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql-family-19fb11ff-mysql80-semi-sync/input.json",
+      "sha256": "c70536e6e506d593ecba90443ba9d9e294052663f679f96a8d4f971ca5871ed0"
+    },
+    {
+      "path": "tests/mysql/8.0/semi-sync/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-mysql-family-19fb11ff-mysql80-semi-sync/metrics.json",
+      "sha256": "a68941d5377f2c0e9d6f32243d6ec7e1c8ef3d399bff2f78f831bdad0b61b50c"
+    }
+  ]
+}

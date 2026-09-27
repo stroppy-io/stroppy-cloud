@@ -1,0 +1,124 @@
+{
+  "run_id": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+  "verified": true,
+  "errors": [],
+  "events": [
+    {
+      "at": "2026-09-27T19:42:13.276518603Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.29",
+        "10.130.0.16",
+        "10.130.0.30"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "db-3"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T19:42:13.282522563Z",
+      "ha_event": "standby_probe",
+      "host": "10.130.0.29"
+    },
+    {
+      "at": "2026-09-27T19:42:13.511012154Z",
+      "ha_event": "standby_probe",
+      "host": "10.130.0.16"
+    },
+    {
+      "at": "2026-09-27T19:42:14.56756059Z",
+      "container_id": "7af43b896ef5d92400122ac5690e73542ac175310a1319af70e05ce9e9e91ee2",
+      "ha_event": "primary_stopped",
+      "host": "10.130.0.30",
+      "writer": "db-3"
+    },
+    {
+      "at": "2026-09-27T19:42:18.579202019Z",
+      "elapsed_seconds": 4.011613787,
+      "ha_event": "proxy_write_recovered",
+      "new_writer": "db-1",
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "db-3"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "db-1"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T19:42:18.582618355Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.29",
+        "10.130.0.16"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "db-3"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "db-1"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T19:42:18.723639523Z",
+      "container_id": "7af43b896ef5d92400122ac5690e73542ac175310a1319af70e05ce9e9e91ee2",
+      "ha_event": "primary_restarted"
+    },
+    {
+      "at": "2026-09-27T19:42:22.730874746Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.29",
+        "10.130.0.16",
+        "10.130.0.30"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "db-3"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "db-1"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T19:42:22.744116644Z",
+      "ha_event": "verified",
+      "primary_changed": true,
+      "primary_rejoined": true,
+      "replicas": 3,
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "db-3"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "db-1"
+        }
+      ]
+    }
+  ],
+  "scope": "Exact probe-row consistency and proxy write availability across one primary container stop/start. Not a VM/disk outage or losslessness proof for arbitrary workloads."
+}

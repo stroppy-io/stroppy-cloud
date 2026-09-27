@@ -8,6 +8,7 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"strings"
 	"time"
@@ -18,6 +19,12 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
+)
+
+// Remote errors retain their meaning across the infrastructure boundary.
+var (
+	ErrRemoteNotFound = errors.New("remote run does not exist")
+	ErrStartRejected  = errors.New("run submission rejected")
 )
 
 // Status of a run (the server's vocabulary, §16.6).
@@ -247,6 +254,9 @@ type MetaPatch struct {
 
 // Repository is the storage port.
 type Repository interface {
+	// Admit serializes preparation and persistence against other launches and
+	// tenant retirement; fn uses the same database transaction.
+	Admit(ctx context.Context, tenantID uuid.UUID, fn func(context.Context) error) error
 	Insert(ctx context.Context, r Run, idempotencyKey string) error
 	ByID(ctx context.Context, id uuid.UUID) (Run, error)
 	ByIdempotencyKey(ctx context.Context, tenantID uuid.UUID, key string) (uuid.UUID, bool, error)

@@ -1,0 +1,13 @@
+{
+  "observed_at": "2026-09-27T16:15:24.091856+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/logs?q=activity+failed&level=error&limit=3",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [],
+    "older": null,
+    "newer": null,
+    "truncated": false
+  }
+}

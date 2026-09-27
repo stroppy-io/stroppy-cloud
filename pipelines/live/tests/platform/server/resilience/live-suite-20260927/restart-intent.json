@@ -1,0 +1,20 @@
+{
+  "at": "2026-09-27T16:02:23.226075+00:00",
+  "suite_id": "7af25d36-2e74-4165-a314-2f9e80f9177d",
+  "runs": [
+    {
+      "id": "e3e18f98-f2b4-40dc-93da-e035ff75814f",
+      "graphene": {
+        "run_ref": "run/7af25d36-2e74-4165-a314-2f9e80f9177d-41e5775f-a16e7c9a",
+        "namespace": "t-server-live-20260924"
+      }
+    },
+    {
+      "id": "be40ddab-2f06-4904-9d51-999359b45653",
+      "graphene": {
+        "run_ref": "run/7af25d36-2e74-4165-a314-2f9e80f9177d-28975b65-0e1a5bd9",
+        "namespace": "t-server-live-20260924"
+      }
+    }
+  ]
+}

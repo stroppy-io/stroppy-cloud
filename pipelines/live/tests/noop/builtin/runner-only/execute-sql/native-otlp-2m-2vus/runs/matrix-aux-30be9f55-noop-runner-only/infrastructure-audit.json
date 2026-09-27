@@ -1,0 +1,26 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-aux-30be9f55-noop-runner-only",
+  "input_run_id": "26d33b53-89c2-4291-bf91-a59bbb106e6c",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "runner-1",
+      "agent": "26d33b53-runner-1",
+      "entity": "docker/26d33b53-89c2-4291-bf91-a59bbb106e6c-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/noop/builtin/runner-only/execute_sql/smoke-2m-2vus/runs/matrix-aux-30be9f55-noop-runner-only/input.json",
+      "sha256": "e541e2d125dc51df0c204096013b147cccce5a09565809fe8a2ee0cab618a98b"
+    },
+    {
+      "path": "tests/noop/builtin/runner-only/execute_sql/smoke-2m-2vus/runs/matrix-aux-30be9f55-noop-runner-only/metrics.json",
+      "sha256": "ac03866856b54ac0bf567c7e1e94050121b14297a8ecba65041d3f8633b4328b"
+    }
+  ]
+}

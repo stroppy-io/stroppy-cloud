@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-09-27T21:28:03.532553+00:00",
+  "run_id": "d740c071-1aae-462d-a014-559d9cb143a8",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "d740c071-managed-ydb-readiness-config",
+      "http_status": 200,
+      "size_bytes": 800,
+      "digest": "sha256:e60e626b1a2a2fc0fa5d48a3d2e2cb4b62cec27a272207380152628f1ee24065",
+      "verified": true
+    },
+    {
+      "id": "d740c071-managed-ydb-readiness-log",
+      "http_status": 200,
+      "size_bytes": 2595,
+      "digest": "sha256:629667c5c267a687033920ce631d3028d9f6ce074e96b99d407a48c0a02501f3",
+      "verified": true
+    },
+    {
+      "id": "d740c071-stroppy-iam-refresh-config",
+      "http_status": 200,
+      "size_bytes": 1066,
+      "digest": "sha256:f967d902c6639b54cc9619854bbec4514f88a745945c49e02e372d4a0c3adb5c",
+      "verified": true
+    },
+    {
+      "id": "d740c071-stroppy-iam-refresh-log",
+      "http_status": 200,
+      "size_bytes": 13908008,
+      "digest": "sha256:ee97a035ba7317cc705a2d2143ca64ff31a8914e6ab3288197ee7a09e0aa846a",
+      "verified": true
+    }
+  ]
+}

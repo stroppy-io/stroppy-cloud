@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+  "checked_at": "2026-09-27T16:02:18.218298+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed single PostgreSQL node.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "blocked",
+      "reason": "Cancelled before workload: repeated TLS handshake timeouts pulling node-exporter from Quay. TPC-H/TPC-DS did not execute.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/errors-unfiltered-before.json",
+        "pointer": "/body/data"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Self-managed single PostgreSQL node.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Cancelled attempt fully cleaned through server resource tree.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-20260927/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

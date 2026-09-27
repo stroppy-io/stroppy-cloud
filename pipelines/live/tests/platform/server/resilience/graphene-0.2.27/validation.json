@@ -1,0 +1,20 @@
+{
+  "dependencies": {
+    "graphene": "v0.2.27",
+    "pipeline": "v0.2.13",
+    "docker": "v0.3.4",
+    "k8s": "v0.4.0"
+  },
+  "build_version": "0.0.0-dev-f658fd8b-graphene027-20260927",
+  "image_manifest": "sha256:a43ea6cef7aa6cce660eb55cbb71a9cd2ef6e98706b44c7c44cf473c670bd02f",
+  "checks": [
+    {
+      "command": "cd pipelines && go test ./internal/activities ./internal/run ./internal/suite ./internal/probe -count=1 -timeout=120s",
+      "exit_code": 0
+    },
+    {
+      "command": "go test -tags=integration ./cmd/stroppy-cloud/application -run 'TestE2E(ObserverRecovery|KeptStandRecovery|SubmissionFaultRecovery|ResultOutageRecovery|CancelCommandSurvivesStaleProjection|Observe|SharedMetrics)$' -count=1 -timeout=180s",
+      "exit_code": 0
+    }
+  ]
+}

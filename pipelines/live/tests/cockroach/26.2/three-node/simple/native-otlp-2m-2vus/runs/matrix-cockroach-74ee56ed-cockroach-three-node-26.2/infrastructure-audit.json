@@ -1,0 +1,56 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-three-node-26.2",
+  "input_run_id": "c02fd219-4ed1-4235-bacc-0c0f208344f4",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "c02fd219-db-1",
+      "entity": "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-2",
+      "agent": "c02fd219-db-2",
+      "entity": "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-2-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "db-3",
+      "agent": "c02fd219-db-3",
+      "entity": "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-db-3-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "proxy-1",
+      "agent": "c02fd219-proxy-1",
+      "entity": "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-proxy-1-node-exporter",
+      "disks": []
+    },
+    {
+      "machine": "runner-1",
+      "agent": "c02fd219-runner-1",
+      "entity": "docker/c02fd219-4ed1-4235-bacc-0c0f208344f4-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/cockroach/26.2/three-node/tpcc-tx/native-otlp-20s-2vus/runs/matrix-cockroach-74ee56ed-cockroach-three-node-26.2/input.json",
+      "sha256": "2481c797f7936406900431755c261c468d8ea9a5aeba9b4814da09f35a7c15dd"
+    },
+    {
+      "path": "tests/cockroach/26.2/three-node/tpcc-tx/native-otlp-20s-2vus/runs/matrix-cockroach-74ee56ed-cockroach-three-node-26.2/metrics.json",
+      "sha256": "1c6ed104a6267b078ecc64d34ba3db92f5ae710d0e1bb3b93880d8e9e8743e2a"
+    }
+  ]
+}

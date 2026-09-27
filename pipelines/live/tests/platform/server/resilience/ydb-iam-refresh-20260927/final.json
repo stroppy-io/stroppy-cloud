@@ -1,0 +1,287 @@
+{
+  "observed_at": "2026-09-27T20:23:36.728814+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/608b7c66-56d7-4c35-8559-800c056a953e",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "id": "608b7c66-56d7-4c35-8559-800c056a953e",
+    "name": "server managed YDB IAM rotation ydb-iam-refresh-20260927",
+    "status": "failed",
+    "phase": "done",
+    "status_reason": "segment iam-refresh failed: read stroppy logs: context canceled",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "8aaa78ea-6381-4aa9-b4b7-f1a7113c3c08",
+      "name": "server managed YDB IAM rotation ydb-iam-refresh-20260927"
+    },
+    "snapshot": {
+      "execution": {
+        "containers": [
+          {
+            "name": "runner-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          }
+        ],
+        "workload": {
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:9dd1a203fc94d53df223e724362c20678b1c38b6dc6cc92a9d4889473286110f"
+        }
+      },
+      "database": {
+        "kind": "ydb_managed",
+        "version": "managed",
+        "params": {
+          "storage_size_limit_gb": 1,
+          "throttling_rcu_limit": 100,
+          "type": "serverless",
+          "deletion_protection": false,
+          "location_id": "ru-central1",
+          "provisioned_rcu_limit": 0
+        },
+        "schema": {
+          "id": "db.ydb_managed.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "ydb_grpcs",
+        "segments": [
+          {
+            "name": "iam-refresh",
+            "run": {
+              "duration": "15m0s",
+              "executor": "constant-vus",
+              "query_timeout": "10s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "20m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1;"
+            },
+            "log_level": "info"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "runner": {
+          "size": "S"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "machines": [
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "id": "spec.run",
+        "version": "1"
+      },
+      "values": {
+        "keep": "0s",
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "run_id": "608b7c66-56d7-4c35-8559-800c056a953e",
+        "tenant": "server-live-20260924",
+        "workload": {
+          "driver_type": "ydb",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "iam-refresh",
+              "run": {
+                "duration": "15m0s",
+                "executor": "constant-vus",
+                "query_timeout": "10s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "20m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "SELECT 1;"
+              }
+            }
+          ],
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:9dd1a203fc94d53df223e724362c20678b1c38b6dc6cc92a9d4889473286110f",
+          "url": "grpcs://managed-ydb-pending:2135/?database=/pending",
+          "ydb_iam_credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5"
+        },
+        "machines": [
+          {
+            "cpu": 4,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "managed_ydb": {
+          "location_id": "ru-central1",
+          "storage_size_limit_gb": 1,
+          "throttling_rcu_limit": 100,
+          "type": "serverless"
+        },
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "containers": [
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "608b7c66-56d7-4c35-8559-800c056a953e",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        },
+        "flows": [
+          {
+            "external": "managed-ydb",
+            "from_role": "runner",
+            "label": "ydb",
+            "port": 2135,
+            "protocol": "grpc"
+          }
+        ]
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-27T20:16:09Z",
+    "started_at": "2026-09-27T20:16:13Z",
+    "finished_at": "2026-09-27T20:23:33Z",
+    "duration": "7m20s",
+    "summary": {
+      "db_kind": "ydb_managed",
+      "db_version": "managed",
+      "protocol": "ydb_grpcs",
+      "stroppy_version": "6.0.0",
+      "topology_label": "managed ydb serverless",
+      "node_count": 1,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "runner": {
+          "size": "S"
+        }
+      },
+      "progress_pct": 0
+    },
+    "result": {
+      "segments": [
+        {
+          "name": "iam-refresh",
+          "status": "failed",
+          "started_at": "2026-09-27T20:20:32Z",
+          "finished_at": "2026-09-27T20:21:31Z",
+          "exit_code": -1,
+          "error": "read stroppy logs: context canceled"
+        }
+      ],
+      "artifacts": [
+        "artifact/608b7c66-managed-ydb-readiness-config",
+        "artifact/608b7c66-managed-ydb-readiness-log",
+        "artifact/608b7c66-stroppy-iam-refresh-config",
+        "artifact/608b7c66-stroppy-iam-refresh-log"
+      ]
+    },
+    "graphene": {
+      "run_ref": "run/608b7c66-56d7-4c35-8559-800c056a953e",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

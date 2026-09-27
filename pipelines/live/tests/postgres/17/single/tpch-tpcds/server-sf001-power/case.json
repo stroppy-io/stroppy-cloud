@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/17/single/tpch-tpcds/server-sf001-power",
+  "database": "postgres",
+  "version": "17",
+  "topology": "single",
+  "workload": "tpch-tpcds",
+  "preset": "server-sf001-power",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "eb2a84f5-aaa8-4ca2-97fb-0a6c05679208",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T18:28:20.681030+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054",
+    "runs/f019770c-bb58-4436-9bcb-8d28cced6fd2",
+    "runs/09e86d6e-3eab-4e5d-ac47-621d19accff3",
+    "runs/eb2a84f5-aaa8-4ca2-97fb-0a6c05679208"
+  ],
+  "source": {
+    "path": "tests/postgres/17/single/tpch-tpcds/server-sf001-power/runs/eb2a84f5-aaa8-4ca2-97fb-0a6c05679208/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "tpch",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "1m0s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "25m0s",
+      "warmup": "0s",
+      "workload": {
+        "load_workers": 2,
+        "pg_unlogged": false,
+        "scale_factor": 0.01,
+        "script": "tpch/tx",
+        "ydb_store_mode": "column"
+      }
+    },
+    {
+      "log_level": "info",
+      "name": "tpcds",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "1m0s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "25m0s",
+      "warmup": "0s",
+      "workload": {
+        "load_workers": 2,
+        "pg_unlogged": false,
+        "query_seed": 19620718,
+        "scale_factor": 0.01,
+        "script": "tpcds",
+        "streams": 1,
+        "validate_force": false,
+        "ydb_store_mode": "column"
+      }
+    }
+  ]
+}

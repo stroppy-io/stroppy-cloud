@@ -1,0 +1,367 @@
+{
+  "observed_at": "2026-09-27T17:00:39.775845+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/f019770c-bb58-4436-9bcb-8d28cced6fd2/overview",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "run_id": "f019770c-bb58-4436-9bcb-8d28cced6fd2",
+    "status": "running",
+    "phase": "deploying",
+    "progress_pct": 30,
+    "source": "persisted",
+    "observed_at": "2026-09-27T16:56:15Z",
+    "degraded_reasons": [],
+    "phases": [
+      {
+        "id": "provisioning",
+        "title": "provisioning",
+        "status": "completed",
+        "started_at": "2026-09-27T16:49:23Z",
+        "finished_at": "2026-09-27T16:52:12Z",
+        "steps": [
+          {
+            "id": "5",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:23Z"
+          },
+          {
+            "id": "15",
+            "title": "resolve-yandex-images",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:23Z"
+          },
+          {
+            "id": "21",
+            "title": "check-config",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:23Z"
+          },
+          {
+            "id": "27",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:52:12Z"
+          },
+          {
+            "id": "28",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:23Z"
+          },
+          {
+            "id": "29",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:51:56Z"
+          },
+          {
+            "id": "30",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:23Z"
+          },
+          {
+            "id": "31",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:45Z"
+          },
+          {
+            "id": "32",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:59Z"
+          },
+          {
+            "id": "33",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:55Z"
+          },
+          {
+            "id": "34",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:49:55Z"
+          },
+          {
+            "id": "42",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:52:10Z"
+          },
+          {
+            "id": "43",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:51:02Z"
+          },
+          {
+            "id": "44",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:51:55Z"
+          },
+          {
+            "id": "45",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:49:23Z",
+            "finished_at": "2026-09-27T16:50:52Z"
+          },
+          {
+            "id": "88",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:51:56Z",
+            "finished_at": "2026-09-27T16:51:56Z"
+          },
+          {
+            "id": "103",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:10Z",
+            "finished_at": "2026-09-27T16:52:10Z"
+          },
+          {
+            "id": "114",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:12Z",
+            "finished_at": "2026-09-27T16:52:12Z"
+          },
+          {
+            "id": "124",
+            "title": "emit",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      },
+      {
+        "id": "deploying",
+        "title": "deploying",
+        "status": "running",
+        "started_at": "2026-09-27T16:52:12Z",
+        "finished_at": null,
+        "steps": [
+          {
+            "id": "134",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:12Z",
+            "finished_at": "2026-09-27T16:52:12Z"
+          },
+          {
+            "id": "145",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:12Z",
+            "finished_at": "2026-09-27T16:52:19Z"
+          },
+          {
+            "id": "151",
+            "title": "prep",
+            "status": "completed",
+            "machine": "f019770c-db-1",
+            "started_at": "2026-09-27T16:52:19Z",
+            "finished_at": "2026-09-27T16:52:28Z"
+          },
+          {
+            "id": "159",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:28Z",
+            "finished_at": "2026-09-27T16:52:28Z"
+          },
+          {
+            "id": "160",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:52:28Z",
+            "finished_at": "2026-09-27T16:52:32Z"
+          },
+          {
+            "id": "166",
+            "title": "install",
+            "status": "completed",
+            "machine": "f019770c-db-1",
+            "started_at": "2026-09-27T16:52:28Z",
+            "finished_at": "2026-09-27T16:55:42Z"
+          },
+          {
+            "id": "172",
+            "title": "install",
+            "status": "completed",
+            "machine": "f019770c-runner-1",
+            "started_at": "2026-09-27T16:52:32Z",
+            "finished_at": "2026-09-27T16:56:15Z"
+          },
+          {
+            "id": "179",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:55:42Z",
+            "finished_at": "2026-09-27T16:55:42Z"
+          },
+          {
+            "id": "185",
+            "title": "write",
+            "status": "completed",
+            "machine": "f019770c-db-1",
+            "started_at": "2026-09-27T16:55:42Z",
+            "finished_at": "2026-09-27T16:55:42Z"
+          },
+          {
+            "id": "192",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:55:42Z",
+            "finished_at": "2026-09-27T16:55:42Z"
+          },
+          {
+            "id": "198",
+            "title": "pull",
+            "status": "completed",
+            "machine": "f019770c-db-1",
+            "started_at": "2026-09-27T16:55:42Z",
+            "finished_at": "2026-09-27T16:56:03Z"
+          },
+          {
+            "id": "205",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:56:03Z",
+            "finished_at": "2026-09-27T16:56:03Z"
+          },
+          {
+            "id": "211",
+            "title": "pull",
+            "status": "pending",
+            "machine": "f019770c-db-1",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "218",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:56:15Z",
+            "finished_at": "2026-09-27T16:56:15Z"
+          },
+          {
+            "id": "224",
+            "title": "pull",
+            "status": "pending",
+            "machine": "f019770c-runner-1",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      }
+    ],
+    "components": [
+      {
+        "id": "db-1-node-exporter",
+        "role": "db",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-1-postgres",
+        "role": "db",
+        "image": "postgres:17",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 5432
+          }
+        ]
+      },
+      {
+        "id": "db-1-postgres-exporter",
+        "role": "db",
+        "image": "quay.io/prometheuscommunity/postgres-exporter:v0.18.1",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9187
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "runner-1-node-exporter",
+        "role": "runner",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "runner-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      }
+    ],
+    "machines": [
+      {
+        "name": "db-1",
+        "role": "db",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.25",
+        "public_ip": "158.160.200.81",
+        "size": "S",
+        "provider_resource_id": "fv4mrst2pia1j5m04kba",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "runner-1",
+        "role": "runner",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.17",
+        "public_ip": "81.26.188.19",
+        "size": "S",
+        "provider_resource_id": "fv4i82uhiapv7oiv94o0",
+        "last_heartbeat_at": null
+      }
+    ],
+    "flows": [
+      {
+        "from": "runner",
+        "to": "db",
+        "protocol": "pg",
+        "port": 5432
+      }
+    ],
+    "workload_segments": []
+  }
+}

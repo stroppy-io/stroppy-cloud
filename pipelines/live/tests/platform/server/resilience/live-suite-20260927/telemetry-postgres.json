@@ -1,0 +1,229 @@
+{
+  "observed_at": "2026-09-27T16:05:26.376264+00:00",
+  "run_id": "be40ddab-2f06-4904-9d51-999359b45653",
+  "run_status": "completed",
+  "contract_version": "2.0.1",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 22,
+      "machine": null,
+      "aggregates": {
+        "avg": 234652.27272727274,
+        "min": 36313,
+        "max": 451539,
+        "last": 451539,
+        "p95": 409645
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 22,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 3810.427316858864,
+        "min": 3577.65230611,
+        "max": 4105.21605461,
+        "last": 4105.21605461,
+        "p95": 4096.8004616148
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 22,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 3810.427316858864,
+        "min": 3577.65230611,
+        "max": 4105.21605461,
+        "last": 4105.21605461,
+        "p95": 4096.8004616148
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 17,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 63.2737827270159,
+        "min": 21.991666666666674,
+        "max": 100,
+        "last": 21.991666666666674,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 20,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 36.0593992816547,
+        "min": 19.365322755379253,
+        "max": 100,
+        "last": 20.98333333333333,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 20,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 768083148.8,
+        "min": 680824832,
+        "max": 850636800,
+        "last": 696590336,
+        "p95": 850636800
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 23,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 563486185.7391304,
+        "min": 528908288,
+        "max": 579334144,
+        "last": 579325952,
+        "p95": 579334144
+      }
+    }
+  ],
+  "native_series_count": 61,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total"
+  ],
+  "native_scope_mismatches": [],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "db-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-postgres",
+          "count": 57
+        },
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-postgres-exporter",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 372
+        },
+        {
+          "value": "unspecified",
+          "count": 44
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "db-1",
+          "count": 248
+        },
+        {
+          "value": "runner-1",
+          "count": 162
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "db",
+          "count": 248
+        },
+        {
+          "value": "runner",
+          "count": 162
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "container",
+          "count": 221
+        },
+        {
+          "value": "stdout",
+          "count": 88
+        },
+        {
+          "value": "stderr",
+          "count": 51
+        },
+        {
+          "value": "pull",
+          "count": 28
+        },
+        {
+          "value": "",
+          "count": 13
+        },
+        {
+          "value": "stroppy",
+          "count": 13
+        },
+        {
+          "value": "runc",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "verified": true
+}

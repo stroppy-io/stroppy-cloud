@@ -1,0 +1,174 @@
+{
+  "started_at": "2026-09-25T14:10:51.204881+00:00",
+  "finished_at": "2026-09-25T14:11:27.609928+00:00",
+  "seconds": 36.405,
+  "command": [
+    "go",
+    "test",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(CompleteRuntimeRoundtrip|ObserverRecovery|WorkloadParameterTransport|InvalidExecutionNeverLaunches)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "401c8f0a1eff09ddba5f98f4a844be7a70cab20a54e8a07a5fc6ca3938ef5c95",
+  "source_sha256_after": "401c8f0a1eff09ddba5f98f4a844be7a70cab20a54e8a07a5fc6ca3938ef5c95",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2EObserverRecovery": {
+      "status": "pass",
+      "seconds": 2.26
+    },
+    "TestE2ECompleteRuntimeRoundtrip": {
+      "status": "pass",
+      "seconds": 5.66
+    },
+    "TestE2EWorkloadParameterTransport": {
+      "status": "pass",
+      "seconds": 4.34
+    },
+    "TestE2EInvalidExecutionNeverLaunches/impossible_disk_granularity": {
+      "status": "pass",
+      "seconds": 3.09
+    },
+    "TestE2EInvalidExecutionNeverLaunches/unknown_flow_target": {
+      "status": "pass",
+      "seconds": 3.06
+    },
+    "TestE2EInvalidExecutionNeverLaunches/path_traversal": {
+      "status": "pass",
+      "seconds": 3.06
+    },
+    "TestE2EInvalidExecutionNeverLaunches/conflicting_sql_source": {
+      "status": "pass",
+      "seconds": 1.15
+    },
+    "TestE2EInvalidExecutionNeverLaunches/unknown_field": {
+      "status": "pass",
+      "seconds": 1.12
+    },
+    "TestE2EInvalidExecutionNeverLaunches": {
+      "status": "pass",
+      "seconds": 12.09
+    }
+  },
+  "http_observations": {
+    "TestE2EObserverRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "listRunEvents": {
+        "200": 1
+      },
+      "listRuns": {
+        "200": 1
+      }
+    },
+    "TestE2ECompleteRuntimeRoundtrip": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 4
+      },
+      "getTest": {
+        "200": 1
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "patchTest": {
+        "200": 3
+      }
+    },
+    "TestE2EWorkloadParameterTransport": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 6
+      },
+      "launchTest": {
+        "201": 1
+      },
+      "patchTest": {
+        "200": 2
+      }
+    },
+    "TestE2EInvalidExecutionNeverLaunches": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "launchTest": {
+        "422": 3
+      },
+      "listRuns": {
+        "200": 1
+      },
+      "patchTest": {
+        "200": 8,
+        "422": 2
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

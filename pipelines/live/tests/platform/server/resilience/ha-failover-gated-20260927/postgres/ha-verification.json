@@ -1,0 +1,139 @@
+{
+  "run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+  "verified": true,
+  "errors": [],
+  "events": [
+    {
+      "at": "2026-09-27T20:10:46.534489956Z",
+      "ha_event": "load_gate_open",
+      "host": "10.130.0.28"
+    },
+    {
+      "at": "2026-09-27T20:10:46.564358187Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.12",
+        "10.130.0.30",
+        "10.130.0.28"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "10.130.0.28/32"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T20:10:46.673715183Z",
+      "ha_event": "load_gate_open",
+      "host": "10.130.0.12"
+    },
+    {
+      "at": "2026-09-27T20:10:46.679116818Z",
+      "ha_event": "standby_probe",
+      "host": "10.130.0.12"
+    },
+    {
+      "at": "2026-09-27T20:10:46.711897714Z",
+      "ha_event": "load_gate_open",
+      "host": "10.130.0.30"
+    },
+    {
+      "at": "2026-09-27T20:10:46.717890262Z",
+      "ha_event": "standby_probe",
+      "host": "10.130.0.30"
+    },
+    {
+      "at": "2026-09-27T20:10:48.290324543Z",
+      "container_id": "83225f8ae9742df7b0285b1b373f6e55732a9ffac7c4c07f251112c40275c6f2",
+      "ha_event": "primary_stopped",
+      "host": "10.130.0.28",
+      "writer": "10.130.0.28/32"
+    },
+    {
+      "at": "2026-09-27T20:10:58.325378908Z",
+      "elapsed_seconds": 10.03502544,
+      "ha_event": "proxy_write_recovered",
+      "new_writer": "10.130.0.12/32",
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "10.130.0.28/32"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "10.130.0.12/32"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T20:10:58.339105146Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.12",
+        "10.130.0.30"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "10.130.0.28/32"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "10.130.0.12/32"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T20:10:58.463084814Z",
+      "container_id": "83225f8ae9742df7b0285b1b373f6e55732a9ffac7c4c07f251112c40275c6f2",
+      "ha_event": "primary_restarted"
+    },
+    {
+      "at": "2026-09-27T20:10:59.491761858Z",
+      "ha_event": "replicas_equal",
+      "hosts": [
+        "10.130.0.12",
+        "10.130.0.30",
+        "10.130.0.28"
+      ],
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "10.130.0.28/32"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "10.130.0.12/32"
+        }
+      ]
+    },
+    {
+      "at": "2026-09-27T20:10:59.521263018Z",
+      "ha_event": "verified",
+      "primary_changed": true,
+      "primary_rejoined": true,
+      "replicas": 3,
+      "rows": [
+        {
+          "ID": 0,
+          "Payload": "before-fault",
+          "Writer": "10.130.0.28/32"
+        },
+        {
+          "ID": 1,
+          "Payload": "written-while-primary-down",
+          "Writer": "10.130.0.12/32"
+        }
+      ]
+    }
+  ],
+  "scope": "Exact probe-row consistency and proxy write availability across one primary container stop/start. Not a VM/disk outage or losslessness proof for arbitrary workloads."
+}

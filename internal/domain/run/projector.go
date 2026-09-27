@@ -105,15 +105,40 @@ var errFinished = errors.New("run finished")
 // asked once; a terminal answer finishes the run, anything else leaves it
 // for the next tick.
 func (p *Projector) follow(ctx context.Context, l Live) {
+	// Periodically reload durable commands (notably cancellation), even if
+	// the event stream remains open and silent.
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
 	r, err := p.repo.ByID(ctx, l.ID)
 	if err != nil {
 		p.log.Warn("projector: read run", xlog.String("run", l.ID.String()), xlog.Error("error", err))
 		return
 	}
 	if r.Status.Terminal() {
+		p.reconcileKeep(ctx, r)
 		return
 	}
 	sctx := p.scope(ctx, r.GrapheneNamespace)
+	if terminal := r.State.Close; terminal != nil {
+		p.finish(ctx, sctx, r, terminal.Status, terminal.Reason, terminal.At)
+		return
+	}
+	if r.SuiteRunID == nil && (r.Status == StatusPending || (r.Status == StatusCancelling && r.StartedAt == nil)) {
+		if err := Submit(sctx, p.graphene, r.CreatedAt, r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+			if errors.Is(err, ErrStartRejected) {
+				_ = p.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // retried on the next tick
+			}
+			p.log.Warn("projector: submission", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+			return
+		}
+	}
+	if r.Status == StatusCancelling {
+		if err := p.graphene.CancelRun(sctx, r.GrapheneID()); err != nil {
+			// The workflow may already have closed while cancellation was
+			// in flight. Still observe its outcome; retry the command next tick.
+			p.log.Debug("projector: cancel delivery", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		}
+	}
 	state, status, lastID := r.State, r.Status, r.LastEventID
 	finished := false
 	err = p.graphene.Events(sctx, r.GrapheneID(), lastID, true, func(e RawEvent) error {
@@ -122,6 +147,9 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		}
 		lastID = e.ID
 		out := state.Apply(status, e)
+		if out.Finished {
+			state.Close = &CloseState{Status: out.Status, Reason: out.Reason, At: e.At}
+		}
 		if out.Timeline != nil {
 			ev := *out.Timeline
 			ev.RunID = r.ID
@@ -132,30 +160,27 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		if err := p.repo.SetProjection(ctx, r.ID, state, lastID); err != nil {
 			return err
 		}
-		if out.Status != "" && (out.Status != status || out.Phase != "") {
-			var startedAt, finishedAt *time.Time
+		if !out.Finished && out.Status != "" && (out.Status != status || out.Phase != "") {
+			var startedAt *time.Time
 			if out.Status == StatusRunning && status == StatusPending {
 				startedAt = ptr(e.At)
-			}
-			if out.Finished {
-				finishedAt = ptr(e.At)
 			}
 			phase := out.Phase
 			if phase == "" {
 				phase = r.Phase
 			}
 			// A cancel in flight keeps its status until the run ends.
-			if status == StatusCancelling && !out.Finished {
+			if status == StatusCancelling {
 				out.Status = StatusCancelling
 			}
-			if err := p.repo.SetStatus(ctx, r.ID, out.Status, phase, out.Reason, startedAt, finishedAt); err != nil {
+			if err := p.repo.SetStatus(ctx, r.ID, out.Status, phase, out.Reason, startedAt, nil); err != nil {
 				return err
 			}
 			status = out.Status
 		}
 		if out.Finished {
 			finished = true
-			p.finish(ctx, sctx, r, status, out.Reason)
+			p.finish(ctx, sctx, r, out.Status, out.Reason, e.At)
 			return errFinished
 		}
 		return nil
@@ -180,11 +205,28 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		if final == StatusFailed {
 			reason = st
 		}
-		if err := p.repo.SetStatus(ctx, r.ID, final, PhaseDone, reason, nil, ptr(time.Now().UTC())); err != nil {
-			p.log.Warn("projector: finish", xlog.String("run", r.ID.String()), xlog.Error("error", err))
-			return
-		}
-		p.finish(ctx, sctx, r, final, reason)
+		p.finish(ctx, sctx, r, final, reason, time.Now().UTC())
+	}
+}
+
+// A release may finish after its HTTP caller disconnects, and expiry happens
+// without a caller at all. Reconcile the projection from actual holdings;
+// retained artifacts do not mean the infrastructure is still kept.
+func (p *Projector) reconcileKeep(ctx context.Context, r Run) {
+	if !r.StandKept {
+		return
+	}
+	sctx := p.scope(ctx, r.GrapheneNamespace)
+	held, err := p.graphene.Holdings(sctx, r.GrapheneRef())
+	if err != nil {
+		p.log.Warn("projector: kept holdings", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		return
+	}
+	if len(standHoldings(held)) != 0 {
+		return
+	}
+	if err := p.repo.SetKeep(ctx, r.ID, false, nil); err != nil {
+		p.log.Warn("projector: clear released keep", xlog.String("run", r.ID.String()), xlog.Error("error", err))
 	}
 }
 
@@ -204,7 +246,7 @@ func TerminalOf(s string) (Status, bool) {
 }
 
 // finish stores the result of a finished run and tells the webhooks.
-func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reason string) {
+func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reason string, at time.Time) {
 	// A run that did not complete still collected something: its partial
 	// result rides in the failure. Keep the raw envelope so explicit zeroes
 	// and opaque report extensions survive storage.
@@ -212,6 +254,7 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 	switch {
 	case err != nil:
 		p.log.Warn("projector: result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		return
 	case len(raw) == 0:
 		// Nothing was collected (the run died before its first phase).
 		p.log.Debug("projector: no result", xlog.String("run", r.ID.String()), xlog.String("failure", failure))
@@ -219,6 +262,7 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 		var res spec.Result
 		if err := json.Unmarshal(raw, &res); err != nil {
 			p.log.Warn("projector: decode result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+			return
 		} else {
 			summary := r.Summary
 			if status == StatusCompleted {
@@ -232,14 +276,34 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 			}
 			if err := p.repo.SetResult(ctx, r.ID, raw, summary, tps); err != nil {
 				p.log.Warn("projector: store result", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+				return
 			}
 		}
 	}
 	// The stand is kept when the pipeline says so (stand.kept), not
 	// because keep was asked: a failed run tears everything down.
-	if cur, err := p.repo.ByID(ctx, r.ID); err == nil && cur.State.Stand != nil && r.Keep > 0 {
-		until := time.Now().UTC().Add(r.Keep)
-		_ = p.repo.SetKeep(ctx, r.ID, true, &until) //nolint:errcheck // best-effort
+	cur, err := p.repo.ByID(ctx, r.ID)
+	if err != nil {
+		return
+	}
+	if cur.State.Stand != nil && r.Keep > 0 {
+		held, err := p.graphene.Holdings(sctx, r.GrapheneRef())
+		if err != nil {
+			return
+		}
+		infra := standHoldings(held)
+		var until *time.Time
+		if len(infra) > 0 {
+			until = infra[0].KeepUntil
+		}
+		if err := p.repo.SetKeep(ctx, r.ID, len(infra) > 0, until); err != nil {
+			return
+		}
+	}
+	// Do this LAST: active rows are the durable finalization queue. If the
+	// result RPC or any write failed, the next follower resumes this work.
+	if err := p.repo.SetStatus(ctx, r.ID, status, PhaseDone, reason, nil, ptr(at)); err != nil {
+		return
 	}
 
 	if p.publisher == nil {
@@ -252,7 +316,7 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 	case StatusCancelled:
 		event = EventRunCancelled
 	}
-	cur, err := p.repo.ByID(ctx, r.ID)
+	cur, err = p.repo.ByID(ctx, r.ID)
 	if err != nil {
 		cur = r
 	}

@@ -63,9 +63,10 @@ func TestE2EObserve(t *testing.T) {
 			t.Fatalf("container page %+v", page)
 		}
 		older := *page.Older
+		oldest := page.Data[len(page.Data)-1].Time
 		e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/logs?container=db-1-postgres&limit=3&cursor="+older+"&direction=older", nil, tok), http.StatusOK, &page)
 		for _, l := range page.Data {
-			if l.Container != "db-1-postgres" || l.Time.Format(time.RFC3339Nano) >= older {
+			if l.Container != "db-1-postgres" || !l.Time.Before(oldest) {
 				t.Fatalf("older page %+v after %s", l, older)
 			}
 		}
@@ -197,18 +198,8 @@ func TestE2EObserve(t *testing.T) {
 		e.problem(e.req(http.MethodPost, base+"/runs/"+r.ID+"/metrics:raw", map[string]any{"query": "rate(", "start": now.Add(-time.Hour), "end": now}, tok), http.StatusUnprocessableEntity, "invalid")
 	})
 
-	t.Run("grafana session links the dashboards", func(t *testing.T) {
-		var gs struct {
-			Dashboards []struct {
-				ID         string `json:"id"`
-				URL        string `json:"url"`
-				PerMachine bool   `json:"per_machine"`
-			} `json:"dashboards"`
-		}
-		e.want(e.req(http.MethodPost, base+"/runs/"+r.ID+"/grafana-session", nil, tok), http.StatusOK, &gs)
-		if len(gs.Dashboards) != 2 || !strings.HasPrefix(gs.Dashboards[0].URL, "/grafana/d/stroppy-run?") || !strings.Contains(gs.Dashboards[0].URL, "var-run_id="+r.ID) || !gs.Dashboards[1].PerMachine {
-			t.Fatalf("grafana %+v", gs)
-		}
+	t.Run("grafana has no direct backend", func(t *testing.T) {
+		e.problem(e.req(http.MethodPost, base+"/runs/"+r.ID+"/grafana-session", nil, tok), http.StatusServiceUnavailable, "unavailable")
 	})
 
 	t.Run("ws log tail and metrics topics", func(t *testing.T) {

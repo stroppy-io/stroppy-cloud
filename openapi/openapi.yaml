@@ -2,8 +2,8 @@
 openapi: 3.1.0
 info:
   title: Stroppy Cloud API
-  version: 2.0.0
-  x-pipeline-contract-version: 2.0.0
+  version: 2.0.2
+  x-pipeline-contract-version: 2.0.2
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -197,7 +197,7 @@ paths:
       tags:
       - Public
       security: []
-      summary: Mint the Grafana scope cookie for a shared run.
+      summary: Grafana session for a shared run (unavailable until supported through Graphene).
       parameters:
       - $ref: '#/components/parameters/shareToken'
       responses:
@@ -2619,7 +2619,7 @@ paths:
           - newer
           default: older
       - $ref: '#/components/parameters/limit'
-      summary: Typed log query (VictoriaLogs behind, scope forced to the run).
+      summary: Typed log query through Graphene, scoped to the run.
       responses:
         '200':
           description: Lines.
@@ -2662,7 +2662,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
-      summary: LogsQL query, AND-ed with the run scope by the server.
+      summary: LogsQL filter evaluated by Graphene inside the authorized run scope.
       requestBody:
         required: true
         content:
@@ -2767,7 +2767,7 @@ paths:
                   type: string
       responses:
         '200':
-          description: Prometheus range result (as returned by VictoriaMetrics).
+          description: Prometheus range result returned by Graphene.
           content:
             application/json:
               schema:
@@ -2783,7 +2783,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
-      summary: Mint the Grafana scope cookie and dashboard links for the run.
+      summary: Grafana session (unavailable until supported through Graphene).
       responses:
         '200':
           description: Session.

@@ -1,0 +1,952 @@
+{
+  "observed_at": "2026-09-27T17:22:08.969871+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/22a00ddf-a390-4e89-b04a-a2eac80894bc/overview",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "run_id": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+    "status": "cancelling",
+    "phase": "deploying",
+    "progress_pct": 30,
+    "source": "persisted",
+    "observed_at": "2026-09-27T17:09:28Z",
+    "degraded_reasons": [],
+    "phases": [
+      {
+        "id": "provisioning",
+        "title": "provisioning",
+        "status": "completed",
+        "started_at": "2026-09-27T16:57:45Z",
+        "finished_at": "2026-09-27T17:01:33Z",
+        "steps": [
+          {
+            "id": "5",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "15",
+            "title": "resolve-yandex-images",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "21",
+            "title": "check-config",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "27",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T17:00:53Z"
+          },
+          {
+            "id": "28",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T16:57:46Z"
+          },
+          {
+            "id": "29",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "30",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T16:57:46Z"
+          },
+          {
+            "id": "31",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "32",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "33",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T17:01:33Z"
+          },
+          {
+            "id": "34",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "35",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:01:23Z"
+          },
+          {
+            "id": "36",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:57:45Z"
+          },
+          {
+            "id": "37",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:58:32Z"
+          },
+          {
+            "id": "38",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:59:10Z"
+          },
+          {
+            "id": "39",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:59:26Z"
+          },
+          {
+            "id": "40",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:45Z",
+            "finished_at": "2026-09-27T16:58:58Z"
+          },
+          {
+            "id": "54",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:52Z"
+          },
+          {
+            "id": "55",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:12Z"
+          },
+          {
+            "id": "56",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T16:59:10Z"
+          },
+          {
+            "id": "57",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "58",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:16Z"
+          },
+          {
+            "id": "59",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T16:59:10Z"
+          },
+          {
+            "id": "60",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "61",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:16Z"
+          },
+          {
+            "id": "62",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:01:32Z"
+          },
+          {
+            "id": "63",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:26Z"
+          },
+          {
+            "id": "64",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:01:22Z"
+          },
+          {
+            "id": "65",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T16:57:46Z",
+            "finished_at": "2026-09-27T17:00:22Z"
+          },
+          {
+            "id": "131",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T17:00:52Z",
+            "finished_at": "2026-09-27T17:00:52Z"
+          },
+          {
+            "id": "142",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:00:53Z",
+            "finished_at": "2026-09-27T17:00:53Z"
+          },
+          {
+            "id": "157",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:17Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "168",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:17Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "179",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:17Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "194",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:17Z",
+            "finished_at": "2026-09-27T17:01:17Z"
+          },
+          {
+            "id": "214",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:23Z",
+            "finished_at": "2026-09-27T17:01:23Z"
+          },
+          {
+            "id": "234",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:33Z",
+            "finished_at": "2026-09-27T17:01:33Z"
+          },
+          {
+            "id": "244",
+            "title": "emit",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      },
+      {
+        "id": "deploying",
+        "title": "deploying",
+        "status": "running",
+        "started_at": "2026-09-27T17:01:34Z",
+        "finished_at": null,
+        "steps": [
+          {
+            "id": "254",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:34Z",
+            "finished_at": "2026-09-27T17:01:34Z"
+          },
+          {
+            "id": "265",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:34Z",
+            "finished_at": "2026-09-27T17:01:40Z"
+          },
+          {
+            "id": "271",
+            "title": "prep",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:01:40Z",
+            "finished_at": "2026-09-27T17:01:48Z"
+          },
+          {
+            "id": "278",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:01:48Z",
+            "finished_at": "2026-09-27T17:01:53Z"
+          },
+          {
+            "id": "284",
+            "title": "prep",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-1",
+            "started_at": "2026-09-27T17:01:53Z",
+            "finished_at": "2026-09-27T17:02:02Z"
+          },
+          {
+            "id": "291",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:02Z",
+            "finished_at": "2026-09-27T17:02:06Z"
+          },
+          {
+            "id": "297",
+            "title": "prep",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:02:06Z",
+            "finished_at": "2026-09-27T17:02:15Z"
+          },
+          {
+            "id": "308",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:15Z"
+          },
+          {
+            "id": "309",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:15Z"
+          },
+          {
+            "id": "310",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:15Z"
+          },
+          {
+            "id": "311",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:20Z"
+          },
+          {
+            "id": "312",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:20Z"
+          },
+          {
+            "id": "322",
+            "title": "install",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:48Z"
+          },
+          {
+            "id": "323",
+            "title": "install",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-1",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:05:35Z"
+          },
+          {
+            "id": "324",
+            "title": "install",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:02:15Z",
+            "finished_at": "2026-09-27T17:02:51Z"
+          },
+          {
+            "id": "330",
+            "title": "install",
+            "status": "completed",
+            "machine": "22a00ddf-proxy-1",
+            "started_at": "2026-09-27T17:02:20Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "336",
+            "title": "install",
+            "status": "completed",
+            "machine": "22a00ddf-runner-1",
+            "started_at": "2026-09-27T17:02:20Z",
+            "finished_at": "2026-09-27T17:03:06Z"
+          },
+          {
+            "id": "343",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:48Z",
+            "finished_at": "2026-09-27T17:02:48Z"
+          },
+          {
+            "id": "349",
+            "title": "write",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:02:48Z",
+            "finished_at": "2026-09-27T17:02:48Z"
+          },
+          {
+            "id": "356",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:48Z",
+            "finished_at": "2026-09-27T17:02:48Z"
+          },
+          {
+            "id": "362",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:02:48Z",
+            "finished_at": "2026-09-27T17:02:51Z"
+          },
+          {
+            "id": "369",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:51Z",
+            "finished_at": "2026-09-27T17:02:51Z"
+          },
+          {
+            "id": "375",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:02:51Z",
+            "finished_at": "2026-09-27T17:03:09Z"
+          },
+          {
+            "id": "382",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:52Z",
+            "finished_at": "2026-09-27T17:02:52Z"
+          },
+          {
+            "id": "388",
+            "title": "write",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:02:52Z",
+            "finished_at": "2026-09-27T17:02:52Z"
+          },
+          {
+            "id": "395",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:52Z",
+            "finished_at": "2026-09-27T17:02:52Z"
+          },
+          {
+            "id": "401",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:02:52Z",
+            "finished_at": "2026-09-27T17:02:54Z"
+          },
+          {
+            "id": "408",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:02:55Z",
+            "finished_at": "2026-09-27T17:02:55Z"
+          },
+          {
+            "id": "414",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:02:55Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "421",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:06Z",
+            "finished_at": "2026-09-27T17:03:06Z"
+          },
+          {
+            "id": "427",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-runner-1",
+            "started_at": "2026-09-27T17:03:06Z",
+            "finished_at": "2026-09-27T17:03:10Z"
+          },
+          {
+            "id": "434",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:09Z",
+            "finished_at": "2026-09-27T17:03:10Z"
+          },
+          {
+            "id": "440",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-1",
+            "started_at": "2026-09-27T17:03:10Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "452",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "458",
+            "title": "write",
+            "status": "completed",
+            "machine": "22a00ddf-proxy-1",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "465",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "471",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-proxy-1",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:19Z"
+          },
+          {
+            "id": "483",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:12Z"
+          },
+          {
+            "id": "489",
+            "title": "pull",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-2",
+            "started_at": "2026-09-27T17:03:12Z",
+            "finished_at": "2026-09-27T17:03:15Z"
+          },
+          {
+            "id": "501",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:03:19Z",
+            "finished_at": "2026-09-27T17:03:19Z"
+          },
+          {
+            "id": "507",
+            "title": "pull",
+            "status": "pending",
+            "machine": "22a00ddf-proxy-1",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "514",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:05:35Z",
+            "finished_at": "2026-09-27T17:05:35Z"
+          },
+          {
+            "id": "520",
+            "title": "write",
+            "status": "completed",
+            "machine": "22a00ddf-db-replica-1",
+            "started_at": "2026-09-27T17:05:35Z",
+            "finished_at": "2026-09-27T17:05:35Z"
+          },
+          {
+            "id": "527",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T17:05:35Z",
+            "finished_at": "2026-09-27T17:05:35Z"
+          },
+          {
+            "id": "533",
+            "title": "pull",
+            "status": "pending",
+            "machine": "22a00ddf-db-replica-1",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "545",
+            "title": "emit",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          },
+          {
+            "id": "547",
+            "title": "cleanup",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      }
+    ],
+    "components": [
+      {
+        "id": "db-1-mysql",
+        "role": "db",
+        "image": "mysql:8.4",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 33061
+          }
+        ]
+      },
+      {
+        "id": "db-1-mysqld-exporter",
+        "role": "db",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-1-node-exporter",
+        "role": "db",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-replica-1-mysql",
+        "role": "db-replica",
+        "image": "mysql:8.4",
+        "machine": "db-replica-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 33061
+          }
+        ]
+      },
+      {
+        "id": "db-replica-1-mysqld-exporter",
+        "role": "db-replica",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-replica-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-replica-1-node-exporter",
+        "role": "db-replica",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-replica-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-replica-2-mysql",
+        "role": "db-replica",
+        "image": "mysql:8.4",
+        "machine": "db-replica-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 3306
+          },
+          {
+            "port": 33061
+          }
+        ]
+      },
+      {
+        "id": "db-replica-2-mysqld-exporter",
+        "role": "db-replica",
+        "image": "prom/mysqld-exporter:v0.19.0",
+        "machine": "db-replica-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9104
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "db-replica-2-node-exporter",
+        "role": "db-replica",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "db-replica-2",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "proxy-1-node-exporter",
+        "role": "proxy",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "proxy-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "proxy-1-proxysql",
+        "role": "proxy",
+        "image": "proxysql/proxysql:2.7.3",
+        "machine": "proxy-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 6070
+          },
+          {
+            "port": 6033
+          }
+        ],
+        "scrape": "/metrics"
+      },
+      {
+        "id": "runner-1-node-exporter",
+        "role": "runner",
+        "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+        "machine": "runner-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      }
+    ],
+    "machines": [
+      {
+        "name": "db-1",
+        "role": "db",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.12",
+        "public_ip": "158.160.225.18",
+        "size": "S",
+        "provider_resource_id": "fv4qvm6es0dkki50q1u7",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "db-replica-1",
+        "role": "db-replica",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.8",
+        "public_ip": "158.160.212.110",
+        "size": "S",
+        "provider_resource_id": "fv4bkqueggjmqgs86ukf",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "db-replica-2",
+        "role": "db-replica",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.23",
+        "public_ip": "158.160.225.170",
+        "size": "S",
+        "provider_resource_id": "fv47htu1kvsj1291rnu5",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "proxy-1",
+        "role": "proxy",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.6",
+        "public_ip": "158.160.227.250",
+        "size": "S",
+        "provider_resource_id": "fv4hda577j09mftn56lv",
+        "last_heartbeat_at": null
+      },
+      {
+        "name": "runner-1",
+        "role": "runner",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.33",
+        "public_ip": "158.160.218.61",
+        "size": "S",
+        "provider_resource_id": "fv40jo8ddb7lo6mthqim",
+        "last_heartbeat_at": null
+      }
+    ],
+    "flows": [
+      {
+        "from": "db-replica",
+        "to": "db",
+        "protocol": "mysql-replication",
+        "port": 3306
+      },
+      {
+        "from": "db-replica",
+        "to": "db",
+        "protocol": "group-replication",
+        "port": 33061
+      },
+      {
+        "from": "db-replica",
+        "to": "db",
+        "protocol": "group-recovery",
+        "port": 3306
+      },
+      {
+        "from": "db-replica",
+        "to": "db-replica",
+        "protocol": "group-replication",
+        "port": 33061
+      },
+      {
+        "from": "db-replica",
+        "to": "db-replica",
+        "protocol": "group-recovery",
+        "port": 3306
+      },
+      {
+        "from": "db",
+        "to": "db",
+        "protocol": "group-replication",
+        "port": 33061
+      },
+      {
+        "from": "db",
+        "to": "db",
+        "protocol": "group-recovery",
+        "port": 3306
+      },
+      {
+        "from": "db",
+        "to": "db-replica",
+        "protocol": "group-replication",
+        "port": 33061
+      },
+      {
+        "from": "db",
+        "to": "db-replica",
+        "protocol": "group-recovery",
+        "port": 3306
+      },
+      {
+        "from": "proxy",
+        "to": "db",
+        "protocol": "mysql",
+        "port": 3306
+      },
+      {
+        "from": "proxy",
+        "to": "db-replica",
+        "protocol": "mysql",
+        "port": 3306
+      },
+      {
+        "from": "runner",
+        "to": "proxy",
+        "protocol": "mysql",
+        "port": 6033
+      }
+    ],
+    "workload_segments": []
+  }
+}

@@ -92,7 +92,8 @@ FROM suite_runs WHERE deleted_at IS NULL AND status IN ('pending', 'running', 'c
 
 -- name: SetSuiteRunStatus :exec
 UPDATE suite_runs
-SET status = @status, status_reason = @status_reason,
+SET status = CASE WHEN status = 'cancelling' AND @status IN ('pending', 'running') THEN status ELSE @status END,
+    status_reason = CASE WHEN status = 'cancelling' AND @status IN ('pending', 'running') THEN status_reason ELSE @status_reason END,
     started_at  = COALESCE(started_at, @started_at),
     finished_at = COALESCE(@finished_at, finished_at),
     duration_seconds = CASE WHEN @finished_at IS NOT NULL AND started_at IS NOT NULL THEN EXTRACT(EPOCH FROM (@finished_at - started_at)) ELSE duration_seconds END,

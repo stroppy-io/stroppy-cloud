@@ -1,0 +1,13 @@
+{
+  "run_id": "50faedbf-236c-4145-8c3b-055fd652e84a",
+  "events": [
+    {
+      "time": "2026-09-27T20:53:25Z",
+      "message": "YDB IAM token refreshed"
+    },
+    {
+      "time": "2026-09-27T20:43:26Z",
+      "message": "YDB authentication token loaded from file"
+    }
+  ]
+}

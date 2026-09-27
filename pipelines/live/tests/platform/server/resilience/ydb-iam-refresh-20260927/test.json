@@ -1,0 +1,120 @@
+{
+  "observed_at": "2026-09-27T20:15:51.889496+00:00",
+  "method": "PATCH",
+  "path": "/api/v1/t/server-live-20260924/tests/8aaa78ea-6381-4aa9-b4b7-f1a7113c3c08",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "id": "8aaa78ea-6381-4aa9-b4b7-f1a7113c3c08",
+    "name": "server managed YDB IAM rotation ydb-iam-refresh-20260927",
+    "tags": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-27T20:14:55Z",
+    "updated_at": "2026-09-27T20:15:51Z",
+    "execution": {
+      "containers": [
+        {
+          "name": "runner-1-node-exporter",
+          "set": {
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+          }
+        }
+      ],
+      "workload": {
+        "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:9dd1a203fc94d53df223e724362c20678b1c38b6dc6cc92a9d4889473286110f"
+      }
+    },
+    "database": {
+      "inline": {
+        "kind": "ydb_managed",
+        "version": "managed",
+        "params": {
+          "deletion_protection": false,
+          "location_id": "ru-central1",
+          "provisioned_rcu_limit": 0,
+          "storage_size_limit_gb": 1,
+          "throttling_rcu_limit": 100,
+          "type": "serverless"
+        },
+        "schema": {
+          "id": "db.ydb_managed.params",
+          "version": "1"
+        }
+      }
+    },
+    "workload": {
+      "inline": {
+        "stroppy_version": "6.0.0",
+        "protocol": "ydb_grpcs",
+        "segments": [
+          {
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1;"
+            },
+            "log_level": "info",
+            "name": "iam-refresh",
+            "run": {
+              "duration": "15m0s",
+              "executor": "constant-vus",
+              "query_timeout": "10s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "20m0s",
+            "warmup": "0s"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      }
+    },
+    "sizes": {
+      "runner": {
+        "size": "S"
+      }
+    },
+    "provider_profile_id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "status": "ready",
+    "resolved": {},
+    "validation": {
+      "fits": true,
+      "issues": [
+        {
+          "scope": "run_spec",
+          "path": "workload.segments",
+          "code": "capacity_unknown",
+          "severity": "WARNING",
+          "message": "custom SQL/simple or schema overrides prevent a complete storage estimate; built-in population estimates do not cover arbitrary writes"
+        }
+      ]
+    },
+    "requirements": {
+      "runner": {
+        "cpu": 2,
+        "memory_gb": 2,
+        "disk_gb": 20,
+        "reason": "1 VUs, 1 load workers"
+      }
+    },
+    "summary": {
+      "db_kind": "ydb_managed",
+      "db_version": "managed",
+      "topology_label": "managed ydb serverless",
+      "node_count": 1,
+      "protocol": "ydb_grpcs",
+      "stroppy_version": "6.0.0"
+    },
+    "usages": []
+  }
+}

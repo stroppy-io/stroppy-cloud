@@ -1,0 +1,310 @@
+{
+  "observed_at": "2026-09-27T18:16:32.298107+00:00",
+  "run_id": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+  "run_status": "cancelled",
+  "stand_kept": false,
+  "remaining_infrastructure": [],
+  "tree": {
+    "ref": "run/22a00ddf-a390-4e89-b04a-a2eac80894bc",
+    "kind": "run",
+    "keep_until": null,
+    "children": [
+      {
+        "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network/stroppy-server-live-20260924-22a00ddf-net",
+        "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Network",
+        "phase": "deleted",
+        "labels": {
+          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+        },
+        "keep_until": null,
+        "children": [
+          {
+            "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup/stroppy-server-live-20260924-22a00ddf-sg",
+            "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.SecurityGroup",
+            "phase": "deleted",
+            "labels": {
+              "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+            },
+            "keep_until": null,
+            "children": [
+              {
+                "ref": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet/stroppy-server-live-20260924-22a00ddf-subnet",
+                "kind": "k8s.vpc.yandex-cloud.jet.crossplane.io.v1alpha1.Subnet",
+                "phase": "deleted",
+                "labels": {
+                  "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                },
+                "keep_until": null,
+                "children": [
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-1-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      },
+                      {
+                        "ref": "agent/22a00ddf-db-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "stroppy-run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "machine": "db-1",
+                          "role": "db"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-runner-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/22a00ddf-runner-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "machine": "runner-1",
+                          "role": "runner",
+                          "stroppy-run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                        },
+                        "flows": [
+                          {
+                            "to": "docker/22a00ddf-a390-4e89-b04a-a2eac80894bc-proxy-1-proxysql",
+                            "protocol": "tcp",
+                            "port": 6033,
+                            "label": "mysql"
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-replica-2",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/22a00ddf-db-replica-2",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "machine": "db-replica-2",
+                          "role": "db-replica",
+                          "stroppy-run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "graphene.io/pipeline": "stroppy-run"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": []
+                      },
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-replica-2-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-db-replica-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/22a00ddf-db-replica-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "stroppy-run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "machine": "db-replica-1",
+                          "role": "db-replica"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": []
+                      },
+                      {
+                        "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk/stroppy-server-live-20260924-22a00ddf-db-replica-1-data",
+                        "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Disk",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                        },
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  },
+                  {
+                    "ref": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance/stroppy-server-live-20260924-22a00ddf-proxy-1",
+                    "kind": "k8s.compute.yandex-cloud.jet.crossplane.io.v1alpha1.Instance",
+                    "phase": "deleted",
+                    "labels": {
+                      "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                    },
+                    "keep_until": null,
+                    "children": [
+                      {
+                        "ref": "agent/22a00ddf-proxy-1",
+                        "kind": "agent",
+                        "phase": "deleted",
+                        "labels": {
+                          "graphene.io/pipeline": "stroppy-run",
+                          "graphene.io/run": "22a00ddf-a390-4e89-b04a-a2eac80894bc",
+                          "machine": "proxy-1",
+                          "role": "proxy",
+                          "stroppy-run": "22a00ddf-a390-4e89-b04a-a2eac80894bc"
+                        },
+                        "flows": [
+                          {
+                            "to": "graphene-server",
+                            "protocol": "otlp",
+                            "label": "obs",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "command",
+                            "label": "commands",
+                            "virtual": true
+                          },
+                          {
+                            "to": "graphene-server",
+                            "protocol": "tty",
+                            "label": "shell",
+                            "virtual": true
+                          }
+                        ],
+                        "keep_until": null,
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "verified": true,
+  "scope": "Server/Graphene resource-tree assertion; no direct YC or Kubernetes query."
+}

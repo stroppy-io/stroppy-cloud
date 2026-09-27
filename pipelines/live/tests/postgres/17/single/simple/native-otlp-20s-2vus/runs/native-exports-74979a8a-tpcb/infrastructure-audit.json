@@ -1,0 +1,34 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "native-exports-74979a8a-tpcb",
+  "input_run_id": "3fc89529-5eae-4619-9d65-d0f37ea9997c",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "3fc89529-db-1",
+      "entity": "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "3fc89529-runner-1",
+      "entity": "docker/3fc89529-5eae-4619-9d65-d0f37ea9997c-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/postgres/17/single/tpcb-tx/native-otlp-20s-2vus/runs/native-exports-74979a8a-tpcb/input.json",
+      "sha256": "09e93b62a2768c2eccb2ff5666fd8bbd392b4c72002dbadc7d4689abdc098abe"
+    },
+    {
+      "path": "tests/postgres/17/single/tpcb-tx/native-otlp-20s-2vus/runs/native-exports-74979a8a-tpcb/components.json",
+      "sha256": "19f2644f06a7cd145053f38b3e450271e203138a3a483212d39c1e806f58a517"
+    }
+  ]
+}

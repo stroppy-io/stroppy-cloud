@@ -17,10 +17,14 @@
     {
       "id": "infrastructure_provisioning",
       "group": "deployment",
-      "status": "unknown",
-      "reason": "No explicit retained verification for this check.",
-      "evidence": null,
-      "legacy_status": "not_recorded"
+      "status": "passed",
+      "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+      "evidence": {
+        "path": "tests/mariadb/10.11/single/simple/smoke-2m-2vus/runs/matrix-maria-monitor-e4a0fdb4-mariadb-single-1011/infrastructure-audit.json",
+        "pointer": "/status"
+      },
+      "legacy_status": "not_recorded",
+      "audited_at": "2026-09-27T19:39:14.336036+00:00"
     },
     {
       "id": "smoke",

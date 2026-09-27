@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-27T19:58:42.784250+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/48021b46-d718-4dde-b0fb-a2aca859ec8f/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "48021b46-stroppy-start-ha-probe-config",
+        "name": "48021b46-stroppy-start-ha-probe-config",
+        "kind": "config",
+        "size_bytes": 1116,
+        "digest": "sha256:2608aa0d0fb2893b7c0a8fc7bf89ff3ab84f3d1830128ef49c2e2a28c7830f66"
+      },
+      {
+        "id": "48021b46-stroppy-start-ha-probe-log",
+        "name": "48021b46-stroppy-start-ha-probe-log",
+        "kind": "log_bundle",
+        "size_bytes": 1038,
+        "digest": "sha256:70f7c5b9fbe5f05d023695eb1b99f2f2d82b178cef088436bb80549386294bd9"
+      },
+      {
+        "id": "48021b46-stroppy-during-failover-config",
+        "name": "48021b46-stroppy-during-failover-config",
+        "kind": "config",
+        "size_bytes": 1045,
+        "digest": "sha256:32189c01e7dc94a228dd8ecb04d2c61397f19386c1d34118b392d13aeae84bd6"
+      },
+      {
+        "id": "48021b46-stroppy-during-failover-log",
+        "name": "48021b46-stroppy-during-failover-log",
+        "kind": "log_bundle",
+        "size_bytes": 2861,
+        "digest": "sha256:fea02832652209ed4b65f06215fea4b88d5bd7ffa647214dfabe2df22b9107dd"
+      }
+    ]
+  }
+}

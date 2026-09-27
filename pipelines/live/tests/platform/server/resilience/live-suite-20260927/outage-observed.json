@@ -1,0 +1,11 @@
+{
+  "accepted_responses_discarded": 0,
+  "active": 1,
+  "fault": {
+    "method": "*",
+    "after": false,
+    "seconds": 30
+  },
+  "hits": 165,
+  "until": "2026-09-27T19:02:53.226399163+03:00"
+}

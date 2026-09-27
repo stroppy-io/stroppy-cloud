@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "id": "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu",
+  "database": "noop",
+  "version": "builtin",
+  "topology": "runner-only",
+  "workload": "execute/sql",
+  "preset": "server-api-90s-1vu",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "d92548ed-af3a-425f-a896-14a90f58bf01",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-25T13:50:43.351825+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/feb7be00-c574-40ab-aae7-b183b85ba793",
+    "runs/d92548ed-af3a-425f-a896-14a90f58bf01"
+  ],
+  "source": {
+    "path": "tests/noop/builtin/runner-only/execute-sql/server-api-90s-1vu/runs/d92548ed-af3a-425f-a896-14a90f58bf01/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "main",
+      "run": {
+        "duration": "1m30s",
+        "executor": "constant-vus",
+        "query_timeout": "0s",
+        "vus": 1
+      },
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "SELECT 1"
+      }
+    }
+  ]
+}

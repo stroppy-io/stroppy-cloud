@@ -1,0 +1,272 @@
+{
+  "observed_at": "2026-09-27T17:26:40.629231+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/7b3d8ae2-1b43-4b41-81ca-64f9e522ea86/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "7b3d8ae2-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "30735419-71bd-4c1c-ae8a-bdaed991aaff",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "analyze",
+            "stroppy.run.id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy.segment": "tpcds-generated",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790529615,
+              "1"
+            ],
+            [
+              1790529620,
+              "1"
+            ],
+            [
+              1790529625,
+              "1"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "7b3d8ae2-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "30735419-71bd-4c1c-ae8a-bdaed991aaff",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "create_indexes",
+            "stroppy.run.id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy.segment": "tpcds-generated",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790529605,
+              "29"
+            ],
+            [
+              1790529610,
+              "29"
+            ],
+            [
+              1790529615,
+              "63"
+            ],
+            [
+              1790529620,
+              "63"
+            ],
+            [
+              1790529625,
+              "63"
+            ],
+            [
+              1790529630,
+              "63"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "7b3d8ae2-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "30735419-71bd-4c1c-ae8a-bdaed991aaff",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "create_schema",
+            "stroppy.run.id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy.segment": "tpcds-generated",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790529585,
+              "48"
+            ],
+            [
+              1790529590,
+              "48"
+            ],
+            [
+              1790529595,
+              "48"
+            ],
+            [
+              1790529600,
+              "48"
+            ],
+            [
+              1790529605,
+              "48"
+            ],
+            [
+              1790529610,
+              "48"
+            ],
+            [
+              1790529615,
+              "48"
+            ],
+            [
+              1790529620,
+              "48"
+            ],
+            [
+              1790529625,
+              "48"
+            ],
+            [
+              1790529630,
+              "48"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "7b3d8ae2-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "30735419-71bd-4c1c-ae8a-bdaed991aaff",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "drop_schema",
+            "stroppy.run.id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy.segment": "tpcds-generated",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790529585,
+              "24"
+            ],
+            [
+              1790529590,
+              "24"
+            ],
+            [
+              1790529595,
+              "24"
+            ],
+            [
+              1790529600,
+              "24"
+            ],
+            [
+              1790529605,
+              "24"
+            ],
+            [
+              1790529610,
+              "24"
+            ],
+            [
+              1790529615,
+              "24"
+            ],
+            [
+              1790529620,
+              "24"
+            ],
+            [
+              1790529625,
+              "24"
+            ],
+            [
+              1790529630,
+              "24"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "7b3d8ae2-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "30735419-71bd-4c1c-ae8a-bdaed991aaff",
+            "service.name": "stroppy",
+            "service.version": "dev-native-8d5c8803f091",
+            "step": "workload",
+            "stroppy.run.id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy.segment": "tpcds-generated",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790529615,
+              "49"
+            ],
+            [
+              1790529620,
+              "102"
+            ],
+            [
+              1790529625,
+              "102"
+            ]
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "seriesFetched": "5",
+      "executionTimeMsec": 0
+    }
+  }
+}

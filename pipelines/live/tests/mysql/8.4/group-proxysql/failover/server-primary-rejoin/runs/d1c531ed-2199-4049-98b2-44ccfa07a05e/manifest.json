@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+  "case_paths": [
+    "tests/mysql/8.4/group-proxysql/failover/server-primary-rejoin"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T19:57:52.426862+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/mysql/8.4/group-proxysql/failover/server-primary-rejoin/runs/d1c531ed-2199-4049-98b2-44ccfa07a05e/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

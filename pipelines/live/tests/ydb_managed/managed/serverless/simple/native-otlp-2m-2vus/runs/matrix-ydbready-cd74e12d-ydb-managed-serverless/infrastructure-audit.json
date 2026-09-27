@@ -1,0 +1,26 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "unknown",
+  "run_id": "matrix-ydbready-cd74e12d-ydb-managed-serverless",
+  "input_run_id": "4f01f4e1-a59c-4b42-afb4-ab85476e209f",
+  "input_resolution": "retained per-run input",
+  "reason": "Missing observations: managed YDB resource readiness requires separate evidence",
+  "checked_machines": [
+    {
+      "machine": "runner-1",
+      "agent": "4f01f4e1-runner-1",
+      "entity": "docker/4f01f4e1-a59c-4b42-afb4-ab85476e209f-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/ydb_managed/managed/serverless/tpcc-tx/native-otlp-20s-2vus/runs/matrix-ydbready-cd74e12d-ydb-managed-serverless/input.json",
+      "sha256": "7273d8a5457c9997fdf6fa3854244f5371c776a2d8a7cf2f44f60dfbefe5e0e2"
+    },
+    {
+      "path": "tests/ydb_managed/managed/serverless/tpcc-tx/native-otlp-20s-2vus/runs/matrix-ydbready-cd74e12d-ydb-managed-serverless/metrics.json",
+      "sha256": "1ce6abecee62780a0ea20209160bd2c3f1e7c3124715bb7cbd11d3cd6800f594"
+    }
+  ]
+}

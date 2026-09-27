@@ -1,0 +1,125 @@
+{
+  "network": {
+    "allow_public_ips": true,
+    "cidr": "10.130.0.0/24"
+  },
+  "observability": {
+    "labels": {
+      "stroppy_run_id": "50faedbf-236c-4145-8c3b-055fd652e84a",
+      "stroppy_tenant": "server-live-20260924"
+    }
+  },
+  "workload": {
+    "driver_type": "ydb",
+    "runner_role": "runner",
+    "segments": [
+      {
+        "log_level": "info",
+        "name": "iam-refresh",
+        "run": {
+          "duration": "15m0s",
+          "executor": "constant-vus",
+          "query_timeout": "10s",
+          "vus": 1
+        },
+        "thresholds": {
+          "error_rate": 0
+        },
+        "timeout": "20m0s",
+        "warmup": "0s",
+        "workload": {
+          "script": "execute_sql",
+          "sql_body": "SELECT 1;"
+        }
+      }
+    ],
+    "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c",
+    "url": "grpcs://managed-ydb-pending:2135/?database=/pending",
+    "ydb_iam_credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5"
+  },
+  "machines": [
+    {
+      "cpu": 4,
+      "image": "ubuntu-2404-lts",
+      "instance_type": "standard-v3",
+      "labels": {
+        "stroppy.io/engine": "stroppy",
+        "stroppy.io/role": "runner"
+      },
+      "location": "ru-central1-d",
+      "memory_gb": 8,
+      "name": "runner-1",
+      "role": "runner"
+    }
+  ],
+  "managed_ydb": {
+    "location_id": "ru-central1",
+    "storage_size_limit_gb": 1,
+    "throttling_rcu_limit": 100,
+    "type": "serverless"
+  },
+  "provider": {
+    "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "kind": "yandex",
+    "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+    "settings": {
+      "cloud_id": "b1gt6m4l9gfhaobcgb81",
+      "folder_id": "b1ghttqg66t14ldkvfcq",
+      "image_family": "ubuntu-2404-lts",
+      "network": {
+        "kind": "create",
+        "subnet_cidr": "10.130.0.0/24"
+      },
+      "platform_id": "standard-v3",
+      "preemptible": false,
+      "public_ips": true,
+      "zone": "ru-central1-d"
+    }
+  },
+  "run_id": "50faedbf-236c-4145-8c3b-055fd652e84a",
+  "tenant": "server-live-20260924",
+  "keep": "0s",
+  "flows": [
+    {
+      "external": "managed-ydb",
+      "from_role": "runner",
+      "label": "ydb",
+      "port": 2135,
+      "protocol": "grpc"
+    }
+  ],
+  "result_expectations": [
+    "iterations_total"
+  ],
+  "containers": [
+    {
+      "cmd": [
+        "--path.rootfs=/host",
+        "--path.procfs=/host/proc",
+        "--path.sysfs=/host/sys",
+        "--path.udev.data=/host/run/udev/data",
+        "--web.listen-address=:9100"
+      ],
+      "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+      "kind": "exporter",
+      "machine": "runner-1",
+      "mounts": [
+        {
+          "ro": true,
+          "source": "/",
+          "target": "/host"
+        }
+      ],
+      "name": "runner-1-node-exporter",
+      "ports": [
+        {
+          "container": 9100,
+          "host": 9100
+        }
+      ],
+      "restart": "always",
+      "role": "runner",
+      "scrape": "/metrics"
+    }
+  ]
+}

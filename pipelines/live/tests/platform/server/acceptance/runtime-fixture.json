@@ -1,0 +1,228 @@
+{
+  "machines": {
+    "db-1": {
+      "cpu": 4,
+      "memory_gb": 16,
+      "boot_disk": {
+        "gb": 80,
+        "type": "network-ssd",
+        "block_size": 4096
+      },
+      "core_fraction": 100,
+      "preemptible": false,
+      "public_ip": false,
+      "disks": [
+        {
+          "name": "data",
+          "gb": 100,
+          "type": "network-ssd",
+          "filesystem": "ext4",
+          "mount_options": [
+            "noatime"
+          ],
+          "mount": "/data",
+          "block_size": 4096
+        },
+        {
+          "name": "wal",
+          "gb": 93,
+          "type": "network-ssd-nonreplicated",
+          "filesystem": "xfs",
+          "mount_options": [
+            "noatime"
+          ],
+          "mount": "/wal"
+        }
+      ],
+      "image": "ubuntu-2404-lts",
+      "location": "ru-central1-a",
+      "instance_type": "standard-v3",
+      "labels": {
+        "acceptance": "custom"
+      }
+    }
+  },
+  "containers": [
+    {
+      "name": "db-1-postgres",
+      "set": {
+        "image": "postgres:17",
+        "cmd": [
+          "postgres",
+          "-c",
+          "max_connections=123"
+        ],
+        "entrypoint": [
+          "docker-entrypoint.sh"
+        ],
+        "env": {
+          "ACCEPTANCE": "saved"
+        },
+        "ports": [
+          {
+            "container": 5432,
+            "host": 5432
+          }
+        ],
+        "mounts": [
+          {
+            "source": "/data",
+            "target": "/var/lib/postgresql/data",
+            "ro": false
+          }
+        ],
+        "files": [
+          {
+            "path": "/etc/acceptance.conf",
+            "content": "# exact\nvalue = '$literal'\n",
+            "mode": "0640"
+          }
+        ],
+        "scrape": "/metrics",
+        "scrape_port": 9189,
+        "depends_on": [],
+        "healthcheck": {
+          "cmd": [
+            "CMD-SHELL",
+            "pg_isready -U postgres"
+          ],
+          "interval": "2s",
+          "retries": 5
+        },
+        "restart": "on-failure",
+        "ulimits": {
+          "nofile": 4096
+        }
+      }
+    }
+  ],
+  "additional_containers": [
+    {
+      "name": "acceptance-sidecar",
+      "role": "runner",
+      "machine": "runner-1",
+      "kind": "addon",
+      "image": "alpine:3.21",
+      "cmd": [
+        "sleep",
+        "300"
+      ],
+      "ports": [
+        {
+          "container": 9190,
+          "host": 9190
+        }
+      ],
+      "env": {
+        "CHECK": "yes"
+      }
+    }
+  ],
+  "network": {
+    "cidr": "10.180.0.0/16",
+    "allow_public_ips": false,
+    "ingress": [
+      {
+        "port": 5432,
+        "proto": "tcp",
+        "cidr": "10.180.0.0/16"
+      }
+    ]
+  },
+  "host_prep": [
+    {
+      "role": "db",
+      "machine": "db-1",
+      "kind": "script",
+      "content": "#!/bin/sh\necho acceptance\n"
+    }
+  ],
+  "scrapes": [
+    {
+      "role": "runner",
+      "url": "http://127.0.0.1:9190/metrics",
+      "job": "acceptance-sidecar"
+    }
+  ],
+  "flows": [
+    {
+      "from_role": "runner",
+      "to_role": "db",
+      "protocol": "tcp",
+      "port": 5432,
+      "label": "acceptance"
+    }
+  ],
+  "workload": {
+    "runner_role": "runner",
+    "stroppy_image": "ghcr.io/stroppy-io/stroppy:v6.0.0.62",
+    "driver_type": "postgres",
+    "url": "postgres://postgres:postgres@${ip:db-1}:5432/postgres?sslmode=disable",
+    "driver": {
+      "bulkSize": 42,
+      "postgres": {
+        "maxConns": 7,
+        "minConns": 0,
+        "maxConnLifetime": "0s",
+        "maxConnIdleTime": "0s",
+        "descriptionCacheCapacity": 0,
+        "statementCacheCapacity": 0,
+        "traceLogLevel": "warn",
+        "defaultQueryExecMode": "exec"
+      },
+      "insertProgress": {
+        "enabled": false,
+        "mode": "off",
+        "interval": "2s",
+        "stallAfter": "5s"
+      }
+    },
+    "segments": [
+      {
+        "name": "custom",
+        "workload": {
+          "script": "execute_sql",
+          "sql_body": "SELECT 1;"
+        },
+        "run": {
+          "executor": "shared-iterations",
+          "vus": 1,
+          "iterations": 3,
+          "query_timeout": "2s"
+        },
+        "extra_params": {
+          "load-workers": "1"
+        },
+        "thresholds": {
+          "error_rate": 0,
+          "p99_ms": 1000
+        },
+        "seed": 123,
+        "timeout": "2m0s",
+        "warmup": "0s",
+        "log_level": "warn",
+        "steps": [
+          "workload"
+        ]
+      }
+    ],
+    "baseline": {
+      "enabled": true,
+      "tiers": [
+        "noop"
+      ],
+      "quick": true,
+      "vus": 2,
+      "rows": 1000,
+      "duration": "1s"
+    }
+  },
+  "observability": {
+    "labels": {
+      "acceptance": "roundtrip"
+    }
+  },
+  "result_expectations": [
+    "iterations_total"
+  ]
+}

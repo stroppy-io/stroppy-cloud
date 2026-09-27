@@ -11,7 +11,7 @@
 | Проверка | Статус | Основание |
 |---|---|---|
 | compile | passed | [доказательство](../../../../../platform/catalog/postgres-matrix-check.json) (`/cells/2`) |
-| infrastructure_provisioning | unknown | No explicit retained verification for this check. |
+| infrastructure_provisioning | passed | [доказательство](runs/matrix-pg-versions-ed460e6f-pg15-single/infrastructure-audit.json) (`/status`) |
 | smoke | passed | [доказательство](../../../../../platform/catalog/postgres-matrix-check.json) (`/cells/2`) |
 | native_tps | not_applicable | No logical transactions for this workload. |
 | native_otlp_metrics | not_run | Not verified in the retained report. |

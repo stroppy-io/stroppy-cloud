@@ -1,0 +1,26 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "external-dsn-7383cd13",
+  "input_run_id": "7383cd13-ce1f-40d3-89c5-0d92dc3db3b5",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "runner-1",
+      "agent": "7383cd13-runner-1",
+      "entity": "docker/7383cd13-ce1f-40d3-89c5-0d92dc3db3b5-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/external/external/dsn/execute_sql/smoke-2m-2vus/runs/external-dsn-7383cd13/input.json",
+      "sha256": "c457724e6b1038c54efb74da4dc2d4208d3254edb90cd3155f76361dc62cd72f"
+    },
+    {
+      "path": "tests/external/external/dsn/execute_sql/smoke-2m-2vus/runs/external-dsn-7383cd13/metrics.json",
+      "sha256": "1b60bb5b6fbc25ca1f00acff16891fa31a6cc0d3d42d0b86ff8e30e3469f5fc7"
+    }
+  ]
+}

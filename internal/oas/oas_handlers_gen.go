@@ -5522,7 +5522,7 @@ func (s *Server) handleCreateProviderProfileRequest(args [1]string, argsEscaped 
 
 // handleCreatePublicShareGrafanaSessionRequest handles createPublicShareGrafanaSession operation.
 //
-// Mint the Grafana scope cookie for a shared run.
+// Grafana session for a shared run (unavailable until supported through Graphene).
 //
 // POST /api/v1/public/share/{token}/grafana-session
 func (s *Server) handleCreatePublicShareGrafanaSessionRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -5614,7 +5614,7 @@ func (s *Server) handleCreatePublicShareGrafanaSessionRequest(args [1]string, ar
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    CreatePublicShareGrafanaSessionOperation,
-			OperationSummary: "Mint the Grafana scope cookie for a shared run.",
+			OperationSummary: "Grafana session for a shared run (unavailable until supported through Graphene).",
 			OperationID:      "createPublicShareGrafanaSession",
 			Body:             nil,
 			RawBody:          rawBody,
@@ -5676,7 +5676,7 @@ func (s *Server) handleCreatePublicShareGrafanaSessionRequest(args [1]string, ar
 
 // handleCreateRunGrafanaSessionRequest handles createRunGrafanaSession operation.
 //
-// Mint the Grafana scope cookie and dashboard links for the run.
+// Grafana session (unavailable until supported through Graphene).
 //
 // POST /api/v1/t/{slug}/runs/{id}/grafana-session
 func (s *Server) handleCreateRunGrafanaSessionRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -5814,7 +5814,7 @@ func (s *Server) handleCreateRunGrafanaSessionRequest(args [2]string, argsEscape
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    CreateRunGrafanaSessionOperation,
-			OperationSummary: "Mint the Grafana scope cookie and dashboard links for the run.",
+			OperationSummary: "Grafana session (unavailable until supported through Graphene).",
 			OperationID:      "createRunGrafanaSession",
 			Body:             nil,
 			RawBody:          rawBody,
@@ -29140,7 +29140,7 @@ func (s *Server) handlePreviewWorkloadRequest(args [1]string, argsEscaped bool, 
 
 // handleQueryRunLogsRequest handles queryRunLogs operation.
 //
-// Typed log query (VictoriaLogs behind, scope forced to the run).
+// Typed log query through Graphene, scoped to the run.
 //
 // GET /api/v1/t/{slug}/runs/{id}/logs
 func (s *Server) handleQueryRunLogsRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -29278,7 +29278,7 @@ func (s *Server) handleQueryRunLogsRequest(args [2]string, argsEscaped bool, w h
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    QueryRunLogsOperation,
-			OperationSummary: "Typed log query (VictoriaLogs behind, scope forced to the run).",
+			OperationSummary: "Typed log query through Graphene, scoped to the run.",
 			OperationID:      "queryRunLogs",
 			Body:             nil,
 			RawBody:          rawBody,
@@ -29396,7 +29396,7 @@ func (s *Server) handleQueryRunLogsRequest(args [2]string, argsEscaped bool, w h
 
 // handleQueryRunLogsRawRequest handles queryRunLogsRaw operation.
 //
-// LogsQL query, AND-ed with the run scope by the server.
+// LogsQL filter evaluated by Graphene inside the authorized run scope.
 //
 // POST /api/v1/t/{slug}/runs/{id}/logs:raw
 func (s *Server) handleQueryRunLogsRawRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -29549,7 +29549,7 @@ func (s *Server) handleQueryRunLogsRawRequest(args [2]string, argsEscaped bool, 
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    QueryRunLogsRawOperation,
-			OperationSummary: "LogsQL query, AND-ed with the run scope by the server.",
+			OperationSummary: "LogsQL filter evaluated by Graphene inside the authorized run scope.",
 			OperationID:      "queryRunLogsRaw",
 			Body:             request,
 			RawBody:          rawBody,

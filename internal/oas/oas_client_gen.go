@@ -245,13 +245,13 @@ type Invoker interface {
 	CreateProviderProfile(ctx context.Context, request *ProviderProfileCreate, params CreateProviderProfileParams, options ...RequestOption) (*ProviderProfile, error)
 	// CreatePublicShareGrafanaSession invokes createPublicShareGrafanaSession operation.
 	//
-	// Mint the Grafana scope cookie for a shared run.
+	// Grafana session for a shared run (unavailable until supported through Graphene).
 	//
 	// POST /api/v1/public/share/{token}/grafana-session
 	CreatePublicShareGrafanaSession(ctx context.Context, params CreatePublicShareGrafanaSessionParams, options ...RequestOption) (*GrafanaSession, error)
 	// CreateRunGrafanaSession invokes createRunGrafanaSession operation.
 	//
-	// Mint the Grafana scope cookie and dashboard links for the run.
+	// Grafana session (unavailable until supported through Graphene).
 	//
 	// POST /api/v1/t/{slug}/runs/{id}/grafana-session
 	CreateRunGrafanaSession(ctx context.Context, params CreateRunGrafanaSessionParams, options ...RequestOption) (*GrafanaSession, error)
@@ -938,13 +938,13 @@ type Invoker interface {
 	PreviewWorkload(ctx context.Context, request *WorkloadWrite, params PreviewWorkloadParams, options ...RequestOption) (*WorkloadPreview, error)
 	// QueryRunLogs invokes queryRunLogs operation.
 	//
-	// Typed log query (VictoriaLogs behind, scope forced to the run).
+	// Typed log query through Graphene, scoped to the run.
 	//
 	// GET /api/v1/t/{slug}/runs/{id}/logs
 	QueryRunLogs(ctx context.Context, params QueryRunLogsParams, options ...RequestOption) (*LogPage, error)
 	// QueryRunLogsRaw invokes queryRunLogsRaw operation.
 	//
-	// LogsQL query, AND-ed with the run scope by the server.
+	// LogsQL filter evaluated by Graphene inside the authorized run scope.
 	//
 	// POST /api/v1/t/{slug}/runs/{id}/logs:raw
 	QueryRunLogsRaw(ctx context.Context, request *QueryRunLogsRawReq, params QueryRunLogsRawParams, options ...RequestOption) (*LogPage, error)
@@ -5453,7 +5453,7 @@ func (c *Client) sendCreateProviderProfile(ctx context.Context, request *Provide
 
 // CreatePublicShareGrafanaSession invokes createPublicShareGrafanaSession operation.
 //
-// Mint the Grafana scope cookie for a shared run.
+// Grafana session for a shared run (unavailable until supported through Graphene).
 //
 // POST /api/v1/public/share/{token}/grafana-session
 func (c *Client) CreatePublicShareGrafanaSession(ctx context.Context, params CreatePublicShareGrafanaSessionParams, options ...RequestOption) (*GrafanaSession, error) {
@@ -5564,7 +5564,7 @@ func (c *Client) sendCreatePublicShareGrafanaSession(ctx context.Context, params
 
 // CreateRunGrafanaSession invokes createRunGrafanaSession operation.
 //
-// Mint the Grafana scope cookie and dashboard links for the run.
+// Grafana session (unavailable until supported through Graphene).
 //
 // POST /api/v1/t/{slug}/runs/{id}/grafana-session
 func (c *Client) CreateRunGrafanaSession(ctx context.Context, params CreateRunGrafanaSessionParams, options ...RequestOption) (*GrafanaSession, error) {
@@ -25376,7 +25376,7 @@ func (c *Client) sendPreviewWorkload(ctx context.Context, request *WorkloadWrite
 
 // QueryRunLogs invokes queryRunLogs operation.
 //
-// Typed log query (VictoriaLogs behind, scope forced to the run).
+// Typed log query through Graphene, scoped to the run.
 //
 // GET /api/v1/t/{slug}/runs/{id}/logs
 func (c *Client) QueryRunLogs(ctx context.Context, params QueryRunLogsParams, options ...RequestOption) (*LogPage, error) {
@@ -25818,7 +25818,7 @@ func (c *Client) sendQueryRunLogs(ctx context.Context, params QueryRunLogsParams
 
 // QueryRunLogsRaw invokes queryRunLogsRaw operation.
 //
-// LogsQL query, AND-ed with the run scope by the server.
+// LogsQL filter evaluated by Graphene inside the authorized run scope.
 //
 // POST /api/v1/t/{slug}/runs/{id}/logs:raw
 func (c *Client) QueryRunLogsRaw(ctx context.Context, request *QueryRunLogsRawReq, params QueryRunLogsRawParams, options ...RequestOption) (*LogPage, error) {

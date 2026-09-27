@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+  "checked_at": "2026-09-27T17:31:30.267060+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpcds/server-sf001-generated/runs/7b3d8ae2-1b43-4b41-81ca-64f9e522ea86/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Required resources/agents became ready and executed the workload; exact hardware SKU not asserted.",
+      "evidence": {
+        "path": "tests/postgres/17/single/tpcds/server-sf001-generated/runs/7b3d8ae2-1b43-4b41-81ca-64f9e522ea86/run.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "failed",
+      "reason": "Generated stream executes 102 statements / 98 of 99 queries without SQL errors; Q88 is silently skipped by Stroppy.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/query-coverage.json",
+        "pointer": "/missing_queries"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "This test reports native queries/s and iterations/s, not logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Native workload telemetry is available with correct run/namespace scope.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/telemetry.json",
+        "pointer": "/native_verified"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "failed",
+      "reason": "Host CPU contains impossible negative percentages near exporter shutdown; Graphene brief records the raw-series reproduction.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/telemetry.json",
+        "pointer": "/invalid_metric_values"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Component logs and facets are available through the server.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/telemetry.json",
+        "pointer": "/logs_verified"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "All config/log artifacts downloaded after completion; sizes and SHA-256 match.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/artifacts.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "not_applicable",
+      "reason": "Single PostgreSQL instance.",
+      "evidence": null
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "Completed run has no remaining infrastructure or kept stand.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/analytical-generated-20260927/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

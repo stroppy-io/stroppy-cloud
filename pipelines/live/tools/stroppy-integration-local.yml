@@ -1,0 +1,8 @@
+# Override for Stroppy's test/compose.tmpfs.yml; test DBs stay on loopback.
+services:
+  pg-tmpfs:
+    ports: !override
+      - "127.0.0.1:5434:5432"
+  mysql-tmpfs:
+    ports: !override
+      - "127.0.0.1:3307:3306"

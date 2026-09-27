@@ -479,16 +479,60 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 	if err := s.writer(ctx, actor, tenantID); err != nil {
 		return SuiteRun{}, err
 	}
-	if idempotencyKey != "" {
-		if id, ok, err := s.repo.RunByIdempotencyKey(ctx, tenantID, idempotencyKey); err != nil {
-			return SuiteRun{}, err
-		} else if ok {
-			return s.ownedRun(ctx, tenantID, id)
+	var sr SuiteRun
+	var prepared []run.Prepared
+	var params spec.Suite
+	replayed := false
+	err := s.runRepo.Admit(ctx, tenantID, func(ctx context.Context) error {
+		if idempotencyKey != "" {
+			id, ok, err := s.repo.RunByIdempotencyKey(ctx, tenantID, idempotencyKey)
+			if err != nil {
+				return err
+			}
+			if ok {
+				sr, err = s.ownedRun(ctx, tenantID, id)
+				replayed = true
+				return err
+			}
 		}
-	}
-	x, err := s.owned(ctx, tenantID, suiteID)
+		var err error
+		sr, prepared, params, err = s.prepareLaunch(ctx, actor, tenantID, suiteID, in, idempotencyKey)
+		return err
+	})
 	if err != nil {
 		return SuiteRun{}, err
+	}
+	if replayed {
+		return sr, nil
+	}
+	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "suite.launch", Target: audit.Target{Kind: "suite_run", ID: sr.ID.String(), Name: sr.Name}, Details: map[string]any{"suite": suiteID, "cells": len(sr.Cells)}}) //nolint:errcheck // audit never blocks
+	labels := map[string]string{"stroppy.io/tenant": params.Tenant, "stroppy.io/suite-run": sr.ID.String()}
+	if err := run.Submit(s.scope(ctx, sr.GrapheneNamespace), s.graphene, sr.CreatedAt, sr.ID.String(), Pipeline, params, labels); err != nil {
+		if !errors.Is(err, run.ErrStartRejected) {
+			// All child specs were committed with the suite; recovery does
+			// not consult mutable library records or launch children itself.
+			return s.ownedRun(ctx, tenantID, sr.ID)
+		}
+		reason := "start: " + err.Error()
+		fin := time.Now().UTC()
+		_ = s.repo.SetRunStatus(ctx, sr.ID, run.StatusFailed, reason, nil, &fin) //nolint:errcheck // reported below
+		for _, p := range prepared {
+			_ = s.runRepo.SetStatus(ctx, p.Run.ID, run.StatusFailed, run.PhaseDone, reason, nil, &fin) //nolint:errcheck // best-effort
+		}
+		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the suite run", err)
+	}
+	for _, p := range prepared {
+		s.runs.MarkStarted(ctx, p.Run)
+	}
+	s.publish(ctx, tenantID, EventSuiteStarted, sr)
+	return s.ownedRun(ctx, tenantID, sr.ID)
+}
+
+// prepareLaunch validates and persists the whole matrix atomically under tenant admission.
+func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, in Launch, idempotencyKey string) (SuiteRun, []run.Prepared, spec.Suite, error) {
+	x, err := s.owned(ctx, tenantID, suiteID)
+	if err != nil {
+		return SuiteRun{}, nil, spec.Suite{}, err
 	}
 	cells := Generate(x, s.testNames(ctx, actor, x))
 	wanted := map[string]bool{}
@@ -506,7 +550,7 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 		chosen = append(chosen, c)
 	}
 	if len(chosen) == 0 {
-		return SuiteRun{}, errs.Invalid("no cells to run")
+		return SuiteRun{}, nil, spec.Suite{}, errs.Invalid("no cells to run")
 	}
 	concurrency := x.Concurrency
 	if in.Concurrency > 0 {
@@ -514,7 +558,7 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 	}
 	slug, ns, err := s.tenantScope(ctx, actor, tenantID)
 	if err != nil {
-		return SuiteRun{}, err
+		return SuiteRun{}, nil, spec.Suite{}, err
 	}
 	trigger := in.Trigger
 	if trigger == "" {
@@ -531,7 +575,7 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 	for i, c := range chosen {
 		testSpec, o, err := s.cellSpec(ctx, actor, x, c)
 		if err != nil {
-			return SuiteRun{}, errs.Invalid(err.Error())
+			return SuiteRun{}, nil, spec.Suite{}, errs.Invalid(err.Error())
 		}
 		if in.Keep != nil {
 			o.Keep = in.Keep
@@ -557,11 +601,11 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 			if e, ok := errors.AsType[*errs.Error](err); ok {
 				e.Detail = "cell " + c.ID + ": " + e.Detail
 			}
-			return SuiteRun{}, err
+			return SuiteRun{}, nil, spec.Suite{}, err
 		}
 		var rs spec.Run
 		if err := json.Unmarshal(p.Compiled.Spec, &rs); err != nil {
-			return SuiteRun{}, errs.Wrap(errs.CodeInternal, "run spec", err)
+			return SuiteRun{}, nil, spec.Suite{}, errs.Wrap(errs.CodeInternal, "run spec", err)
 		}
 		prepared = append(prepared, p)
 		cellRuns = append(cellRuns, CellRun{CellID: c.ID, Name: c.Name, RunID: p.Run.ID})
@@ -574,30 +618,15 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 		GrapheneNamespace: ns, CreatedAt: now, UpdatedAt: now,
 	}
 	if err := s.repo.InsertRun(ctx, sr, idempotencyKey); err != nil {
-		return SuiteRun{}, err
+		return SuiteRun{}, nil, spec.Suite{}, err
 	}
 	for _, p := range prepared {
 		if err := s.runs.Insert(ctx, p.Run); err != nil {
-			return SuiteRun{}, err
+			return SuiteRun{}, nil, spec.Suite{}, err
 		}
 	}
-	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "suite.launch", Target: audit.Target{Kind: "suite_run", ID: srID.String(), Name: name}, Details: map[string]any{"suite": x.ID, "cells": len(chosen)}}) //nolint:errcheck // audit never blocks
 	params := spec.Suite{SuiteRunID: srID.String(), Tenant: slug, Cells: specCells, Concurrency: concurrency, Defaults: spec.SuiteDefaults{ContinueOnFailure: true, Labels: in.Labels}}
-	labels := map[string]string{"stroppy.io/tenant": slug, "stroppy.io/suite-run": srID.String()}
-	if err := s.graphene.StartRun(s.scope(ctx, ns), srID.String(), Pipeline, params, labels); err != nil {
-		reason := "start: " + err.Error()
-		fin := time.Now().UTC()
-		_ = s.repo.SetRunStatus(ctx, srID, run.StatusFailed, reason, nil, &fin) //nolint:errcheck // reported below
-		for _, p := range prepared {
-			_ = s.runRepo.SetStatus(ctx, p.Run.ID, run.StatusFailed, run.PhaseDone, reason, nil, &fin) //nolint:errcheck // best-effort
-		}
-		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the suite run", err)
-	}
-	for _, p := range prepared {
-		s.runs.MarkStarted(ctx, p.Run)
-	}
-	s.publish(ctx, tenantID, EventSuiteStarted, sr)
-	return s.ownedRun(ctx, tenantID, srID)
+	return sr, prepared, params, nil
 }
 
 func isInline(x Suite, id uuid.UUID) bool {

@@ -1,0 +1,7 @@
+{
+  "tag": "ghcr.io/stroppy-io/stroppy:dev-ha-probe-927ca8afbafc",
+  "source_sha256": "927ca8afbafcb8d4c4e24ce239ba41dad6c1e96ab399fea7a39366c9fd9e76c1",
+  "binary_sha256": "98f92f3b8c78339da4ce296202674e69eab744e104a4edf4e7dac8461244a5ac",
+  "driver_go_mod_sha256": "0ef834ff19c4ad5b8cfa72cf180fefb2f01f3147e87ddff013be33c7c365736d",
+  "pinned_image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2"
+}

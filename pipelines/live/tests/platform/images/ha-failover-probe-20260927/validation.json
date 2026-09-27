@@ -1,0 +1,15 @@
+{
+  "scope": "Local test controller safety gates, not cloud HA qualification",
+  "race_test": {
+    "passed": true,
+    "command": "go test -race ha_failover_probe.go ha_failover_probe_test.go",
+    "cases": [
+      "owned target accepted",
+      "foreign run rejected",
+      "unlabelled target rejected",
+      "ambiguous target rejected",
+      "missing target rejected"
+    ]
+  },
+  "anonymous_image_pull_verified": true
+}

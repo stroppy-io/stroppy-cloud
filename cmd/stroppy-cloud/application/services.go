@@ -37,8 +37,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/repositories"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
-	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/victoria"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 /*
@@ -103,7 +101,6 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	lib := library.NewService(repositories.NewLibraryRepo(db), registry, cat, tenants, providerRepo, keepLimit{settingsSvc}, auditSvc)
 	webhooks := webhook.NewService(webhookRepo, tenants, auditSvc)
 	compiler := compile.NewService(registry, cat, lib)
-	compiler.Observability = spec.Observability{OTLPEndpoint: cfg.Infra.Observability.OTLPEndpoint, OTLPHeaders: cfg.Infra.Observability.OTLPHeaders}
 	runRepo := repositories.NewRunRepo(db, tx)
 	runs := run.NewService(runRepo, infra.Graphene, tenants, lib, providers, settingsSvc, compiler, webhooks, auditSvc, graphene.WithNamespace)
 	projector := run.NewProjector(runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)
@@ -145,7 +142,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 		Admin:      adminSvc,
 		Pipelines:  pusher,
 		Examples:   examples.NewService(lib, suites),
-		Observe:    observe.NewService(runs, nilLogs(victoria.NewLogs(&cfg.Infra.Victoria)), nilMetrics(victoria.NewMetrics(&cfg.Infra.Victoria)), cat),
+		Observe:    observe.NewService(runs, graphene.NewLogs(infra.Graphene), graphene.NewMetrics(infra.Graphene), cat),
 		Schemas:    registry,
 		Catalog:    cat,
 		IAM:        repositories.NewIAMRepo(db),
@@ -218,22 +215,6 @@ func (a pusherStates) States(ctx context.Context) ([]admin.Namespace, error) {
 		out = append(out, admin.Namespace{Namespace: st.Namespace, Status: st.Status, Revision: st.Revision, Error: st.Error, PushedAt: st.PushedAt})
 	}
 	return out, nil
-}
-
-// nilLogs / nilMetrics keep a nil client a nil port (typed nil pointers
-// would look connected).
-func nilLogs(l *victoria.Logs) observe.Logs {
-	if l == nil {
-		return nil
-	}
-	return l
-}
-
-func nilMetrics(m *victoria.Metrics) observe.Metrics {
-	if m == nil {
-		return nil
-	}
-	return m
 }
 
 func (p probePipelines) Configure(ctx context.Context, runID string, params provider.ConfigureParams) (provider.VerifyResult, error) {

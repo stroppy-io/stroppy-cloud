@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-09-27T16:10:12.504825+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/e3e18f98-f2b4-40dc-93da-e035ff75814f/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "172",
+        "at": "2026-09-27T15:57:18Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "174",
+        "at": "2026-09-27T15:57:25Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "177",
+        "at": "2026-09-27T16:00:19Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "machine": "runner-1",
+          "public_ip": "158.160.218.3",
+          "private_ip": "10.130.0.13",
+          "id": "fv4chkaea7k4fetgmbrc",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "178",
+        "at": "2026-09-27T16:00:19Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "2m53.513s"
+        }
+      },
+      {
+        "id": "179",
+        "at": "2026-09-27T16:00:19Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "205",
+        "at": "2026-09-27T16:07:53Z",
+        "kind": "activity-failed",
+        "title": "Step failed: pull",
+        "subject": "stroppy.image.pull",
+        "error": "pull quay.io/prometheus/node-exporter:v1.12.1: decode docker progress: unexpected EOF"
+      },
+      {
+        "id": "206",
+        "at": "2026-09-27T16:09:00Z",
+        "kind": "run-canceled",
+        "title": "Run cancelled",
+        "status": "canceled"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

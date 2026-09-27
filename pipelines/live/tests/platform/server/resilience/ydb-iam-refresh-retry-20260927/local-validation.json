@@ -1,0 +1,64 @@
+{
+  "contract_version": "2.0.2",
+  "cloud_build": "0.0.0-dev-f658fd8b-iam-heartbeat2-20260927",
+  "checks": [
+    {
+      "command": "go test ./... -count=1 -race",
+      "cwd": "stroppy-cloud",
+      "status": "passed"
+    },
+    {
+      "command": "go test -tags=integration ./cmd/... -count=1 -p 1 -timeout=20m",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "seconds": 511.19
+    },
+    {
+      "command": "go test ./... -count=1",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed"
+    },
+    {
+      "command": "go test -race ./internal/activities ./internal/cloud",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed"
+    },
+    {
+      "command": "make lint lint-pipelines",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make contract-check",
+      "cwd": "stroppy-cloud",
+      "status": "passed",
+      "artifacts": 218,
+      "browser_tests": 3
+    },
+    {
+      "command": "go test -race ./internal/activities -count=1",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed",
+      "seconds": 62.362
+    },
+    {
+      "command": "go test -race ./internal/activities -run 'TestHeartbeat|TestPullImageHeartbeats|TestRenew|TestRefreshIAM|TestLegacy' -count=1",
+      "cwd": "stroppy-cloud/pipelines",
+      "status": "passed",
+      "seconds": 61.218
+    }
+  ],
+  "compatibility": "Patch 2.0.2 records the pipeline SDK/docker dependency update; public JSON shapes unchanged. No Graphene source changes.",
+  "source_sha256": {
+    "pipelines/internal/activities/heartbeat.go": "7c59d3ce1020279aca02cc237515bf16b4175d891aedf37f9cdb2ccbdf02c5db",
+    "pipelines/internal/activities/heartbeat_test.go": "e60a93a5722bbb353f6f2acf8c9ea87528e90651841b0cce7bd4039543fbb34b",
+    "pipelines/internal/activities/docker.go": "e16161d5b1a9a58cf6483831a0eee4cae2e4df68c13bb2ddde04c167d4bf367c",
+    "pipelines/internal/activities/stroppy.go": "4285b3c79e80f44e8ecae632927bd12270c3cf7dfb216627ab07ecc07da1867d",
+    "pipelines/internal/activities/database.go": "028c99f49411270e1f622c1a52a098cea08261b40c2a1a5371a61bebfd927e14",
+    "pipelines/internal/activities/database_probe.go": "12ccb21572f9b34a71a93f7778b4f44b1b607e39dacb00fd2c32c937660e4e61",
+    "pipelines/internal/activities/ydb_auth.go": "207878567d5a772eecfb667578e165e30438fc75e8614f3ce7c9cc89ffb7c3b3",
+    "pipelines/internal/activities/ydb_refresh.go": "59fcac6b1fbca396b824d5dd264045299d4d17f150b8cfe1e6f06021e2f60c8f",
+    "pipelines/internal/activities/ydb_refresh_test.go": "3a9f8a624d618a68ec9ae6dd27b65bd5cb73f21cc975d15094cf79abb859b3f1"
+  }
+}

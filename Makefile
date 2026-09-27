@@ -112,7 +112,7 @@ migrate-clear: tools ## Regenerate the single bootstrap migration from schema.sq
 # Test / lint
 # ============================================================
 test-db: tools ## Run integration tests (testcontainers Postgres + fake Graphene; needs Docker)
-	go test -tags=integration ./cmd/... -count=1 -p 1
+	go test -tags=integration ./cmd/... -count=1 -p 1 -timeout=20m
 
 test: ## Run unit tests
 	go test ./... -count=1 -race

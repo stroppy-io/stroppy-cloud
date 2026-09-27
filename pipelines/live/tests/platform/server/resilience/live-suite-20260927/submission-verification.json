@@ -1,0 +1,6 @@
+{
+  "suite_id": "7af25d36-2e74-4165-a314-2f9e80f9177d",
+  "same_server_identity": true,
+  "outage_boundary": "provider quota check before admission; HTTP 503, no suite created",
+  "first_status": "pending"
+}

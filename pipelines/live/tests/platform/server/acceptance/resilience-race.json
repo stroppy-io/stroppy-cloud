@@ -1,0 +1,203 @@
+{
+  "started_at": "2026-09-27T12:34:33.417404+00:00",
+  "finished_at": "2026-09-27T12:37:01.308497+00:00",
+  "seconds": 147.891,
+  "command": [
+    "go",
+    "test",
+    "-race",
+    "-json",
+    "-tags=integration",
+    "./cmd/stroppy-cloud/application",
+    "-count=1",
+    "-p=1",
+    "-timeout=20m",
+    "-run",
+    "^TestE2E(SubmissionFaultRecovery|ResultOutageRecovery|CancelCommandSurvivesStaleProjection)$"
+  ],
+  "git_head": "f658fd8bea708e1b89dc32eb195721ac53045ffc",
+  "source_sha256_before": "11c62ebc5c800f5e9b6e8c8ff816e5800faa3e4ff9631e0d815971368a16f441",
+  "source_sha256_after": "11c62ebc5c800f5e9b6e8c8ff816e5800faa3e4ff9631e0d815971368a16f441",
+  "source_changed_during_run": false,
+  "exit_code": 0,
+  "tests": {
+    "TestE2ESubmissionFaultRecovery/run_unavailable_before_acceptance": {
+      "status": "pass",
+      "seconds": 14.73
+    },
+    "TestE2ESubmissionFaultRecovery/run_accepted_but_answer_lost": {
+      "status": "pass",
+      "seconds": 14.44
+    },
+    "TestE2ESubmissionFaultRecovery/suite_unavailable_before_acceptance": {
+      "status": "pass",
+      "seconds": 34.2
+    },
+    "TestE2ESubmissionFaultRecovery/suite_accepted_but_answer_lost": {
+      "status": "pass",
+      "seconds": 34.16
+    },
+    "TestE2ESubmissionFaultRecovery": {
+      "status": "pass",
+      "seconds": 97.53
+    },
+    "TestE2EResultOutageRecovery": {
+      "status": "pass",
+      "seconds": 14.5
+    },
+    "TestE2ECancelCommandSurvivesStaleProjection": {
+      "status": "pass",
+      "seconds": 14.75
+    }
+  },
+  "http_observations": {
+    "TestE2ESubmissionFaultRecovery/run_unavailable_before_acceptance": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 1
+      },
+      "getRun": {
+        "200": 17
+      },
+      "launchTest": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/run_accepted_but_answer_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 4
+      },
+      "launchTest": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/suite_unavailable_before_acceptance": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getSuiteRun": {
+        "200": 39
+      },
+      "launchSuite": {
+        "201": 2
+      }
+    },
+    "TestE2ESubmissionFaultRecovery/suite_accepted_but_answer_lost": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createSuite": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getSuiteRun": {
+        "200": 4
+      },
+      "launchSuite": {
+        "201": 2
+      }
+    },
+    "TestE2EResultOutageRecovery": {
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 3
+      },
+      "launchTest": {
+        "201": 1
+      }
+    },
+    "TestE2ECancelCommandSurvivesStaleProjection": {
+      "cancelRun": {
+        "503": 1
+      },
+      "createDatabase": {
+        "201": 1
+      },
+      "createProviderProfile": {
+        "201": 1
+      },
+      "createTest": {
+        "201": 1
+      },
+      "createWorkload": {
+        "201": 1
+      },
+      "getProviderProfile": {
+        "200": 2
+      },
+      "getRun": {
+        "200": 9
+      },
+      "launchTest": {
+        "201": 1
+      }
+    }
+  },
+  "note": "HTTP observations prove route exercise only. Semantic assertions are linked in capabilities.json. Graphene and cloud activities are simulated; PostgreSQL and HTTP are real."
+}

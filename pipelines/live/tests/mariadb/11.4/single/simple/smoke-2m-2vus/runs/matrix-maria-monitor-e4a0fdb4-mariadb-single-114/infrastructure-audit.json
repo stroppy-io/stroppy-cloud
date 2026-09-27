@@ -1,0 +1,34 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-maria-monitor-e4a0fdb4-mariadb-single-114",
+  "input_run_id": "2d1e7aa3-de93-4254-b764-ba24f38797cf",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "2d1e7aa3-db-1",
+      "entity": "docker/2d1e7aa3-de93-4254-b764-ba24f38797cf-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "2d1e7aa3-runner-1",
+      "entity": "docker/2d1e7aa3-de93-4254-b764-ba24f38797cf-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/mariadb/11.4/single/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-maria-monitor-e4a0fdb4-mariadb-single-114/input.json",
+      "sha256": "b03a02caf73c6998b68a574460701fc0b9c408f2f5ddfc88300e3f43a2460adf"
+    },
+    {
+      "path": "tests/mariadb/11.4/single/tpcc-tx/native-otlp-20s-2vus-retry50/runs/matrix-maria-monitor-e4a0fdb4-mariadb-single-114/metrics.json",
+      "sha256": "7e439e10c6f3804b889d82abd73c44688c6790a6fa67ad9392fade0474db59c8"
+    }
+  ]
+}

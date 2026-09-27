@@ -1,0 +1,598 @@
+{
+  "observed_at": "2026-09-27T19:58:42.740406+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/48021b46-d718-4dde-b0fb-a2aca859ec8f/events",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "id": "428",
+        "at": "2026-09-27T19:39:13Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "429",
+        "at": "2026-09-27T19:39:15Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "450",
+        "at": "2026-09-27T19:42:19Z",
+        "kind": "machine.ready",
+        "title": "Machine proxy-1 ready",
+        "subject": "proxy-1",
+        "payload": {
+          "machine": "proxy-1",
+          "public_ip": "158.160.205.32",
+          "private_ip": "10.130.0.18",
+          "id": "fv4ij3eo0kj35r392pt5",
+          "role": "proxy"
+        }
+      },
+      {
+        "id": "451",
+        "at": "2026-09-27T19:42:24Z",
+        "kind": "machine.ready",
+        "title": "Machine db-1 ready",
+        "subject": "db-1",
+        "payload": {
+          "public_ip": "84.252.133.103",
+          "private_ip": "10.130.0.23",
+          "id": "fv4l4t33fs5loepbrp20",
+          "role": "db",
+          "machine": "db-1"
+        }
+      },
+      {
+        "id": "452",
+        "at": "2026-09-27T19:42:24Z",
+        "kind": "machine.ready",
+        "title": "Machine etcd-2 ready",
+        "subject": "etcd-2",
+        "payload": {
+          "public_ip": "158.160.148.97",
+          "private_ip": "10.130.0.32",
+          "id": "fv4o6d51p5ldnba3bs1n",
+          "role": "etcd",
+          "machine": "etcd-2"
+        }
+      },
+      {
+        "id": "453",
+        "at": "2026-09-27T19:42:28Z",
+        "kind": "machine.ready",
+        "title": "Machine db-replica-1 ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "machine": "db-replica-1",
+          "public_ip": "158.160.208.58",
+          "private_ip": "10.130.0.8",
+          "id": "fv470a1rr1ohtaqeimb9",
+          "role": "db-replica"
+        }
+      },
+      {
+        "id": "454",
+        "at": "2026-09-27T19:42:35Z",
+        "kind": "machine.ready",
+        "title": "Machine etcd-1 ready",
+        "subject": "etcd-1",
+        "payload": {
+          "id": "fv418im9ig6bbnb1aoei",
+          "role": "etcd",
+          "machine": "etcd-1",
+          "public_ip": "158.160.183.41",
+          "private_ip": "10.130.0.17"
+        }
+      },
+      {
+        "id": "455",
+        "at": "2026-09-27T19:42:35Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "id": "fv48jutgre3tgmj8ifv8",
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.225.250",
+          "private_ip": "10.130.0.26"
+        }
+      },
+      {
+        "id": "456",
+        "at": "2026-09-27T19:42:38Z",
+        "kind": "machine.ready",
+        "title": "Machine etcd-3 ready",
+        "subject": "etcd-3",
+        "payload": {
+          "machine": "etcd-3",
+          "public_ip": "158.160.219.42",
+          "private_ip": "10.130.0.22",
+          "id": "fv4l4m3ci0vlboaqtg44",
+          "role": "etcd"
+        }
+      },
+      {
+        "id": "457",
+        "at": "2026-09-27T19:42:55Z",
+        "kind": "machine.ready",
+        "title": "Machine db-replica-2 ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "public_ip": "158.160.236.104",
+          "private_ip": "10.130.0.11",
+          "id": "fv4vafn8jjqbqsg8u532",
+          "role": "db-replica",
+          "machine": "db-replica-2"
+        }
+      },
+      {
+        "id": "458",
+        "at": "2026-09-27T19:42:55Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "3m40.022s"
+        }
+      },
+      {
+        "id": "459",
+        "at": "2026-09-27T19:42:55Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "466",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container etcd-2-node-exporter ready",
+        "subject": "etcd-2",
+        "payload": {
+          "layer": 0,
+          "machine": "etcd-2",
+          "container": "etcd-2-node-exporter",
+          "id": "cfbf461ee96985ae9ccccf7b84b9654f529b3b055b2dd2b293504402fd57f230",
+          "role": "etcd"
+        }
+      },
+      {
+        "id": "467",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "layer": 0,
+          "machine": "runner-1",
+          "container": "runner-1-node-exporter",
+          "id": "b215860e30642e0aa102769385e8b11dc233ab769bf761507d41c3149b306db9",
+          "role": "runner"
+        }
+      },
+      {
+        "id": "468",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container db-1-node-exporter ready",
+        "subject": "db-1",
+        "payload": {
+          "container": "db-1-node-exporter",
+          "id": "7686fffb27923e27832748a49523ae8b6656ba40224b78061353b5e5cea83924",
+          "role": "db",
+          "layer": 0,
+          "machine": "db-1"
+        }
+      },
+      {
+        "id": "469",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container proxy-1-node-exporter ready",
+        "subject": "proxy-1",
+        "payload": {
+          "machine": "proxy-1",
+          "container": "proxy-1-node-exporter",
+          "id": "3f414799b29be6074b9721c413db777feea8b5eca7d8c143e47a4289b7a2cf97",
+          "role": "proxy",
+          "layer": 0
+        }
+      },
+      {
+        "id": "470",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-2-node-exporter ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "layer": 0,
+          "machine": "db-replica-2",
+          "container": "db-replica-2-node-exporter",
+          "id": "8d00e748b35bbc1c1534e433bb6f2b360c53773f40ce99edc6742892dbcbccfa",
+          "role": "db-replica"
+        }
+      },
+      {
+        "id": "471",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container etcd-1-node-exporter ready",
+        "subject": "etcd-1",
+        "payload": {
+          "machine": "etcd-1",
+          "container": "etcd-1-node-exporter",
+          "id": "870f050df72a08f13a71a956d16589c1f5d178bdc4e2cc8e9406948aca5b0728",
+          "role": "etcd",
+          "layer": 0
+        }
+      },
+      {
+        "id": "472",
+        "at": "2026-09-27T19:46:20Z",
+        "kind": "container.ready",
+        "title": "Container etcd-2-etcd ready",
+        "subject": "etcd-2",
+        "payload": {
+          "id": "f0328743466d1607ba95262f208d101af548849a341a2c64e870a58bfc3a141e",
+          "role": "etcd",
+          "layer": 0,
+          "machine": "etcd-2",
+          "container": "etcd-2-etcd"
+        }
+      },
+      {
+        "id": "473",
+        "at": "2026-09-27T19:46:22Z",
+        "kind": "container.ready",
+        "title": "Container etcd-3-node-exporter ready",
+        "subject": "etcd-3",
+        "payload": {
+          "role": "etcd",
+          "layer": 0,
+          "machine": "etcd-3",
+          "container": "etcd-3-node-exporter",
+          "id": "bbfd7397d90b2d3c436048c7b380931a19b67d31c2290063c89926c12072bbf5"
+        }
+      },
+      {
+        "id": "474",
+        "at": "2026-09-27T19:46:22Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-1-node-exporter ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "id": "e3241a0c229c64a7a3ddfc386ef208553feb042bbd3fd8a8093dee0200666b74",
+          "role": "db-replica",
+          "layer": 0,
+          "machine": "db-replica-1",
+          "container": "db-replica-1-node-exporter"
+        }
+      },
+      {
+        "id": "475",
+        "at": "2026-09-27T19:46:22Z",
+        "kind": "container.ready",
+        "title": "Container etcd-1-etcd ready",
+        "subject": "etcd-1",
+        "payload": {
+          "id": "11329659e081d42366d9654a30802706ab276401e8a414678ef7ab0afeb32823",
+          "role": "etcd",
+          "layer": 0,
+          "machine": "etcd-1",
+          "container": "etcd-1-etcd"
+        }
+      },
+      {
+        "id": "479",
+        "at": "2026-09-27T19:46:24Z",
+        "kind": "container.ready",
+        "title": "Container etcd-3-etcd ready",
+        "subject": "etcd-3",
+        "payload": {
+          "id": "df963434d358727f64dc362c2031568f5b313a701b15090fa22f5d52233f50a8",
+          "role": "etcd",
+          "layer": 0,
+          "machine": "etcd-3",
+          "container": "etcd-3-etcd"
+        }
+      },
+      {
+        "id": "480",
+        "at": "2026-09-27T19:46:31Z",
+        "kind": "container.ready",
+        "title": "Container db-1-postgres ready",
+        "subject": "db-1",
+        "payload": {
+          "id": "09104e8099bdc8e00b6f9f2ca796112b264e0a068dfb4481876c3a13f276dc4b",
+          "role": "db",
+          "layer": 1,
+          "machine": "db-1",
+          "container": "db-1-postgres"
+        }
+      },
+      {
+        "id": "481",
+        "at": "2026-09-27T19:46:42Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-2-postgres ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "id": "d496009adc117f5e70acb4400fcce94239b8b5abfc1b1608d585dcd2483de23f",
+          "role": "db-replica",
+          "layer": 1,
+          "machine": "db-replica-2",
+          "container": "db-replica-2-postgres"
+        }
+      },
+      {
+        "id": "482",
+        "at": "2026-09-27T19:46:42Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-1-postgres ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "role": "db-replica",
+          "layer": 1,
+          "machine": "db-replica-1",
+          "container": "db-replica-1-postgres",
+          "id": "7c1ee584872d7aa7225f035b7c9ee39cc34295612f6fb1a1565cd76c296f7ce8"
+        }
+      },
+      {
+        "id": "483",
+        "at": "2026-09-27T19:46:44Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-1-postgres-exporter ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "id": "be912d4aed6a4fc0a19abfca4914967f78064235e7c2bd96da1dd6d0e2092e38",
+          "role": "db-replica",
+          "layer": 2,
+          "machine": "db-replica-1",
+          "container": "db-replica-1-postgres-exporter"
+        }
+      },
+      {
+        "id": "484",
+        "at": "2026-09-27T19:46:44Z",
+        "kind": "container.ready",
+        "title": "Container db-1-postgres-exporter ready",
+        "subject": "db-1",
+        "payload": {
+          "container": "db-1-postgres-exporter",
+          "id": "f029c986a1648727deeb1313d9063f062d26d935afd906d762931cf7bd43f33a",
+          "role": "db",
+          "layer": 2,
+          "machine": "db-1"
+        }
+      },
+      {
+        "id": "485",
+        "at": "2026-09-27T19:46:44Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-2-postgres-exporter ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "role": "db-replica",
+          "layer": 2,
+          "machine": "db-replica-2",
+          "container": "db-replica-2-postgres-exporter",
+          "id": "7754d997c4e00eb9f7a7b1af9b6ae194e09143f815ddac877125b4fa15de24e5"
+        }
+      },
+      {
+        "id": "486",
+        "at": "2026-09-27T19:46:44Z",
+        "kind": "container.ready",
+        "title": "Container proxy-1-haproxy ready",
+        "subject": "proxy-1",
+        "payload": {
+          "id": "8a045963a30f5b7baebb16a50e3e2083b31150416fc88078e7285ce8f6fb0948",
+          "role": "proxy",
+          "layer": 2,
+          "machine": "proxy-1",
+          "container": "proxy-1-haproxy"
+        }
+      },
+      {
+        "id": "487",
+        "at": "2026-09-27T19:46:47Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-1-ha-probe ready",
+        "subject": "db-replica-1",
+        "payload": {
+          "role": "db-replica",
+          "layer": 3,
+          "machine": "db-replica-1",
+          "container": "db-replica-1-ha-probe",
+          "id": "0c4c5d856c02eca1969f9811b5aada0f76a4e80011ac769615971d91fee21a77"
+        }
+      },
+      {
+        "id": "488",
+        "at": "2026-09-27T19:46:47Z",
+        "kind": "container.ready",
+        "title": "Container db-1-ha-probe ready",
+        "subject": "db-1",
+        "payload": {
+          "layer": 3,
+          "machine": "db-1",
+          "container": "db-1-ha-probe",
+          "id": "36d4025203eb789e63b79c4a59303ce6276683771d68ba612fd43bd2d1089aa3",
+          "role": "db"
+        }
+      },
+      {
+        "id": "489",
+        "at": "2026-09-27T19:46:49Z",
+        "kind": "container.ready",
+        "title": "Container db-replica-2-ha-probe ready",
+        "subject": "db-replica-2",
+        "payload": {
+          "machine": "db-replica-2",
+          "container": "db-replica-2-ha-probe",
+          "id": "7c29f9a7e83d556413b81adaec278edd3c756166e0bd443879e367d6836ee389",
+          "role": "db-replica",
+          "layer": 3
+        }
+      },
+      {
+        "id": "490",
+        "at": "2026-09-27T19:46:49Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "3m53.786s"
+        }
+      },
+      {
+        "id": "491",
+        "at": "2026-09-27T19:46:49Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "492",
+        "at": "2026-09-27T19:46:49Z",
+        "kind": "segment.started",
+        "title": "Segment start-ha-probe started",
+        "subject": "start-ha-probe",
+        "payload": {
+          "segment": "start-ha-probe",
+          "index": 0,
+          "script": "execute_sql"
+        }
+      },
+      {
+        "id": "493",
+        "at": "2026-09-27T19:46:53Z",
+        "kind": "segment.finished",
+        "title": "Segment start-ha-probe finished",
+        "subject": "start-ha-probe",
+        "payload": {
+          "index": 0,
+          "status": "completed",
+          "metrics": {
+            "failed_iterations_total": 0,
+            "iteration_duration_p50": 5,
+            "iteration_duration_p95": 5,
+            "iteration_duration_p99": 5,
+            "iterations_total": 1
+          },
+          "segment": "start-ha-probe",
+          "started_at": "2026-09-27T19:46:49.227120964Z",
+          "finished_at": "2026-09-27T19:46:53.204209386Z"
+        }
+      },
+      {
+        "id": "494",
+        "at": "2026-09-27T19:46:53Z",
+        "kind": "segment.started",
+        "title": "Segment during-failover started",
+        "subject": "during-failover",
+        "payload": {
+          "index": 1,
+          "script": "execute_sql",
+          "segment": "during-failover"
+        }
+      },
+      {
+        "id": "495",
+        "at": "2026-09-27T19:46:59Z",
+        "kind": "segment.failed",
+        "title": "Segment during-failover failed",
+        "subject": "during-failover",
+        "error": "stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded",
+        "payload": {
+          "index": 1,
+          "status": "failed",
+          "segment": "during-failover",
+          "error": "stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded"
+        }
+      },
+      {
+        "id": "496",
+        "at": "2026-09-27T19:46:59Z",
+        "kind": "phase.failed",
+        "title": "Phase workload failed",
+        "subject": "workload",
+        "error": "segment during-failover failed: stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded",
+        "payload": {
+          "phase": "workload",
+          "elapsed": "10.707s",
+          "error": "segment during-failover failed: stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded"
+        }
+      },
+      {
+        "id": "497",
+        "at": "2026-09-27T19:46:59Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "498",
+        "at": "2026-09-27T19:47:05Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "segments": 2
+        }
+      },
+      {
+        "id": "499",
+        "at": "2026-09-27T19:47:05Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting",
+          "elapsed": "5.324s"
+        }
+      },
+      {
+        "id": "500",
+        "at": "2026-09-27T19:47:05Z",
+        "kind": "phase.started",
+        "title": "Phase teardown started",
+        "subject": "teardown",
+        "payload": {
+          "phase": "teardown"
+        }
+      },
+      {
+        "id": "502",
+        "at": "2026-09-27T19:58:24Z",
+        "kind": "run-failed",
+        "title": "Run failed",
+        "status": "failed",
+        "error": "segment during-failover failed: stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

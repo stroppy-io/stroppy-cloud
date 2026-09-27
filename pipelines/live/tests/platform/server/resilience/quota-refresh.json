@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-27T12:33:22.088752+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/providers/b413b185-61ca-4d81-abf2-0b760aa59ed5/quotas:refresh",
+  "http_status": 503,
+  "contract_version": "2.0.1",
+  "body": {
+    "type": "https://stroppy.io/problems/unavailable",
+    "title": "Temporarily unavailable",
+    "status": 503,
+    "detail": "quota pipeline",
+    "code": "unavailable",
+    "request_id": "ad47a63985cb/7jdaJJSjxU-000002"
+  }
+}

@@ -527,3 +527,28 @@ func authorOf(a auth.Actor) *uuid.UUID {
 	id := a.UserID
 	return &id
 }
+
+// MetricsRun resolves the sole run authorized by an active metrics/configs link.
+// Its time bounds come from the published snapshot, not later run changes.
+func (s *Service) MetricsRun(ctx context.Context, token string) (run.Run, error) {
+	sh, err := s.Public(ctx, token)
+	if err != nil {
+		return run.Run{}, err
+	}
+	if sh.Scope == ScopeOverview {
+		return run.Run{}, errs.Forbidden("this share does not include metrics")
+	}
+	if sh.Kind != KindRun || sh.TargetID == nil || sh.Snapshot.Run == nil {
+		return run.Run{}, errs.Invalid("metrics endpoint requires a single-run share")
+	}
+	r, err := s.run(ctx, sh.TenantID, *sh.TargetID)
+	if err != nil {
+		return run.Run{}, err
+	}
+	r.StartedAt = sh.Snapshot.Run.StartedAt
+	r.FinishedAt = sh.Snapshot.Run.FinishedAt
+	if r.FinishedAt == nil {
+		r.FinishedAt = &sh.CapturedAt
+	}
+	return r, nil
+}

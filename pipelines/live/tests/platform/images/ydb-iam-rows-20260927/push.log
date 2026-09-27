@@ -1,0 +1,45 @@
+The push refers to repository [ghcr.io/stroppy-io/stroppy]
+53f8f5e03afd: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+53f8f5e03afd: Waiting
+53f8f5e03afd: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+53f8f5e03afd: Waiting
+6b1ce657c524: Waiting
+53f8f5e03afd: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+53f8f5e03afd: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Waiting
+6b1ce657c524: Waiting
+53f8f5e03afd: Waiting
+4dc2a95b413f: Waiting
+44136fa355b3: Already exists
+6b1ce657c524: Layer already exists
+53f8f5e03afd: Waiting
+b45299a66031: Waiting
+f01d8f909c94: Waiting
+53f8f5e03afd: Layer already exists
+b45299a66031: Layer already exists
+f01d8f909c94: Waiting
+4dc2a95b413f: Waiting
+f01d8f909c94: Waiting
+4dc2a95b413f: Waiting
+f01d8f909c94: Waiting
+4dc2a95b413f: Pushed
+f01d8f909c94: Pushed
+dev-iam-rows-beea29efd327: digest: sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c size: 856

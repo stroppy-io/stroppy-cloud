@@ -1,0 +1,8 @@
+{
+  "run_id": "d92548ed-af3a-425f-a896-14a90f58bf01",
+  "observed_at": "2026-09-25T13:51:25.454232+00:00",
+  "summary_iterations": 15610838,
+  "otlp_last_iterations": 15610838,
+  "verified": true,
+  "shutdown_warning": "Stroppy logged failed to upload metrics: context canceled at shutdown; the final iteration count reached Graphene after ingestion delay."
+}

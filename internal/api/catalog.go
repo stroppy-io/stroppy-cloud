@@ -14,6 +14,25 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
 
+// GetPublicCatalog exposes the same catalog identities as the authenticated API.
+func (h *Handler) GetPublicCatalog(_ context.Context) (*oas.PublicCatalog, error) {
+	out := &oas.PublicCatalog{Databases: []oas.PublicCatalogDatabasesItem{}, Providers: []oas.ProviderKind{}}
+	for _, d := range h.deps.Catalog.Databases {
+		item := oas.PublicCatalogDatabasesItem{Kind: oas.DatabaseKind(d.Kind), Title: oas.NewOptString(d.Title), Versions: []string{}, Topologies: []string{}}
+		for _, v := range d.Versions {
+			item.Versions = append(item.Versions, v.Version)
+		}
+		for _, topology := range d.Topologies {
+			item.Topologies = append(item.Topologies, topology.ID)
+		}
+		out.Databases = append(out.Databases, item)
+	}
+	for _, p := range h.deps.Catalog.Providers {
+		out.Providers = append(out.Providers, oas.ProviderKind(p.Kind))
+	}
+	return out, nil
+}
+
 // GetCatalogDatabases — kinds, versions, roles, topology templates.
 func (h *Handler) GetCatalogDatabases(ctx context.Context) (*oas.GetCatalogDatabasesOK, error) {
 	if _, err := actor(ctx); err != nil {

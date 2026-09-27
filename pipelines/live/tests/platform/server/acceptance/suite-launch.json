@@ -1,0 +1,103 @@
+{
+  "observed_at": "2026-09-25T14:35:09.928352+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/suites/3d41ebf5-610f-406e-863a-8d3de69803ca:launch",
+  "http_status": 201,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "20582790-09e3-4566-bb1b-3d036a34afb3",
+    "name": "server acceptance mixed outcome",
+    "suite": {
+      "id": "3d41ebf5-610f-406e-863a-8d3de69803ca",
+      "name": "server acceptance mixed outcome"
+    },
+    "status": "pending",
+    "trigger": "suite",
+    "concurrency": 2,
+    "progress": {
+      "total": 2,
+      "done": 0,
+      "failed": 0,
+      "running": 0,
+      "pending": 2,
+      "cancelled": 0,
+      "pct": 0
+    },
+    "cells": [
+      {
+        "cell_id": "787eba5b-44ca2fbf",
+        "name": "server-acceptance-success",
+        "run": {
+          "id": "215c494a-a655-48fc-9939-df9e1ceee86d",
+          "name": "server acceptance mixed outcome · server-acceptance-success",
+          "status": "pending",
+          "started_at": null
+        },
+        "status": "pending",
+        "summary": {
+          "db_kind": "noop",
+          "db_version": "builtin",
+          "protocol": "noop",
+          "stroppy_version": "6.0.0",
+          "topology_label": "noop (runner only)",
+          "node_count": 1,
+          "provider_kind": "yandex",
+          "provider_profile": {
+            "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+            "name": "YC live acceptance"
+          },
+          "sizes": {
+            "runner": {
+              "size": "XS"
+            }
+          },
+          "progress_pct": 0
+        }
+      },
+      {
+        "cell_id": "c8576e1a-7d0374a6",
+        "name": "server-acceptance-sql-failure",
+        "run": {
+          "id": "164f7af4-2166-4e0b-8753-9fc9d2445ffb",
+          "name": "server acceptance mixed outcome · server-acceptance-sql-failure",
+          "status": "pending",
+          "started_at": null
+        },
+        "status": "pending",
+        "summary": {
+          "db_kind": "postgres",
+          "db_version": "17",
+          "protocol": "pg",
+          "stroppy_version": "6.0.0",
+          "topology_label": "postgres",
+          "node_count": 2,
+          "provider_kind": "yandex",
+          "provider_profile": {
+            "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+            "name": "YC live acceptance"
+          },
+          "sizes": {
+            "runner": {
+              "size": "XS"
+            },
+            "db": {
+              "size": "XS"
+            }
+          },
+          "progress_pct": 0
+        }
+      }
+    ],
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "labels": {},
+    "created_at": "2026-09-25T14:35:05Z",
+    "started_at": null,
+    "finished_at": null,
+    "duration": null,
+    "graphene": {
+      "run_ref": "run/20582790-09e3-4566-bb1b-3d036a34afb3"
+    }
+  }
+}

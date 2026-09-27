@@ -242,7 +242,8 @@ func (r *SuiteRepo) LiveRuns(ctx context.Context) ([]run.Live, error) {
 }
 
 func (r *SuiteRepo) SetRunStatus(ctx context.Context, id uuid.UUID, status run.Status, reason string, startedAt, finishedAt *time.Time) error {
-	if err := r.q.SetSuiteRunStatus(ctx, db.SetSuiteRunStatusParams{ID: id, Status: string(status), StatusReason: reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
+	value := string(status)
+	if err := r.q.SetSuiteRunStatus(ctx, db.SetSuiteRunStatusParams{ID: id, Status: &value, StatusReason: &reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
 		return infraf("suite run: set status: %v", err)
 	}
 	return nil

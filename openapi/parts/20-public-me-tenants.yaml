@@ -88,7 +88,7 @@ paths:
       operationId: createPublicShareGrafanaSession
       tags: [Public]
       security: []
-      summary: Mint the Grafana scope cookie for a shared run.
+      summary: Grafana session for a shared run (unavailable until supported through Graphene).
       parameters:
         - $ref: '#/components/parameters/shareToken'
       responses:

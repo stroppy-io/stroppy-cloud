@@ -1,0 +1,10 @@
+{
+  "observed_at": "2026-09-27T16:10:12.532097+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/e3e18f98-f2b4-40dc-93da-e035ff75814f/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": []
+  }
+}

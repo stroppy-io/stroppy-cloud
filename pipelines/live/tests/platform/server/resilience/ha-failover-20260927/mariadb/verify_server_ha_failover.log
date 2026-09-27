@@ -1,0 +1,1 @@
+{"run_id": "9ecc21d6-5a9c-451f-aab5-b1196ed07944", "verified": true, "errors": [], "scope": "Exact probe-row consistency and proxy write availability across one primary container stop/start. Not a VM/disk outage or losslessness proof for arbitrary workloads."}

@@ -1,0 +1,34 @@
+{
+  "audited_at": "2026-09-27T19:39:14.336036+00:00",
+  "status": "passed",
+  "run_id": "matrix-cockroach-74ee56ed-cockroach-single-24.3",
+  "input_run_id": "2d63bb24-5cfb-4124-8299-50ab0db1e745",
+  "input_resolution": "retained per-run input",
+  "reason": "Retained run-scoped telemetry identifies every expected agent, host exporter and data disk; mounted disks also have a data filesystem. Historical provisioning evidence, not a new server/API run or exact cloud hardware conformance.",
+  "checked_machines": [
+    {
+      "machine": "db-1",
+      "agent": "2d63bb24-db-1",
+      "entity": "docker/2d63bb24-5cfb-4124-8299-50ab0db1e745-db-1-node-exporter",
+      "disks": [
+        "data"
+      ]
+    },
+    {
+      "machine": "runner-1",
+      "agent": "2d63bb24-runner-1",
+      "entity": "docker/2d63bb24-5cfb-4124-8299-50ab0db1e745-runner-1-node-exporter",
+      "disks": []
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/cockroach/24.3/single/tpcc-tx/native-otlp-20s-2vus/runs/matrix-cockroach-74ee56ed-cockroach-single-24.3/input.json",
+      "sha256": "cf270d2af0ade3882d419b44a362f2500141a35602a0d752d1a2a7e357403d87"
+    },
+    {
+      "path": "tests/cockroach/24.3/single/tpcc-tx/native-otlp-20s-2vus/runs/matrix-cockroach-74ee56ed-cockroach-single-24.3/metrics.json",
+      "sha256": "f8a380bb3577107f68cff0c67b74d17887e534c23c22e8d4059d670803a760de"
+    }
+  ]
+}

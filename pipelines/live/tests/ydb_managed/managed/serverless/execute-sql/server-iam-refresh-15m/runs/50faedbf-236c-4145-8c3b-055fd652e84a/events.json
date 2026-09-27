@@ -1,0 +1,187 @@
+{
+  "observed_at": "2026-09-27T21:00:21.539993+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/50faedbf-236c-4145-8c3b-055fd652e84a/events",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "data": [
+      {
+        "id": "575",
+        "at": "2026-09-27T20:39:19Z",
+        "kind": "run-started",
+        "title": "Run started"
+      },
+      {
+        "id": "576",
+        "at": "2026-09-27T20:39:20Z",
+        "kind": "phase.started",
+        "title": "Phase provisioning started",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning"
+        }
+      },
+      {
+        "id": "577",
+        "at": "2026-09-27T20:41:59Z",
+        "kind": "machine.ready",
+        "title": "Machine runner-1 ready",
+        "subject": "runner-1",
+        "payload": {
+          "role": "runner",
+          "machine": "runner-1",
+          "public_ip": "158.160.130.121",
+          "private_ip": "10.130.0.16",
+          "id": "fv4ek7odacp31pvo3v34"
+        }
+      },
+      {
+        "id": "578",
+        "at": "2026-09-27T20:42:26Z",
+        "kind": "phase.finished",
+        "title": "Phase provisioning finished",
+        "subject": "provisioning",
+        "payload": {
+          "phase": "provisioning",
+          "elapsed": "3m5.275s"
+        }
+      },
+      {
+        "id": "579",
+        "at": "2026-09-27T20:42:26Z",
+        "kind": "phase.started",
+        "title": "Phase deploying started",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying"
+        }
+      },
+      {
+        "id": "580",
+        "at": "2026-09-27T20:43:16Z",
+        "kind": "container.ready",
+        "title": "Container runner-1-node-exporter ready",
+        "subject": "runner-1",
+        "payload": {
+          "container": "runner-1-node-exporter",
+          "id": "c97f3da0bd966dfe59b493302bc2da26272299b43d278a8d317d4a52cc262273",
+          "role": "runner",
+          "layer": 0,
+          "machine": "runner-1"
+        }
+      },
+      {
+        "id": "581",
+        "at": "2026-09-27T20:43:16Z",
+        "kind": "phase.finished",
+        "title": "Phase deploying finished",
+        "subject": "deploying",
+        "payload": {
+          "phase": "deploying",
+          "elapsed": "50.709s"
+        }
+      },
+      {
+        "id": "582",
+        "at": "2026-09-27T20:43:16Z",
+        "kind": "phase.started",
+        "title": "Phase workload started",
+        "subject": "workload",
+        "payload": {
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "583",
+        "at": "2026-09-27T20:43:23Z",
+        "kind": "segment.started",
+        "title": "Segment iam-refresh started",
+        "subject": "iam-refresh",
+        "payload": {
+          "index": 0,
+          "script": "execute_sql",
+          "segment": "iam-refresh"
+        }
+      },
+      {
+        "id": "605",
+        "at": "2026-09-27T20:58:26Z",
+        "kind": "segment.failed",
+        "title": "Segment iam-refresh failed",
+        "subject": "iam-refresh",
+        "error": "threshold: error rate 0.0014 > 0.0000",
+        "payload": {
+          "error": "threshold: error rate 0.0014 > 0.0000",
+          "index": 0,
+          "status": "failed",
+          "segment": "iam-refresh"
+        }
+      },
+      {
+        "id": "606",
+        "at": "2026-09-27T20:58:26Z",
+        "kind": "phase.failed",
+        "title": "Phase workload failed",
+        "subject": "workload",
+        "error": "segment iam-refresh failed: threshold: error rate 0.0014 > 0.0000",
+        "payload": {
+          "elapsed": "15m9.843s",
+          "error": "segment iam-refresh failed: threshold: error rate 0.0014 > 0.0000",
+          "phase": "workload"
+        }
+      },
+      {
+        "id": "607",
+        "at": "2026-09-27T20:58:26Z",
+        "kind": "phase.started",
+        "title": "Phase collecting started",
+        "subject": "collecting",
+        "payload": {
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "608",
+        "at": "2026-09-27T20:58:32Z",
+        "kind": "result.published",
+        "title": "Result published",
+        "payload": {
+          "segments": 1
+        }
+      },
+      {
+        "id": "609",
+        "at": "2026-09-27T20:58:32Z",
+        "kind": "phase.finished",
+        "title": "Phase collecting finished",
+        "subject": "collecting",
+        "payload": {
+          "elapsed": "5.794s",
+          "phase": "collecting"
+        }
+      },
+      {
+        "id": "610",
+        "at": "2026-09-27T20:58:32Z",
+        "kind": "phase.started",
+        "title": "Phase teardown started",
+        "subject": "teardown",
+        "payload": {
+          "phase": "teardown"
+        }
+      },
+      {
+        "id": "612",
+        "at": "2026-09-27T21:00:14Z",
+        "kind": "run-failed",
+        "title": "Run failed",
+        "status": "failed",
+        "error": "segment iam-refresh failed: threshold: error rate 0.0014 > 0.0000"
+      }
+    ],
+    "meta": {
+      "has_more": false
+    }
+  }
+}

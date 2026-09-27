@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-09-27T20:02:15.441974+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/tests/11374fec-dad3-4406-b14e-1e88b187d29a:clone",
+  "http_status": 409,
+  "contract_version": "2.0.1",
+  "body": {
+    "type": "https://stroppy.io/problems/conflict",
+    "title": "Conflict",
+    "status": 409,
+    "detail": "a test with this name exists",
+    "code": "conflict",
+    "request_id": "8fa987ddbb2a/AekeqC0fEk-001643"
+  }
+}

@@ -1,0 +1,1413 @@
+{
+  "observed_at": "2026-09-27T19:28:10.011950+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+    "name": "server HA mariadb 3 members proxysql",
+    "status": "completed",
+    "phase": "done",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "a45fd554-6558-4565-b04c-2b88bddf9f68",
+      "name": "server HA mariadb 3 members proxysql"
+    },
+    "snapshot": {
+      "execution": {
+        "containers": [
+          {
+            "name": "db-1-node-exporter",
+            "set": {
+              "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-2-node-exporter",
+            "set": {
+              "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-3-node-exporter",
+            "set": {
+              "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "proxy-1-node-exporter",
+            "set": {
+              "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "runner-1-node-exporter",
+            "set": {
+              "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          }
+        ],
+        "workload": {
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945"
+        }
+      },
+      "database": {
+        "kind": "mariadb",
+        "version": "11.8",
+        "params": {
+          "proxysql": 1,
+          "replicas": 0,
+          "replication": "galera",
+          "version": "11.8",
+          "galera_nodes": 3,
+          "init_sql": "USE stroppy;\nCREATE TABLE live_cluster_probe (id INT PRIMARY KEY, writes BIGINT NOT NULL);\nDELIMITER //\nCREATE PROCEDURE live_assert_cluster()\nBEGIN\n  IF NOT COALESCE(((SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE')='3' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'), 0) THEN\n    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='live acceptance: expected three healthy cluster members';\n  END IF;\n  INSERT INTO live_cluster_probe VALUES (1,1) ON DUPLICATE KEY UPDATE writes=writes+1;\nEND//\nDELIMITER ;\n",
+          "maxscale": false
+        },
+        "schema": {
+          "id": "db.mariadb.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "mysql",
+        "segments": [
+          {
+            "name": "cluster-health-writes",
+            "run": {
+              "duration": "2m0s",
+              "executor": "constant-vus",
+              "query_timeout": "10s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "5m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_assert_cluster();"
+            },
+            "log_level": "info"
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "proxy": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        },
+        "db": {
+          "size": "S"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "effective_configs": {
+        "db": {
+          "cfg.mariadb.cnf@11.8": {
+            "schema": {
+              "id": "cfg.mariadb.cnf",
+              "version": "11.8"
+            },
+            "values": {
+              "log_bin": "binlog",
+              "wsrep_sync_wait": 1,
+              "lower_case_table_names": 0,
+              "log_slave_updates": "OFF",
+              "transaction_isolation": "REPEATABLE-READ",
+              "wsrep_provider": "/usr/lib/galera/libgalera_smm.so",
+              "rpl_semi_sync_slave_enabled": "OFF",
+              "log_slow_verbosity": "",
+              "max_tmp_total_space_usage": 0,
+              "wsrep_slave_threads": 1,
+              "innodb_file_per_table": "ON",
+              "rpl_semi_sync_master_timeout": 10000,
+              "innodb_snapshot_isolation": "ON",
+              "collation_server": "utf8mb4_general_ci",
+              "wsrep_on": "OFF",
+              "max_connections": 151,
+              "cluster_lines": "",
+              "innodb_lock_wait_timeout": 50,
+              "general_log": "OFF",
+              "slave_parallel_mode": "optimistic",
+              "innodb_log_buffer_size": 16,
+              "performance_schema": "OFF",
+              "innodb_buffer_pool_size": 128,
+              "table_definition_cache": 400,
+              "max_allowed_packet": 16,
+              "max_tmp_session_space_usage": 0,
+              "rpl_semi_sync_master_wait_point": "AFTER_COMMIT",
+              "slave_parallel_threads": 0,
+              "log_slow_query_time": 10,
+              "interactive_timeout": 28800,
+              "innodb_read_io_threads": 4,
+              "innodb_log_file_size": 96,
+              "max_heap_table_size": 16,
+              "default_time_zone": "+00:00",
+              "sync_binlog": 0,
+              "binlog_format": "MIXED",
+              "rpl_semi_sync_master_enabled": "OFF",
+              "log_slow_query": "OFF",
+              "galera_lines": "wsrep_on = OFF\n",
+              "innodb_doublewrite": "ON",
+              "thread_cache_size": 256,
+              "log_slow_always_query_time": 0,
+              "wait_timeout": 28800,
+              "binlog_row_image": "FULL",
+              "max_connect_errors": 100,
+              "innodb_io_capacity": 200,
+              "innodb_flush_log_at_trx_commit": 1,
+              "slave_abort_blocking_timeout": 31536000,
+              "gtid_domain_id": 0,
+              "gtid_ignore_duplicates": "OFF",
+              "innodb_write_io_threads": 4,
+              "innodb_data_file_buffering": "OFF",
+              "wsrep_sst_method": "mariabackup",
+              "wsrep_cluster_name": "stroppy",
+              "read_only": "OFF",
+              "innodb_autoinc_lock_mode": 1,
+              "character_set_server": "utf8mb4",
+              "innodb_io_capacity_max": 2000,
+              "port": 3306,
+              "binlog_expire_logs_seconds": 0,
+              "open_files_limit": 32768,
+              "gtid_strict_mode": "OFF",
+              "log_warnings": 2,
+              "table_open_cache": 2000,
+              "sql_mode": "STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+              "innodb_log_file_buffering": "OFF",
+              "custom_rendered": "",
+              "bind_address": "0.0.0.0",
+              "tmp_table_size": 16
+            }
+          },
+          "cfg.exporter.mysqld@1": {
+            "schema": {
+              "id": "cfg.exporter.mysqld",
+              "version": "1"
+            },
+            "values": {
+              "binlog_size": "OFF",
+              "collector_flags": "--collect.global_status\n--collect.global_variables\n--collect.slave_status\n--no-collect.info_schema.innodb_metrics\n--collect.info_schema.innodb_cmp\n--collect.info_schema.innodb_cmpmem\n--no-collect.info_schema.processlist\n--collect.info_schema.tables\n--collect.info_schema.query_response_time\n--no-collect.perf_schema.eventswaits\n--no-collect.perf_schema.eventsstatements\n--no-collect.perf_schema.tableiowaits\n--no-collect.perf_schema.indexiowaits\n--no-collect.perf_schema.file_events\n--no-collect.binlog_size\n--no-collect.engine_innodb_status\n--no-collect.auto_increment.columns\n--no-collect.heartbeat\n",
+              "engine_innodb_status": "OFF",
+              "global_status": "ON",
+              "info_schema_processlist": "OFF",
+              "auto_increment_columns": "OFF",
+              "heartbeat": "OFF",
+              "info_schema_tables": "ON",
+              "info_schema_innodb_cmp": "ON",
+              "listen_port": 9104,
+              "max_open_connections": 3,
+              "mysqld_username": "exporter",
+              "perf_schema_eventsstatements": "OFF",
+              "perf_schema_file_events": "OFF",
+              "query_timeout": 0,
+              "custom_rendered": "",
+              "perf_schema_eventswaits": "OFF",
+              "perf_schema_tableiowaits": "OFF",
+              "slave_status": "ON",
+              "global_variables": "ON",
+              "info_schema_innodb_metrics": "OFF",
+              "info_schema_query_response_time": "ON",
+              "info_schema_innodb_cmpmem": "ON",
+              "config_my_cnf": "/etc/mysqld_exporter/.my.cnf",
+              "log_level": "info",
+              "perf_schema_indexiowaits": "OFF",
+              "target_flags": ""
+            }
+          }
+        },
+        "proxy": {
+          "cfg.proxysql.cnf@2": {
+            "schema": {
+              "id": "cfg.proxysql.cnf",
+              "version": "2"
+            },
+            "values": {
+              "hostgroups_block": "mysql_replication_hostgroups =\n(\n    { writer_hostgroup=10, reader_hostgroup=20, check_type=\"read_only\" }\n)\n",
+              "ping_interval_server_msec": 120000,
+              "default_collation_connection": "utf8mb4_general_ci",
+              "transaction_persistent": 1,
+              "max_writers": 1,
+              "connect_timeout_server": 3000,
+              "max_connections": 2048,
+              "query_rules_block": "mysql_query_rules =\n(\n    { rule_id=1, active=1, match_digest=\"^SELECT .* FOR UPDATE\", destination_hostgroup=10, apply=1 },\n    { rule_id=2, active=1, match_digest=\"^SELECT\", destination_hostgroup=20, apply=1 }\n)\n",
+              "monitor_connect_interval": 60000,
+              "writer_is_also_reader": 2,
+              "topology": "replication",
+              "offline_hostgroup": 40,
+              "backup_writer_hostgroup": 30,
+              "check_type": "read_only",
+              "username": "stroppy",
+              "monitor_read_only_timeout": 500,
+              "default_schema": "information_schema",
+              "writer_hostgroup": 10,
+              "read_write_split": "true",
+              "reader_hostgroup": 20,
+              "default_query_delay": 0,
+              "servers_block": "",
+              "monitor_username": "monitor",
+              "server_version": "8.0.36",
+              "admin_mysql_ifaces": "0.0.0.0:6032",
+              "default_charset": "utf8mb4",
+              "sessions_sort": "true",
+              "users_block": "mysql_users =\n(\n    { username=\"stroppy\", password=\"\", default_hostgroup=10, transaction_persistent=1, max_connections=10000, active=1 }\n)\n",
+              "custom_rendered": "",
+              "admin_credentials": "admin:admin",
+              "interfaces": "0.0.0.0:6033",
+              "monitor_read_only_interval": 1500,
+              "errorlog": "/var/lib/proxysql/proxysql.log",
+              "max_transactions_behind": 0,
+              "ping_timeout_server": 500,
+              "restapi_port": 6070,
+              "datadir": "/var/lib/proxysql",
+              "default_query_timeout": 36000000,
+              "threads": 4,
+              "stacksize": 1048576,
+              "restapi_enabled": "false",
+              "commands_stats": "true",
+              "user_max_connections": 10000,
+              "poll_timeout": 2000,
+              "monitor_ping_interval": 10000,
+              "monitor_history": 600000
+            }
+          },
+          "cfg.maxscale.cnf@25": {
+            "schema": {
+              "id": "cfg.maxscale.cnf",
+              "version": "25"
+            },
+            "values": {
+              "listener_port": 4006,
+              "cooperative_monitoring_locks": "none",
+              "max_slave_connections": 255,
+              "listener_protocol": "mariadb",
+              "monitor_module": "mariadbmon",
+              "enforce_read_only_slaves": "false",
+              "maxlog": "true",
+              "service_user": "maxscale_service",
+              "listener_address": "::",
+              "server_names": "",
+              "master_failure_mode": "fail_on_write",
+              "backend_timeout": 3000,
+              "transaction_replay_timeout": 30000,
+              "master_accept_reads": "false",
+              "admin_secure_gui": "true",
+              "admin_port": 8989,
+              "failcount": 5,
+              "custom_rendered": "",
+              "admin_host": "127.0.0.1",
+              "threads": "auto",
+              "auto_failover": "false",
+              "monitor_extra": "auto_failover=false\nauto_rejoin=false\nenforce_read_only_slaves=false\nfailcount=5\nreplication_user=maxscale_repl\nreplication_password=\ncooperative_monitoring_locks=none\n",
+              "replication_user": "maxscale_repl",
+              "max_replication_lag": 0,
+              "server_sections": "",
+              "slave_selection_criteria": "least_current_operations",
+              "monitor_user": "maxscale_monitor",
+              "syslog": "false",
+              "monitor_interval": 2000,
+              "causal_reads_timeout": 10000,
+              "causal_reads": "none",
+              "log_info": "false",
+              "transaction_replay": "false",
+              "auto_rejoin": "false",
+              "transaction_replay_max_size": 1
+            }
+          }
+        },
+        "db-replica": {
+          "cfg.mariadb.cnf@11.8": {
+            "schema": {
+              "id": "cfg.mariadb.cnf",
+              "version": "11.8"
+            },
+            "values": {
+              "slave_parallel_threads": 0,
+              "innodb_lock_wait_timeout": 50,
+              "innodb_flush_log_at_trx_commit": 1,
+              "collation_server": "utf8mb4_general_ci",
+              "log_slave_updates": "OFF",
+              "innodb_io_capacity": 200,
+              "binlog_expire_logs_seconds": 0,
+              "bind_address": "0.0.0.0",
+              "gtid_strict_mode": "OFF",
+              "wait_timeout": 28800,
+              "general_log": "OFF",
+              "innodb_doublewrite": "ON",
+              "max_tmp_session_space_usage": 0,
+              "binlog_row_image": "FULL",
+              "rpl_semi_sync_master_timeout": 10000,
+              "thread_cache_size": 256,
+              "innodb_io_capacity_max": 2000,
+              "wsrep_on": "OFF",
+              "binlog_format": "MIXED",
+              "innodb_data_file_buffering": "OFF",
+              "performance_schema": "OFF",
+              "wsrep_sst_method": "mariabackup",
+              "log_slow_query": "OFF",
+              "cluster_lines": "",
+              "wsrep_sync_wait": 1,
+              "wsrep_provider": "/usr/lib/galera/libgalera_smm.so",
+              "default_time_zone": "+00:00",
+              "sync_binlog": 0,
+              "innodb_autoinc_lock_mode": 1,
+              "interactive_timeout": 28800,
+              "transaction_isolation": "REPEATABLE-READ",
+              "log_slow_query_time": 10,
+              "gtid_domain_id": 0,
+              "slave_abort_blocking_timeout": 31536000,
+              "innodb_log_buffer_size": 16,
+              "innodb_write_io_threads": 4,
+              "tmp_table_size": 16,
+              "innodb_read_io_threads": 4,
+              "table_open_cache": 2000,
+              "rpl_semi_sync_master_wait_point": "AFTER_COMMIT",
+              "wsrep_cluster_name": "stroppy",
+              "max_connect_errors": 100,
+              "slave_parallel_mode": "optimistic",
+              "custom_rendered": "",
+              "table_definition_cache": 400,
+              "log_slow_verbosity": "",
+              "rpl_semi_sync_slave_enabled": "OFF",
+              "innodb_log_file_buffering": "OFF",
+              "max_tmp_total_space_usage": 0,
+              "galera_lines": "wsrep_on = OFF\n",
+              "max_heap_table_size": 16,
+              "gtid_ignore_duplicates": "OFF",
+              "log_slow_always_query_time": 0,
+              "innodb_snapshot_isolation": "ON",
+              "character_set_server": "utf8mb4",
+              "open_files_limit": 32768,
+              "lower_case_table_names": 0,
+              "rpl_semi_sync_master_enabled": "OFF",
+              "port": 3306,
+              "read_only": "OFF",
+              "max_allowed_packet": 16,
+              "log_warnings": 2,
+              "max_connections": 151,
+              "sql_mode": "STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION",
+              "log_bin": "binlog",
+              "innodb_buffer_pool_size": 128,
+              "wsrep_slave_threads": 1,
+              "innodb_file_per_table": "ON",
+              "innodb_log_file_size": 96
+            }
+          }
+        }
+      },
+      "machines": [
+        {
+          "name": "db-1",
+          "role": "db",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "db-2",
+          "role": "db",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "db-3",
+          "role": "db",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "proxy-1",
+          "role": "proxy",
+          "size": "S",
+          "cpu": 2,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "version": "1",
+        "id": "spec.run"
+      },
+      "values": {
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "workload": {
+          "driver_type": "mysql",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "cluster-health-writes",
+              "run": {
+                "duration": "2m0s",
+                "executor": "constant-vus",
+                "query_timeout": "10s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "5m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "CALL live_assert_cluster();"
+              }
+            }
+          ],
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:d1083cac1321793911e39b00043afd8167ed2aa69fec5c0429fa17c7ef2ce945",
+          "url": "root:stroppy_mysql@tcp(${ip:role:proxy}:6033)/stroppy"
+        },
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        },
+        "run_id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+        "tenant": "server-live-20260924",
+        "containers": [
+          {
+            "cmd": [
+              "bash",
+              "/usr/local/bin/stroppy-cluster-start.sh"
+            ],
+            "env": {
+              "MARIADB_DATABASE": "stroppy",
+              "MARIADB_ROOT_HOST": "%",
+              "MARIADB_ROOT_PASSWORD": "stroppy_mysql",
+              "MYSQL_DATABASE": "stroppy",
+              "MYSQL_ROOT_HOST": "%",
+              "MYSQL_ROOT_PASSWORD": "stroppy_mysql",
+              "STROPPY_CLUSTER_SEED": "1",
+              "STROPPY_RECOVERY_PASSWORD": "stroppy_recovery"
+            },
+            "files": [
+              {
+                "content": "# MariaDB 11.8 — generated by stroppy, do not edit by hand\n[mariadb]\n\n# InnoDB\ninnodb_buffer_pool_size = 128M\ninnodb_log_file_size = 96M\ninnodb_log_buffer_size = 16M\ninnodb_flush_log_at_trx_commit = 1\ninnodb_io_capacity = 200\ninnodb_io_capacity_max = 2000\ninnodb_read_io_threads = 4\ninnodb_write_io_threads = 4\ninnodb_lock_wait_timeout = 50\ninnodb_file_per_table = ON\ninnodb_autoinc_lock_mode = 2\ninnodb_doublewrite = ON\ninnodb_log_file_buffering = OFF\ninnodb_data_file_buffering = OFF\ninnodb_snapshot_isolation = ON\n\n# Binary log\nlog_bin = binlog\nbinlog_format = ROW\nbinlog_row_image = FULL\nsync_binlog = 0\nbinlog_expire_logs_seconds = 0\nlog_slave_updates = OFF\nserver_id = 1\nreport_host = ${ip:db-1}\n\n# GTID\ngtid_strict_mode = OFF\ngtid_domain_id = 0\ngtid_ignore_duplicates = OFF\n\n# Replication\nrpl_semi_sync_master_enabled = OFF\nrpl_semi_sync_master_timeout = 10000\nrpl_semi_sync_master_wait_point = AFTER_COMMIT\nrpl_semi_sync_slave_enabled = OFF\nslave_parallel_threads = 0\nslave_parallel_mode = optimistic\nread_only = OFF\n\n# Galera\nwsrep_on = ON\nwsrep_provider = /usr/lib/galera/libgalera_smm.so\nwsrep_cluster_name = 5fc7ddd65c134be7b51b21bf19277540\nwsrep_cluster_address = gcomm://${ip:db-1},${ip:db-2},${ip:db-3}\nwsrep_node_address = ${ip:db-1}\nwsrep_node_name = db-1\nwsrep_sst_method = mariabackup\nwsrep_sst_auth = root:stroppy_mysql\nwsrep_slave_threads = 1\nwsrep_sync_wait = 1\n\n# Connections\nbind_address = 0.0.0.0\nport = 3306\nmax_connections = 151\nmax_connect_errors = 100\nthread_cache_size = 256\nwait_timeout = 28800\ninteractive_timeout = 28800\nmax_allowed_packet = 16M\n\n# Tables and caches\ntable_open_cache = 2000\ntable_definition_cache = 400\ntmp_table_size = 16M\nmax_heap_table_size = 16M\nopen_files_limit = 32768\n\n# SQL\nsql_mode = STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\ncharacter_set_server = utf8mb4\ncollation_server = utf8mb4_general_ci\ndefault_time_zone = +00:00\nlower_case_table_names = 0\ntransaction_isolation = REPEATABLE-READ\n\n# Performance schema\nperformance_schema = OFF\n\n# Logging\ngeneral_log = OFF\nlog_slow_query = OFF\nlog_slow_query_time = 10\nlog_slow_verbosity = \nlog_warnings = 2\n\n# 11.5-11.7 additions\nmax_tmp_session_space_usage = 0M\nmax_tmp_total_space_usage = 0M\nlog_slow_always_query_time = 0\nslave_abort_blocking_timeout = 31536000\n\n# Custom\n\n",
+                "mode": "0644",
+                "path": "/etc/mysql/conf.d/zz-stroppy.cnf"
+              },
+              {
+                "content": "#!/usr/bin/env bash\nset -euo pipefail\nexport MYSQL_PWD=\"$MARIADB_ROOT_PASSWORD\"\n# The official entrypoint's temporary server must not join Galera while\n# installing system tables. Initialize once with wsrep explicitly disabled.\nif [ ! -d /var/lib/mysql/mysql ]; then\n    echo 'cluster-init: initializing local datadir with wsrep disabled'\n    env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-on=OFF --wsrep-provider=none &\n    server=$!\n    trap 'kill -TERM \"$server\" 2>/dev/null || true; wait \"$server\" || true' EXIT\n    trap 'exit 143' TERM\n    trap 'exit 130' INT\n    ready=0\n    for ((i=0; i<300; i++)); do\n        kill -0 \"$server\" 2>/dev/null || exit 1\n        if mariadb -h127.0.0.1 -uroot -e 'SELECT 1' >/dev/null 2>&1; then\n            ready=1\n            break\n        fi\n        sleep 1\n    done\n    [ \"$ready\" = 1 ] || { echo 'cluster-init: MariaDB initialization timed out' >&2; exit 1; }\n    mariadb-admin -h127.0.0.1 -uroot shutdown\n    wait \"$server\"\n    trap - EXIT TERM INT\nfi\nmarker=/var/lib/mysql/.stroppy-cluster-bootstrap\nif [ \"$STROPPY_CLUSTER_SEED\" = 1 ] && [ ! -e \"$marker\" ]; then\n    # Do not automatically bootstrap again after an interrupted attempt.\n    touch \"$marker\"\n    echo 'cluster-init: bootstrapping the initial Galera component'\n    exec env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-new-cluster\nfi\necho 'cluster-init: joining the existing Galera component'\nexec env -u MYSQL_PWD docker-entrypoint.sh mariadbd\n",
+                "mode": "0755",
+                "path": "/usr/local/bin/stroppy-cluster-start.sh"
+              },
+              {
+                "content": "CREATE USER IF NOT EXISTS 'exporter'@'%' IDENTIFIED BY 'stroppy_exporter';\nGRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'%';\nGRANT SLAVE MONITOR ON *.* TO 'exporter'@'%';\nFLUSH PRIVILEGES;\nUSE stroppy;\nCREATE TABLE live_cluster_probe (id INT PRIMARY KEY, writes BIGINT NOT NULL);\nDELIMITER //\nCREATE PROCEDURE live_assert_cluster()\nBEGIN\n  IF NOT COALESCE(((SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE')='3' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'), 0) THEN\n    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='live acceptance: expected three healthy cluster members';\n  END IF;\n  INSERT INTO live_cluster_probe VALUES (1,1) ON DUPLICATE KEY UPDATE writes=writes+1;\nEND//\nDELIMITER ;\n",
+                "mode": "0644",
+                "path": "/docker-entrypoint-initdb.d/10-stroppy.sql"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "test \"$(mariadb --skip-ssl --connect-timeout=3 -h127.0.0.1 -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 1 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "mariadb:11.8",
+            "kind": "database",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/mysql",
+                "target": "/var/lib/mysql"
+              }
+            ],
+            "name": "db-1-mariadb",
+            "ports": [
+              {
+                "container": 3306,
+                "host": 3306
+              },
+              {
+                "container": 4567,
+                "host": 4567
+              },
+              {
+                "container": 4568,
+                "host": 4568
+              },
+              {
+                "container": 4444,
+                "host": 4444
+              }
+            ],
+            "restart": "always",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--mysqld.address=127.0.0.1:3306",
+              "--mysqld.username=exporter",
+              "--web.listen-address=:9104"
+            ],
+            "depends_on": [
+              "db-1-mariadb"
+            ],
+            "env": {
+              "MYSQLD_EXPORTER_PASSWORD": "stroppy_exporter"
+            },
+            "image": "prom/mysqld-exporter:v0.19.0",
+            "kind": "exporter",
+            "machine": "db-1",
+            "name": "db-1-mysqld-exporter",
+            "ports": [
+              {
+                "container": 9104,
+                "host": 9104
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "bash",
+              "/usr/local/bin/stroppy-cluster-start.sh"
+            ],
+            "depends_on": [
+              "db-1-mariadb"
+            ],
+            "env": {
+              "MARIADB_ROOT_HOST": "%",
+              "MARIADB_ROOT_PASSWORD": "stroppy_mysql",
+              "MYSQL_ROOT_HOST": "%",
+              "MYSQL_ROOT_PASSWORD": "stroppy_mysql",
+              "STROPPY_CLUSTER_SEED": "0",
+              "STROPPY_RECOVERY_PASSWORD": "stroppy_recovery"
+            },
+            "files": [
+              {
+                "content": "# MariaDB 11.8 — generated by stroppy, do not edit by hand\n[mariadb]\n\n# InnoDB\ninnodb_buffer_pool_size = 128M\ninnodb_log_file_size = 96M\ninnodb_log_buffer_size = 16M\ninnodb_flush_log_at_trx_commit = 1\ninnodb_io_capacity = 200\ninnodb_io_capacity_max = 2000\ninnodb_read_io_threads = 4\ninnodb_write_io_threads = 4\ninnodb_lock_wait_timeout = 50\ninnodb_file_per_table = ON\ninnodb_autoinc_lock_mode = 2\ninnodb_doublewrite = ON\ninnodb_log_file_buffering = OFF\ninnodb_data_file_buffering = OFF\ninnodb_snapshot_isolation = ON\n\n# Binary log\nlog_bin = binlog\nbinlog_format = ROW\nbinlog_row_image = FULL\nsync_binlog = 0\nbinlog_expire_logs_seconds = 0\nlog_slave_updates = OFF\nserver_id = 2\nreport_host = ${ip:db-2}\n\n# GTID\ngtid_strict_mode = OFF\ngtid_domain_id = 0\ngtid_ignore_duplicates = OFF\n\n# Replication\nrpl_semi_sync_master_enabled = OFF\nrpl_semi_sync_master_timeout = 10000\nrpl_semi_sync_master_wait_point = AFTER_COMMIT\nrpl_semi_sync_slave_enabled = OFF\nslave_parallel_threads = 0\nslave_parallel_mode = optimistic\nread_only = OFF\n\n# Galera\nwsrep_on = ON\nwsrep_provider = /usr/lib/galera/libgalera_smm.so\nwsrep_cluster_name = 5fc7ddd65c134be7b51b21bf19277540\nwsrep_cluster_address = gcomm://${ip:db-1},${ip:db-2},${ip:db-3}\nwsrep_node_address = ${ip:db-2}\nwsrep_node_name = db-2\nwsrep_sst_method = mariabackup\nwsrep_sst_auth = root:stroppy_mysql\nwsrep_slave_threads = 1\nwsrep_sync_wait = 1\n\n# Connections\nbind_address = 0.0.0.0\nport = 3306\nmax_connections = 151\nmax_connect_errors = 100\nthread_cache_size = 256\nwait_timeout = 28800\ninteractive_timeout = 28800\nmax_allowed_packet = 16M\n\n# Tables and caches\ntable_open_cache = 2000\ntable_definition_cache = 400\ntmp_table_size = 16M\nmax_heap_table_size = 16M\nopen_files_limit = 32768\n\n# SQL\nsql_mode = STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\ncharacter_set_server = utf8mb4\ncollation_server = utf8mb4_general_ci\ndefault_time_zone = +00:00\nlower_case_table_names = 0\ntransaction_isolation = REPEATABLE-READ\n\n# Performance schema\nperformance_schema = OFF\n\n# Logging\ngeneral_log = OFF\nlog_slow_query = OFF\nlog_slow_query_time = 10\nlog_slow_verbosity = \nlog_warnings = 2\n\n# 11.5-11.7 additions\nmax_tmp_session_space_usage = 0M\nmax_tmp_total_space_usage = 0M\nlog_slow_always_query_time = 0\nslave_abort_blocking_timeout = 31536000\n\n# Custom\n\n",
+                "mode": "0644",
+                "path": "/etc/mysql/conf.d/zz-stroppy.cnf"
+              },
+              {
+                "content": "#!/usr/bin/env bash\nset -euo pipefail\nexport MYSQL_PWD=\"$MARIADB_ROOT_PASSWORD\"\n# The official entrypoint's temporary server must not join Galera while\n# installing system tables. Initialize once with wsrep explicitly disabled.\nif [ ! -d /var/lib/mysql/mysql ]; then\n    echo 'cluster-init: initializing local datadir with wsrep disabled'\n    env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-on=OFF --wsrep-provider=none &\n    server=$!\n    trap 'kill -TERM \"$server\" 2>/dev/null || true; wait \"$server\" || true' EXIT\n    trap 'exit 143' TERM\n    trap 'exit 130' INT\n    ready=0\n    for ((i=0; i<300; i++)); do\n        kill -0 \"$server\" 2>/dev/null || exit 1\n        if mariadb -h127.0.0.1 -uroot -e 'SELECT 1' >/dev/null 2>&1; then\n            ready=1\n            break\n        fi\n        sleep 1\n    done\n    [ \"$ready\" = 1 ] || { echo 'cluster-init: MariaDB initialization timed out' >&2; exit 1; }\n    mariadb-admin -h127.0.0.1 -uroot shutdown\n    wait \"$server\"\n    trap - EXIT TERM INT\nfi\nmarker=/var/lib/mysql/.stroppy-cluster-bootstrap\nif [ \"$STROPPY_CLUSTER_SEED\" = 1 ] && [ ! -e \"$marker\" ]; then\n    # Do not automatically bootstrap again after an interrupted attempt.\n    touch \"$marker\"\n    echo 'cluster-init: bootstrapping the initial Galera component'\n    exec env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-new-cluster\nfi\necho 'cluster-init: joining the existing Galera component'\nexec env -u MYSQL_PWD docker-entrypoint.sh mariadbd\n",
+                "mode": "0755",
+                "path": "/usr/local/bin/stroppy-cluster-start.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "test \"$(mariadb --skip-ssl --connect-timeout=3 -h127.0.0.1 -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 2 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "mariadb:11.8",
+            "kind": "database",
+            "machine": "db-2",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/mysql",
+                "target": "/var/lib/mysql"
+              }
+            ],
+            "name": "db-2-mariadb",
+            "ports": [
+              {
+                "container": 3306,
+                "host": 3306
+              },
+              {
+                "container": 4567,
+                "host": 4567
+              },
+              {
+                "container": 4568,
+                "host": 4568
+              },
+              {
+                "container": 4444,
+                "host": 4444
+              }
+            ],
+            "restart": "always",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--mysqld.address=127.0.0.1:3306",
+              "--mysqld.username=exporter",
+              "--web.listen-address=:9104"
+            ],
+            "depends_on": [
+              "db-2-mariadb"
+            ],
+            "env": {
+              "MYSQLD_EXPORTER_PASSWORD": "stroppy_exporter"
+            },
+            "image": "prom/mysqld-exporter:v0.19.0",
+            "kind": "exporter",
+            "machine": "db-2",
+            "name": "db-2-mysqld-exporter",
+            "ports": [
+              {
+                "container": 9104,
+                "host": 9104
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-2",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-2-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "bash",
+              "/usr/local/bin/stroppy-cluster-start.sh"
+            ],
+            "depends_on": [
+              "db-2-mariadb"
+            ],
+            "env": {
+              "MARIADB_ROOT_HOST": "%",
+              "MARIADB_ROOT_PASSWORD": "stroppy_mysql",
+              "MYSQL_ROOT_HOST": "%",
+              "MYSQL_ROOT_PASSWORD": "stroppy_mysql",
+              "STROPPY_CLUSTER_SEED": "0",
+              "STROPPY_RECOVERY_PASSWORD": "stroppy_recovery"
+            },
+            "files": [
+              {
+                "content": "# MariaDB 11.8 — generated by stroppy, do not edit by hand\n[mariadb]\n\n# InnoDB\ninnodb_buffer_pool_size = 128M\ninnodb_log_file_size = 96M\ninnodb_log_buffer_size = 16M\ninnodb_flush_log_at_trx_commit = 1\ninnodb_io_capacity = 200\ninnodb_io_capacity_max = 2000\ninnodb_read_io_threads = 4\ninnodb_write_io_threads = 4\ninnodb_lock_wait_timeout = 50\ninnodb_file_per_table = ON\ninnodb_autoinc_lock_mode = 2\ninnodb_doublewrite = ON\ninnodb_log_file_buffering = OFF\ninnodb_data_file_buffering = OFF\ninnodb_snapshot_isolation = ON\n\n# Binary log\nlog_bin = binlog\nbinlog_format = ROW\nbinlog_row_image = FULL\nsync_binlog = 0\nbinlog_expire_logs_seconds = 0\nlog_slave_updates = OFF\nserver_id = 3\nreport_host = ${ip:db-3}\n\n# GTID\ngtid_strict_mode = OFF\ngtid_domain_id = 0\ngtid_ignore_duplicates = OFF\n\n# Replication\nrpl_semi_sync_master_enabled = OFF\nrpl_semi_sync_master_timeout = 10000\nrpl_semi_sync_master_wait_point = AFTER_COMMIT\nrpl_semi_sync_slave_enabled = OFF\nslave_parallel_threads = 0\nslave_parallel_mode = optimistic\nread_only = OFF\n\n# Galera\nwsrep_on = ON\nwsrep_provider = /usr/lib/galera/libgalera_smm.so\nwsrep_cluster_name = 5fc7ddd65c134be7b51b21bf19277540\nwsrep_cluster_address = gcomm://${ip:db-1},${ip:db-2},${ip:db-3}\nwsrep_node_address = ${ip:db-3}\nwsrep_node_name = db-3\nwsrep_sst_method = mariabackup\nwsrep_sst_auth = root:stroppy_mysql\nwsrep_slave_threads = 1\nwsrep_sync_wait = 1\n\n# Connections\nbind_address = 0.0.0.0\nport = 3306\nmax_connections = 151\nmax_connect_errors = 100\nthread_cache_size = 256\nwait_timeout = 28800\ninteractive_timeout = 28800\nmax_allowed_packet = 16M\n\n# Tables and caches\ntable_open_cache = 2000\ntable_definition_cache = 400\ntmp_table_size = 16M\nmax_heap_table_size = 16M\nopen_files_limit = 32768\n\n# SQL\nsql_mode = STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION\ncharacter_set_server = utf8mb4\ncollation_server = utf8mb4_general_ci\ndefault_time_zone = +00:00\nlower_case_table_names = 0\ntransaction_isolation = REPEATABLE-READ\n\n# Performance schema\nperformance_schema = OFF\n\n# Logging\ngeneral_log = OFF\nlog_slow_query = OFF\nlog_slow_query_time = 10\nlog_slow_verbosity = \nlog_warnings = 2\n\n# 11.5-11.7 additions\nmax_tmp_session_space_usage = 0M\nmax_tmp_total_space_usage = 0M\nlog_slow_always_query_time = 0\nslave_abort_blocking_timeout = 31536000\n\n# Custom\n\n",
+                "mode": "0644",
+                "path": "/etc/mysql/conf.d/zz-stroppy.cnf"
+              },
+              {
+                "content": "#!/usr/bin/env bash\nset -euo pipefail\nexport MYSQL_PWD=\"$MARIADB_ROOT_PASSWORD\"\n# The official entrypoint's temporary server must not join Galera while\n# installing system tables. Initialize once with wsrep explicitly disabled.\nif [ ! -d /var/lib/mysql/mysql ]; then\n    echo 'cluster-init: initializing local datadir with wsrep disabled'\n    env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-on=OFF --wsrep-provider=none &\n    server=$!\n    trap 'kill -TERM \"$server\" 2>/dev/null || true; wait \"$server\" || true' EXIT\n    trap 'exit 143' TERM\n    trap 'exit 130' INT\n    ready=0\n    for ((i=0; i<300; i++)); do\n        kill -0 \"$server\" 2>/dev/null || exit 1\n        if mariadb -h127.0.0.1 -uroot -e 'SELECT 1' >/dev/null 2>&1; then\n            ready=1\n            break\n        fi\n        sleep 1\n    done\n    [ \"$ready\" = 1 ] || { echo 'cluster-init: MariaDB initialization timed out' >&2; exit 1; }\n    mariadb-admin -h127.0.0.1 -uroot shutdown\n    wait \"$server\"\n    trap - EXIT TERM INT\nfi\nmarker=/var/lib/mysql/.stroppy-cluster-bootstrap\nif [ \"$STROPPY_CLUSTER_SEED\" = 1 ] && [ ! -e \"$marker\" ]; then\n    # Do not automatically bootstrap again after an interrupted attempt.\n    touch \"$marker\"\n    echo 'cluster-init: bootstrapping the initial Galera component'\n    exec env -u MYSQL_PWD docker-entrypoint.sh mariadbd --wsrep-new-cluster\nfi\necho 'cluster-init: joining the existing Galera component'\nexec env -u MYSQL_PWD docker-entrypoint.sh mariadbd\n",
+                "mode": "0755",
+                "path": "/usr/local/bin/stroppy-cluster-start.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "test \"$(mariadb --skip-ssl --connect-timeout=3 -h127.0.0.1 -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 3 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "mariadb:11.8",
+            "kind": "database",
+            "machine": "db-3",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/mysql",
+                "target": "/var/lib/mysql"
+              }
+            ],
+            "name": "db-3-mariadb",
+            "ports": [
+              {
+                "container": 3306,
+                "host": 3306
+              },
+              {
+                "container": 4567,
+                "host": 4567
+              },
+              {
+                "container": 4568,
+                "host": 4568
+              },
+              {
+                "container": 4444,
+                "host": 4444
+              }
+            ],
+            "restart": "always",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--mysqld.address=127.0.0.1:3306",
+              "--mysqld.username=exporter",
+              "--web.listen-address=:9104"
+            ],
+            "depends_on": [
+              "db-3-mariadb"
+            ],
+            "env": {
+              "MYSQLD_EXPORTER_PASSWORD": "stroppy_exporter"
+            },
+            "image": "prom/mysqld-exporter:v0.19.0",
+            "kind": "exporter",
+            "machine": "db-3",
+            "name": "db-3-mysqld-exporter",
+            "ports": [
+              {
+                "container": 9104,
+                "host": 9104
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-3",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-3-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "proxy-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "proxy-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "proxy",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "bash",
+              "-ec",
+              "ulimit -Sn \"$(ulimit -Hn)\"; exec proxysql -f --idle-threads -D /var/lib/proxysql"
+            ],
+            "depends_on": [
+              "db-1-mariadb",
+              "db-2-mariadb",
+              "db-3-mariadb"
+            ],
+            "files": [
+              {
+                "content": "# ProxySQL — generated by stroppy, do not edit by hand\n# Only parsed on a clean datadir or with --initial.\ndatadir=\"/var/lib/proxysql\"\nerrorlog=\"/var/lib/proxysql/proxysql.log\"\n\nadmin_variables=\n{\n    admin_credentials=\"admin:admin\"\n    mysql_ifaces=\"127.0.0.1:6032\"\n    restapi_enabled=true\n    restapi_port=6070\n}\n\nmysql_variables=\n{\n    interfaces=\"0.0.0.0:6033\"\n    threads=4\n    max_connections=2048\n    stacksize=1048576\n    poll_timeout=2000\n    default_query_delay=0\n    default_query_timeout=36000000\n    connect_timeout_server=3000\n    server_version=\"8.0.36\"\n    default_schema=\"information_schema\"\n    default_charset=\"utf8mb4\"\n    default_collation_connection=\"utf8mb4_general_ci\"\n    sessions_sort=true\n    commands_stats=true\n    monitor_username=\"exporter\"\n    monitor_password=\"stroppy_exporter\"\n    monitor_history=600000\n    monitor_connect_interval=60000\n    monitor_ping_interval=10000\n    monitor_read_only_interval=1500\n    monitor_read_only_timeout=500\n    ping_interval_server_msec=120000\n    ping_timeout_server=500\n\n}\n\nmysql_servers =\n(\n    { address=\"${ip:db-1}\", port=3306, hostgroup=10, weight=1, max_connections=1000, use_ssl=0 },\n    { address=\"${ip:db-2}\", port=3306, hostgroup=10, weight=1, max_connections=1000, use_ssl=0 },\n    { address=\"${ip:db-3}\", port=3306, hostgroup=10, weight=1, max_connections=1000, use_ssl=0 }\n)\n\nmysql_users =\n(\n    { username=\"root\", password=\"stroppy_mysql\", default_hostgroup=10, transaction_persistent=1, max_connections=10000, active=1 }\n)\n\nmysql_query_rules =\n(\n    { rule_id=1, active=1, match_digest=\"^SELECT .* FOR UPDATE\", destination_hostgroup=10, apply=1 },\n    { rule_id=2, active=1, match_digest=\"^SELECT\", destination_hostgroup=20, apply=1 }\n)\n\nmysql_galera_hostgroups =\n(\n    { writer_hostgroup=10, backup_writer_hostgroup=30, reader_hostgroup=20, offline_hostgroup=40, active=1, max_writers=1, writer_is_also_reader=2, max_transactions_behind=0 }\n)\n",
+                "mode": "0644",
+                "path": "/etc/proxysql.cnf"
+              },
+              {
+                "content": "#!/usr/bin/env bash\nset -euo pipefail\ntest \"$(mysql --skip-ssl --connect-timeout=3 -h127.0.0.1 -P6033 -uroot -pstroppy_mysql -Dstroppy -Nse 'SELECT 1')\" = 1 && test \"$(mariadb --skip-ssl --connect-timeout=3 -h${ip:db-1} -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 3 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1 && test \"$(mariadb --skip-ssl --connect-timeout=3 -h${ip:db-2} -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 3 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1 && test \"$(mariadb --skip-ssl --connect-timeout=3 -h${ip:db-3} -uroot -pstroppy_mysql -Nse \"SELECT (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_SIZE') >= 3 AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_LOCAL_STATE')='4' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_READY')='ON' AND (SELECT VARIABLE_VALUE FROM information_schema.GLOBAL_STATUS WHERE VARIABLE_NAME='WSREP_CLUSTER_STATUS')='Primary'\")\" = 1\n",
+                "mode": "0755",
+                "path": "/etc/stroppy/proxy-health.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD",
+                "bash",
+                "/etc/stroppy/proxy-health.sh"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "proxysql/proxysql:2.7.3",
+            "kind": "proxy",
+            "machine": "proxy-1",
+            "name": "proxy-1-proxysql",
+            "ports": [
+              {
+                "container": 6070,
+                "host": 6070
+              },
+              {
+                "container": 6033,
+                "host": 6033
+              }
+            ],
+            "restart": "always",
+            "role": "proxy",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "docker.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "flows": [
+          {
+            "from_role": "db",
+            "label": "galera",
+            "port": 4567,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "galera-ist",
+            "port": 4568,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "galera-sst",
+            "port": 4444,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "proxy",
+            "label": "mysql",
+            "port": 3306,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "runner",
+            "label": "mysql",
+            "port": 6033,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          }
+        ],
+        "host_prep": [
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-1",
+            "role": "db"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-2",
+            "role": "db"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-3",
+            "role": "db"
+          }
+        ],
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "keep": "0s",
+        "machines": [
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "mariadb",
+              "stroppy.io/role": "db"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-1",
+            "role": "db"
+          },
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "mariadb",
+              "stroppy.io/role": "db"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-2",
+            "role": "db"
+          },
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "mariadb",
+              "stroppy.io/role": "db"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-3",
+            "role": "db"
+          },
+          {
+            "cpu": 2,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "proxysql",
+              "stroppy.io/role": "proxy"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "proxy-1",
+            "role": "proxy"
+          },
+          {
+            "cpu": 4,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        }
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-27T16:57:57Z",
+    "started_at": "2026-09-27T16:57:57Z",
+    "finished_at": "2026-09-27T17:19:19Z",
+    "duration": "21m22s",
+    "summary": {
+      "db_kind": "mariadb",
+      "db_version": "11.8",
+      "protocol": "mysql",
+      "stroppy_version": "6.0.0",
+      "topology_label": "galera ×3 + proxysql",
+      "node_count": 5,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "db": {
+          "size": "S"
+        },
+        "proxy": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        }
+      },
+      "progress_pct": 100,
+      "headline": {
+        "latency_p95_ms": 25,
+        "cluster-health-writes.measurement_seconds": 120.004,
+        "cluster-health-writes.failed_queries_total": 0,
+        "cluster-health-writes.iterations_per_second": 171.244,
+        "cluster-health-writes.iteration_duration_p90": 10,
+        "cluster-health-writes.retry_attempts_total": 0,
+        "cluster-health-writes.iteration_duration_p95": 25,
+        "cluster-health-writes.iteration_duration_p99": 25,
+        "cluster-health-writes.run_query_duration_p95": 25,
+        "cluster-health-writes.failed_iterations_total": 0,
+        "cluster-health-writes.run_query_duration_count": 20550,
+        "cluster-health-writes.queries_per_second": 171.244,
+        "cluster-health-writes.iteration_duration_p50": 5,
+        "cluster-health-writes.run_query_duration_p50": 5,
+        "cluster-health-writes.run_query_duration_p90": 10,
+        "cluster-health-writes.run_query_duration_p99": 25,
+        "cluster-health-writes.run_query_operations_total": 20550,
+        "latency_p99_ms": 25,
+        "cluster-health-writes.iterations_total": 20550,
+        "cluster-health-writes.terminal_errors_total": 0,
+        "cluster-health-writes.iteration_duration_avg": 5.837,
+        "cluster-health-writes.run_query_duration_avg": 5.784,
+        "cluster-health-writes.iteration_duration_count": 20550,
+        "latency_p50_ms": 5
+      }
+    },
+    "result": {
+      "metrics": {
+        "cluster-health-writes.iteration_duration_count": {
+          "value": 20550
+        },
+        "cluster-health-writes.run_query_duration_count": {
+          "value": 20550
+        },
+        "cluster-health-writes.measurement_seconds": {
+          "value": 120.004,
+          "unit": "s"
+        },
+        "cluster-health-writes.failed_queries_total": {
+          "value": 0
+        },
+        "cluster-health-writes.retry_attempts_total": {
+          "value": 0
+        },
+        "cluster-health-writes.iteration_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "cluster-health-writes.iteration_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "cluster-health-writes.failed_iterations_total": {
+          "value": 0
+        },
+        "cluster-health-writes.iterations_per_second": {
+          "value": 171.244,
+          "unit": "iterations/s"
+        },
+        "cluster-health-writes.iteration_duration_p50": {
+          "value": 5,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_operations_total": {
+          "value": 20550
+        },
+        "cluster-health-writes.queries_per_second": {
+          "value": 171.244,
+          "unit": "queries/s"
+        },
+        "cluster-health-writes.iterations_total": {
+          "value": 20550
+        },
+        "cluster-health-writes.terminal_errors_total": {
+          "value": 0
+        },
+        "cluster-health-writes.iteration_duration_avg": {
+          "value": 5.837,
+          "unit": "ms"
+        },
+        "cluster-health-writes.iteration_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_duration_avg": {
+          "value": 5.784,
+          "unit": "ms"
+        },
+        "cluster-health-writes.run_query_duration_p90": {
+          "value": 10,
+          "unit": "ms"
+        }
+      },
+      "segments": [
+        {
+          "name": "cluster-health-writes",
+          "status": "completed",
+          "started_at": "2026-09-27T17:09:48Z",
+          "finished_at": "2026-09-27T17:11:53Z",
+          "exit_code": 0,
+          "metrics": {
+            "iteration_duration_p90": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "iteration_duration_p99": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "run_query_duration_p90": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "run_query_duration_p95": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "run_query_duration_count": {
+              "value": 20550
+            },
+            "queries_per_second": {
+              "value": 171.244,
+              "unit": "queries/s"
+            },
+            "iteration_duration_p50": {
+              "value": 5,
+              "unit": "ms"
+            },
+            "run_query_duration_p50": {
+              "value": 5,
+              "unit": "ms"
+            },
+            "run_query_duration_p99": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "run_query_duration_avg": {
+              "value": 5.784,
+              "unit": "ms"
+            },
+            "failed_queries_total": {
+              "value": 0
+            },
+            "retry_attempts_total": {
+              "value": 0
+            },
+            "iteration_duration_avg": {
+              "value": 5.837,
+              "unit": "ms"
+            },
+            "failed_iterations_total": {
+              "value": 0
+            },
+            "terminal_errors_total": {
+              "value": 0
+            },
+            "iteration_duration_p95": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "iteration_duration_count": {
+              "value": 20550
+            },
+            "run_query_operations_total": {
+              "value": 20550
+            },
+            "iterations_total": {
+              "value": 20550
+            },
+            "measurement_seconds": {
+              "value": 120.004,
+              "unit": "s"
+            },
+            "iterations_per_second": {
+              "value": 171.244,
+              "unit": "iterations/s"
+            }
+          }
+        }
+      ],
+      "artifacts": [
+        "artifact/5fc7ddd6-stroppy-cluster-health-writes-config",
+        "artifact/5fc7ddd6-stroppy-cluster-health-writes-log"
+      ],
+      "summary": {
+        "latency_p50_ms": 5,
+        "latency_p95_ms": 25,
+        "latency_p99_ms": 25,
+        "duration": "2m4.619804638s"
+      }
+    },
+    "graphene": {
+      "run_ref": "run/5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

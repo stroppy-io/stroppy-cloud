@@ -184,7 +184,6 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 		Admin:     a.services.Admin,
 		Examples:  a.services.Examples,
 		Observe:   a.services.Observe,
-		Grafana:   api.GrafanaConfig{Enabled: a.cfg.HTTP.GrafanaURL != "", Dashboards: a.cfg.HTTP.GrafanaDashboards},
 		Schemas:   a.services.Schemas,
 		Public: api.PublicConfig{
 			IAMBaseURL: "", IAMClientID: a.cfg.IAM.ClientID, IAMEnvironment: a.cfg.IAM.Environment,
@@ -220,7 +219,6 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 		API:          api.AcceptMiddleware(apiServer),
 		WS:           socket,
 		IAMURL:       map[bool]string{false: a.cfg.IAM.BaseURL}[a.cfg.Dev.Enabled()],
-		GrafanaURL:   a.cfg.HTTP.GrafanaURL,
 		Webhook:      webhook,
 		WebhookPath:  a.cfg.IAM.WebhookPath,
 		PublicConfig: a.publicConfig(),

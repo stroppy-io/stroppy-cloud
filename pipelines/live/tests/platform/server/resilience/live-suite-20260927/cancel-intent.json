@@ -1,0 +1,5 @@
+{
+  "run_id": "e3e18f98-f2b4-40dc-93da-e035ff75814f",
+  "at": "2026-09-27T16:07:35.230243+00:00",
+  "reason": "Exercise durable cancellation during deployment. Slow image pull remains unqualified."
+}

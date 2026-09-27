@@ -1,0 +1,87 @@
+{
+  "observed_at": "2026-09-27T16:15:59.200233+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/0c3d8b9e-2c1c-4547-9dc8-fe2b7f656054/logs:facets",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "field": "level",
+        "values": [
+          {
+            "value": "info",
+            "count": 167
+          },
+          {
+            "value": "unspecified",
+            "count": 12
+          },
+          {
+            "value": "error",
+            "count": 10
+          },
+          {
+            "value": "warn",
+            "count": 10
+          }
+        ]
+      },
+      {
+        "field": "machine",
+        "values": [
+          {
+            "value": "runner-1",
+            "count": 96
+          },
+          {
+            "value": "db-1",
+            "count": 94
+          }
+        ]
+      },
+      {
+        "field": "role",
+        "values": [
+          {
+            "value": "runner",
+            "count": 96
+          },
+          {
+            "value": "db",
+            "count": 94
+          }
+        ]
+      },
+      {
+        "field": "stream",
+        "values": [
+          {
+            "value": "stdout",
+            "count": 92
+          },
+          {
+            "value": "stderr",
+            "count": 41
+          },
+          {
+            "value": "",
+            "count": 31
+          },
+          {
+            "value": "pull",
+            "count": 21
+          },
+          {
+            "value": "container",
+            "count": 12
+          },
+          {
+            "value": "runc",
+            "count": 2
+          }
+        ]
+      }
+    ]
+  }
+}

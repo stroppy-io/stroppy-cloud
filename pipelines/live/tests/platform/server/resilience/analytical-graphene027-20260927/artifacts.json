@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-09-27T18:28:23.098125+00:00",
+  "run_id": "eb2a84f5-aaa8-4ca2-97fb-0a6c05679208",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "eb2a84f5-stroppy-tpch-config",
+      "http_status": 200,
+      "size_bytes": 1096,
+      "digest": "sha256:20d056bb408b57a6a8206972d0dd2eec1ecb1d03214946bba5508a0c72a0b3ff",
+      "verified": true
+    },
+    {
+      "id": "eb2a84f5-stroppy-tpch-log",
+      "http_status": 200,
+      "size_bytes": 15838,
+      "digest": "sha256:e38f02b2bf2e0fa58a6e36aa4aa2775b4536a8137c54ed05ff700d05d87663c6",
+      "verified": true
+    },
+    {
+      "id": "eb2a84f5-stroppy-tpcds-config",
+      "http_status": 200,
+      "size_bytes": 1168,
+      "digest": "sha256:6f7306e4197bae4c4d8cadc9d4fde37f422831da4ce346b9a80ac88fb4c6a850",
+      "verified": true
+    },
+    {
+      "id": "eb2a84f5-stroppy-tpcds-log",
+      "http_status": 200,
+      "size_bytes": 34108,
+      "digest": "sha256:6eb302cc57d745c129078916cfc92e6dc19b63a5291ac3df64831cdb7e61d83c",
+      "verified": true
+    }
+  ]
+}

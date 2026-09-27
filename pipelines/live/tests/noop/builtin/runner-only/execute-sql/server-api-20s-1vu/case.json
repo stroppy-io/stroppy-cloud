@@ -11,19 +11,20 @@
     "ru-central1-d"
   ],
   "acceptance_scope": "real YC run launched and observed through the local server API",
-  "selected_run": "731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+  "selected_run": "d7003247-6d13-4c77-92b2-6267e1c63281",
   "execution": {
     "status": "completed",
-    "observed_at": "2026-09-24T15:39:58.088605+00:00"
+    "observed_at": "2026-09-25T13:25:56.203052+00:00"
   },
   "checks": "checks.json",
   "runs": [
     "runs/bc94e0ff-2a4f-4e76-a85c-faf9e013e528",
     "runs/5f04e4bc-1c83-4e7b-ad1f-88f599403e98",
-    "runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e"
+    "runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e",
+    "runs/d7003247-6d13-4c77-92b2-6267e1c63281"
   ],
   "source": {
-    "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/731d5ee3-e248-4176-bd53-8bf0b6e5223e/run.json",
+    "path": "tests/noop/builtin/runner-only/execute-sql/server-api-20s-1vu/runs/d7003247-6d13-4c77-92b2-6267e1c63281/run.json",
     "pointer": "/body"
   },
   "input": "input.json",

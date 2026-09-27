@@ -1,0 +1,128 @@
+{
+  "observed_at": "2026-09-27T17:23:43.019547+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "stats": {
+      "seriesFetched": "1",
+      "executionTimeMsec": 0
+    },
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "cpu": "0",
+            "graphene.activity": "docker.container.observe",
+            "graphene.agent": "5fc7ddd6-db-2",
+            "graphene.attempt": "1",
+            "graphene.entity": "docker/5fc7ddd6-5c13-4be7-b51b-21bf19277540-db-2-node-exporter",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "machine",
+            "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+            "mode": "idle",
+            "scope.name": "graphene.obs",
+            "scope.version": "unknown",
+            "service.name": "graphene-pipeline",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.46.0"
+          },
+          "values": [
+            [
+              1790529180,
+              "1790529167.544"
+            ],
+            [
+              1790529185,
+              "1790529182.543"
+            ],
+            [
+              1790529190,
+              "1790529182.543"
+            ],
+            [
+              1790529195,
+              "1790529182.543"
+            ],
+            [
+              1790529200,
+              "1790529197.544"
+            ],
+            [
+              1790529205,
+              "1790529197.544"
+            ],
+            [
+              1790529210,
+              "1790529197.544"
+            ],
+            [
+              1790529215,
+              "1790529212.543"
+            ],
+            [
+              1790529220,
+              "1790529212.543"
+            ],
+            [
+              1790529225,
+              "1790529212.543"
+            ],
+            [
+              1790529230,
+              "1790529227.544"
+            ],
+            [
+              1790529235,
+              "1790529227.544"
+            ],
+            [
+              1790529240,
+              "1790529227.544"
+            ],
+            [
+              1790529245,
+              "1790529227.544"
+            ],
+            [
+              1790529250,
+              "1790529227.544"
+            ],
+            [
+              1790529255,
+              "1790529227.544"
+            ],
+            [
+              1790529260,
+              "1790529227.544"
+            ],
+            [
+              1790529265,
+              "1790529227.544"
+            ],
+            [
+              1790529270,
+              "1790529227.544"
+            ],
+            [
+              1790529275,
+              "1790529227.544"
+            ],
+            [
+              1790529280,
+              "1790529227.544"
+            ],
+            [
+              1790529285,
+              "1790529227.544"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

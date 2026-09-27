@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-27T15:38:00.925968+00:00",
+  "config": {
+    "STROPPY_INFRA_GRAPHENE_ADDRESS": "graphene.stroppy.io:443",
+    "STROPPY_INFRA_GRAPHENE_INSECURE": "false",
+    "HTTPS_PROXY": null,
+    "HTTP_PROXY": null
+  }
+}

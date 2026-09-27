@@ -1,0 +1,63 @@
+{
+  "observed_at": "2026-09-27T19:58:08.663518+00:00",
+  "run_id": "9ecc21d6-5a9c-451f-aab5-b1196ed07944",
+  "query": {
+    "query": "100 * (1 - avg by (\"graphene.agent\") (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))",
+    "start": "2026-09-27T19:35:33Z",
+    "end": "2026-09-27T19:55:39+00:00",
+    "step": "5s"
+  },
+  "http_status": 200,
+  "series": [
+    {
+      "agent": "9ecc21d6-db-1",
+      "points": 115,
+      "min": 0.21598272138227959,
+      "max": 28.758799309337224,
+      "verified": true
+    },
+    {
+      "agent": "9ecc21d6-db-2",
+      "points": 72,
+      "min": 0.49189045466632164,
+      "max": 8.853389071364592,
+      "verified": true
+    },
+    {
+      "agent": "9ecc21d6-db-3",
+      "points": 102,
+      "min": 0.24751241714970895,
+      "max": 7.264559841905105,
+      "verified": true
+    },
+    {
+      "agent": "9ecc21d6-proxy-1",
+      "points": 84,
+      "min": 0.22257657298514477,
+      "max": 9.909161864589677,
+      "verified": true
+    },
+    {
+      "agent": "9ecc21d6-runner-1",
+      "points": 138,
+      "min": 0.10131880543471361,
+      "max": 10.840351489177912,
+      "verified": true
+    }
+  ],
+  "expected_agents": [
+    "9ecc21d6-db-1",
+    "9ecc21d6-db-2",
+    "9ecc21d6-db-3",
+    "9ecc21d6-proxy-1",
+    "9ecc21d6-runner-1"
+  ],
+  "observed_agents": [
+    "9ecc21d6-db-1",
+    "9ecc21d6-db-2",
+    "9ecc21d6-db-3",
+    "9ecc21d6-proxy-1",
+    "9ecc21d6-runner-1"
+  ],
+  "verified": true
+}

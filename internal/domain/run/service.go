@@ -3,6 +3,7 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"sort"
@@ -197,14 +198,27 @@ type Prepared struct {
 
 // launch is the common path: prepare, store, start.
 func (s *Service) launch(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, spec library.TestSpec, testRef *Ref, o Overrides, idempotencyKey string) (Run, error) {
-	p, err := s.Prepare(ctx, actor, tenantID, spec, testRef, o, PrepareOptions{})
+	var admitted Run
+	replayed := false
+	err := s.repo.Admit(ctx, tenantID, func(ctx context.Context) error {
+		if r, ok, err := s.replay(ctx, tenantID, idempotencyKey); err != nil || ok {
+			admitted, replayed = r, ok
+			return err
+		}
+		p, err := s.Prepare(ctx, actor, tenantID, spec, testRef, o, PrepareOptions{})
+		if err != nil {
+			return err
+		}
+		admitted = p.Run
+		return s.repo.Insert(ctx, p.Run, idempotencyKey)
+	})
 	if err != nil {
 		return Run{}, err
 	}
-	if err := s.repo.Insert(ctx, p.Run, idempotencyKey); err != nil {
-		return Run{}, err
+	if replayed {
+		return admitted, nil
 	}
-	return s.Start(ctx, p.Run)
+	return s.Start(ctx, admitted)
 }
 
 // Prepare resolves the test, checks fit/limits/quotas and compiles the
@@ -342,14 +356,14 @@ func (s *Service) Insert(ctx context.Context, r Run) error {
 // Start hands a stored run to Graphene and records the outcome.
 func (s *Service) Start(ctx context.Context, r Run) (Run, error) {
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &r.TenantID, Action: "run.launch", Target: audit.Target{Kind: "run", ID: r.ID.String(), Name: r.Name}, Details: map[string]any{"test": r.TestID, "trigger": r.Trigger}}) //nolint:errcheck // audit never blocks
-	labels := map[string]string{"stroppy.io/run": r.ID.String()}
-	for k, v := range r.Labels {
-		labels[k] = v
-	}
-	if err := s.graphene.StartRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID(), "stroppy-run", r.RunSpec, labels); err != nil {
-		reason := "start: " + err.Error()
-		_ = s.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, reason, nil, ptr(time.Now().UTC())) //nolint:errcheck // reported below
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the run", err)
+	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.CreatedAt, r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+		if errors.Is(err, ErrStartRejected) {
+			_ = s.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // reported below
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene rejected the run", err)
+		}
+		// The durable row is the accepted command. A lost answer does not
+		// mean rejection; the projector submits it after connection recovery.
+		return r, nil
 	}
 	s.publish(ctx, r.TenantID, EventRunStarted, r)
 	return s.repo.ByID(ctx, r.ID)

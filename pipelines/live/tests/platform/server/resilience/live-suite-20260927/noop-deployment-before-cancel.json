@@ -1,0 +1,187 @@
+{
+  "observed_at": "2026-09-27T16:07:35.230031+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/e3e18f98-f2b4-40dc-93da-e035ff75814f/overview",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "run_id": "e3e18f98-f2b4-40dc-93da-e035ff75814f",
+    "status": "running",
+    "phase": "deploying",
+    "progress_pct": 30,
+    "source": "persisted",
+    "observed_at": "2026-09-27T16:01:09Z",
+    "degraded_reasons": [],
+    "phases": [
+      {
+        "id": "provisioning",
+        "title": "provisioning",
+        "status": "completed",
+        "started_at": "2026-09-27T15:57:25Z",
+        "finished_at": "2026-09-27T16:00:19Z",
+        "steps": [
+          {
+            "id": "5",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:25Z",
+            "finished_at": "2026-09-27T15:57:26Z"
+          },
+          {
+            "id": "15",
+            "title": "resolve-yandex-images",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:57:26Z"
+          },
+          {
+            "id": "21",
+            "title": "check-config",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:57:26Z"
+          },
+          {
+            "id": "27",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T16:00:19Z"
+          },
+          {
+            "id": "28",
+            "title": "user-data",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:57:26Z"
+          },
+          {
+            "id": "29",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:58:02Z"
+          },
+          {
+            "id": "30",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:58:22Z"
+          },
+          {
+            "id": "31",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:58:18Z"
+          },
+          {
+            "id": "37",
+            "title": "transfer",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T16:00:18Z"
+          },
+          {
+            "id": "38",
+            "title": "declare",
+            "status": "completed",
+            "started_at": "2026-09-27T15:57:26Z",
+            "finished_at": "2026-09-27T15:59:19Z"
+          },
+          {
+            "id": "70",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:00:19Z",
+            "finished_at": "2026-09-27T16:00:19Z"
+          },
+          {
+            "id": "80",
+            "title": "emit",
+            "status": "pending",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      },
+      {
+        "id": "deploying",
+        "title": "deploying",
+        "status": "running",
+        "started_at": "2026-09-27T16:00:19Z",
+        "finished_at": null,
+        "steps": [
+          {
+            "id": "90",
+            "title": "emit",
+            "status": "completed",
+            "started_at": "2026-09-27T16:00:19Z",
+            "finished_at": "2026-09-27T16:00:19Z"
+          },
+          {
+            "id": "101",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:00:19Z",
+            "finished_at": "2026-09-27T16:00:28Z"
+          },
+          {
+            "id": "107",
+            "title": "install",
+            "status": "completed",
+            "machine": "e3e18f98-runner-1",
+            "started_at": "2026-09-27T16:00:28Z",
+            "finished_at": "2026-09-27T16:01:08Z"
+          },
+          {
+            "id": "114",
+            "title": "ensure",
+            "status": "completed",
+            "started_at": "2026-09-27T16:01:08Z",
+            "finished_at": "2026-09-27T16:01:08Z"
+          },
+          {
+            "id": "120",
+            "title": "pull",
+            "status": "pending",
+            "machine": "e3e18f98-runner-1",
+            "started_at": null,
+            "finished_at": null
+          }
+        ]
+      }
+    ],
+    "components": [
+      {
+        "id": "runner-1-node-exporter",
+        "role": "runner",
+        "image": "quay.io/prometheus/node-exporter:v1.12.1",
+        "machine": "runner-1",
+        "status": "pending",
+        "endpoints": [
+          {
+            "port": 9100
+          }
+        ],
+        "scrape": "/metrics"
+      }
+    ],
+    "machines": [
+      {
+        "name": "runner-1",
+        "role": "runner",
+        "status": "ready",
+        "presence": "online",
+        "address": "10.130.0.13",
+        "public_ip": "158.160.218.3",
+        "size": "XS",
+        "provider_resource_id": "fv4chkaea7k4fetgmbrc",
+        "last_heartbeat_at": null
+      }
+    ],
+    "flows": [],
+    "workload_segments": []
+  }
+}

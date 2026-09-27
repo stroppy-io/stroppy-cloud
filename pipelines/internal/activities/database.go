@@ -35,6 +35,7 @@ type WaitDatabaseResult struct {
 // readiness does not prove that its load balancer is accepting client traffic.
 // The same Stroppy image and credentials must also complete a read-only SELECT.
 func WaitDatabase(ctx context.Context, req WaitDatabaseRequest) (WaitDatabaseResult, error) {
+	ctx = bindHeartbeatContext(ctx)
 	u, err := url.Parse(req.Endpoint)
 	if err != nil || u.User != nil || (u.Scheme != "grpc" && u.Scheme != "grpcs") {
 		return WaitDatabaseResult{}, fmt.Errorf("managed database needs a grpc(s) endpoint without userinfo")

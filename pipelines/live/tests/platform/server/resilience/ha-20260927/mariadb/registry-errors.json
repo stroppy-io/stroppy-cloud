@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-27T17:09:14.285841+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/logs?level=error&limit=100",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T17:00:47Z",
+        "message": "activity failed",
+        "level": "error",
+        "fields": {
+          "trace_id": "23edcb8a66e19adb3a3b427e4d545fdb",
+          "telemetry.sdk.language": "go",
+          "graphene.run": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+          "telemetry.sdk.name": "opentelemetry",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.entity": "run/5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+          "severity_number": "17",
+          "graphene.namespace": "t-server-live-20260924",
+          "contour": "run",
+          "graphene.role": "run",
+          "graphene.attempt": "1",
+          "error": "context deadline exceeded",
+          "span_id": "580f31140161e34f",
+          "graphene.activity": "k8s.entity.declare",
+          "scope.name": "graphene.obs",
+          "activity": "k8s.entity.declare",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline"
+        }
+      }
+    ],
+    "older": null,
+    "newer": null,
+    "truncated": false
+  }
+}

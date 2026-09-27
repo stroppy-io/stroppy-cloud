@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "81cda0f2-8db1-44c8-8d12-cb83ccf91f98",
+  "case_paths": [
+    "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m"
+  ],
+  "execution": {
+    "status": "failed",
+    "observed_at": "2026-09-27T20:50:09.416270+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/81cda0f2-8db1-44c8-8d12-cb83ccf91f98/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}

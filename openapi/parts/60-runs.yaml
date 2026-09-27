@@ -180,7 +180,7 @@ paths:
         - { name: cursor, in: query, schema: { type: string }, description: Opaque (`_time`+`seq`). }
         - { name: direction, in: query, schema: { type: string, enum: [older, newer], default: older } }
         - $ref: '#/components/parameters/limit'
-      summary: Typed log query (VictoriaLogs behind, scope forced to the run).
+      summary: Typed log query through Graphene, scoped to the run.
       responses:
         '200':
           description: Lines.
@@ -216,7 +216,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
-      summary: LogsQL query, AND-ed with the run scope by the server.
+      summary: LogsQL filter evaluated by Graphene inside the authorized run scope.
       requestBody:
         required: true
         content:
@@ -278,7 +278,7 @@ paths:
                 step: { type: string }
       responses:
         '200':
-          description: Prometheus range result (as returned by VictoriaMetrics).
+          description: Prometheus range result returned by Graphene.
           content:
             application/json:
               schema: { type: object, additionalProperties: true }
@@ -290,7 +290,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
-      summary: Mint the Grafana scope cookie and dashboard links for the run.
+      summary: Grafana session (unavailable until supported through Graphene).
       responses:
         '200':
           description: Session.

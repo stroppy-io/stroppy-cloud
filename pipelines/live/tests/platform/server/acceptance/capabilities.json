@@ -1,0 +1,2819 @@
+{
+  "generated_at": "2026-09-27T12:19:31.433104+00:00",
+  "local_verified": false,
+  "race_verified": false,
+  "live_evidence_complete": true,
+  "source_sha256": "51bfe266c343a0d6c2c8e204b1abda6170a66f5f2078c02ea8882caa010cae36",
+  "fixture_sha256": {
+    "runtime-fixture.json": "b96ba5efc2418373832f8012fc4ce75322599366bfcae9e7f81e51567c81dc71",
+    "workloads-fixture.json": "3d706b3753036c1a53ae1b7a9e382be8a1b990bd63417647948e0a21fc026774"
+  },
+  "operations": {
+    "getPublicConfig": {
+      "method": "GET",
+      "path": "/api/v1/public/config",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        },
+        "TestE2EMeAndPublic": {
+          "200": 1
+        }
+      }
+    },
+    "getPublicCatalog": {
+      "method": "GET",
+      "path": "/api/v1/public/catalog",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 1
+        }
+      }
+    },
+    "getPublicRating": {
+      "method": "GET",
+      "path": "/api/v1/public/rating",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "404": 1
+        },
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "getPublicShare": {
+      "method": "GET",
+      "path": "/api/v1/public/share/{token}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 2,
+          "404": 1
+        }
+      }
+    },
+    "getPublicShareMetrics": {
+      "method": "GET",
+      "path": "/api/v1/public/share/{token}/metrics",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "200": 1,
+          "403": 1,
+          "404": 1,
+          "422": 1
+        },
+        "TestE2EShareCompareRating": {
+          "403": 1
+        }
+      }
+    },
+    "createPublicShareGrafanaSession": {
+      "method": "POST",
+      "path": "/api/v1/public/share/{token}/grafana-session",
+      "status": "unsupported",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "503": 1
+        }
+      },
+      "reason": "Same unavailable Grafana session capability for public shares (503)."
+    },
+    "exportPublicShare": {
+      "method": "GET",
+      "path": "/api/v1/public/share/{token}/export",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "getPublicHealth": {
+      "method": "GET",
+      "path": "/api/v1/public/health",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMeAndPublic": {
+          "200": 1
+        }
+      }
+    },
+    "getMe": {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 1
+        },
+        "TestE2EDevMode": {
+          "200": 3,
+          "401": 1
+        },
+        "TestE2EMeAndPublic": {
+          "200": 1
+        }
+      }
+    },
+    "patchMe": {
+      "method": "PATCH",
+      "path": "/api/v1/me",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMeAndPublic": {
+          "200": 1
+        }
+      }
+    },
+    "listMyTokens": {
+      "method": "GET",
+      "path": "/api/v1/me/tokens",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETokens": {
+          "200": 1
+        }
+      }
+    },
+    "createMyToken": {
+      "method": "POST",
+      "path": "/api/v1/me/tokens",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "201": 1
+        },
+        "TestE2ETokens": {
+          "403": 1
+        }
+      }
+    },
+    "revokeMyToken": {
+      "method": "DELETE",
+      "path": "/api/v1/me/tokens/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETokens": {
+          "204": 1
+        }
+      }
+    },
+    "listMyTenants": {
+      "method": "GET",
+      "path": "/api/v1/tenants",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETenantLifecycle": {
+          "200": 1
+        },
+        "TestE2EInvites": {
+          "200": 1
+        }
+      }
+    },
+    "createTenant": {
+      "method": "POST",
+      "path": "/api/v1/tenants",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "201": 2
+        },
+        "TestE2EAdmin": {
+          "403": 1
+        },
+        "TestE2EDevMode": {
+          "201": 1
+        },
+        "TestE2ETenantLifecycle": {
+          "403": 1
+        }
+      }
+    },
+    "suggestTenantName": {
+      "method": "GET",
+      "path": "/api/v1/tenants/suggest-name",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 1
+        }
+      }
+    },
+    "getTenant": {
+      "method": "GET",
+      "path": "/api/v1/tenants/{slug}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 1
+        },
+        "TestE2ETenantLifecycle": {
+          "200": 1,
+          "401": 3,
+          "404": 1
+        },
+        "TestE2EMembersAndRoles": {
+          "200": 1,
+          "401": 1
+        },
+        "TestE2EInvites": {
+          "200": 1
+        },
+        "TestE2ETokens": {
+          "401": 2
+        }
+      }
+    },
+    "patchTenant": {
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{slug}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1
+        },
+        "TestE2ETenantLifecycle": {
+          "200": 1
+        }
+      }
+    },
+    "deleteTenant": {
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{slug}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "403": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "204": 1,
+          "409": 1
+        },
+        "TestE2ETenantLifecycle": {
+          "204": 1
+        }
+      }
+    },
+    "listMembers": {
+      "method": "GET",
+      "path": "/api/v1/tenants/{slug}/members",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMembersAndRoles": {
+          "200": 1
+        }
+      }
+    },
+    "patchMember": {
+      "method": "PATCH",
+      "path": "/api/v1/tenants/{slug}/members/{userId}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMembersAndRoles": {
+          "200": 1,
+          "403": 1,
+          "422": 1
+        }
+      }
+    },
+    "removeMember": {
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{slug}/members/{userId}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMembersAndRoles": {
+          "204": 1,
+          "403": 1
+        }
+      }
+    },
+    "transferTenant": {
+      "method": "POST",
+      "path": "/api/v1/tenants/{slug}:transfer",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMembersAndRoles": {
+          "200": 1,
+          "403": 1
+        }
+      }
+    },
+    "listInvites": {
+      "method": "GET",
+      "path": "/api/v1/tenants/{slug}/invites",
+      "status": "exercised",
+      "tests": {
+        "TestE2EInvites": {
+          "200": 1
+        }
+      }
+    },
+    "createInvite": {
+      "method": "POST",
+      "path": "/api/v1/tenants/{slug}/invites",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "201": 2
+        },
+        "TestE2EMembersAndRoles": {
+          "403": 1
+        },
+        "TestE2EInvites": {
+          "201": 3,
+          "409": 1
+        },
+        "TestE2ETokens": {
+          "403": 1
+        }
+      }
+    },
+    "revokeInvite": {
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{slug}/invites/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EInvites": {
+          "204": 1,
+          "409": 1
+        }
+      }
+    },
+    "listMyInvites": {
+      "method": "GET",
+      "path": "/api/v1/me/invites",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 2
+        }
+      }
+    },
+    "acceptInvite": {
+      "method": "POST",
+      "path": "/api/v1/me/invites/{id}:accept",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "200": 1
+        }
+      }
+    },
+    "declineInvite": {
+      "method": "POST",
+      "path": "/api/v1/me/invites/{id}:decline",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "204": 1
+        }
+      }
+    },
+    "listTenantTokens": {
+      "method": "GET",
+      "path": "/api/v1/tenants/{slug}/tokens",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETokens": {
+          "200": 1
+        }
+      }
+    },
+    "createTenantToken": {
+      "method": "POST",
+      "path": "/api/v1/tenants/{slug}/tokens",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETokens": {
+          "201": 1,
+          "422": 1
+        }
+      }
+    },
+    "revokeTenantToken": {
+      "method": "DELETE",
+      "path": "/api/v1/tenants/{slug}/tokens/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ETokens": {
+          "204": 1
+        }
+      }
+    },
+    "listTenantAudit": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/audit",
+      "status": "exercised",
+      "tests": {
+        "TestE2EMembersAndRoles": {
+          "200": 1
+        }
+      }
+    },
+    "getTenantSettings": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/settings",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESettingsAndLimits": {
+          "200": 1
+        }
+      }
+    },
+    "patchTenantSettings": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/settings",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESettingsAndLimits": {
+          "200": 1,
+          "422": 1
+        }
+      }
+    },
+    "getTenantLimits": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/limits",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 2
+        },
+        "TestE2EDevMode": {
+          "200": 1
+        },
+        "TestE2ESettingsAndLimits": {
+          "200": 1
+        }
+      }
+    },
+    "listProviderProfiles": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/providers",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "200": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "200": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "200": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "200": 1
+        }
+      }
+    },
+    "createProviderProfile": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/providers",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESharedMetrics": {
+          "201": 1
+        },
+        "TestE2EAdmin": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "201": 1
+        },
+        "TestE2EContractHandoff": {
+          "201": 1
+        },
+        "TestE2EExamples": {
+          "201": 1
+        },
+        "TestE2ELibrary": {
+          "201": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "201": 1
+        },
+        "TestE2EObserve": {
+          "201": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "201": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "201": 1,
+          "409": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "201": 1
+        },
+        "TestE2EObserverRecovery": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "201": 1
+        },
+        "TestE2ERuns": {
+          "201": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "201": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "201": 1
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "201": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "201": 1
+        },
+        "TestE2EScenarios": {
+          "201": 1
+        },
+        "TestE2EProviderProfiles": {
+          "201": 1,
+          "409": 1,
+          "422": 1
+        },
+        "TestE2EShareCompareRating": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 1
+        },
+        "TestE2EWebSocket": {
+          "201": 1
+        }
+      }
+    },
+    "getProviderProfile": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/providers/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        },
+        "TestE2ESharedMetrics": {
+          "200": 1
+        },
+        "TestE2EAdmin": {
+          "200": 2
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "200": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "200": 1
+        },
+        "TestE2EContractHandoff": {
+          "200": 1
+        },
+        "TestE2EExamples": {
+          "200": 1
+        },
+        "TestE2ELibrary": {
+          "200": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 1
+        },
+        "TestE2EObserve": {
+          "200": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "200": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "200": 2
+        },
+        "TestE2EQuotaVisibility": {
+          "200": 2
+        },
+        "TestE2EObserverRecovery": {
+          "200": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "200": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "200": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "200": 2
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "200": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "200": 1
+        },
+        "TestE2EScenarios": {
+          "200": 1
+        },
+        "TestE2EProviderProfiles": {
+          "200": 3,
+          "404": 1
+        },
+        "TestE2EShareCompareRating": {
+          "200": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        },
+        "TestE2EWebSocket": {
+          "200": 1
+        }
+      }
+    },
+    "patchProviderProfile": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/providers/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EProviderLifecycle": {
+          "200": 1,
+          "409": 1
+        }
+      }
+    },
+    "deleteProviderProfile": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/providers/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EProviderLifecycle": {
+          "204": 1,
+          "409": 3
+        },
+        "TestE2EProviderProfiles": {
+          "204": 1
+        }
+      }
+    },
+    "verifyProviderProfile": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/providers/{id}:verify",
+      "status": "exercised",
+      "tests": {
+        "TestE2EProviderLifecycle": {
+          "202": 1,
+          "409": 1
+        },
+        "TestE2EProviderProfiles": {
+          "202": 1
+        }
+      }
+    },
+    "getProviderQuotas": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/providers/{id}/quotas",
+      "status": "exercised",
+      "tests": {
+        "TestE2EQuotaVisibility": {
+          "200": 1
+        },
+        "TestE2EProviderProfiles": {
+          "200": 1
+        }
+      }
+    },
+    "refreshProviderQuotas": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/providers/{id}/quotas:refresh",
+      "status": "exercised",
+      "tests": {
+        "TestE2EQuotaVisibility": {
+          "200": 3,
+          "503": 1
+        },
+        "TestE2EProviderProfiles": {
+          "409": 1
+        }
+      }
+    },
+    "listWebhooks": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/webhooks",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "createWebhook": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/webhooks",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "201": 1,
+          "422": 1
+        }
+      }
+    },
+    "patchWebhook": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/webhooks/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "200": 1
+        }
+      }
+    },
+    "deleteWebhook": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/webhooks/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "204": 1
+        }
+      }
+    },
+    "rotateWebhookSecret": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/webhooks/{id}:rotate-secret",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "200": 1
+        }
+      }
+    },
+    "listWebhookDeliveries": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/webhooks/{id}/deliveries",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "200": 3,
+          "404": 1
+        }
+      }
+    },
+    "replayWebhookDelivery": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/webhooks/{id}/deliveries/{deliveryId}:replay",
+      "status": "exercised",
+      "tests": {
+        "TestE2EWebhooks": {
+          "202": 1
+        }
+      }
+    },
+    "getCatalogDatabases": {
+      "method": "GET",
+      "path": "/api/v1/catalog/databases",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1,
+          "401": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 1
+        }
+      }
+    },
+    "getCatalogProviders": {
+      "method": "GET",
+      "path": "/api/v1/catalog/providers",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1
+        }
+      }
+    },
+    "getCatalogStroppy": {
+      "method": "GET",
+      "path": "/api/v1/catalog/stroppy",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1,
+          "404": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 1
+        }
+      }
+    },
+    "listExamples": {
+      "method": "GET",
+      "path": "/api/v1/catalog/examples",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "200": 2
+        }
+      }
+    },
+    "cloneExample": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/examples/{exampleId}:clone",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "201": 5,
+          "404": 1
+        }
+      }
+    },
+    "quickRunExample": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/examples/{exampleId}:quick-run",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "201": 1,
+          "422": 2
+        }
+      }
+    },
+    "listSchemas": {
+      "method": "GET",
+      "path": "/api/v1/catalog/schemas",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1
+        }
+      }
+    },
+    "getSchema": {
+      "method": "GET",
+      "path": "/api/v1/catalog/schemas/{schemaId}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1,
+          "404": 1
+        }
+      }
+    },
+    "validateSchemaValue": {
+      "method": "POST",
+      "path": "/api/v1/catalog/schemas/{schemaId}:validate",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 2
+        }
+      }
+    },
+    "renderSchemaValue": {
+      "method": "POST",
+      "path": "/api/v1/catalog/schemas/{schemaId}:render",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 1
+        }
+      }
+    },
+    "getCatalogMetrics": {
+      "method": "GET",
+      "path": "/api/v1/catalog/metrics",
+      "status": "exercised",
+      "tests": {
+        "TestE2ECatalog": {
+          "200": 2
+        }
+      }
+    },
+    "listDatabases": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/databases",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "createDatabase": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/databases",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESharedMetrics": {
+          "201": 1
+        },
+        "TestE2EAdmin": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "201": 1
+        },
+        "TestE2EContractHandoff": {
+          "201": 1
+        },
+        "TestE2EExamples": {
+          "201": 1
+        },
+        "TestE2ELibrary": {
+          "201": 1,
+          "409": 1,
+          "422": 2
+        },
+        "TestE2EDatabaseMatrix": {
+          "201": 65
+        },
+        "TestE2EObserve": {
+          "201": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "201": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "201": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "201": 1
+        },
+        "TestE2EObserverRecovery": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "201": 1
+        },
+        "TestE2ERuns": {
+          "201": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "201": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "201": 1
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "201": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "201": 2
+        },
+        "TestE2EScenarios": {
+          "201": 1
+        },
+        "TestE2EShareCompareRating": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 1
+        },
+        "TestE2EWebSocket": {
+          "201": 1
+        }
+      }
+    },
+    "getDatabase": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/databases/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuntimeOverrides": {
+          "200": 1
+        }
+      }
+    },
+    "patchDatabase": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/databases/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 3,
+          "422": 1
+        }
+      }
+    },
+    "deleteDatabase": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/databases/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "204": 1,
+          "409": 1
+        }
+      }
+    },
+    "previewDatabase": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/databases:preview",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "cloneDatabase": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/databases/{id}:clone",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "201": 1
+        }
+      }
+    },
+    "exportDatabase": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/databases/{id}:export",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 2
+        }
+      }
+    },
+    "importDatabase": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/databases:import",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 2
+        }
+      }
+    },
+    "diffDatabases": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/databases:diff",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "listWorkloads": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/workloads",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "createWorkload": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/workloads",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESharedMetrics": {
+          "201": 1
+        },
+        "TestE2EAdmin": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "201": 1
+        },
+        "TestE2EContractHandoff": {
+          "201": 1
+        },
+        "TestE2EExamples": {
+          "201": 1
+        },
+        "TestE2ELibrary": {
+          "201": 1,
+          "422": 2
+        },
+        "TestE2EDatabaseMatrix": {
+          "201": 65
+        },
+        "TestE2EObserve": {
+          "201": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "201": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "201": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "201": 1
+        },
+        "TestE2EObserverRecovery": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "201": 1
+        },
+        "TestE2ERuns": {
+          "201": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "201": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "201": 1
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "201": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "201": 1
+        },
+        "TestE2EScenarios": {
+          "201": 1
+        },
+        "TestE2EShareCompareRating": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 1
+        },
+        "TestE2EWebSocket": {
+          "201": 1
+        }
+      }
+    },
+    "getWorkload": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/workloads/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1,
+          "404": 1
+        }
+      }
+    },
+    "patchWorkload": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/workloads/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "deleteWorkload": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/workloads/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "204": 1
+        }
+      }
+    },
+    "previewWorkload": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/workloads:preview",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "cloneWorkload": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/workloads/{id}:clone",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        }
+      }
+    },
+    "exportWorkload": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/workloads/{id}:export",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "importWorkload": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/workloads:import",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "diffWorkloads": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/workloads:diff",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "listTests": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/tests",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "createTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/tests",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESharedMetrics": {
+          "201": 1
+        },
+        "TestE2EAdmin": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "201": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "201": 1
+        },
+        "TestE2EContractHandoff": {
+          "201": 1
+        },
+        "TestE2EExamples": {
+          "201": 1
+        },
+        "TestE2ELibrary": {
+          "201": 1,
+          "403": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "201": 65
+        },
+        "TestE2EObserve": {
+          "201": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "201": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "201": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "201": 1
+        },
+        "TestE2EObserverRecovery": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "201": 1
+        },
+        "TestE2ERuns": {
+          "201": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "201": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "201": 1
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "201": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "201": 1
+        },
+        "TestE2EScenarios": {
+          "201": 1
+        },
+        "TestE2EShareCompareRating": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 1
+        },
+        "TestE2EWebSocket": {
+          "201": 1
+        }
+      }
+    },
+    "getTest": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/tests/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 2,
+          "404": 1
+        },
+        "TestE2EContractHandoff": {
+          "200": 1
+        },
+        "TestE2ELibrary": {
+          "200": 2
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "200": 1
+        },
+        "TestE2ERuntimeOverrides": {
+          "200": 1
+        }
+      }
+    },
+    "patchTest": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/tests/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        },
+        "TestE2EContractHandoff": {
+          "200": 3
+        },
+        "TestE2ELibrary": {
+          "200": 2
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "200": 3
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "200": 2
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "200": 8,
+          "422": 2
+        },
+        "TestE2ERuntimeOverrides": {
+          "200": 2
+        }
+      }
+    },
+    "deleteTest": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/tests/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "204": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "204": 1,
+          "409": 2
+        }
+      }
+    },
+    "validateTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/tests:validate",
+      "status": "exercised",
+      "tests": {
+        "TestE2ELibrary": {
+          "200": 1
+        }
+      }
+    },
+    "launchTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/tests/{id}:launch",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "201": 2
+        },
+        "TestE2EAdmin": {
+          "201": 1,
+          "422": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "201": 6
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "201": 3,
+          "422": 3
+        },
+        "TestE2EContractHandoff": {
+          "201": 1,
+          "422": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "201": 64
+        },
+        "TestE2EObserve": {
+          "201": 1
+        },
+        "TestE2EProviderLifecycle": {
+          "201": 1,
+          "422": 1
+        },
+        "TestE2ETenantProviderCleanup": {
+          "409": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "201": 1,
+          "422": 2
+        },
+        "TestE2EObserverRecovery": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "201": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "201": 1
+        },
+        "TestE2ERuns": {
+          "201": 4,
+          "403": 1,
+          "422": 2
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "201": 1
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "201": 1
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "422": 3
+        },
+        "TestE2ERuntimeOverrides": {
+          "201": 1
+        },
+        "TestE2EScenarios": {
+          "201": 12
+        },
+        "TestE2EShareCompareRating": {
+          "201": 2
+        },
+        "TestE2EWebSocket": {
+          "201": 1
+        }
+      }
+    },
+    "cloneTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/tests/{id}:clone",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        }
+      }
+    },
+    "exportTest": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/tests/{id}:export",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "importTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/tests:import",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "diffTests": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/tests:diff",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "listTestRuns": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/tests/{id}/runs",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 1
+        }
+      }
+    },
+    "listRuns": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1,
+          "403": 1
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "200": 1
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "200": 1
+        },
+        "TestE2EObserverRecovery": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 4
+        },
+        "TestE2EInvalidExecutionNeverLaunches": {
+          "200": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        }
+      }
+    },
+    "getRunFacets": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs:facets",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 1
+        }
+      }
+    },
+    "getRun": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "200": 4
+        },
+        "TestE2EConcurrentLaunch/same_idempotency_key": {
+          "200": 3
+        },
+        "TestE2EConcurrentLaunch/tenant_limit": {
+          "200": 7
+        },
+        "TestE2EContractHandoff": {
+          "200": 3
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 313
+        },
+        "TestE2EObserve": {
+          "200": 2
+        },
+        "TestE2EProviderLifecycle": {
+          "200": 2
+        },
+        "TestE2EObserverRecovery": {
+          "200": 4
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "200": 5
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "200": 5
+        },
+        "TestE2ERuns": {
+          "200": 6,
+          "404": 1
+        },
+        "TestE2ECompleteRuntimeRoundtrip": {
+          "200": 4
+        },
+        "TestE2EWorkloadParameterTransport": {
+          "200": 7
+        },
+        "TestE2EScenarios": {
+          "200": 35
+        },
+        "TestE2EShareCompareRating": {
+          "200": 5
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        }
+      }
+    },
+    "patchRun": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/runs/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 1
+        }
+      }
+    },
+    "deleteRun": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/runs/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "204": 1,
+          "409": 1
+        }
+      }
+    },
+    "getRunOverview": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/overview",
+      "status": "exercised",
+      "tests": {
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2ERuns": {
+          "200": 1
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "getRunTree": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/tree",
+      "status": "exercised",
+      "tests": {
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2ERuns": {
+          "200": 3
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "listRunEvents": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/events",
+      "status": "exercised",
+      "tests": {
+        "TestE2EObserverRecovery": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 1
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "queryRunLogs": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/logs",
+      "status": "exercised",
+      "tests": {
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2EObserve": {
+          "200": 4
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "getRunLogFacets": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/logs:facets",
+      "status": "exercised",
+      "tests": {
+        "TestE2EObserve": {
+          "200": 1
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "queryRunLogsRaw": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}/logs:raw",
+      "status": "exercised",
+      "tests": {
+        "TestE2EObserve": {
+          "200": 1,
+          "422": 1
+        }
+      }
+    },
+    "getRunMetrics": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/metrics",
+      "status": "exercised",
+      "tests": {
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2EObserve": {
+          "200": 2,
+          "404": 1,
+          "422": 1
+        },
+        "TestE2EScenarios": {
+          "200": 12
+        }
+      }
+    },
+    "queryRunMetricsRaw": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}/metrics:raw",
+      "status": "exercised",
+      "tests": {
+        "TestE2EObserve": {
+          "200": 2,
+          "422": 1
+        }
+      }
+    },
+    "createRunGrafanaSession": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}/grafana-session",
+      "status": "unsupported",
+      "tests": {
+        "TestE2EObserve": {
+          "503": 1
+        }
+      },
+      "reason": "Grafana sessions are explicitly unavailable (503); Graphene 0.2.23 integration has no session broker."
+    },
+    "listRunArtifacts": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/artifacts",
+      "status": "exercised",
+      "tests": {
+        "TestE2EDatabaseMatrix": {
+          "200": 64
+        },
+        "TestE2EKeptStandRecovery/expired": {
+          "200": 1
+        },
+        "TestE2EKeptStandRecovery/release_acknowledgement_lost": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 2
+        },
+        "TestE2EScenarios": {
+          "200": 14
+        }
+      }
+    },
+    "downloadRunArtifact": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/artifacts/{artifactId}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 2,
+          "404": 2
+        }
+      }
+    },
+    "exportRun": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/runs/{id}/export",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 1
+        }
+      }
+    },
+    "cancelRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:cancel",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "200": 1
+        },
+        "TestE2EQuotaVisibility": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 5,
+          "409": 1
+        },
+        "TestE2EScenarios": {
+          "200": 2
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "extendRunKeep": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:keep-extend",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "200": 1,
+          "422": 1
+        }
+      }
+    },
+    "releaseRunKeep": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:keep-release",
+      "status": "exercised",
+      "tests": {
+        "TestE2EProviderLifecycle": {
+          "200": 1
+        },
+        "TestE2ERuns": {
+          "200": 1,
+          "409": 1
+        }
+      }
+    },
+    "rerunRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:rerun",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "201": 1
+        }
+      }
+    },
+    "saveRunAsTest": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:save-as-test",
+      "status": "exercised",
+      "tests": {
+        "TestE2ERuns": {
+          "201": 1
+        }
+      }
+    },
+    "shareRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/runs/{id}:share",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "201": 1
+        },
+        "TestE2EShareCompareRating": {
+          "201": 2
+        }
+      }
+    },
+    "compareRuns": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/compare",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1,
+          "422": 1
+        }
+      }
+    },
+    "shareComparison": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/compare:share",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "201": 1
+        }
+      }
+    },
+    "listSuites": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suites",
+      "status": "exercised",
+      "tests": {
+        "TestE2EExamples": {
+          "200": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "createSuite": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suites",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 1,
+          "409": 1
+        }
+      }
+    },
+    "getSuite": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suites/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1,
+          "404": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 3,
+          "404": 1
+        }
+      }
+    },
+    "patchSuite": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/suites/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        }
+      }
+    },
+    "deleteSuite": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/suites/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "204": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "204": 1
+        }
+      }
+    },
+    "previewSuite": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suites:preview",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "launchSuite": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suites/{id}:launch",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 2,
+          "403": 1
+        }
+      }
+    },
+    "cloneSuite": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suites/{id}:clone",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        }
+      }
+    },
+    "exportSuite": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suites/{id}:export",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "importSuite": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suites:import",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "listSuiteRunsOfSuite": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suites/{id}/runs",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "listSuiteRuns": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suite-runs",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "getSuiteRun": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 3
+        },
+        "TestE2ESuitesAndSchedules": {
+          "200": 10,
+          "404": 1
+        }
+      }
+    },
+    "deleteSuiteRun": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "204": 1,
+          "422": 1
+        }
+      }
+    },
+    "getSuiteRunSummary": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}/summary",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        }
+      }
+    },
+    "cancelSuiteRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}:cancel",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1,
+          "409": 1
+        }
+      }
+    },
+    "retryFailedSuiteRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}:retry-failed",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "201": 1,
+          "409": 1
+        }
+      }
+    },
+    "shareSuiteRun": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/suite-runs/{id}:share",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        }
+      }
+    },
+    "listSchedules": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/schedules",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 2
+        }
+      }
+    },
+    "createSchedule": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/schedules",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "201": 1
+        },
+        "TestE2ESuitesAndSchedules": {
+          "201": 2,
+          "422": 1
+        }
+      }
+    },
+    "getSchedule": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/schedules/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1,
+          "404": 1
+        }
+      }
+    },
+    "patchSchedule": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/schedules/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "deleteSchedule": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/schedules/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "204": 2
+        }
+      }
+    },
+    "pauseSchedule": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/schedules/{id}:pause",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "resumeSchedule": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/schedules/{id}:resume",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "runScheduleNow": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/schedules/{id}:run-now",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "201": 2
+        }
+      }
+    },
+    "listScheduleHistory": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/schedules/{id}/history",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESuitesAndSchedules": {
+          "200": 1
+        }
+      }
+    },
+    "addFavorite": {
+      "method": "PUT",
+      "path": "/api/v1/t/{slug}/favorites/{kind}/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "204": 1
+        },
+        "TestE2ERuns": {
+          "204": 1
+        }
+      }
+    },
+    "removeFavorite": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/favorites/{kind}/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "204": 1
+        }
+      }
+    },
+    "listShares": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/shares",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "getShare": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/shares/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EPortableLibrary": {
+          "200": 1
+        }
+      }
+    },
+    "patchShare": {
+      "method": "PATCH",
+      "path": "/api/v1/t/{slug}/shares/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "200": 2
+        },
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "revokeShare": {
+      "method": "DELETE",
+      "path": "/api/v1/t/{slug}/shares/{id}",
+      "status": "exercised",
+      "tests": {
+        "TestE2ESharedMetrics": {
+          "204": 1
+        },
+        "TestE2EShareCompareRating": {
+          "204": 1,
+          "409": 1
+        }
+      }
+    },
+    "rebuildShare": {
+      "method": "POST",
+      "path": "/api/v1/t/{slug}/shares/{id}:rebuild",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "getTenantRating": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/rating",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 3,
+          "422": 1
+        }
+      }
+    },
+    "getTenantDashboard": {
+      "method": "GET",
+      "path": "/api/v1/t/{slug}/dashboard",
+      "status": "exercised",
+      "tests": {
+        "TestE2EShareCompareRating": {
+          "200": 1
+        }
+      }
+    },
+    "getAdminStatus": {
+      "method": "GET",
+      "path": "/api/v1/admin/status",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        },
+        "TestE2EPipelinePush": {
+          "200": 5
+        }
+      }
+    },
+    "resyncPipelines": {
+      "method": "POST",
+      "path": "/api/v1/admin/pipelines:resync",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "202": 1
+        },
+        "TestE2EPipelinePush": {
+          "202": 1
+        }
+      }
+    },
+    "adminListTenants": {
+      "method": "GET",
+      "path": "/api/v1/admin/tenants",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 3,
+          "403": 2
+        }
+      }
+    },
+    "adminGetTenant": {
+      "method": "GET",
+      "path": "/api/v1/admin/tenants/{slug}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminDeleteTenant": {
+      "method": "DELETE",
+      "path": "/api/v1/admin/tenants/{slug}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EIdentityHTTP": {
+          "204": 2
+        }
+      }
+    },
+    "adminSuspendTenant": {
+      "method": "POST",
+      "path": "/api/v1/admin/tenants/{slug}:suspend",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminResumeTenant": {
+      "method": "POST",
+      "path": "/api/v1/admin/tenants/{slug}:resume",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminSetTenantLimits": {
+      "method": "PUT",
+      "path": "/api/v1/admin/tenants/{slug}/limits",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 2
+        },
+        "TestE2EDevMode": {
+          "200": 1
+        },
+        "TestE2EDatabaseMatrix": {
+          "200": 1
+        }
+      }
+    },
+    "adminAssignOwner": {
+      "method": "POST",
+      "path": "/api/v1/admin/tenants/{slug}:assign-owner",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1,
+          "409": 1
+        }
+      }
+    },
+    "adminListUsers": {
+      "method": "GET",
+      "path": "/api/v1/admin/users",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminPatchUser": {
+      "method": "PATCH",
+      "path": "/api/v1/admin/users/{userId}",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "getSystemSettings": {
+      "method": "GET",
+      "path": "/api/v1/admin/settings",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "patchSystemSettings": {
+      "method": "PATCH",
+      "path": "/api/v1/admin/settings",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 2
+        }
+      }
+    },
+    "adminListRuns": {
+      "method": "GET",
+      "path": "/api/v1/admin/runs",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminCancelRun": {
+      "method": "POST",
+      "path": "/api/v1/admin/runs/{id}:cancel",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 1
+        }
+      }
+    },
+    "adminListAudit": {
+      "method": "GET",
+      "path": "/api/v1/admin/audit",
+      "status": "exercised",
+      "tests": {
+        "TestE2EAdmin": {
+          "200": 2
+        }
+      }
+    }
+  },
+  "capabilities": [
+    {
+      "id": "catalog_and_schemas",
+      "scope": "Catalog identities, schema validation/rendering and examples",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ECatalog",
+        "TestE2EIdentityHTTP",
+        "TestE2EExamples"
+      ],
+      "live_evidence": [
+        {
+          "path": "public-catalog.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "catalog_matrix",
+      "scope": "Every deployable database version/topology; compatible scripts on each default database",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EDatabaseMatrix"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "runtime_inputs",
+      "scope": "Machine, disk, network, container, file content, driver, workload, telemetry overrides survive save/edit/compile",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ECompleteRuntimeRoundtrip",
+        "TestE2ERuntimeOverrides"
+      ],
+      "live_evidence": [
+        {
+          "path": "pg-run.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "workload_inputs",
+      "scope": "All 9 workload variants and every discriminated parameter reach RunSpec",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EWorkloadParameterTransport"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "lossless_contract",
+      "scope": "Browser roundtrip preserves uint64, zero/false/empty/null and complete native result envelopes",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EContractHandoff"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "invalid_inputs",
+      "scope": "Invalid disks, missing roles, file paths, conflicting SQL and impossible capacity never launch",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EInvalidExecutionNeverLaunches",
+        "TestE2EContractHandoff"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "library_portability",
+      "scope": "CRUD, clone, export/import, diff and immutable run snapshots",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ELibrary",
+        "TestE2EPortableLibrary"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "identity_and_access",
+      "scope": "Tenant isolation, roles, token scope, invite accept/decline, IAM events and admin",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EMembersAndRoles",
+        "TestE2ETokens",
+        "TestE2EInvites",
+        "TestE2EIdentityHTTP",
+        "TestE2EIAMWebhook",
+        "TestE2EAdmin"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "provider_lifecycle",
+      "scope": "Credentials, verification, YC quota projection, rotation, retirement and cleanup protections",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EProviderProfiles",
+        "TestE2EProviderLifecycle",
+        "TestE2ETenantProviderCleanup",
+        "TestE2EQuotaVisibility"
+      ],
+      "live_evidence": [
+        {
+          "path": "server-status.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "concurrent_admission",
+      "scope": "Same-key HTTP requests return one run; six competing launches respect tenant limit three",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EConcurrentLaunch"
+      ],
+      "live_evidence": []
+    },
+    {
+      "id": "lifecycle",
+      "scope": "Completion, failure, cancellation, partial results, full rerun, keep/release, artifacts",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ERuns",
+        "TestE2EScenarios"
+      ],
+      "live_evidence": [
+        {
+          "path": "pg-lifecycle.json",
+          "status": "passed"
+        },
+        {
+          "path": "cancel-lifecycle.json",
+          "status": "passed"
+        },
+        {
+          "path": "suite-rerun-verification.json",
+          "status": "passed"
+        },
+        {
+          "path": "pg-artifacts.json",
+          "status": "passed"
+        },
+        {
+          "path": "failure-artifacts.json",
+          "status": "passed"
+        },
+        {
+          "path": "pg-cleanup.json",
+          "status": "passed"
+        },
+        {
+          "path": "cancel-cleanup.json",
+          "status": "passed"
+        },
+        {
+          "path": "failure-cleanup.json",
+          "status": "passed"
+        },
+        {
+          "path": "suite-success-cleanup.json",
+          "status": "passed"
+        },
+        {
+          "path": "rerun-cleanup.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "restart_recovery",
+      "scope": "Persisted cursor resumes observation without relaunch or duplicate milestones",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EObserverRecovery"
+      ],
+      "live_evidence": [
+        {
+          "path": "pg-lifecycle.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "kept_reconciliation",
+      "scope": "Expired stand or lost release acknowledgement clears stale keep without removing artifacts",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EKeptStandRecovery"
+      ],
+      "live_evidence": [
+        {
+          "path": "pg-after-release.json",
+          "status": "passed"
+        },
+        {
+          "path": "pg-artifacts.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "cleanup_phase",
+      "scope": "Pipeline announces actual teardown after collection, before terminal closure",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EScenarios"
+      ],
+      "live_evidence": [
+        {
+          "path": "rerun-teardown.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "final_resources",
+      "scope": "Acceptance tenant has no active or kept runs; rerun artifacts remain downloadable",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ERuns"
+      ],
+      "live_evidence": [
+        {
+          "path": "final-resources.json",
+          "status": "passed"
+        },
+        {
+          "path": "rerun-artifacts.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "suite_schedule_webhook",
+      "scope": "Suite cells, retries, scheduling and webhook delivery",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ESuitesAndSchedules",
+        "TestE2EWebhooks"
+      ],
+      "live_evidence": [
+        {
+          "path": "suite-rerun-verification.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "telemetry",
+      "scope": "Run-scoped logs, bidirectional pagination/facets, typed/raw native and host metrics through Graphene",
+      "local_status": "passed",
+      "tests": [
+        "TestE2EObserve",
+        "TestE2EWebSocket"
+      ],
+      "live_evidence": [
+        {
+          "path": "pg-telemetry.json",
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "id": "public_share",
+      "scope": "Published snapshots, scoped anonymous metrics, revocation, comparison and ratings",
+      "local_status": "passed",
+      "tests": [
+        "TestE2ESharedMetrics",
+        "TestE2EShareCompareRating"
+      ],
+      "live_evidence": [
+        {
+          "path": "public-metrics.json",
+          "status": "passed"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Route exercise is not a proof of every parameter combination; semantic assertions are linked separately.",
+    "Local Graphene and cloud activities are simulated; HTTP, compilation, serialization and PostgreSQL are real.",
+    "Real acceptance samples PostgreSQL and noop on YC; it does not requalify every database/topology/workload.",
+    "Stroppy uses the pinned development digest; an official release still needs separate qualification.",
+    "Grafana session endpoints are unavailable. Pipeline trace retrieval is not verified. AWS is excluded."
+  ]
+}

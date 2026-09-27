@@ -1,0 +1,49 @@
+{
+  "observed_at": "2026-09-27T19:57:59.004596+00:00",
+  "run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+  "verified": true,
+  "artifacts": [
+    {
+      "id": "d1c531ed-stroppy-start-ha-probe-config",
+      "http_status": 200,
+      "size_bytes": 1070,
+      "digest": "sha256:7de5cc7b8fcdf6aa02b26a460a09b9bf4b5ea03ac670f3508a399ffa9987229d",
+      "verified": true
+    },
+    {
+      "id": "d1c531ed-stroppy-start-ha-probe-log",
+      "http_status": 200,
+      "size_bytes": 1046,
+      "digest": "sha256:5bbd802ceb028168fe0c3e18e39905e65a8fd9935afdee74b08a65a6df9e0ddf",
+      "verified": true
+    },
+    {
+      "id": "d1c531ed-stroppy-during-failover-config",
+      "http_status": 200,
+      "size_bytes": 1010,
+      "digest": "sha256:a857219399288debf63d9612b851e46fff6c5d977e0746310ffad77216fe40f3",
+      "verified": true
+    },
+    {
+      "id": "d1c531ed-stroppy-during-failover-log",
+      "http_status": 200,
+      "size_bytes": 5193498,
+      "digest": "sha256:277b79d840effed2dde69abd8a748b3b5a6c3fd9e98b1eb6f0682e0a3a8eb261",
+      "verified": true
+    },
+    {
+      "id": "d1c531ed-stroppy-verify-ha-probe-config",
+      "http_status": 200,
+      "size_bytes": 1025,
+      "digest": "sha256:37d98117585ff749a4c3a326a0898525609da6186de75c9b066a176da2f7310e",
+      "verified": true
+    },
+    {
+      "id": "d1c531ed-stroppy-verify-ha-probe-log",
+      "http_status": 200,
+      "size_bytes": 1037,
+      "digest": "sha256:0551031dea7cb4bf365b535f0f59362356db0011ddb5338edea3ac4136c4751d",
+      "verified": true
+    }
+  ]
+}

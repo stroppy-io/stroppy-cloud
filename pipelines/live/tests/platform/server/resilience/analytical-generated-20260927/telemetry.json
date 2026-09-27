@@ -1,0 +1,256 @@
+{
+  "observed_at": "2026-09-27T17:26:17.586542+00:00",
+  "run_id": "7b3d8ae2-1b43-4b41-81ca-64f9e522ea86",
+  "run_status": "completed",
+  "contract_version": "2.0.1",
+  "http": {
+    "metrics": 200,
+    "raw_metrics": 200,
+    "logs": [
+      200,
+      200
+    ],
+    "forward_logs": [
+      200,
+      200
+    ],
+    "facets": 200
+  },
+  "metric_errors": [],
+  "metric_series": [
+    {
+      "key": "iterations_total",
+      "points": 2,
+      "machine": null,
+      "aggregates": {
+        "avg": 1,
+        "min": 1,
+        "max": 1,
+        "last": 1,
+        "p95": 1
+      }
+    },
+    {
+      "key": "iterations_per_second",
+      "points": 3,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 0.054297422875246665,
+        "min": 0,
+        "max": 0.08144613431287,
+        "last": 0.08144613431287,
+        "p95": 0.08144613431287
+      }
+    },
+    {
+      "key": "queries_per_second",
+      "points": 3,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 7.851624754026332,
+        "min": 6.939862862253,
+        "max": 8.307505699913,
+        "last": 8.307505699913,
+        "p95": 8.307505699913
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 21,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 67.32569133768405,
+        "min": 19.274999999999963,
+        "max": 100,
+        "last": 100,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_cpu_usage",
+      "points": 39,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 10.007403827443044,
+        "min": -100.31666666666652,
+        "max": 100,
+        "last": -100.31666666666652,
+        "p95": 100
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 17,
+      "machine": "db-1",
+      "aggregates": {
+        "avg": 863868325.6470588,
+        "min": 784166912,
+        "max": 907341824,
+        "last": 907341824,
+        "p95": 907341824
+      }
+    },
+    {
+      "key": "node_memory_used_bytes",
+      "points": 34,
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 614099787.2941177,
+        "min": 583401472,
+        "max": 682430464,
+        "last": 596500480,
+        "p95": 682430464
+      }
+    }
+  ],
+  "native_series_count": 891,
+  "native_metric_names": [
+    "stroppy_failed_iterations_total",
+    "stroppy_failed_queries_total",
+    "stroppy_insert_duration_bucket",
+    "stroppy_insert_duration_count",
+    "stroppy_insert_duration_sum",
+    "stroppy_insert_operations_total",
+    "stroppy_insert_progress_rows_per_second",
+    "stroppy_insert_progress_rows_total",
+    "stroppy_insert_rows_total",
+    "stroppy_iteration_duration_bucket",
+    "stroppy_iteration_duration_count",
+    "stroppy_iteration_duration_sum",
+    "stroppy_iterations_per_second",
+    "stroppy_iterations_total",
+    "stroppy_measurement_seconds",
+    "stroppy_queries_per_second",
+    "stroppy_retry_attempts_total",
+    "stroppy_run_query_duration_bucket",
+    "stroppy_run_query_duration_count",
+    "stroppy_run_query_duration_sum",
+    "stroppy_run_query_operations_total",
+    "stroppy_terminal_errors_total"
+  ],
+  "native_scope_mismatches": [],
+  "invalid_metric_values": [
+    {
+      "key": "node_cpu_usage",
+      "machine": "runner-1",
+      "aggregates": {
+        "avg": 10.007403827443044,
+        "min": -100.31666666666652,
+        "max": 100,
+        "last": -100.31666666666652,
+        "p95": 100
+      }
+    }
+  ],
+  "log_page_sizes": [
+    20,
+    20
+  ],
+  "forward_log_page_sizes": [
+    20,
+    20
+  ],
+  "facets": [
+    {
+      "field": "container",
+      "values": [
+        {
+          "value": "db-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "runner-1-node-exporter",
+          "count": 57
+        },
+        {
+          "value": "db-1-postgres",
+          "count": 56
+        },
+        {
+          "value": "db-1-postgres-exporter",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "field": "level",
+      "values": [
+        {
+          "value": "info",
+          "count": 518
+        },
+        {
+          "value": "unspecified",
+          "count": 36
+        },
+        {
+          "value": "warn",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "field": "machine",
+      "values": [
+        {
+          "value": "runner-1",
+          "count": 308
+        },
+        {
+          "value": "db-1",
+          "count": 234
+        }
+      ]
+    },
+    {
+      "field": "role",
+      "values": [
+        {
+          "value": "runner",
+          "count": 308
+        },
+        {
+          "value": "db",
+          "count": 234
+        }
+      ]
+    },
+    {
+      "field": "stream",
+      "values": [
+        {
+          "value": "container",
+          "count": 210
+        },
+        {
+          "value": "stroppy",
+          "count": 156
+        },
+        {
+          "value": "stdout",
+          "count": 88
+        },
+        {
+          "value": "stderr",
+          "count": 51
+        },
+        {
+          "value": "pull",
+          "count": 28
+        },
+        {
+          "value": "",
+          "count": 25
+        },
+        {
+          "value": "runc",
+          "count": 2
+        }
+      ]
+    }
+  ],
+  "logs_verified": true,
+  "native_verified": true,
+  "components_verified": false,
+  "verified": false
+}

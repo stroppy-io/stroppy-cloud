@@ -1,0 +1,29 @@
+{
+  "build": "0.0.0-dev-f658fd8b-iam-pull2-20260927",
+  "checks": [
+    {
+      "command": "go test -race ./internal/activities -count=1",
+      "status": "passed",
+      "seconds": 64.465
+    },
+    {
+      "command": "make lint-pipelines",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make contract-check",
+      "status": "passed",
+      "contract": "2.0.2",
+      "artifacts": 218
+    }
+  ],
+  "scope": "Immutable digest image cache, bounded transient registry retries; earlier IAM/heartbeat and full server/Stroppy gates retained in related evidence.",
+  "files_sha256": {
+    "pipelines/internal/activities/docker.go": "ff534c5e4a64bd16a1fcb68dff93232be6a9b2198e88dae08917cc15099943a9",
+    "pipelines/internal/activities/docker_test.go": "1e4630d48537efd3b4102a1e101ab03266336dbcaba432c77dae5a7560f0c3bb",
+    "pipelines/internal/activities/heartbeat.go": "7c59d3ce1020279aca02cc237515bf16b4175d891aedf37f9cdb2ccbdf02c5db",
+    "pipelines/internal/activities/heartbeat_test.go": "e60a93a5722bbb353f6f2acf8c9ea87528e90651841b0cce7bd4039543fbb34b",
+    "pipelines/internal/activities/ydb_refresh.go": "1d8eb781fb22f7f2a9d2e07272e50659ae81165dbd921e33c3d3ab60f3e89150"
+  }
+}

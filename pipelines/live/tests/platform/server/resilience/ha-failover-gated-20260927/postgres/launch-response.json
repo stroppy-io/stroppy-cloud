@@ -1,0 +1,2252 @@
+{
+  "observed_at": "2026-09-27T20:04:01.286021+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/tests/87dbcbf2-af72-40c7-8788-581c55daf635:launch",
+  "http_status": 201,
+  "contract_version": "2.0.1",
+  "body": {
+    "id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+    "name": "server Patroni primary outage after workload gate",
+    "status": "pending",
+    "phase": "queued",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "87dbcbf2-af72-40c7-8788-581c55daf635",
+      "name": "server Patroni primary outage after workload gate"
+    },
+    "snapshot": {
+      "execution": {
+        "additional_containers": [
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-1}",
+              "PROBE_CONTAINER": "db-1-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-1-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-1-ha-probe",
+            "restart": "no",
+            "role": "db"
+          },
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-replica-1}",
+              "PROBE_CONTAINER": "db-replica-1-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-replica-1-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-replica-1",
+            "mounts": [
+              {
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-replica-1-ha-probe",
+            "restart": "no",
+            "role": "db-replica"
+          },
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-replica-2}",
+              "PROBE_CONTAINER": "db-replica-2-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-replica-2-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-replica-2",
+            "mounts": [
+              {
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-replica-2-ha-probe",
+            "restart": "no",
+            "role": "db-replica"
+          }
+        ],
+        "containers": [
+          {
+            "name": "db-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-replica-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-replica-2-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "etcd-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "etcd-2-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "etcd-3-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "proxy-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "runner-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          },
+          {
+            "name": "db-1-postgres",
+            "set": {
+              "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+            }
+          },
+          {
+            "name": "db-1-postgres-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+            }
+          },
+          {
+            "name": "db-replica-1-postgres",
+            "set": {
+              "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+            }
+          },
+          {
+            "name": "db-replica-1-postgres-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+            }
+          },
+          {
+            "name": "db-replica-2-postgres",
+            "set": {
+              "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db"
+            }
+          },
+          {
+            "name": "db-replica-2-postgres-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d"
+            }
+          },
+          {
+            "name": "proxy-1-haproxy",
+            "set": {
+              "image": "mirror.gcr.io/library/haproxy@sha256:ff001ac3d6df60921a5e53a9ba1ec9d4fa0edd701b4f851cecbd46b42fa92f66"
+            }
+          },
+          {
+            "name": "etcd-1-etcd",
+            "set": {
+              "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+            }
+          },
+          {
+            "name": "etcd-2-etcd",
+            "set": {
+              "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+            }
+          },
+          {
+            "name": "etcd-3-etcd",
+            "set": {
+              "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b"
+            }
+          }
+        ],
+        "flows": [
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5000,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5000,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          }
+        ],
+        "workload": {
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624"
+        }
+      },
+      "database": {
+        "kind": "postgres",
+        "version": "17",
+        "params": {
+          "etcd_nodes": 3,
+          "haproxy": 1,
+          "version": "17",
+          "locale": "C.UTF-8",
+          "replicas": 2,
+          "wal_archive": false,
+          "pgbouncer": false,
+          "sync_replicas": 0,
+          "ha": "patroni",
+          "init_sql": "CREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL, started INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0,0);\nCREATE PROCEDURE live_ha_tick() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT started FROM live_ha_control WHERE id=1) = 0 THEN\n    UPDATE live_ha_control SET started=1 WHERE id=1;\n  END IF;\nEND; $$;\nCREATE PROCEDURE live_ha_verify() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    RAISE EXCEPTION 'HA failover probe did not complete';\n  END IF;\nEND; $$;\n"
+        },
+        "schema": {
+          "id": "db.postgres.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "pg",
+        "segments": [
+          {
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',inet_server_addr()::text);"
+            },
+            "log_level": "info",
+            "name": "start-ha-probe",
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "8m0s"
+          },
+          {
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_ha_tick();"
+            },
+            "log_level": "info",
+            "name": "during-failover",
+            "run": {
+              "duration": "4m0s",
+              "executor": "constant-vus",
+              "query_timeout": "5s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 1
+            },
+            "timeout": "8m0s",
+            "warmup": "0s"
+          },
+          {
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "8m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "CALL live_ha_verify();"
+            },
+            "log_level": "info",
+            "name": "verify-ha-probe",
+            "run": {
+              "executor": "shared-iterations",
+              "iterations": 1,
+              "query_timeout": "5s",
+              "vus": 1
+            }
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "db-replica": {
+          "size": "S"
+        },
+        "db": {
+          "size": "S"
+        },
+        "etcd": {
+          "size": "S"
+        },
+        "proxy": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "effective_configs": {
+        "etcd": {
+          "cfg.etcd@3": {
+            "schema": {
+              "id": "cfg.etcd",
+              "version": "3"
+            },
+            "values": {
+              "name": "default",
+              "election_timeout": 1000,
+              "data_dir": "/var/lib/etcd",
+              "auto_compaction_mode": "periodic",
+              "custom_rendered": "",
+              "listen_client_urls": "http://0.0.0.0:2379",
+              "heartbeat_interval": 100,
+              "listen_peer_urls": "http://0.0.0.0:2380",
+              "max_request_bytes": 1572864,
+              "auto_compaction_retention": "1h",
+              "initial_cluster_token": "etcd-cluster",
+              "enable_v2": "false",
+              "initial_cluster_rendered": "",
+              "initial_cluster_state": "new",
+              "quota_backend_bytes": 0,
+              "snapshot_count": 100000
+            }
+          }
+        },
+        "proxy": {
+          "cfg.haproxy.cfg@2": {
+            "schema": {
+              "id": "cfg.haproxy.cfg",
+              "version": "2"
+            },
+            "values": {
+              "listener_blocks": "",
+              "timeout_client": 1800,
+              "retries": 2,
+              "nbthread": 0,
+              "stats_auth": "",
+              "stats_enabled": true,
+              "stats_uri": "/stats",
+              "timeout_server": 1800,
+              "defaults_extra": "    log global\n    option tcplog\n",
+              "stats_port": 8404,
+              "timeout_connect": 4,
+              "global_extra": "    log /dev/log local0 info\n    stats socket /var/run/haproxy.sock mode 660 level admin\n",
+              "log": "/dev/log local0 info",
+              "mode": "tcp",
+              "option_tcplog": true,
+              "stats_socket": "/var/run/haproxy.sock",
+              "maxconn": 20000,
+              "log_format": "",
+              "timeout_check": 5,
+              "stats_block": "listen stats\n    bind *:8404\n    mode http\n    stats enable\n    stats uri /stats\n    stats refresh 5s"
+            }
+          },
+          "cfg.pgbouncer.ini@1": {
+            "schema": {
+              "id": "cfg.pgbouncer.ini",
+              "version": "1"
+            },
+            "values": {
+              "min_pool_size": 0,
+              "admin_users": "postgres",
+              "auth_file": "/etc/pgbouncer/userlist.txt",
+              "db_port": 5432,
+              "ignore_startup_parameters": "",
+              "server_idle_timeout": 600,
+              "auth_type": "scram-sha-256",
+              "db_dbname": "stroppy",
+              "log_connections": "1",
+              "listen_addr": "*",
+              "client_idle_timeout": 0,
+              "reserve_pool_timeout": 5,
+              "server_reset_query": "",
+              "stats_period": 60,
+              "query_wait_timeout": 120,
+              "stats_users": "postgres",
+              "databases_rendered": "",
+              "listen_port": 6432,
+              "log_disconnections": "1",
+              "max_client_conn": 100,
+              "server_lifetime": 3600,
+              "max_user_connections": 0,
+              "default_pool_size": 20,
+              "db_name": "stroppy",
+              "reserve_pool_size": 0,
+              "max_db_connections": 0,
+              "pool_mode": "transaction"
+            }
+          }
+        },
+        "db-replica": {
+          "cfg.patroni.yml@4": {
+            "schema": {
+              "version": "4",
+              "id": "cfg.patroni.yml"
+            },
+            "values": {
+              "synchronous_mode_strict": "false",
+              "use_slots": "true",
+              "dcs_namespace": "/service/",
+              "tag_nosync": "false",
+              "superuser_username": "postgres",
+              "synchronous_mode": "off",
+              "ttl": 30,
+              "etcd3_hosts_rendered": "",
+              "restapi_listen": "0.0.0.0:8008",
+              "scope": "stroppy",
+              "watchdog_safety_margin": 5,
+              "bin_dir": "/usr/lib/postgresql/17/bin",
+              "failsafe_mode": "false",
+              "postgresql_listen": "0.0.0.0:5432",
+              "postgresql_parameters_rendered": "",
+              "tag_clonefrom": "false",
+              "loop_wait": 10,
+              "rewind_username": "rewind",
+              "use_pg_rewind": "true",
+              "watchdog_mode": "automatic",
+              "data_dir": "/var/lib/postgresql/data",
+              "maximum_lag_on_failover": 1048576,
+              "retry_timeout": 10,
+              "synchronous_node_count": 1,
+              "tag_nofailover": "false",
+              "replication_username": "replicator",
+              "tag_noloadbalance": "false",
+              "watchdog_device": "/dev/watchdog"
+            }
+          },
+          "cfg.pg_hba.conf@1": {
+            "schema": {
+              "id": "cfg.pg_hba.conf",
+              "version": "1"
+            },
+            "values": {
+              "include_cluster_defaults": "yes",
+              "rules_rendered": "",
+              "cluster_defaults_rendered": "local\tall\tpostgres\t\tpeer"
+            }
+          },
+          "cfg.postgresql.conf@17": {
+            "schema": {
+              "id": "cfg.postgresql.conf",
+              "version": "17"
+            },
+            "values": {
+              "wal_buffers": "-1",
+              "min_wal_size": 80,
+              "deadlock_timeout": 1000,
+              "vacuum_cost_limit": 200,
+              "transaction_timeout": 0,
+              "port": 5432,
+              "max_parallel_maintenance_workers": 2,
+              "log_lock_waits": "off",
+              "autovacuum_vacuum_cost_limit": -1,
+              "autovacuum_max_workers": 3,
+              "log_autovacuum_min_duration": 600000,
+              "autovacuum_naptime": 60,
+              "statement_timeout": 0,
+              "hot_standby_feedback": "off",
+              "hash_mem_multiplier": 2,
+              "max_worker_processes": 8,
+              "synchronous_commit": "on",
+              "max_parallel_workers_per_gather": 2,
+              "log_checkpoints": "on",
+              "autovacuum_vacuum_insert_threshold": 1000,
+              "max_wal_size": 1024,
+              "effective_cache_size": 4096,
+              "logging_collector": "off",
+              "reserved_connections": 0,
+              "vacuum_cost_page_dirty": 20,
+              "max_wal_senders": 10,
+              "default_text_search_config": "pg_catalog.simple",
+              "autovacuum_vacuum_scale_factor": 0.2,
+              "superuser_reserved_connections": 3,
+              "autovacuum_vacuum_insert_scale_factor": 0.2,
+              "log_min_duration_statement": -1,
+              "vacuum_cost_delay": 0,
+              "autovacuum_analyze_scale_factor": 0.1,
+              "effective_io_concurrency": 1,
+              "fsync": "on",
+              "pg_stat_statements_track": "top",
+              "idle_in_transaction_session_timeout": 0,
+              "max_parallel_workers": 8,
+              "timezone": "UTC",
+              "max_connections": 100,
+              "autovacuum_vacuum_threshold": 50,
+              "huge_pages": "try",
+              "jit": "on",
+              "maintenance_work_mem": 64,
+              "wal_compression": "off",
+              "ssl": "off",
+              "vacuum_cost_page_miss": 2,
+              "custom_rendered": "",
+              "tcp_keepalives_interval": 0,
+              "default_statistics_target": 100,
+              "autovacuum": "on",
+              "max_locks_per_transaction": 64,
+              "shared_buffers": 128,
+              "wal_level": "replica",
+              "lc_messages": "C",
+              "log_destination": "stderr",
+              "autovacuum_vacuum_cost_delay": 2,
+              "checkpoint_timeout": 300,
+              "temp_buffers": 8,
+              "wal_writer_delay": 200,
+              "lock_timeout": 0,
+              "checkpoint_completion_target": 0.9,
+              "log_disconnections": "off",
+              "seq_page_cost": 1,
+              "pg_stat_statements_max": 5000,
+              "max_replication_slots": 10,
+              "listen_addresses": "*",
+              "autovacuum_analyze_threshold": 50,
+              "wal_keep_size": 0,
+              "extensions": [
+                "pg_stat_statements"
+              ],
+              "log_line_prefix": "%m [%p] ",
+              "random_page_cost": 4,
+              "hot_standby": "on",
+              "log_statement": "none",
+              "pg_stat_statements_rendered": "pg_stat_statements.max = 5000\npg_stat_statements.track = top",
+              "log_temp_files": -1,
+              "vacuum_cost_page_hit": 1,
+              "log_connections": "off",
+              "shared_preload_libraries": "pg_stat_statements",
+              "tcp_keepalives_count": 0,
+              "full_page_writes": "on",
+              "work_mem": 4,
+              "tcp_keepalives_idle": 0
+            }
+          }
+        },
+        "db": {
+          "cfg.exporter.postgres@1": {
+            "schema": {
+              "id": "cfg.exporter.postgres",
+              "version": "1"
+            },
+            "values": {
+              "collector_long_running_transactions": "off",
+              "opts": "--web.listen-address=:9187 --web.telemetry-path=/metrics --log.level=info --log.format=logfmt --metric-prefix=pg --collection-timeout=1m --exclude-databases=template0,template1 --collector.database --no-collector.database_wraparound --collector.locks --no-collector.long_running_transactions --no-collector.postmaster --no-collector.process_idle --collector.replication --collector.replication_slots --collector.roles --collector.settings --collector.stat_activity --no-collector.stat_activity_autovacuum --collector.stat_archiver --collector.stat_bgwriter --no-collector.stat_checkpointer --collector.stat_database --collector.stat_progress_vacuum --collector.stat_replication --collector.stat_statements --collector.stat_user_tables --no-collector.stat_wal_receiver --no-collector.statio_user_indexes --collector.statio_user_tables --collector.wal --no-collector.xlog_location --no-collector.buffercache_summary",
+              "collector_stat_activity_autovacuum": "off",
+              "collector_stat_progress_vacuum": "on",
+              "log_level": "info",
+              "log_format": "logfmt",
+              "collector_flags": "--collector.database --no-collector.database_wraparound --collector.locks --no-collector.long_running_transactions --no-collector.postmaster --no-collector.process_idle --collector.replication --collector.replication_slots --collector.roles --collector.settings --collector.stat_activity --no-collector.stat_activity_autovacuum --collector.stat_archiver --collector.stat_bgwriter --no-collector.stat_checkpointer --collector.stat_database --collector.stat_progress_vacuum --collector.stat_replication --collector.stat_statements --collector.stat_user_tables --no-collector.stat_wal_receiver --no-collector.statio_user_indexes --collector.statio_user_tables --collector.wal --no-collector.xlog_location --no-collector.buffercache_summary",
+              "exclude_databases": "template0,template1",
+              "web_telemetry_path": "/metrics",
+              "collector_process_idle": "off",
+              "collector_stat_checkpointer": "off",
+              "collector_stat_wal_receiver": "off",
+              "collector_wal": "on",
+              "collector_locks": "on",
+              "include_databases": "",
+              "web_listen_port": 9187,
+              "collector_database_wraparound": "off",
+              "collector_settings": "on",
+              "collector_statio_user_tables": "on",
+              "collector_stat_activity": "on",
+              "collector_replication": "on",
+              "collector_replication_slots": "on",
+              "auto_discover_databases": "off",
+              "collector_stat_statements": "on",
+              "collector_buffercache_summary": "off",
+              "collector_statio_user_indexes": "off",
+              "metric_prefix": "pg",
+              "collector_roles": "on",
+              "collector_xlog_location": "off",
+              "collector_postmaster": "off",
+              "collector_stat_archiver": "on",
+              "collector_stat_database": "on",
+              "collector_stat_replication": "on",
+              "disable_default_metrics": "off",
+              "collection_timeout": "1m",
+              "collector_stat_bgwriter": "on",
+              "collector_database": "on",
+              "collector_stat_user_tables": "on"
+            }
+          },
+          "cfg.patroni.yml@4": {
+            "schema": {
+              "id": "cfg.patroni.yml",
+              "version": "4"
+            },
+            "values": {
+              "synchronous_mode": "off",
+              "watchdog_device": "/dev/watchdog",
+              "bin_dir": "/usr/lib/postgresql/17/bin",
+              "failsafe_mode": "false",
+              "scope": "stroppy",
+              "tag_nosync": "false",
+              "data_dir": "/var/lib/postgresql/data",
+              "superuser_username": "postgres",
+              "synchronous_mode_strict": "false",
+              "tag_clonefrom": "false",
+              "tag_noloadbalance": "false",
+              "replication_username": "replicator",
+              "synchronous_node_count": 1,
+              "maximum_lag_on_failover": 1048576,
+              "postgresql_parameters_rendered": "",
+              "watchdog_safety_margin": 5,
+              "retry_timeout": 10,
+              "etcd3_hosts_rendered": "",
+              "restapi_listen": "0.0.0.0:8008",
+              "dcs_namespace": "/service/",
+              "loop_wait": 10,
+              "watchdog_mode": "automatic",
+              "postgresql_listen": "0.0.0.0:5432",
+              "tag_nofailover": "false",
+              "ttl": 30,
+              "use_pg_rewind": "true",
+              "use_slots": "true",
+              "rewind_username": "rewind"
+            }
+          },
+          "cfg.pg_hba.conf@1": {
+            "schema": {
+              "id": "cfg.pg_hba.conf",
+              "version": "1"
+            },
+            "values": {
+              "rules_rendered": "",
+              "cluster_defaults_rendered": "local\tall\tpostgres\t\tpeer",
+              "include_cluster_defaults": "yes"
+            }
+          },
+          "cfg.postgresql.conf@17": {
+            "schema": {
+              "version": "17",
+              "id": "cfg.postgresql.conf"
+            },
+            "values": {
+              "vacuum_cost_page_hit": 1,
+              "log_statement": "none",
+              "timezone": "UTC",
+              "fsync": "on",
+              "autovacuum_vacuum_threshold": 50,
+              "log_checkpoints": "on",
+              "transaction_timeout": 0,
+              "vacuum_cost_page_miss": 2,
+              "deadlock_timeout": 1000,
+              "max_wal_senders": 10,
+              "vacuum_cost_limit": 200,
+              "logging_collector": "off",
+              "hot_standby_feedback": "off",
+              "max_locks_per_transaction": 64,
+              "checkpoint_timeout": 300,
+              "autovacuum_analyze_threshold": 50,
+              "statement_timeout": 0,
+              "autovacuum_vacuum_scale_factor": 0.2,
+              "pg_stat_statements_rendered": "pg_stat_statements.max = 5000\npg_stat_statements.track = top",
+              "tcp_keepalives_count": 0,
+              "log_disconnections": "off",
+              "vacuum_cost_delay": 0,
+              "autovacuum": "on",
+              "wal_buffers": "-1",
+              "ssl": "off",
+              "default_statistics_target": 100,
+              "huge_pages": "try",
+              "hash_mem_multiplier": 2,
+              "max_parallel_workers": 8,
+              "work_mem": 4,
+              "log_temp_files": -1,
+              "listen_addresses": "*",
+              "default_text_search_config": "pg_catalog.simple",
+              "log_min_duration_statement": -1,
+              "vacuum_cost_page_dirty": 20,
+              "log_connections": "off",
+              "pg_stat_statements_max": 5000,
+              "max_connections": 100,
+              "maintenance_work_mem": 64,
+              "autovacuum_max_workers": 3,
+              "jit": "on",
+              "effective_cache_size": 4096,
+              "log_destination": "stderr",
+              "log_lock_waits": "off",
+              "lock_timeout": 0,
+              "checkpoint_completion_target": 0.9,
+              "temp_buffers": 8,
+              "random_page_cost": 4,
+              "tcp_keepalives_interval": 0,
+              "effective_io_concurrency": 1,
+              "autovacuum_vacuum_insert_scale_factor": 0.2,
+              "shared_buffers": 128,
+              "port": 5432,
+              "log_line_prefix": "%m [%p] ",
+              "max_parallel_maintenance_workers": 2,
+              "shared_preload_libraries": "pg_stat_statements",
+              "autovacuum_vacuum_insert_threshold": 1000,
+              "autovacuum_analyze_scale_factor": 0.1,
+              "synchronous_commit": "on",
+              "tcp_keepalives_idle": 0,
+              "pg_stat_statements_track": "top",
+              "custom_rendered": "",
+              "full_page_writes": "on",
+              "max_worker_processes": 8,
+              "min_wal_size": 80,
+              "wal_keep_size": 0,
+              "idle_in_transaction_session_timeout": 0,
+              "log_autovacuum_min_duration": 600000,
+              "autovacuum_naptime": 60,
+              "extensions": [
+                "pg_stat_statements"
+              ],
+              "max_replication_slots": 10,
+              "max_wal_size": 1024,
+              "reserved_connections": 0,
+              "lc_messages": "C",
+              "seq_page_cost": 1,
+              "wal_level": "replica",
+              "wal_writer_delay": 200,
+              "autovacuum_vacuum_cost_delay": 2,
+              "wal_compression": "off",
+              "superuser_reserved_connections": 3,
+              "hot_standby": "on",
+              "max_parallel_workers_per_gather": 2,
+              "autovacuum_vacuum_cost_limit": -1
+            }
+          }
+        }
+      },
+      "machines": [
+        {
+          "name": "db-1",
+          "role": "db",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "db-replica-1",
+          "role": "db-replica",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "db-replica-2",
+          "role": "db-replica",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 16,
+          "disk_gb": 100,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "etcd-1",
+          "role": "etcd",
+          "size": "S",
+          "cpu": 2,
+          "memory_gb": 8,
+          "disk_gb": 20,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "etcd-2",
+          "role": "etcd",
+          "size": "S",
+          "cpu": 2,
+          "memory_gb": 8,
+          "disk_gb": 20,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "etcd-3",
+          "role": "etcd",
+          "size": "S",
+          "cpu": 2,
+          "memory_gb": 8,
+          "disk_gb": 20,
+          "disk_type": "network-ssd",
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "proxy-1",
+          "role": "proxy",
+          "size": "S",
+          "cpu": 2,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        },
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "id": "spec.run",
+        "version": "1"
+      },
+      "values": {
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+        "scrapes": [
+          {
+            "job": "db-1-postgres",
+            "role": "db",
+            "url": "http://127.0.0.1:8008/metrics"
+          },
+          {
+            "job": "db-replica-1-postgres",
+            "role": "db-replica",
+            "url": "http://127.0.0.1:8008/metrics"
+          },
+          {
+            "job": "db-replica-2-postgres",
+            "role": "db-replica",
+            "url": "http://127.0.0.1:8008/metrics"
+          },
+          {
+            "job": "proxy-1-haproxy",
+            "role": "proxy",
+            "url": "http://127.0.0.1:8405/metrics"
+          }
+        ],
+        "tenant": "server-live-20260924",
+        "containers": [
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-1}",
+              "PROBE_CONTAINER": "db-1-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-1-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-1-ha-probe",
+            "restart": "no",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "etcd-1-etcd",
+              "etcd-2-etcd",
+              "etcd-3-etcd"
+            ],
+            "env": {
+              "PGDATA": "/var/lib/postgresql/data/pgdata"
+            },
+            "files": [
+              {
+                "content": "# postgresql.conf for PostgreSQL 17 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@17 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 1\njit = on\ndefault_statistics_target = 100\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = off\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/postgresql.conf"
+              },
+              {
+                "content": "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/pg_hba.conf"
+              },
+              {
+                "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"off\"\n        synchronous_mode_strict: false\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-1\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/17/bin\n    connect_address: ${ip:db-1}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-1}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-4790c0e6-69b1-4ad1-8e3f-a5a06594827d\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/patroni.yml"
+              },
+              {
+                "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\nCREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL, started INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0,0);\nCREATE PROCEDURE live_ha_tick() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT started FROM live_ha_control WHERE id=1) = 0 THEN\n    UPDATE live_ha_control SET started=1 WHERE id=1;\n  END IF;\nEND; $$;\nCREATE PROCEDURE live_ha_verify() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    RAISE EXCEPTION 'HA failover probe did not complete';\n  END IF;\nEND; $$;\nSTROPPY_SQL\n",
+                "mode": "0755",
+                "path": "/etc/stroppy/patroni-init.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db",
+            "kind": "database",
+            "machine": "db-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/pg",
+                "target": "/var/lib/postgresql/data"
+              }
+            ],
+            "name": "db-1-postgres",
+            "ports": [
+              {
+                "container": 5432,
+                "host": 5432
+              },
+              {
+                "container": 8008,
+                "host": 8008
+              }
+            ],
+            "restart": "always",
+            "role": "db"
+          },
+          {
+            "cmd": [
+              "--collector.postmaster",
+              "--collector.stat_statements",
+              "--web.listen-address=:9187"
+            ],
+            "depends_on": [
+              "db-1-postgres"
+            ],
+            "env": {
+              "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+            },
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d",
+            "kind": "exporter",
+            "machine": "db-1",
+            "name": "db-1-postgres-exporter",
+            "ports": [
+              {
+                "container": 9187,
+                "host": 9187
+              }
+            ],
+            "restart": "always",
+            "role": "db",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-replica-1}",
+              "PROBE_CONTAINER": "db-replica-1-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-replica-1-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-replica-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-replica-1-ha-probe",
+            "restart": "no",
+            "role": "db-replica"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-replica-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-replica-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "etcd-1-etcd",
+              "etcd-2-etcd",
+              "etcd-3-etcd"
+            ],
+            "env": {
+              "PGDATA": "/var/lib/postgresql/data/pgdata"
+            },
+            "files": [
+              {
+                "content": "# postgresql.conf for PostgreSQL 17 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@17 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 1\njit = on\ndefault_statistics_target = 100\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = off\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/postgresql.conf"
+              },
+              {
+                "content": "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/pg_hba.conf"
+              },
+              {
+                "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"off\"\n        synchronous_mode_strict: false\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-replica-1\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/17/bin\n    connect_address: ${ip:db-replica-1}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-replica-1}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-4790c0e6-69b1-4ad1-8e3f-a5a06594827d\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/patroni.yml"
+              },
+              {
+                "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\nCREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL, started INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0,0);\nCREATE PROCEDURE live_ha_tick() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT started FROM live_ha_control WHERE id=1) = 0 THEN\n    UPDATE live_ha_control SET started=1 WHERE id=1;\n  END IF;\nEND; $$;\nCREATE PROCEDURE live_ha_verify() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    RAISE EXCEPTION 'HA failover probe did not complete';\n  END IF;\nEND; $$;\nSTROPPY_SQL\n",
+                "mode": "0755",
+                "path": "/etc/stroppy/patroni-init.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db",
+            "kind": "database",
+            "machine": "db-replica-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/pg",
+                "target": "/var/lib/postgresql/data"
+              }
+            ],
+            "name": "db-replica-1-postgres",
+            "ports": [
+              {
+                "container": 5432,
+                "host": 5432
+              },
+              {
+                "container": 8008,
+                "host": 8008
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica"
+          },
+          {
+            "cmd": [
+              "--collector.postmaster",
+              "--collector.stat_statements",
+              "--web.listen-address=:9187"
+            ],
+            "depends_on": [
+              "db-replica-1-postgres"
+            ],
+            "env": {
+              "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+            },
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d",
+            "kind": "exporter",
+            "machine": "db-replica-1",
+            "name": "db-replica-1-postgres-exporter",
+            "ports": [
+              {
+                "container": 9187,
+                "host": 9187
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "db-1-postgres",
+              "db-replica-1-postgres",
+              "db-replica-2-postgres",
+              "proxy-1-haproxy"
+            ],
+            "env": {
+              "DB_HOSTS": "${ip:db-1},${ip:db-replica-1},${ip:db-replica-2}",
+              "DB_KIND": "postgres",
+              "DB_PASSWORD": "stroppy_postgres",
+              "DB_USER": "postgres",
+              "LOCAL_HOST": "${ip:db-replica-2}",
+              "PROBE_CONTAINER": "db-replica-2-ha-probe",
+              "PROXY_HOST": "${ip:proxy-1}",
+              "TARGET_CONTAINER": "db-replica-2-postgres",
+              "WAIT_FOR_LOAD_GATE": "1"
+            },
+            "healthcheck": {
+              "cmd": [
+                "/ha-probe",
+                "health"
+              ],
+              "interval": "1s",
+              "retries": 10
+            },
+            "image": "ghcr.io/stroppy-io/stroppy@sha256:657fe3200764f7d7d1a91590a567aac5bd387b9da526090a78941b93ccd3b8a2",
+            "kind": "addon",
+            "machine": "db-replica-2",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/var/run/docker.sock",
+                "target": "/var/run/docker.sock"
+              }
+            ],
+            "name": "db-replica-2-ha-probe",
+            "restart": "no",
+            "role": "db-replica"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "db-replica-2",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "db-replica-2-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "etcd-1-etcd",
+              "etcd-2-etcd",
+              "etcd-3-etcd"
+            ],
+            "env": {
+              "PGDATA": "/var/lib/postgresql/data/pgdata"
+            },
+            "files": [
+              {
+                "content": "# postgresql.conf for PostgreSQL 17 — generated by stroppy.\n# Do not edit: regenerate from the cfg.postgresql.conf@17 schema.\n\n# --- Memory ---\nshared_buffers = 128MB\nhuge_pages = try\ntemp_buffers = 8MB\nwork_mem = 4MB\nhash_mem_multiplier = 2\nmaintenance_work_mem = 64MB\neffective_cache_size = 4096MB\n\n# --- Write-ahead log ---\nwal_level = replica\nmax_wal_size = 1024MB\nmin_wal_size = 80MB\ncheckpoint_timeout = 300s\ncheckpoint_completion_target = 0.9\nwal_compression = off\nsynchronous_commit = on\nwal_buffers = -1\nfsync = on\nfull_page_writes = on\nwal_writer_delay = 200ms\n\n# --- Replication ---\nmax_wal_senders = 10\nmax_replication_slots = 10\nhot_standby = on\nhot_standby_feedback = off\nwal_keep_size = 0MB\n\n# --- Planner ---\nseq_page_cost = 1\nrandom_page_cost = 4\neffective_io_concurrency = 1\njit = on\ndefault_statistics_target = 100\n\n# --- Autovacuum ---\nautovacuum = on\nautovacuum_max_workers = 3\nautovacuum_naptime = 60s\nautovacuum_vacuum_threshold = 50\nautovacuum_vacuum_insert_threshold = 1000\nautovacuum_analyze_threshold = 50\nautovacuum_vacuum_scale_factor = 0.2\nautovacuum_vacuum_insert_scale_factor = 0.2\nautovacuum_analyze_scale_factor = 0.1\nautovacuum_vacuum_cost_delay = 2ms\nautovacuum_vacuum_cost_limit = -1\nvacuum_cost_delay = 0ms\nvacuum_cost_limit = 200\nvacuum_cost_page_hit = 1\nvacuum_cost_page_miss = 2\nvacuum_cost_page_dirty = 20\n\n# --- Connections ---\nlisten_addresses = '*'\nport = 5432\nmax_connections = 100\nsuperuser_reserved_connections = 3\nreserved_connections = 0\nssl = off\ntcp_keepalives_idle = 0s\ntcp_keepalives_interval = 0s\ntcp_keepalives_count = 0\n\n# --- Locks and parallelism ---\nmax_worker_processes = 8\nmax_parallel_workers = 8\nmax_parallel_workers_per_gather = 2\nmax_parallel_maintenance_workers = 2\nmax_locks_per_transaction = 64\ndeadlock_timeout = 1000ms\nlock_timeout = 0ms\nstatement_timeout = 0ms\nidle_in_transaction_session_timeout = 0ms\ntransaction_timeout = 0ms\n\n# --- Logging ---\nlogging_collector = off\nlog_destination = 'stderr'\nlog_min_duration_statement = -1\nlog_checkpoints = on\nlog_connections = off\nlog_disconnections = off\nlog_lock_waits = off\nlog_temp_files = -1\nlog_autovacuum_min_duration = 600000\nlog_line_prefix = '%m [%p] '\nlog_statement = none\n\n# --- Extensions ---\nshared_preload_libraries = 'pg_stat_statements'\npg_stat_statements.max = 5000\npg_stat_statements.track = top\n\n# --- Locale ---\ntimezone = 'UTC'\nlc_messages = 'C'\ndefault_text_search_config = 'pg_catalog.simple'\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/postgresql.conf"
+              },
+              {
+                "content": "# pg_hba.conf — generated by stroppy.\n# TYPE\tDATABASE\tUSER\tADDRESS\tMETHOD\t[OPTIONS]\nlocal\tall\tpostgres\t\tpeer\nlocal\tall\tall\ttrust\nhost\tall\tall\t127.0.0.1/32\ttrust\nhost\tall\tall\t::1/128\ttrust\nhost\tall\tall\t0.0.0.0/0\tscram-sha-256\nhost\treplication\treplicator\t0.0.0.0/0\tscram-sha-256\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/pg_hba.conf"
+              },
+              {
+                "content": "bootstrap:\n    dcs:\n        failsafe_mode: false\n        loop_wait: 10\n        maximum_lag_on_failover: 1048576\n        postgresql:\n            use_pg_rewind: true\n            use_slots: true\n        retry_timeout: 10\n        synchronous_mode: \"off\"\n        synchronous_mode_strict: false\n        synchronous_node_count: 1\n        ttl: 30\n    initdb:\n        - data-checksums\n        - locale: C.UTF-8\n        - encoding: UTF8\n    post_bootstrap: /etc/stroppy/patroni-init.sh\netcd3:\n    hosts:\n        - ${ip:etcd-1}:2379\n        - ${ip:etcd-2}:2379\n        - ${ip:etcd-3}:2379\nname: db-replica-2\nnamespace: /service/\npostgresql:\n    authentication:\n        replication:\n            password: stroppy_replication\n            username: replicator\n        rewind:\n            password: stroppy_postgres\n            username: postgres\n        superuser:\n            password: stroppy_postgres\n            username: postgres\n    bin_dir: /usr/lib/postgresql/17/bin\n    connect_address: ${ip:db-replica-2}:5432\n    custom_conf: /etc/stroppy/postgresql.conf\n    data_dir: /var/lib/postgresql/data/pgdata\n    listen: 0.0.0.0:5432\n    parameters:\n        hba_file: /etc/stroppy/pg_hba.conf\n        unix_socket_directories: /var/run/postgresql\nrestapi:\n    connect_address: ${ip:db-replica-2}:8008\n    listen: 0.0.0.0:8008\nscope: stroppy-4790c0e6-69b1-4ad1-8e3f-a5a06594827d\ntags:\n    clonefrom: false\n    nofailover: false\n    noloadbalance: false\n    nosync: false\nwatchdog:\n    device: /dev/watchdog\n    mode: \"off\"\n    safety_margin: 5\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/patroni.yml"
+              },
+              {
+                "content": "#!/bin/sh\nset -eu\npsql \"$1\" -v ON_ERROR_STOP=1 <<'STROPPY_SQL'\nCREATE EXTENSION IF NOT EXISTS pg_stat_statements;\nCREATE TABLE live_ha_markers (id INT PRIMARY KEY, payload VARCHAR(100) NOT NULL, writer VARCHAR(100) NOT NULL);\nCREATE TABLE live_ha_control (id INT PRIMARY KEY, done INT NOT NULL, started INT NOT NULL);\nINSERT INTO live_ha_control VALUES (1,0,0);\nCREATE PROCEDURE live_ha_tick() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT started FROM live_ha_control WHERE id=1) = 0 THEN\n    UPDATE live_ha_control SET started=1 WHERE id=1;\n  END IF;\nEND; $$;\nCREATE PROCEDURE live_ha_verify() LANGUAGE plpgsql AS $$ BEGIN\n  IF (SELECT done FROM live_ha_control WHERE id=1) <> 1 THEN\n    RAISE EXCEPTION 'HA failover probe did not complete';\n  END IF;\nEND; $$;\nSTROPPY_SQL\n",
+                "mode": "0755",
+                "path": "/etc/stroppy/patroni-init.sh"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD-SHELL",
+                "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U postgres -d postgres -Atqc 'SELECT 1'"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "docker.stroppy.io/stroppy-io/patroni@sha256:38091476721967c498b6aed59e530a1ca0771f3206f909cb69ea87b76df6e9db",
+            "kind": "database",
+            "machine": "db-replica-2",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/pg",
+                "target": "/var/lib/postgresql/data"
+              }
+            ],
+            "name": "db-replica-2-postgres",
+            "ports": [
+              {
+                "container": 5432,
+                "host": 5432
+              },
+              {
+                "container": 8008,
+                "host": 8008
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica"
+          },
+          {
+            "cmd": [
+              "--collector.postmaster",
+              "--collector.stat_statements",
+              "--web.listen-address=:9187"
+            ],
+            "depends_on": [
+              "db-replica-2-postgres"
+            ],
+            "env": {
+              "DATA_SOURCE_NAME": "postgresql://postgres:stroppy_postgres@127.0.0.1:5432/postgres?sslmode=disable"
+            },
+            "image": "mirror.gcr.io/prometheuscommunity/postgres-exporter@sha256:fb96c4413985d4b23ab02b19022b3d70a86c8e0a62f41ab15ebb6f4673781a5d",
+            "kind": "exporter",
+            "machine": "db-replica-2",
+            "name": "db-replica-2-postgres-exporter",
+            "ports": [
+              {
+                "container": 9187,
+                "host": 9187
+              }
+            ],
+            "restart": "always",
+            "role": "db-replica",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "/usr/local/bin/etcd",
+              "--config-file=/etc/stroppy/etcd.yml"
+            ],
+            "files": [
+              {
+                "content": "# etcd 3.5 configuration — generated by stroppy.\nname: etcd-1\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-1}:2380\nadvertise-client-urls: http://${ip:etcd-1}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: 4790c0e6-69b1-4ad1-8e3f-a5a06594827d\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/etcd.yml"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD",
+                "/usr/local/bin/etcdctl",
+                "--endpoints=http://127.0.0.1:2379",
+                "endpoint",
+                "health"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b",
+            "kind": "coordinator",
+            "machine": "etcd-1",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/etcd",
+                "target": "/var/lib/etcd"
+              }
+            ],
+            "name": "etcd-1-etcd",
+            "ports": [
+              {
+                "container": 2379,
+                "host": 2379
+              },
+              {
+                "container": 2380,
+                "host": 2380
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "etcd-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "etcd-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "/usr/local/bin/etcd",
+              "--config-file=/etc/stroppy/etcd.yml"
+            ],
+            "files": [
+              {
+                "content": "# etcd 3.5 configuration — generated by stroppy.\nname: etcd-2\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-2}:2380\nadvertise-client-urls: http://${ip:etcd-2}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: 4790c0e6-69b1-4ad1-8e3f-a5a06594827d\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/etcd.yml"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD",
+                "/usr/local/bin/etcdctl",
+                "--endpoints=http://127.0.0.1:2379",
+                "endpoint",
+                "health"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b",
+            "kind": "coordinator",
+            "machine": "etcd-2",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/etcd",
+                "target": "/var/lib/etcd"
+              }
+            ],
+            "name": "etcd-2-etcd",
+            "ports": [
+              {
+                "container": 2379,
+                "host": 2379
+              },
+              {
+                "container": 2380,
+                "host": 2380
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "etcd-2",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "etcd-2-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "/usr/local/bin/etcd",
+              "--config-file=/etc/stroppy/etcd.yml"
+            ],
+            "files": [
+              {
+                "content": "# etcd 3.5 configuration — generated by stroppy.\nname: etcd-3\ndata-dir: /var/lib/etcd\nlisten-peer-urls: http://0.0.0.0:2380\nlisten-client-urls: http://0.0.0.0:2379\ninitial-advertise-peer-urls: http://${ip:etcd-3}:2380\nadvertise-client-urls: http://${ip:etcd-3}:2379\ninitial-cluster: etcd-1=http://${ip:etcd-1}:2380,etcd-2=http://${ip:etcd-2}:2380,etcd-3=http://${ip:etcd-3}:2380\ninitial-cluster-state: new\ninitial-cluster-token: 4790c0e6-69b1-4ad1-8e3f-a5a06594827d\nheartbeat-interval: 100\nelection-timeout: 1000\nsnapshot-count: 100000\nquota-backend-bytes: 0\nauto-compaction-mode: periodic\nauto-compaction-retention: \"1h\"\nmax-request-bytes: 1572864\nenable-v2: false\n",
+                "mode": "0644",
+                "path": "/etc/stroppy/etcd.yml"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD",
+                "/usr/local/bin/etcdctl",
+                "--endpoints=http://127.0.0.1:2379",
+                "endpoint",
+                "health"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "quay.io/coreos/etcd@sha256:d367cba7801b29d2f7481bb56802894658ec8a647834509118c81f77f721381b",
+            "kind": "coordinator",
+            "machine": "etcd-3",
+            "mounts": [
+              {
+                "ro": false,
+                "source": "/data/etcd",
+                "target": "/var/lib/etcd"
+              }
+            ],
+            "name": "etcd-3-etcd",
+            "ports": [
+              {
+                "container": 2379,
+                "host": 2379
+              },
+              {
+                "container": 2380,
+                "host": 2380
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "etcd-3",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "etcd-3-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "etcd",
+            "scrape": "/metrics"
+          },
+          {
+            "depends_on": [
+              "db-1-postgres"
+            ],
+            "files": [
+              {
+                "content": "# managed by stroppy-cloud — cfg.haproxy.cfg@2\nglobal\n    maxconn 20000\n    log /dev/log local0 info\n    stats socket /tmp/haproxy.sock mode 660 level admin\n\ndefaults\n    mode tcp\n    retries 2\n    timeout connect 4s\n    timeout client 1800s\n    timeout server 1800s\n    timeout check 5s\n    log global\n    option tcplog\n\nlisten rw\n    bind *:5000\n    mode tcp\n    balance leastconn\n    option httpchk\n    http-check send meth GET uri /primary\n    http-check expect status 200\n    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n    server db-1 ${ip:db-1}:5432 check port 8008 weight 100\n    server db-replica-1 ${ip:db-replica-1}:5432 check port 8008 weight 100\n    server db-replica-2 ${ip:db-replica-2}:5432 check port 8008 weight 100\n\nlisten ro\n    bind *:5001\n    mode tcp\n    balance leastconn\n    option httpchk\n    http-check send meth GET uri /replica\n    http-check expect status 200\n    default-server inter 3s fall 3 rise 2 on-marked-down shutdown-sessions\n    server db-1 ${ip:db-1}:5432 check port 8008 weight 100\n    server db-replica-1 ${ip:db-replica-1}:5432 check port 8008 weight 100\n    server db-replica-2 ${ip:db-replica-2}:5432 check port 8008 weight 100\n\nlisten stats\n    bind *:8404\n    mode http\n    stats enable\n    stats uri /stats\n    stats refresh 5s\n\nlisten stroppy_metrics\n    bind 127.0.0.1:8405\n    mode http\n    http-request use-service prometheus-exporter if { path /metrics }\n",
+                "mode": "0644",
+                "path": "/usr/local/etc/haproxy/haproxy.cfg"
+              }
+            ],
+            "healthcheck": {
+              "cmd": [
+                "CMD",
+                "bash",
+                "-ec",
+                "haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg; exec 3<>/dev/tcp/127.0.0.1/5000"
+              ],
+              "interval": "5s",
+              "retries": 60
+            },
+            "image": "mirror.gcr.io/library/haproxy@sha256:ff001ac3d6df60921a5e53a9ba1ec9d4fa0edd701b4f851cecbd46b42fa92f66",
+            "kind": "proxy",
+            "machine": "proxy-1",
+            "name": "proxy-1-haproxy",
+            "ports": [
+              {
+                "container": 5000,
+                "host": 5000
+              },
+              {
+                "container": 5001,
+                "host": 5001
+              }
+            ],
+            "restart": "always",
+            "role": "proxy"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "proxy-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "proxy-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "proxy",
+            "scrape": "/metrics"
+          },
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "host_prep": [
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-1",
+            "role": "db"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-replica-1",
+            "role": "db-replica"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "db-replica-2",
+            "role": "db-replica"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "etcd-1",
+            "role": "etcd"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "etcd-2",
+            "role": "etcd"
+          },
+          {
+            "content": "#!/bin/sh\nset -eu\n\n# The YC recipe attaches a newly created secondary disk with device_name=data.\n# Never fall back to a positional device name such as /dev/vdb.\ndevice='/dev/disk/by-id/virtio-data'\ntarget='/data'\nfilesystem='ext4'\noptions='defaults'\nattempt=0\nwhile [ ! -b \"$device\" ]; do\n    attempt=$((attempt + 1))\n    if [ \"$attempt\" -ge 60 ]; then\n        echo \"attached data disk did not appear: $device\" >&2\n        exit 1\n    fi\n    sleep 1\ndone\ndevice=$(readlink -f \"$device\")\n# A failed probe must never mean an empty disk.\nmounts=$(lsblk -nr -o MOUNTPOINTS \"$device\")\ntypes=$(lsblk -nr -o TYPE \"$device\")\nif [ \"$types\" != disk ]; then\n    echo \"data device is not a whole disk without partitions\" >&2\n    exit 1\nfi\nif mountpoint -q \"$target\"; then\n    source=$(findmnt -n -o SOURCE --target \"$target\")\n    if [ \"$(readlink -f \"$source\")\" != \"$device\" ]; then\n        echo \"$target is mounted from a different device\" >&2\n        exit 1\n    fi\n    actual=$(findmnt -n -o FSTYPE --target \"$target\")\n    if [ \"$actual\" != \"$filesystem\" ]; then\n        echo \"existing mount has a different filesystem\" >&2\n        exit 1\n    fi\n    exit 0\nfi\nif [ -n \"$(printf '%s' \"$mounts\" | tr -d '[:space:]')\" ]; then\n    echo \"data disk is already in use\" >&2\n    exit 1\nfi\nif [ -d \"$target\" ] && [ -n \"$(find \"$target\" -mindepth 1 -maxdepth 1 -print -quit)\" ]; then\n    echo \"refusing to hide existing files beneath $target\" >&2\n    exit 1\nfi\nsignatures=$(wipefs --no-act --noheadings --output TYPE \"$device\")\ncase \"$signatures\" in\n    '')\n        if ! command -v \"mkfs.$filesystem\" >/dev/null 2>&1; then\n            case \"$filesystem\" in\n                xfs) apt-get update; DEBIAN_FRONTEND=noninteractive apt-get install -y xfsprogs ;;\n                *) echo \"missing filesystem tool: mkfs.$filesystem\" >&2; exit 1 ;;\n            esac\n        fi\n        \"mkfs.$filesystem\" \"$device\"\n        ;;\n    \"$filesystem\") ;; # Retry after formatting or unmounting the same data disk.\n    *) echo \"data disk has unexpected signatures; refusing to format it\" >&2; exit 1 ;;\nesac\nmkdir -p \"$target\"\nmount -t \"$filesystem\" -o \"$options\" \"$device\" \"$target\"\nuuid=$(blkid -o value -s UUID \"$device\")\nfstype=$(blkid -o value -s TYPE \"$device\")\nif ! awk -v target=\"$target\" '$2 == target { found=1 } END { exit !found }' /etc/fstab; then\n    printf 'UUID=%s %s %s %s 0 2\\n' \"$uuid\" \"$target\" \"$fstype\" \"$options\" >> /etc/fstab\nfi\nfindmnt --target \"$target\"\n",
+            "kind": "script",
+            "machine": "etcd-3",
+            "role": "etcd"
+          }
+        ],
+        "workload": {
+          "driver_type": "postgres",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "start-ha-probe",
+              "run": {
+                "executor": "shared-iterations",
+                "iterations": 1,
+                "query_timeout": "5s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "8m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',inet_server_addr()::text);"
+              }
+            },
+            {
+              "log_level": "info",
+              "name": "during-failover",
+              "run": {
+                "duration": "4m0s",
+                "executor": "constant-vus",
+                "query_timeout": "5s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 1
+              },
+              "timeout": "8m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "CALL live_ha_tick();"
+              }
+            },
+            {
+              "log_level": "info",
+              "name": "verify-ha-probe",
+              "run": {
+                "executor": "shared-iterations",
+                "iterations": 1,
+                "query_timeout": "5s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "8m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "CALL live_ha_verify();"
+              }
+            }
+          ],
+          "stroppy_image": "ghcr.io/stroppy-io/stroppy@sha256:65378b0d306301a2d80030a74230be4327b4f2c084ae37e009deda342c0b2624",
+          "url": "postgresql://postgres:stroppy_postgres@${ip:role:proxy}:5000/postgres?sslmode=disable"
+        },
+        "keep": "0s",
+        "machines": [
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "postgres",
+              "stroppy.io/role": "db"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-1",
+            "role": "db"
+          },
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "postgres",
+              "stroppy.io/role": "db-replica"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-replica-1",
+            "role": "db-replica"
+          },
+          {
+            "cpu": 4,
+            "disks": [
+              {
+                "gb": 100,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "postgres",
+              "stroppy.io/role": "db-replica"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 16,
+            "name": "db-replica-2",
+            "role": "db-replica"
+          },
+          {
+            "cpu": 2,
+            "disks": [
+              {
+                "gb": 20,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "etcd",
+              "stroppy.io/role": "etcd"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "etcd-1",
+            "role": "etcd"
+          },
+          {
+            "cpu": 2,
+            "disks": [
+              {
+                "gb": 20,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "etcd",
+              "stroppy.io/role": "etcd"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "etcd-2",
+            "role": "etcd"
+          },
+          {
+            "cpu": 2,
+            "disks": [
+              {
+                "gb": 20,
+                "mount": "/data",
+                "name": "data",
+                "type": "network-ssd"
+              }
+            ],
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "etcd",
+              "stroppy.io/role": "etcd"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "etcd-3",
+            "role": "etcd"
+          },
+          {
+            "cpu": 2,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "haproxy",
+              "stroppy.io/role": "proxy"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "proxy-1",
+            "role": "proxy"
+          },
+          {
+            "cpu": 4,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ],
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "flows": [
+          {
+            "from_role": "db-replica",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "pg-streaming",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "pg-streaming",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "pg-streaming",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "etcd",
+            "port": 2379,
+            "protocol": "tcp",
+            "to_role": "etcd"
+          },
+          {
+            "from_role": "db",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "pg-streaming",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db",
+            "label": "pg-streaming",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db",
+            "label": "etcd",
+            "port": 2379,
+            "protocol": "tcp",
+            "to_role": "etcd"
+          },
+          {
+            "from_role": "etcd",
+            "label": "etcd-peer",
+            "port": 2380,
+            "protocol": "tcp",
+            "to_role": "etcd"
+          },
+          {
+            "from_role": "proxy",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "proxy",
+            "label": "pg",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "proxy",
+            "label": "patroni-api",
+            "port": 8008,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "proxy",
+            "label": "pg",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "runner",
+            "label": "pg",
+            "port": 5000,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          },
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db",
+            "label": "ha-probe",
+            "port": 5000,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5432,
+            "protocol": "tcp",
+            "to_role": "db-replica"
+          },
+          {
+            "from_role": "db-replica",
+            "label": "ha-probe",
+            "port": 5000,
+            "protocol": "tcp",
+            "to_role": "proxy"
+          }
+        ],
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        }
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "created_at": "2026-09-27T20:03:57Z",
+    "started_at": null,
+    "finished_at": null,
+    "duration": null,
+    "summary": {
+      "db_kind": "postgres",
+      "db_version": "17",
+      "protocol": "pg",
+      "stroppy_version": "6.0.0",
+      "topology_label": "postgres + 2 replicas + patroni + haproxy",
+      "node_count": 8,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "db": {
+          "size": "S"
+        },
+        "etcd": {
+          "size": "S"
+        },
+        "proxy": {
+          "size": "S"
+        },
+        "runner": {
+          "size": "S"
+        },
+        "db-replica": {
+          "size": "S"
+        }
+      },
+      "progress_pct": 0
+    },
+    "graphene": {
+      "run_ref": "run/4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

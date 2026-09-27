@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "run_id": "d1c531ed-2199-4049-98b2-44ccfa07a05e",
+  "checked_at": "2026-09-27T19:58:00.370151+00:00",
+  "checks": [
+    {
+      "id": "compile",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "Server validated and compiled the test before launch.",
+      "evidence": {
+        "path": "tests/mysql/8.4/group-proxysql/failover/server-primary-rejoin/runs/d1c531ed-2199-4049-98b2-44ccfa07a05e/run.json",
+        "pointer": "/body"
+      }
+    },
+    {
+      "id": "infrastructure_provisioning",
+      "group": "deployment",
+      "status": "passed",
+      "reason": "All required machines executed the scenario. Exact hardware SKU is not asserted.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/final.json",
+        "pointer": "/body/result"
+      }
+    },
+    {
+      "id": "smoke",
+      "group": "workload_check",
+      "status": "passed",
+      "reason": "Start and final SQL assertions passed; permitted errors during the controlled outage are retained in the result.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/ha-verification.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "native_tps",
+      "group": "native_metrics",
+      "status": "not_applicable",
+      "reason": "execute_sql reports native queries/s rather than logical transaction TPS.",
+      "evidence": null
+    },
+    {
+      "id": "native_otlp_metrics",
+      "group": "native_metrics",
+      "status": "passed",
+      "reason": "Native Stroppy metrics retain correct run/namespace scope.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/telemetry.json",
+        "pointer": "/native_verified"
+      }
+    },
+    {
+      "id": "component_metrics",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "All host CPU series valid through teardown; all database exporters healthy after rejoin.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/cpu-tail.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "component_logs",
+      "group": "telemetry",
+      "status": "passed",
+      "reason": "Component logs, facets and pagination are available through the server.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/telemetry.json",
+        "pointer": "/logs_verified"
+      }
+    },
+    {
+      "id": "pipeline_traces",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "database_metric_distributions",
+      "group": "telemetry",
+      "status": "not_run",
+      "reason": "No explicit acceptance evidence recorded for this check.",
+      "evidence": null
+    },
+    {
+      "id": "managed_database_metrics",
+      "group": "telemetry",
+      "status": "not_applicable",
+      "reason": "Self-managed database.",
+      "evidence": null
+    },
+    {
+      "id": "artifacts",
+      "group": "artifacts",
+      "status": "passed",
+      "reason": "Config/log artifacts match size and SHA after cleanup.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/artifacts.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "replication",
+      "group": "replication",
+      "status": "passed",
+      "reason": "Exact probe-row consistency and proxy write availability across one primary container stop/start. Not a VM/disk outage or losslessness proof for arbitrary workloads.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/ha-verification.json",
+        "pointer": "/verified"
+      }
+    },
+    {
+      "id": "cleanup",
+      "group": "cleanup",
+      "status": "passed",
+      "reason": "No infrastructure or kept stand remains in the server resource tree.",
+      "evidence": {
+        "path": "tests/platform/server/resilience/ha-failover-20260927/mysql/cleanup.json",
+        "pointer": "/verified"
+      }
+    }
+  ]
+}

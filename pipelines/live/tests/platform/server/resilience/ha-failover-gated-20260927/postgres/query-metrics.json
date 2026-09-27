@@ -1,0 +1,306 @@
+{
+  "observed_at": "2026-09-27T20:27:12.488070+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/4790c0e6-69b1-4ad1-8e3f-a5a06594827d/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "4790c0e6-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "590389a6-5372-4e7a-83fc-6c169dae7502",
+            "service.name": "stroppy",
+            "service.version": "dev-tpcds-b788c6435564",
+            "step": "workload",
+            "stroppy.run.id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy.segment": "start-ha-probe",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790539845,
+              "1"
+            ],
+            [
+              1790539850,
+              "1"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "4790c0e6-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "ccfef040-e5c5-4825-a6e7-60e4f19bc642",
+            "service.name": "stroppy",
+            "service.version": "dev-tpcds-b788c6435564",
+            "step": "workload",
+            "stroppy.run.id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy.segment": "during-failover",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790539860,
+              "1498"
+            ],
+            [
+              1790539865,
+              "1498"
+            ],
+            [
+              1790539870,
+              "17496"
+            ],
+            [
+              1790539875,
+              "17496"
+            ],
+            [
+              1790539880,
+              "41169"
+            ],
+            [
+              1790539885,
+              "41169"
+            ],
+            [
+              1790539890,
+              "63105"
+            ],
+            [
+              1790539895,
+              "63105"
+            ],
+            [
+              1790539900,
+              "84615"
+            ],
+            [
+              1790539905,
+              "84615"
+            ],
+            [
+              1790539910,
+              "107863"
+            ],
+            [
+              1790539915,
+              "107863"
+            ],
+            [
+              1790539920,
+              "129223"
+            ],
+            [
+              1790539925,
+              "129223"
+            ],
+            [
+              1790539930,
+              "150805"
+            ],
+            [
+              1790539935,
+              "150805"
+            ],
+            [
+              1790539940,
+              "172784"
+            ],
+            [
+              1790539945,
+              "172784"
+            ],
+            [
+              1790539950,
+              "195212"
+            ],
+            [
+              1790539955,
+              "195212"
+            ],
+            [
+              1790539960,
+              "218550"
+            ],
+            [
+              1790539965,
+              "218550"
+            ],
+            [
+              1790539970,
+              "243975"
+            ],
+            [
+              1790539975,
+              "243975"
+            ],
+            [
+              1790539980,
+              "271218"
+            ],
+            [
+              1790539985,
+              "271218"
+            ],
+            [
+              1790539990,
+              "298220"
+            ],
+            [
+              1790539995,
+              "298220"
+            ],
+            [
+              1790540000,
+              "324623"
+            ],
+            [
+              1790540005,
+              "324623"
+            ],
+            [
+              1790540010,
+              "351132"
+            ],
+            [
+              1790540015,
+              "351132"
+            ],
+            [
+              1790540020,
+              "376994"
+            ],
+            [
+              1790540025,
+              "376994"
+            ],
+            [
+              1790540030,
+              "403549"
+            ],
+            [
+              1790540035,
+              "403549"
+            ],
+            [
+              1790540040,
+              "430445"
+            ],
+            [
+              1790540045,
+              "430445"
+            ],
+            [
+              1790540050,
+              "457398"
+            ],
+            [
+              1790540055,
+              "457398"
+            ],
+            [
+              1790540060,
+              "484132"
+            ],
+            [
+              1790540065,
+              "484132"
+            ],
+            [
+              1790540070,
+              "510933"
+            ],
+            [
+              1790540075,
+              "510933"
+            ],
+            [
+              1790540080,
+              "537038"
+            ],
+            [
+              1790540085,
+              "537038"
+            ],
+            [
+              1790540090,
+              "563921"
+            ],
+            [
+              1790540095,
+              "563921"
+            ],
+            [
+              1790540100,
+              "563921"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "4790c0e6-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "f52bf120-6371-42f2-8b91-d187f63de631",
+            "service.name": "stroppy",
+            "service.version": "dev-tpcds-b788c6435564",
+            "step": "workload",
+            "stroppy.run.id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy.segment": "verify-ha-probe",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790540090,
+              "1"
+            ],
+            [
+              1790540095,
+              "1"
+            ]
+          ]
+        }
+      ]
+    },
+    "stats": {
+      "seriesFetched": "3",
+      "executionTimeMsec": 1
+    }
+  }
+}

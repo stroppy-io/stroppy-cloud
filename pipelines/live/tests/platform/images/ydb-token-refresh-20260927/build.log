@@ -1,0 +1,3 @@
+echo dev-iam-e621e2612d93
+dev-iam-e621e2612d93
+CGO_ENABLED=0 go build -trimpath  -ldflags "-s -w -X 'github.com/stroppy-io/stroppy/internal/version.Version=dev-iam-e621e2612d93'" -o /home/yaroher/devel/github/stroppy-io/stroppy/build/stroppy ./cmd/stroppy

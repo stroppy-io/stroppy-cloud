@@ -1,0 +1,50 @@
+[
+  {
+    "at": "2026-09-27T19:39:33.587773+00:00",
+    "state": [
+      "running",
+      "provisioning",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T19:42:59.924914+00:00",
+    "state": [
+      "running",
+      "deploying",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T19:46:51.227476+00:00",
+    "state": [
+      "running",
+      "workload",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T19:47:01.299644+00:00",
+    "state": [
+      "running",
+      "collecting",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T19:47:11.352621+00:00",
+    "state": [
+      "running",
+      "teardown",
+      null
+    ]
+  },
+  {
+    "at": "2026-09-27T19:58:25.389086+00:00",
+    "state": [
+      "failed",
+      "done",
+      "segment during-failover failed: stroppy exit status 1: Error: failed to run go workload: driver dispatch: context canceled: context deadline exceeded"
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "observed_at": "2026-09-27T19:04:30.024865+00:00",
+    "state": [
+      "pending",
+      "queued"
+    ]
+  },
+  {
+    "observed_at": "2026-09-27T19:04:35.050507+00:00",
+    "state": [
+      "running",
+      "provisioning"
+    ]
+  },
+  {
+    "observed_at": "2026-09-27T19:07:31.022519+00:00",
+    "state": [
+      "running",
+      "deploying"
+    ]
+  },
+  {
+    "observed_at": "2026-09-27T19:07:39.793108+00:00",
+    "state": [
+      "cancelling",
+      "deploying"
+    ]
+  },
+  {
+    "observed_at": "2026-09-27T19:13:51.885097+00:00",
+    "state": [
+      "cancelled",
+      "done"
+    ]
+  }
+]

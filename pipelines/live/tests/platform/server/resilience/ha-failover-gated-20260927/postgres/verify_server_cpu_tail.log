@@ -1,0 +1,90 @@
+{
+  "observed_at": "2026-09-27T20:28:58.144873+00:00",
+  "run_id": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+  "query": {
+    "query": "100 * (1 - avg by (\"graphene.agent\") (rate(node_cpu_seconds_total{mode=\"idle\"}[1m])))",
+    "start": "2026-09-27T20:04:01Z",
+    "end": "2026-09-27T20:28:48+00:00",
+    "step": "5s"
+  },
+  "http_status": 200,
+  "series": [
+    {
+      "agent": "4790c0e6-db-1",
+      "points": 168,
+      "min": 0.2624671916011123,
+      "max": 3.88768898488121,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-db-replica-1",
+      "points": 156,
+      "min": 0.26085367272004056,
+      "max": 0.6791312433580998,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-db-replica-2",
+      "points": 90,
+      "min": 0.2699559764099968,
+      "max": 1.8385039527004432,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-etcd-1",
+      "points": 138,
+      "min": 0.6811762751288031,
+      "max": 54.45488659382994,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-etcd-2",
+      "points": 114,
+      "min": 0.7874538990597202,
+      "max": 1.9191181353342746,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-etcd-3",
+      "points": 72,
+      "min": 0.7707769232047301,
+      "max": 2.093023255813864,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-proxy-1",
+      "points": 127,
+      "min": 0.2092814669635512,
+      "max": 63.4476459353981,
+      "verified": true
+    },
+    {
+      "agent": "4790c0e6-runner-1",
+      "points": 61,
+      "min": 3.4406031018564542,
+      "max": 8.769977074126967,
+      "verified": true
+    }
+  ],
+  "expected_agents": [
+    "4790c0e6-db-1",
+    "4790c0e6-db-replica-1",
+    "4790c0e6-db-replica-2",
+    "4790c0e6-etcd-1",
+    "4790c0e6-etcd-2",
+    "4790c0e6-etcd-3",
+    "4790c0e6-proxy-1",
+    "4790c0e6-runner-1"
+  ],
+  "observed_agents": [
+    "4790c0e6-db-1",
+    "4790c0e6-db-replica-1",
+    "4790c0e6-db-replica-2",
+    "4790c0e6-etcd-1",
+    "4790c0e6-etcd-2",
+    "4790c0e6-etcd-3",
+    "4790c0e6-proxy-1",
+    "4790c0e6-runner-1"
+  ],
+  "verified": true
+}

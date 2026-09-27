@@ -98,7 +98,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Mint the Grafana scope cookie for a shared run. */
+        /** Grafana session for a shared run (unavailable until supported through Graphene). */
         post: operations["createPublicShareGrafanaSession"];
         delete?: never;
         options?: never;
@@ -1350,7 +1350,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Typed log query (VictoriaLogs behind, scope forced to the run). */
+        /** Typed log query through Graphene, scoped to the run. */
         get: operations["queryRunLogs"];
         put?: never;
         post?: never;
@@ -1386,7 +1386,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** LogsQL query, AND-ed with the run scope by the server. */
+        /** LogsQL filter evaluated by Graphene inside the authorized run scope. */
         post: operations["queryRunLogsRaw"];
         delete?: never;
         options?: never;
@@ -1437,7 +1437,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Mint the Grafana scope cookie and dashboard links for the run. */
+        /** Grafana session (unavailable until supported through Graphene). */
         post: operations["createRunGrafanaSession"];
         delete?: never;
         options?: never;
@@ -7111,7 +7111,7 @@ export interface operations {
             };
         };
         responses: {
-            /** @description Prometheus range result (as returned by VictoriaMetrics). */
+            /** @description Prometheus range result returned by Graphene. */
             200: {
                 headers: {
                     [name: string]: unknown;

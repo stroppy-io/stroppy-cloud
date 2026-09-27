@@ -1,0 +1,6 @@
+{
+  "reference": "docker.stroppy.io/stroppy-io/stroppy@sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c",
+  "source": "ghcr.io/stroppy-io/stroppy@sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c",
+  "anonymous_manifest_digest_equal": true,
+  "note": "Existing public project registry mirror; no credentials retrieved or new registry created."
+}

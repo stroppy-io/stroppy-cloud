@@ -1,0 +1,43 @@
+{
+  "observed_at": "2026-09-27T12:34:24.765269+00:00",
+  "method": "GET",
+  "path": "/api/v1/admin/status",
+  "http_status": 200,
+  "contract_version": "2.0.1",
+  "body": {
+    "version": "0.0.0-dev-f658fd8b-resilience1-20260927",
+    "commit": "f658fd8b",
+    "started_at": "2026-09-27T12:32:11Z",
+    "components": {
+      "postgres": {
+        "status": "ok"
+      },
+      "graphene": {
+        "status": "ok"
+      }
+    },
+    "pipelines": {
+      "expected_revision": "0.0.0-dev-f658fd8b-resilience1-20260927",
+      "namespaces": [
+        {
+          "namespace": "t-server-live-20260924",
+          "tenant_slug": "server-live-20260924",
+          "status": "failed",
+          "revision": "0.0.0-dev-f658fd8b-resilience1-20260927",
+          "error": "stroppy-quotas: publish manifest: rpc error: code = FailedPrecondition desc = failed workflow update: Unable to perform workflow execution update due to Workflow Task in failed state.",
+          "pushed_at": "2026-09-25T14:45:09Z"
+        }
+      ]
+    },
+    "runs": {
+      "running": 0,
+      "pending": 0,
+      "kept_stands": 0
+    },
+    "tenants": {
+      "active": 1,
+      "suspended": 0,
+      "orphaned": 0
+    }
+  }
+}

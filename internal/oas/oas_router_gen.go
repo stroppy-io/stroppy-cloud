@@ -6443,7 +6443,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								switch method {
 								case "POST":
 									r.name = CreatePublicShareGrafanaSessionOperation
-									r.summary = "Mint the Grafana scope cookie for a shared run."
+									r.summary = "Grafana session for a shared run (unavailable until supported through Graphene)."
 									r.operationID = "createPublicShareGrafanaSession"
 									r.operationGroup = ""
 									r.pathPattern = "/api/v1/public/share/{token}/grafana-session"
@@ -7490,7 +7490,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 												switch method {
 												case "POST":
 													r.name = CreateRunGrafanaSessionOperation
-													r.summary = "Mint the Grafana scope cookie and dashboard links for the run."
+													r.summary = "Grafana session (unavailable until supported through Graphene)."
 													r.operationID = "createRunGrafanaSession"
 													r.operationGroup = ""
 													r.pathPattern = "/api/v1/t/{slug}/runs/{id}/grafana-session"
@@ -7514,7 +7514,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 												switch method {
 												case "GET":
 													r.name = QueryRunLogsOperation
-													r.summary = "Typed log query (VictoriaLogs behind, scope forced to the run)."
+													r.summary = "Typed log query through Graphene, scoped to the run."
 													r.operationID = "queryRunLogs"
 													r.operationGroup = ""
 													r.pathPattern = "/api/v1/t/{slug}/runs/{id}/logs"
@@ -7576,7 +7576,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 														switch method {
 														case "POST":
 															r.name = QueryRunLogsRawOperation
-															r.summary = "LogsQL query, AND-ed with the run scope by the server."
+															r.summary = "LogsQL filter evaluated by Graphene inside the authorized run scope."
 															r.operationID = "queryRunLogsRaw"
 															r.operationGroup = ""
 															r.pathPattern = "/api/v1/t/{slug}/runs/{id}/logs:raw"

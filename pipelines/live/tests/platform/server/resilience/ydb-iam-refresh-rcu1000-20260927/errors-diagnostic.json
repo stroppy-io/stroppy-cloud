@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-09-27T20:58:47.686599+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/546827b6-29e3-4974-bf7e-ad81dbf75cda/logs?q=error&limit=10",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T20:57:55Z",
+        "message": "2026/09/27 20:57:54 ERROR Activity error. Namespace t-server-live-20260924 TaskQueue agent/546827b6-runner-1/run/546827b6-29e3-4974-bf7e-ad81dbf75cda WorkerID 1569@runner-1@ WorkflowID run/546827b6-29e3-4974-bf7e-ad81dbf75cda RunID 01a0e4a4-f261-7827-97cd-68d5ed77199d ActivityType stroppy.database.ready Attempt 1 Error pull ghcr.io/stroppy-io/stroppy@sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c: Error response from daemon: failed to resolve reference \"ghcr.io/stroppy-io/stroppy@sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c\": failed to do request: Head \"https://ghcr.io/v2/stroppy-io/stroppy/manifests/sha256:7e58c713d13387b2e82a85ffd909daf184b10b06c64ae724c17d126475e1f25c\": dial tcp 140.82.121.33:443: i/o timeout",
+        "level": "unspecified",
+        "stream": "container",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "service.name": "graphene-agent",
+          "stream": "container",
+          "graphene.run": "546827b6-29e3-4974-bf7e-ad81dbf75cda",
+          "severity_number": "0",
+          "graphene.agent": "546827b6-runner-1",
+          "graphene.namespace": "t-server-live-20260924",
+          "graphene.role": "agent"
+        }
+      }
+    ],
+    "older": null,
+    "newer": null,
+    "truncated": false
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "id": "tests/postgres/17/patroni-ha/failover/server-primary-rejoin",
+  "database": "postgres",
+  "version": "17",
+  "topology": "patroni-ha",
+  "workload": "execute/sql",
+  "preset": "server-primary-rejoin",
+  "provider": "yandex",
+  "zones": [
+    "ru-central1-d"
+  ],
+  "acceptance_scope": "real YC run launched and observed through the local server API",
+  "selected_run": "4790c0e6-69b1-4ad1-8e3f-a5a06594827d",
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T20:27:01.342858+00:00"
+  },
+  "checks": "checks.json",
+  "runs": [
+    "runs/48021b46-d718-4dde-b0fb-a2aca859ec8f",
+    "runs/4790c0e6-69b1-4ad1-8e3f-a5a06594827d"
+  ],
+  "source": {
+    "path": "tests/postgres/17/patroni-ha/failover/server-primary-rejoin/runs/4790c0e6-69b1-4ad1-8e3f-a5a06594827d/run.json",
+    "pointer": "/body"
+  },
+  "input": "input.json",
+  "input_status": "public_snapshot",
+  "input_note": "Compiled RunSpec from the server API; operator OTLP headers omitted.",
+  "actual_segments": [
+    {
+      "log_level": "info",
+      "name": "start-ha-probe",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "INSERT INTO live_ha_markers VALUES (0,'before-fault',inet_server_addr()::text);"
+      }
+    },
+    {
+      "log_level": "info",
+      "name": "during-failover",
+      "run": {
+        "duration": "4m0s",
+        "executor": "constant-vus",
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 1
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "CALL live_ha_tick();"
+      }
+    },
+    {
+      "log_level": "info",
+      "name": "verify-ha-probe",
+      "run": {
+        "executor": "shared-iterations",
+        "iterations": 1,
+        "query_timeout": "5s",
+        "vus": 1
+      },
+      "thresholds": {
+        "error_rate": 0
+      },
+      "timeout": "8m0s",
+      "warmup": "0s",
+      "workload": {
+        "script": "execute_sql",
+        "sql_body": "CALL live_ha_verify();"
+      }
+    }
+  ]
+}

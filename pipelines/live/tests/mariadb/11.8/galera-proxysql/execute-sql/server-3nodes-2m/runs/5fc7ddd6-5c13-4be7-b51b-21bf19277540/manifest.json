@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": "5fc7ddd6-5c13-4be7-b51b-21bf19277540",
+  "case_paths": [
+    "tests/mariadb/11.8/galera-proxysql/execute-sql/server-3nodes-2m"
+  ],
+  "execution": {
+    "status": "completed",
+    "observed_at": "2026-09-27T17:20:02.318861+00:00"
+  },
+  "input_status": "public_snapshot",
+  "input_source": {
+    "path": "tests/mariadb/11.8/galera-proxysql/execute-sql/server-3nodes-2m/runs/5fc7ddd6-5c13-4be7-b51b-21bf19277540/run.json",
+    "pointer": "/body/run_spec/values"
+  }
+}
