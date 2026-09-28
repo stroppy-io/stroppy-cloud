@@ -244,6 +244,8 @@ func artifactKind(name string) string {
 	switch {
 	case strings.HasSuffix(name, "-config"):
 		return "config"
+	case strings.HasSuffix(name, "-report"):
+		return "report"
 	case strings.HasSuffix(name, "-log"):
 		return "log_bundle"
 	}

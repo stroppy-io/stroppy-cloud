@@ -32689,6 +32689,24 @@ func (s *RunResultSegmentsItem) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if len(s.Report) != 0 {
+			e.FieldStart("report")
+			e.Raw(s.Report)
+		}
+	}
+	{
+		if s.ReportArtifact.Set {
+			e.FieldStart("report_artifact")
+			s.ReportArtifact.Encode(e)
+		}
+	}
+	{
+		if s.ReportOmitted.Set {
+			e.FieldStart("report_omitted")
+			s.ReportOmitted.Encode(e)
+		}
+	}
+	{
 		if s.Metrics.Set {
 			e.FieldStart("metrics")
 			s.Metrics.Encode(e)
@@ -32696,16 +32714,19 @@ func (s *RunResultSegmentsItem) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRunResultSegmentsItem = [9]string{
-	0: "name",
-	1: "status",
-	2: "started_at",
-	3: "finished_at",
-	4: "exit_code",
-	5: "error",
-	6: "errors",
-	7: "compliance",
-	8: "metrics",
+var jsonFieldsNameOfRunResultSegmentsItem = [12]string{
+	0:  "name",
+	1:  "status",
+	2:  "started_at",
+	3:  "finished_at",
+	4:  "exit_code",
+	5:  "error",
+	6:  "errors",
+	7:  "compliance",
+	8:  "report",
+	9:  "report_artifact",
+	10: "report_omitted",
+	11: "metrics",
 }
 
 // Decode decodes RunResultSegmentsItem from json.
@@ -32799,6 +32820,37 @@ func (s *RunResultSegmentsItem) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"compliance\"")
+			}
+		case "report":
+			if err := func() error {
+				v, err := d.RawAppend(nil)
+				s.Report = jx.Raw(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"report\"")
+			}
+		case "report_artifact":
+			if err := func() error {
+				s.ReportArtifact.Reset()
+				if err := s.ReportArtifact.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"report_artifact\"")
+			}
+		case "report_omitted":
+			if err := func() error {
+				s.ReportOmitted.Reset()
+				if err := s.ReportOmitted.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"report_omitted\"")
 			}
 		case "metrics":
 			if err := func() error {

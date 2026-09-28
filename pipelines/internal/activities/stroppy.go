@@ -68,7 +68,8 @@ type RunSegmentResult struct {
 	// ConfigPath is the rendered stroppy-config.json on the machine.
 	ConfigPath string `json:"config_path,omitempty"`
 	// LogPath is the full stroppy output on the machine.
-	LogPath string `json:"log_path,omitempty"`
+	LogPath    string `json:"log_path,omitempty"`
+	ReportPath string `json:"report_path,omitempty"`
 }
 
 // RunSegment runs ON THE RUNNER MACHINE's agent container: writes the
@@ -91,7 +92,7 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 	if err != nil {
 		return RunSegmentResult{}, err
 	}
-	runCtx, args, cleanup, err := ydbRuntimeArgs(ctx, cfgPath, req.Workload.YDBIAMCredentialsSecret, stroppycfg.Args(seg), stroppyContainer{
+	args, cleanup, err := ydbRuntimeArgs(ctx, cfgPath, req.Workload.YDBIAMCredentialsSecret, stroppycfg.Args(seg), stroppyContainer{
 		Name:  "stroppy-auth-version-" + segmentSlug(req.Index, seg.Name),
 		Image: req.Workload.StroppyImage, RegistrySecret: req.RegistrySecret,
 		Dir: dir, Args: []string{"version", "--json"}, LogName: seg.Name + "-auth-capabilities",
@@ -101,23 +102,31 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		return RunSegmentResult{}, err
 	}
 	defer cleanup()
+	args, reportPath, err := reportRuntimeArgs(ctx, stroppyContainer{
+		Name: "stroppy-" + segmentSlug(req.Index, seg.Name), Image: req.Workload.StroppyImage,
+		RegistrySecret: req.RegistrySecret, Dir: dir, LogName: seg.Name,
+	}, args)
+	if err != nil {
+		return RunSegmentResult{}, err
+	}
+	// Stroppy atomically creates its report with mode 0600. Match the agent
+	// identity so it can read/publish the file, including non-root agents.
+	user := ""
+	if reportPath != "" {
+		user = fmt.Sprintf("%d:%d", os.Geteuid(), os.Getegid())
+	}
 	started := time.Now().UTC()
-	out, err := runStroppy(runCtx, stroppyContainer{
+	out, err := runStroppy(ctx, stroppyContainer{
 		Name:           "stroppy-" + segmentSlug(req.Index, seg.Name),
 		Image:          req.Workload.StroppyImage,
 		RegistrySecret: req.RegistrySecret,
 		Dir:            dir,
 		Args:           args,
+		User:           user,
 		Labels:         map[string]string{"stroppy-run": req.RunID, "stroppy-segment": seg.Name},
 		LogName:        seg.Name,
 	})
 	if err != nil {
-		if ctx.Err() == nil && errors.Is(context.Cause(runCtx), errIAMExpired) {
-			return RunSegmentResult{
-				ConfigPath: cfgPath, LogPath: out.LogPath,
-				Result: spec.SegmentResult{Name: seg.Name, StartedAt: started, FinishedAt: time.Now().UTC(), Status: spec.SegmentFailed, ExitCode: 1, Error: errIAMExpired.Error()},
-			}, nil
-		}
 		return RunSegmentResult{}, err
 	}
 	finished := time.Now().UTC()
@@ -126,10 +135,11 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 		ConfigPath: cfgPath,
 		LogPath:    out.LogPath,
 	}
-	res.Result.Status, res.Result.Error = segmentOutcome(ctx, &seg, &out, &res.Result)
-	if ctx.Err() == nil && errors.Is(context.Cause(runCtx), errIAMExpired) {
-		res.Result.Status, res.Result.Error = spec.SegmentFailed, errIAMExpired.Error()
+	out.ReportPath = reportPath
+	if info, err := os.Stat(reportPath); err == nil && info.Mode().IsRegular() {
+		res.ReportPath = reportPath
 	}
+	res.Result.Status, res.Result.Error = segmentOutcome(ctx, &seg, &out, &res.Result)
 	return res, nil
 }
 
@@ -139,6 +149,9 @@ func RunSegment(ctx context.Context, req RunSegmentRequest) (RunSegmentResult, e
 // summarized; 130/143 after a graceful cancellation; 1 for setup,
 // validation, teardown, fatal or other command errors.
 func segmentOutcome(ctx context.Context, seg *spec.Segment, out *stroppyOutput, r *spec.SegmentResult) (status spec.SegmentStatus, reason string) {
+	if out.ReportPath != "" {
+		return reportOutcome(seg, out, r)
+	}
 	summary := stroppycfg.ParseOutput(out.Log)
 	var summaryErr error
 	if out.LogPath != "" {
@@ -245,6 +258,7 @@ func RunBaseline(ctx context.Context, req RunBaselineRequest) (RunBaselineResult
 
 // stroppyContainer describes one throwaway stroppy process.
 type stroppyContainer struct {
+	User                                      string
 	Name, Image, RegistrySecret, Dir, LogName string
 	Args                                      []string
 	Labels                                    map[string]string
@@ -252,11 +266,12 @@ type stroppyContainer struct {
 
 // stroppyOutput is what came back.
 type stroppyOutput struct {
-	ExitCode  int
-	Log       []byte
-	Stdout    []byte
-	LogPath   string
-	StreamErr error
+	ReportPath string
+	ExitCode   int
+	Log        []byte
+	Stdout     []byte
+	LogPath    string
+	StreamErr  error
 }
 
 // runStroppy pulls the image, replaces a stale container of the same name,
@@ -285,6 +300,7 @@ func runStroppy(ctx context.Context, c stroppyContainer) (stroppyOutput, error) 
 		Image:      c.Image,
 		Cmd:        c.Args,
 		WorkingDir: stroppycfg.ContainerWorkspace,
+		User:       c.User,
 		Labels:     c.Labels,
 	}, &container.HostConfig{
 		NetworkMode: "host",

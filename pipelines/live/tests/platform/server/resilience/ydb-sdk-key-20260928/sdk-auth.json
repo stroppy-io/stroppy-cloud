@@ -1,0 +1,138 @@
+{
+  "run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+  "verified": true,
+  "auth_mode": "sdk-key",
+  "renewal_verified": null,
+  "rotation_verified": false,
+  "events": [
+    {
+      "message": "Using Yandex Cloud service account key authentication",
+      "time": "2026-09-27T22:34:13Z",
+      "activity": "stroppy.segment.run",
+      "machine": "runner-1"
+    }
+  ],
+  "segment": {
+    "name": "iam-refresh",
+    "status": "completed",
+    "started_at": "2026-09-27T22:34:12Z",
+    "finished_at": "2026-09-27T22:49:13Z",
+    "exit_code": 0,
+    "metrics": {
+      "run_query_duration_avg": {
+        "value": 10.663,
+        "unit": "ms"
+      },
+      "run_query_duration_p50": {
+        "value": 10,
+        "unit": "ms"
+      },
+      "failed_iterations_total": {
+        "value": 0
+      },
+      "run_query_operations_total": {
+        "value": 83330
+      },
+      "iteration_duration_p95": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "iterations_total": {
+        "value": 83330
+      },
+      "queries_per_second": {
+        "value": 92.588,
+        "unit": "queries/s"
+      },
+      "iteration_duration_avg": {
+        "value": 10.798,
+        "unit": "ms"
+      },
+      "run_query_duration_p95": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_duration_p99": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "iteration_duration_count": {
+        "value": 83330
+      },
+      "run_query_duration_count": {
+        "value": 83330
+      },
+      "iteration_duration_p99": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "measurement_seconds": {
+        "value": 900.006,
+        "unit": "s"
+      },
+      "failed_queries_total": {
+        "value": 0
+      },
+      "retry_attempts_total": {
+        "value": 0
+      },
+      "iterations_per_second": {
+        "value": 92.588,
+        "unit": "iterations/s"
+      },
+      "iteration_duration_p50": {
+        "value": 10,
+        "unit": "ms"
+      },
+      "iteration_duration_p90": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "run_query_duration_p90": {
+        "value": 25,
+        "unit": "ms"
+      },
+      "terminal_errors_total": {
+        "value": 0
+      }
+    }
+  },
+  "queries_during_segment": [
+    {
+      "labels": {
+        "__name__": "stroppy_run_query_operations_total",
+        "graphene.agent": "6af3d1ca-runner-1",
+        "graphene.namespace": "t-server-live-20260924",
+        "graphene.role": "workload",
+        "graphene.run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+        "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+        "scope.version": "unknown",
+        "service.instance.id": "01aa1324-b744-4218-95f1-1042babb0e90",
+        "service.name": "stroppy",
+        "service.version": "dev-ydb-key-4972e5f35f1f",
+        "step": "workload",
+        "stroppy.run.id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+        "stroppy.segment": "iam-refresh",
+        "stroppy.tenant": "server-live-20260924",
+        "stroppy_run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+        "stroppy_tenant": "server-live-20260924",
+        "telemetry.sdk.language": "go",
+        "telemetry.sdk.name": "opentelemetry",
+        "telemetry.sdk.version": "1.44.0"
+      },
+      "first": [
+        1790548465,
+        "852"
+      ],
+      "last": [
+        1790549350,
+        "82380"
+      ]
+    }
+  ],
+  "public_configs_without_token": [
+    "6af3d1ca-managed-ydb-readiness-config",
+    "6af3d1ca-stroppy-iam-refresh-config"
+  ],
+  "scope": "Official SDK service-account key authentication and continuous queries; token reissuance tested locally with short-lived IAM credentials, not claimed for this live run."
+}

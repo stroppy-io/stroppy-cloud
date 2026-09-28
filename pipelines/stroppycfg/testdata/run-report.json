@@ -1,0 +1,421 @@
+{
+  "schema": 1,
+  "kind": "run",
+  "id": "26e41345-91aa-44fd-a507-630d2c9193d5",
+  "stroppy_version": "v6.1.0",
+  "started_at": "2026-09-27T23:42:10.083572867Z",
+  "finished_at": "2026-09-27T23:42:10.083843059Z",
+  "status": "completed",
+  "workload": "execute_sql",
+  "driver": "noop",
+  "drivers": [
+    {
+      "index": 0,
+      "type": "noop"
+    }
+  ],
+  "host": {
+    "os": "linux",
+    "arch": "amd64",
+    "go_version": "go1.26.8-X:nodwarf5",
+    "cpus": 20,
+    "gomaxprocs": 20
+  },
+  "scenario": {
+    "executor": "shared-iterations",
+    "vus": 1,
+    "duration_seconds": null,
+    "iterations_requested": 3
+  },
+  "parameters": {
+    "run": {
+      "duration": {
+        "value": "0s",
+        "source": "default"
+      },
+      "executor": {
+        "value": "shared-iterations",
+        "source": "cli"
+      },
+      "iterations": {
+        "value": 3,
+        "source": "cli"
+      },
+      "query-timeout": {
+        "value": "0s",
+        "source": "default"
+      },
+      "vus": {
+        "value": 1,
+        "source": "default"
+      }
+    },
+    "workload": {
+      "sql-body": {
+        "value": "--= query\nSELECT 1;\n",
+        "source": "cli"
+      },
+      "sql-file": {
+        "value": "",
+        "source": "cli"
+      }
+    }
+  },
+  "step_selection": {
+    "only": [],
+    "exclude": []
+  },
+  "steps": [
+    {
+      "name": "workload",
+      "status": "completed",
+      "executions": 3,
+      "duration_seconds": 0.00008009600000000001
+    }
+  ],
+  "measurement_seconds": 0.000171355,
+  "metrics": {
+    "failed_iterations_total": {
+      "type": "counter",
+      "total": 0,
+      "series": [
+        {
+          "total": 0
+        }
+      ]
+    },
+    "failed_queries_total": {
+      "type": "counter",
+      "total": 0,
+      "series": [
+        {
+          "total": 0
+        }
+      ]
+    },
+    "iteration_duration": {
+      "type": "histogram",
+      "unit": "ms",
+      "count": 3,
+      "sum": 0.100948,
+      "average": 0.03364933333333333,
+      "bounds": [
+        0.005,
+        0.01,
+        0.025,
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        1,
+        2.5,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500,
+        5000,
+        10000,
+        20000,
+        30000,
+        60000
+      ],
+      "bucket_counts": [
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "percentiles": {
+        "p50": 0.01,
+        "p90": 0.01,
+        "p95": 0.01,
+        "p99": 0.01
+      },
+      "series": [
+        {
+          "count": 3,
+          "sum": 0.100948,
+          "average": 0.03364933333333333,
+          "bounds": [
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            1,
+            2.5,
+            5,
+            10,
+            25,
+            50,
+            100,
+            250,
+            500,
+            1000,
+            2500,
+            5000,
+            10000,
+            20000,
+            30000,
+            60000
+          ],
+          "bucket_counts": [
+            1,
+            1,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "iterations_per_second": {
+      "type": "gauge",
+      "unit": "{iteration}/s",
+      "total": 17507.513641271045,
+      "series": [
+        {
+          "total": 17507.513641271045
+        }
+      ]
+    },
+    "iterations_total": {
+      "type": "counter",
+      "total": 3,
+      "series": [
+        {
+          "total": 3
+        }
+      ]
+    },
+    "measurement_seconds": {
+      "type": "gauge",
+      "unit": "s",
+      "total": 0.000171355,
+      "series": [
+        {
+          "total": 0.000171355
+        }
+      ]
+    },
+    "queries_per_second": {
+      "type": "gauge",
+      "unit": "{query}/s",
+      "total": 17507.513641271045,
+      "series": [
+        {
+          "total": 17507.513641271045
+        }
+      ]
+    },
+    "retry_attempts_total": {
+      "type": "counter",
+      "total": 0,
+      "series": [
+        {
+          "total": 0
+        }
+      ]
+    },
+    "run_query_duration": {
+      "type": "histogram",
+      "unit": "ms",
+      "count": 3,
+      "sum": 0.000255,
+      "average": 0.000085,
+      "bounds": [
+        0.005,
+        0.01,
+        0.025,
+        0.05,
+        0.1,
+        0.25,
+        0.5,
+        1,
+        2.5,
+        5,
+        10,
+        25,
+        50,
+        100,
+        250,
+        500,
+        1000,
+        2500,
+        5000,
+        10000,
+        20000,
+        30000,
+        60000
+      ],
+      "bucket_counts": [
+        3,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "percentiles": {
+        "p50": 0.005,
+        "p90": 0.005,
+        "p95": 0.005,
+        "p99": 0.005
+      },
+      "series": [
+        {
+          "attributes": {
+            "step": "workload"
+          },
+          "count": 3,
+          "sum": 0.000255,
+          "average": 0.000085,
+          "bounds": [
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.1,
+            0.25,
+            0.5,
+            1,
+            2.5,
+            5,
+            10,
+            25,
+            50,
+            100,
+            250,
+            500,
+            1000,
+            2500,
+            5000,
+            10000,
+            20000,
+            30000,
+            60000
+          ],
+          "bucket_counts": [
+            3,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    "run_query_operations_total": {
+      "type": "counter",
+      "total": 3,
+      "series": [
+        {
+          "attributes": {
+            "step": "workload"
+          },
+          "total": 3
+        }
+      ]
+    },
+    "terminal_errors_total": {
+      "type": "counter",
+      "total": 0,
+      "series": [
+        {
+          "total": 0
+        }
+      ]
+    }
+  },
+  "errors": {
+    "terminal_errors": 0,
+    "failed_iterations": 0,
+    "failed_queries": 0,
+    "retry_attempts": 0,
+    "groups": []
+  },
+  "workload_reports": []
+}

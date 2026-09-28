@@ -1,0 +1,70 @@
+{
+  "observed_at": "2026-09-27T22:34:22.639785+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f/logs?q=Using+Yandex+Cloud+service+account+key+authentication&limit=20",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "data": [
+      {
+        "time": "2026-09-27T22:34:13Z",
+        "message": "{\"level\":\"info\",\"ts\":1790548453.3414745,\"caller\":\"ydb/driver.go:195\",\"msg\":\"Using Yandex Cloud service account key authentication\"}",
+        "level": "info",
+        "stream": "stroppy",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "graphene.role": "machine",
+          "graphene.attempt": "1",
+          "graphene.entity": "run/6af3d1ca-3ee4-4561-8f85-e270512df99f",
+          "service.name": "graphene-pipeline",
+          "span_id": "653f5b91ef85bb68",
+          "trace_id": "78b42eff09f293d7c64ed0b57a3eb9e2",
+          "graphene.agent": "6af3d1ca-runner-1",
+          "scope.name": "graphene.obs",
+          "telemetry.sdk.language": "go",
+          "graphene.namespace": "t-server-live-20260924",
+          "scope.version": "unknown",
+          "graphene.activity": "stroppy.segment.run",
+          "telemetry.sdk.version": "1.46.0",
+          "graphene.run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+          "severity_number": "9",
+          "stream": "stroppy",
+          "segment": "iam-refresh",
+          "telemetry.sdk.name": "opentelemetry"
+        }
+      },
+      {
+        "time": "2026-09-27T22:34:09Z",
+        "message": "{\"level\":\"info\",\"ts\":1790548449.3605096,\"caller\":\"ydb/driver.go:195\",\"msg\":\"Using Yandex Cloud service account key authentication\"}",
+        "level": "info",
+        "stream": "stroppy",
+        "role": "runner",
+        "machine": "runner-1",
+        "fields": {
+          "graphene.namespace": "t-server-live-20260924",
+          "graphene.attempt": "1",
+          "graphene.agent": "6af3d1ca-runner-1",
+          "span_id": "f3ea97d560974874",
+          "telemetry.sdk.name": "opentelemetry",
+          "trace_id": "78b42eff09f293d7c64ed0b57a3eb9e2",
+          "graphene.role": "machine",
+          "telemetry.sdk.version": "1.46.0",
+          "scope.name": "graphene.obs",
+          "scope.version": "unknown",
+          "service.name": "graphene-pipeline",
+          "graphene.entity": "run/6af3d1ca-3ee4-4561-8f85-e270512df99f",
+          "graphene.activity": "stroppy.database.ready",
+          "severity_number": "9",
+          "segment": "managed-ydb-ready",
+          "stream": "stroppy",
+          "graphene.run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+          "telemetry.sdk.language": "go"
+        }
+      }
+    ],
+    "older": null,
+    "newer": null,
+    "truncated": false
+  }
+}

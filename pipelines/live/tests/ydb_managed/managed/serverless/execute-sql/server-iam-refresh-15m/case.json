@@ -11,10 +11,10 @@
     "ru-central1-d"
   ],
   "acceptance_scope": "real YC run launched and observed through the local server API",
-  "selected_run": "d740c071-1aae-462d-a014-559d9cb143a8",
+  "selected_run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
   "execution": {
     "status": "completed",
-    "observed_at": "2026-09-27T21:28:00.987739+00:00"
+    "observed_at": "2026-09-27T22:51:29.377579+00:00"
   },
   "checks": "checks.json",
   "runs": [
@@ -22,10 +22,11 @@
     "runs/81cda0f2-8db1-44c8-8d12-cb83ccf91f98",
     "runs/50faedbf-236c-4145-8c3b-055fd652e84a",
     "runs/546827b6-29e3-4974-bf7e-ad81dbf75cda",
-    "runs/d740c071-1aae-462d-a014-559d9cb143a8"
+    "runs/d740c071-1aae-462d-a014-559d9cb143a8",
+    "runs/6af3d1ca-3ee4-4561-8f85-e270512df99f"
   ],
   "source": {
-    "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/d740c071-1aae-462d-a014-559d9cb143a8/run.json",
+    "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f/run.json",
     "pointer": "/body"
   },
   "input": "input.json",

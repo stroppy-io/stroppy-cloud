@@ -52,6 +52,9 @@ func TestCompleteNativeResultProjection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if !strings.Contains(string(encoded), "18446744073709551615") {
+		t.Fatal("native report integer precision lost")
+	}
 	want := strings.ReplaceAll(string(raw), `"canceled"`, `"cancelled"`)
 	sameJSON(t, json.RawMessage(want), encoded)
 	empty, ok := resultOf(json.RawMessage(`{"segments":[{"name":"main","status":"completed","exit_code":0}]}`)).Get()
@@ -69,4 +72,19 @@ func TestSchemaValuesAreBrowserSafe(t *testing.T) {
 		t.Fatal(err)
 	}
 	sameJSON(t, want, encoded)
+}
+
+func TestNativeReportStatusIsNotRenamed(t *testing.T) {
+	raw := json.RawMessage(`{"segments":[{"name":"measure","status":"canceled","report":{"schema":1,"kind":"run","status":"canceled","future":{"n":18446744073709551615}}}]}`)
+	wire, ok := resultOf(raw).Get()
+	if !ok {
+		t.Fatal("native report result disappeared")
+	}
+	encoded, err := wire.MarshalJSON()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(encoded), `"status":"cancelled"`) || !strings.Contains(string(encoded), `"status":"canceled"`) || !strings.Contains(string(encoded), `18446744073709551615`) {
+		t.Fatalf("report was rewritten: %s", encoded)
+	}
 }

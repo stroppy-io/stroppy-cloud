@@ -1,0 +1,11 @@
+{
+  "run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+  "events": [
+    {
+      "message": "Using Yandex Cloud service account key authentication",
+      "time": "2026-09-27T22:34:13Z",
+      "activity": "stroppy.segment.run",
+      "machine": "runner-1"
+    }
+  ]
+}

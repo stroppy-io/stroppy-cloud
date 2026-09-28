@@ -3406,6 +3406,12 @@ export interface components {
                 errors?: components["schemas"]["RunSegmentErrors"];
                 /** @description Native workload compliance report */
                 compliance?: unknown;
+                /** @description Native versioned Stroppy run JSON */
+                report?: unknown;
+                /** @description Published original JSON report: artifact/<id>; retained 30 days. */
+                report_artifact?: string;
+                /** @description Reason the complete report is available only as an artifact (inline size limit). */
+                report_omitted?: string;
                 metrics?: {
                     [key: string]: components["schemas"]["MetricValue"];
                 };

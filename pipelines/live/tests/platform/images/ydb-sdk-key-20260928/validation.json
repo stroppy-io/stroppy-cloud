@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "command": "go test -race ./pkg/driver/ydb ./pkg/config ./cmd/stroppy/commands/run -count=1",
+      "status": "passed"
+    },
+    {
+      "command": "make tests TEST_FLAGS=-short",
+      "status": "passed"
+    },
+    {
+      "command": "make linter",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make integration",
+      "status": "passed",
+      "seconds": 49.391
+    }
+  ],
+  "scope": "Official SDK short-TTL renewal via local TLS IAM with signed JWT; issuer failure/recovery and explicit identity. Full short/race suite. Integration result recorded separately."
+}

@@ -69,6 +69,12 @@ func ResultRun() *schemapb.Schema {
 					// {"compliance": Report} on stdout.
 					schemapb.JSON("compliance").Title("TPC-C compliance report").
 						Desc("Machine-readable TPC-C report (tpm_c, per-transaction mix and response times, verdicts) when the workload emits one."),
+					schemapb.JSON("report").Title("Stroppy run report").
+						Desc("Native versioned JSON envelope, preserving unknown workload payloads and integer precision. Large reports are available through report_artifact."),
+					schemapb.Str("report_artifact").Title("Report artifact").
+						Desc("Published original JSON report, addressed through Graphene as artifact/<id>. Retained for 30 days.").MaxLen(256),
+					schemapb.Str("report_omitted").Title("Inline report omission").
+						Desc("Reason the complete envelope was not included inline; read the original artifact.").MaxLen(256),
 					schemapb.Str("error").Title("Error").
 						Desc("Failure text; set when the status is failed.").MaxLen(4096),
 				).Strict().Rule(schemapb.Rule(
@@ -82,7 +88,7 @@ func ResultRun() *schemapb.Schema {
 			schemapb.List("artifacts", schemapb.Str("").MinLen(1).MaxLen(256)).
 				Title("Artifacts").Group("Result").
 				Desc("Graphene artifact references (artifact/<id>): raw stroppy output, the report.").
-				MaxItems(2*64+1).Unique(),
+				MaxItems(3*64+3).Unique(),
 
 			// doc: `stroppy baseline --json` — schema 1 report.
 			schemapb.Object("baseline",

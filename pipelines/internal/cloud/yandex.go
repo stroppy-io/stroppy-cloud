@@ -38,6 +38,24 @@ type yandexCredentials struct {
 	SAKeyJSON string `json:"sa_key_json"`
 }
 
+// YandexServiceAccountKeyJSON unwraps the provider secret for an activity-local
+// SDK credential file. Never return the key through workflow results or artifacts.
+func YandexServiceAccountKeyJSON(credentials string) (string, error) {
+	var c yandexCredentials
+	if err := json.Unmarshal([]byte(credentials), &c); err != nil {
+		return "", fmt.Errorf("invalid Yandex credentials JSON")
+	}
+	key, err := iamkey.ReadFromJSONBytes([]byte(c.SAKeyJSON))
+	if err != nil || key.GetId() == "" || key.GetServiceAccountId() == "" || key.GetPrivateKey() == "" {
+		return "", fmt.Errorf("invalid Yandex service-account key")
+	}
+	// Do not include parser errors: malformed key material is confidential too.
+	if _, err := ycsdk.ServiceAccountKey(key); err != nil {
+		return "", fmt.Errorf("invalid Yandex service-account private key")
+	}
+	return c.SAKeyJSON, nil
+}
+
 // quotaIDs are the compute quotas a run consumes; their ids are the
 // Quota Manager ids of the compute service.
 //

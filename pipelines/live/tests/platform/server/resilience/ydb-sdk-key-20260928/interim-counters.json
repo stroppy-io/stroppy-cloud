@@ -1,0 +1,268 @@
+{
+  "observed_at": "2026-09-27T22:48:51.358510+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f/metrics:raw",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "stats": {
+      "seriesFetched": "2",
+      "executionTimeMsec": 2
+    },
+    "status": "success",
+    "data": {
+      "resultType": "matrix",
+      "result": [
+        {
+          "metric": {
+            "__name__": "stroppy_failed_queries_total",
+            "graphene.agent": "6af3d1ca-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "01aa1324-b744-4218-95f1-1042babb0e90",
+            "service.name": "stroppy",
+            "service.version": "dev-ydb-key-4972e5f35f1f",
+            "stroppy.run.id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "stroppy.segment": "iam-refresh",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790549211,
+              "0"
+            ],
+            [
+              1790549216,
+              "0"
+            ],
+            [
+              1790549221,
+              "0"
+            ],
+            [
+              1790549226,
+              "0"
+            ],
+            [
+              1790549231,
+              "0"
+            ],
+            [
+              1790549236,
+              "0"
+            ],
+            [
+              1790549241,
+              "0"
+            ],
+            [
+              1790549246,
+              "0"
+            ],
+            [
+              1790549251,
+              "0"
+            ],
+            [
+              1790549256,
+              "0"
+            ],
+            [
+              1790549261,
+              "0"
+            ],
+            [
+              1790549266,
+              "0"
+            ],
+            [
+              1790549271,
+              "0"
+            ],
+            [
+              1790549276,
+              "0"
+            ],
+            [
+              1790549281,
+              "0"
+            ],
+            [
+              1790549286,
+              "0"
+            ],
+            [
+              1790549291,
+              "0"
+            ],
+            [
+              1790549296,
+              "0"
+            ],
+            [
+              1790549301,
+              "0"
+            ],
+            [
+              1790549306,
+              "0"
+            ],
+            [
+              1790549311,
+              "0"
+            ],
+            [
+              1790549316,
+              "0"
+            ],
+            [
+              1790549321,
+              "0"
+            ],
+            [
+              1790549326,
+              "0"
+            ],
+            [
+              1790549331,
+              "0"
+            ]
+          ]
+        },
+        {
+          "metric": {
+            "__name__": "stroppy_run_query_operations_total",
+            "graphene.agent": "6af3d1ca-runner-1",
+            "graphene.namespace": "t-server-live-20260924",
+            "graphene.role": "workload",
+            "graphene.run": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "scope.name": "github.com/stroppy-io/stroppy/pkg/bench",
+            "scope.version": "unknown",
+            "service.instance.id": "01aa1324-b744-4218-95f1-1042babb0e90",
+            "service.name": "stroppy",
+            "service.version": "dev-ydb-key-4972e5f35f1f",
+            "step": "workload",
+            "stroppy.run.id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "stroppy.segment": "iam-refresh",
+            "stroppy.tenant": "server-live-20260924",
+            "stroppy_run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "stroppy_tenant": "server-live-20260924",
+            "telemetry.sdk.language": "go",
+            "telemetry.sdk.name": "opentelemetry",
+            "telemetry.sdk.version": "1.44.0"
+          },
+          "values": [
+            [
+              1790549211,
+              "69211"
+            ],
+            [
+              1790549216,
+              "70162"
+            ],
+            [
+              1790549221,
+              "70162"
+            ],
+            [
+              1790549226,
+              "71088"
+            ],
+            [
+              1790549231,
+              "71088"
+            ],
+            [
+              1790549236,
+              "72045"
+            ],
+            [
+              1790549241,
+              "72045"
+            ],
+            [
+              1790549246,
+              "72980"
+            ],
+            [
+              1790549251,
+              "72980"
+            ],
+            [
+              1790549256,
+              "73934"
+            ],
+            [
+              1790549261,
+              "73934"
+            ],
+            [
+              1790549266,
+              "74877"
+            ],
+            [
+              1790549271,
+              "74877"
+            ],
+            [
+              1790549276,
+              "75803"
+            ],
+            [
+              1790549281,
+              "75803"
+            ],
+            [
+              1790549286,
+              "76748"
+            ],
+            [
+              1790549291,
+              "76748"
+            ],
+            [
+              1790549296,
+              "77699"
+            ],
+            [
+              1790549301,
+              "77699"
+            ],
+            [
+              1790549306,
+              "77699"
+            ],
+            [
+              1790549311,
+              "77699"
+            ],
+            [
+              1790549316,
+              "77699"
+            ],
+            [
+              1790549321,
+              "77699"
+            ],
+            [
+              1790549326,
+              "77699"
+            ],
+            [
+              1790549331,
+              "77699"
+            ]
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -6,6 +6,7 @@ package suite
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/graphene-ci/pipeline/pkg/pipeline"
 
@@ -56,6 +57,7 @@ func Run(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) {
 	handles := pipeline.RunAll[spec.Result](ctx, run.PipelineID, cells, s.Concurrency, pipeline.WithLabels(labels))
 
 	result := spec.SuiteResult{Total: len(s.Cells)}
+	reportBudget := 256 << 10
 	for i, h := range handles {
 		cell := s.Cells[i]
 		res, err := h.TryReady(ctx)
@@ -72,6 +74,7 @@ func Run(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) {
 			events.Emit(ctx, CellFailed, events.Payload{"cell": cell.ID, "error": err.Error()})
 		} else {
 			out.Status = "completed"
+			limitSuiteReports(&res, &reportBudget)
 			out.Result = &res
 			result.Done++
 			events.Emit(ctx, CellFinished, events.Payload{"cell": cell.ID, "tps": res.Summary.TPS})
@@ -87,4 +90,19 @@ func Run(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) {
 		return result, fmt.Errorf("suite: %d of %d cells failed", result.Fail, result.Total)
 	}
 	return result, nil
+}
+
+// The suite repeats child results in one workflow message. Bound only inline
+// envelopes; originals remain in the child run and its published artifacts.
+func limitSuiteReports(result *spec.Result, remaining *int) {
+	result.Segments = slices.Clone(result.Segments)
+	for i := range result.Segments {
+		segment := &result.Segments[i]
+		if len(segment.Report) > *remaining {
+			segment.Report = nil
+			segment.ReportOmitted = "suite inline report budget exceeded; open child run or report artifact"
+		} else {
+			*remaining -= len(segment.Report)
+		}
+	}
 }

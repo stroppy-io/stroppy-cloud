@@ -1,0 +1,5 @@
+{
+  "pgx": "v5.10.0",
+  "stroppy": "dev-ydb-key-4972e5f35f1f",
+  "ydb_service_account_key_file": "1"
+}

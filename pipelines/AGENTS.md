@@ -69,14 +69,16 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
 - Managed YDB перед workload проверяется тем же образом Stroppy: TCP, TLS/IAM
   и read-only SELECT 1. Readiness ограничена пятью минутами, не входит в нагрузку;
   её конфиг и журнал попыток сохраняются отдельными артефактами с общим retention.
-- IAM внутри сегмента обновляется activity на runner: образ с capability
-  `ydb_token_file=1` получает приватный token-файл 0600, который заменяется
-  атомарно каждые 10 минут или через половину оставшегося TTL. Временный отказ
-  выдачи сохраняет ещё действующий токен; истечение без обновления завершает
-  workload с failed. Публичный конфиг и артефакты токена не содержат. Для старых
-  образов deadline activity должен заканчиваться минимум за минуту до expiry;
-  иначе запуск отклоняется до workload. Возможность проверяется через
-  `stroppy version --json`, а не по имени тега.
+- Managed YDB использует JSON-ключ сервисного аккаунта из профиля Graphene.
+  Образ с capability `ydb_service_account_key_file=1` получает отдельный
+  приватный key-файл 0600 и runtime-конфиг с `serviceAccountKeyFile`.
+  IAM-токены получает и обновляет официальный YDB SDK внутри Stroppy;
+  собственного refresh loop и изменяемого token-файла нет. Проверка TLS
+  IAM включена независимо от настройки TLS базы. Файлы удаляются после run,
+  включая ошибку/отмену; публичный конфиг и артефакты ключа не содержат.
+  Для старых образов остаётся разовый IAM-токен только при deadline activity
+  минимум за минуту до expiry; длинный сегмент требует поддержки key-файла.
+  Возможность проверяется через `stroppy version --json`, а не по имени тега.
 - Сегменты workload — последовательно, `AtMostOnce`, таймаут
   `duration*1.5 + warmup + 30m` по умолчанию; явный segment.timeout
   задаёт deadline activity после отдельного idle wait warmup.
@@ -192,14 +194,19 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
   duration|iterations, queryTimeout}`, `params{<lowerCamel>}`, `steps/noSteps`.
   Snake_case ключи схемы → lowerCamel (`scale_factor` → `scaleFactor`);
   `sql_file`/`schema_file` с именем файла из `files` → `/workspace/<name>`.
-- Итоги: JSON-отчёта у `stroppy run` НЕТ. Пайплайн парсит stderr-блоки
-  `=== bench summary ===` (counters + histograms `count/avg/p50/p90/p95/p99`,
-  мс) и `=== bench completed with errors ===`, плюс stdout-строку
-  `{"compliance": …}` (TPC-C). Nonfatal-ошибки = exit 0 (учтены в `errors`),
-  130/143 — cancel, 1 — ошибка. Пороги (`thresholds`) применяет пайплайн.
-  Итоги читаются потоком из полного файла лога: лимит 8 MiB на диагностическую
-  копию в памяти не обрезает summary/compliance длительных прогонов. Ошибки
-  чтения или записи лога делают результат неуспешным.
+- Итоги: для образов с `--report-file` (проверка через `run --help`)
+  используется JSON schema 1 / kind run. Отчёт — источник метрик и статуса,
+  его исходный файл сохраняется как `stroppy-<segment>-report` на 30 дней.
+  Процесс с JSON-report запускается с UID/GID агента: отчёт создаётся 0600
+  и должен быть доступен этому же агенту для чтения/загрузки.
+  Полный JSON передаётся в result.segment.report до 64 KiB на сегмент / 256 KiB
+  на run; большие отчёты доступны по report_artifact с report_omitted.
+  Сводка suite также ограничивает inline-отчёты суммарно до 256 KiB, сохраняя
+  ссылки на дочерние результаты и артефакты.
+  Неизвестная версия/повреждение/отсутствие — явная ошибка без text fallback.
+  Старые образы используют полный файл лога с bench summary/compliance.
+  Отчёты failed/canceled сохраняются; completed_with_errors проходит обычные
+  thresholds. Пайплайн управляет report CLI-флагами. OTLP остаётся независимым.
 - Baseline: `stroppy baseline --json --no-save --download always [...]` до
   сегментов на runner-машине; отчёт schema 1 → `result.baseline`; fail
   вердикта не валит прогон.
@@ -245,8 +252,8 @@ status and replicated test rows. `live/tools/mysql_probe.py` uses ordinary SQL a
 and does not require sudo or Docker access in an agent shell.
 
 Run results allow 256 metrics per segment and 64 segments, so aggregate metrics
-must not reuse the per-segment cap. Artifact capacity is config + log per segment
-plus the optional baseline log. Preserve every native metric instead of truncating.
+must not reuse the per-segment cap. Artifact capacity is config + log + report per segment
+plus the optional baseline log and two managed-readiness artifacts. Preserve every native metric instead of truncating.
 
 SDK 0.2.5 bounds OTLP metric requests to 2 MiB by splitting complete protobuf
 collections/points before gRPC export. Resource identity, labels, timestamps and

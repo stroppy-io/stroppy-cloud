@@ -1,0 +1,27 @@
+{
+  "build": "0.0.0-dev-d39684a7-ydb-sdk-key-20260928",
+  "checks": [
+    {
+      "command": "go test -race ./internal/activities ./internal/cloud -count=1",
+      "status": "passed",
+      "activities_seconds": 63.694,
+      "cloud_seconds": 1.087
+    },
+    {
+      "command": "make lint-pipelines",
+      "status": "passed",
+      "issues": 0
+    },
+    {
+      "command": "make contract-check",
+      "status": "passed",
+      "contract": "2.0.2",
+      "artifacts": 218
+    }
+  ],
+  "source_sha256": {
+    "pipelines/internal/activities/ydb_auth.go": "11c99ab3e5c431ecfa3528dfaa18100e290c71982407d904e1bd49da6e86851c",
+    "pipelines/internal/activities/stroppy.go": "c98c5fd55df96bf8715c94cad1ec15665954a8cd5daab64795bf37aafe5b1e32",
+    "pipelines/internal/cloud/yandex.go": "7999497d982c446adc1090d42e597369b1a328fb7ad8966b4a3ae23cac24ea39"
+  }
+}

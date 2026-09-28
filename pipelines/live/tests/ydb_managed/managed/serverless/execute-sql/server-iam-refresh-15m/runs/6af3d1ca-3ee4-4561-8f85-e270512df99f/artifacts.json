@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-09-27T22:51:29.496027+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f/artifacts",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "data": [
+      {
+        "id": "6af3d1ca-managed-ydb-readiness-config",
+        "name": "6af3d1ca-managed-ydb-readiness-config",
+        "kind": "config",
+        "size_bytes": 800,
+        "digest": "sha256:941de72ff3c5de8366cd4435f0e8a40be9db249af3864890d6b184274f9ed924"
+      },
+      {
+        "id": "6af3d1ca-managed-ydb-readiness-log",
+        "name": "6af3d1ca-managed-ydb-readiness-log",
+        "kind": "log_bundle",
+        "size_bytes": 1218,
+        "digest": "sha256:2c8b33a4862f81185b20aa7a57d439fc9cbb8cdc5567d55eca91c3c392d87463"
+      },
+      {
+        "id": "6af3d1ca-stroppy-iam-refresh-config",
+        "name": "6af3d1ca-stroppy-iam-refresh-config",
+        "kind": "config",
+        "size_bytes": 1066,
+        "digest": "sha256:02bdddbc7ca9f1ed97cb879158e6756e5a89452933f7a449d9a33aba4b9073e8"
+      },
+      {
+        "id": "6af3d1ca-stroppy-iam-refresh-log",
+        "name": "6af3d1ca-stroppy-iam-refresh-log",
+        "kind": "log_bundle",
+        "size_bytes": 14760638,
+        "digest": "sha256:1638d604851f44eec47f551a3f508f9038803218ecee9b0ab1b16598456d69bd"
+      }
+    ]
+  }
+}

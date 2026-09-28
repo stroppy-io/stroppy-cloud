@@ -1,5 +1,5 @@
 {
-  "audited_at": "2026-09-27T21:30:05.188659+00:00",
+  "audited_at": "2026-09-27T22:50:25.224706+00:00",
   "applied": false,
   "cases": 284,
   "unknown_before": {
@@ -277,14 +277,14 @@
     }
   ],
   "workloads_in_completed_run_inputs": {
+    "tpcb/tx": 47,
     "tpcc/tx": 47,
-    "tpch/tx": 1,
     "simple": 63,
     "tpcb/procs": 31,
-    "execute_sql": 13,
-    "tpcb/tx": 47,
     "tpcc/procs": 31,
-    "tpcds": 2
+    "execute_sql": 12,
+    "tpcds": 2,
+    "tpch/tx": 1
   },
   "historical_topologies": {
     "cockroach/24.1/single": [
@@ -497,7 +497,6 @@
       "matrix-ydbpopulation-f4bd4b38-ydb-managed-dedicated-medium"
     ],
     "ydb_managed/managed/serverless": [
-      "d740c071-1aae-462d-a014-559d9cb143a8",
       "matrix-ydbready-cd74e12d-ydb-managed-serverless"
     ]
   },

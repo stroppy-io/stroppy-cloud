@@ -1,0 +1,32 @@
+{
+  "base_commit": "790763d71ad61e74923da06815b929c5838ad196",
+  "files": {
+    "CHANGELOG.md": "70e9166af645f90a83c8770ec3d23f9a9e77a7c0863ddf573d66a50ce45c38fe",
+    "cmd/stroppy/commands/help/topic_drivers.go": "89520d327bff97e5ff7676521f1d5844ac1dcd6858ae3f4c2cabce5c9a2710c5",
+    "cmd/stroppy/commands/root.go": "1420e635863bac3b4728caac747ac6ab5bf488c4eda3d15df8524eac67829bf1",
+    "cmd/stroppy/commands/run/run.go": "c5ae19dfa19549da6577e408b886c0c0aff916c26552b0d24f239634fadb6775",
+    "docs/jsonschema/run.schema.json": "8c6e12860c1e7659f1a0010f83f3d8092d4727addc5b249d2a4acac2a4c8a2c8",
+    "go.mod": "4c1c96b964fdbeece6cb745e1d451edc1f0bb37e44f45816d8d6841bd2002e60",
+    "go.sum": "cba68a52192bd82ac8be6cb140e5422727763c762b4fc9febddda253f5226315",
+    "pkg/config/config.go": "c30f1fb8ef2da7404d4902ed1dea4524655a66c056eccda6afd914892370f85a",
+    "pkg/driver/sqldriver/rows.go": "6ebe14e50109812f71426b17e19d48c5007ac76328266b0ebe13d789a55c5310",
+    "pkg/driver/sqldriver/rows_test.go": "0094fd13c5f319852b54b124ae70cb2d765f7db6b969302017f68a2e2efd2437",
+    "pkg/driver/ydb/driver.go": "02a2f286079a2024317d43acf26e59edddf6745d753efc12b17ae7b8fcd671df",
+    "pkg/driver/ydb/service_account_test.go": "b8ee0be358cb3d992cdc1b5f80c5b179b952e6e52e5cdf8c0d7c8b0142df94f6",
+    "test/integration/tpcds_generated_test.go": "aade7828158725625ac69232fda3dd14193f10cc3e63b96f29df87c07267b2a0",
+    "third_party/gotpcds/dsqgen/eval_test.go": "a312e9f5e43706a647e363340626392a1437ccb0b37feb2cab9c1fc32f0ccaf4",
+    "third_party/gotpcds/dsqgen/generate.go": "58a6efa44b192ac8f32a7b60be91f4a409cabaed3226c264ebba82a788cb2fd3",
+    "third_party/gotpcds/dsqgen/templates/query88.tpl": "337d2833890a82af177064b9726e5721da272675e43731e19d4a64e9a3f74454",
+    "workloads/tpcds/README.md": "ef0d74f9163b0083f2be3a0d05e9d59fa60df9319a86ff634104097ece8ea36e",
+    "workloads/tpcds/generated_test.go": "f175f3a6b3941f9504437dd5008f2fce011eac88fdaf591f3f9bab26582a8b78",
+    "workloads/tpcds/tpcds.go": "e279ff233ffb92b037516846d00531682bcae2b0fe6d8bf87b80d3237e5d3d46"
+  },
+  "source_hash": "4972e5f35f1fdcbdd2a2ba00dff282810c87bace6a51979fa218b588ba0f7c72",
+  "version": "dev-ydb-key-4972e5f35f1f",
+  "source_archive_sha256": "5205d0fec2931a206d104ba4771a7c34caa253d76c16acb7d947c8cab46c86f9",
+  "binary_sha256": "a3638ca5ccfd5fb78cba61b21ec5d131d6ddd33e0e5626cd939c8cfacb9703dc",
+  "tag": "ghcr.io/stroppy-io/stroppy:dev-ydb-key-4972e5f35f1f",
+  "image_id": "sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c",
+  "digest": "sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c",
+  "mirror": "docker.stroppy.io/stroppy-io/stroppy@sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c"
+}

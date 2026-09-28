@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "run_id": "d740c071-1aae-462d-a014-559d9cb143a8",
-  "checked_at": "2026-09-27T21:29:34.942859+00:00",
+  "run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+  "checked_at": "2026-09-27T22:53:18.004346+00:00",
   "checks": [
     {
       "id": "compile",
@@ -9,7 +9,7 @@
       "status": "passed",
       "reason": "Server validated and compiled the test before launch.",
       "evidence": {
-        "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/d740c071-1aae-462d-a014-559d9cb143a8/run.json",
+        "path": "tests/ydb_managed/managed/serverless/execute-sql/server-iam-refresh-15m/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f/run.json",
         "pointer": "/body"
       }
     },
@@ -19,7 +19,7 @@
       "status": "passed",
       "reason": "Managed serverless resource explicitly ready during workload; runner executed the segment.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/managed-ready.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/managed-ready.json",
         "pointer": "/verified"
       }
     },
@@ -27,9 +27,9 @@
       "id": "smoke",
       "group": "workload_check",
       "status": "passed",
-      "reason": "Real YC renewal response inside a continuous 15m segment; no query errors. See rotation_verified for actual replacement versus unchanged credential.",
+      "reason": "Official SDK service-account key authentication and continuous queries; token reissuance tested locally with short-lived IAM credentials, not claimed for this live run. No query errors.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/rotation.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/sdk-auth.json",
         "pointer": "/verified"
       }
     },
@@ -46,7 +46,7 @@
       "status": "passed",
       "reason": "Verified through server API; see scoped evidence.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/telemetry.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/telemetry.json",
         "pointer": "/native_verified"
       }
     },
@@ -56,7 +56,7 @@
       "status": "passed",
       "reason": "Verified through server API; see scoped evidence.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/cpu-tail.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/cpu-tail.json",
         "pointer": "/verified"
       }
     },
@@ -66,7 +66,7 @@
       "status": "passed",
       "reason": "Verified through server API; see scoped evidence.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/telemetry.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/telemetry.json",
         "pointer": "/logs_verified"
       }
     },
@@ -97,7 +97,7 @@
       "status": "passed",
       "reason": "Verified through server API; see scoped evidence.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/artifacts.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/artifacts.json",
         "pointer": "/verified"
       }
     },
@@ -114,7 +114,7 @@
       "status": "passed",
       "reason": "Verified through server API; see scoped evidence.",
       "evidence": {
-        "path": "tests/platform/server/resilience/ydb-iam-refresh-mirror-20260927/cleanup.json",
+        "path": "tests/platform/server/resilience/ydb-sdk-key-20260928/cleanup.json",
         "pointer": "/verified"
       }
     }

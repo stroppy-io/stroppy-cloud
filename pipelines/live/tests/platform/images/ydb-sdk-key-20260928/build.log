@@ -1,0 +1,3 @@
+echo dev-ydb-key-4972e5f35f1f
+dev-ydb-key-4972e5f35f1f
+CGO_ENABLED=0 go build -trimpath  -ldflags "-s -w -X 'github.com/stroppy-io/stroppy/internal/version.Version=dev-ydb-key-4972e5f35f1f'" -o /home/yaroher/devel/github/stroppy-io/stroppy/build/stroppy ./cmd/stroppy

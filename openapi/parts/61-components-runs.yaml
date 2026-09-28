@@ -147,6 +147,9 @@ components:
               error: { type: string, description: Segment failure diagnostic. }
               errors: { $ref: '#/components/schemas/RunSegmentErrors' }
               compliance: { description: Native workload compliance report, preserved without interpreting its fields. }
+              report: { description: Native versioned Stroppy run JSON, including unknown fields and workload payloads. Use lossless JSON decoding for large integers. }
+              report_artifact: { type: string, description: 'Published original JSON report: artifact/<id>; retained 30 days.' }
+              report_omitted: { type: string, description: Reason the complete report is available only as an artifact (inline size limit). }
               metrics:
                 type: object
                 additionalProperties: { $ref: '#/components/schemas/MetricValue' }

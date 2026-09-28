@@ -1,0 +1,48 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 188B done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 ...
+
+#3 [auth] library/alpine:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/alpine:3.22
+#2 DONE 0.9s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.1s
+
+#5 [1/4] FROM docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8
+#5 resolve docker.io/library/alpine:3.22@sha256:5291449c3df73caf6ed85e649dec1b9e818b39a5d8c871e97afc13e9cd5e8fa8 0.1s done
+#5 DONE 0.2s
+
+#6 [internal] load build context
+#6 transferring context: 38.08MB 0.1s done
+#6 DONE 0.3s
+
+#7 [2/4] RUN apk add --no-cache ca-certificates
+#7 CACHED
+
+#8 [3/4] WORKDIR /workspace
+#8 CACHED
+
+#9 [4/4] COPY stroppy /usr/local/bin/stroppy
+#9 DONE 0.4s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 1.9s done
+#10 exporting manifest sha256:ba0119939e230fd740acc38ff9440a8e9cf21471ff1500df9cfbbace3ae0152f 0.0s done
+#10 exporting config sha256:d789a9d51503b69044eea6a1ad2941c6f61c5deea85a9a6bb9eb724127fed57f 0.0s done
+#10 exporting attestation manifest sha256:8a34d2431ce8fd6ec0352392ac01a889ec9ef3db3ddc2881f6d092dd780a45f8
+#10 exporting attestation manifest sha256:8a34d2431ce8fd6ec0352392ac01a889ec9ef3db3ddc2881f6d092dd780a45f8 0.1s done
+#10 exporting manifest list sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c 0.0s done
+#10 naming to ghcr.io/stroppy-io/stroppy:dev-ydb-key-4972e5f35f1f 0.0s done
+#10 unpacking to ghcr.io/stroppy-io/stroppy:dev-ydb-key-4972e5f35f1f
+#10 unpacking to ghcr.io/stroppy-io/stroppy:dev-ydb-key-4972e5f35f1f 0.1s done
+#10 DONE 2.3s

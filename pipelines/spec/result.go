@@ -70,7 +70,13 @@ type SegmentResult struct {
 	ExitCode   int                    `json:"exit_code"`
 	// Compliance is the TPC-C report stroppy prints as {"compliance": …}.
 	Compliance json.RawMessage `json:"compliance,omitempty"`
-	Error      string          `json:"error,omitempty"`
+	// Report is the native versioned Stroppy envelope, with unknown fields retained.
+	Report json.RawMessage `json:"report,omitempty"`
+	// ReportArtifact is set only after the original file has been published.
+	ReportArtifact string `json:"report_artifact,omitempty"`
+	// ReportOmitted explains why the envelope is available only as an artifact.
+	ReportOmitted string `json:"report_omitted,omitempty"`
+	Error         string `json:"error,omitempty"`
 }
 
 // Summary is the headline of a run.

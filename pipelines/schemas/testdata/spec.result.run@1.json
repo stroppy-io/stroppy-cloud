@@ -214,6 +214,28 @@
                     "title": "TPC-C compliance report"
                   },
                   {
+                    "description": "Native versioned JSON envelope, preserving unknown workload payloads and integer precision. Large reports are available through report_artifact.",
+                    "json": {},
+                    "name": "report",
+                    "title": "Stroppy run report"
+                  },
+                  {
+                    "description": "Published original JSON report, addressed through Graphene as artifact/\u003cid\u003e. Retained for 30 days.",
+                    "name": "report_artifact",
+                    "string": {
+                      "maxLen": "256"
+                    },
+                    "title": "Report artifact"
+                  },
+                  {
+                    "description": "Reason the complete envelope was not included inline; read the original artifact.",
+                    "name": "report_omitted",
+                    "string": {
+                      "maxLen": "256"
+                    },
+                    "title": "Inline report omission"
+                  },
+                  {
                     "description": "Failure text; set when the status is failed.",
                     "name": "error",
                     "string": {
@@ -251,7 +273,7 @@
             }
           }
         ],
-        "maxItems": "129",
+        "maxItems": "195",
         "unique": true
       },
       "name": "artifacts",

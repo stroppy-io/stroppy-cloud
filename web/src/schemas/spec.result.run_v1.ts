@@ -59,6 +59,12 @@ export interface SpecResultRun1Item {
   exit_code?: number | string;
   /** TPC-C compliance report. Machine-readable TPC-C report (tpm_c, per-transaction mix and response times, verdicts) when the workload emits one. */
   compliance?: unknown;
+  /** Stroppy run report. Native versioned JSON envelope, preserving unknown workload payloads and integer precision. Large reports are available through report_artifact. */
+  report?: unknown;
+  /** Report artifact. Published original JSON report, addressed through Graphene as artifact/<id>. Retained for 30 days. */
+  report_artifact?: string;
+  /** Inline report omission. Reason the complete envelope was not included inline; read the original artifact. */
+  report_omitted?: string;
   /** Error. Failure text; set when the status is failed. */
   error?: string;
 }

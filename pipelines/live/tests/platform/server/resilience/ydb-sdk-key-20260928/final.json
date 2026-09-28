@@ -1,0 +1,473 @@
+{
+  "observed_at": "2026-09-27T22:51:29.304531+00:00",
+  "method": "GET",
+  "path": "/api/v1/t/server-live-20260924/runs/6af3d1ca-3ee4-4561-8f85-e270512df99f",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+    "name": "server managed YDB IAM rotation ydb-sdk-key-20260928",
+    "status": "completed",
+    "phase": "done",
+    "stand_kept": false,
+    "keep_until": null,
+    "trigger": "manual",
+    "test_ref": {
+      "id": "4d39d2f1-1d2d-4802-aee7-680ea63b3087",
+      "name": "server managed YDB IAM rotation ydb-sdk-key-20260928"
+    },
+    "snapshot": {
+      "execution": {
+        "containers": [
+          {
+            "name": "runner-1-node-exporter",
+            "set": {
+              "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0"
+            }
+          }
+        ],
+        "workload": {
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c"
+        }
+      },
+      "database": {
+        "kind": "ydb_managed",
+        "version": "managed",
+        "params": {
+          "storage_size_limit_gb": 1,
+          "throttling_rcu_limit": 1000,
+          "type": "serverless",
+          "deletion_protection": false,
+          "location_id": "ru-central1",
+          "provisioned_rcu_limit": 0
+        },
+        "schema": {
+          "id": "db.ydb_managed.params",
+          "version": "1"
+        }
+      },
+      "workload": {
+        "stroppy_version": "6.0.0",
+        "protocol": "ydb_grpcs",
+        "segments": [
+          {
+            "log_level": "info",
+            "name": "iam-refresh",
+            "run": {
+              "duration": "15m0s",
+              "executor": "constant-vus",
+              "query_timeout": "10s",
+              "vus": 1
+            },
+            "thresholds": {
+              "error_rate": 0
+            },
+            "timeout": "20m0s",
+            "warmup": "0s",
+            "workload": {
+              "script": "execute_sql",
+              "sql_body": "SELECT 1;"
+            }
+          }
+        ],
+        "schema": {
+          "id": "workload.stroppy",
+          "version": "1"
+        }
+      },
+      "sizes": {
+        "runner": {
+          "size": "S"
+        }
+      },
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "machines": [
+        {
+          "name": "runner-1",
+          "role": "runner",
+          "size": "S",
+          "cpu": 4,
+          "memory_gb": 8,
+          "instance_type": "standard-v3",
+          "location": "ru-central1-d"
+        }
+      ]
+    },
+    "run_spec": {
+      "schema": {
+        "id": "spec.run",
+        "version": "1"
+      },
+      "values": {
+        "network": {
+          "allow_public_ips": true,
+          "cidr": "10.130.0.0/24"
+        },
+        "run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+        "tenant": "server-live-20260924",
+        "flows": [
+          {
+            "external": "managed-ydb",
+            "from_role": "runner",
+            "label": "ydb",
+            "port": 2135,
+            "protocol": "grpc"
+          }
+        ],
+        "keep": "0s",
+        "result_expectations": [
+          "iterations_total"
+        ],
+        "managed_ydb": {
+          "location_id": "ru-central1",
+          "storage_size_limit_gb": 1,
+          "throttling_rcu_limit": 1000,
+          "type": "serverless"
+        },
+        "provider": {
+          "credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "kind": "yandex",
+          "provider_config_name": "sc-52c2e4628883-b413b185-61ca-4d81-abf2-0b760aa59ed5",
+          "settings": {
+            "cloud_id": "b1gt6m4l9gfhaobcgb81",
+            "folder_id": "b1ghttqg66t14ldkvfcq",
+            "image_family": "ubuntu-2404-lts",
+            "network": {
+              "kind": "create",
+              "subnet_cidr": "10.130.0.0/24"
+            },
+            "platform_id": "standard-v3",
+            "preemptible": false,
+            "public_ips": true,
+            "zone": "ru-central1-d"
+          }
+        },
+        "workload": {
+          "driver_type": "ydb",
+          "runner_role": "runner",
+          "segments": [
+            {
+              "log_level": "info",
+              "name": "iam-refresh",
+              "run": {
+                "duration": "15m0s",
+                "executor": "constant-vus",
+                "query_timeout": "10s",
+                "vus": 1
+              },
+              "thresholds": {
+                "error_rate": 0
+              },
+              "timeout": "20m0s",
+              "warmup": "0s",
+              "workload": {
+                "script": "execute_sql",
+                "sql_body": "SELECT 1;"
+              }
+            }
+          ],
+          "stroppy_image": "docker.stroppy.io/stroppy-io/stroppy@sha256:ac0683827873a674d2c1f05d926ad11cba11bf7c96c2c12a088ce67ede937a4c",
+          "url": "grpcs://managed-ydb-pending:2135/?database=/pending",
+          "ydb_iam_credentials_secret": "provider-b413b185-61ca-4d81-abf2-0b760aa59ed5"
+        },
+        "containers": [
+          {
+            "cmd": [
+              "--path.rootfs=/host",
+              "--path.procfs=/host/proc",
+              "--path.sysfs=/host/sys",
+              "--path.udev.data=/host/run/udev/data",
+              "--web.listen-address=:9100"
+            ],
+            "image": "mirror.gcr.io/prom/node-exporter@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0",
+            "kind": "exporter",
+            "machine": "runner-1",
+            "mounts": [
+              {
+                "ro": true,
+                "source": "/",
+                "target": "/host"
+              }
+            ],
+            "name": "runner-1-node-exporter",
+            "ports": [
+              {
+                "container": 9100,
+                "host": 9100
+              }
+            ],
+            "restart": "always",
+            "role": "runner",
+            "scrape": "/metrics"
+          }
+        ],
+        "observability": {
+          "labels": {
+            "stroppy_run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+            "stroppy_tenant": "server-live-20260924"
+          }
+        },
+        "machines": [
+          {
+            "cpu": 4,
+            "image": "ubuntu-2404-lts",
+            "instance_type": "standard-v3",
+            "labels": {
+              "stroppy.io/engine": "stroppy",
+              "stroppy.io/role": "runner"
+            },
+            "location": "ru-central1-d",
+            "memory_gb": 8,
+            "name": "runner-1",
+            "role": "runner"
+          }
+        ]
+      }
+    },
+    "rating": {
+      "tenant": true,
+      "global": false
+    },
+    "labels": {},
+    "author": {
+      "id": "a5905fec-043f-58cd-ba8d-68487b5ceff2"
+    },
+    "is_favorite": false,
+    "created_at": "2026-09-27T22:29:57Z",
+    "started_at": "2026-09-27T22:30:01Z",
+    "finished_at": "2026-09-27T22:51:16Z",
+    "duration": "21m15s",
+    "summary": {
+      "db_kind": "ydb_managed",
+      "db_version": "managed",
+      "protocol": "ydb_grpcs",
+      "stroppy_version": "6.0.0",
+      "topology_label": "managed ydb serverless",
+      "node_count": 1,
+      "provider_kind": "yandex",
+      "provider_profile": {
+        "id": "b413b185-61ca-4d81-abf2-0b760aa59ed5",
+        "name": "YC live acceptance"
+      },
+      "sizes": {
+        "runner": {
+          "size": "S"
+        }
+      },
+      "progress_pct": 100,
+      "headline": {
+        "iam-refresh.run_query_duration_p95": 25,
+        "iam-refresh.iteration_duration_count": 83330,
+        "iam-refresh.run_query_duration_count": 83330,
+        "iam-refresh.iteration_duration_p90": 25,
+        "iam-refresh.iteration_duration_p99": 25,
+        "iam-refresh.run_query_duration_p99": 25,
+        "iam-refresh.failed_iterations_total": 0,
+        "iam-refresh.run_query_operations_total": 83330,
+        "iam-refresh.iterations_total": 83330,
+        "iam-refresh.queries_per_second": 92.588,
+        "iam-refresh.iteration_duration_p50": 10,
+        "iam-refresh.iteration_duration_p95": 25,
+        "latency_p50_ms": 10,
+        "latency_p95_ms": 25,
+        "iam-refresh.measurement_seconds": 900.006,
+        "iam-refresh.failed_queries_total": 0,
+        "iam-refresh.iterations_per_second": 92.588,
+        "iam-refresh.iteration_duration_avg": 10.798,
+        "iam-refresh.run_query_duration_avg": 10.663,
+        "iam-refresh.run_query_duration_p50": 10,
+        "latency_p99_ms": 25,
+        "iam-refresh.retry_attempts_total": 0,
+        "iam-refresh.terminal_errors_total": 0,
+        "iam-refresh.run_query_duration_p90": 25
+      }
+    },
+    "result": {
+      "metrics": {
+        "iam-refresh.retry_attempts_total": {
+          "value": 0
+        },
+        "iam-refresh.terminal_errors_total": {
+          "value": 0
+        },
+        "iam-refresh.iteration_duration_count": {
+          "value": 83330
+        },
+        "iam-refresh.run_query_operations_total": {
+          "value": 83330
+        },
+        "iam-refresh.failed_queries_total": {
+          "value": 0
+        },
+        "iam-refresh.iteration_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.iteration_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iam-refresh.measurement_seconds": {
+          "value": 900.006,
+          "unit": "s"
+        },
+        "iam-refresh.iterations_per_second": {
+          "value": 92.588,
+          "unit": "iterations/s"
+        },
+        "iam-refresh.iteration_duration_avg": {
+          "value": 10.798,
+          "unit": "ms"
+        },
+        "iam-refresh.iteration_duration_p50": {
+          "value": 10,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_avg": {
+          "value": 10.663,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_p95": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.failed_iterations_total": {
+          "value": 0
+        },
+        "iam-refresh.queries_per_second": {
+          "value": 92.588,
+          "unit": "queries/s"
+        },
+        "iam-refresh.iteration_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_p90": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_p99": {
+          "value": 25,
+          "unit": "ms"
+        },
+        "iam-refresh.run_query_duration_count": {
+          "value": 83330
+        },
+        "iam-refresh.iterations_total": {
+          "value": 83330
+        }
+      },
+      "segments": [
+        {
+          "name": "iam-refresh",
+          "status": "completed",
+          "started_at": "2026-09-27T22:34:12Z",
+          "finished_at": "2026-09-27T22:49:13Z",
+          "exit_code": 0,
+          "metrics": {
+            "run_query_duration_avg": {
+              "value": 10.663,
+              "unit": "ms"
+            },
+            "run_query_duration_p50": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "failed_iterations_total": {
+              "value": 0
+            },
+            "run_query_operations_total": {
+              "value": 83330
+            },
+            "iteration_duration_p95": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "iterations_total": {
+              "value": 83330
+            },
+            "queries_per_second": {
+              "value": 92.588,
+              "unit": "queries/s"
+            },
+            "iteration_duration_avg": {
+              "value": 10.798,
+              "unit": "ms"
+            },
+            "run_query_duration_p95": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "run_query_duration_p99": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "iteration_duration_count": {
+              "value": 83330
+            },
+            "run_query_duration_count": {
+              "value": 83330
+            },
+            "iteration_duration_p99": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "measurement_seconds": {
+              "value": 900.006,
+              "unit": "s"
+            },
+            "failed_queries_total": {
+              "value": 0
+            },
+            "retry_attempts_total": {
+              "value": 0
+            },
+            "iterations_per_second": {
+              "value": 92.588,
+              "unit": "iterations/s"
+            },
+            "iteration_duration_p50": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "iteration_duration_p90": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "run_query_duration_p90": {
+              "value": 25,
+              "unit": "ms"
+            },
+            "terminal_errors_total": {
+              "value": 0
+            }
+          }
+        }
+      ],
+      "artifacts": [
+        "artifact/6af3d1ca-managed-ydb-readiness-config",
+        "artifact/6af3d1ca-managed-ydb-readiness-log",
+        "artifact/6af3d1ca-stroppy-iam-refresh-config",
+        "artifact/6af3d1ca-stroppy-iam-refresh-log"
+      ],
+      "summary": {
+        "latency_p50_ms": 10,
+        "latency_p95_ms": 25,
+        "latency_p99_ms": 25,
+        "duration": "15m0.744204708s"
+      }
+    },
+    "graphene": {
+      "run_ref": "run/6af3d1ca-3ee4-4561-8f85-e270512df99f",
+      "namespace": "t-server-live-20260924"
+    },
+    "shares": []
+  }
+}

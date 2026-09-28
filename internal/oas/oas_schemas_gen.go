@@ -19241,8 +19241,14 @@ type RunResultSegmentsItem struct {
 	Error  OptString           `json:"error"`
 	Errors OptRunSegmentErrors `json:"errors"`
 	// Native workload compliance report.
-	Compliance jx.Raw                          `json:"compliance"`
-	Metrics    OptRunResultSegmentsItemMetrics `json:"metrics"`
+	Compliance jx.Raw `json:"compliance"`
+	// Native versioned Stroppy run JSON.
+	Report jx.Raw `json:"report"`
+	// Published original JSON report: artifact/<id>; retained 30 days.
+	ReportArtifact OptString `json:"report_artifact"`
+	// Reason the complete report is available only as an artifact (inline size limit).
+	ReportOmitted OptString                       `json:"report_omitted"`
+	Metrics       OptRunResultSegmentsItemMetrics `json:"metrics"`
 }
 
 // GetName returns the value of Name.
@@ -19283,6 +19289,21 @@ func (s *RunResultSegmentsItem) GetErrors() OptRunSegmentErrors {
 // GetCompliance returns the value of Compliance.
 func (s *RunResultSegmentsItem) GetCompliance() jx.Raw {
 	return s.Compliance
+}
+
+// GetReport returns the value of Report.
+func (s *RunResultSegmentsItem) GetReport() jx.Raw {
+	return s.Report
+}
+
+// GetReportArtifact returns the value of ReportArtifact.
+func (s *RunResultSegmentsItem) GetReportArtifact() OptString {
+	return s.ReportArtifact
+}
+
+// GetReportOmitted returns the value of ReportOmitted.
+func (s *RunResultSegmentsItem) GetReportOmitted() OptString {
+	return s.ReportOmitted
 }
 
 // GetMetrics returns the value of Metrics.
@@ -19328,6 +19349,21 @@ func (s *RunResultSegmentsItem) SetErrors(val OptRunSegmentErrors) {
 // SetCompliance sets the value of Compliance.
 func (s *RunResultSegmentsItem) SetCompliance(val jx.Raw) {
 	s.Compliance = val
+}
+
+// SetReport sets the value of Report.
+func (s *RunResultSegmentsItem) SetReport(val jx.Raw) {
+	s.Report = val
+}
+
+// SetReportArtifact sets the value of ReportArtifact.
+func (s *RunResultSegmentsItem) SetReportArtifact(val OptString) {
+	s.ReportArtifact = val
+}
+
+// SetReportOmitted sets the value of ReportOmitted.
+func (s *RunResultSegmentsItem) SetReportOmitted(val OptString) {
+	s.ReportOmitted = val
 }
 
 // SetMetrics sets the value of Metrics.

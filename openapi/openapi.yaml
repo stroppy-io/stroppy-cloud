@@ -2,8 +2,8 @@
 openapi: 3.1.0
 info:
   title: Stroppy Cloud API
-  version: 2.0.2
-  x-pipeline-contract-version: 2.0.2
+  version: 2.1.0
+  x-pipeline-contract-version: 2.1.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -6991,6 +6991,16 @@ components:
               compliance:
                 description: Native workload compliance report
                 preserved without interpreting its fields.: null
+              report:
+                description: Native versioned Stroppy run JSON
+                including unknown fields and workload payloads. Use lossless JSON decoding for large integers.: null
+              report_artifact:
+                type: string
+                description: 'Published original JSON report: artifact/<id>; retained 30 days.'
+              report_omitted:
+                type: string
+                description: Reason the complete report is available only as an artifact (inline size
+                  limit).
               metrics:
                 type: object
                 additionalProperties:

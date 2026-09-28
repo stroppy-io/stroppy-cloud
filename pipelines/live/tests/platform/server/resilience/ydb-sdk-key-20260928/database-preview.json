@@ -1,0 +1,26 @@
+{
+  "observed_at": "2026-09-27T22:29:48.100096+00:00",
+  "method": "POST",
+  "path": "/api/v1/t/server-live-20260924/databases:preview",
+  "http_status": 200,
+  "contract_version": "2.0.2",
+  "body": {
+    "validation": {
+      "errors": []
+    },
+    "topology_preview": {
+      "label": "managed ydb serverless",
+      "node_count": 1,
+      "nodes": [
+        {
+          "role": "runner",
+          "engine": "stroppy",
+          "count": 1
+        }
+      ],
+      "flows": []
+    },
+    "requirements": {},
+    "effective_configs": {}
+  }
+}

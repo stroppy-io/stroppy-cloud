@@ -98,6 +98,7 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 		out.Baseline = runBaseline(ctx, run, runner, &out)
 	}
 
+	inlineReportBytes := 0
 	for i, seg := range segments {
 		events.Emit(ctx, events.SegmentStarted, events.Payload{"segment": seg.Name, "index": i, "script": seg.Workload.Script})
 		labels := maps.Clone(run.Observability.Labels)
@@ -132,12 +133,20 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 			events.Emit(ctx, events.SegmentFailed, events.Payload{"segment": seg.Name, "index": i, "error": err.Error()})
 			return out, fmt.Errorf("segment %s: %w", seg.Name, err)
 		}
+		if inlineReportBytes+len(res.Result.Report) > 256<<10 {
+			res.Result.Report = nil
+			res.Result.ReportOmitted = "run inline report budget exceeded; see report artifact"
+		}
+		inlineReportBytes += len(res.Result.Report)
 		out.Segments = append(out.Segments, res.Result)
 		if res.ConfigPath != "" {
 			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-config", Path: res.ConfigPath, Config: true})
 		}
 		if res.LogPath != "" {
 			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-log", Path: res.LogPath})
+		}
+		if res.ReportPath != "" {
+			out.Files = append(out.Files, artifactFile{Name: "stroppy-" + seg.Name + "-report", Path: res.ReportPath})
 		}
 		if res.Result.Status != spec.SegmentCompleted {
 			events.Emit(ctx, events.SegmentFailed, events.Payload{"segment": seg.Name, "index": i, "status": string(res.Result.Status), "error": res.Result.Error})
@@ -203,6 +212,11 @@ func publishArtifacts(ctx pipeline.Context, run spec.Run, wl workloadOutcome) []
 		h := pipeline.NewArtifact(ctx, name, artifact.FromAgentFile(wl.Runner, f.Path))
 		if _, err := h.TryReady(ctx); err != nil {
 			ctx.Logger().Warn("artifact upload failed", "artifact", name, "error", err)
+			for i := range wl.Segments {
+				if f.Name == "stroppy-"+wl.Segments[i].Name+"-report" && wl.Segments[i].ReportOmitted != "" {
+					wl.Segments[i].ReportOmitted = "inline report omitted due to size; original report artifact upload failed"
+				}
+			}
 			continue
 		}
 		var retention []pipeline.TransferOption
@@ -211,6 +225,11 @@ func publishArtifacts(ctx pipeline.Context, run spec.Run, wl workloadOutcome) []
 		}
 		pipeline.ToStand(ctx, h, retention...)
 		names = append(names, "artifact/"+name)
+		for i := range wl.Segments {
+			if f.Name == "stroppy-"+wl.Segments[i].Name+"-report" {
+				wl.Segments[i].ReportArtifact = "artifact/" + name
+			}
+		}
 	}
 	return names
 }

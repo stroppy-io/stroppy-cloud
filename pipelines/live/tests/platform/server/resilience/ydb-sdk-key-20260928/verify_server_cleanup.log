@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-27T22:51:30.308592+00:00",
+  "run_id": "6af3d1ca-3ee4-4561-8f85-e270512df99f",
+  "run_status": "completed",
+  "stand_kept": false,
+  "remaining_infrastructure": [],
+  "verified": true,
+  "scope": "Server/Graphene resource-tree assertion; no direct YC or Kubernetes query."
+}
