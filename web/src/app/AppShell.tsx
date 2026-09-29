@@ -9,7 +9,7 @@ import { type ReactNode, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AppLink } from './AppLink'
 import { Breadcrumbs } from './Breadcrumbs'
-import { useIsBare } from './crumbs'
+import { useBreadcrumbs, useIsBare } from './crumbs'
 import { GlobalSearch, type GlobalSearchHandle } from './GlobalSearch'
 import { ShortcutsModal } from './ShortcutsModal'
 import { Sidebar } from './Sidebar'
@@ -109,6 +109,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const searchRef = useRef<GlobalSearchHandle>(null)
   const [helpOpen, setHelpOpen] = useState(false)
   const bare = useIsBare()
+  const crumbCount = useBreadcrumbs().length
 
   // GitHub-style navigation shortcuts. Sequences are ignored while typing in inputs by the library.
   const go = (to: string) => () => void navigate({ to: to as never, params: { slug } as never })
@@ -151,7 +152,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
       <div className={styles.body}>
         {!bare && <Sidebar />}
         <main className={styles.main}>
-          {!bare && (
+          {/* A single crumb only repeats the page title: no empty bar for top-level pages. */}
+          {!bare && crumbCount > 1 && (
             <div className={styles.crumbBar}>
               <Breadcrumbs />
             </div>

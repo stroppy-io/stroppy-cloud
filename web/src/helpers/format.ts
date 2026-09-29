@@ -47,8 +47,8 @@ export function formatDuration(input: string | number | null | undefined): strin
   const h = Math.floor(sec / 3600)
   const mi = Math.floor((sec % 3600) / 60)
   const s = sec % 60
-  if (h) return `${h}h ${mi}m`
-  if (mi) return `${mi}m ${s}s`
+  if (h) return mi ? `${h}h ${mi}m` : `${h}h`
+  if (mi) return s ? `${mi}m ${s}s` : `${mi}m`
   return `${s}s`
 }
 

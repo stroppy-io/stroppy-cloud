@@ -27,7 +27,8 @@
   },
   "actions": {
     "clone": "Clone to library",
-    "quickRun": "Quick run"
+    "quickRun": "Quick run",
+    "cloneShort": "Clone"
   },
   "clone": {
     "title": "Clone «{{name}}»",
@@ -71,6 +72,10 @@
     "sizeVariants_one": "{{count}} size variant",
     "sizeVariants_other": "{{count}} size variants",
     "iterations_one": "{{count}} iteration",
-    "iterations_other": "{{count}} iterations"
+    "iterations_other": "{{count}} iterations",
+    "segment": "Segment",
+    "script": "Script",
+    "length": "Length",
+    "workload": "Workload"
   }
 }

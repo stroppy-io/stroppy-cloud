@@ -27,7 +27,8 @@
   },
   "actions": {
     "clone": "Клонировать в библиотеку",
-    "quickRun": "Быстрый запуск"
+    "quickRun": "Быстрый запуск",
+    "cloneShort": "Клонировать"
   },
   "clone": {
     "title": "Клонировать «{{name}}»",
@@ -79,6 +80,10 @@
     "iterations_one": "{{count}} итерация",
     "iterations_few": "{{count}} итерации",
     "iterations_many": "{{count}} итераций",
-    "iterations_other": "{{count}} итерации"
+    "iterations_other": "{{count}} итерации",
+    "segment": "Сегмент",
+    "script": "Скрипт",
+    "length": "Длительность",
+    "workload": "Нагрузка"
   }
 }
