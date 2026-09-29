@@ -43,6 +43,13 @@ type LogQuery struct {
 	Scope    Scope
 	Agents   []string
 	Entities []string
+	// Origin is the instant the run's seqs count from; the store sets the
+	// seq of every line it answers (AssignSeqs).
+	Origin time.Time
+	// Anchor is set when the cursor is a line's seq: an older page ends
+	// with that line, a newer page starts with it, and the page carries
+	// the cursor the other way from it (the line itself excluded).
+	Anchor LineAnchor
 }
 
 // LogLine is one entry.
@@ -193,6 +200,10 @@ func (s *Service) Logs(ctx context.Context, actor auth.Actor, tenantID uuid.UUID
 	}
 	id := identitiesOf(r)
 	q.Scope, q.Agents, q.Entities = ScopeOf(r), id.agents(q.Roles, q.Machines), id.entities(q.Containers)
+	q.Origin = SeqOrigin(r)
+	if a, ok := ParseSeq(q.Origin, q.Cursor); ok {
+		q.Anchor, q.Cursor = a, ""
+	}
 	page, err := s.logs.Query(ctx, q)
 	for i := range page.Lines {
 		id.enrich(&page.Lines[i])
@@ -239,6 +250,8 @@ func (s *Service) RawLogs(ctx context.Context, actor auth.Actor, tenantID, runID
 		limit = 200
 	}
 	page, err := s.logs.Raw(ctx, ScopeOf(r), query, w.Start, w.End, limit)
+	// A raw answer is one page, newest first, with no cursor to continue.
+	AssignSeqs(SeqOrigin(r), page.Lines, false, nil)
 	id := identitiesOf(r)
 	for i := range page.Lines {
 		id.enrich(&page.Lines[i])

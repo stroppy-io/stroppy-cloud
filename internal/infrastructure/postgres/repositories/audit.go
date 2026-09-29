@@ -43,7 +43,7 @@ func (r *AuditRepo) OfTenant(ctx context.Context, q audit.Query) ([]audit.Entry,
 	before := q.BeforeID
 	limit := int64(q.Limit)
 	rows, err := r.q.AuditOfTenant(ctx, db.AuditOfTenantParams{
-		TenantID: &tenantID, BeforeID: &before, Action: &q.Action, ActorID: &q.ActorID, Since: q.Since, Lim: &limit,
+		TenantID: &tenantID, BeforeID: before, Action: q.Action, ActorID: q.ActorID, Since: q.Since, Lim: limit,
 	})
 	if err != nil {
 		return nil, infraf("audit: of tenant: %v", err)

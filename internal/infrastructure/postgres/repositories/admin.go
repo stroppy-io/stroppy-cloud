@@ -23,16 +23,16 @@ type AdminRepo struct{ q *db.Queries }
 // NewAdminRepo builds the repository.
 func NewAdminRepo(database tx.DB) *AdminRepo { return &AdminRepo{q: db.New(database)} }
 
-func window(limit, offset int) (lim, off *int64) {
+func window(limit, offset int) (lim, off int64) {
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	return ptrInt64(int64(limit)), ptrInt64(int64(offset))
+	return int64(limit), int64(offset)
 }
 
 func (r *AdminRepo) Tenants(ctx context.Context, q admin.TenantQuery) ([]tenant.Tenant, error) {
 	lim, off := window(q.Limit, q.Offset)
-	rows, err := r.q.AdminTenants(ctx, db.AdminTenantsParams{Search: &q.Search, Status: &q.Status, Lim: lim, Off: off})
+	rows, err := r.q.AdminTenants(ctx, db.AdminTenantsParams{Search: q.Search, Status: q.Status, SortKey: q.Sort, Desc: q.Desc, Lim: lim, Off: off})
 	if err != nil {
 		return nil, infraf("admin: tenants: %v", err)
 	}
@@ -75,18 +75,12 @@ func (r *AdminRepo) Counters(ctx context.Context, tenantID uuid.UUID) (admin.Cou
 	if err != nil {
 		return admin.Counters{}, nil, infraf("admin: counters: %v", err)
 	}
-	n := func(p *int32) int {
-		if p == nil {
-			return 0
-		}
-		return int(*p)
-	}
-	return admin.Counters{Members: n(row.Members), RunsTotal: n(row.RunsTotal), RunsRunning: n(row.RunsRunning), KeptStands: n(row.KeptStands), Providers: n(row.Providers)}, row.LastActivityAt, nil
+	return admin.Counters{Members: int(row.Members), RunsTotal: int(row.RunsTotal), RunsRunning: int(row.RunsRunning), KeptStands: int(row.KeptStands), Providers: int(row.Providers)}, row.LastActivityAt, nil
 }
 
 func (r *AdminRepo) Users(ctx context.Context, q admin.UserQuery) ([]admin.UserView, error) {
 	lim, off := window(q.Limit, q.Offset)
-	rows, err := r.q.AdminProfiles(ctx, db.AdminProfilesParams{Search: &q.Search, OnlyAdmins: &q.OnlyAdmins, Lim: lim, Off: off})
+	rows, err := r.q.AdminProfiles(ctx, db.AdminProfilesParams{Search: q.Search, OnlyAdmins: q.OnlyAdmins, SortKey: q.Sort, Desc: q.Desc, Lim: lim, Off: off})
 	if err != nil {
 		return nil, infraf("admin: users: %v", err)
 	}
@@ -95,10 +89,8 @@ func (r *AdminRepo) Users(ctx context.Context, q admin.UserQuery) ([]admin.UserV
 		v := admin.UserView{Profile: profileRow(db.ProfileByIDRow{
 			ID: row.ID, Email: row.Email, DisplayName: row.DisplayName, Avatar: row.Avatar, IsPlatformAdmin: row.IsPlatformAdmin,
 			Preferences: row.Preferences, Notifications: row.Notifications, CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
-		})}
-		if row.Memberships != nil {
-			v.Memberships = int(*row.Memberships)
-		}
+		}), LastActivityAt: row.LastActivityAt}
+		v.Memberships = int(row.Memberships)
 		if row.OwnedTenantID != nil {
 			name := ""
 			if row.OwnedTenantName != nil {
@@ -127,7 +119,7 @@ func (r *AdminRepo) Runs(ctx context.Context, q admin.RunQuery) ([]admin.RunView
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	rows, err := r.q.AdminRuns(ctx, db.AdminRunsParams{Statuses: q.Statuses, Tenant: q.Tenant, Lim: int64(limit), Off: int64(q.Offset)})
+	rows, err := r.q.AdminRuns(ctx, db.AdminRunsParams{Statuses: q.Statuses, Tenant: q.Tenant, SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset)})
 	if err != nil {
 		return nil, infraf("admin: runs: %v", err)
 	}
@@ -159,7 +151,7 @@ func (r *AdminRepo) Audit(ctx context.Context, q admin.AuditQuery) ([]audit.Entr
 	if limit <= 0 || limit > 201 {
 		limit = 51
 	}
-	rows, err := r.q.AuditAll(ctx, db.AuditAllParams{BeforeID: &q.BeforeID, Tenant: &q.Tenant, Action: &q.Action, ActorID: &q.ActorID, Since: q.Since, Lim: &limit})
+	rows, err := r.q.AuditAll(ctx, db.AuditAllParams{BeforeID: q.BeforeID, Tenant: q.Tenant, Action: q.Action, ActorID: q.ActorID, Since: q.Since, Lim: limit})
 	if err != nil {
 		return nil, infraf("admin: audit: %v", err)
 	}
@@ -189,8 +181,7 @@ func (r *AdminRepo) UpdateSystem(ctx context.Context, p admin.SystemPatch, by *u
 	}
 	params := db.UpdateSystemSettingsParams{TenantCreation: p.TenantCreation, PublicRatingEnabled: p.PublicRatingEnabled, ExamplesEnabled: p.ExamplesEnabled, UpdatedBy: by}
 	if p.SetDefaultLimits {
-		t := true
-		params.SetDefaultLimits = &t
+		params.SetDefaultLimits = true
 		if p.DefaultLimits != nil {
 			params.DefaultLimits, _ = json.Marshal(p.DefaultLimits) //nolint:errcheck // struct
 		}
@@ -200,8 +191,7 @@ func (r *AdminRepo) UpdateSystem(ctx context.Context, p admin.SystemPatch, by *u
 		params.RunRetentionMaxDays = &d
 	}
 	if p.SetCatalog {
-		t := true
-		params.SetCatalog, params.StroppyCatalog = &t, p.StroppyCatalog
+		params.SetCatalog, params.StroppyCatalog = true, p.StroppyCatalog
 	}
 	row, err := r.q.UpdateSystemSettings(ctx, params)
 	if err != nil {

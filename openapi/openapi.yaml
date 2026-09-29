@@ -1461,6 +1461,8 @@ paths:
             $ref: '#/components/schemas/DatabaseKind'
       - name: sort
         in: query
+        description: Sort key. `topology` orders by the topology label (the plan label of `topology_preview`),
+          `usages` by the number of tests referencing the definition.
         schema:
           type: string
           enum:
@@ -1469,6 +1471,8 @@ paths:
           - updated_at
           - kind
           - version
+          - topology
+          - usages
           - author
           default: updated_at
       - $ref: '#/components/parameters/order'
@@ -1721,6 +1725,8 @@ paths:
           type: string
       - name: sort
         in: query
+        description: Sort key. `segments` orders by the number of spec segments, `usages` by the number
+          of tests referencing the definition.
         schema:
           type: string
           enum:
@@ -1729,6 +1735,8 @@ paths:
           - updated_at
           - protocol
           - stroppy_version
+          - segments
+          - usages
           - author
           default: updated_at
       - $ref: '#/components/parameters/order'
@@ -2240,6 +2248,35 @@ paths:
       parameters:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
+      - name: sort
+        in: query
+        description: 'Sort key, as in listRuns (`default`: the caller''s favorites, then live runs, then
+          the newest; `order` is ignored for it). Missing values sort last. The trend covers the page,
+          newest first.'
+        schema:
+          type: string
+          enum:
+          - default
+          - started_at
+          - finished_at
+          - duration
+          - tps
+          - qps
+          - p50
+          - p99
+          - errors
+          - status
+          - name
+          - db_kind
+          - workload
+          - topology
+          - provider
+          - trigger
+          - author
+          - created_at
+          - updated_at
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: Run history of the test with a metric trend and baseline.
@@ -3114,6 +3151,8 @@ paths:
       - $ref: '#/components/parameters/favorites'
       - name: sort
         in: query
+        description: Sort key. `schedules` orders by the number of schedules targeting the suite, `next_run_at`
+          by the earliest next run of its enabled schedules (suites without one sort last).
         schema:
           type: string
           enum:
@@ -3123,6 +3162,8 @@ paths:
           - last_run_at
           - cell_count
           - test_count
+          - schedules
+          - next_run_at
           - author
           default: updated_at
       - $ref: '#/components/parameters/order'
@@ -4045,6 +4086,22 @@ paths:
           - active
           - orphaned
           - suspended
+      - name: sort
+        in: query
+        description: Sort key. `members` and `runs` order by counts, `last_activity` by the newest audit
+          entry of the tenant (none sorts last).
+        schema:
+          type: string
+          enum:
+          - name
+          - slug
+          - status
+          - members
+          - runs
+          - created_at
+          - last_activity
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: All tenants.
@@ -4200,6 +4257,21 @@ paths:
         in: query
         schema:
           type: boolean
+      - name: sort
+        in: query
+        description: Sort key. `name` is the display name, `memberships` the tenant count, `last_activity`
+          the newest audit entry the user acted in (none sorts last; also returned as `last_seen_at`).
+        schema:
+          type: string
+          enum:
+          - name
+          - email
+          - platform_admin
+          - memberships
+          - last_activity
+          - created_at
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: Profiles known to the server.
@@ -4301,6 +4373,36 @@ paths:
         in: query
         schema:
           type: string
+      - name: sort
+        in: query
+        description: Sort key, as in listRuns plus `tenant` (the slug). `default` puts live runs (pending,
+          running, cancelling) first, then the newest; `order` is ignored for it. Missing values sort
+          last.
+        schema:
+          type: string
+          enum:
+          - default
+          - started_at
+          - finished_at
+          - duration
+          - tps
+          - qps
+          - p50
+          - p99
+          - errors
+          - status
+          - name
+          - db_kind
+          - workload
+          - topology
+          - provider
+          - trigger
+          - author
+          - tenant
+          - created_at
+          - updated_at
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: Runs across all tenants (queue view).
@@ -4813,6 +4915,10 @@ components:
           description: IAM `sub`.
         display_name:
           type: string
+          description: Profile display name; falls back to the email.
+        email:
+          type: string
+          description: Filled for authenticated callers only.
         avatar:
           type: string
     Usage:

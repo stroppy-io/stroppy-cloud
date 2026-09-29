@@ -11,7 +11,13 @@ paths:
         - $ref: '#/components/parameters/author'
         - $ref: '#/components/parameters/favorites'
         - { name: kind, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/DatabaseKind' } } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, kind, version, author], default: updated_at } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key. `topology` orders by the topology label (the plan label
+            of `topology_preview`), `usages` by the number of tests
+            referencing the definition.
+          schema: { type: string, enum: [name, created_at, updated_at, kind, version, topology, usages, author], default: updated_at }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -193,7 +199,12 @@ paths:
         - { name: protocol, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/Protocol' } } }
         - { name: stroppy_version, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: script, in: query, schema: { type: string } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, protocol, stroppy_version, author], default: updated_at } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key. `segments` orders by the number of spec segments,
+            `usages` by the number of tests referencing the definition.
+          schema: { type: string, enum: [name, created_at, updated_at, protocol, stroppy_version, segments, usages, author], default: updated_at }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -568,6 +579,14 @@ paths:
       parameters:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
+        - name: sort
+          in: query
+          description: >-
+            Sort key, as in listRuns (`default`: the caller's favorites, then
+            live runs, then the newest; `order` is ignored for it). Missing
+            values sort last. The trend covers the page, newest first.
+          schema: { type: string, enum: [default, started_at, finished_at, duration, tps, qps, p50, p99, errors, status, name, db_kind, workload, topology, provider, trigger, author, created_at, updated_at], default: created_at }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: Run history of the test with a metric trend and baseline.

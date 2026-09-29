@@ -13,8 +13,6 @@ func isUnique(err error) bool {
 	return errors.As(err, &pg) && pg.Code == "23505"
 }
 
-func ptrInt64(v int64) *int64 { return &v }
-
 type lifecycleTransactor interface {
 	Do(context.Context, func(context.Context) error) error
 }

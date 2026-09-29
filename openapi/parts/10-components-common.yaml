@@ -171,7 +171,8 @@ components:
       required: [id]
       properties:
         id: { type: string, description: IAM `sub`. }
-        display_name: { type: string }
+        display_name: { type: string, description: 'Profile display name; falls back to the email.' }
+        email: { type: string, description: Filled for authenticated callers only. }
         avatar: { type: string }
     Usage:
       type: object

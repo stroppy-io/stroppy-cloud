@@ -446,6 +446,173 @@ func (s *AdminListRunsOKDataItemTriggerRef) SetParentRunID(val OptUUID) {
 	s.ParentRunID = val
 }
 
+type AdminListRunsSort string
+
+const (
+	AdminListRunsSortDefault    AdminListRunsSort = "default"
+	AdminListRunsSortStartedAt  AdminListRunsSort = "started_at"
+	AdminListRunsSortFinishedAt AdminListRunsSort = "finished_at"
+	AdminListRunsSortDuration   AdminListRunsSort = "duration"
+	AdminListRunsSortTps        AdminListRunsSort = "tps"
+	AdminListRunsSortQPS        AdminListRunsSort = "qps"
+	AdminListRunsSortP50        AdminListRunsSort = "p50"
+	AdminListRunsSortP99        AdminListRunsSort = "p99"
+	AdminListRunsSortErrors     AdminListRunsSort = "errors"
+	AdminListRunsSortStatus     AdminListRunsSort = "status"
+	AdminListRunsSortName       AdminListRunsSort = "name"
+	AdminListRunsSortDbKind     AdminListRunsSort = "db_kind"
+	AdminListRunsSortWorkload   AdminListRunsSort = "workload"
+	AdminListRunsSortTopology   AdminListRunsSort = "topology"
+	AdminListRunsSortProvider   AdminListRunsSort = "provider"
+	AdminListRunsSortTrigger    AdminListRunsSort = "trigger"
+	AdminListRunsSortAuthor     AdminListRunsSort = "author"
+	AdminListRunsSortTenant     AdminListRunsSort = "tenant"
+	AdminListRunsSortCreatedAt  AdminListRunsSort = "created_at"
+	AdminListRunsSortUpdatedAt  AdminListRunsSort = "updated_at"
+)
+
+// AllValues returns all AdminListRunsSort values.
+func (AdminListRunsSort) AllValues() []AdminListRunsSort {
+	return []AdminListRunsSort{
+		AdminListRunsSortDefault,
+		AdminListRunsSortStartedAt,
+		AdminListRunsSortFinishedAt,
+		AdminListRunsSortDuration,
+		AdminListRunsSortTps,
+		AdminListRunsSortQPS,
+		AdminListRunsSortP50,
+		AdminListRunsSortP99,
+		AdminListRunsSortErrors,
+		AdminListRunsSortStatus,
+		AdminListRunsSortName,
+		AdminListRunsSortDbKind,
+		AdminListRunsSortWorkload,
+		AdminListRunsSortTopology,
+		AdminListRunsSortProvider,
+		AdminListRunsSortTrigger,
+		AdminListRunsSortAuthor,
+		AdminListRunsSortTenant,
+		AdminListRunsSortCreatedAt,
+		AdminListRunsSortUpdatedAt,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AdminListRunsSort) MarshalText() ([]byte, error) {
+	switch s {
+	case AdminListRunsSortDefault:
+		return []byte(s), nil
+	case AdminListRunsSortStartedAt:
+		return []byte(s), nil
+	case AdminListRunsSortFinishedAt:
+		return []byte(s), nil
+	case AdminListRunsSortDuration:
+		return []byte(s), nil
+	case AdminListRunsSortTps:
+		return []byte(s), nil
+	case AdminListRunsSortQPS:
+		return []byte(s), nil
+	case AdminListRunsSortP50:
+		return []byte(s), nil
+	case AdminListRunsSortP99:
+		return []byte(s), nil
+	case AdminListRunsSortErrors:
+		return []byte(s), nil
+	case AdminListRunsSortStatus:
+		return []byte(s), nil
+	case AdminListRunsSortName:
+		return []byte(s), nil
+	case AdminListRunsSortDbKind:
+		return []byte(s), nil
+	case AdminListRunsSortWorkload:
+		return []byte(s), nil
+	case AdminListRunsSortTopology:
+		return []byte(s), nil
+	case AdminListRunsSortProvider:
+		return []byte(s), nil
+	case AdminListRunsSortTrigger:
+		return []byte(s), nil
+	case AdminListRunsSortAuthor:
+		return []byte(s), nil
+	case AdminListRunsSortTenant:
+		return []byte(s), nil
+	case AdminListRunsSortCreatedAt:
+		return []byte(s), nil
+	case AdminListRunsSortUpdatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AdminListRunsSort) UnmarshalText(data []byte) error {
+	switch AdminListRunsSort(data) {
+	case AdminListRunsSortDefault:
+		*s = AdminListRunsSortDefault
+		return nil
+	case AdminListRunsSortStartedAt:
+		*s = AdminListRunsSortStartedAt
+		return nil
+	case AdminListRunsSortFinishedAt:
+		*s = AdminListRunsSortFinishedAt
+		return nil
+	case AdminListRunsSortDuration:
+		*s = AdminListRunsSortDuration
+		return nil
+	case AdminListRunsSortTps:
+		*s = AdminListRunsSortTps
+		return nil
+	case AdminListRunsSortQPS:
+		*s = AdminListRunsSortQPS
+		return nil
+	case AdminListRunsSortP50:
+		*s = AdminListRunsSortP50
+		return nil
+	case AdminListRunsSortP99:
+		*s = AdminListRunsSortP99
+		return nil
+	case AdminListRunsSortErrors:
+		*s = AdminListRunsSortErrors
+		return nil
+	case AdminListRunsSortStatus:
+		*s = AdminListRunsSortStatus
+		return nil
+	case AdminListRunsSortName:
+		*s = AdminListRunsSortName
+		return nil
+	case AdminListRunsSortDbKind:
+		*s = AdminListRunsSortDbKind
+		return nil
+	case AdminListRunsSortWorkload:
+		*s = AdminListRunsSortWorkload
+		return nil
+	case AdminListRunsSortTopology:
+		*s = AdminListRunsSortTopology
+		return nil
+	case AdminListRunsSortProvider:
+		*s = AdminListRunsSortProvider
+		return nil
+	case AdminListRunsSortTrigger:
+		*s = AdminListRunsSortTrigger
+		return nil
+	case AdminListRunsSortAuthor:
+		*s = AdminListRunsSortAuthor
+		return nil
+	case AdminListRunsSortTenant:
+		*s = AdminListRunsSortTenant
+		return nil
+	case AdminListRunsSortCreatedAt:
+		*s = AdminListRunsSortCreatedAt
+		return nil
+	case AdminListRunsSortUpdatedAt:
+		*s = AdminListRunsSortUpdatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 type AdminListTenantsOK struct {
 	Data []AdminTenant `json:"data"`
 	Meta PageMeta      `json:"meta"`
@@ -469,6 +636,82 @@ func (s *AdminListTenantsOK) SetData(val []AdminTenant) {
 // SetMeta sets the value of Meta.
 func (s *AdminListTenantsOK) SetMeta(val PageMeta) {
 	s.Meta = val
+}
+
+type AdminListTenantsSort string
+
+const (
+	AdminListTenantsSortName         AdminListTenantsSort = "name"
+	AdminListTenantsSortSlug         AdminListTenantsSort = "slug"
+	AdminListTenantsSortStatus       AdminListTenantsSort = "status"
+	AdminListTenantsSortMembers      AdminListTenantsSort = "members"
+	AdminListTenantsSortRuns         AdminListTenantsSort = "runs"
+	AdminListTenantsSortCreatedAt    AdminListTenantsSort = "created_at"
+	AdminListTenantsSortLastActivity AdminListTenantsSort = "last_activity"
+)
+
+// AllValues returns all AdminListTenantsSort values.
+func (AdminListTenantsSort) AllValues() []AdminListTenantsSort {
+	return []AdminListTenantsSort{
+		AdminListTenantsSortName,
+		AdminListTenantsSortSlug,
+		AdminListTenantsSortStatus,
+		AdminListTenantsSortMembers,
+		AdminListTenantsSortRuns,
+		AdminListTenantsSortCreatedAt,
+		AdminListTenantsSortLastActivity,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AdminListTenantsSort) MarshalText() ([]byte, error) {
+	switch s {
+	case AdminListTenantsSortName:
+		return []byte(s), nil
+	case AdminListTenantsSortSlug:
+		return []byte(s), nil
+	case AdminListTenantsSortStatus:
+		return []byte(s), nil
+	case AdminListTenantsSortMembers:
+		return []byte(s), nil
+	case AdminListTenantsSortRuns:
+		return []byte(s), nil
+	case AdminListTenantsSortCreatedAt:
+		return []byte(s), nil
+	case AdminListTenantsSortLastActivity:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AdminListTenantsSort) UnmarshalText(data []byte) error {
+	switch AdminListTenantsSort(data) {
+	case AdminListTenantsSortName:
+		*s = AdminListTenantsSortName
+		return nil
+	case AdminListTenantsSortSlug:
+		*s = AdminListTenantsSortSlug
+		return nil
+	case AdminListTenantsSortStatus:
+		*s = AdminListTenantsSortStatus
+		return nil
+	case AdminListTenantsSortMembers:
+		*s = AdminListTenantsSortMembers
+		return nil
+	case AdminListTenantsSortRuns:
+		*s = AdminListTenantsSortRuns
+		return nil
+	case AdminListTenantsSortCreatedAt:
+		*s = AdminListTenantsSortCreatedAt
+		return nil
+	case AdminListTenantsSortLastActivity:
+		*s = AdminListTenantsSortLastActivity
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type AdminListTenantsStatus string
@@ -542,6 +785,75 @@ func (s *AdminListUsersOK) SetData(val []AdminUser) {
 // SetMeta sets the value of Meta.
 func (s *AdminListUsersOK) SetMeta(val PageMeta) {
 	s.Meta = val
+}
+
+type AdminListUsersSort string
+
+const (
+	AdminListUsersSortName          AdminListUsersSort = "name"
+	AdminListUsersSortEmail         AdminListUsersSort = "email"
+	AdminListUsersSortPlatformAdmin AdminListUsersSort = "platform_admin"
+	AdminListUsersSortMemberships   AdminListUsersSort = "memberships"
+	AdminListUsersSortLastActivity  AdminListUsersSort = "last_activity"
+	AdminListUsersSortCreatedAt     AdminListUsersSort = "created_at"
+)
+
+// AllValues returns all AdminListUsersSort values.
+func (AdminListUsersSort) AllValues() []AdminListUsersSort {
+	return []AdminListUsersSort{
+		AdminListUsersSortName,
+		AdminListUsersSortEmail,
+		AdminListUsersSortPlatformAdmin,
+		AdminListUsersSortMemberships,
+		AdminListUsersSortLastActivity,
+		AdminListUsersSortCreatedAt,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AdminListUsersSort) MarshalText() ([]byte, error) {
+	switch s {
+	case AdminListUsersSortName:
+		return []byte(s), nil
+	case AdminListUsersSortEmail:
+		return []byte(s), nil
+	case AdminListUsersSortPlatformAdmin:
+		return []byte(s), nil
+	case AdminListUsersSortMemberships:
+		return []byte(s), nil
+	case AdminListUsersSortLastActivity:
+		return []byte(s), nil
+	case AdminListUsersSortCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AdminListUsersSort) UnmarshalText(data []byte) error {
+	switch AdminListUsersSort(data) {
+	case AdminListUsersSortName:
+		*s = AdminListUsersSortName
+		return nil
+	case AdminListUsersSortEmail:
+		*s = AdminListUsersSortEmail
+		return nil
+	case AdminListUsersSortPlatformAdmin:
+		*s = AdminListUsersSortPlatformAdmin
+		return nil
+	case AdminListUsersSortMemberships:
+		*s = AdminListUsersSortMemberships
+		return nil
+	case AdminListUsersSortLastActivity:
+		*s = AdminListUsersSortLastActivity
+		return nil
+	case AdminListUsersSortCreatedAt:
+		*s = AdminListUsersSortCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type AdminPatchUserReq struct {
@@ -5842,6 +6154,8 @@ const (
 	ListDatabasesSortUpdatedAt ListDatabasesSort = "updated_at"
 	ListDatabasesSortKind      ListDatabasesSort = "kind"
 	ListDatabasesSortVersion   ListDatabasesSort = "version"
+	ListDatabasesSortTopology  ListDatabasesSort = "topology"
+	ListDatabasesSortUsages    ListDatabasesSort = "usages"
 	ListDatabasesSortAuthor    ListDatabasesSort = "author"
 )
 
@@ -5853,6 +6167,8 @@ func (ListDatabasesSort) AllValues() []ListDatabasesSort {
 		ListDatabasesSortUpdatedAt,
 		ListDatabasesSortKind,
 		ListDatabasesSortVersion,
+		ListDatabasesSortTopology,
+		ListDatabasesSortUsages,
 		ListDatabasesSortAuthor,
 	}
 }
@@ -5869,6 +6185,10 @@ func (s ListDatabasesSort) MarshalText() ([]byte, error) {
 	case ListDatabasesSortKind:
 		return []byte(s), nil
 	case ListDatabasesSortVersion:
+		return []byte(s), nil
+	case ListDatabasesSortTopology:
+		return []byte(s), nil
+	case ListDatabasesSortUsages:
 		return []byte(s), nil
 	case ListDatabasesSortAuthor:
 		return []byte(s), nil
@@ -5894,6 +6214,12 @@ func (s *ListDatabasesSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListDatabasesSortVersion:
 		*s = ListDatabasesSortVersion
+		return nil
+	case ListDatabasesSortTopology:
+		*s = ListDatabasesSortTopology
+		return nil
+	case ListDatabasesSortUsages:
+		*s = ListDatabasesSortUsages
 		return nil
 	case ListDatabasesSortAuthor:
 		*s = ListDatabasesSortAuthor
@@ -6715,6 +7041,8 @@ const (
 	ListSuitesSortLastRunAt ListSuitesSort = "last_run_at"
 	ListSuitesSortCellCount ListSuitesSort = "cell_count"
 	ListSuitesSortTestCount ListSuitesSort = "test_count"
+	ListSuitesSortSchedules ListSuitesSort = "schedules"
+	ListSuitesSortNextRunAt ListSuitesSort = "next_run_at"
 	ListSuitesSortAuthor    ListSuitesSort = "author"
 )
 
@@ -6727,6 +7055,8 @@ func (ListSuitesSort) AllValues() []ListSuitesSort {
 		ListSuitesSortLastRunAt,
 		ListSuitesSortCellCount,
 		ListSuitesSortTestCount,
+		ListSuitesSortSchedules,
+		ListSuitesSortNextRunAt,
 		ListSuitesSortAuthor,
 	}
 }
@@ -6745,6 +7075,10 @@ func (s ListSuitesSort) MarshalText() ([]byte, error) {
 	case ListSuitesSortCellCount:
 		return []byte(s), nil
 	case ListSuitesSortTestCount:
+		return []byte(s), nil
+	case ListSuitesSortSchedules:
+		return []byte(s), nil
+	case ListSuitesSortNextRunAt:
 		return []byte(s), nil
 	case ListSuitesSortAuthor:
 		return []byte(s), nil
@@ -6774,6 +7108,12 @@ func (s *ListSuitesSort) UnmarshalText(data []byte) error {
 	case ListSuitesSortTestCount:
 		*s = ListSuitesSortTestCount
 		return nil
+	case ListSuitesSortSchedules:
+		*s = ListSuitesSortSchedules
+		return nil
+	case ListSuitesSortNextRunAt:
+		*s = ListSuitesSortNextRunAt
+		return nil
 	case ListSuitesSortAuthor:
 		*s = ListSuitesSortAuthor
 		return nil
@@ -6794,6 +7134,166 @@ func (s *ListTenantTokensOK) GetData() []ApiToken {
 // SetData sets the value of Data.
 func (s *ListTenantTokensOK) SetData(val []ApiToken) {
 	s.Data = val
+}
+
+type ListTestRunsSort string
+
+const (
+	ListTestRunsSortDefault    ListTestRunsSort = "default"
+	ListTestRunsSortStartedAt  ListTestRunsSort = "started_at"
+	ListTestRunsSortFinishedAt ListTestRunsSort = "finished_at"
+	ListTestRunsSortDuration   ListTestRunsSort = "duration"
+	ListTestRunsSortTps        ListTestRunsSort = "tps"
+	ListTestRunsSortQPS        ListTestRunsSort = "qps"
+	ListTestRunsSortP50        ListTestRunsSort = "p50"
+	ListTestRunsSortP99        ListTestRunsSort = "p99"
+	ListTestRunsSortErrors     ListTestRunsSort = "errors"
+	ListTestRunsSortStatus     ListTestRunsSort = "status"
+	ListTestRunsSortName       ListTestRunsSort = "name"
+	ListTestRunsSortDbKind     ListTestRunsSort = "db_kind"
+	ListTestRunsSortWorkload   ListTestRunsSort = "workload"
+	ListTestRunsSortTopology   ListTestRunsSort = "topology"
+	ListTestRunsSortProvider   ListTestRunsSort = "provider"
+	ListTestRunsSortTrigger    ListTestRunsSort = "trigger"
+	ListTestRunsSortAuthor     ListTestRunsSort = "author"
+	ListTestRunsSortCreatedAt  ListTestRunsSort = "created_at"
+	ListTestRunsSortUpdatedAt  ListTestRunsSort = "updated_at"
+)
+
+// AllValues returns all ListTestRunsSort values.
+func (ListTestRunsSort) AllValues() []ListTestRunsSort {
+	return []ListTestRunsSort{
+		ListTestRunsSortDefault,
+		ListTestRunsSortStartedAt,
+		ListTestRunsSortFinishedAt,
+		ListTestRunsSortDuration,
+		ListTestRunsSortTps,
+		ListTestRunsSortQPS,
+		ListTestRunsSortP50,
+		ListTestRunsSortP99,
+		ListTestRunsSortErrors,
+		ListTestRunsSortStatus,
+		ListTestRunsSortName,
+		ListTestRunsSortDbKind,
+		ListTestRunsSortWorkload,
+		ListTestRunsSortTopology,
+		ListTestRunsSortProvider,
+		ListTestRunsSortTrigger,
+		ListTestRunsSortAuthor,
+		ListTestRunsSortCreatedAt,
+		ListTestRunsSortUpdatedAt,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListTestRunsSort) MarshalText() ([]byte, error) {
+	switch s {
+	case ListTestRunsSortDefault:
+		return []byte(s), nil
+	case ListTestRunsSortStartedAt:
+		return []byte(s), nil
+	case ListTestRunsSortFinishedAt:
+		return []byte(s), nil
+	case ListTestRunsSortDuration:
+		return []byte(s), nil
+	case ListTestRunsSortTps:
+		return []byte(s), nil
+	case ListTestRunsSortQPS:
+		return []byte(s), nil
+	case ListTestRunsSortP50:
+		return []byte(s), nil
+	case ListTestRunsSortP99:
+		return []byte(s), nil
+	case ListTestRunsSortErrors:
+		return []byte(s), nil
+	case ListTestRunsSortStatus:
+		return []byte(s), nil
+	case ListTestRunsSortName:
+		return []byte(s), nil
+	case ListTestRunsSortDbKind:
+		return []byte(s), nil
+	case ListTestRunsSortWorkload:
+		return []byte(s), nil
+	case ListTestRunsSortTopology:
+		return []byte(s), nil
+	case ListTestRunsSortProvider:
+		return []byte(s), nil
+	case ListTestRunsSortTrigger:
+		return []byte(s), nil
+	case ListTestRunsSortAuthor:
+		return []byte(s), nil
+	case ListTestRunsSortCreatedAt:
+		return []byte(s), nil
+	case ListTestRunsSortUpdatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListTestRunsSort) UnmarshalText(data []byte) error {
+	switch ListTestRunsSort(data) {
+	case ListTestRunsSortDefault:
+		*s = ListTestRunsSortDefault
+		return nil
+	case ListTestRunsSortStartedAt:
+		*s = ListTestRunsSortStartedAt
+		return nil
+	case ListTestRunsSortFinishedAt:
+		*s = ListTestRunsSortFinishedAt
+		return nil
+	case ListTestRunsSortDuration:
+		*s = ListTestRunsSortDuration
+		return nil
+	case ListTestRunsSortTps:
+		*s = ListTestRunsSortTps
+		return nil
+	case ListTestRunsSortQPS:
+		*s = ListTestRunsSortQPS
+		return nil
+	case ListTestRunsSortP50:
+		*s = ListTestRunsSortP50
+		return nil
+	case ListTestRunsSortP99:
+		*s = ListTestRunsSortP99
+		return nil
+	case ListTestRunsSortErrors:
+		*s = ListTestRunsSortErrors
+		return nil
+	case ListTestRunsSortStatus:
+		*s = ListTestRunsSortStatus
+		return nil
+	case ListTestRunsSortName:
+		*s = ListTestRunsSortName
+		return nil
+	case ListTestRunsSortDbKind:
+		*s = ListTestRunsSortDbKind
+		return nil
+	case ListTestRunsSortWorkload:
+		*s = ListTestRunsSortWorkload
+		return nil
+	case ListTestRunsSortTopology:
+		*s = ListTestRunsSortTopology
+		return nil
+	case ListTestRunsSortProvider:
+		*s = ListTestRunsSortProvider
+		return nil
+	case ListTestRunsSortTrigger:
+		*s = ListTestRunsSortTrigger
+		return nil
+	case ListTestRunsSortAuthor:
+		*s = ListTestRunsSortAuthor
+		return nil
+	case ListTestRunsSortCreatedAt:
+		*s = ListTestRunsSortCreatedAt
+		return nil
+	case ListTestRunsSortUpdatedAt:
+		*s = ListTestRunsSortUpdatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type ListTestsOK struct {
@@ -6990,6 +7490,8 @@ const (
 	ListWorkloadsSortUpdatedAt      ListWorkloadsSort = "updated_at"
 	ListWorkloadsSortProtocol       ListWorkloadsSort = "protocol"
 	ListWorkloadsSortStroppyVersion ListWorkloadsSort = "stroppy_version"
+	ListWorkloadsSortSegments       ListWorkloadsSort = "segments"
+	ListWorkloadsSortUsages         ListWorkloadsSort = "usages"
 	ListWorkloadsSortAuthor         ListWorkloadsSort = "author"
 )
 
@@ -7001,6 +7503,8 @@ func (ListWorkloadsSort) AllValues() []ListWorkloadsSort {
 		ListWorkloadsSortUpdatedAt,
 		ListWorkloadsSortProtocol,
 		ListWorkloadsSortStroppyVersion,
+		ListWorkloadsSortSegments,
+		ListWorkloadsSortUsages,
 		ListWorkloadsSortAuthor,
 	}
 }
@@ -7017,6 +7521,10 @@ func (s ListWorkloadsSort) MarshalText() ([]byte, error) {
 	case ListWorkloadsSortProtocol:
 		return []byte(s), nil
 	case ListWorkloadsSortStroppyVersion:
+		return []byte(s), nil
+	case ListWorkloadsSortSegments:
+		return []byte(s), nil
+	case ListWorkloadsSortUsages:
 		return []byte(s), nil
 	case ListWorkloadsSortAuthor:
 		return []byte(s), nil
@@ -7042,6 +7550,12 @@ func (s *ListWorkloadsSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListWorkloadsSortStroppyVersion:
 		*s = ListWorkloadsSortStroppyVersion
+		return nil
+	case ListWorkloadsSortSegments:
+		*s = ListWorkloadsSortSegments
+		return nil
+	case ListWorkloadsSortUsages:
+		*s = ListWorkloadsSortUsages
 		return nil
 	case ListWorkloadsSortAuthor:
 		*s = ListWorkloadsSortAuthor
@@ -7451,10 +7965,12 @@ func (s *Member) SetLastSeenAt(val OptNilDateTime) {
 // Merged schema.
 type MemberUser struct {
 	// IAM `sub`.
-	ID          string    `json:"id"`
+	ID string `json:"id"`
+	// Profile display name; falls back to the email.
 	DisplayName OptString `json:"display_name"`
-	Avatar      OptString `json:"avatar"`
-	Email       OptString `json:"email"`
+	// Merged property.
+	Email  OptString `json:"email"`
+	Avatar OptString `json:"avatar"`
 }
 
 // GetID returns the value of ID.
@@ -7467,14 +7983,14 @@ func (s *MemberUser) GetDisplayName() OptString {
 	return s.DisplayName
 }
 
-// GetAvatar returns the value of Avatar.
-func (s *MemberUser) GetAvatar() OptString {
-	return s.Avatar
-}
-
 // GetEmail returns the value of Email.
 func (s *MemberUser) GetEmail() OptString {
 	return s.Email
+}
+
+// GetAvatar returns the value of Avatar.
+func (s *MemberUser) GetAvatar() OptString {
+	return s.Avatar
 }
 
 // SetID sets the value of ID.
@@ -7487,14 +8003,14 @@ func (s *MemberUser) SetDisplayName(val OptString) {
 	s.DisplayName = val
 }
 
-// SetAvatar sets the value of Avatar.
-func (s *MemberUser) SetAvatar(val OptString) {
-	s.Avatar = val
-}
-
 // SetEmail sets the value of Email.
 func (s *MemberUser) SetEmail(val OptString) {
 	s.Email = val
+}
+
+// SetAvatar sets the value of Avatar.
+func (s *MemberUser) SetAvatar(val OptString) {
+	s.Avatar = val
 }
 
 // Ref: #/components/schemas/MetricDef
@@ -7930,6 +8446,98 @@ func (o OptAdminListRunsOKDataItemTriggerRef) Or(d AdminListRunsOKDataItemTrigge
 	return d
 }
 
+// NewOptAdminListRunsSort returns new OptAdminListRunsSort with value set to v.
+func NewOptAdminListRunsSort(v AdminListRunsSort) OptAdminListRunsSort {
+	return OptAdminListRunsSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAdminListRunsSort is optional AdminListRunsSort.
+type OptAdminListRunsSort struct {
+	Value AdminListRunsSort
+	Set   bool
+}
+
+// IsSet returns true if OptAdminListRunsSort was set.
+func (o OptAdminListRunsSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAdminListRunsSort) Reset() {
+	var v AdminListRunsSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAdminListRunsSort) SetTo(v AdminListRunsSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAdminListRunsSort) Get() (v AdminListRunsSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAdminListRunsSort) Or(d AdminListRunsSort) AdminListRunsSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptAdminListTenantsSort returns new OptAdminListTenantsSort with value set to v.
+func NewOptAdminListTenantsSort(v AdminListTenantsSort) OptAdminListTenantsSort {
+	return OptAdminListTenantsSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAdminListTenantsSort is optional AdminListTenantsSort.
+type OptAdminListTenantsSort struct {
+	Value AdminListTenantsSort
+	Set   bool
+}
+
+// IsSet returns true if OptAdminListTenantsSort was set.
+func (o OptAdminListTenantsSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAdminListTenantsSort) Reset() {
+	var v AdminListTenantsSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAdminListTenantsSort) SetTo(v AdminListTenantsSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAdminListTenantsSort) Get() (v AdminListTenantsSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAdminListTenantsSort) Or(d AdminListTenantsSort) AdminListTenantsSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptAdminListTenantsStatus returns new OptAdminListTenantsStatus with value set to v.
 func NewOptAdminListTenantsStatus(v AdminListTenantsStatus) OptAdminListTenantsStatus {
 	return OptAdminListTenantsStatus{
@@ -7970,6 +8578,52 @@ func (o OptAdminListTenantsStatus) Get() (v AdminListTenantsStatus, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptAdminListTenantsStatus) Or(d AdminListTenantsStatus) AdminListTenantsStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptAdminListUsersSort returns new OptAdminListUsersSort with value set to v.
+func NewOptAdminListUsersSort(v AdminListUsersSort) OptAdminListUsersSort {
+	return OptAdminListUsersSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAdminListUsersSort is optional AdminListUsersSort.
+type OptAdminListUsersSort struct {
+	Value AdminListUsersSort
+	Set   bool
+}
+
+// IsSet returns true if OptAdminListUsersSort was set.
+func (o OptAdminListUsersSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAdminListUsersSort) Reset() {
+	var v AdminListUsersSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAdminListUsersSort) SetTo(v AdminListUsersSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAdminListUsersSort) Get() (v AdminListUsersSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAdminListUsersSort) Or(d AdminListUsersSort) AdminListUsersSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -10086,6 +10740,52 @@ func (o OptListSuitesSort) Get() (v ListSuitesSort, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptListSuitesSort) Or(d ListSuitesSort) ListSuitesSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptListTestRunsSort returns new OptListTestRunsSort with value set to v.
+func NewOptListTestRunsSort(v ListTestRunsSort) OptListTestRunsSort {
+	return OptListTestRunsSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListTestRunsSort is optional ListTestRunsSort.
+type OptListTestRunsSort struct {
+	Value ListTestRunsSort
+	Set   bool
+}
+
+// IsSet returns true if OptListTestRunsSort was set.
+func (o OptListTestRunsSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListTestRunsSort) Reset() {
+	var v ListTestRunsSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListTestRunsSort) SetTo(v ListTestRunsSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListTestRunsSort) Get() (v ListTestRunsSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListTestRunsSort) Or(d ListTestRunsSort) ListTestRunsSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -27859,9 +28559,12 @@ func (s *UsageKind) UnmarshalText(data []byte) error {
 // Ref: #/components/schemas/UserRef
 type UserRef struct {
 	// IAM `sub`.
-	ID          string    `json:"id"`
+	ID string `json:"id"`
+	// Profile display name; falls back to the email.
 	DisplayName OptString `json:"display_name"`
-	Avatar      OptString `json:"avatar"`
+	// Filled for authenticated callers only.
+	Email  OptString `json:"email"`
+	Avatar OptString `json:"avatar"`
 }
 
 // GetID returns the value of ID.
@@ -27872,6 +28575,11 @@ func (s *UserRef) GetID() string {
 // GetDisplayName returns the value of DisplayName.
 func (s *UserRef) GetDisplayName() OptString {
 	return s.DisplayName
+}
+
+// GetEmail returns the value of Email.
+func (s *UserRef) GetEmail() OptString {
+	return s.Email
 }
 
 // GetAvatar returns the value of Avatar.
@@ -27887,6 +28595,11 @@ func (s *UserRef) SetID(val string) {
 // SetDisplayName sets the value of DisplayName.
 func (s *UserRef) SetDisplayName(val OptString) {
 	s.DisplayName = val
+}
+
+// SetEmail sets the value of Email.
+func (s *UserRef) SetEmail(val OptString) {
+	s.Email = val
 }
 
 // SetAvatar sets the value of Avatar.

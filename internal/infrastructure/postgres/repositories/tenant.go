@@ -100,9 +100,8 @@ func (r *TenantRepo) SlugTaken(ctx context.Context, slug string) (bool, error) {
 }
 
 func (r *TenantRepo) Update(ctx context.Context, id uuid.UUID, p tenant.Patch) error {
-	clearPublic := p.ClearPublicName
 	n, err := r.q.UpdateTenant(ctx, db.UpdateTenantParams{
-		ID: id, Name: p.Name, Description: p.Description, PublicName: p.PublicName, ClearPublicName: &clearPublic,
+		ID: id, Name: p.Name, Description: p.Description, PublicName: p.PublicName, ClearPublicName: p.ClearPublicName,
 	})
 	if err != nil {
 		return infraf("tenant: update: %v", err)
@@ -235,7 +234,7 @@ func (r *TenantRepo) PendingInvites(ctx context.Context, tenantID uuid.UUID) ([]
 }
 
 func (r *TenantRepo) PendingInvitesForEmail(ctx context.Context, email string) ([]tenant.Invite, error) {
-	rows, err := r.q.PendingInvitesForEmail(ctx, &email)
+	rows, err := r.q.PendingInvitesForEmail(ctx, email)
 	if err != nil {
 		return nil, infraf("invite: for email: %v", err)
 	}
@@ -258,10 +257,7 @@ func tenantRow(row db.TenantByIDRow) tenant.Tenant {
 	t := tenant.Tenant{
 		ID: row.ID, Slug: row.Slug, Name: row.Name, Description: row.Description, PublicName: row.PublicName,
 		Status: tenant.Status(row.Status), OwnerID: row.OwnerID, GrapheneNamespace: row.GrapheneNamespace,
-		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt,
-	}
-	if row.MemberCount != nil {
-		t.MemberCount = int(*row.MemberCount)
+		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt, MemberCount: int(row.MemberCount),
 	}
 	return t
 }

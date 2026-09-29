@@ -53,7 +53,7 @@ func (r *ScheduleRepo) List(ctx context.Context, tenantID uuid.UUID, q schedule.
 	if q.Enabled != nil {
 		onlyEnabled, onlyDisabled = *q.Enabled, !*q.Enabled
 	}
-	rows, err := r.q.SchedulesOfTenant(ctx, db.SchedulesOfTenantParams{TenantID: tenantID, TargetKind: &q.TargetKind, OnlyEnabled: &onlyEnabled, OnlyDisabled: &onlyDisabled, SortKey: &q.Sort, Desc: &q.Desc, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(q.Offset))})
+	rows, err := r.q.SchedulesOfTenant(ctx, db.SchedulesOfTenantParams{TenantID: tenantID, TargetKind: q.TargetKind, OnlyEnabled: onlyEnabled, OnlyDisabled: onlyDisabled, SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset)})
 	if err != nil {
 		return nil, infraf("schedule: list: %v", err)
 	}
@@ -65,7 +65,7 @@ func (r *ScheduleRepo) List(ctx context.Context, tenantID uuid.UUID, q schedule.
 }
 
 func (r *ScheduleRepo) Upcoming(ctx context.Context, tenantID uuid.UUID, limit int) ([]schedule.Schedule, error) {
-	rows, err := r.q.UpcomingSchedules(ctx, db.UpcomingSchedulesParams{TenantID: tenantID, Lim: ptrInt64(int64(limit))})
+	rows, err := r.q.UpcomingSchedules(ctx, db.UpcomingSchedulesParams{TenantID: tenantID, Lim: int64(limit)})
 	if err != nil {
 		return nil, infraf("schedule: upcoming: %v", err)
 	}
@@ -137,7 +137,7 @@ func (r *ScheduleRepo) AddHistory(ctx context.Context, id uuid.UUID, ref schedul
 }
 
 func (r *ScheduleRepo) History(ctx context.Context, id uuid.UUID, limit, offset int) ([]schedule.RunRef, error) {
-	rows, err := r.q.ScheduleHistory(ctx, db.ScheduleHistoryParams{ScheduleID: id, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(offset))})
+	rows, err := r.q.ScheduleHistory(ctx, db.ScheduleHistoryParams{ScheduleID: id, Lim: int64(limit), Off: int64(offset)})
 	if err != nil {
 		return nil, infraf("schedule: history: %v", err)
 	}

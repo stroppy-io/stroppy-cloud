@@ -40,6 +40,13 @@ paths:
       parameters:
         - $ref: '#/components/parameters/search'
         - { name: status, in: query, schema: { type: string, enum: [active, orphaned, suspended] } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key. `members` and `runs` order by counts, `last_activity` by
+            the newest audit entry of the tenant (none sorts last).
+          schema: { type: string, enum: [name, slug, status, members, runs, created_at, last_activity], default: created_at }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: All tenants.
@@ -158,6 +165,14 @@ paths:
       parameters:
         - $ref: '#/components/parameters/search'
         - { name: platform_admin, in: query, schema: { type: boolean } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key. `name` is the display name, `memberships` the tenant
+            count, `last_activity` the newest audit entry the user acted in
+            (none sorts last; also returned as `last_seen_at`).
+          schema: { type: string, enum: [name, email, platform_admin, memberships, last_activity, created_at], default: created_at }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: Profiles known to the server.
@@ -231,6 +246,14 @@ paths:
       parameters:
         - { name: status, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/RunStatus' } } }
         - { name: tenant, in: query, schema: { type: string } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key, as in listRuns plus `tenant` (the slug). `default` puts
+            live runs (pending, running, cancelling) first, then the newest;
+            `order` is ignored for it. Missing values sort last.
+          schema: { type: string, enum: [default, started_at, finished_at, duration, tps, qps, p50, p99, errors, status, name, db_kind, workload, topology, provider, trigger, author, tenant, created_at, updated_at], default: created_at }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: Runs across all tenants (queue view).

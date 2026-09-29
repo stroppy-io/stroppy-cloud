@@ -21,10 +21,10 @@ FROM runs
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@search::text = '' OR name ILIKE '%' || @search::text || '%' OR test_name ILIKE '%' || @search::text || '%')
   AND (@author_id::text = '' OR author_id::text = @author_id::text)
-  AND (cardinality(@statuses::text[]) = 0 OR status = ANY(@statuses::text[]))
-  AND (cardinality(@kinds::text[]) = 0 OR summary->>'db_kind' = ANY(@kinds::text[]))
-  AND (cardinality(@profiles::text[]) = 0 OR summary->'provider_profile'->>'id' = ANY(@profiles::text[]))
-  AND (cardinality(@triggers::text[]) = 0 OR trigger = ANY(@triggers::text[]))
+  AND (COALESCE(cardinality(@statuses::text[]), 0) = 0 OR status = ANY(@statuses::text[]))
+  AND (COALESCE(cardinality(@kinds::text[]), 0) = 0 OR summary->>'db_kind' = ANY(@kinds::text[]))
+  AND (COALESCE(cardinality(@profiles::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY(@profiles::text[]))
+  AND (COALESCE(cardinality(@triggers::text[]), 0) = 0 OR trigger = ANY(@triggers::text[]))
   AND (@test_id::text = '' OR test_id::text = @test_id::text)
   AND (@suite_run_id::text = '' OR suite_run_id::text = @suite_run_id::text)
   AND (NOT @standalone::boolean OR suite_run_id IS NULL)
@@ -90,13 +90,6 @@ SELECT field, value, count(*)::int AS count FROM (
   UNION ALL SELECT 'provider_profile', summary->'provider_profile'->>'id' FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND summary ? 'provider_profile'
   UNION ALL SELECT 'author', author_id::text FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND author_id IS NOT NULL
 ) f GROUP BY field, value ORDER BY field, count DESC, value;
-
--- name: RunsOfTest :many
-SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
-       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
-FROM runs WHERE test_id = @test_id AND deleted_at IS NULL
-ORDER BY created_at DESC LIMIT @lim OFFSET @off;
 
 -- name: LiveRuns :many
 -- Active workflows and terminal runs whose kept infrastructure still needs reconciliation.
@@ -195,10 +188,10 @@ WHERE r.deleted_at IS NULL AND r.status = 'completed'
   AND r.summary->'headline' ? @metric::text
   AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
   AND ((@tenant_id::text <> '' AND r.tenant_id::text = @tenant_id::text AND r.rating_tenant) OR (@tenant_id::text = '' AND r.rating_global))
-  AND (cardinality(@kinds::text[]) = 0 OR r.summary->>'db_kind' = ANY(@kinds::text[]))
-  AND (cardinality(@versions::text[]) = 0 OR r.summary->>'db_version' = ANY(@versions::text[]))
-  AND (cardinality(@providers::text[]) = 0 OR r.summary->>'provider_kind' = ANY(@providers::text[]))
-  AND (cardinality(@stroppy_versions::text[]) = 0 OR r.summary->>'stroppy_version' = ANY(@stroppy_versions::text[]))
+  AND (COALESCE(cardinality(@kinds::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY(@kinds::text[]))
+  AND (COALESCE(cardinality(@versions::text[]), 0) = 0 OR r.summary->>'db_version' = ANY(@versions::text[]))
+  AND (COALESCE(cardinality(@providers::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY(@providers::text[]))
+  AND (COALESCE(cardinality(@stroppy_versions::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY(@stroppy_versions::text[]))
   AND (@league::text = '' OR (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) = @league::text)
   AND (@since::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= @since::timestamptz)
 ORDER BY CASE WHEN @higher_is_better::boolean THEN -(r.summary->'headline'->>@metric::text)::float8 ELSE (r.summary->'headline'->>@metric::text)::float8 END, r.finished_at DESC

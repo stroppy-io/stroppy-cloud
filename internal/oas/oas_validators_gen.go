@@ -152,6 +152,53 @@ func (s *AdminListRunsOKDataItem) Validate() error {
 	return nil
 }
 
+func (s AdminListRunsSort) Validate() error {
+	switch s {
+	case "default":
+		return nil
+	case "started_at":
+		return nil
+	case "finished_at":
+		return nil
+	case "duration":
+		return nil
+	case "tps":
+		return nil
+	case "qps":
+		return nil
+	case "p50":
+		return nil
+	case "p99":
+		return nil
+	case "errors":
+		return nil
+	case "status":
+		return nil
+	case "name":
+		return nil
+	case "db_kind":
+		return nil
+	case "workload":
+		return nil
+	case "topology":
+		return nil
+	case "provider":
+		return nil
+	case "trigger":
+		return nil
+	case "author":
+		return nil
+	case "tenant":
+		return nil
+	case "created_at":
+		return nil
+	case "updated_at":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *AdminListTenantsOK) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -201,6 +248,27 @@ func (s *AdminListTenantsOK) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s AdminListTenantsSort) Validate() error {
+	switch s {
+	case "name":
+		return nil
+	case "slug":
+		return nil
+	case "status":
+		return nil
+	case "members":
+		return nil
+	case "runs":
+		return nil
+	case "created_at":
+		return nil
+	case "last_activity":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s AdminListTenantsStatus) Validate() error {
@@ -265,6 +333,25 @@ func (s *AdminListUsersOK) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s AdminListUsersSort) Validate() error {
+	switch s {
+	case "name":
+		return nil
+	case "email":
+		return nil
+	case "platform_admin":
+		return nil
+	case "memberships":
+		return nil
+	case "last_activity":
+		return nil
+	case "created_at":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *AdminStatus) Validate() error {
@@ -2789,6 +2876,10 @@ func (s ListDatabasesSort) Validate() error {
 		return nil
 	case "version":
 		return nil
+	case "topology":
+		return nil
+	case "usages":
+		return nil
 	case "author":
 		return nil
 	default:
@@ -3676,6 +3767,10 @@ func (s ListSuitesSort) Validate() error {
 		return nil
 	case "test_count":
 		return nil
+	case "schedules":
+		return nil
+	case "next_run_at":
+		return nil
 	case "author":
 		return nil
 	default:
@@ -3721,6 +3816,51 @@ func (s *ListTenantTokensOK) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s ListTestRunsSort) Validate() error {
+	switch s {
+	case "default":
+		return nil
+	case "started_at":
+		return nil
+	case "finished_at":
+		return nil
+	case "duration":
+		return nil
+	case "tps":
+		return nil
+	case "qps":
+		return nil
+	case "p50":
+		return nil
+	case "p99":
+		return nil
+	case "errors":
+		return nil
+	case "status":
+		return nil
+	case "name":
+		return nil
+	case "db_kind":
+		return nil
+	case "workload":
+		return nil
+	case "topology":
+		return nil
+	case "provider":
+		return nil
+	case "trigger":
+		return nil
+	case "author":
+		return nil
+	case "created_at":
+		return nil
+	case "updated_at":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *ListTestsOK) Validate() error {
@@ -3954,6 +4094,10 @@ func (s ListWorkloadsSort) Validate() error {
 	case "protocol":
 		return nil
 	case "stroppy_version":
+		return nil
+	case "segments":
+		return nil
+	case "usages":
 		return nil
 	case "author":
 		return nil

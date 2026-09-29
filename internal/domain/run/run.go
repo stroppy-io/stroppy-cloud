@@ -276,7 +276,6 @@ type Repository interface {
 	ByIdempotencyKey(ctx context.Context, tenantID uuid.UUID, key string) (uuid.UUID, bool, error)
 	List(ctx context.Context, tenantID uuid.UUID, q ListQuery) ([]Run, error)
 	Facets(ctx context.Context, tenantID uuid.UUID) ([]Facet, error)
-	OfTest(ctx context.Context, testID uuid.UUID, limit, offset int) ([]Run, error)
 	// TestRunStats returns the latest run and the run count per test id.
 	TestRunStats(ctx context.Context, testIDs []uuid.UUID) (map[uuid.UUID]TestRunStat, error)
 	OfSuiteRun(ctx context.Context, suiteRunID uuid.UUID) ([]Run, error)

@@ -57,8 +57,17 @@ func (s *Streams) runOf(ctx context.Context, actor auth.Actor, id string) (run.R
 	return r, nil
 }
 
-// Snapshot answers a state topic.
+// Snapshot answers a state topic; UserRefs in the payload are filled the
+// same way the REST middleware fills them.
 func (s *Streams) Snapshot(ctx context.Context, actor auth.Actor, topic string) (payload any, version string, err error) {
+	payload, version, err = s.snapshot(ctx, actor, topic)
+	if err != nil {
+		return nil, "", err
+	}
+	return s.h.fillUsers(auth.WithActor(ctx, actor), payload), version, nil
+}
+
+func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) (payload any, version string, err error) {
 	kind, arg, err := splitTopic(topic)
 	if err != nil {
 		return nil, "", err

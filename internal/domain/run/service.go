@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -353,7 +354,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		sizes[role] = rs.Size
 	}
 	r.Summary = Summary{
-		DBKind: string(dbSpec.Kind), DBVersion: dbSpec.Version, WorkloadName: wlName,
+		DBKind: string(dbSpec.Kind), DBVersion: dbSpec.Version, WorkloadName: workloadLabel(wlName, *wlSpec),
 		Protocol: string(wlSpec.Protocol), StroppyVersion: wlSpec.StroppyVersion,
 		TopologyLabel: res.DatabaseDerived.Plan.Label, NodeCount: len(compiled.Machines), ProviderKind: string(res.Profile.Kind),
 		ProviderProfile: &Ref{ID: res.Profile.ID, Name: res.Profile.Name}, Sizes: sizes,
@@ -397,6 +398,40 @@ func (s *Service) tenantScope(ctx context.Context, actor auth.Actor, tenantID uu
 	}
 	ns, err = s.access.NamespaceOf(ctx, tenantID)
 	return slug, ns, err
+}
+
+// workloadLabel is the run's workload as lists show it: the referenced
+// definition's name, else the first segment script with "+N" for the
+// other distinct scripts, else the first segment name.
+func workloadLabel(name string, w library.WorkloadSpec) string {
+	if name != "" {
+		return name
+	}
+	var scripts []string
+	first := ""
+	for _, raw := range w.Segments {
+		var seg struct {
+			Name     string `json:"name"`
+			Workload struct {
+				Script string `json:"script"`
+			} `json:"workload"`
+		}
+		_ = json.Unmarshal(raw, &seg) //nolint:errcheck // baked upstream
+		if first == "" {
+			first = seg.Name
+		}
+		if seg.Workload.Script != "" && !slices.Contains(scripts, seg.Workload.Script) {
+			scripts = append(scripts, seg.Workload.Script)
+		}
+	}
+	switch len(scripts) {
+	case 0:
+		return first
+	case 1:
+		return scripts[0]
+	default:
+		return fmt.Sprintf("%s +%d", scripts[0], len(scripts)-1)
+	}
 }
 
 func segmentNames(w library.WorkloadSpec) []string {
@@ -589,7 +624,6 @@ func (s *Service) Facets(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 	return s.repo.Facets(ctx, tenantID)
 }
 
-// OfTest lists the runs of one test, newest first.
 // TestRunStats — latest run + run count for a set of tests (member+).
 func (s *Service) TestRunStats(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, testIDs []uuid.UUID) (map[uuid.UUID]TestRunStat, error) {
 	if err := s.member(ctx, actor, tenantID); err != nil {
@@ -599,13 +633,6 @@ func (s *Service) TestRunStats(ctx context.Context, actor auth.Actor, tenantID u
 		return map[uuid.UUID]TestRunStat{}, nil
 	}
 	return s.repo.TestRunStats(ctx, testIDs)
-}
-
-func (s *Service) OfTest(ctx context.Context, actor auth.Actor, tenantID, testID uuid.UUID, limit, offset int) ([]Run, error) {
-	if err := s.member(ctx, actor, tenantID); err != nil {
-		return nil, err
-	}
-	return s.repo.OfTest(ctx, testID, limit, offset)
 }
 
 // Favorites of the actor by kind.

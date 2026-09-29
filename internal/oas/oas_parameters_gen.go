@@ -985,8 +985,12 @@ func decodeAdminListAuditParams(args [0]string, argsEscaped bool, r *http.Reques
 type AdminListRunsParams struct {
 	Status []RunStatus `json:",omitempty"`
 	Tenant OptString   `json:",omitempty,omitzero"`
-	Cursor OptString   `json:",omitempty,omitzero"`
-	Limit  OptInt      `json:",omitempty,omitzero"`
+	// Sort key, as in listRuns plus `tenant` (the slug). `default` puts live runs (pending, running,
+	// cancelling) first, then the newest; `order` is ignored for it. Missing values sort last.
+	Sort   OptAdminListRunsSort `json:",omitempty,omitzero"`
+	Order  OptOrder             `json:",omitempty,omitzero"`
+	Cursor OptString            `json:",omitempty,omitzero"`
+	Limit  OptInt               `json:",omitempty,omitzero"`
 }
 
 func unpackAdminListRunsParams(packed middleware.Parameters) (params AdminListRunsParams) {
@@ -1006,6 +1010,24 @@ func unpackAdminListRunsParams(packed middleware.Parameters) (params AdminListRu
 		}
 		if v, ok := packed[key]; ok {
 			params.Tenant = v.(OptString)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptAdminListRunsSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
 		}
 	}
 	{
@@ -1133,6 +1155,128 @@ func decodeAdminListRunsParams(args [0]string, argsEscaped bool, r *http.Request
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "tenant",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := AdminListRunsSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal AdminListRunsSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = AdminListRunsSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
 			In:   "query",
 			Err:  err,
 		}
@@ -1284,8 +1428,12 @@ type AdminListTenantsParams struct {
 	// Free-text search over name and description.
 	Search OptString                 `json:",omitempty,omitzero"`
 	Status OptAdminListTenantsStatus `json:",omitempty,omitzero"`
-	Cursor OptString                 `json:",omitempty,omitzero"`
-	Limit  OptInt                    `json:",omitempty,omitzero"`
+	// Sort key. `members` and `runs` order by counts, `last_activity` by the newest audit entry of the
+	// tenant (none sorts last).
+	Sort   OptAdminListTenantsSort `json:",omitempty,omitzero"`
+	Order  OptOrder                `json:",omitempty,omitzero"`
+	Cursor OptString               `json:",omitempty,omitzero"`
+	Limit  OptInt                  `json:",omitempty,omitzero"`
 }
 
 func unpackAdminListTenantsParams(packed middleware.Parameters) (params AdminListTenantsParams) {
@@ -1305,6 +1453,24 @@ func unpackAdminListTenantsParams(packed middleware.Parameters) (params AdminLis
 		}
 		if v, ok := packed[key]; ok {
 			params.Status = v.(OptAdminListTenantsStatus)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptAdminListTenantsSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
 		}
 	}
 	{
@@ -1450,6 +1616,128 @@ func decodeAdminListTenantsParams(args [0]string, argsEscaped bool, r *http.Requ
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "status",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := AdminListTenantsSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal AdminListTenantsSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = AdminListTenantsSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
 			In:   "query",
 			Err:  err,
 		}
@@ -1601,8 +1889,12 @@ type AdminListUsersParams struct {
 	// Free-text search over name and description.
 	Search        OptString `json:",omitempty,omitzero"`
 	PlatformAdmin OptBool   `json:",omitempty,omitzero"`
-	Cursor        OptString `json:",omitempty,omitzero"`
-	Limit         OptInt    `json:",omitempty,omitzero"`
+	// Sort key. `name` is the display name, `memberships` the tenant count, `last_activity` the newest
+	// audit entry the user acted in (none sorts last; also returned as `last_seen_at`).
+	Sort   OptAdminListUsersSort `json:",omitempty,omitzero"`
+	Order  OptOrder              `json:",omitempty,omitzero"`
+	Cursor OptString             `json:",omitempty,omitzero"`
+	Limit  OptInt                `json:",omitempty,omitzero"`
 }
 
 func unpackAdminListUsersParams(packed middleware.Parameters) (params AdminListUsersParams) {
@@ -1622,6 +1914,24 @@ func unpackAdminListUsersParams(packed middleware.Parameters) (params AdminListU
 		}
 		if v, ok := packed[key]; ok {
 			params.PlatformAdmin = v.(OptBool)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptAdminListUsersSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
 		}
 	}
 	{
@@ -1752,6 +2062,128 @@ func decodeAdminListUsersParams(args [0]string, argsEscaped bool, r *http.Reques
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "platform_admin",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := AdminListUsersSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal AdminListUsersSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = AdminListUsersSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
 			In:   "query",
 			Err:  err,
 		}
@@ -12998,14 +13430,16 @@ type ListDatabasesParams struct {
 	// Free-text search over name and description.
 	Search OptString `json:",omitempty,omitzero"`
 	// Comma-separated `key=value` or bare `key` label filters.
-	Tags      OptString            `json:",omitempty,omitzero"`
-	Author    OptString            `json:",omitempty,omitzero"`
-	Favorites OptBool              `json:",omitempty,omitzero"`
-	Kind      []DatabaseKind       `json:",omitempty"`
-	Sort      OptListDatabasesSort `json:",omitempty,omitzero"`
-	Order     OptOrder             `json:",omitempty,omitzero"`
-	Cursor    OptString            `json:",omitempty,omitzero"`
-	Limit     OptInt               `json:",omitempty,omitzero"`
+	Tags      OptString      `json:",omitempty,omitzero"`
+	Author    OptString      `json:",omitempty,omitzero"`
+	Favorites OptBool        `json:",omitempty,omitzero"`
+	Kind      []DatabaseKind `json:",omitempty"`
+	// Sort key. `topology` orders by the topology label (the plan label of `topology_preview`), `usages`
+	// by the number of tests referencing the definition.
+	Sort   OptListDatabasesSort `json:",omitempty,omitzero"`
+	Order  OptOrder             `json:",omitempty,omitzero"`
+	Cursor OptString            `json:",omitempty,omitzero"`
+	Limit  OptInt               `json:",omitempty,omitzero"`
 }
 
 func unpackListDatabasesParams(packed middleware.Parameters) (params ListDatabasesParams) {
@@ -18444,13 +18878,15 @@ type ListSuitesParams struct {
 	// Free-text search over name and description.
 	Search OptString `json:",omitempty,omitzero"`
 	// Comma-separated `key=value` or bare `key` label filters.
-	Tags      OptString         `json:",omitempty,omitzero"`
-	Author    OptString         `json:",omitempty,omitzero"`
-	Favorites OptBool           `json:",omitempty,omitzero"`
-	Sort      OptListSuitesSort `json:",omitempty,omitzero"`
-	Order     OptOrder          `json:",omitempty,omitzero"`
-	Cursor    OptString         `json:",omitempty,omitzero"`
-	Limit     OptInt            `json:",omitempty,omitzero"`
+	Tags      OptString `json:",omitempty,omitzero"`
+	Author    OptString `json:",omitempty,omitzero"`
+	Favorites OptBool   `json:",omitempty,omitzero"`
+	// Sort key. `schedules` orders by the number of schedules targeting the suite, `next_run_at` by the
+	// earliest next run of its enabled schedules (suites without one sort last).
+	Sort   OptListSuitesSort `json:",omitempty,omitzero"`
+	Order  OptOrder          `json:",omitempty,omitzero"`
+	Cursor OptString         `json:",omitempty,omitzero"`
+	Limit  OptInt            `json:",omitempty,omitzero"`
 }
 
 func unpackListSuitesParams(packed middleware.Parameters) (params ListSuitesParams) {
@@ -19573,10 +20009,14 @@ func decodeListTenantTokensParams(args [1]string, argsEscaped bool, r *http.Requ
 // ListTestRunsParams is parameters of listTestRuns operation.
 type ListTestRunsParams struct {
 	// Tenant slug.
-	Slug   string
-	ID     uuid.UUID
-	Cursor OptString `json:",omitempty,omitzero"`
-	Limit  OptInt    `json:",omitempty,omitzero"`
+	Slug string
+	ID   uuid.UUID
+	// Sort key, as in listRuns (`default`: the caller's favorites, then live runs, then the newest;
+	// `order` is ignored for it). Missing values sort last. The trend covers the page, newest first.
+	Sort   OptListTestRunsSort `json:",omitempty,omitzero"`
+	Order  OptOrder            `json:",omitempty,omitzero"`
+	Cursor OptString           `json:",omitempty,omitzero"`
+	Limit  OptInt              `json:",omitempty,omitzero"`
 }
 
 func unpackListTestRunsParams(packed middleware.Parameters) (params ListTestRunsParams) {
@@ -19593,6 +20033,24 @@ func unpackListTestRunsParams(packed middleware.Parameters) (params ListTestRuns
 			In:   "path",
 		}
 		params.ID = packed[key].(uuid.UUID)
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptListTestRunsSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
+		}
 	}
 	{
 		key := middleware.ParameterKey{
@@ -19724,6 +20182,128 @@ func decodeListTestRunsParams(args [2]string, argsEscaped bool, r *http.Request)
 		return params, &ogenerrors.DecodeParamError{
 			Name: "id",
 			In:   "path",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := ListTestRunsSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal ListTestRunsSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = ListTestRunsSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
+			In:   "query",
 			Err:  err,
 		}
 	}
@@ -21059,16 +21639,18 @@ type ListWorkloadsParams struct {
 	// Free-text search over name and description.
 	Search OptString `json:",omitempty,omitzero"`
 	// Comma-separated `key=value` or bare `key` label filters.
-	Tags           OptString            `json:",omitempty,omitzero"`
-	Author         OptString            `json:",omitempty,omitzero"`
-	Favorites      OptBool              `json:",omitempty,omitzero"`
-	Protocol       []Protocol           `json:",omitempty"`
-	StroppyVersion []string             `json:",omitempty"`
-	Script         OptString            `json:",omitempty,omitzero"`
-	Sort           OptListWorkloadsSort `json:",omitempty,omitzero"`
-	Order          OptOrder             `json:",omitempty,omitzero"`
-	Cursor         OptString            `json:",omitempty,omitzero"`
-	Limit          OptInt               `json:",omitempty,omitzero"`
+	Tags           OptString  `json:",omitempty,omitzero"`
+	Author         OptString  `json:",omitempty,omitzero"`
+	Favorites      OptBool    `json:",omitempty,omitzero"`
+	Protocol       []Protocol `json:",omitempty"`
+	StroppyVersion []string   `json:",omitempty"`
+	Script         OptString  `json:",omitempty,omitzero"`
+	// Sort key. `segments` orders by the number of spec segments, `usages` by the number of tests
+	// referencing the definition.
+	Sort   OptListWorkloadsSort `json:",omitempty,omitzero"`
+	Order  OptOrder             `json:",omitempty,omitzero"`
+	Cursor OptString            `json:",omitempty,omitzero"`
+	Limit  OptInt               `json:",omitempty,omitzero"`
 }
 
 func unpackListWorkloadsParams(packed middleware.Parameters) (params ListWorkloadsParams) {

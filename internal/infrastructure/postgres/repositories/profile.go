@@ -81,6 +81,24 @@ func (r *ProfileRepo) Delete(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
+// Refs loads display data for a batch of ids, the email scoped to the
+// viewer in the query itself. An empty batch matches nothing, so it
+// skips the round trip.
+func (r *ProfileRepo) Refs(ctx context.Context, viewer profile.Viewer, ids []uuid.UUID) ([]profile.Ref, error) {
+	if len(ids) == 0 {
+		return nil, nil
+	}
+	rows, err := r.q.ProfileRefs(ctx, db.ProfileRefsParams{Reveal: viewer.Reveal, Viewer: viewer.UserID, ScopeTenant: viewer.Tenant, Ids: ids})
+	if err != nil {
+		return nil, infraf("profile: refs: %v", err)
+	}
+	out := make([]profile.Ref, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, profile.Ref{ID: row.ID, Email: row.Email, DisplayName: row.DisplayName, Avatar: row.Avatar})
+	}
+	return out, nil
+}
+
 // profileRow maps the SELECT list; every profile query returns the same
 // columns, so the other row types convert to ProfileByIDRow.
 func profileRow(row db.ProfileByIDRow) profile.Profile {

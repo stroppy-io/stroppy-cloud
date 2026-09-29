@@ -14,7 +14,7 @@ require (
 	github.com/gopherex/pgtx v1.1.0
 	github.com/gopherex/pgtx/contrib/otel v1.1.0
 	github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3
-	github.com/gopherex/sqld v1.1.1
+	github.com/gopherex/sqld v1.1.5
 	github.com/gopherex/xconf v1.1.2
 	github.com/gopherex/xlog v1.0.2
 	github.com/gopherex/xlog/contrib/libs/otel v1.0.2

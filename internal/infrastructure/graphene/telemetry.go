@@ -9,6 +9,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"connectrpc.com/connect"
@@ -101,6 +102,23 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 	if limit <= 0 || limit > 1000 {
 		limit = 200
 	}
+	// A line's seq as the cursor: the page starts from that line itself
+	// and carries the cursor the other way, which starts next to it.
+	var back logCursor
+	known := map[int64][]observe.LogLine{}
+	if !q.Anchor.IsZero() {
+		if q.Cursor != "" {
+			return observe.LogPage{}, errs.Invalid("a log cursor is either a page cursor or a line seq")
+		}
+		var err error
+		if cursor, back, err = l.anchor(ctx, q, req, cursor, known); err != nil {
+			return observe.LogPage{}, err
+		}
+		req.SinceUnixNano = cursor.Start
+		if direction == "older" {
+			req.UntilUnixNano = cursor.End
+		}
+	}
 	req.Limit = int32(min(cursor.Skip+limit, 10000)) //nolint:gosec // bounded above
 	page, next, err := l.read(ctx, q.Scope, req)
 	if err != nil {
@@ -116,6 +134,12 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 	}
 	read := len(page.Lines)
 	page.Lines = page.Lines[min(cursor.Skip, read):]
+	// The page starts where a cursor or a seq left off, and ends where more
+	// records follow: only those edges can split a microsecond.
+	continued := q.Cursor != "" || !q.Anchor.IsZero()
+	if err := l.assignSeqs(ctx, q, req, page.Lines, direction == "newer", continued, next != "", known); err != nil {
+		return observe.LogPage{}, err
+	}
 	if next != "" {
 		cursor.Token, cursor.Skip = next, 0
 	} else {
@@ -124,10 +148,124 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 	if direction == "newer" {
 		page.Newer = encodeLogCursor(cursor)
 		slices.Reverse(page.Lines)
-	} else if next != "" {
-		page.Older = encodeLogCursor(cursor)
+		if !q.Anchor.IsZero() {
+			page.Older = encodeLogCursor(back)
+		}
+	} else {
+		if next != "" {
+			page.Older = encodeLogCursor(cursor)
+		}
+		if !q.Anchor.IsZero() {
+			page.Newer = encodeLogCursor(back)
+		}
 	}
 	return page, nil
+}
+
+// anchor turns a line's seq into the page's own cursor and the cursor the
+// other way. It reads the lines of the seq's microsecond under the
+// selection, in the store's order (time, stream, body), and finds the line
+// by its digest: i is its index among the lines of its exact time, n their
+// count. An older page skips the n-1-i lines after it (desc), the newer
+// cursor from it the i+1 lines up to it (asc); a newer page skips i and
+// the older cursor from it n-i. Our own skip over a bounded window — no
+// Graphene token is forged. A line the selection does not hold anchors the
+// edge of its microsecond: the page stays near it, with no line twice.
+func (l *Logs) anchor(ctx context.Context, q observe.LogQuery, req *managementv1.LogsRequest, base logCursor, known map[int64][]observe.LogLine) (page, back logCursor, err error) {
+	at, next := q.Anchor.At.UnixNano(), q.Anchor.Next().UnixNano()
+	group, err := l.micro(ctx, q.Scope, req, observe.Micro(q.Anchor.At))
+	if err != nil {
+		return logCursor{}, logCursor{}, err
+	}
+	known[observe.Micro(q.Anchor.At)] = group
+	t, i, n := int64(0), 0, 0
+	for k, bucket := range observe.SeqBuckets(group) {
+		if bucket != q.Anchor.Bucket {
+			continue
+		}
+		t = group[k].Time.UnixNano()
+		for _, other := range group[:k] {
+			if other.Time.UnixNano() == t {
+				i++
+			}
+		}
+		for _, other := range group {
+			if other.Time.UnixNano() == t {
+				n++
+			}
+		}
+		break
+	}
+	older, newer := base, base
+	older.Direction, newer.Direction = "older", "newer"
+	older.Token, newer.Token = "", ""
+	if n == 0 {
+		// Not in the selection: both cursors meet at one edge of the
+		// microsecond (its end for an older page, its start for a newer
+		// one), so the whole microsecond lands on the page, once.
+		older.End, older.Skip = next, 0
+		newer.Start, newer.Skip = next-1, 0
+		if q.Direction == "newer" {
+			older.End, newer.Start = at, at-1
+		}
+	} else {
+		older.End, newer.Start = t+1, t-1
+		older.Skip, newer.Skip = n-1-i, i+1
+		if q.Direction == "newer" {
+			older.Skip, newer.Skip = n-i, i
+		}
+	}
+	older.Start = base.Start
+	if q.Direction == "newer" {
+		return newer, older, nil
+	}
+	return older, newer, nil
+}
+
+// micro reads one microsecond of the selection whole, in the store's
+// order. The run's window does not bound it: a seq is the line's place in
+// the store, whichever window the page was read under.
+func (l *Logs) micro(ctx context.Context, scope observe.Scope, req *managementv1.LogsRequest, us int64) ([]observe.LogLine, error) {
+	// Graphene's bounds are exclusive on both ends.
+	probe := &managementv1.LogsRequest{Ref: req.Ref, Query: req.Query, Text: req.Text, Severities: req.Severities, SinceUnixNano: us*1000 - 1, UntilUnixNano: (us + 1) * 1000, Order: "asc", Limit: 10000}
+	page, _, err := l.read(ctx, scope, probe)
+	return page.Lines, err
+}
+
+// assignSeqs sets the seqs of a page in the store's order (asc) or
+// reversed. A microsecond at an edge the page may split (near: where it
+// continues a cursor; far: where more records follow) is read whole, so a
+// line's seq does not depend on the page. known holds microseconds already
+// read whole.
+func (l *Logs) assignSeqs(ctx context.Context, q observe.LogQuery, req *managementv1.LogsRequest, lines []observe.LogLine, asc, near, far bool, known map[int64][]observe.LogLine) error {
+	if len(lines) == 0 {
+		return nil
+	}
+	var edges []int64
+	for _, e := range []struct {
+		split bool
+		line  observe.LogLine
+	}{{near, lines[0]}, {far, lines[len(lines)-1]}} {
+		us := observe.Micro(e.line.Time)
+		if _, ok := known[us]; e.split && !ok && !slices.Contains(edges, us) {
+			edges = append(edges, us)
+		}
+	}
+	groups := make([][]observe.LogLine, len(edges))
+	failures := make([]error, len(edges))
+	var wg sync.WaitGroup
+	for i, us := range edges {
+		wg.Go(func() { groups[i], failures[i] = l.micro(ctx, q.Scope, req, us) })
+	}
+	wg.Wait()
+	for i, us := range edges {
+		if failures[i] != nil {
+			return failures[i]
+		}
+		known[us] = groups[i]
+	}
+	observe.AssignSeqs(q.Origin, lines, asc, known)
+	return nil
 }
 
 func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.LogsRequest) (observe.LogPage, string, error) {
@@ -147,8 +285,7 @@ func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.
 		chunk := stream.Msg()
 		if rec := chunk.GetRecord(); rec != nil {
 			fields := rec.GetAttributes()
-			seq, _ := strconv.Atoi(fields["seq"]) //nolint:errcheck // optional metadata
-			page.Lines = append(page.Lines, observe.LogLine{Time: time.Unix(0, rec.GetTimeUnixNano()).UTC(), Message: rec.GetBody(), Level: strings.ToLower(rec.GetSeverity()), Stream: fields["stream"], Seq: seq, Fields: fields})
+			page.Lines = append(page.Lines, observe.LogLine{Time: time.Unix(0, rec.GetTimeUnixNano()).UTC(), Message: rec.GetBody(), Level: strings.ToLower(rec.GetSeverity()), Stream: fields["stream"], Fields: fields})
 		}
 		if p := chunk.GetPage(); p != nil {
 			page.Truncated, next = p.GetTruncated(), p.GetNextPageToken()

@@ -111,7 +111,7 @@ func (r *ProviderRepo) Update(ctx context.Context, id uuid.UUID, name *string, s
 
 func (r *ProviderRepo) SetStatus(ctx context.Context, id uuid.UUID, status provider.Status, reason, runID string) error {
 	st := string(status)
-	if _, err := r.q.SetProviderStatus(ctx, db.SetProviderStatusParams{ID: id, Status: &st, StatusReason: reason, VerifyRunID: runID}); err != nil {
+	if _, err := r.q.SetProviderStatus(ctx, db.SetProviderStatusParams{ID: id, Status: st, StatusReason: reason, VerifyRunID: runID}); err != nil {
 		return infraf("provider: set status: %v", err)
 	}
 	return nil
@@ -172,7 +172,7 @@ func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status 
 			return err
 		}
 		st := string(status)
-		n, err := r.q.BeginProviderOperation(ctx, db.BeginProviderOperationParams{ID: id, Status: &st, RunID: runID})
+		n, err := r.q.BeginProviderOperation(ctx, db.BeginProviderOperationParams{ID: id, Status: st, RunID: runID})
 		if err != nil {
 			return infraf("provider: begin operation: %v", err)
 		}
@@ -185,7 +185,7 @@ func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status 
 
 func (r *ProviderRepo) FinishOperation(ctx context.Context, id uuid.UUID, runID string, status provider.Status, reason string) error {
 	st := string(status)
-	_, err := r.q.FinishProviderOperation(ctx, db.FinishProviderOperationParams{ID: id, RunID: runID, Status: &st, Reason: reason})
+	_, err := r.q.FinishProviderOperation(ctx, db.FinishProviderOperationParams{ID: id, RunID: runID, Status: st, Reason: reason})
 	if err != nil {
 		return infraf("provider: finish operation: %v", err)
 	}

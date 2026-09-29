@@ -3,6 +3,7 @@ package spec
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
@@ -14,7 +15,7 @@ import (
 // caller launches through Graphene without the StroppyCloud server.
 func NormalizeRun(in Run) (Run, error) {
 	var out Run
-	err := normalize(in, &out, specschema.Run())
+	err := normalize(in, &out, runEngine)
 	if err == nil {
 		err = ResourceErrors(CheckResources(out))
 		if err == nil {
@@ -27,7 +28,7 @@ func NormalizeRun(in Run) (Run, error) {
 // NormalizeSuite validates every child before dispatching the first one.
 func NormalizeSuite(in Suite) (Suite, error) {
 	var out Suite
-	err := normalize(in, &out, specschema.Suite())
+	err := normalize(in, &out, suiteEngine)
 	if err == nil {
 		for _, cell := range out.Cells {
 			if e := ResourceErrors(CheckResources(cell.RunSpec)); e != nil {
@@ -38,7 +39,20 @@ func NormalizeSuite(in Suite) (Suite, error) {
 	return out, err
 }
 
-func normalize(in, out any, schema *schemapb.Schema) error {
+// Engines are compiled once: building a schema and compiling its rules
+// costs tens of milliseconds, and the schemas are fixed for the process.
+// A compiled Engine is immutable and safe for concurrent use.
+var (
+	runEngine            = compiled(specschema.Run)
+	suiteEngine          = compiled(specschema.Suite)
+	providerConfigEngine = compiled(specschema.ProviderConfig)
+)
+
+func compiled(schema func() *schemapb.Schema) func() (*schemapb.Engine, error) {
+	return sync.OnceValues(func() (*schemapb.Engine, error) { return schemapb.Compile(schema()) })
+}
+
+func normalize(in, out any, engine func() (*schemapb.Engine, error)) error {
 	raw, err := json.Marshal(in)
 	if err != nil {
 		return err
@@ -47,7 +61,7 @@ func normalize(in, out any, schema *schemapb.Schema) error {
 	if err != nil {
 		return err
 	}
-	e, err := schemapb.Compile(schema)
+	e, err := engine()
 	if err != nil {
 		return err
 	}
@@ -98,6 +112,6 @@ func wireValue(value any) any {
 
 func NormalizeProviderConfig(in ProviderConfig) (ProviderConfig, error) {
 	var out ProviderConfig
-	err := normalize(in, &out, specschema.ProviderConfig())
+	err := normalize(in, &out, providerConfigEngine)
 	return out, err
 }

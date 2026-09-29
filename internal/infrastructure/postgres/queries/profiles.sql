@@ -30,3 +30,24 @@ UPDATE profiles SET email = @email, updated_at = now() WHERE id = @id;
 
 -- name: DeleteProfile :execrows
 DELETE FROM profiles WHERE id = @id;
+
+-- name: ProfileRefs :many
+-- Display data for a batch of subjects (UserRef enrichment); missing ids
+-- are simply absent. The email is disclosed only to the subject itself, to
+-- a co-member of at least one tenant (confined to scope_tenant when set —
+-- API tokens) or when reveal is set (platform admin); otherwise ''.
+SELECT p.id,
+       CASE WHEN @reveal::boolean
+                 OR p.id = @viewer::uuid
+                 OR EXISTS (SELECT 1
+                            FROM tenant_members v
+                            JOIN tenant_members m ON m.tenant_id = v.tenant_id
+                            WHERE m.user_id = p.id
+                              AND v.user_id = @viewer::uuid
+                              AND (@scope_tenant::uuid = '00000000-0000-0000-0000-000000000000'::uuid
+                                   OR v.tenant_id = @scope_tenant::uuid))
+            THEN p.email ELSE '' END AS email,
+       p.display_name,
+       p.avatar
+FROM profiles p
+WHERE p.id = ANY(@ids::uuid[]);

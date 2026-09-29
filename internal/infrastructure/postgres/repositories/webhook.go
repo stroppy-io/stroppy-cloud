@@ -139,7 +139,7 @@ func (r *WebhookRepo) DeliveryByID(ctx context.Context, id uuid.UUID) (webhook.D
 
 func (r *WebhookRepo) Deliveries(ctx context.Context, webhookID uuid.UUID, before *time.Time, limit int) ([]webhook.Delivery, error) {
 	lim := int64(limit)
-	rows, err := r.q.DeliveriesOfWebhook(ctx, db.DeliveriesOfWebhookParams{WebhookID: webhookID, Before: before, Lim: &lim})
+	rows, err := r.q.DeliveriesOfWebhook(ctx, db.DeliveriesOfWebhookParams{WebhookID: webhookID, Before: before, Lim: lim})
 	if err != nil {
 		return nil, infraf("delivery: list: %v", err)
 	}
@@ -153,7 +153,7 @@ func (r *WebhookRepo) Deliveries(ctx context.Context, webhookID uuid.UUID, befor
 func (r *WebhookRepo) Due(ctx context.Context, lease time.Duration, limit int) ([]webhook.Delivery, error) {
 	lim := int64(limit)
 	rows, err := r.q.DueDeliveries(ctx, db.DueDeliveriesParams{
-		Lease: pgtype.Interval{Microseconds: lease.Microseconds(), Valid: true}, Lim: &lim,
+		Lease: pgtype.Interval{Microseconds: lease.Microseconds(), Valid: true}, Lim: lim,
 	})
 	if err != nil {
 		return nil, infraf("delivery: due: %v", err)

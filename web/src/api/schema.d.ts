@@ -2434,7 +2434,10 @@ export interface components {
         UserRef: {
             /** @description IAM `sub`. */
             id: string;
+            /** @description Profile display name; falls back to the email. */
             display_name?: string;
+            /** @description Filled for authenticated callers only. */
+            email?: string;
             avatar?: string;
         };
         Usage: {
@@ -5850,7 +5853,8 @@ export interface operations {
                 author?: components["parameters"]["author"];
                 favorites?: components["parameters"]["favorites"];
                 kind?: components["schemas"]["DatabaseKind"][];
-                sort?: "name" | "created_at" | "updated_at" | "kind" | "version" | "author";
+                /** @description Sort key. `topology` orders by the topology label (the plan label of `topology_preview`), `usages` by the number of tests referencing the definition. */
+                sort?: "name" | "created_at" | "updated_at" | "kind" | "version" | "topology" | "usages" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -6132,7 +6136,8 @@ export interface operations {
                 protocol?: components["schemas"]["Protocol"][];
                 stroppy_version?: string[];
                 script?: string;
-                sort?: "name" | "created_at" | "updated_at" | "protocol" | "stroppy_version" | "author";
+                /** @description Sort key. `segments` orders by the number of spec segments, `usages` by the number of tests referencing the definition. */
+                sort?: "name" | "created_at" | "updated_at" | "protocol" | "stroppy_version" | "segments" | "usages" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -6716,6 +6721,9 @@ export interface operations {
     listTestRuns: {
         parameters: {
             query?: {
+                /** @description Sort key, as in listRuns (`default`: the caller's favorites, then live runs, then the newest; `order` is ignored for it). Missing values sort last. The trend covers the page, newest first. */
+                sort?: "default" | "started_at" | "finished_at" | "duration" | "tps" | "qps" | "p50" | "p99" | "errors" | "status" | "name" | "db_kind" | "workload" | "topology" | "provider" | "trigger" | "author" | "created_at" | "updated_at";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };
@@ -7509,7 +7517,8 @@ export interface operations {
                 tags?: components["parameters"]["tags"];
                 author?: components["parameters"]["author"];
                 favorites?: components["parameters"]["favorites"];
-                sort?: "name" | "created_at" | "updated_at" | "last_run_at" | "cell_count" | "test_count" | "author";
+                /** @description Sort key. `schedules` orders by the number of schedules targeting the suite, `next_run_at` by the earliest next run of its enabled schedules (suites without one sort last). */
+                sort?: "name" | "created_at" | "updated_at" | "last_run_at" | "cell_count" | "test_count" | "schedules" | "next_run_at" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -8529,6 +8538,9 @@ export interface operations {
                 /** @description Free-text search over name and description. */
                 search?: components["parameters"]["search"];
                 status?: "active" | "orphaned" | "suspended";
+                /** @description Sort key. `members` and `runs` order by counts, `last_activity` by the newest audit entry of the tenant (none sorts last). */
+                sort?: "name" | "slug" | "status" | "members" | "runs" | "created_at" | "last_activity";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };
@@ -8711,6 +8723,9 @@ export interface operations {
                 /** @description Free-text search over name and description. */
                 search?: components["parameters"]["search"];
                 platform_admin?: boolean;
+                /** @description Sort key. `name` is the display name, `memberships` the tenant count, `last_activity` the newest audit entry the user acted in (none sorts last; also returned as `last_seen_at`). */
+                sort?: "name" | "email" | "platform_admin" | "memberships" | "last_activity" | "created_at";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };
@@ -8815,6 +8830,9 @@ export interface operations {
             query?: {
                 status?: components["schemas"]["RunStatus"][];
                 tenant?: string;
+                /** @description Sort key, as in listRuns plus `tenant` (the slug). `default` puts live runs (pending, running, cancelling) first, then the newest; `order` is ignored for it. Missing values sort last. */
+                sort?: "default" | "started_at" | "finished_at" | "duration" | "tps" | "qps" | "p50" | "p99" | "errors" | "status" | "name" | "db_kind" | "workload" | "topology" | "provider" | "trigger" | "author" | "tenant" | "created_at" | "updated_at";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };

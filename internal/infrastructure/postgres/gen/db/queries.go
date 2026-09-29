@@ -35,13 +35,31 @@ FROM tenants t
 WHERE t.deleted_at IS NULL
   AND ($1::text = '' OR t.name ILIKE '%' || $1::text || '%' OR t.slug ILIKE '%' || $1::text || '%')
   AND ($2::text = '' OR t.status = $2::text)
-ORDER BY t.created_at DESC LIMIT $3 OFFSET $4;`
+ORDER BY
+  CASE WHEN $3::text = 'name' AND NOT $4::boolean THEN t.name END ASC,
+  CASE WHEN $3::text = 'name' AND $4::boolean THEN t.name END DESC,
+  CASE WHEN $3::text = 'slug' AND NOT $4::boolean THEN t.slug END ASC,
+  CASE WHEN $3::text = 'slug' AND $4::boolean THEN t.slug END DESC,
+  CASE WHEN $3::text = 'status' AND NOT $4::boolean THEN t.status END ASC,
+  CASE WHEN $3::text = 'status' AND $4::boolean THEN t.status END DESC,
+  CASE WHEN $3::text = 'members' AND NOT $4::boolean THEN (SELECT count(*) FROM tenant_members m WHERE m.tenant_id = t.id) END ASC,
+  CASE WHEN $3::text = 'members' AND $4::boolean THEN (SELECT count(*) FROM tenant_members m WHERE m.tenant_id = t.id) END DESC,
+  CASE WHEN $3::text = 'runs' AND NOT $4::boolean THEN (SELECT count(*) FROM runs r WHERE r.tenant_id = t.id AND r.deleted_at IS NULL) END ASC,
+  CASE WHEN $3::text = 'runs' AND $4::boolean THEN (SELECT count(*) FROM runs r WHERE r.tenant_id = t.id AND r.deleted_at IS NULL) END DESC,
+  CASE WHEN $3::text = 'last_activity' AND NOT $4::boolean THEN (SELECT max(a.at) FROM audit_log a WHERE a.tenant_id = t.id) END ASC NULLS LAST,
+  CASE WHEN $3::text = 'last_activity' AND $4::boolean THEN (SELECT max(a.at) FROM audit_log a WHERE a.tenant_id = t.id) END DESC NULLS LAST,
+  CASE WHEN $3::text = 'created_at' AND NOT $4::boolean THEN t.created_at END ASC,
+  CASE WHEN $3::text = 'created_at' AND $4::boolean THEN t.created_at END DESC,
+  t.created_at DESC, t.id
+LIMIT $5 OFFSET $6;`
 
 type AdminTenantsParams struct {
-	Search *string
-	Status *string
-	Lim    *int64
-	Off    *int64
+	Search  string
+	Status  string
+	SortKey string
+	Desc    bool
+	Lim     int64
+	Off     int64
 }
 
 type AdminTenantsRow struct {
@@ -55,11 +73,11 @@ type AdminTenantsRow struct {
 	GrapheneNamespace string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	MemberCount       *int32
+	MemberCount       int32
 }
 
 func (q *Queries) AdminTenants(ctx context.Context, arg AdminTenantsParams) ([]AdminTenantsRow, error) {
-	rows, err := q.db.Query(ctx, adminTenantsSQL, arg.Search, arg.Status, arg.Lim, arg.Off)
+	rows, err := q.db.Query(ctx, adminTenantsSQL, arg.Search, arg.Status, arg.SortKey, arg.Desc, arg.Lim, arg.Off)
 	if err != nil {
 		return nil, err
 	}
@@ -130,11 +148,11 @@ const tenantCountersSQL = `SELECT (SELECT count(*) FROM tenant_members m WHERE m
        (SELECT max(a.at) FROM audit_log a WHERE a.tenant_id = $1) AS last_activity_at;`
 
 type TenantCountersRow struct {
-	Members        *int32
-	RunsTotal      *int32
-	RunsRunning    *int32
-	KeptStands     *int32
-	Providers      *int32
+	Members        int32
+	RunsTotal      int32
+	RunsRunning    int32
+	KeptStands     int32
+	Providers      int32
 	LastActivityAt *time.Time
 }
 
@@ -148,17 +166,36 @@ func (q *Queries) TenantCounters(ctx context.Context, tenantID uuid.UUID) (Tenan
 const adminProfilesSQL = `SELECT p.id, p.email, p.display_name, p.avatar, p.is_platform_admin, p.preferences, p.notifications, p.created_at, p.updated_at,
        (SELECT count(*) FROM tenant_members m WHERE m.user_id = p.id)::int AS memberships,
        (SELECT t.id FROM tenants t WHERE t.owner_id = p.id AND t.deleted_at IS NULL LIMIT 1) AS owned_tenant_id,
-       (SELECT t.name FROM tenants t WHERE t.owner_id = p.id AND t.deleted_at IS NULL LIMIT 1) AS owned_tenant_name
-FROM profiles p
+       (SELECT t.name FROM tenants t WHERE t.owner_id = p.id AND t.deleted_at IS NULL LIMIT 1) AS owned_tenant_name,
+       la.last_activity_at
+FROM profiles p,
+     -- last activity: the newest audit entry the user acted in (as user or admin).
+     LATERAL (SELECT max(a.at) AS last_activity_at FROM audit_log a WHERE a.actor_kind IN ('user', 'admin') AND a.actor_id = p.id::text) la
 WHERE ($1::text = '' OR p.email ILIKE '%' || $1::text || '%' OR p.display_name ILIKE '%' || $1::text || '%')
   AND (NOT $2::boolean OR p.is_platform_admin)
-ORDER BY p.created_at DESC LIMIT $3 OFFSET $4;`
+ORDER BY
+  CASE WHEN $3::text = 'name' AND NOT $4::boolean THEN p.display_name END ASC,
+  CASE WHEN $3::text = 'name' AND $4::boolean THEN p.display_name END DESC,
+  CASE WHEN $3::text = 'email' AND NOT $4::boolean THEN p.email END ASC,
+  CASE WHEN $3::text = 'email' AND $4::boolean THEN p.email END DESC,
+  CASE WHEN $3::text = 'platform_admin' AND NOT $4::boolean THEN p.is_platform_admin END ASC,
+  CASE WHEN $3::text = 'platform_admin' AND $4::boolean THEN p.is_platform_admin END DESC,
+  CASE WHEN $3::text = 'memberships' AND NOT $4::boolean THEN (SELECT count(*) FROM tenant_members m WHERE m.user_id = p.id) END ASC,
+  CASE WHEN $3::text = 'memberships' AND $4::boolean THEN (SELECT count(*) FROM tenant_members m WHERE m.user_id = p.id) END DESC,
+  CASE WHEN $3::text = 'last_activity' AND NOT $4::boolean THEN la.last_activity_at END ASC NULLS LAST,
+  CASE WHEN $3::text = 'last_activity' AND $4::boolean THEN la.last_activity_at END DESC NULLS LAST,
+  CASE WHEN $3::text = 'created_at' AND NOT $4::boolean THEN p.created_at END ASC,
+  CASE WHEN $3::text = 'created_at' AND $4::boolean THEN p.created_at END DESC,
+  p.created_at DESC, p.id
+LIMIT $5 OFFSET $6;`
 
 type AdminProfilesParams struct {
-	Search     *string
-	OnlyAdmins *bool
-	Lim        *int64
-	Off        *int64
+	Search     string
+	OnlyAdmins bool
+	SortKey    string
+	Desc       bool
+	Lim        int64
+	Off        int64
 }
 
 type AdminProfilesRow struct {
@@ -171,13 +208,14 @@ type AdminProfilesRow struct {
 	Notifications   json.RawMessage
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Memberships     *int32
+	Memberships     int32
 	OwnedTenantID   *uuid.UUID
 	OwnedTenantName *string
+	LastActivityAt  *time.Time
 }
 
 func (q *Queries) AdminProfiles(ctx context.Context, arg AdminProfilesParams) ([]AdminProfilesRow, error) {
-	rows, err := q.db.Query(ctx, adminProfilesSQL, arg.Search, arg.OnlyAdmins, arg.Lim, arg.Off)
+	rows, err := q.db.Query(ctx, adminProfilesSQL, arg.Search, arg.OnlyAdmins, arg.SortKey, arg.Desc, arg.Lim, arg.Off)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +223,7 @@ func (q *Queries) AdminProfiles(ctx context.Context, arg AdminProfilesParams) ([
 	var items []AdminProfilesRow
 	for rows.Next() {
 		var i AdminProfilesRow
-		if err := rows.Scan(&i.ID, &i.Email, &i.DisplayName, &i.Avatar, &i.IsPlatformAdmin, &i.Preferences, &i.Notifications, &i.CreatedAt, &i.UpdatedAt, &i.Memberships, &i.OwnedTenantID, &i.OwnedTenantName); err != nil {
+		if err := rows.Scan(&i.ID, &i.Email, &i.DisplayName, &i.Avatar, &i.IsPlatformAdmin, &i.Preferences, &i.Notifications, &i.CreatedAt, &i.UpdatedAt, &i.Memberships, &i.OwnedTenantID, &i.OwnedTenantName, &i.LastActivityAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -236,12 +274,12 @@ WHERE ($1::bigint = 0 OR a.id < $1::bigint)
 ORDER BY a.id DESC LIMIT $6;`
 
 type AuditAllParams struct {
-	BeforeID *int64
-	Tenant   *string
-	Action   *string
-	ActorID  *string
+	BeforeID int64
+	Tenant   string
+	Action   string
+	ActorID  string
 	Since    *time.Time
-	Lim      *int64
+	Lim      int64
 }
 
 type AuditAllRow struct {
@@ -317,10 +355,10 @@ type UpdateSystemSettingsParams struct {
 	TenantCreation      *string
 	PublicRatingEnabled *bool
 	ExamplesEnabled     *bool
-	SetDefaultLimits    *bool
+	SetDefaultLimits    bool
 	DefaultLimits       json.RawMessage
 	RunRetentionMaxDays *int32
-	SetCatalog          *bool
+	SetCatalog          bool
 	StroppyCatalog      json.RawMessage
 	UpdatedBy           *uuid.UUID
 }
@@ -378,11 +416,11 @@ LIMIT $6;`
 
 type AuditOfTenantParams struct {
 	TenantID *uuid.UUID
-	BeforeID *int64
-	Action   *string
-	ActorID  *string
+	BeforeID int64
+	Action   string
+	ActorID  string
 	Since    *time.Time
-	Lim      *int64
+	Lim      int64
 }
 
 type AuditOfTenantRow struct {
@@ -578,7 +616,7 @@ type PendingInvitesForEmailRow struct {
 	InviterAvatar string
 }
 
-func (q *Queries) PendingInvitesForEmail(ctx context.Context, email *string) ([]PendingInvitesForEmailRow, error) {
+func (q *Queries) PendingInvitesForEmail(ctx context.Context, email string) ([]PendingInvitesForEmailRow, error) {
 	rows, err := q.db.Query(ctx, pendingInvitesForEmailSQL, email)
 	if err != nil {
 		return nil, err
@@ -873,15 +911,15 @@ type UpdateTestParams struct {
 	Name              *string
 	Description       *string
 	Tags              json.RawMessage
-	SetDatabase       *bool
+	SetDatabase       bool
 	DatabaseID        *uuid.UUID
 	DatabaseInline    json.RawMessage
-	SetWorkload       *bool
+	SetWorkload       bool
 	WorkloadID        *uuid.UUID
 	WorkloadInline    json.RawMessage
 	Sizes             json.RawMessage
 	Execution         json.RawMessage
-	SetProvider       *bool
+	SetProvider       bool
 	ProviderProfileID *uuid.UUID
 	Keep              *string
 	RatingTenant      *bool
@@ -1460,7 +1498,7 @@ SET status = $1, status_reason = $2, verify_run_id = $3,
 WHERE id = $4 AND deleted_at IS NULL;`
 
 type SetProviderStatusParams struct {
-	Status       *string
+	Status       string
 	StatusReason string
 	VerifyRunID  string
 	ID           uuid.UUID
@@ -1506,7 +1544,7 @@ WHERE p.id = $3 AND p.deleted_at IS NULL AND p.status IN ('ready', 'failed', 'de
  );`
 
 type BeginProviderOperationParams struct {
-	Status *string
+	Status string
 	RunID  string
 	ID     uuid.UUID
 }
@@ -1521,7 +1559,7 @@ const finishProviderOperationSQL = `UPDATE provider_profiles SET status = $1, st
 WHERE id=$3 AND verify_run_id=$4 AND deleted_at IS NULL;`
 
 type FinishProviderOperationParams struct {
-	Status *string
+	Status string
 	Reason string
 	ID     uuid.UUID
 	RunID  string
@@ -1743,7 +1781,7 @@ SELECT field, value, count(*)::int AS count FROM (
 
 type RunFacetValuesRow struct {
 	Field string
-	Value string
+	Value *string
 	Count int32
 }
 
@@ -1757,78 +1795,6 @@ func (q *Queries) RunFacetValues(ctx context.Context, tenantID uuid.UUID) ([]Run
 	for rows.Next() {
 		var i RunFacetValuesRow
 		if err := rows.Scan(&i.Field, &i.Value, &i.Count); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const runsOfTestSQL = `SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
-       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
-FROM runs WHERE test_id = $1 AND deleted_at IS NULL
-ORDER BY created_at DESC LIMIT $2 OFFSET $3;`
-
-type RunsOfTestParams struct {
-	TestID *uuid.UUID
-	Lim    *int64
-	Off    *int64
-}
-
-type RunsOfTestRow struct {
-	ID                uuid.UUID
-	TenantID          uuid.UUID
-	Name              string
-	Status            string
-	Phase             string
-	StatusReason      string
-	Trigger           string
-	SuiteRunID        *uuid.UUID
-	CellID            string
-	ScheduleID        *uuid.UUID
-	ParentRunID       *uuid.UUID
-	TestID            *uuid.UUID
-	TestName          string
-	AuthorID          *uuid.UUID
-	Snapshot          json.RawMessage
-	RunSpec           json.RawMessage
-	Summary           json.RawMessage
-	Result            json.RawMessage
-	RuntimeState      json.RawMessage
-	LastEventID       int64
-	RatingTenant      bool
-	RatingGlobal      bool
-	Keep              string
-	KeepUntil         *time.Time
-	StandKept         bool
-	Notes             string
-	Labels            json.RawMessage
-	GrapheneNamespace string
-	GrapheneRunID     string
-	PipelineRevision  string
-	Tps               *float64
-	DurationSeconds   *float64
-	CreatedAt         time.Time
-	StartedAt         *time.Time
-	FinishedAt        *time.Time
-	UpdatedAt         time.Time
-	DeletedAt         *time.Time
-}
-
-func (q *Queries) RunsOfTest(ctx context.Context, arg RunsOfTestParams) ([]RunsOfTestRow, error) {
-	rows, err := q.db.Query(ctx, runsOfTestSQL, arg.TestID, arg.Lim, arg.Off)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []RunsOfTestRow
-	for rows.Next() {
-		var i RunsOfTestRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1940,7 +1906,7 @@ const runsOfScheduleSQL = `SELECT id, name, status, created_at FROM runs WHERE s
 
 type RunsOfScheduleParams struct {
 	ScheduleID *uuid.UUID
-	Lim        *int64
+	Lim        int64
 }
 
 type RunsOfScheduleRow struct {
@@ -1986,7 +1952,7 @@ func (q *Queries) TenantLiveRunCount(ctx context.Context, tenantID uuid.UUID) (T
 const tenantHasLiveRunsSQL = `SELECT EXISTS (SELECT 1 FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling'))::boolean AS live;`
 
 type TenantHasLiveRunsRow struct {
-	Live *bool
+	Live bool
 }
 
 func (q *Queries) TenantHasLiveRuns(ctx context.Context, tenantID uuid.UUID) (TenantHasLiveRunsRow, error) {
@@ -2030,9 +1996,9 @@ SET status = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') TH
 WHERE id = $6 AND status NOT IN ('completed', 'failed', 'cancelled');`
 
 type SetRunStatusParams struct {
-	Status       *string
+	Status       string
 	Phase        string
-	StatusReason *string
+	StatusReason string
 	StartedAt    *time.Time
 	FinishedAt   *time.Time
 	ID           uuid.UUID
@@ -2119,7 +2085,7 @@ type RunsWithoutQpsSeriesRow struct {
 	DeletedAt         *time.Time
 }
 
-func (q *Queries) RunsWithoutQpsSeries(ctx context.Context, lim *int64) ([]RunsWithoutQpsSeriesRow, error) {
+func (q *Queries) RunsWithoutQpsSeries(ctx context.Context, lim int64) ([]RunsWithoutQpsSeriesRow, error) {
 	rows, err := q.db.Query(ctx, runsWithoutQpsSeriesSQL, lim)
 	if err != nil {
 		return nil, err
@@ -2200,7 +2166,7 @@ FROM run_events WHERE run_id = $1 AND id > $2 ORDER BY id LIMIT $3;`
 type RunEventsAfterParams struct {
 	RunID uuid.UUID
 	After int64
-	Lim   *int64
+	Lim   int64
 }
 
 type RunEventsAfterRow struct {
@@ -2305,7 +2271,7 @@ type RatingLeaguesRow struct {
 	League *string
 }
 
-func (q *Queries) RatingLeagues(ctx context.Context, tenantID *string) ([]RatingLeaguesRow, error) {
+func (q *Queries) RatingLeagues(ctx context.Context, tenantID string) ([]RatingLeaguesRow, error) {
 	rows, err := q.db.Query(ctx, ratingLeaguesSQL, tenantID)
 	if err != nil {
 		return nil, err
@@ -2531,14 +2497,14 @@ LIMIT $8 OFFSET $9;`
 
 type SharesOfTenantParams struct {
 	TenantID     uuid.UUID
-	TargetKind   *string
-	TargetID     *string
-	OnlyActive   *bool
-	OnlyInactive *bool
-	SortKey      *string
-	Desc         *bool
-	Lim          *int64
-	Off          *int64
+	TargetKind   string
+	TargetID     string
+	OnlyActive   bool
+	OnlyInactive bool
+	SortKey      string
+	Desc         bool
+	Lim          int64
+	Off          int64
 }
 
 type SharesOfTenantRow struct {
@@ -2620,7 +2586,7 @@ WHERE id = $5;`
 type UpdateShareParams struct {
 	Scope      *string
 	Title      *string
-	SetExpires *bool
+	SetExpires bool
 	ExpiresAt  *time.Time
 	ID         uuid.UUID
 }
@@ -2742,6 +2708,10 @@ ORDER BY
   CASE WHEN $6::text = 'cell_count' AND $7::boolean THEN jsonb_array_length(cells) END DESC,
   CASE WHEN $6::text = 'last_run_at' AND NOT $7::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END ASC NULLS LAST,
   CASE WHEN $6::text = 'last_run_at' AND $7::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END DESC NULLS LAST,
+  CASE WHEN $6::text = 'schedules' AND NOT $7::boolean THEN (SELECT count(*) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL) END ASC,
+  CASE WHEN $6::text = 'schedules' AND $7::boolean THEN (SELECT count(*) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL) END DESC,
+  CASE WHEN $6::text = 'next_run_at' AND NOT $7::boolean THEN (SELECT min(sc.next_run_at) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL AND sc.enabled) END ASC NULLS LAST,
+  CASE WHEN $6::text = 'next_run_at' AND $7::boolean THEN (SELECT min(sc.next_run_at) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL AND sc.enabled) END DESC NULLS LAST,
   CASE WHEN $6::text = 'created_at' AND NOT $7::boolean THEN created_at END ASC,
   CASE WHEN $6::text = 'created_at' AND $7::boolean THEN created_at END DESC,
   CASE WHEN $6::text = 'updated_at' AND NOT $7::boolean THEN updated_at END ASC,
@@ -2751,14 +2721,14 @@ LIMIT $8 OFFSET $9;`
 
 type SuitesOfTenantParams struct {
 	TenantID    uuid.UUID
-	Search      *string
-	AuthorID    *string
+	Search      string
+	AuthorID    string
 	Tags        json.RawMessage
-	FavoritesOf *string
-	SortKey     *string
-	Desc        *bool
-	Lim         *int64
-	Off         *int64
+	FavoritesOf string
+	SortKey     string
+	Desc        bool
+	Lim         int64
+	Off         int64
 }
 
 type SuitesOfTenantRow struct {
@@ -2840,7 +2810,7 @@ type SuitesUsingTestRow struct {
 	Name string
 }
 
-func (q *Queries) SuitesUsingTest(ctx context.Context, testID *string) ([]SuitesUsingTestRow, error) {
+func (q *Queries) SuitesUsingTest(ctx context.Context, testID string) ([]SuitesUsingTestRow, error) {
 	rows, err := q.db.Query(ctx, suitesUsingTestSQL, testID)
 	if err != nil {
 		return nil, err
@@ -2946,8 +2916,8 @@ FROM suite_runs WHERE suite_id = $1 AND deleted_at IS NULL ORDER BY created_at D
 
 type SuiteRunsOfSuiteParams struct {
 	SuiteID *uuid.UUID
-	Lim     *int64
-	Off     *int64
+	Lim     int64
+	Off     int64
 }
 
 type SuiteRunsOfSuiteRow struct {
@@ -3049,8 +3019,8 @@ SET status = CASE WHEN status = 'cancelling' AND $1 IN ('pending', 'running') TH
 WHERE id = $5 AND status NOT IN ('completed', 'failed', 'cancelled');`
 
 type SetSuiteRunStatusParams struct {
-	Status       *string
-	StatusReason *string
+	Status       string
+	StatusReason string
 	StartedAt    *time.Time
 	FinishedAt   *time.Time
 	ID           uuid.UUID
@@ -3161,13 +3131,13 @@ LIMIT $7 OFFSET $8;`
 
 type SchedulesOfTenantParams struct {
 	TenantID     uuid.UUID
-	TargetKind   *string
-	OnlyEnabled  *bool
-	OnlyDisabled *bool
-	SortKey      *string
-	Desc         *bool
-	Lim          *int64
-	Off          *int64
+	TargetKind   string
+	OnlyEnabled  bool
+	OnlyDisabled bool
+	SortKey      string
+	Desc         bool
+	Lim          int64
+	Off          int64
 }
 
 type SchedulesOfTenantRow struct {
@@ -3352,8 +3322,8 @@ const scheduleHistorySQL = `SELECT id, schedule_id, kind, ref_id, name, status, 
 
 type ScheduleHistoryParams struct {
 	ScheduleID uuid.UUID
-	Lim        *int64
-	Off        *int64
+	Lim        int64
+	Off        int64
 }
 
 type ScheduleHistoryRow struct {
@@ -3392,7 +3362,7 @@ FROM schedules WHERE tenant_id = $1 AND deleted_at IS NULL AND enabled AND next_
 
 type UpcomingSchedulesParams struct {
 	TenantID uuid.UUID
-	Lim      *int64
+	Lim      int64
 }
 
 type UpcomingSchedulesRow struct {
@@ -3466,7 +3436,7 @@ type TenantBySlugRow struct {
 	GrapheneNamespace string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	MemberCount       *int32
+	MemberCount       int32
 }
 
 func (q *Queries) TenantBySlug(ctx context.Context, slug string) (TenantBySlugRow, error) {
@@ -3492,7 +3462,7 @@ type TenantByIDRow struct {
 	GrapheneNamespace string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	MemberCount       *int32
+	MemberCount       int32
 }
 
 func (q *Queries) TenantByID(ctx context.Context, id uuid.UUID) (TenantByIDRow, error) {
@@ -3521,7 +3491,7 @@ type TenantsOfUserRow struct {
 	GrapheneNamespace string
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
-	MemberCount       *int32
+	MemberCount       int32
 	Role              string
 	JoinedAt          time.Time
 }
@@ -3584,7 +3554,7 @@ WHERE id = $5 AND deleted_at IS NULL;`
 type UpdateTenantParams struct {
 	Name            *string
 	Description     *string
-	ClearPublicName *bool
+	ClearPublicName bool
 	PublicName      *string
 	ID              uuid.UUID
 }
@@ -4043,7 +4013,7 @@ LIMIT $3;`
 type DeliveriesOfWebhookParams struct {
 	WebhookID uuid.UUID
 	Before    *time.Time
-	Lim       *int64
+	Lim       int64
 }
 
 type DeliveriesOfWebhookRow struct {
@@ -4095,7 +4065,7 @@ RETURNING id, webhook_id, event, status, attempts, next_attempt_at, last_attempt
 
 type DueDeliveriesParams struct {
 	Lease pgtype.Interval
-	Lim   *int64
+	Lim   int64
 }
 
 type DueDeliveriesRow struct {
@@ -4161,6 +4131,8 @@ func (q *Queries) ResetDelivery(ctx context.Context, id uuid.UUID) (int64, error
 type AdminRunsParams struct {
 	Statuses []string
 	Tenant   string
+	SortKey  string
+	Desc     bool
 	Lim      int64
 	Off      int64
 }
@@ -4210,21 +4182,32 @@ type AdminRunsRow struct {
 func (q *Queries) AdminRuns(ctx context.Context, arg AdminRunsParams) ([]AdminRunsRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id")
-	conds = append(conds, "r.deleted_at IS NULL")
-	if len(arg.Statuses) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
 		args = append(args, arg.Statuses)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR r.status = ANY($%d::text[]))", len(args), len(args)))
+		positions[1] = len(args)
 	}
-	args = append(args, arg.Tenant)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR t.slug = $%d::text)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[2] == 0 {
+		args = append(args, arg.Tenant)
+		positions[2] = len(args)
 	}
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY r.created_at DESC LIMIT $%d OFFSET $%d", len(args)-1, len(args)))
+	if positions[3] == 0 {
+		args = append(args, arg.SortKey)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
+		args = append(args, arg.Desc)
+		positions[4] = len(args)
+	}
+	if positions[5] == 0 {
+		args = append(args, arg.Lim)
+		positions[5] = len(args)
+	}
+	if positions[6] == 0 {
+		args = append(args, arg.Off)
+		positions[6] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.status = ANY($%d::text[]))\n  AND ($%d::text = '' OR t.slug = $%d::text)\nORDER BY\n  -- default: live runs (pending, running, cancelling), then the newest.\n  CASE WHEN $%d::text = 'default' THEN r.status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'tenant' AND NOT $%d::boolean THEN t.slug END ASC,\n  CASE WHEN $%d::text = 'tenant' AND $%d::boolean THEN t.slug END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN r.name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN r.name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN r.status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN r.status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN r.trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN r.trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN r.summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN r.summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN r.summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN r.summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN r.summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN r.summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN r.summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN r.summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN r.author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN r.author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN r.tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN r.tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN r.duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN r.duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN r.started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN r.started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN r.finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN r.finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN r.updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN r.updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN r.created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN r.created_at END DESC,\n  r.created_at DESC, r.id\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[5], positions[6]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4274,28 +4257,44 @@ type DatabasesOfTenantRow struct {
 func (q *Queries) DatabasesOfTenant(ctx context.Context, arg DatabasesOfTenantParams) ([]DatabasesOfTenantRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("-- Filters are optional; sort is decided by the caller through sort_key/desc.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
-	args = append(args, arg.Search)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')", len(args), len(args), len(args)))
-	args = append(args, arg.AuthorID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR author_id::text = $%d::text)", len(args), len(args)))
-	if len(arg.Kinds) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.TenantID)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.Search)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
+		args = append(args, arg.AuthorID)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
 		args = append(args, arg.Kinds)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR kind = ANY($%d::text[]))", len(args), len(args)))
+		positions[4] = len(args)
 	}
-	args = append(args, arg.Tags)
-	conds = append(conds, fmt.Sprintf("($%d::jsonb IS NULL OR tags @> $%d::jsonb)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[5] == 0 {
+		args = append(args, arg.Tags)
+		positions[5] = len(args)
 	}
-	args = append(args, arg.SortKey)
-	args = append(args, arg.Desc)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d", len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-1, len(args)))
+	if positions[6] == 0 {
+		args = append(args, arg.SortKey)
+		positions[6] = len(args)
+	}
+	if positions[7] == 0 {
+		args = append(args, arg.Desc)
+		positions[7] = len(args)
+	}
+	if positions[8] == 0 {
+		args = append(args, arg.Lim)
+		positions[8] = len(args)
+	}
+	if positions[9] == 0 {
+		args = append(args, arg.Off)
+		positions[9] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("-- Filters are optional; sort is decided by the caller through sort_key/desc.\n-- `topology` sorts by the plan label topology.Compile derives at read time\n-- (the UI's topology column), recomputed here from the baked params: they\n-- carry every key the kind declares. Keep in step with topology.go labels.\n-- `usages` counts the live tests referencing the definition.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases, LATERAL (SELECT CASE kind\n    WHEN 'postgres' THEN concat_ws(' + ', 'postgres',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,\n        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,\n        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)\n    WHEN 'orioledb' THEN concat_ws(' + ', 'orioledb',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,\n        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,\n        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)\n    WHEN 'mysql' THEN concat_ws(' + ', 'mysql',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'replication' = 'group' THEN 'group replication' END,\n        CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN 'proxysql' END)\n    WHEN 'mariadb' THEN CASE WHEN params->>'replication' = 'galera'\n        THEN 'galera ×' || COALESCE((params->>'galera_nodes')::numeric::int, 3)\n             || CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN ' + proxysql' WHEN params->>'maxscale' = 'true' THEN ' + maxscale' ELSE '' END\n        ELSE concat_ws(' + ', 'mariadb',\n             CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n             CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 OR params->>'maxscale' = 'true' THEN 'proxy' END) END\n    WHEN 'picodata' THEN 'picodata ×' || GREATEST(1, COALESCE((SELECT sum(COALESCE((t->>'instances')::numeric::int, 1)) FROM jsonb_array_elements(CASE WHEN jsonb_typeof(params->'tiers') = 'array' THEN params->'tiers' ELSE '[]'::jsonb END) t), 0))\n        || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END\n    WHEN 'ydb' THEN 'ydb ' || COALESCE(NULLIF(params->>'fault_tolerance', ''), 'none') || ': ' || COALESCE((params->>'storage_nodes')::numeric::int, 1) || ' storage + ' || COALESCE((params->>'database_nodes')::numeric::int, 1) || ' database'\n    WHEN 'cockroach' THEN 'cockroach ×' || COALESCE((params->>'nodes')::numeric::int, 3) || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END\n    WHEN 'pg_noop' THEN 'pg-noop'\n    WHEN 'noop' THEN 'noop (runner only)'\n    WHEN 'ydb_managed' THEN 'managed ydb ' || COALESCE(NULLIF(params->>'type', ''), 'dedicated')\n    WHEN 'external' THEN 'external ' || COALESCE(NULLIF(params->>'protocol', ''), 'pg')\n  END AS topology_label) tl\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR kind = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN tl.topology_label END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN tl.topology_label END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4343,34 +4342,52 @@ type WorkloadsOfTenantRow struct {
 func (q *Queries) WorkloadsOfTenant(ctx context.Context, arg WorkloadsOfTenantParams) ([]WorkloadsOfTenantRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT id, tenant_id, name, description, tags, author_id, stroppy_version, protocol, spec, created_at, updated_at\nFROM workloads")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
-	args = append(args, arg.Search)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')", len(args), len(args), len(args)))
-	args = append(args, arg.AuthorID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR author_id::text = $%d::text)", len(args), len(args)))
-	if len(arg.Protocols) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.TenantID)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.Search)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
+		args = append(args, arg.AuthorID)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
 		args = append(args, arg.Protocols)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR protocol = ANY($%d::text[]))", len(args), len(args)))
+		positions[4] = len(args)
 	}
-	if len(arg.Versions) > 0 {
+	if positions[5] == 0 {
 		args = append(args, arg.Versions)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR stroppy_version = ANY($%d::text[]))", len(args), len(args)))
+		positions[5] = len(args)
 	}
-	args = append(args, arg.Script)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR spec->'segments' @> jsonb_build_array(jsonb_build_object('workload', jsonb_build_object('script', $%d::text))))", len(args), len(args)))
-	args = append(args, arg.Tags)
-	conds = append(conds, fmt.Sprintf("($%d::jsonb IS NULL OR tags @> $%d::jsonb)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[6] == 0 {
+		args = append(args, arg.Script)
+		positions[6] = len(args)
 	}
-	args = append(args, arg.SortKey)
-	args = append(args, arg.Desc)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'protocol' AND NOT $%d::boolean THEN protocol END ASC,\n  CASE WHEN $%d::text = 'protocol' AND $%d::boolean THEN protocol END DESC,\n  CASE WHEN $%d::text = 'stroppy_version' AND NOT $%d::boolean THEN stroppy_version END ASC,\n  CASE WHEN $%d::text = 'stroppy_version' AND $%d::boolean THEN stroppy_version END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d", len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-1, len(args)))
+	if positions[7] == 0 {
+		args = append(args, arg.Tags)
+		positions[7] = len(args)
+	}
+	if positions[8] == 0 {
+		args = append(args, arg.SortKey)
+		positions[8] = len(args)
+	}
+	if positions[9] == 0 {
+		args = append(args, arg.Desc)
+		positions[9] = len(args)
+	}
+	if positions[10] == 0 {
+		args = append(args, arg.Lim)
+		positions[10] = len(args)
+	}
+	if positions[11] == 0 {
+		args = append(args, arg.Off)
+		positions[11] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, description, tags, author_id, stroppy_version, protocol, spec, created_at, updated_at\nFROM workloads\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR protocol = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR stroppy_version = ANY($%d::text[]))\n  AND ($%d::text = '' OR spec->'segments' @> jsonb_build_array(jsonb_build_object('workload', jsonb_build_object('script', $%d::text))))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'protocol' AND NOT $%d::boolean THEN protocol END ASC,\n  CASE WHEN $%d::text = 'protocol' AND $%d::boolean THEN protocol END DESC,\n  CASE WHEN $%d::text = 'stroppy_version' AND NOT $%d::boolean THEN stroppy_version END ASC,\n  CASE WHEN $%d::text = 'stroppy_version' AND $%d::boolean THEN stroppy_version END DESC,\n  CASE WHEN $%d::text = 'segments' AND NOT $%d::boolean THEN jsonb_array_length(COALESCE(spec->'segments', '[]'::jsonb)) END ASC,\n  CASE WHEN $%d::text = 'segments' AND $%d::boolean THEN jsonb_array_length(COALESCE(spec->'segments', '[]'::jsonb)) END DESC,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.workload_id = workloads.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.workload_id = workloads.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[8], positions[9], positions[10], positions[11]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4425,28 +4442,44 @@ type TestsOfTenantRow struct {
 func (q *Queries) TestsOfTenant(ctx context.Context, arg TestsOfTenantParams) ([]TestsOfTenantRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,\n       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at\nFROM tests")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
-	args = append(args, arg.Search)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')", len(args), len(args), len(args)))
-	args = append(args, arg.AuthorID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR author_id::text = $%d::text)", len(args), len(args)))
-	if len(arg.Statuses) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.TenantID)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.Search)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
+		args = append(args, arg.AuthorID)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
 		args = append(args, arg.Statuses)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR status = ANY($%d::text[]))", len(args), len(args)))
+		positions[4] = len(args)
 	}
-	args = append(args, arg.Tags)
-	conds = append(conds, fmt.Sprintf("($%d::jsonb IS NULL OR tags @> $%d::jsonb)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[5] == 0 {
+		args = append(args, arg.Tags)
+		positions[5] = len(args)
 	}
-	args = append(args, arg.SortKey)
-	args = append(args, arg.Desc)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'database' AND NOT $%d::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'database' AND $%d::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'last_run_at' AND NOT $%d::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'last_run_at' AND $%d::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d", len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-1, len(args)))
+	if positions[6] == 0 {
+		args = append(args, arg.SortKey)
+		positions[6] = len(args)
+	}
+	if positions[7] == 0 {
+		args = append(args, arg.Desc)
+		positions[7] = len(args)
+	}
+	if positions[8] == 0 {
+		args = append(args, arg.Lim)
+		positions[8] = len(args)
+	}
+	if positions[9] == 0 {
+		args = append(args, arg.Off)
+		positions[9] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, description, tags, author_id, database_id, database_inline, workload_id, workload_inline,\n       sizes, execution, provider_profile_id, keep, rating_tenant, rating_global, status, validated_at, created_at, updated_at\nFROM tests\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'database' AND NOT $%d::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'database' AND $%d::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'last_run_at' AND NOT $%d::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'last_run_at' AND $%d::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4456,6 +4489,57 @@ func (q *Queries) TestsOfTenant(ctx context.Context, arg TestsOfTenantParams) ([
 	for rows.Next() {
 		var i TestsOfTenantRow
 		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Description, &i.Tags, &i.AuthorID, &i.DatabaseID, &i.DatabaseInline, &i.WorkloadID, &i.WorkloadInline, &i.Sizes, &i.Execution, &i.ProviderProfileID, &i.Keep, &i.RatingTenant, &i.RatingGlobal, &i.Status, &i.ValidatedAt, &i.CreatedAt, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	return items, rows.Err()
+}
+
+type ProfileRefsParams struct {
+	Reveal      bool
+	Viewer      uuid.UUID
+	ScopeTenant uuid.UUID
+	Ids         []uuid.UUID
+}
+
+type ProfileRefsRow struct {
+	ID          uuid.UUID
+	Email       string
+	DisplayName string
+	Avatar      string
+}
+
+func (q *Queries) ProfileRefs(ctx context.Context, arg ProfileRefsParams) ([]ProfileRefsRow, error) {
+	var b strings.Builder
+	var args []any
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.Reveal)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.Viewer)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
+		args = append(args, arg.ScopeTenant)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
+		args = append(args, arg.Ids)
+		positions[4] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("-- Display data for a batch of subjects (UserRef enrichment); missing ids\n-- are simply absent. The email is disclosed only to the subject itself, to\n-- a co-member of at least one tenant (confined to scope_tenant when set —\n-- API tokens) or when reveal is set (platform admin); otherwise ''.\nSELECT p.id,\n       CASE WHEN $%d::boolean\n                 OR p.id = $%d::uuid\n                 OR EXISTS (SELECT 1\n                            FROM tenant_members v\n                            JOIN tenant_members m ON m.tenant_id = v.tenant_id\n                            WHERE m.user_id = p.id\n                              AND v.user_id = $%d::uuid\n                              AND ($%d::uuid = '00000000-0000-0000-0000-000000000000'::uuid\n                                   OR v.tenant_id = $%d::uuid))\n            THEN p.email ELSE '' END AS email,\n       p.display_name,\n       p.avatar\nFROM profiles p\nWHERE p.id = ANY($%d::uuid[]);", positions[1], positions[2], positions[2], positions[3], positions[3], positions[4]))
+	rows, err := q.db.Query(ctx, b.String(), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ProfileRefsRow
+	for rows.Next() {
+		var i ProfileRefsRow
+		if err := rows.Scan(&i.ID, &i.Email, &i.DisplayName, &i.Avatar); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -4475,10 +4559,10 @@ type RunsOfTenantParams struct {
 	SuiteRunID     string
 	Standalone     bool
 	Labels         json.RawMessage
-	StartedAfter   time.Time
-	StartedBefore  time.Time
-	FinishedAfter  time.Time
-	FinishedBefore time.Time
+	StartedAfter   *time.Time
+	StartedBefore  *time.Time
+	FinishedAfter  *time.Time
+	FinishedBefore *time.Time
 	DurationMin    float64
 	DurationMax    float64
 	StandKeptOnly  bool
@@ -4533,63 +4617,104 @@ type RunsOfTenantRow struct {
 func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]RunsOfTenantRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
-	args = append(args, arg.Search)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')", len(args), len(args), len(args)))
-	args = append(args, arg.AuthorID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR author_id::text = $%d::text)", len(args), len(args)))
-	if len(arg.Statuses) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.TenantID)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.Search)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
+		args = append(args, arg.AuthorID)
+		positions[3] = len(args)
+	}
+	if positions[4] == 0 {
 		args = append(args, arg.Statuses)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR status = ANY($%d::text[]))", len(args), len(args)))
+		positions[4] = len(args)
 	}
-	if len(arg.Kinds) > 0 {
+	if positions[5] == 0 {
 		args = append(args, arg.Kinds)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR summary->>'db_kind' = ANY($%d::text[]))", len(args), len(args)))
+		positions[5] = len(args)
 	}
-	if len(arg.Profiles) > 0 {
+	if positions[6] == 0 {
 		args = append(args, arg.Profiles)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))", len(args), len(args)))
+		positions[6] = len(args)
 	}
-	if len(arg.Triggers) > 0 {
+	if positions[7] == 0 {
 		args = append(args, arg.Triggers)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR trigger = ANY($%d::text[]))", len(args), len(args)))
+		positions[7] = len(args)
 	}
-	args = append(args, arg.TestID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR test_id::text = $%d::text)", len(args), len(args)))
-	args = append(args, arg.SuiteRunID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR suite_run_id::text = $%d::text)", len(args), len(args)))
-	args = append(args, arg.Standalone)
-	conds = append(conds, fmt.Sprintf("(NOT $%d::boolean OR suite_run_id IS NULL)", len(args)))
-	args = append(args, arg.Labels)
-	conds = append(conds, fmt.Sprintf("($%d::jsonb IS NULL OR labels @> $%d::jsonb)", len(args), len(args)))
-	args = append(args, arg.StartedAfter)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)", len(args), len(args)))
-	args = append(args, arg.StartedBefore)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)", len(args), len(args)))
-	args = append(args, arg.FinishedAfter)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)", len(args), len(args)))
-	args = append(args, arg.FinishedBefore)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)", len(args), len(args)))
-	args = append(args, arg.DurationMin)
-	conds = append(conds, fmt.Sprintf("($%d::double precision = 0 OR duration_seconds >= $%d::double precision)", len(args), len(args)))
-	args = append(args, arg.DurationMax)
-	conds = append(conds, fmt.Sprintf("($%d::double precision = 0 OR duration_seconds <= $%d::double precision)", len(args), len(args)))
-	args = append(args, arg.StandKeptOnly)
-	conds = append(conds, fmt.Sprintf("($%d::boolean = false OR stand_kept)", len(args)))
-	args = append(args, arg.FavoritesOf)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[8] == 0 {
+		args = append(args, arg.TestID)
+		positions[8] = len(args)
 	}
-	args = append(args, arg.SortKey)
-	args = append(args, arg.ViewerID)
-	args = append(args, arg.Desc)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d", len(args)-4, len(args)-3, len(args)-4, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-4, len(args)-2, len(args)-1, len(args)))
+	if positions[9] == 0 {
+		args = append(args, arg.SuiteRunID)
+		positions[9] = len(args)
+	}
+	if positions[10] == 0 {
+		args = append(args, arg.Standalone)
+		positions[10] = len(args)
+	}
+	if positions[11] == 0 {
+		args = append(args, arg.Labels)
+		positions[11] = len(args)
+	}
+	if positions[12] == 0 {
+		args = append(args, arg.StartedAfter)
+		positions[12] = len(args)
+	}
+	if positions[13] == 0 {
+		args = append(args, arg.StartedBefore)
+		positions[13] = len(args)
+	}
+	if positions[14] == 0 {
+		args = append(args, arg.FinishedAfter)
+		positions[14] = len(args)
+	}
+	if positions[15] == 0 {
+		args = append(args, arg.FinishedBefore)
+		positions[15] = len(args)
+	}
+	if positions[16] == 0 {
+		args = append(args, arg.DurationMin)
+		positions[16] = len(args)
+	}
+	if positions[17] == 0 {
+		args = append(args, arg.DurationMax)
+		positions[17] = len(args)
+	}
+	if positions[18] == 0 {
+		args = append(args, arg.StandKeptOnly)
+		positions[18] = len(args)
+	}
+	if positions[19] == 0 {
+		args = append(args, arg.FavoritesOf)
+		positions[19] = len(args)
+	}
+	if positions[20] == 0 {
+		args = append(args, arg.SortKey)
+		positions[20] = len(args)
+	}
+	if positions[21] == 0 {
+		args = append(args, arg.ViewerID)
+		positions[21] = len(args)
+	}
+	if positions[22] == 0 {
+		args = append(args, arg.Desc)
+		positions[22] = len(args)
+	}
+	if positions[23] == 0 {
+		args = append(args, arg.Lim)
+		positions[23] = len(args)
+	}
+	if positions[24] == 0 {
+		args = append(args, arg.Off)
+		positions[24] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR test_id::text = $%d::text)\n  AND ($%d::text = '' OR suite_run_id::text = $%d::text)\n  AND (NOT $%d::boolean OR suite_run_id IS NULL)\n  AND ($%d::jsonb IS NULL OR labels @> $%d::jsonb)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)\n  AND ($%d::double precision = 0 OR duration_seconds >= $%d::double precision)\n  AND ($%d::double precision = 0 OR duration_seconds <= $%d::double precision)\n  AND ($%d::boolean = false OR stand_kept)\n  AND ($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))\nORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[11], positions[12], positions[12], positions[13], positions[13], positions[14], positions[14], positions[15], positions[15], positions[16], positions[16], positions[17], positions[17], positions[18], positions[19], positions[19], positions[20], positions[21], positions[20], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[23], positions[24]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4614,7 +4739,7 @@ type RatingRunsParams struct {
 	Providers       []string
 	StroppyVersions []string
 	League          string
-	Since           time.Time
+	Since           *time.Time
 	HigherIsBetter  bool
 	Lim             int64
 	Off             int64
@@ -4637,43 +4762,52 @@ type RatingRunsRow struct {
 func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]RatingRunsRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	args = append(args, arg.Metric)
-	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric; league = the\n-- sizes signature, so only equal hardware competes.\nSELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n       t.name AS tenant_name, t.public_name AS tenant_public_name,\n       (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) AS league,\n       (r.summary->'headline'->>$%d::text)::float8 AS value\nFROM runs r JOIN tenants t ON t.id = r.tenant_id", len(args)))
-	conds = append(conds, "r.deleted_at IS NULL AND r.status = 'completed'")
-	args = append(args, arg.Metric)
-	conds = append(conds, fmt.Sprintf("r.summary->'headline' ? $%d::text", len(args)))
-	conds = append(conds, "coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("(($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))", len(args), len(args), len(args)))
-	if len(arg.Kinds) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.Metric)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
+		args = append(args, arg.TenantID)
+		positions[2] = len(args)
+	}
+	if positions[3] == 0 {
 		args = append(args, arg.Kinds)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))", len(args), len(args)))
+		positions[3] = len(args)
 	}
-	if len(arg.Versions) > 0 {
+	if positions[4] == 0 {
 		args = append(args, arg.Versions)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))", len(args), len(args)))
+		positions[4] = len(args)
 	}
-	if len(arg.Providers) > 0 {
+	if positions[5] == 0 {
 		args = append(args, arg.Providers)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))", len(args), len(args)))
+		positions[5] = len(args)
 	}
-	if len(arg.StroppyVersions) > 0 {
+	if positions[6] == 0 {
 		args = append(args, arg.StroppyVersions)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))", len(args), len(args)))
+		positions[6] = len(args)
 	}
-	args = append(args, arg.League)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) = $%d::text)", len(args), len(args)))
-	args = append(args, arg.Since)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[7] == 0 {
+		args = append(args, arg.League)
+		positions[7] = len(args)
 	}
-	args = append(args, arg.HigherIsBetter)
-	args = append(args, arg.Metric)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY CASE WHEN $%d::boolean THEN -(r.summary->'headline'->>$%d::text)::float8 ELSE (r.summary->'headline'->>$%d::text)::float8 END, r.finished_at DESC\nLIMIT $%d OFFSET $%d", len(args)-3, len(args)-2, len(args)-2, len(args)-1, len(args)))
+	if positions[8] == 0 {
+		args = append(args, arg.Since)
+		positions[8] = len(args)
+	}
+	if positions[9] == 0 {
+		args = append(args, arg.HigherIsBetter)
+		positions[9] = len(args)
+	}
+	if positions[10] == 0 {
+		args = append(args, arg.Lim)
+		positions[10] = len(args)
+	}
+	if positions[11] == 0 {
+		args = append(args, arg.Off)
+		positions[11] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric; league = the\n-- sizes signature, so only equal hardware competes.\nSELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n       t.name AS tenant_name, t.public_name AS tenant_public_name,\n       (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) AS league,\n       (r.summary->'headline'->>$%d::text)::float8 AS value\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL AND r.status = 'completed'\n  AND r.summary->'headline' ? $%d::text\n  AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')\n  AND (($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))\n  AND ($%d::text = '' OR (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) = $%d::text)\n  AND ($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)\nORDER BY CASE WHEN $%d::boolean THEN -(r.summary->'headline'->>$%d::text)::float8 ELSE (r.summary->'headline'->>$%d::text)::float8 END, r.finished_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[1], positions[1], positions[10], positions[11]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4737,15 +4871,12 @@ type RunsByIdsRow struct {
 func (q *Queries) RunsByIds(ctx context.Context, arg RunsByIdsParams) ([]RunsByIdsRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs")
-	if len(arg.Ids) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
 		args = append(args, arg.Ids)
-		conds = append(conds, fmt.Sprintf("id = ANY($%d::uuid[]) AND deleted_at IS NULL", len(args)))
+		positions[1] = len(args)
 	}
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
-	}
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs WHERE id = ANY($%d::uuid[]) AND deleted_at IS NULL;", positions[1]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4778,16 +4909,12 @@ type TestRunStatsRow struct {
 func (q *Queries) TestRunStats(ctx context.Context, arg TestRunStatsParams) ([]TestRunStatsRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT DISTINCT ON (test_id) test_id, id, name, status, started_at, count(*) OVER (PARTITION BY test_id) AS run_count\nFROM runs")
-	if len(arg.TestIds) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
 		args = append(args, arg.TestIds)
-		conds = append(conds, fmt.Sprintf("test_id = ANY($%d::uuid[]) AND deleted_at IS NULL", len(args)))
+		positions[1] = len(args)
 	}
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
-	}
-	b.WriteString(" ORDER BY test_id, created_at DESC")
+	b.WriteString(fmt.Sprintf("SELECT DISTINCT ON (test_id) test_id, id, name, status, started_at, count(*) OVER (PARTITION BY test_id) AS run_count\nFROM runs WHERE test_id = ANY($%d::uuid[]) AND deleted_at IS NULL\nORDER BY test_id, created_at DESC;", positions[1]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4809,8 +4936,8 @@ type SuiteRunsOfTenantParams struct {
 	Statuses      []string
 	Triggers      []string
 	SuiteID       string
-	StartedAfter  time.Time
-	StartedBefore time.Time
+	StartedAfter  *time.Time
+	StartedBefore *time.Time
 	SortKey       string
 	Desc          bool
 	Lim           int64
@@ -4845,32 +4972,48 @@ type SuiteRunsOfTenantRow struct {
 func (q *Queries) SuiteRunsOfTenant(ctx context.Context, arg SuiteRunsOfTenantParams) ([]SuiteRunsOfTenantRow, error) {
 	var b strings.Builder
 	var args []any
-	var conds []string
-	b.WriteString("SELECT id, tenant_id, suite_id, suite_name, name, status, status_reason, trigger, schedule_id, retry_of, concurrency, cells, labels, author_id,\n       graphene_namespace, last_event_id, created_at, started_at, finished_at, duration_seconds, updated_at, deleted_at\nFROM suite_runs")
-	args = append(args, arg.TenantID)
-	conds = append(conds, fmt.Sprintf("tenant_id = $%d AND deleted_at IS NULL", len(args)))
-	if len(arg.Statuses) > 0 {
+	positions := make(map[uint32]int)
+	if positions[1] == 0 {
+		args = append(args, arg.TenantID)
+		positions[1] = len(args)
+	}
+	if positions[2] == 0 {
 		args = append(args, arg.Statuses)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR status = ANY($%d::text[]))", len(args), len(args)))
+		positions[2] = len(args)
 	}
-	if len(arg.Triggers) > 0 {
+	if positions[3] == 0 {
 		args = append(args, arg.Triggers)
-		conds = append(conds, fmt.Sprintf("(cardinality($%d::text[]) = 0 OR trigger = ANY($%d::text[]))", len(args), len(args)))
+		positions[3] = len(args)
 	}
-	args = append(args, arg.SuiteID)
-	conds = append(conds, fmt.Sprintf("($%d::text = '' OR suite_id::text = $%d::text)", len(args), len(args)))
-	args = append(args, arg.StartedAfter)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz < '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)", len(args), len(args)))
-	args = append(args, arg.StartedBefore)
-	conds = append(conds, fmt.Sprintf("($%d::timestamptz < '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)", len(args), len(args)))
-	if len(conds) > 0 {
-		b.WriteString(" WHERE " + strings.Join(conds, " AND "))
+	if positions[4] == 0 {
+		args = append(args, arg.SuiteID)
+		positions[4] = len(args)
 	}
-	args = append(args, arg.SortKey)
-	args = append(args, arg.Desc)
-	args = append(args, arg.Lim)
-	args = append(args, arg.Off)
-	b.WriteString(fmt.Sprintf(" ORDER BY\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN NOT $%d::boolean THEN created_at END ASC,\n  created_at DESC\nLIMIT $%d OFFSET $%d", len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-3, len(args)-2, len(args)-2, len(args)-1, len(args)))
+	if positions[5] == 0 {
+		args = append(args, arg.StartedAfter)
+		positions[5] = len(args)
+	}
+	if positions[6] == 0 {
+		args = append(args, arg.StartedBefore)
+		positions[6] = len(args)
+	}
+	if positions[7] == 0 {
+		args = append(args, arg.SortKey)
+		positions[7] = len(args)
+	}
+	if positions[8] == 0 {
+		args = append(args, arg.Desc)
+		positions[8] = len(args)
+	}
+	if positions[9] == 0 {
+		args = append(args, arg.Lim)
+		positions[9] = len(args)
+	}
+	if positions[10] == 0 {
+		args = append(args, arg.Off)
+		positions[10] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, suite_id, suite_name, name, status, status_reason, trigger, schedule_id, retry_of, concurrency, cells, labels, author_id,\n       graphene_namespace, last_event_id, created_at, started_at, finished_at, duration_seconds, updated_at, deleted_at\nFROM suite_runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR suite_id::text = $%d::text)\n  AND ($%d::timestamptz < '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz < '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\nORDER BY\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN NOT $%d::boolean THEN created_at END ASC,\n  created_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[8], positions[7], positions[8], positions[7], positions[8], positions[7], positions[8], positions[7], positions[8], positions[7], positions[8], positions[8], positions[9], positions[10]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err

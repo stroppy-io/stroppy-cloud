@@ -83,6 +83,9 @@ func (h *Handler) adminTenantOf(v admin.TenantView, full bool) *oas.AdminTenant 
 
 func adminUserOf(u admin.UserView) oas.AdminUser {
 	out := oas.AdminUser{ID: u.Profile.ID.String(), Email: u.Profile.Email, DisplayName: u.Profile.DisplayName, IsPlatformAdmin: u.Profile.IsPlatformAdmin || u.AdminSource == "config", Memberships: oas.NewOptInt(u.Memberships), CreatedAt: u.Profile.CreatedAt, LastSeenAt: oas.OptNilDateTime{Null: true, Set: true}}
+	if u.LastActivityAt != nil {
+		out.LastSeenAt = oas.NewOptNilDateTime(*u.LastActivityAt)
+	}
 	if u.AdminSource != "" {
 		out.AdminSource = oas.NewOptAdminUserAdminSource(oas.AdminUserAdminSource(u.AdminSource))
 	}
@@ -108,7 +111,10 @@ func (h *Handler) AdminListTenants(ctx context.Context, params oas.AdminListTena
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	q := admin.TenantQuery{Search: params.Search.Or(""), Limit: limit + 1, Offset: offset}
+	q := admin.TenantQuery{
+		Search: params.Search.Or(""), Sort: string(params.Sort.Or(oas.AdminListTenantsSortCreatedAt)),
+		Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset,
+	}
 	if v, ok := params.Status.Get(); ok {
 		q.Status = string(v)
 	}
@@ -225,7 +231,10 @@ func (h *Handler) AdminListUsers(ctx context.Context, params oas.AdminListUsersP
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	list, err := h.deps.Admin.Users(ctx, a, admin.UserQuery{Search: params.Search.Or(""), OnlyAdmins: params.PlatformAdmin.Or(false), Limit: limit + 1, Offset: offset})
+	list, err := h.deps.Admin.Users(ctx, a, admin.UserQuery{
+		Search: params.Search.Or(""), OnlyAdmins: params.PlatformAdmin.Or(false), Sort: string(params.Sort.Or(oas.AdminListUsersSortCreatedAt)),
+		Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -273,7 +282,10 @@ func (h *Handler) AdminListRuns(ctx context.Context, params oas.AdminListRunsPar
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	q := admin.RunQuery{Tenant: params.Tenant.Or(""), Limit: limit + 1, Offset: offset}
+	q := admin.RunQuery{
+		Tenant: params.Tenant.Or(""), Sort: string(params.Sort.Or(oas.AdminListRunsSortCreatedAt)),
+		Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset,
+	}
 	for _, s := range params.Status {
 		q.Statuses = append(q.Statuses, string(s))
 	}

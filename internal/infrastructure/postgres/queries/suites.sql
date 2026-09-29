@@ -28,6 +28,10 @@ ORDER BY
   CASE WHEN @sort_key::text = 'cell_count' AND @desc::boolean THEN jsonb_array_length(cells) END DESC,
   CASE WHEN @sort_key::text = 'last_run_at' AND NOT @desc::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'last_run_at' AND @desc::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'schedules' AND NOT @desc::boolean THEN (SELECT count(*) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL) END ASC,
+  CASE WHEN @sort_key::text = 'schedules' AND @desc::boolean THEN (SELECT count(*) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL) END DESC,
+  CASE WHEN @sort_key::text = 'next_run_at' AND NOT @desc::boolean THEN (SELECT min(sc.next_run_at) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL AND sc.enabled) END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'next_run_at' AND @desc::boolean THEN (SELECT min(sc.next_run_at) FROM schedules sc WHERE sc.target_kind = 'suite' AND sc.target_id = suites.id AND sc.deleted_at IS NULL AND sc.enabled) END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
   CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
@@ -71,8 +75,8 @@ SELECT id, tenant_id, suite_id, suite_name, name, status, status_reason, trigger
        graphene_namespace, last_event_id, created_at, started_at, finished_at, duration_seconds, updated_at, deleted_at
 FROM suite_runs
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
-  AND (cardinality(@statuses::text[]) = 0 OR status = ANY(@statuses::text[]))
-  AND (cardinality(@triggers::text[]) = 0 OR trigger = ANY(@triggers::text[]))
+  AND (COALESCE(cardinality(@statuses::text[]), 0) = 0 OR status = ANY(@statuses::text[]))
+  AND (COALESCE(cardinality(@triggers::text[]), 0) = 0 OR trigger = ANY(@triggers::text[]))
   AND (@suite_id::text = '' OR suite_id::text = @suite_id::text)
   AND (@started_after::timestamptz < '1970-01-02'::timestamptz OR started_at >= @started_after::timestamptz)
   AND (@started_before::timestamptz < '1970-01-02'::timestamptz OR started_at <= @started_before::timestamptz)

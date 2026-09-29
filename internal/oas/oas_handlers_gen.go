@@ -1630,6 +1630,14 @@ func (s *Server) handleAdminListRunsRequest(args [0]string, argsEscaped bool, w 
 					In:   "query",
 				}: params.Tenant,
 				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
+				{
 					Name: "cursor",
 					In:   "query",
 				}: params.Cursor,
@@ -1842,6 +1850,14 @@ func (s *Server) handleAdminListTenantsRequest(args [0]string, argsEscaped bool,
 					In:   "query",
 				}: params.Status,
 				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
+				{
 					Name: "cursor",
 					In:   "query",
 				}: params.Cursor,
@@ -2053,6 +2069,14 @@ func (s *Server) handleAdminListUsersRequest(args [0]string, argsEscaped bool, w
 					Name: "platform_admin",
 					In:   "query",
 				}: params.PlatformAdmin,
+				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
 				{
 					Name: "cursor",
 					In:   "query",
@@ -24330,6 +24354,14 @@ func (s *Server) handleListTestRunsRequest(args [2]string, argsEscaped bool, w h
 					Name: "id",
 					In:   "path",
 				}: params.ID,
+				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
 				{
 					Name: "cursor",
 					In:   "query",

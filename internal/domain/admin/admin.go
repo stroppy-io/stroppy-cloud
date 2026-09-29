@@ -42,6 +42,8 @@ type UserView struct {
 	AdminSource string // config | db | ""
 	OwnedTenant *run.Ref
 	Memberships int
+	// LastActivityAt is the newest audit entry the user acted in.
+	LastActivityAt *time.Time
 }
 
 // RunView is a run with its tenant.
@@ -79,6 +81,8 @@ type SystemPatch struct {
 type TenantQuery struct {
 	Search string
 	Status string
+	Sort   string
+	Desc   bool
 	Limit  int
 	Offset int
 }
@@ -87,6 +91,8 @@ type TenantQuery struct {
 type UserQuery struct {
 	Search     string
 	OnlyAdmins bool
+	Sort       string
+	Desc       bool
 	Limit      int
 	Offset     int
 }
@@ -95,6 +101,8 @@ type UserQuery struct {
 type RunQuery struct {
 	Statuses []string
 	Tenant   string
+	Sort     string
+	Desc     bool
 	Limit    int
 	Offset   int
 }

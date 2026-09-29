@@ -195,6 +195,7 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 	apiServer, err := oas.NewServer(handler, api.NewSecurity(verifier),
 		oas.WithPathPrefix(""),
 		oas.WithErrorHandler(api.ErrorHandler(handler)),
+		oas.WithMiddleware(api.UsersMiddleware(handler)),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("api server: %w", err)

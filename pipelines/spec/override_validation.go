@@ -6,13 +6,18 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/system"
 )
 
+var (
+	machineEngine = compiled(system.Machine)
+	runtimeEngine = compiled(system.Runtime)
+)
+
 // NormalizeMachineOverride validates optional preset overrides without inventing defaults.
 func NormalizeMachineOverride(raw json.RawMessage) (json.RawMessage, error) {
 	if len(raw) == 0 {
 		return nil, nil
 	}
 	var out json.RawMessage
-	if err := normalize(raw, &out, system.Machine()); err != nil {
+	if err := normalize(raw, &out, machineEngine); err != nil {
 		return nil, err
 	}
 	return out, nil
@@ -24,7 +29,7 @@ func NormalizeRuntime(raw json.RawMessage) (json.RawMessage, error) {
 		return nil, nil
 	}
 	var out json.RawMessage
-	if err := normalize(raw, &out, system.Runtime()); err != nil {
+	if err := normalize(raw, &out, runtimeEngine); err != nil {
 		return nil, err
 	}
 	return out, nil

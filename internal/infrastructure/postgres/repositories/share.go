@@ -69,7 +69,7 @@ func (r *ShareRepo) List(ctx context.Context, tenantID uuid.UUID, q share.ListQu
 	if q.Active != nil {
 		onlyActive, onlyInactive = *q.Active, !*q.Active
 	}
-	rows, err := r.q.SharesOfTenant(ctx, db.SharesOfTenantParams{TenantID: tenantID, TargetKind: &q.Kind, TargetID: &q.TargetID, OnlyActive: &onlyActive, OnlyInactive: &onlyInactive, SortKey: &q.Sort, Desc: &q.Desc, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(q.Offset))})
+	rows, err := r.q.SharesOfTenant(ctx, db.SharesOfTenantParams{TenantID: tenantID, TargetKind: q.Kind, TargetID: q.TargetID, OnlyActive: onlyActive, OnlyInactive: onlyInactive, SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset)})
 	if err != nil {
 		return nil, infraf("share: list: %v", err)
 	}
@@ -102,8 +102,7 @@ func (r *ShareRepo) Update(ctx context.Context, id uuid.UUID, p share.Patch, exp
 		params.Title = p.Title
 	}
 	if p.TTL != nil || p.ClearTTL {
-		t := true
-		params.SetExpires, params.ExpiresAt = &t, expiresAt
+		params.SetExpires, params.ExpiresAt = true, expiresAt
 	}
 	if err := r.q.UpdateShare(ctx, params); err != nil {
 		return infraf("share: update: %v", err)

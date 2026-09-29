@@ -66,8 +66,8 @@ func (r *SuiteRepo) ByName(ctx context.Context, tenantID uuid.UUID, name string)
 func (r *SuiteRepo) List(ctx context.Context, tenantID uuid.UUID, q library.ListQuery, favoritesOf string) ([]suite.Suite, error) {
 	lim, off := listWindow(q)
 	rows, err := r.q.SuitesOfTenant(ctx, db.SuitesOfTenantParams{
-		TenantID: tenantID, Search: &q.Search, AuthorID: &q.AuthorID, Tags: tagsFilter(q.Tags), FavoritesOf: &favoritesOf,
-		SortKey: &q.Sort, Desc: &q.Desc, Lim: &lim, Off: &off,
+		TenantID: tenantID, Search: q.Search, AuthorID: q.AuthorID, Tags: tagsFilter(q.Tags), FavoritesOf: favoritesOf,
+		SortKey: q.Sort, Desc: q.Desc, Lim: lim, Off: off,
 	})
 	if err != nil {
 		return nil, infraf("suite: list: %v", err)
@@ -125,8 +125,7 @@ func (r *SuiteRepo) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (r *SuiteRepo) UsingTest(ctx context.Context, testID uuid.UUID) ([]library.Usage, error) {
-	id := testID.String()
-	rows, err := r.q.SuitesUsingTest(ctx, &id)
+	rows, err := r.q.SuitesUsingTest(ctx, testID.String())
 	if err != nil {
 		return nil, infraf("suite: using test: %v", err)
 	}
@@ -196,7 +195,7 @@ func (r *SuiteRepo) Runs(ctx context.Context, tenantID uuid.UUID, q suite.ListQu
 		limit = 50
 	}
 	rows, err := r.q.SuiteRunsOfTenant(ctx, db.SuiteRunsOfTenantParams{
-		TenantID: tenantID, Statuses: q.Statuses, Triggers: q.Triggers, SuiteID: q.SuiteID, StartedAfter: q.StartedAfter, StartedBefore: q.StartedBefore,
+		TenantID: tenantID, Statuses: q.Statuses, Triggers: q.Triggers, SuiteID: q.SuiteID, StartedAfter: &q.StartedAfter, StartedBefore: &q.StartedBefore,
 		SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
@@ -210,7 +209,7 @@ func (r *SuiteRepo) Runs(ctx context.Context, tenantID uuid.UUID, q suite.ListQu
 }
 
 func (r *SuiteRepo) RunsOfSuite(ctx context.Context, suiteID uuid.UUID, limit, offset int) ([]suite.SuiteRun, error) {
-	rows, err := r.q.SuiteRunsOfSuite(ctx, db.SuiteRunsOfSuiteParams{SuiteID: &suiteID, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(offset))})
+	rows, err := r.q.SuiteRunsOfSuite(ctx, db.SuiteRunsOfSuiteParams{SuiteID: &suiteID, Lim: int64(limit), Off: int64(offset)})
 	if err != nil {
 		return nil, infraf("suite run: of suite: %v", err)
 	}
@@ -243,7 +242,7 @@ func (r *SuiteRepo) LiveRuns(ctx context.Context) ([]run.Live, error) {
 
 func (r *SuiteRepo) SetRunStatus(ctx context.Context, id uuid.UUID, status run.Status, reason string, startedAt, finishedAt *time.Time) error {
 	value := string(status)
-	if err := r.q.SetSuiteRunStatus(ctx, db.SetSuiteRunStatusParams{ID: id, Status: &value, StatusReason: &reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
+	if err := r.q.SetSuiteRunStatus(ctx, db.SetSuiteRunStatusParams{ID: id, Status: value, StatusReason: reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
 		return infraf("suite run: set status: %v", err)
 	}
 	return nil

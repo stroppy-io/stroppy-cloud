@@ -17562,15 +17562,15 @@ func (s *MemberUser) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.Avatar.Set {
-			e.FieldStart("avatar")
-			s.Avatar.Encode(e)
-		}
-	}
-	{
 		if s.Email.Set {
 			e.FieldStart("email")
 			s.Email.Encode(e)
+		}
+	}
+	{
+		if s.Avatar.Set {
+			e.FieldStart("avatar")
+			s.Avatar.Encode(e)
 		}
 	}
 }
@@ -17578,8 +17578,8 @@ func (s *MemberUser) encodeFields(e *jx.Encoder) {
 var jsonFieldsNameOfMemberUser = [4]string{
 	0: "id",
 	1: "display_name",
-	2: "avatar",
-	3: "email",
+	2: "email",
+	3: "avatar",
 }
 
 // Decode decodes MemberUser from json.
@@ -17613,16 +17613,6 @@ func (s *MemberUser) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"display_name\"")
 			}
-		case "avatar":
-			if err := func() error {
-				s.Avatar.Reset()
-				if err := s.Avatar.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"avatar\"")
-			}
 		case "email":
 			if err := func() error {
 				s.Email.Reset()
@@ -17632,6 +17622,16 @@ func (s *MemberUser) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"email\"")
+			}
+		case "avatar":
+			if err := func() error {
+				s.Avatar.Reset()
+				if err := s.Avatar.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"avatar\"")
 			}
 		default:
 			return d.Skip()
@@ -51981,6 +51981,12 @@ func (s *UserRef) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Email.Set {
+			e.FieldStart("email")
+			s.Email.Encode(e)
+		}
+	}
+	{
 		if s.Avatar.Set {
 			e.FieldStart("avatar")
 			s.Avatar.Encode(e)
@@ -51988,10 +51994,11 @@ func (s *UserRef) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfUserRef = [3]string{
+var jsonFieldsNameOfUserRef = [4]string{
 	0: "id",
 	1: "display_name",
-	2: "avatar",
+	2: "email",
+	3: "avatar",
 }
 
 // Decode decodes UserRef from json.
@@ -52024,6 +52031,16 @@ func (s *UserRef) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"display_name\"")
+			}
+		case "email":
+			if err := func() error {
+				s.Email.Reset()
+				if err := s.Email.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"email\"")
 			}
 		case "avatar":
 			if err := func() error {

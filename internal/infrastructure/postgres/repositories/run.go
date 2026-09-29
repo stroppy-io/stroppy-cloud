@@ -108,11 +108,12 @@ func (r *RunRepo) List(ctx context.Context, tenantID uuid.UUID, q run.ListQuery)
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
+	durMin, durMax := q.DurationMin.Seconds(), q.DurationMax.Seconds()
 	rows, err := r.q.RunsOfTenant(ctx, db.RunsOfTenantParams{
 		TenantID: tenantID, Search: q.Search, AuthorID: q.AuthorID, Statuses: q.Statuses, Kinds: q.Kinds, Profiles: q.Profiles, Triggers: q.Triggers,
 		TestID: q.TestID, SuiteRunID: q.SuiteRunID, Standalone: q.Standalone, Labels: tagsFilter(q.Labels),
-		StartedAfter: q.StartedAfter, StartedBefore: q.StartedBefore, FinishedAfter: q.FinishedAfter, FinishedBefore: q.FinishedBefore,
-		DurationMin: q.DurationMin.Seconds(), DurationMax: q.DurationMax.Seconds(), StandKeptOnly: q.StandKeptOnly, FavoritesOf: q.FavoritesOf,
+		StartedAfter: &q.StartedAfter, StartedBefore: &q.StartedBefore, FinishedAfter: &q.FinishedAfter, FinishedBefore: &q.FinishedBefore,
+		DurationMin: durMin, DurationMax: durMax, StandKeptOnly: q.StandKeptOnly, FavoritesOf: q.FavoritesOf,
 		ViewerID: q.ViewerID, SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
@@ -132,22 +133,13 @@ func (r *RunRepo) Facets(ctx context.Context, tenantID uuid.UUID) ([]run.Facet, 
 	}
 	var out []run.Facet
 	for _, row := range rows {
+		if row.Value == nil { // a JSON null under a present key: no facet value
+			continue
+		}
 		if len(out) == 0 || out[len(out)-1].Field != row.Field {
 			out = append(out, run.Facet{Field: row.Field, Values: []run.FacetValue{}})
 		}
-		out[len(out)-1].Values = append(out[len(out)-1].Values, run.FacetValue{Value: row.Value, Count: int(row.Count)})
-	}
-	return out, nil
-}
-
-func (r *RunRepo) OfTest(ctx context.Context, testID uuid.UUID, limit, offset int) ([]run.Run, error) {
-	rows, err := r.q.RunsOfTest(ctx, db.RunsOfTestParams{TestID: &testID, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(offset))})
-	if err != nil {
-		return nil, infraf("run: of test: %v", err)
-	}
-	out := make([]run.Run, 0, len(rows))
-	for _, row := range rows {
-		out = append(out, runOf(db.RunByIDRow(row)))
+		out[len(out)-1].Values = append(out[len(out)-1].Values, run.FacetValue{Value: *row.Value, Count: int(row.Count)})
 	}
 	return out, nil
 }
@@ -206,7 +198,7 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 	}
 	rows, err := r.q.RatingRuns(ctx, db.RatingRunsParams{
 		Metric: q.Metric, TenantID: q.TenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers, StroppyVersions: q.StroppyVersions,
-		League: q.League, Since: q.Since, HigherIsBetter: q.HigherIsBetter, Lim: int64(limit), Off: int64(q.Offset),
+		League: q.League, Since: &q.Since, HigherIsBetter: q.HigherIsBetter, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
 		return nil, infraf("run: rating: %v", err)
@@ -231,7 +223,7 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 }
 
 func (r *RunRepo) Leagues(ctx context.Context, tenantID string) ([]string, error) {
-	rows, err := r.q.RatingLeagues(ctx, &tenantID)
+	rows, err := r.q.RatingLeagues(ctx, tenantID)
 	if err != nil {
 		return nil, infraf("run: leagues: %v", err)
 	}
@@ -269,7 +261,7 @@ func (r *RunRepo) HasLive(ctx context.Context, tenantID uuid.UUID) (bool, error)
 	if err != nil {
 		return false, infraf("run: has live: %v", err)
 	}
-	return row.Live != nil && *row.Live, nil
+	return row.Live, nil
 }
 
 func (r *RunRepo) UpdateMeta(ctx context.Context, id uuid.UUID, p run.MetaPatch) error {
@@ -289,7 +281,7 @@ func (r *RunRepo) UpdateMeta(ctx context.Context, id uuid.UUID, p run.MetaPatch)
 
 func (r *RunRepo) SetStatus(ctx context.Context, id uuid.UUID, status run.Status, phase run.Phase, reason string, startedAt, finishedAt *time.Time) error {
 	value := string(status)
-	if err := r.q.SetRunStatus(ctx, db.SetRunStatusParams{ID: id, Status: &value, Phase: string(phase), StatusReason: &reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
+	if err := r.q.SetRunStatus(ctx, db.SetRunStatusParams{ID: id, Status: value, Phase: string(phase), StatusReason: reason, StartedAt: startedAt, FinishedAt: finishedAt}); err != nil {
 		return infraf("run: set status: %v", err)
 	}
 	return nil
@@ -311,7 +303,7 @@ func (r *RunRepo) SetResult(ctx context.Context, id uuid.UUID, result json.RawMe
 }
 
 func (r *RunRepo) WithoutQPSSeries(ctx context.Context, limit int) ([]run.Run, error) {
-	rows, err := r.q.RunsWithoutQpsSeries(ctx, ptrInt64(int64(limit)))
+	rows, err := r.q.RunsWithoutQpsSeries(ctx, int64(limit))
 	if err != nil {
 		return nil, infraf("run: without qps series: %v", err)
 	}
@@ -365,7 +357,7 @@ func (r *RunRepo) InsertEvent(ctx context.Context, e run.Event) (bool, error) {
 
 func (r *RunRepo) EventsAfter(ctx context.Context, runID uuid.UUID, after int64, limit int) ([]run.Event, error) {
 	lim := int64(limit)
-	rows, err := r.q.RunEventsAfter(ctx, db.RunEventsAfterParams{RunID: runID, After: after, Lim: &lim})
+	rows, err := r.q.RunEventsAfter(ctx, db.RunEventsAfterParams{RunID: runID, After: after, Lim: lim})
 	if err != nil {
 		return nil, infraf("run: events: %v", err)
 	}

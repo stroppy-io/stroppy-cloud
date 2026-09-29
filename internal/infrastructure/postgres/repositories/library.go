@@ -367,9 +367,9 @@ func (r *LibraryRepo) Tests(ctx context.Context, tenantID uuid.UUID, q library.L
 func (r *LibraryRepo) UpdateTest(ctx context.Context, t library.Test, p library.TestPatch) error {
 	params := db.UpdateTestParams{
 		ID: t.ID, Name: p.Name, Description: p.Description, Status: string(t.Status), ValidatedAt: t.ValidatedAt,
-		SetDatabase: &p.SetDatabase, DatabaseID: p.DatabaseRef, DatabaseInline: specJSON(p.DatabaseInline),
-		SetWorkload: &p.SetWorkload, WorkloadID: p.WorkloadRef, WorkloadInline: specJSON(p.WorkloadInline),
-		SetProvider: &p.SetProvider, ProviderProfileID: p.ProviderProfileID,
+		SetDatabase: p.SetDatabase, DatabaseID: p.DatabaseRef, DatabaseInline: specJSON(p.DatabaseInline),
+		SetWorkload: p.SetWorkload, WorkloadID: p.WorkloadRef, WorkloadInline: specJSON(p.WorkloadInline),
+		SetProvider: p.SetProvider, ProviderProfileID: p.ProviderProfileID,
 		RatingTenant: p.RatingTenant, RatingGlobal: p.RatingGlobal, Execution: p.Execution,
 	}
 	if p.Tags != nil {

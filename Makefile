@@ -88,9 +88,9 @@ schemas-test: ## Run schema tests (add ARGS=-update to refresh goldens)
 SQLD_CFG := internal/infrastructure/postgres/sqld.yaml
 
 tools: ## Install the sqld code generators into ./bin
-	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld@v1.1.1
-	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld-gen-go@v1.1.1
-	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld-gen-bob@v1.1.1
+	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld@v1.1.5
+	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld-gen-go@v1.1.5
+	GOFLAGS=-mod=mod GOBIN=$$(pwd)/bin go install github.com/gopherex/sqld/cmd/sqld-gen-bob@v1.1.5
 
 db-gen: tools ## Generate gen/db + gen/bob from schema.sql + queries/*.sql
 	./bin/sqld generate -c $(SQLD_CFG)

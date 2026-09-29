@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"sort"
 	"strconv"
 	"time"
 
@@ -466,19 +467,27 @@ func (h *Handler) ListTestRuns(ctx context.Context, params oas.ListTestRunsParam
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	list, err := h.deps.Runs.OfTest(ctx, a, t.ID, params.ID, limit+1, offset)
+	q := run.ListQuery{
+		TestID: params.ID.String(), Sort: string(params.Sort.Or(oas.ListTestRunsSortCreatedAt)),
+		Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset,
+	}
+	list, err := h.deps.Runs.List(ctx, a, t.ID, q)
 	if err != nil {
 		return nil, err
 	}
 	list, meta := page(list, offset, limit)
+	favs := h.favoritesOf(ctx, a, t.ID)
 	out := &oas.TestRunHistory{Data: make([]oas.Run, 0, len(list)), Meta: meta}
 	trend := oas.TestRunHistoryTrend{Metric: oas.NewOptString("tps"), Points: []oas.TestRunHistoryTrendPointsItem{}}
 	for _, r := range list {
-		out.Data = append(out.Data, *h.runOf(r, nil))
+		f := favs[r.ID]
+		out.Data = append(out.Data, *h.runOf(r, &f))
 		if r.TPS != nil && r.FinishedAt != nil {
 			trend.Points = append(trend.Points, oas.TestRunHistoryTrendPointsItem{RunID: r.ID, At: *r.FinishedAt, Value: *r.TPS})
 		}
 	}
+	// The trend reads newest first whatever the page order is.
+	sort.SliceStable(trend.Points, func(i, j int) bool { return trend.Points[i].At.After(trend.Points[j].At) })
 	out.Trend = oas.NewOptTestRunHistoryTrend(trend)
 	return out, nil
 }
