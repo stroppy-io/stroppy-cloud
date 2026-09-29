@@ -148,5 +148,12 @@
     "createdAt": "Created: {{time}}",
     "lastActivityAt": "Last activity: {{time}}",
     "lastSeenAt": "Last seen: {{time}}"
+  },
+  "sort": {
+    "name": "Name",
+    "slug": "Slug",
+    "email": "E-mail",
+    "lastActivity": "Last activity",
+    "created": "Created"
   }
 }

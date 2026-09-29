@@ -362,7 +362,9 @@
   },
   "sort": {
     "updated": "Updated",
-    "created": "Created"
+    "created": "Created",
+    "nextRun": "Next run",
+    "scheduleCount": "Schedule count"
   },
   "list": {
     "favorite": "Favorite",

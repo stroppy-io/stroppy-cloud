@@ -1,6 +1,6 @@
 import { ErrorState } from '@app/ErrorState'
 import { Page } from '@app/Page'
-import { Button, EmptyState, ErrorBoundary, LoadingPlaceholder } from '@grafana/ui'
+import { Button, EmptyState, ErrorBoundary, Icon, LoadingPlaceholder } from '@grafana/ui'
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react-router'
 import { lazy } from 'react'
@@ -45,6 +45,7 @@ function NotFound() {
     <Page>
       <EmptyState
         variant="not-found"
+        image={<Icon name="question-circle" size="xxxl" />}
         message={t('common.errors.pageNotFound')}
         button={
           <Button onClick={() => void navigate({ to: '/' })}>{t('common.errors.goHome')}</Button>

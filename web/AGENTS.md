@@ -43,7 +43,7 @@ Test), прогоны (Run) с живым наблюдением, Suite-матр
 | Таблицы списков | `@tanstack/react-table` 9 (headless) + `@tanstack/react-virtual` 3 | стили — grafana-токены; grafana `InteractiveTable` (react-table v7) не используем; `TableNG` — только DataFrame-метрики |
 | Тайминг/шорткаты | `@tanstack/react-pacer`, `@tanstack/react-hotkeys` | debounce/throttle/batch (валидация, WS-батчи логов); GitHub-style `g r`, `/`, `?` |
 | Devtools | `@tanstack/react-devtools` + query/router плагины | dev-only |
-| i18n | i18next + react-i18next, локали `ru`/`en` | как в komeet |
+| i18n | i18next + react-i18next, локали `ru`/`en` | как в komeet; мажоры i18next/react-i18next = те, что требует `@grafana/i18n` (один экземпляр на приложение) |
 | Тосты | sonner, стилизован через `useTheme2` | в `@grafana/ui` тостов нет (они в runtime) |
 | Тесты | vitest (+ существующий node contract-тест) | `yarn test` |
 | Линт/формат | biome | 2 пробела, width 100, single quotes, без `;` |
@@ -314,8 +314,22 @@ workload, провайдеры, sizes): generic-рендерер `components/sch
 - Переводимо: JSX-текст, `placeholder`, `title`, `aria-label`, тултипы,
   тосты, ошибки zod (схема в `useMemo(() => …, [t])`). Не переводимо:
   `console.*`, enum/API-имена, URL, id, имена БД/провайдеров.
-- Компоненты `@grafana/ui` несут свой `@grafana/i18n` (английский) — их
-  внутренние строки не трогаем.
+- Внутренние строки `@grafana/ui`/`@grafana/data` (TimeRangePicker,
+  RefreshPicker, Select/Combobox, Modal, Pagination, ConfirmModal…) идут через
+  `@grafana/i18n` в **тот же** экземпляр i18next: ключи Grafana — полные пути в
+  дефолтном namespace (`grafana-ui.select.placeholder`,
+  `time-picker.range-content.from-input`). Английский — дефолты из кода
+  Grafana; русский — `locales/grafana/ru.json`, генерируется
+  `node scripts/gen-grafana-ru.mjs` из официального ru-RU `grafana.json` той же
+  версии по ключам, которые реально вызывает dist, + `ru.overrides.json`
+  (пробелы Crowdin и наши формулировки). После апгрейда `@grafana/ui` —
+  перегенерировать; скрипт падает, если ключ остался без перевода.
+  `lib/i18n.ts` вызывает `initPluginTranslations('translation')`, иначе `t`
+  Grafana не привязан (в dev бросает). Смена языка ремонтирует дерево роутера
+  (`App.tsx`, `key={i18n.language}`): Grafana читает строки без подписки и
+  мемоизирует части пикеров. Не переводятся (захардкожены в Grafana):
+  «Browser Time»/«Default» в TimeZonePicker, дефолтный `loadingMessage` Select.
+  Проверка — `src/lib/i18n.test.ts`.
 
 ## 11. Авторизация: сейчас dev, шов под IAM
 
@@ -388,27 +402,40 @@ cd web && yarn lint     # biome check
 Перед сдачей: `yarn build` зелёный, `yarn lint` чистый, greps из §4 и §10,
 обе темы, скриншот.
 
+## Локальные промо-скриншоты
+
+`web/.env.development.local` с `VITE_API_MODE=mock` включает мок-данные на
+`http://localhost:5173` (`yarn dev`). Файл локальный и игнорируется Git;
+для возврата к API удалить эту строку или файл. Production всегда использует API.
+В режиме mock отображается плашка; TanStack Devtools доступны в dev-сборке.
+Обычный локальный режим — `VITE_API_MODE=real`. `seed.ts` содержит согласованную
+историю прогонов, QPS, результаты и участников; обновление страницы сбрасывает
+мок-состояние. `UserAvatar` строит стабильный identicon по ID без внешних запросов.
+Живые поля рана (`summary.expected_finish_at` по warmup+duration сегментов,
+`headline` и `qps_series` из сэмплов фазы workload, прогресс сегментов) —
+`api/mock/live-summary.ts`, общий для сида и симуляции; симуляция стартует с
+первого запроса мока. Сортировка прогонов (`sort` enum listRuns/listTestRuns/
+adminListRuns, `default` = избранные → живые → новые, пустые значения в конце) —
+`api/mock/run-sort.ts`. Инварианты — `api/mock/live-summary.test.ts`.
+`capacity.ts` дополняет основной тенант до 843 прогонов, включая 8 активных
+строк (5 running, 1 cancelling, 2 pending). Сценарии используют до 64 машин
+на прогон, 2048 VU и реальные XS–XL пресеты из каталога провайдеров;
+нагрузка и результаты синтетические, не измеренная производительность продукта.
+YDB: 32 storage + 31 compute + runner; PostgreSQL/MySQL: по 8 реплик.
+Лимиты демонстрационного тенанта рассчитаны под этот набор; технические границы
+берутся из схем и расчёта ресурсов runner, а не из прежних настроек тенанта.
+
 ## 15. Открытое
 
 - Режим по умолчанию — real (vite proxy → `:18347`, `make dev`); мок только
   `VITE_API_MODE=mock` в dev-сборке, грузится лениво и в прод-бандл не попадает.
-- Живой сервер (2026-09-28): закрыто на сервере — `/me.tenants`,
-  `owned_tenant_id`, метрики в `unix_ms`, `//go:embed all:dist`, схемы по id без
-  версии, `ListTests` параллельная валидация + `summary.last_run/run_count`.
-  Открыто: `Run.summary.workload_name` пуст для inline-нагрузок (UI берёт
-  `snapshot.workload_name` → скрипт первого сегмента); `ListTests` всё ещё
-  ~2.5 с на 27 тестов (валидация каждого — кэшировать fit в БД). Headline `tps`
-  отсутствует у query-only нагрузок — по каталогу метрик, UI показывает «—».
+- Живой сервер: `Run.summary.workload_name` заполняется сервером (для inline — скрипт первого сегмента «+N»); `ListTests` ~60 мс (скомпилированные схемы кэшируются на процесс); headline `qps` + `qps_series` + `expected_finish_at` в сводке запуска.
 - Prod-сборка: Monaco берётся из бандла с воркерами (`components/code/
   monaco-setup.ts`), не с CDN; чанк-ошибки после деплоя → авто-перезагрузка
   один раз (`routes/__root.tsx`).
-- Логи на живом сервере: строки без `seq`, курсор страницы — opaque base64; UI
-  сортирует буфер по времени сам. Постоянная ссылка на строку (`?line=`) требует
-  per-line курсор в `LogLine` от сервера — пока работает только на моке.
+- Логи: у каждой строки стабильный `seq` (микросекунда от начала запуска + слот), он же курсор — `?line=<seq>` открывает строку на живом сервере. Страница логов ~230 мс (перечитывание граничной микросекунды).
 - `rerun {resume}` на сервере всегда деградирует до обычного rerun с пометкой в
   notes: attach к живому стенду в пайплайне не реализован (STROPPY.MD §14).
-- `CodeEditorLazy` живёт в `components/runs`; поднять в `components/` (admin
-  дублирует lazy-обёртку).
 
 - `agent.pty` (Shell) — недоступен на сервере; вкладку не строим.
 - `TableNG` — unstable API; если ломается, метрики на свой `DataTable` (react-table 9) поверх DataFrame.
@@ -468,8 +495,8 @@ cd web && yarn lint     # biome check
   icon="building" isOpen` (шеврон рисует сам ToolbarButton).
 - **Самодельных контролов в шелле нет**: поиск — grafana `Input`
   (`prefix`/`suffix`/`loading`) + `Menu`/`Menu.Item` в позиционированном
-  контейнере; аватар — `ToolbarButton` с кружком инициалов (grafana `Avatar`
-  только для картинок); подсказки клавиш — `Text variant="bodySmall"
+  контейнере; аватар — `ToolbarButton` с `UserAvatar` (URL пользователя или стабильный
+  GitHub-подобный identicon по ID; общий для профиля, участников и авторов); подсказки клавиш — `Text variant="bodySmall"
   color="secondary"`, без своих `kbd`. Интерактивное в sidebar — `Icon`,
   `Tooltip`, `IconButton`; сам пункт — `AppLink` + emotion (nav-компонента
   standalone в `@grafana/ui` нет).

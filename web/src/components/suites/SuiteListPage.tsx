@@ -23,6 +23,7 @@ import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar
 import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
 import { RelativeTime } from '@components/RelativeTime'
 import { StatusBadge } from '@components/StatusBadge'
+import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, ConfirmModal, Icon, Stack, Tooltip, useStyles2 } from '@grafana/ui'
@@ -50,7 +51,17 @@ export const suiteListSearchSchema = z.object({
   author: csvSchema,
   favorites: z.boolean().optional().catch(undefined),
   sort: z
-    .enum(['name', 'created_at', 'updated_at', 'last_run_at', 'cell_count', 'test_count', 'author'])
+    .enum([
+      'name',
+      'created_at',
+      'updated_at',
+      'last_run_at',
+      'cell_count',
+      'test_count',
+      'schedules',
+      'next_run_at',
+      'author',
+    ])
     .default('updated_at')
     .catch('updated_at'),
   order: orderSchema.default('desc').catch('desc'),
@@ -370,6 +381,10 @@ export function SuiteListPage({
         id: 'schedules',
         header: t('suites.columns.schedules'),
         width: 200,
+        sortOptions: [
+          { key: 'next_run_at', label: t('suites.sort.nextRun') },
+          { key: 'schedules', label: t('suites.sort.scheduleCount') },
+        ],
         render: (s) => {
           const sch = s.summary?.schedules ?? []
           if (!sch.length) return { primary: undefined }
@@ -412,7 +427,7 @@ export function SuiteListPage({
         value: (s) => s.updated_at,
         render: (s) => ({
           primary: <RelativeTime value={s.updated_at} />,
-          secondary: s.author.display_name,
+          secondary: <UserLabel user={s.author} />,
           title: s.author.display_name,
         }),
       }),

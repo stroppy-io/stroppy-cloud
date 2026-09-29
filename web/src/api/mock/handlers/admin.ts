@@ -1,5 +1,6 @@
 import type { AdminStatus, Run, Schemas, SystemSettings, TenantLimits } from '@api/types'
 import { noContent, notFound, problem, route } from '../router'
+import { sortRuns } from '../run-sort'
 import { getSimulation } from '../simulation'
 import type { MockStore, TenantData } from '../store'
 import { daysAgo, hoursAgo, iso, minutesAgo, multi, paginate, parseListQuery } from '../util'
@@ -435,7 +436,7 @@ route('PATCH', '/api/v1/admin/settings', ({ store, body }) => {
 // ---------- global run queue ----------
 
 route('GET', '/api/v1/admin/runs', ({ store, query }) => {
-  const lq = parseListQuery(query)
+  const lq = parseListQuery(query, 'default')
   const st = multi(query, 'status')
   const tenant = query.get('tenant')
   let items = Object.values(store.tenants).flatMap((t) =>
@@ -447,8 +448,8 @@ route('GET', '/api/v1/admin/runs', ({ store, query }) => {
   if (tenant) items = items.filter((r) => r.tenant.slug === tenant || r.tenant.id === tenant)
   if (st.length) items = items.filter((r) => st.includes(r.status))
   else items = items.filter(isLive)
-  items.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-  return { json: paginate(items, lq) }
+  // `default` here: live first, then the newest (favorites are per tenant, not global).
+  return { json: paginate(sortRuns(items, lq.sort, lq.order), lq) }
 })
 
 route('POST', '/api/v1/admin/runs/:id:cancel', ({ store, params }) => {

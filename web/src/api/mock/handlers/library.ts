@@ -10,6 +10,7 @@ import type {
 } from '@api/types'
 import { type HandlerResult, listRoutes, noContent, notFound, problem, route } from '../router'
 import { launchFromTest } from '../run-factory'
+import { sortRuns } from '../run-sort'
 import { SIZES } from '../seed'
 import type { Database, MockStore, TenantData, Test, Workload } from '../store'
 import { iso, matchesSearch, multi, paginate, parseListQuery, sortBy, uuid } from '../util'
@@ -1446,11 +1447,12 @@ route('GET', '/api/v1/t/:slug/tests/:id/runs', ({ store, params, query }) => {
   const t = tenant(store, params.slug)
   const test = t?.tests.find((d) => d.id === params.id)
   if (!t || !test) return notFound('test')
-  const lq = parseListQuery(query, 'created_at')
-  const runs = sortBy(
+  const lq = parseListQuery(query, 'default')
+  const runs = sortRuns(
     t.runs.filter((r) => r.test_ref.id === test.id),
-    (r) => r.created_at,
-    'desc'
+    lq.sort,
+    lq.order,
+    (r) => t.favorites.has(`run:${r.id}`)
   ).map((r) => ({ ...r, is_favorite: t.favorites.has(`run:${r.id}`) }))
   const completed = sortBy(
     runs.filter((r) => r.status === 'completed' && r.summary?.headline?.tps !== undefined),

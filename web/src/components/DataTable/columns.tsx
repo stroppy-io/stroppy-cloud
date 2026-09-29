@@ -10,6 +10,7 @@ import type { SortOption } from './ColumnHeader'
 import {
   BoolCell,
   type CellLink,
+  CodeCell,
   Dash,
   IdentityCell,
   LinkCell,
@@ -301,6 +302,18 @@ export const col = {
       width: b.width ?? WIDTH.link,
       accessorFn: (r: T) => b.render(r).text ?? '',
       cell: ({ row }) => <LinkCell {...b.render(row.original)} icon={b.icon} />,
+    } as DataTableColumn<T>
+  },
+
+  // Digest / id / token prefix / image ref: monospace, one line, middle-shortened.
+  code<T extends RowData>(
+    b: ColumnBase & { value: (r: T) => string | undefined | null; max?: number }
+  ): DataTableColumn<T> {
+    return {
+      ...base<T>(b),
+      width: b.width ?? 8 * (b.max ?? 24) + 32,
+      accessorFn: (r: T) => b.value(r) ?? '',
+      cell: ({ row }) => <CodeCell value={b.value(row.original)} max={b.max} />,
     } as DataTableColumn<T>
   },
 

@@ -38,7 +38,7 @@ const SPARK_H = 14
 // to draw (two runs or more).
 function TrendSpark({ testId }: { testId: string }) {
   const { slug } = useTenant()
-  const runs = useQuery({ ...testQueries.runs(slug, testId, 20), staleTime: 60_000 })
+  const runs = useQuery({ ...testQueries.runs(slug, testId, { limit: 20 }), staleTime: 60_000 })
   if ((runs.data?.trend?.points?.length ?? 0) < 2) return null
   return <TpsTrend trend={runs.data?.trend} width={SPARK_W} height={SPARK_H} />
 }

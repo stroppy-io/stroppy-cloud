@@ -142,7 +142,8 @@ export function SuiteRunPage({
     )
   const terminal = !!sr && isTerminal(sr.status)
   const failedCount = sr ? sr.progress.failed + (sr.progress.cancelled ?? 0) : 0
-  const okCount = sr ? sr.progress.done - failedCount : 0
+  // done / failed / cancelled are disjoint counters (internal/domain/suite Progress).
+  const okCount = sr ? sr.progress.done : 0
 
   return (
     <Page width="wide">

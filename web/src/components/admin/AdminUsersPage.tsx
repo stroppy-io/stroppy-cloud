@@ -1,13 +1,15 @@
-import { adminMutations, adminQueries } from '@api/queries/admin'
+import { type AdminUsersQuery, adminMutations, adminQueries } from '@api/queries/admin'
 import type { AdminUser } from '@api/types'
 import { PageFill } from '@app/Page'
 import { toast } from '@app/Toaster'
 import { Dash } from '@components/DataTable/cells'
 import { col } from '@components/DataTable/columns'
 import { DataTable, type DataTableColumn } from '@components/DataTable/DataTable'
+import { orderSchema } from '@components/DataTable/list-search'
 import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { DataTableToolbar } from '@components/DataTable/Toolbar'
 import { RelativeTime } from '@components/RelativeTime'
+import { UserAvatar } from '@components/UserAvatar'
 import { Badge, Button, Stack } from '@grafana/ui'
 import { formatDateTime, relativeTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
@@ -22,11 +24,24 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
+// Server sort keys of adminListUsers (default created_at).
+const USER_SORT_KEYS = [
+  'name',
+  'email',
+  'platform_admin',
+  'memberships',
+  'last_activity',
+  'created_at',
+] as const satisfies readonly NonNullable<AdminUsersQuery['sort']>[]
+
 export const adminUsersSearchSchema = z.object({
   search: z.string().optional().catch(undefined),
   admins: z.boolean().optional().catch(undefined),
+  sort: z.enum(USER_SORT_KEYS).default('created_at').catch('created_at'),
+  order: orderSchema.default('desc').catch('desc'),
 })
 export type AdminUsersSearch = z.infer<typeof adminUsersSearchSchema>
+export const ADMIN_USERS_DEFAULTS = { sort: 'created_at', order: 'desc' } as const
 
 export function AdminUsersPage({
   search,
@@ -40,7 +55,12 @@ export function AdminUsersPage({
   const me = useMe()
   const copy = useCopy()
   const list = useInfiniteQuery({
-    ...adminQueries.users({ search: search.search, platform_admin: search.admins }),
+    ...adminQueries.users({
+      search: search.search,
+      platform_admin: search.admins,
+      sort: search.sort,
+      order: search.order,
+    }),
     placeholderData: keepPreviousData,
   })
   const rows = useMemo(() => list.data?.pages.flatMap((p) => p.data) ?? [], [list.data])
@@ -94,8 +114,13 @@ export function AdminUsersPage({
       col.identity<AdminUser>({
         id: 'name',
         header: t('common.fields.name'),
+        sortOptions: [
+          { key: 'name', label: t('admin.sort.name') },
+          { key: 'email', label: t('admin.sort.email') },
+        ],
         render: (u) => ({
           title: u.display_name,
+          lead: <UserAvatar user={u} size={28} />,
           subtitle: u.email,
           badges: (
             <>
@@ -111,6 +136,7 @@ export function AdminUsersPage({
         id: 'admin',
         header: t('admin.users.platformAdmin'),
         width: 176,
+        sortKey: 'platform_admin',
         value: (u) => u.is_platform_admin,
       }),
       col.text<AdminUser>({
@@ -123,6 +149,7 @@ export function AdminUsersPage({
         id: 'memberships',
         header: t('admin.users.memberships'),
         width: 112,
+        sortKey: 'memberships',
         value: (u) => u.memberships,
         format: (v) => String(v),
       }),
@@ -130,6 +157,10 @@ export function AdminUsersPage({
         id: 'activity',
         header: t('admin.table.activity'),
         width: 180,
+        sortOptions: [
+          { key: 'last_activity', label: t('admin.sort.lastActivity') },
+          { key: 'created_at', label: t('admin.sort.created') },
+        ],
         value: (u) => u.last_seen_at ?? u.created_at,
         render: (u) => ({
           primary: u.last_seen_at ? <RelativeTime value={u.last_seen_at} /> : <Dash />,
@@ -173,6 +204,13 @@ export function AdminUsersPage({
         loading={list.isPending}
         error={list.isError ? list.error : undefined}
         onRetry={() => void list.refetch()}
+        sort={{ field: search.sort, order: search.order }}
+        onSortChange={(s) =>
+          onSearchChange({
+            sort: (s?.field as AdminUsersSearch['sort']) ?? 'created_at',
+            order: s?.order ?? 'desc',
+          })
+        }
         filtered={!!search.search || !!search.admins}
         onClearFilters={clearAll}
         empty={{ message: t('admin.users.empty') }}

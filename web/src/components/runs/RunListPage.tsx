@@ -33,6 +33,7 @@ import {
   workloadView,
 } from '@components/runs/list/RunCells'
 import { ShareModal } from '@components/runs/ShareModal'
+import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2, IconName } from '@grafana/data'
 import { Badge, Button, ConfirmModal, Icon, Stack, Tooltip, useStyles2 } from '@grafana/ui'
@@ -618,13 +619,14 @@ export function RunListPage({
         value: (r) => r.summary?.provider_profile?.name,
         render: (r) => providerView(r),
       }),
-      col.text<Run>({
+      col.stack<Run>({
         id: 'author',
         header: t('runs.columns.author'),
         width: 160,
         defaultHidden: true,
         sortKey: 'author',
         value: (r) => r.author.display_name,
+        render: (r) => ({ primary: <UserLabel user={r.author} /> }),
         filter: {
           kind: 'checklist',
           options: facet('author').map((v) => ({

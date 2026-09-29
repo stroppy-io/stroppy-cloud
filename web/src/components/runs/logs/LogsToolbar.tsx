@@ -189,16 +189,16 @@ export function LogsToolbar({
               )}
             </span>
           </Text>
+          <Select
+            width={10}
+            aria-label={t('runs.logs.limit')}
+            options={LOG_LIMITS.map((n) => ({ label: String(n), value: n }))}
+            value={limit}
+            onChange={(o) =>
+              onSearchChange({ limit: o.value === LOG_LIMIT_DEFAULT ? undefined : o.value })
+            }
+          />
           <ButtonGroup className={styles.paging}>
-            <Select
-              width={10}
-              aria-label={t('runs.logs.limit')}
-              options={LOG_LIMITS.map((n) => ({ label: String(n), value: n }))}
-              value={limit}
-              onChange={(o) =>
-                onSearchChange({ limit: o.value === LOG_LIMIT_DEFAULT ? undefined : o.value })
-              }
-            />
             <Button
               variant="secondary"
               size="md"

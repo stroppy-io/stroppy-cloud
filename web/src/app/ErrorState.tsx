@@ -1,5 +1,5 @@
 import { isApiError } from '@api/errors'
-import { Alert, Button, EmptyState, Stack, Text } from '@grafana/ui'
+import { Alert, Button, EmptyState, Icon, Stack, Text } from '@grafana/ui'
 import { useTranslation } from 'react-i18next'
 
 // Uniform error rendering for queries and route errors.
@@ -47,6 +47,7 @@ export function ErrorState({
   return (
     <EmptyState
       variant="not-found"
+      image={<Icon name="exclamation-circle" size="xxxl" />}
       message={title}
       button={
         onRetry ? (

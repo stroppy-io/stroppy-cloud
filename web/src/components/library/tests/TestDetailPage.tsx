@@ -1,6 +1,6 @@
 import { catalogQueries } from '@api/queries/catalog'
 import { keys } from '@api/queries/keys'
-import { libraryMutations, testQueries } from '@api/queries/library'
+import { libraryMutations, type TestRunsQuery, testQueries } from '@api/queries/library'
 import { providerQueries } from '@api/queries/settings'
 import type { Run, Schemas } from '@api/types'
 import { AppLink } from '@app/AppLink'
@@ -10,6 +10,7 @@ import { toast } from '@app/Toaster'
 import { TagsCell } from '@components/DataTable/cells'
 import { col } from '@components/DataTable/columns'
 import { DataTable, type DataTableColumn } from '@components/DataTable/DataTable'
+import { orderSchema } from '@components/DataTable/list-search'
 import { useTablePrefs } from '@components/DataTable/prefs'
 import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { TableSettings } from '@components/DataTable/TableSettings'
@@ -23,6 +24,7 @@ import {
   TriggerMark,
 } from '@components/runs/list/RunCells'
 import { StatusBadge } from '@components/StatusBadge'
+import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2, IconName } from '@grafana/data'
 import {
@@ -40,7 +42,13 @@ import {
 } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
 import { useTenant } from '@hooks/useTenant'
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -59,6 +67,30 @@ import { LaunchDrawer } from './LaunchDrawer'
 
 type Test = Schemas['Test']
 
+// Server sort keys of listTestRuns (the listRuns set; the endpoint defaults to created_at).
+const TEST_RUN_SORT_KEYS = [
+  'default',
+  'started_at',
+  'finished_at',
+  'duration',
+  'tps',
+  'qps',
+  'p50',
+  'p99',
+  'errors',
+  'status',
+  'name',
+  'db_kind',
+  'workload',
+  'topology',
+  'provider',
+  'trigger',
+  'author',
+  'created_at',
+  'updated_at',
+] as const satisfies readonly NonNullable<TestRunsQuery['sort']>[]
+
+// `rsort`/`rorder` sort the «Запуски» tab; prefixed so other tabs can own `sort` later.
 export const testDetailSearchSchema = z.object({
   tab: z
     .enum(['overview', 'validation', 'runs', 'usages', 'diff'])
@@ -66,8 +98,15 @@ export const testDetailSearchSchema = z.object({
     .catch('overview'),
   launch: z.boolean().optional().catch(undefined),
   diff: z.string().optional().catch(undefined),
+  rsort: z.enum(TEST_RUN_SORT_KEYS).default('created_at').catch('created_at'),
+  rorder: orderSchema.default('desc').catch('desc'),
 })
 export type TestDetailSearch = z.infer<typeof testDetailSearchSchema>
+export const TEST_DETAIL_DEFAULTS = {
+  tab: 'overview',
+  rsort: 'created_at',
+  rorder: 'desc',
+} as const
 
 const getStyles = (theme: GrafanaTheme2) => ({
   tabs: css({ marginBottom: theme.spacing(2) }),
@@ -533,7 +572,14 @@ export function TestDetailPage({
         </Panel>
       )}
 
-      {search.tab === 'runs' && <RunsTab test={test} />}
+      {search.tab === 'runs' && (
+        <RunsTab
+          test={test}
+          sort={search.rsort}
+          order={search.rorder}
+          onSortChange={(rsort, rorder) => onSearchChange({ rsort, rorder })}
+        />
+      )}
 
       {search.tab === 'usages' && (
         <Panel
@@ -580,12 +626,25 @@ const TRIGGER_ICON: Record<Run['trigger'], IconName> = {
 
 // Run history of the test: the runs table (tables-guide §14) reduced to what differs between
 // runs of one test — status, run, metrics, time. A secondary table: grows with the tab.
-function RunsTab({ test }: { test: Test }) {
+function RunsTab({
+  test,
+  sort,
+  order,
+  onSortChange,
+}: {
+  test: Test
+  sort: TestDetailSearch['rsort']
+  order: TestDetailSearch['rorder']
+  onSortChange: (sort: TestDetailSearch['rsort'], order: TestDetailSearch['rorder']) => void
+}) {
   const styles = useStyles2(getStyles)
   const { t } = useTranslation()
   const { slug } = useTenant()
   const navigate = useNavigate()
-  const history = useQuery(testQueries.runs(slug, test.id, 50))
+  const history = useQuery({
+    ...testQueries.runs(slug, test.id, { sort, order, limit: 50 }),
+    placeholderData: keepPreviousData,
+  })
   const runs = useMemo(() => history.data?.data ?? [], [history.data])
   const trend = history.data?.trend
 
@@ -646,10 +705,16 @@ function RunsTab({ test }: { test: Test }) {
       ]
     }
     return [
-      col.status<Run>({ id: 'status', title: t('runs.columns.status'), status: (r) => r.status }),
+      col.status<Run>({
+        id: 'status',
+        title: t('runs.columns.status'),
+        status: (r) => r.status,
+        sortKey: 'status',
+      }),
       col.identity<Run>({
         id: 'name',
         header: t('runs.columns.name'),
+        sortKey: 'name',
         render: (r) => {
           const running = r.status === 'running' || r.status === 'cancelling'
           const labels = Object.entries(r.labels ?? {}).map(([k, v]) => (v ? `${k}=${v}` : k))
@@ -694,12 +759,23 @@ function RunsTab({ test }: { test: Test }) {
         id: 'metrics',
         header: t('runs.columns.metrics'),
         width: 290,
+        sortOptions: [
+          { key: 'qps', label: 'QPS' },
+          { key: 'p99', label: 'p99' },
+          { key: 'p50', label: 'p50' },
+          { key: 'errors', label: t('runs.sort.errors') },
+        ],
         cell: (r) => <RunMetricsCell run={r} />,
       }),
       col.custom<Run>({
         id: 'time',
         header: t('runs.columns.time'),
         width: 180,
+        sortOptions: [
+          { key: 'started_at', label: t('runs.sort.started') },
+          { key: 'finished_at', label: t('runs.sort.finished') },
+          { key: 'duration', label: t('runs.sort.duration') },
+        ],
         cell: (r) => <RunTimeCell run={r} />,
       }),
       col.stack<Run>({
@@ -707,14 +783,17 @@ function RunsTab({ test }: { test: Test }) {
         header: t('runs.columns.provider'),
         width: 200,
         defaultHidden: true,
+        sortKey: 'provider',
         render: (r) => providerView(r),
       }),
-      col.text<Run>({
+      col.stack<Run>({
         id: 'author',
         header: t('runs.columns.author'),
         width: 160,
         defaultHidden: true,
+        sortKey: 'author',
         value: (r) => r.author.display_name,
+        render: (r) => ({ primary: <UserLabel user={r.author} /> }),
       }),
       col.actions<Run>({ title: (r) => r.name, actions }),
     ]
@@ -741,6 +820,13 @@ function RunsTab({ test }: { test: Test }) {
           loading={history.isPending}
           error={history.isError ? history.error : undefined}
           onRetry={() => void history.refetch()}
+          sort={{ field: sort, order }}
+          onSortChange={(s) =>
+            onSortChange(
+              (s?.field as TestDetailSearch['rsort']) ?? 'created_at',
+              s?.order ?? 'desc'
+            )
+          }
           rowHref={(r) => `/t/${slug}/runs/${r.id}`}
           empty={{ message: t('library.tests.noRuns') }}
           aria-label={t('library.tabs.runs')}

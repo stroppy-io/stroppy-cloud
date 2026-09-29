@@ -22,6 +22,7 @@ import { TableSettings } from '@components/DataTable/TableSettings'
 import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar'
 import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
 import { RelativeTime } from '@components/RelativeTime'
+import { UserLabel } from '@components/UserAvatar'
 import { Button, ConfirmModal, Stack } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
 import { toYaml } from '@helpers/yaml'
@@ -66,7 +67,16 @@ export const workloadListSearchSchema = z.object({
   author: csvSchema,
   favorites: z.boolean().optional().catch(undefined),
   sort: z
-    .enum(['name', 'created_at', 'updated_at', 'protocol', 'stroppy_version', 'author'])
+    .enum([
+      'name',
+      'created_at',
+      'updated_at',
+      'protocol',
+      'stroppy_version',
+      'segments',
+      'usages',
+      'author',
+    ])
     .default('updated_at')
     .catch('updated_at'),
   order: orderSchema.default('desc').catch('desc'),
@@ -367,6 +377,7 @@ export function WorkloadListPage({
         id: 'segments',
         header: t('library.columns.segments'),
         minWidth: 240,
+        sortKey: 'segments',
         filter: {
           kind: 'text',
           value: search.script,
@@ -416,6 +427,7 @@ export function WorkloadListPage({
         id: 'usages',
         header: t('library.columns.usage'),
         width: 160,
+        sortKey: 'usages',
         value: (r) => r.usages?.length ?? 0,
         render: (r) => {
           const u = usageView(r.usages, t)
@@ -445,7 +457,7 @@ export function WorkloadListPage({
         value: (r) => r.updated_at,
         render: (r) => ({
           primary: <RelativeTime value={r.updated_at} />,
-          secondary: r.author.display_name,
+          secondary: <UserLabel user={r.author} />,
           title: r.author.display_name,
         }),
       }),

@@ -4,6 +4,7 @@ import { CopyText } from '@components/CopyText'
 import { KeyValueList } from '@components/KeyValueList'
 import { RelativeTime } from '@components/RelativeTime'
 import { TagsEditor } from '@components/TagsEditor'
+import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, Field, Input, Modal, Stack, Text, TextArea, useStyles2 } from '@grafana/ui'
@@ -180,7 +181,7 @@ export function EntityAbout({
           ...(extra ?? []),
           {
             label: t('common.fields.author'),
-            value: entity.author.display_name ?? entity.author.id,
+            value: <UserLabel user={entity.author} />,
           },
           {
             label: t('common.fields.created'),

@@ -24,13 +24,20 @@ import type {
   Webhook,
   WebhookDelivery,
 } from '@api/types'
+import { expandCapacityDemo } from './capacity'
+import { capacitySizes } from './capacity-sizes'
+import { progressSegments, segmentBudgets, syncLiveSummary } from './live-summary'
 import type { Database, MockStore, RunLive, Suite, TenantData, Test, Workload } from './store'
 import { daysAgo, durationStr, hoursAgo, iso, minutesAgo, pick, rng, uuid } from './util'
 
 // ---------- users ----------
 const ADMIN_ID = 'u-admin'
 export const users: { ref: UserRef; email: string; admin: boolean }[] = [
-  { ref: { id: ADMIN_ID, display_name: 'Admin' }, email: 'admin@stroppy.local', admin: true },
+  {
+    ref: { id: ADMIN_ID, display_name: 'Alex Morgan' },
+    email: 'alex@stroppy.example',
+    admin: true,
+  },
   { ref: { id: 'u-olga', display_name: 'Olga Petrova' }, email: 'olga@example.com', admin: false },
   { ref: { id: 'u-max', display_name: 'Max Ivanov' }, email: 'max@example.com', admin: false },
   { ref: { id: 'u-lena', display_name: 'Lena Sidorova' }, email: 'lena@example.com', admin: false },
@@ -187,7 +194,7 @@ export function catalogDatabases(): CatalogDatabase[] {
     mk(
       'ydb',
       'YDB',
-      ['26', '25'],
+      ['26.3', '26.2', '26.1', '25.4'],
       [
         {
           role: 'storage',
@@ -294,7 +301,7 @@ export const SIZES: Schemas['SizeSpec'][] = [
 ]
 
 export function catalogProviders(): CatalogProvider[] {
-  const sizes = { db: SIZES, proxy: SIZES.slice(0, 3), runner: SIZES, etcd: SIZES.slice(0, 2) }
+  const sizes = capacitySizes.yandex
   return [
     {
       kind: 'yandex',
@@ -332,20 +339,7 @@ export function catalogProviders(): CatalogProvider[] {
         { id: 'gp3', title: 'gp3', min_gb: 8, step_gb: 1 },
         { id: 'io2', title: 'io2', min_gb: 8, step_gb: 1 },
       ],
-      sizes: {
-        db: SIZES.map((s) => ({
-          ...s,
-          instance_type: `m6i.${['large', 'xlarge', '2xlarge', '4xlarge', '8xlarge'][SIZES.indexOf(s)]}`,
-        })),
-        proxy: SIZES.slice(0, 3).map((s) => ({
-          ...s,
-          instance_type: `c6i.${['large', 'xlarge', '2xlarge'][SIZES.indexOf(s)]}`,
-        })),
-        runner: SIZES.map((s) => ({
-          ...s,
-          instance_type: `c6i.${['large', 'xlarge', '2xlarge', '4xlarge', '8xlarge'][SIZES.indexOf(s)]}`,
-        })),
-      },
+      sizes: capacitySizes.aws,
       images: [{ id: 'ami-ubuntu-2404', os: 'Ubuntu 24.04' }],
     },
   ]
@@ -447,6 +441,13 @@ export function stroppyCatalog(): StroppyCatalog {
 
 export function metricDefs(): MetricDef[] {
   return [
+    {
+      key: 'queries_per_second',
+      title: 'Queries / s',
+      unit: 'qps',
+      higher_is_better: true,
+      group: 'Throughput',
+    },
     {
       key: 'tps',
       title: 'Transactions / s',
@@ -1087,24 +1088,20 @@ export interface RunSeed {
 
 function machinesFor(
   db: Database,
-  sizes: Schemas['RoleSizes']
+  sizes: Schemas['RoleSizes'],
+  provider?: ProviderProfile
 ): NonNullable<Schemas['RunSnapshot']['machines']> {
   const out: NonNullable<Schemas['RunSnapshot']['machines']> = []
   for (const n of db.topology_preview?.nodes ?? []) {
     if (n.colocated_with) continue
-    const roleSize =
-      sizes[
-        n.role === 'master' ||
-        n.role === 'replica' ||
-        n.role === 'storage' ||
-        n.role === 'node' ||
-        n.role === 'instance'
-          ? 'db'
-          : n.role === 'haproxy'
-            ? 'proxy'
-            : n.role
-      ] ?? sizes.db
-    const spec = SIZES.find((s) => s.size === roleSize.size) ?? SIZES[1]
+    const family = ['etcd', 'coordinator'].includes(n.role)
+      ? 'coordinator'
+      : ['haproxy', 'proxy', 'proxysql'].includes(n.role)
+        ? 'proxy'
+        : 'db'
+    const roleSize = sizes[n.role] ?? sizes[family] ?? sizes.db
+    const table = capacitySizes[provider?.kind ?? 'yandex'][family]
+    const spec = table.find((s) => s.size === roleSize.size) ?? table[1]
     for (let i = 1; i <= n.count; i++)
       out.push({
         name: `${n.role}-${i}`,
@@ -1115,10 +1112,11 @@ function machinesFor(
         disk_gb: roleSize.disk?.gb ?? spec.default_disk_gb,
         disk_type: roleSize.disk?.type ?? 'network-ssd',
         instance_type: spec.instance_type,
-        location: 'ru-central1-a',
+        location: provider?.kind === 'aws' ? 'eu-central-1' : 'ru-central1-a',
       })
   }
-  const r = SIZES.find((s) => s.size === sizes.runner?.size) ?? SIZES[1]
+  const runnerSizes = capacitySizes[provider?.kind ?? 'yandex'].runner
+  const r = runnerSizes.find((s) => s.size === sizes.runner?.size) ?? runnerSizes[1]
   out.push({
     name: 'runner-1',
     role: 'runner',
@@ -1128,7 +1126,7 @@ function machinesFor(
     disk_gb: r.default_disk_gb,
     disk_type: 'network-ssd',
     instance_type: r.instance_type,
-    location: 'ru-central1-a',
+    location: provider?.kind === 'aws' ? 'eu-central-1' : 'ru-central1-a',
   })
   return out
 }
@@ -1143,6 +1141,7 @@ export function buildRun(s: RunSeed): Run {
     s.status === 'completed'
       ? {
           metrics: {
+            queries_per_second: { value: (s.tps ?? 0) * 4, unit: 'qps' },
             tps: { value: s.tps ?? 0, unit: 'tps' },
             latency_p50_ms: { value: (s.p99 ?? 0) * 0.3, unit: 'ms' },
             latency_p95_ms: { value: (s.p99 ?? 0) * 0.7, unit: 'ms' },
@@ -1223,14 +1222,14 @@ export function buildRun(s: RunSeed): Run {
       sizes,
       provider_profile: { id: s.provider.id, name: s.provider.name },
       keep: s.keep ? '2h' : '0s',
-      machines: machinesFor(s.db, sizes),
+      machines: machinesFor(s.db, sizes, s.provider),
     },
     run_spec: {
       schema: { id: 'spec.run', version: '1' },
       values: {
         name: s.name,
         database: { kind: s.db.kind, version: s.db.version },
-        machines: machinesFor(s.db, sizes).map((m) => ({
+        machines: machinesFor(s.db, sizes, s.provider).map((m) => ({
           name: m.name,
           role: m.role,
           size: m.size,
@@ -1265,7 +1264,16 @@ export function buildRun(s: RunSeed): Run {
       progress_pct: terminal ? 100 : s.status === 'pending' ? 0 : 40,
       segment: s.status === 'running' && s.phase === 'workload' ? segNames[0] : undefined,
       headline:
-        s.status === 'completed' ? { tps: s.tps ?? 0, latency_p99_ms: s.p99 ?? 0 } : undefined,
+        s.status === 'completed'
+          ? {
+              tps: s.tps ?? 0,
+              qps: (s.tps ?? 0) * 4,
+              latency_p50_ms: (s.p99 ?? 0) * 0.3,
+              latency_p95_ms: (s.p99 ?? 0) * 0.7,
+              latency_p99_ms: s.p99 ?? 0,
+              errors: s.errors ?? 0,
+            }
+          : undefined,
     },
     result,
     graphene: { run_ref: `run/${s.id}`, namespace: 't-main', pipeline_revision: 'a1b2c3d' },
@@ -1441,8 +1449,8 @@ export function buildLive(run: Run, seedNum: number): RunLive {
   const wl = phases[2]
   const wStart = new Date(wl.started_at ?? started).getTime()
   const wEnd = wl.finished_at ? new Date(wl.finished_at).getTime() : now
-  const base = run.result?.summary?.tps ?? 900
-  const p99 = run.result?.summary?.latency_p99_ms ?? 60
+  const base = run.result?.summary?.tps ?? run.summary?.headline?.tps ?? 900
+  const p99 = run.result?.summary?.latency_p99_ms ?? run.summary?.headline?.latency_p99_ms ?? 60
   const pts = (fn: (i: number, x: number) => number) => {
     const out: number[][] = []
     const n = 120
@@ -1452,18 +1460,24 @@ export function buildLive(run: Run, seedNum: number): RunLive {
   metrics.tps = pts((i, x) =>
     Math.max(
       0,
-      base * (x < 0.08 ? x / 0.08 : 1) * (1 + 0.08 * Math.sin(i / 6)) + (rand() - 0.5) * base * 0.05
+      base *
+        Math.min(1, x / 0.08) *
+        (1 +
+          0.06 * Math.sin(i / 6) +
+          0.025 * Math.sin(i / 2) -
+          0.16 * Math.exp(-((x - 0.64) ** 2) / 0.001)) +
+        (rand() - 0.5) * base * 0.025
     )
   )
   metrics.latency_p50_ms = pts((i) => p99 * 0.3 * (1 + 0.1 * Math.sin(i / 9)))
   metrics.latency_p95_ms = pts((i) => p99 * 0.7 * (1 + 0.15 * Math.sin(i / 7)))
   metrics.latency_p99_ms = pts((i) => p99 * (1 + 0.25 * Math.abs(Math.sin(i / 5))) + rand() * 5)
   metrics.errors = pts(() => (rand() < 0.03 ? Math.floor(rand() * 5) : 0))
-  metrics.db_cpu = pts((i) => 45 + 25 * Math.abs(Math.sin(i / 11)) + rand() * 5)
+  metrics.db_cpu = pts((i) => 62 + 25 * Math.abs(Math.sin(i / 11)) + rand() * 5)
   metrics.db_cache_hit = pts(() => 97 + rand() * 2.5)
   metrics.db_io_read = pts((i) => 12e6 + 8e6 * Math.abs(Math.sin(i / 13)))
   metrics.db_io_write = pts((i) => 30e6 + 15e6 * Math.abs(Math.cos(i / 10)))
-  metrics.runner_cpu = pts(() => 30 + rand() * 10)
+  metrics.runner_cpu = pts(() => 58 + rand() * 24)
   const cur = PHASES.indexOf(run.phase)
   return {
     overview: {
@@ -1517,7 +1531,8 @@ export function buildLive(run: Run, seedNum: number): RunLive {
     logs,
     metrics,
     phaseIndex: terminal ? PHASES.length : Math.max(0, cur),
-    phaseStartedAt: now - 20_000,
+    // The simulation measures the current phase from its recorded start.
+    phaseStartedAt: Date.parse(phases[Math.max(0, cur)]?.started_at ?? iso(now)),
     segmentIndex: 0,
     seq: logs.length,
   }
@@ -1660,7 +1675,7 @@ function tenantMain(): TenantData {
   const tenant: Tenant = {
     id: 'ten-main',
     slug: 'main',
-    name: 'Main benchmarks',
+    name: 'Stroppy Labs',
     description: 'Core team database benchmarks',
     status: 'active',
     owner: admin,
@@ -2064,11 +2079,67 @@ function tenantMain(): TenantData {
       favorite: true,
     },
   ]
+  // A month of repeatable benchmark history fills the dashboard, comparisons and test trends.
+  const historyRand = rng(20260929)
+  const baselines = seeds.filter((r) => r.status === 'completed')
+  for (let i = 0; i < 48; i++) {
+    const baseline = baselines[i % baselines.length]
+    const factor = 0.88 + historyRand() * 0.2
+    seeds.push({
+      ...baseline,
+      id: `run-history-${i + 1}`,
+      name: `${baseline.test.name} #${200 + i}`,
+      startedMinAgo: (i + 1) * 11 * 60,
+      tps: Math.round((baseline.tps ?? 1500) * factor),
+      p99: Math.round((baseline.p99 ?? 40) / factor),
+      errors: i % 13 === 0 ? 2 : 0,
+      keep: false,
+      favorite: i % 11 === 0,
+      trigger: 'api',
+      trigger_ref: undefined,
+      author: users[i % users.length].ref,
+      labels: {
+        branch: 'main',
+        environment: 'benchmark',
+        revision: `b${(0x8ae120 + i).toString(16)}`,
+      },
+      notes: 'Repeatable baseline · dedicated runners · warm cache · 64 virtual users.',
+    })
+  }
   const runs = seeds.map(buildRun)
   const runLive: Record<string, RunLive> = {}
   runs.forEach((r, i) => {
-    runLive[r.id] = buildLive(r, 1000 + i)
+    const live = buildLive(r, 1000 + i)
+    runLive[r.id] = live
+    live.metrics.queries_per_second = (live.metrics.tps ?? []).map(([t, v]) => [t, v * 4])
+    if (r.summary && r.status === 'completed') {
+      r.summary.qps_series = live.metrics.queries_per_second
+        .filter((_, n) => n % 4 === 0)
+        .map(([t, v]) => ({ t, v }))
+    }
   })
+
+  for (const [index, test] of ts.entries()) {
+    const history = runs
+      .filter((r) => r.test_ref?.id === test.id)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at))
+    const latest = history[0]
+    ts[index] = {
+      ...test,
+      summary: {
+        ...test.summary,
+        run_count: history.length,
+        last_run: latest
+          ? {
+              id: latest.id,
+              name: latest.name,
+              status: latest.status,
+              started_at: latest.started_at,
+            }
+          : undefined,
+      },
+    }
+  }
 
   const suites: Suite[] = [
     {
@@ -2360,7 +2431,7 @@ function tenantMain(): TenantData {
     },
   ]
   const members: Member[] = [
-    { user: { ...admin, email: 'admin@stroppy.local' }, role: 'owner', joined_at: daysAgo(90) },
+    { user: { ...admin, email: 'alex@stroppy.example' }, role: 'owner', joined_at: daysAgo(90) },
     { user: { ...max, email: 'max@example.com' }, role: 'admin', joined_at: daysAgo(80) },
     { user: { ...olga, email: 'olga@example.com' }, role: 'member', joined_at: daysAgo(60) },
     { user: { ...lena, email: 'lena@example.com' }, role: 'member', joined_at: daysAgo(30) },
@@ -2547,7 +2618,7 @@ function tenantSandbox(): TenantData {
     tenant,
     members: [
       { user: { ...olga, email: 'olga@example.com' }, role: 'owner', joined_at: daysAgo(15) },
-      { user: { ...admin, email: 'admin@stroppy.local' }, role: 'viewer', joined_at: daysAgo(14) },
+      { user: { ...admin, email: 'alex@stroppy.example' }, role: 'viewer', joined_at: daysAgo(14) },
     ],
     invites: [],
     tokens: [],
@@ -2589,13 +2660,35 @@ function tenantSandbox(): TenantData {
   }
 }
 
+// Brings seeded non-terminal runs to the state the simulation would have them in now: workload
+// segments by their plan, `expected_finish_at`, live headline and QPS sparkline.
+function syncSeededLive(t: TenantData): void {
+  for (const run of t.runs) {
+    const live = t.runLive[run.id]
+    if (!live || !['running', 'cancelling'].includes(run.status)) continue
+    // Before the workload nothing has been measured yet; the simulation samples from its start.
+    if (run.phase === 'provisioning' || run.phase === 'deploying') live.metrics = {}
+    if (run.phase === 'workload') progressSegments(run, live, now, segmentBudgets(run, 90_000))
+    else if (run.phase === 'collecting' || run.phase === 'teardown') {
+      const ended = live.overview.phases.find((p) => p.id === 'workload')?.finished_at
+      for (const s of live.overview.workload_segments ?? []) {
+        s.status = 'completed'
+        s.finished_at = ended ?? null
+      }
+    }
+    syncLiveSummary(run, live)
+  }
+}
+
 export function seed(): Omit<MockStore, 'tenant' | 'roleIn' | 'audit'> {
   const main = tenantMain()
+  expandCapacityDemo(main, buildRun, buildLive)
   const sandbox = tenantSandbox()
+  for (const t of [main, sandbox]) syncSeededLive(t)
   const me: Me = {
     id: ADMIN_ID,
-    email: 'admin@stroppy.local',
-    display_name: 'Admin',
+    email: 'alex@stroppy.example',
+    display_name: 'Alex Morgan',
     avatar: 'identicon',
     is_platform_admin: true,
     tenants: [
@@ -2664,7 +2757,7 @@ export function seed(): Omit<MockStore, 'tenant' | 'roleIn' | 'audit'> {
           owner: lena,
           created_at: daysAgo(50),
         },
-        email: 'admin@stroppy.local',
+        email: 'alex@stroppy.example',
         role: 'member',
         status: 'pending',
         invited_by: lena,

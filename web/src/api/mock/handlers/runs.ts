@@ -1,15 +1,10 @@
 import type { Comparison, LaunchOverrides, Run, RunMetrics, Share } from '@api/types'
 import { noContent, notFound, problem, route } from '../router'
 import { launchFromTest } from '../run-factory'
+import { sortRuns } from '../run-sort'
 import { getSimulation } from '../simulation'
 import type { Test } from '../store'
-import { facet, iso, matchesSearch, multi, paginate, parseListQuery, sortBy, uuid } from '../util'
-
-function durationSec(r: Run): number {
-  if (!r.started_at) return 0
-  const end = r.finished_at ? new Date(r.finished_at).getTime() : Date.now()
-  return (end - new Date(r.started_at).getTime()) / 1000
-}
+import { facet, iso, matchesSearch, multi, paginate, parseListQuery, uuid } from '../util'
 
 function filterRuns(runs: Run[], q: URLSearchParams, favorites: Set<string>): Run[] {
   const status = multi(q, 'status')
@@ -55,30 +50,13 @@ function filterRuns(runs: Run[], q: URLSearchParams, favorites: Set<string>): Ru
   })
 }
 
-function sortRuns(runs: Run[], sort: string | undefined, order: 'asc' | 'desc'): Run[] {
-  switch (sort) {
-    case 'started_at':
-      return sortBy(runs, (r) => r.started_at ?? r.created_at, order)
-    case 'finished_at':
-      return sortBy(runs, (r) => r.finished_at ?? '', order)
-    case 'duration':
-      return sortBy(runs, durationSec, order)
-    case 'tps':
-      return sortBy(runs, (r) => r.summary?.headline?.tps ?? -1, order)
-    case 'status':
-      return sortBy(runs, (r) => r.status, order)
-    case 'name':
-      return sortBy(runs, (r) => r.name.toLowerCase(), order)
-    default:
-      return sortBy(runs, (r) => r.created_at, order)
-  }
-}
-
 route('GET', '/api/v1/t/:slug/runs', ({ store, params, query }) => {
   const t = store.tenant(params.slug)
   if (!t) return notFound('tenant')
-  const lq = parseListQuery(query, 'created_at')
-  const items = sortRuns(filterRuns(t.runs, query, t.favorites), lq.sort, lq.order).map((r) => ({
+  const lq = parseListQuery(query, 'default')
+  const items = sortRuns(filterRuns(t.runs, query, t.favorites), lq.sort, lq.order, (r) =>
+    t.favorites.has(`run:${r.id}`)
+  ).map((r) => ({
     ...r,
     is_favorite: t.favorites.has(`run:${r.id}`),
   }))

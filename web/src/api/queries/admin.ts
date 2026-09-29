@@ -1,5 +1,5 @@
 import { api, unwrap } from '@api/client'
-import type { RunStatus, Schemas } from '@api/types'
+import type { Paths, Schemas } from '@api/types'
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query'
 import { keys } from './keys'
 
@@ -8,18 +8,19 @@ export type TenantLimitsWrite = Schemas['TenantLimitsWrite']
 export type SystemSettingsPatch = Schemas['SystemSettingsPatch']
 export type AdminRun = Schemas['Run'] & { tenant?: Schemas['Ref'] }
 
-export interface AdminTenantsQuery {
-  search?: string
-  status?: 'active' | 'orphaned' | 'suspended'
-}
-export interface AdminUsersQuery {
-  search?: string
-  platform_admin?: boolean
-}
-export interface AdminRunsQuery {
-  status?: RunStatus[]
-  tenant?: string
-}
+type Paging = 'cursor' | 'limit'
+export type AdminTenantsQuery = Omit<
+  NonNullable<Paths['/api/v1/admin/tenants']['get']['parameters']['query']>,
+  Paging
+>
+export type AdminUsersQuery = Omit<
+  NonNullable<Paths['/api/v1/admin/users']['get']['parameters']['query']>,
+  Paging
+>
+export type AdminRunsQuery = Omit<
+  NonNullable<Paths['/api/v1/admin/runs']['get']['parameters']['query']>,
+  Paging
+>
 export interface AdminAuditQuery {
   tenant?: string
   action?: string

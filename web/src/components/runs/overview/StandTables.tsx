@@ -82,10 +82,10 @@ export function ComponentsTable({ components }: { components: Component[] }) {
           subtitle: [c.role, c.engine].filter(Boolean).join(' · '),
         }),
       }),
-      col.text<Component>({
+      col.code<Component>({
         id: 'image',
         header: t('runs.overview.components.image'),
-        minWidth: 200,
+        max: 36,
         value: (c) => c.image,
       }),
       col.text<Component>({

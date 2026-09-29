@@ -1,9 +1,14 @@
-import { type AdminRun, adminMutations, adminQueries } from '@api/queries/admin'
+import {
+  type AdminRun,
+  type AdminRunsQuery,
+  adminMutations,
+  adminQueries,
+} from '@api/queries/admin'
 import { PageFill } from '@app/Page'
 import { toast } from '@app/Toaster'
 import { col } from '@components/DataTable/columns'
 import { DataTable, type DataTableColumn } from '@components/DataTable/DataTable'
-import { refreshSchema } from '@components/DataTable/list-search'
+import { orderSchema, refreshSchema } from '@components/DataTable/list-search'
 import { useTablePrefs } from '@components/DataTable/prefs'
 import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { TableSettings } from '@components/DataTable/TableSettings'
@@ -33,13 +38,40 @@ import { z } from 'zod'
 
 const STATUSES = ['pending', 'running', 'cancelling', 'completed', 'failed', 'cancelled'] as const
 
+// Server sort keys of adminListRuns: the listRuns set plus `tenant`; the endpoint defaults to
+// created_at.
+const ADMIN_RUN_SORT_KEYS = [
+  'default',
+  'started_at',
+  'finished_at',
+  'duration',
+  'tps',
+  'qps',
+  'p50',
+  'p99',
+  'errors',
+  'status',
+  'name',
+  'db_kind',
+  'workload',
+  'topology',
+  'provider',
+  'trigger',
+  'author',
+  'tenant',
+  'created_at',
+  'updated_at',
+] as const satisfies readonly NonNullable<AdminRunsQuery['sort']>[]
+
 export const adminRunsSearchSchema = z.object({
   status: z.array(z.enum(STATUSES)).optional().catch(undefined),
   tenant: z.string().optional().catch(undefined),
+  sort: z.enum(ADMIN_RUN_SORT_KEYS).default('created_at').catch('created_at'),
+  order: orderSchema.default('desc').catch('desc'),
   refresh: refreshSchema('5s'),
 })
 export type AdminRunsSearch = z.infer<typeof adminRunsSearchSchema>
-export const ADMIN_RUNS_DEFAULTS = { refresh: '5s' } as const
+export const ADMIN_RUNS_DEFAULTS = { sort: 'created_at', order: 'desc', refresh: '5s' } as const
 
 const TRIGGER_ICON: Record<AdminRun['trigger'], IconName> = {
   manual: 'user',
@@ -50,8 +82,8 @@ const TRIGGER_ICON: Record<AdminRun['trigger'], IconName> = {
 
 const getStyles = (theme: GrafanaTheme2) => ({ root: css({ gap: theme.spacing(1) }) })
 
-// The platform-wide run queue (admin). Same cells as the tenant runs list plus the tenant; the
-// server list has no sort keys, so columns do not sort.
+// The platform-wide run queue (admin). Same cells and server sort keys as the tenant runs list
+// plus the tenant.
 export function AdminRunsPage({
   search,
   onSearchChange,
@@ -66,7 +98,12 @@ export function AdminRunsPage({
   const copy = useCopy()
   const auto = useAutoRefresh(search.refresh)
   const list = useInfiniteQuery({
-    ...adminQueries.runs({ status: search.status, tenant: search.tenant }),
+    ...adminQueries.runs({
+      status: search.status,
+      tenant: search.tenant,
+      sort: search.sort,
+      order: search.order,
+    }),
     placeholderData: keepPreviousData,
     refetchInterval: auto.refetchInterval,
   })
@@ -165,6 +202,7 @@ export function AdminRunsPage({
         id: 'status',
         title: t('common.fields.status'),
         status: (r) => r.status,
+        sortKey: 'status',
         filter: {
           kind: 'checklist',
           options: STATUSES.map((s) => ({ value: s, label: t(`common.status.${s}`) })),
@@ -175,6 +213,7 @@ export function AdminRunsPage({
       col.identity<AdminRun>({
         id: 'name',
         header: t('admin.runs.run'),
+        sortKey: 'name',
         render: (r) => {
           const slug = slugOf(r)
           const running = r.status === 'running' || r.status === 'cancelling'
@@ -204,6 +243,7 @@ export function AdminRunsPage({
         header: t('common.misc.tenant'),
         icon: 'building',
         width: 180,
+        sortKey: 'tenant',
         filter: {
           kind: 'checklist',
           single: true,
@@ -223,6 +263,10 @@ export function AdminRunsPage({
         id: 'database',
         header: t('runs.columns.database'),
         minWidth: 200,
+        sortOptions: [
+          { key: 'db_kind', label: t('runs.sort.engine') },
+          { key: 'topology', label: t('runs.sort.topology') },
+        ],
         render: (r) => databaseView(r, t),
       }),
       col.stack<AdminRun>({
@@ -230,6 +274,7 @@ export function AdminRunsPage({
         header: t('runs.columns.workload'),
         minWidth: 220,
         defaultHidden: true,
+        sortKey: 'workload',
         render: (r) => workloadView(r, t),
       }),
       col.custom<AdminRun>({
@@ -237,18 +282,30 @@ export function AdminRunsPage({
         header: t('runs.columns.metrics'),
         width: 290,
         defaultHidden: true,
+        sortOptions: [
+          { key: 'qps', label: 'QPS' },
+          { key: 'p99', label: 'p99' },
+          { key: 'p50', label: 'p50' },
+          { key: 'errors', label: t('runs.sort.errors') },
+        ],
         cell: (r) => <RunMetricsCell run={r} />,
       }),
       col.custom<AdminRun>({
         id: 'time',
         header: t('runs.columns.time'),
         width: 180,
+        sortOptions: [
+          { key: 'started_at', label: t('runs.sort.started') },
+          { key: 'finished_at', label: t('runs.sort.finished') },
+          { key: 'duration', label: t('runs.sort.duration') },
+        ],
         cell: (r) => <RunTimeCell run={r} />,
       }),
       col.text<AdminRun>({
         id: 'author',
         header: t('common.fields.author'),
         width: 170,
+        sortKey: 'author',
         value: (r) => r.author.display_name,
       }),
       col.actions<AdminRun>({ title: (r) => r.name, actions: rowActions }),
@@ -302,6 +359,13 @@ export function AdminRunsPage({
         loading={list.isPending}
         error={list.isError ? list.error : undefined}
         onRetry={() => void list.refetch()}
+        sort={{ field: search.sort, order: search.order }}
+        onSortChange={(s) =>
+          onSearchChange({
+            sort: (s?.field as AdminRunsSearch['sort']) ?? 'created_at',
+            order: s?.order ?? 'desc',
+          })
+        }
         onOverlayChange={auto.setPaused}
         rowHref={(r) => {
           const slug = slugOf(r)

@@ -1,4 +1,11 @@
 import type { Run, RunPhase } from '@api/types'
+import {
+  downsample,
+  progressSegments,
+  segmentBudgets,
+  syncLiveSummary,
+  workloadWindow,
+} from './live-summary'
 import type { MockStore, RunLive } from './store'
 import { durationStr, iso, rng } from './util'
 
@@ -8,21 +15,20 @@ const PHASES: RunPhase[] = ['provisioning', 'deploying', 'workload', 'collecting
 const PHASE_SECONDS: Record<string, number> = {
   provisioning: 25,
   deploying: 20,
+  // Fallback only: the workload runs its segments' warmup + duration (see `workloadMs`).
   workload: 90,
   collecting: 12,
   teardown: 15,
 }
 const LOG_LINES = [
-  'checkpoint complete: wrote 512 buffers (0.4%)',
-  'connection received: host=10.0.3.11 port=51322',
-  'stroppy: iteration ok p99=41ms',
-  'stroppy: vus=64 tps=3011',
-  'haproxy: backend primary status UP',
-  'patroni: leader lock renewed by master-1',
-  'agent: heartbeat ok load=2.31',
-  'automatic analyze of table "tpcc.order_line"',
-  'WARNING: long-running transaction detected (12s)',
-  'ERROR: deadlock detected (retrying)',
+  'agent: metrics batch published',
+  'agent: connection health check passed',
+  'stroppy: iteration completed successfully',
+  'stroppy: workload workers healthy',
+  'agent: service health check passed',
+  'agent: topology state synchronized',
+  'agent: heartbeat ok',
+  'agent: telemetry buffer flushed',
 ]
 
 type Listener = (payload: unknown, cursor?: string) => void
@@ -143,7 +149,9 @@ class Simulation {
     const phase = PHASES[live.phaseIndex]
     if (!phase) return
     const elapsed = (nowMs - live.phaseStartedAt) / 1000
-    const total = PHASE_SECONDS[phase]
+    const budgets = segmentBudgets(run, PHASE_SECONDS.workload * 1000)
+    const total =
+      phase === 'workload' ? budgets.reduce((a, b) => a + b, 0) / 1000 : PHASE_SECONDS[phase]
     const pct = Math.min(
       99,
       Math.round(((live.phaseIndex + Math.min(1, elapsed / total)) / PHASES.length) * 100)
@@ -177,38 +185,38 @@ class Simulation {
           this.pushEvent(run, live, 'container.ready', `${c.id} healthy`, c.id, 'ready')
       })
     } else if (phase === 'workload') {
-      const seg = live.overview.workload_segments?.[0]
-      if (seg && seg.status !== 'running') {
-        seg.status = 'running'
-        seg.started_at = iso()
-        run.summary = { ...run.summary, segment: seg.name }
-        this.pushEvent(
-          run,
-          live,
-          'segment.started',
-          `Segment ${seg.name} started`,
-          seg.name,
-          'running'
-        )
-      }
+      this.segmentEvents(run, live, progressSegments(run, live, nowMs, budgets))
+      const seg = live.overview.workload_segments?.find((s) => s.status === 'running')
       // live metrics: append a sample every tick
-      const base = 2800 + 400 * Math.sin(elapsed / 9)
+      const target = run.summary?.headline?.tps ?? 2800
+      const p99 = run.summary?.headline?.latency_p99_ms ?? 45
+      const ratio = (run.summary?.headline?.qps ?? target * 4) / target
+      const base = target * (1 + 0.06 * Math.sin(elapsed / 9))
       const sample = (key: string, v: number) => {
         live.metrics[key] ??= []
         const arr = live.metrics[key]
         arr.push([nowMs, v])
-        if (arr.length > 600) arr.shift()
+        // Room for a 66-minute segment at 1 Hz, so the sparkline keeps the whole workload.
+        if (arr.length > 4200) arr.shift()
       }
-      sample('tps', Math.max(0, base * Math.min(1, elapsed / 10) + (this.rand() - 0.5) * 120))
-      sample('latency_p99_ms', 45 + 12 * Math.abs(Math.sin(elapsed / 5)) + this.rand() * 4)
-      sample('latency_p95_ms', 30 + 6 * Math.abs(Math.sin(elapsed / 6)))
-      sample('latency_p50_ms', 14 + 2 * Math.sin(elapsed / 7))
+      const throughput = Math.max(
+        0,
+        base * Math.min(1, elapsed / 10) + (this.rand() - 0.5) * target * 0.025
+      )
+      sample('tps', throughput)
+      sample('queries_per_second', throughput * ratio)
+      sample(
+        'latency_p99_ms',
+        p99 * (1 + 0.2 * Math.abs(Math.sin(elapsed / 5)) + this.rand() * 0.05)
+      )
+      sample('latency_p95_ms', p99 * (0.7 + 0.1 * Math.abs(Math.sin(elapsed / 6))))
+      sample('latency_p50_ms', p99 * (0.3 + 0.04 * Math.sin(elapsed / 7)))
       sample('errors', this.rand() < 0.05 ? 1 : 0)
-      sample('db_cpu', 55 + 20 * Math.abs(Math.sin(elapsed / 11)))
+      sample('db_cpu', 65 + 20 * Math.abs(Math.sin(elapsed / 11)))
       sample('db_cache_hit', 98 + this.rand())
       sample('db_io_read', 10e6 + 6e6 * Math.abs(Math.sin(elapsed / 13)))
       sample('db_io_write', 28e6 + 12e6 * Math.abs(Math.cos(elapsed / 10)))
-      sample('runner_cpu', 35 + this.rand() * 8)
+      sample('runner_cpu', 58 + this.rand() * 24)
       this.emit(`run.metrics/${run.id}`, {
         window: { start: iso(live.phaseStartedAt), end: iso(nowMs), segment: seg?.name },
         series: Object.entries(live.metrics).map(([key, points]) => ({
@@ -224,7 +232,10 @@ class Simulation {
     const newLines = []
     for (let i = 0; i < n; i++) {
       const m = machines[Math.floor(this.rand() * machines.length)]
-      const msg = LOG_LINES[Math.floor(this.rand() * LOG_LINES.length)]
+      const msg =
+        phase === 'workload' && i === 0
+          ? `stroppy: queries_per_second=${Math.round(live.metrics.queries_per_second?.at(-1)?.[1] ?? 0)} tps=${Math.round(live.metrics.tps?.at(-1)?.[1] ?? 0)} p99=${(live.metrics.latency_p99_ms?.at(-1)?.[1] ?? 0).toFixed(1)}ms`
+          : LOG_LINES[Math.floor(this.rand() * LOG_LINES.length)]
       const line = {
         time: iso(nowMs),
         seq: ++live.seq,
@@ -235,7 +246,7 @@ class Simulation {
         machine: m?.name,
         container: m?.role === 'runner' ? 'stroppy' : m?.role,
         phase,
-        segment: phase === 'workload' ? live.overview.workload_segments?.[0]?.name : undefined,
+        segment: phase === 'workload' ? run.summary?.segment : undefined,
       }
       live.logs.push(line)
       newLines.push(line)
@@ -251,21 +262,8 @@ class Simulation {
         p.finished_at = iso(nowMs)
       }
       this.pushEvent(run, live, 'phase.finished', `${phase} finished`, phase, 'completed')
-      if (phase === 'workload') {
-        const seg = live.overview.workload_segments?.[0]
-        if (seg) {
-          seg.status = 'completed'
-          seg.finished_at = iso(nowMs)
-        }
-        this.pushEvent(
-          run,
-          live,
-          'segment.finished',
-          `Segment ${seg?.name ?? 'workload'} finished`,
-          seg?.name,
-          'completed'
-        )
-      }
+      if (phase === 'workload')
+        this.segmentEvents(run, live, progressSegments(run, live, nowMs, budgets))
       // 12% of runs fail at deploy, for realism
       if (phase === 'deploying' && this.rand() < 0.12) {
         run.status_reason = 'container master-1/postgres failed healthcheck after 3 attempts'
@@ -288,7 +286,24 @@ class Simulation {
       }
       this.pushEvent(run, live, 'phase.started', `${next} started`, next, 'running')
     }
+    syncLiveSummary(run, live)
     this.publishRun(slug, run, live)
+  }
+
+  private segmentEvents(
+    run: Run,
+    live: RunLive,
+    changes: ReturnType<typeof progressSegments>
+  ): void {
+    for (const c of changes)
+      this.pushEvent(
+        run,
+        live,
+        c.status === 'running' ? 'segment.started' : 'segment.finished',
+        `Segment ${c.name} ${c.status === 'running' ? 'started' : 'finished'}`,
+        c.name,
+        c.status
+      )
   }
 
   private finish(
@@ -303,7 +318,8 @@ class Simulation {
     run.phase = status === 'completed' ? 'done' : run.phase
     run.finished_at = iso(nowMs)
     run.duration = durationStr(nowMs - new Date(run.started_at ?? run.created_at).getTime())
-    run.summary = { ...run.summary, progress_pct: 100, segment: undefined }
+    const { expected_finish_at: _planned, ...summary } = run.summary ?? {}
+    run.summary = { ...summary, progress_pct: 100, segment: undefined }
     live.overview.status = status
     live.overview.phase = run.phase
     live.overview.progress_pct = 100
@@ -326,20 +342,26 @@ class Simulation {
       const p99 = live.metrics.latency_p99_ms?.length
         ? Math.max(...live.metrics.latency_p99_ms.map(([, v]) => v))
         : 50
+      const qpsPoints = workloadWindow(live.metrics.queries_per_second ?? [], live)
+      const errors = (live.metrics.errors ?? []).reduce((n, [, v]) => n + v, 0)
+      const qps = qpsPoints.length
+        ? qpsPoints.reduce((n, [, v]) => n + v, 0) / qpsPoints.length
+        : tps * 4
       run.result = {
         metrics: {
           tps: { value: Math.round(tps), unit: 'tps' },
+          queries_per_second: { value: Math.round(qps), unit: 'qps' },
           latency_p99_ms: { value: Math.round(p99), unit: 'ms' },
           latency_p95_ms: { value: Math.round(p99 * 0.7), unit: 'ms' },
           latency_p50_ms: { value: Math.round(p99 * 0.3), unit: 'ms' },
-          errors: { value: 0, unit: 'count' },
+          errors: { value: errors, unit: 'count' },
         },
         summary: {
           tps: Math.round(tps),
           latency_p99_ms: Math.round(p99),
           latency_p95_ms: Math.round(p99 * 0.7),
           latency_p50_ms: Math.round(p99 * 0.3),
-          errors: 0,
+          errors,
           duration: run.duration ?? undefined,
         },
         segments: (live.overview.workload_segments ?? []).map((s) => ({
@@ -352,7 +374,15 @@ class Simulation {
       }
       run.summary = {
         ...run.summary,
-        headline: { tps: Math.round(tps), latency_p99_ms: Math.round(p99) },
+        headline: {
+          tps: Math.round(tps),
+          qps: Math.round(qps),
+          latency_p50_ms: Math.round(p99 * 0.3),
+          latency_p95_ms: Math.round(p99 * 0.7),
+          latency_p99_ms: Math.round(p99),
+          errors,
+        },
+        qps_series: downsample(qpsPoints),
       }
     }
     this.pushEvent(

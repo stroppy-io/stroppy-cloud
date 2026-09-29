@@ -43,8 +43,12 @@ export function runSegments(r: Run): Segment[] {
 export function workloadView(r: Run, t: TFunction) {
   const segs = runSegments(r)
   const scripts = [...new Set(segs.map((s) => s.script).filter(Boolean))] as string[]
-  const main = r.summary?.workload_name ?? r.snapshot?.workload_name ?? scripts[0] ?? segs[0]?.name
-  const primary = main ? `${main}${scripts.length > 1 ? ` +${scripts.length - 1}` : ''}` : undefined
+  // The server's workload_name is already the full label («tpch/tx +1»); only a local fallback
+  // from the snapshot needs the «+N».
+  const named = r.summary?.workload_name || r.snapshot?.workload_name
+  const first = scripts[0] ?? segs[0]?.name
+  const primary =
+    named ?? (first ? `${first}${scripts.length > 1 ? ` +${scripts.length - 1}` : ''}` : undefined)
   const vus = Math.max(0, ...segs.map((s) => s.vus ?? 0))
   const secondary = [
     r.summary?.protocol,

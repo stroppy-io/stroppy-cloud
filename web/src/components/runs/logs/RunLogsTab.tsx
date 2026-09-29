@@ -37,7 +37,9 @@ export const runLogsSearchSchema = telemetrySearchSchema.extend({
   level: arr(),
   segment: str(),
   q: str(),
-  line: str(),
+  // Line `seq` (< 2^53, exact as a JS number). Kept numeric so the URL stays `?line=<seq>`:
+  // a digit-only string would be re-serialized by the router as `?line="<seq>"`.
+  line: z.coerce.number().int().nonnegative().optional().catch(undefined),
   limit: z
     .union([z.literal(LOG_LIMITS[0]), z.literal(LOG_LIMITS[1]), z.literal(LOG_LIMITS[2])])
     .optional()
@@ -108,7 +110,8 @@ export function RunLogsTab({
     [search, range.start, range.end]
   )
   const query = useMemo(() => ({ ...filter, limit }) as LogQuery, [filter, limit])
-  const bufferOpts = runQueries.logBuffer(slug, id, query, search.line)
+  const anchor = search.line !== undefined ? String(search.line) : undefined
+  const bufferOpts = runQueries.logBuffer(slug, id, query, anchor)
   const key = bufferOpts.queryKey
   const logs = useQuery(bufferOpts)
   const facets = useQuery({
@@ -336,7 +339,7 @@ export function RunLogsTab({
         height="100%"
         emptyText={emptyText}
         highlight={search.q}
-        anchorSeq={search.line}
+        anchorSeq={anchor}
         machineColors={machineColors}
         onReachTop={handleReachTop}
         onReachBottom={handleReachBottom}

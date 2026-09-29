@@ -1,10 +1,14 @@
 import { testQueries } from '@api/queries/library'
-import { TestDetailPage, testDetailSearchSchema } from '@components/library/tests/TestDetailPage'
+import {
+  TEST_DETAIL_DEFAULTS,
+  TestDetailPage,
+  testDetailSearchSchema,
+} from '@components/library/tests/TestDetailPage'
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/t/$slug/library/tests/$id')({
   validateSearch: testDetailSearchSchema,
-  search: { middlewares: [stripSearchParams({ tab: 'overview' })] },
+  search: { middlewares: [stripSearchParams(TEST_DETAIL_DEFAULTS)] },
   loader: async ({ context, params }) => {
     const entity = await context.queryClient.ensureQueryData(
       testQueries.detail(params.slug, params.id)

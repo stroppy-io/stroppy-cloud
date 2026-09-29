@@ -83,7 +83,9 @@ export function SuiteOverviewTab({
   const navigate = useNavigate()
   const tests = useQuery(testQueries.options(slug))
   const providers = useQuery(providerQueries.list(slug))
-  const testIds = (suite.tests ?? []).flatMap((x) => ('ref' in x ? [x.ref.id] : []))
+  const refs = (suite.tests ?? []).flatMap((x) => ('ref' in x ? [x.ref] : []))
+  const testIds = refs.map((r) => r.id)
+  const refName = new Map(refs.map((r) => [r.id, r.name]))
   const byId = new Map((tests.data?.data ?? []).map((x) => [x.id, x]))
   const providerName = (id: string) => providers.data?.data.find((p) => p.id === id)?.name ?? id
   const axes = suite.axes ?? {}
@@ -165,7 +167,7 @@ export function SuiteOverviewTab({
                 <Icon name="vial" />
                 <div style={{ minWidth: 0 }}>
                   <AppLink to="/t/$slug/library/tests/$id" params={{ slug, id }} plain>
-                    <Text weight="medium">{x?.name ?? id}</Text>
+                    <Text weight="medium">{x?.name ?? refName.get(id) ?? id}</Text>
                   </AppLink>
                   <div className={styles.muted}>
                     {[
@@ -178,10 +180,16 @@ export function SuiteOverviewTab({
                       .join(' · ')}
                   </div>
                 </div>
-                <span className={styles.muted}>
-                  {t('suites.overview.testRuns', { count: x?.summary?.run_count ?? 0 })}
-                </span>
-                {x ? <StatusBadge status={x.status} /> : <StatusBadge status="unknown" />}
+                {/* Status and run count come from the test list; until it loads show nothing
+                    rather than «0 запусков · Неизвестно». */}
+                {x && (
+                  <>
+                    <span className={styles.muted}>
+                      {t('suites.overview.testRuns', { count: x.summary?.run_count ?? 0 })}
+                    </span>
+                    <StatusBadge status={x.status} />
+                  </>
+                )}
               </div>
             )
           })}

@@ -6,6 +6,7 @@ import { toast } from '@app/Toaster'
 import { CopyText } from '@components/CopyText'
 import { KeyValueList } from '@components/KeyValueList'
 import { TagsEditor } from '@components/TagsEditor'
+import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Divider, Stack, Switch, Text, Tooltip, useStyles2 } from '@grafana/ui'
@@ -206,7 +207,7 @@ export function RunSidebar({ run }: { run: Run }) {
                 },
               ]
             : []),
-          { label: t('common.fields.author'), value: run.author.display_name },
+          { label: t('common.fields.author'), value: <UserLabel user={run.author} /> },
           { label: t('common.fields.created'), value: formatDateTime(run.created_at) },
           ...(run.finished_at
             ? [{ label: t('common.fields.finished'), value: formatDateTime(run.finished_at) }]

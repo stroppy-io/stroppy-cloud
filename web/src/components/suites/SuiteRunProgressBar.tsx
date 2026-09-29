@@ -56,7 +56,8 @@ export function SuiteRunProgressBar({
   const { t } = useTranslation()
   const total = Math.max(1, progress.total)
   const cancelled = progress.cancelled ?? 0
-  const ok = Math.max(0, progress.done - progress.failed - cancelled)
+  // Server categories are disjoint: total = done + failed + cancelled + running + pending.
+  const ok = progress.done
   const pct = (n: number) => `${(n / total) * 100}%`
   const items: { key: string; n: number; cls: string }[] = [
     { key: 'done', n: ok, cls: styles.done },

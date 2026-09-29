@@ -8,8 +8,7 @@ import { DataTable, type DataTableColumn } from '@components/DataTable/DataTable
 import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { RelativeTime } from '@components/RelativeTime'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
-import { css } from '@emotion/css'
-import type { GrafanaTheme2 } from '@grafana/data'
+import { UserAvatar } from '@components/UserAvatar'
 import {
   Badge,
   Button,
@@ -21,7 +20,6 @@ import {
   Stack,
   Text,
   TextArea,
-  useStyles2,
 } from '@grafana/ui'
 import { applyServerErrors, firstError } from '@helpers/form'
 import { formatDateTime, relativeTime } from '@helpers/time'
@@ -37,33 +35,8 @@ import { ReadOnlyNotice } from './ReadOnlyNotice'
 
 const ROLES = ['admin', 'member', 'viewer'] as const satisfies readonly TenantRole[]
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  avatar: css({
-    width: theme.spacing(3.5),
-    height: theme.spacing(3.5),
-    borderRadius: '50%',
-    display: 'inline-grid',
-    placeItems: 'center',
-    background: theme.colors.background.secondary,
-    border: `1px solid ${theme.colors.border.medium}`,
-    fontSize: theme.typography.bodySmall.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    flexShrink: 0,
-  }),
-})
-
-export function initials(name: string | undefined): string {
-  const parts = (name ?? '').trim().split(/\s+/).filter(Boolean)
-  if (!parts.length) return '?'
-  return parts
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? '')
-    .join('')
-}
-
 export function MembersPage() {
   const { t } = useTranslation()
-  const styles = useStyles2(getStyles)
   const { slug, can, me } = useTenant()
   const qc = useQueryClient()
   const navigate = useNavigate()
@@ -192,11 +165,7 @@ export function MembersPage() {
         render: (m) => ({
           title: m.user.display_name ?? m.user.email ?? m.user.id,
           subtitle: m.user.email,
-          lead: (
-            <span className={styles.avatar} aria-hidden>
-              {initials(m.user.display_name ?? m.user.email)}
-            </span>
-          ),
+          lead: <UserAvatar user={m.user} size={28} />,
           badges:
             m.user.id === me.id ? <Badge text={t('common.misc.you')} color="blue" /> : undefined,
         }),
@@ -230,7 +199,7 @@ export function MembersPage() {
         actions: memberActions,
       }),
     ],
-    [t, styles, me.id, canManage, setRole.isPending]
+    [t, me.id, canManage, setRole.isPending]
   )
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: inviteActions is a per-render closure

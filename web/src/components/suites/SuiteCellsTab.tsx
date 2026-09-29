@@ -103,10 +103,31 @@ export function SuiteCellsTab({
   const { slug, can } = useTenant()
   const navigate = useNavigate()
   const qc = useQueryClient()
-  const [cells, setCells] = useState<SuiteCell[]>(() => stripValidation(suite.cells ?? []))
+  // A suite without stored cells derives them from tests × axes (the summary counts those);
+  // the table then starts from the server's expansion so it matches the «N ячеек» badge.
+  const storedBody = useMemo<Schemas['SuiteWrite']>(
+    () => ({
+      name: suite.name,
+      tests: suite.tests,
+      axes: suite.axes,
+      cells: suite.cells ?? [],
+      concurrency: suite.concurrency,
+      defaults: suite.defaults,
+    }),
+    [suite]
+  )
+  const derived = useQuery({
+    ...suiteQueries.preview(slug, storedBody),
+    enabled: !suite.cells?.length,
+  })
+  const baseline = useMemo(
+    () => stripValidation(suite.cells?.length ? suite.cells : (derived.data?.cells ?? [])),
+    [suite.cells, derived.data]
+  )
+  const [cells, setCells] = useState<SuiteCell[]>(baseline)
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset local edits when the server copy changes
-  useEffect(() => setCells(stripValidation(suite.cells ?? [])), [suite.id, suite.updated_at])
-  const dirty = JSON.stringify(cells) !== JSON.stringify(stripValidation(suite.cells ?? []))
+  useEffect(() => setCells(baseline), [suite.id, suite.updated_at, baseline])
+  const dirty = JSON.stringify(cells) !== JSON.stringify(baseline)
   const [editing, setEditing] = useState<SuiteCell | undefined>()
   const [regenNote, setRegenNote] = useState<number | undefined>()
   const providers = useQuery(providerQueries.list(slug))

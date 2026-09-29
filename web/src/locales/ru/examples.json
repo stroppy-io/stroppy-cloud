@@ -1,23 +1,24 @@
 {
   "title": "Примеры",
-  "subtitle": "Готовые базы, нагрузки, тесты и матрицы. Клонируйте в библиотеку или запускайте сразу.",
+  "subtitle": "Готовые базы, нагрузки, тесты и сьюты. Клонируйте в библиотеку или запускайте сразу.",
   "disabled": "Примеры отключены на этой инсталляции. Галерея показана только для чтения.",
   "filters": {
     "kind": "Тип",
     "db": "База",
-    "all": "Все"
+    "all": "Все",
+    "anyDb": "Любая база"
   },
   "kind": {
     "database": "Базы данных",
     "workload": "Нагрузки",
     "test": "Тесты",
-    "suite": "Матрицы"
+    "suite": "Сьюты"
   },
   "kindOne": {
     "database": "База",
     "workload": "Нагрузка",
     "test": "Тест",
-    "suite": "Матрица"
+    "suite": "Сьют"
   },
   "empty": {
     "title": "Нет примеров под фильтры",
@@ -54,5 +55,30 @@
     "example": "Пример",
     "onlyTests": "Быстрый запуск есть только у тестов",
     "disabled": "Примеры отключены на этой инсталляции"
+  },
+  "card": {
+    "engine": "Движок",
+    "topology": "Топология",
+    "singleNode": "один узел",
+    "protocol": "Протокол",
+    "database": "База",
+    "sizes": "Размеры",
+    "concurrency": "Параллельность",
+    "segments_one": "{{count}} сегмент",
+    "segments_few": "{{count}} сегмента",
+    "segments_many": "{{count}} сегментов",
+    "segments_other": "{{count}} сегмента",
+    "tests_one": "{{count}} тест",
+    "tests_few": "{{count}} теста",
+    "tests_many": "{{count}} тестов",
+    "tests_other": "{{count}} теста",
+    "sizeVariants_one": "{{count}} вариант размеров",
+    "sizeVariants_few": "{{count}} варианта размеров",
+    "sizeVariants_many": "{{count}} вариантов размеров",
+    "sizeVariants_other": "{{count}} варианта размеров",
+    "iterations_one": "{{count}} итерация",
+    "iterations_few": "{{count}} итерации",
+    "iterations_many": "{{count}} итераций",
+    "iterations_other": "{{count}} итерации"
   }
 }

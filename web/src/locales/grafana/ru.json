@@ -1,0 +1,1296 @@
+{
+  "carousel": {
+    "close": "Закрыть",
+    "error": "Ошибка при загрузке изображений",
+    "next": "Далее",
+    "previous": "Назад"
+  },
+  "clipboard-button": {
+    "inline-toast": {
+      "success": "Скопировано"
+    }
+  },
+  "combobox": {
+    "async": {
+      "error": "Не удалось загрузить варианты."
+    },
+    "clear": {
+      "title": "Очистить значение"
+    },
+    "custom-value": {
+      "description": "Использовать своё значение"
+    },
+    "options": {
+      "loading": "Загрузка вариантов…",
+      "no-found": "Ничего не найдено."
+    }
+  },
+  "grafana-data": {
+    "datetime": {
+      "rangeutils": {
+        "getBaseRangeOptions": {
+          "dayBeforeYesterday": "Позавчера",
+          "previousFiscalQuarter": "Предыдущий финансовый квартал",
+          "previousFiscalYear": "Предыдущий финансовый год",
+          "previousMonth": "Предыдущий месяц",
+          "previousWeek": "Предыдущая неделя",
+          "previousYear": "Предыдущий год",
+          "thisDayLastWeek": "Этот день на прошлой неделе",
+          "thisFiscalQuarter": "Текущий финансовый квартал",
+          "thisFiscalQuarterSoFar": "Текущий финансовый квартал по состоянию на настоящий момент",
+          "thisFiscalYear": "Текущий финансовый год",
+          "thisFiscalYearSoFar": "Текущий финансовый год по состоянию на настоящий момент",
+          "thisMonth": "Текущий месяц",
+          "thisMonthSoFar": "Текущий месяц по состоянию на настоящий момент",
+          "thisWeek": "Текущая неделя",
+          "thisWeekSoFar": "Текущая неделя по состоянию на настоящий момент",
+          "thisYear": "Текущий год",
+          "thisYearSoFar": "Текущий год по состоянию на настоящий момент",
+          "today": "Сегодня",
+          "todaySoFar": "Сегодня по состоянию на настоящий момент",
+          "yesterday": "Вчера"
+        },
+        "lastNDays_one": "Последний {{count}} день",
+        "lastNDays_other": "Последние {{count}} дня",
+        "lastNDays_few": "Последние {{count}} дня",
+        "lastNDays_many": "Последние {{count}} дней",
+        "lastNHours_one": "Последний {{count}} час",
+        "lastNHours_other": "Последние {{count}} часа",
+        "lastNHours_few": "Последние {{count}} часа",
+        "lastNHours_many": "Последние {{count}} часов",
+        "lastNMinutes_one": "Последняя {{count}} минута",
+        "lastNMinutes_other": "Последние {{count}} минуты",
+        "lastNMinutes_few": "Последние {{count}} минуты",
+        "lastNMinutes_many": "Последние {{count}} минут",
+        "lastNMonths_one": "Последний {{count}} месяц",
+        "lastNMonths_other": "Последние {{count}} месяца",
+        "lastNMonths_few": "Последние {{count}} месяца",
+        "lastNMonths_many": "Последние {{count}} месяцев",
+        "lastNYears_one": "Последний {{count}} год",
+        "lastNYears_other": "Последние {{count}} года",
+        "lastNYears_few": "Последние {{count}} года",
+        "lastNYears_many": "Последние {{count}} лет",
+        "nextNDays_one": "Следующий {{count}} день",
+        "nextNDays_other": "Следующие {{count}} дня",
+        "nextNDays_few": "Следующие {{count}} дня",
+        "nextNDays_many": "Следующие {{count}} дней",
+        "nextNHours_one": "Следующий {{count}} час",
+        "nextNHours_other": "Следующие {{count}} часа",
+        "nextNHours_few": "Следующие {{count}} часа",
+        "nextNHours_many": "Следующие {{count}} часов",
+        "nextNMinutes_one": "Следующая {{count}} минута",
+        "nextNMinutes_other": "Следующие {{count}} минуты",
+        "nextNMinutes_few": "Следующие {{count}} минуты",
+        "nextNMinutes_many": "Следующие {{count}} минут",
+        "nextNMonths_one": "Следующий {{count}} месяц",
+        "nextNMonths_other": "Следующие {{count}} месяца",
+        "nextNMonths_few": "Следующие {{count}} месяца",
+        "nextNMonths_many": "Следующие {{count}} месяцев",
+        "nextNYears_one": "Следующий {{count}} год",
+        "nextNYears_other": "Следующие {{count}} года",
+        "nextNYears_few": "Следующие {{count}} года",
+        "nextNYears_many": "Следующие {{count}} лет"
+      }
+    },
+    "field": {
+      "fieldColor": {
+        "accessibleGroup": "Доступно",
+        "experimentalGroup": "Экспериментальные",
+        "otherGroup": "Прочее"
+      }
+    },
+    "valueFormats": {
+      "categories": {
+        "acceleration": {
+          "formats": {
+            "name-feet-sec": "Фут/с²",
+            "name-g-unit": "Единица ускорения свободного падения (G)",
+            "name-meters-sec": "М/с²"
+          },
+          "name": "Ускорение"
+        },
+        "angle": {
+          "formats": {
+            "name-arc-minutes": "Угловые минуты",
+            "name-arc-seconds": "Угловые секунды",
+            "name-degrees": "Градусы (°)",
+            "name-gradian": "Градиан",
+            "name-radians": "Радианы"
+          },
+          "name": "Угол"
+        },
+        "area": {
+          "formats": {
+            "name-acres": "Акры (акр)",
+            "name-hectares": "Гектары (га)",
+            "name-square-feet": "Квадратные футы (фут²)",
+            "name-square-meters": "Квадратные метры (м²)",
+            "name-square-miles": "Квадратные мили (миля²)"
+          },
+          "name": "Площадь"
+        },
+        "boolean": {
+          "formats": {
+            "name-on-off": "Вкл. / Выкл.",
+            "name-true-false": "Истина / Ложь",
+            "name-yes-no": "Да / Нет"
+          },
+          "name": "Логическое значение"
+        },
+        "computation": {
+          "formats": {
+            "name-eflops": "Эксафлоп/с",
+            "name-flops": "Флоп/с",
+            "name-gflops": "Гигафлоп/с",
+            "name-mflops": "Мегафлоп/с",
+            "name-pflops": "Петафлоп/с",
+            "name-tflops": "Терафлоп/с",
+            "name-yflops": "Йоттафлоп/с",
+            "name-zflops": "Зеттафлоп/с"
+          },
+          "name": "Вычислительная мощность"
+        },
+        "concentration": {
+          "formats": {
+            "name-g-m3": "грамм на кубический метр (г/м³)",
+            "name-g-nm3": "грамм на нормальный кубический метр (г/Нм³)",
+            "name-mg-dl": "миллиграмм на децилитр (мг/дл)",
+            "name-mg-m3": "миллиграмм на кубический метр (мг/м³)",
+            "name-mg-nm3": "миллиграмм на нормальный кубический метр (мг/Нм³)",
+            "name-mmol-l": "миллимоль на литр (ммоль/л)",
+            "name-ng-m3": "нанограмм на кубический метр (нг/м³)",
+            "name-ng-nm3": "нанограмм на нормальный кубический метр (нг/Нм³)",
+            "name-ppb": "частей на миллиард (ppb)",
+            "name-ppm": "частей на миллион (ppm)",
+            "name-ug-m3": "микрограмм на кубический метр (мкг/м³)",
+            "name-ug-nm3": "микрограмм на нормальный кубический метр (мкг/Нм³)"
+          },
+          "name": "Концентрация"
+        },
+        "currency": {
+          "formats": {
+            "name-bgn": "Болгарский лев (BGN)",
+            "name-brl": "Бразильский реал (R$)",
+            "name-btc": "Биткоин (฿)",
+            "name-chf": "Швейцарский франк (CHF)",
+            "name-czk": "Чешская крона (CZK)",
+            "name-dkk": "Датская крона (kr)",
+            "name-eur": "Евро (€)",
+            "name-gbp": "Фунт стерлингов (£)",
+            "name-idr": "Индонезийская рупия (Rp)",
+            "name-ils": "Новый израильский шекель (₪)",
+            "name-inr": "Индийская рупия (₹)",
+            "name-isk": "Исландская крона (kr)",
+            "name-jpy": "Йена (¥)",
+            "name-krw": "Южнокорейская вона (₩)",
+            "name-mbtc": "Миллибиткоин (฿)",
+            "name-myr": "Малайзийский ринггит (RM)",
+            "name-nok": "Норвежская крона (kr)",
+            "name-php": "Филиппинское песо (PHP)",
+            "name-pln": "Польский злотый (PLN)",
+            "name-pyg": "Парагвайский гуарани (₲)",
+            "name-rub": "Российский рубль (₽)",
+            "name-sek": "Шведская крона (kr)",
+            "name-try": "Турецкая лира (₺)",
+            "name-uah": "Украинская гривна (₴)",
+            "name-ubtc": "Микробиткоин (฿)",
+            "name-usd": "Доллар США ($)",
+            "name-uyu": "Уругвайское песо (UYU)",
+            "name-vnd": "Вьетнамский донг (VND)",
+            "name-xpf": "Тихоокеанский франк (XPF)",
+            "name-zar": "Южноафриканский рэнд (R)"
+          },
+          "name": "Валюта"
+        },
+        "data-rate": {
+          "formats": {
+            "name-bits-sec-iec": "бит/с (МЭК)",
+            "name-bits-sec-si": "бит/с (СИ)",
+            "name-bytes-sec-iec": "байт/с (МЭК)",
+            "name-bytes-sec-si": "байт/с (СИ)",
+            "name-gibibits-sec": "гибибит/с",
+            "name-gibibytes-sec": "гибибайт/с",
+            "name-gigabits-sec": "гигабит/с",
+            "name-gigabytes-sec": "гигабайт/с",
+            "name-kibibits-sec": "кибибит/с",
+            "name-kibibytes-sec": "кибибайт/с",
+            "name-kilobits-sec": "килобит/с",
+            "name-kilobytes-sec": "килобайт/с",
+            "name-mebibits-sec": "мебибит/с",
+            "name-mebibytes-sec": "мебибайт/с",
+            "name-megabits-sec": "мегабит/с",
+            "name-megabytes-sec": "мегабайт/с",
+            "name-packets-sec": "пакеты/с",
+            "name-pebibits-sec": "пебибит/с",
+            "name-pebibytes-sec": "пебибайт/с",
+            "name-petabits-sec": "петабит/с",
+            "name-petabytes-sec": "петабайт/с",
+            "name-tebibits-sec": "тебибит/с",
+            "name-tebibytes-sec": "тебибайт/с",
+            "name-terabits-sec": "терабит/с",
+            "name-terabytes-sec": "терабайт/с"
+          },
+          "name": "Скорость передачи данных"
+        },
+        "data": {
+          "formats": {
+            "name-bits-iec": "биты (МЭК)",
+            "name-bits-si": "биты (СИ)",
+            "name-bytes-iec": "байты (МЭК)",
+            "name-bytes-si": "байты (СИ)",
+            "name-gibibytes": "гибибайты",
+            "name-gigabytes": "гигабайты",
+            "name-kibibytes": "кибибайты",
+            "name-kilobytes": "килобайты",
+            "name-mebibytes": "мебибайты",
+            "name-megabytes": "мегабайты",
+            "name-pebibytes": "пебибайты",
+            "name-petabytes": "петабайты",
+            "name-tebibytes": "тебибайты",
+            "name-terabytes": "терабайты"
+          },
+          "name": "Данные"
+        },
+        "date-time": {
+          "formats": {
+            "name-datetime-default": "Дата и время по умолчанию",
+            "name-datetime-iso": "Дата и время в формате ISO",
+            "name-datetime-iso-no-date": "Дата и время в формате ISO (без даты, если сегодня)",
+            "name-datetime-local": "Дата и время в местном формате",
+            "name-datetime-local-no-date": "Дата и время в местном формате (без даты, если сегодня)",
+            "name-datetime-us": "Дата и время в американском формате",
+            "name-datetime-us-no-date": "Дата и время в американском формате (без даты, если сегодня)",
+            "name-from-now": "С настоящего момента"
+          },
+          "name": "Дата и время"
+        },
+        "energy": {
+          "formats": {
+            "name-ampere": "Ампер (А)",
+            "name-ampere-hour": "Ампер-час (А·ч)",
+            "name-decibel-milliwatt": "Децибел-милливатт (дБм)",
+            "name-electron-volt": "Электрон-вольт (эВ)",
+            "name-farad": "Фарад (Ф)",
+            "name-femtofarad": "Фемтофарад (фФ)",
+            "name-gigawatt": "Гигаватт (ГВт)",
+            "name-henry": "Генри (Гн)",
+            "name-joule": "Джоуль (Дж)",
+            "name-kiloampere": "Килоампер (кА)",
+            "name-kiloampere-hour": "Килоампер-час (кА·ч)",
+            "name-kiloohm": "Килоом (кОм)",
+            "name-kilovolt": "Киловольт (кВ)",
+            "name-kilovolt-ampere": "Киловольт-ампер (кВА)",
+            "name-kilovolt-ampere-reactive": "Киловольт-ампер реактивный (кВАр)",
+            "name-kilowatt": "Киловатт (кВт)",
+            "name-kilowatt-hour": "Киловатт-час (кВт·ч)",
+            "name-kilowatt-min": "Киловатт-минут (кВт·мин)",
+            "name-lumens": "Люмен (лм)",
+            "name-megaohm": "Мегаом (МОм)",
+            "name-megawatt": "Мегаватт (МВт)",
+            "name-megawatt-hour": "Мегаватт-час (МВт·ч)",
+            "name-microfarad": "Микрофарад (мкФ)",
+            "name-microhenry": "Микрогенри (мкГн)",
+            "name-milliampere": "Миллиампер (мА)",
+            "name-milliampere-hour": "Миллиампер-час (мА·ч)",
+            "name-millihenry": "Миллигенри (мГн)",
+            "name-milliohm": "Миллиом (мОм)",
+            "name-millivolt": "Милливольт (мВ)",
+            "name-milliwatt": "Милливатт (мВт)",
+            "name-nanofarad": "Нанофарад (нФ)",
+            "name-ohm": "Ом (Ом)",
+            "name-picofarad": "Пикофарад (пФ)",
+            "name-volt": "Вольт (В)",
+            "name-volt-ampere": "Вольт-ампер (ВА)",
+            "name-volt-ampere-reactive": "Вольт-ампер реактивный (ВАр)",
+            "name-watt": "Ватт (Вт)",
+            "name-watt-hour": "Ватт-час (Вт·ч)",
+            "name-watt-hour-per-kg": "Ватт-час на килограмм (Вт·ч/кг)",
+            "name-watt-square-meter": "Ватт на квадратный метр (Вт/м²)"
+          },
+          "name": "Энергия"
+        },
+        "flow": {
+          "formats": {
+            "name-cubic-feet-min": "Кубический фут/мин (куб. фут/мин)",
+            "name-cubic-feet-sec": "Кубический фут/с (куб. фут/с)",
+            "name-cubic-meters-sec": "Кубический метр/с (куб. м/с)",
+            "name-gallons-min": "Галлон/мин (гал/мин)",
+            "name-litre-hour": "Литр/час",
+            "name-litre-min": "Литр/мин (л/мин)",
+            "name-lux": "Люкс (лк)",
+            "name-millilitre-min": "миллилитр/мин (мл/мин)"
+          },
+          "name": "Расход"
+        },
+        "force": {
+          "formats": {
+            "name-kilonewton-meters": "Килоньютон-метр (кН·м)",
+            "name-kilonewtons": "Килоньютон (кН)",
+            "name-newton-meters": "Ньютон-метр (Н·м)",
+            "name-newtons": "Ньютон (Н)"
+          },
+          "name": "Сила"
+        },
+        "hash-rate": {
+          "formats": {
+            "name-exahashes-sec": "эксахеш/сек",
+            "name-gigahashes-sec": "гигахеш/сек",
+            "name-hashes-sec": "хеш/сек",
+            "name-kilohashes-sec": "килохеш/сек",
+            "name-megahashes-sec": "мегахеш/сек",
+            "name-petahashes-sec": "петахеш/сек",
+            "name-terahashes-sec": "терахеш/сек"
+          },
+          "name": "Хешрейт"
+        },
+        "length": {
+          "formats": {
+            "name-centimeter": "сантиметр (cm)",
+            "name-feet": "фут (фут)",
+            "name-inch": "дюйм (дюйм)",
+            "name-kilometer": "километр (км)",
+            "name-meter": "метр (м)",
+            "name-mile": "миля (миля)",
+            "name-millimeter": "миллиметр (мм)"
+          },
+          "name": "Длина"
+        },
+        "mass": {
+          "formats": {
+            "name-gram": "грамм (г)",
+            "name-kilogram": "килограмм (кг)",
+            "name-metric-ton": "метрическая тонна (т)",
+            "name-milligram": "миллиграмм (мг)",
+            "name-pound": "фунт (фунт)"
+          },
+          "name": "Масса"
+        },
+        "misc": {
+          "formats": {
+            "name-candala": "Кандела (кд)",
+            "name-decibel": "Децибел",
+            "name-hexadecimal": "Шестнадцатеричный",
+            "name-hexadecimal-0x": "Шестнадцатеричный (0x)",
+            "name-humidity": "Влажность (%H)",
+            "name-locale": "Формат локали",
+            "name-number": "Число",
+            "name-percent-1": "Процент (0,0–1,0)",
+            "name-percent-100": "Процент (0–100)",
+            "name-pixels": "Пиксели",
+            "name-scientific": "Экспоненциальное представление",
+            "name-short": "краткий",
+            "name-si-short": "краткий СИ",
+            "name-string": "Строка"
+          },
+          "name": "Прочее"
+        },
+        "pressure": {
+          "formats": {
+            "name-bars": "Столбцы",
+            "name-hectopascals": "Гектопаскаль",
+            "name-inches-mercury": "Дюймы ртутного столба",
+            "name-kilobars": "Килобар",
+            "name-kilopascals": "Килопаскаль",
+            "name-millibars": "Миллибар",
+            "name-pascals": "Паскаль",
+            "name-psi": "PSI"
+          },
+          "name": "Давление"
+        },
+        "radiation": {
+          "formats": {
+            "name-becquerel": "Беккерель (Бк)",
+            "name-curie": "кюри (Ки)",
+            "name-exposure": "Экспозиционная доза (Кл/кг)",
+            "name-gray": "Грей (Гр)",
+            "name-microsievert": "микрозиверт (мкЗв)",
+            "name-microsievert-hour": "микрозиверт/час (мкЗв/ч)",
+            "name-millisievert": "миллизиверт (мЗв)",
+            "name-millisievert-hour": "миллизиверт/час (мЗв/ч)",
+            "name-rad": "рад",
+            "name-rem": "бэр",
+            "name-roentgen": "рентген (Р)",
+            "name-sievert": "Зиверт (Зв)",
+            "name-sievert-hour": "Зиверт/час (Зв/ч)"
+          },
+          "name": "Излучение"
+        },
+        "rotational-speed": {
+          "formats": {
+            "name-degrees-sec": "Градусы в секунду (°/с)",
+            "name-gigahertz": "Гигагерц (ГГц)",
+            "name-hertz": "Герц (Гц)",
+            "name-kilohertz": "Килогерц (кГц)",
+            "name-megahertz": "Мегагерц (МГц)",
+            "name-radians-sec": "Радиан в секунду (рад/с)",
+            "name-rpm": "Обороты в минуту (об/мин)"
+          },
+          "name": "Скорость вращения"
+        },
+        "temperature": {
+          "formats": {
+            "name-celsius": "Градусы Цельсия (°C)",
+            "name-fahrenheit": "Градусы Фаренгейта (°F)",
+            "name-kelvin": "Кельвин (К)"
+          },
+          "name": "Температура"
+        },
+        "throughput": {
+          "formats": {
+            "name-counts-min": "число отсчетов в минуту (cpm)",
+            "name-counts-sec": "число отсчетов в секунду (cps)",
+            "name-events-min": "число событий в минуту (epm)",
+            "name-events-sec": "число событий в секунду (eps)",
+            "name-io-ops-sec": "число операций ввода/вывода в секунду (iops)",
+            "name-messages-min": "число сообщений в минуту (mpm)",
+            "name-messages-sec": "число сообщений в секунду (mps)",
+            "name-ops-min": "число операций в минуту (opm)",
+            "name-ops-sec": "число операций в секунду (ops)",
+            "name-reads-min": "число считываний в минуту (rpm)",
+            "name-reads-sec": "число считываний в секунду (rps)",
+            "name-records-min": "число записей в минуту (rpm)",
+            "name-records-sec": "число записей в секунду (rps)",
+            "name-requests-min": "число запросов в минуту (rpm)",
+            "name-requests-sec": "число запросов в секунду (rps)",
+            "name-rows-min": "число строк в минуту (rpm)",
+            "name-rows-sec": "число строк в секунду (rps)",
+            "name-writes-min": "число записей в минуту (wpm)",
+            "name-writes-sec": "число записей в секунду (wps)"
+          },
+          "name": "Пропускная способность"
+        },
+        "time": {
+          "formats": {
+            "name-clock-ms": "время (мс)",
+            "name-clock-s": "время (с)",
+            "name-days": "дни (д)",
+            "name-duration-dhms": "продолжительность (д чч:мм:сс)",
+            "name-duration-hms": "продолжительность (чч:мм:сс)",
+            "name-duration-ms": "продолжительность (мс)",
+            "name-duration-s": "продолжительность (с)",
+            "name-hertz": "Герц (1/с)",
+            "name-hours": "часы (ч)",
+            "name-microseconds": "микросекунды (мкс)",
+            "name-milliseconds": "миллисекунды (мс)",
+            "name-minutes": "минуты (мин)",
+            "name-nanoseconds": "наносекунды (нс)",
+            "name-seconds": "секунды (с)",
+            "name-timeticks": "Отметки времени (с/100)"
+          },
+          "name": "Время"
+        },
+        "velocity": {
+          "formats": {
+            "name-kilometers-hour": "километров в час (км/ч)",
+            "name-knot": "узел (уз)",
+            "name-meters-second": "метров в секунду (м/с)",
+            "name-miles-hour": "миль в час (миль/ч)"
+          },
+          "name": "Скорость"
+        },
+        "volume": {
+          "formats": {
+            "name-cubic-decimeter": "кубический дециметр",
+            "name-cubic-meter": "кубический метр",
+            "name-gallons": "галлоны",
+            "name-litre": "литр (л)",
+            "name-millilitre": "миллилитр (мл)",
+            "name-normal-cubic-meter": "Нормальный кубический метр"
+          },
+          "name": "Объем"
+        }
+      }
+    }
+  },
+  "grafana-ui": {
+    "action-editor": {
+      "button": {
+        "action-variables-title": "Переменные действия",
+        "confirm": "Подтвердить",
+        "confirm-action": "Подтвердить действие",
+        "variable-value-placeholder": "Значение"
+      },
+      "close": "Закрыть",
+      "continue": "Продолжить",
+      "inline": {
+        "add-action": "Добавить действие",
+        "edit-action": "Редактировать действие"
+      }
+    },
+    "alert": {
+      "close-button": "Закрыть уведомление"
+    },
+    "auto-save-field": {
+      "saved": "Сохранено",
+      "saving": "Сохранение <1></1>"
+    },
+    "axis-builder": {
+      "linear-threshold": {
+        "label": "Линейный порог",
+        "warning": {
+          "nan": "Линейный порог должен быть числом",
+          "zero": "Линейный порог не может быть равен нулю"
+        }
+      },
+      "log-base": "База журналов"
+    },
+    "builder": {
+      "axis": {
+        "category-axis": "Ось",
+        "color-label": "Цвет",
+        "color-options": {
+          "label-series": "Ряды",
+          "label-text": "Текст"
+        },
+        "grid-line-options": {
+          "label-auto": "Авто",
+          "label-off": "Выкл.",
+          "label-on": "Вкл."
+        },
+        "name-centered-zero": "Центр на нуле",
+        "name-grid-lines": "Показывать линии сетки",
+        "name-label": "Метка",
+        "name-placement": "Размещение",
+        "name-scale": "Шкала",
+        "name-show-border": "Показывать границу",
+        "name-soft-max": "Мягкий макс.",
+        "name-soft-min": "Мягкий мин.",
+        "name-width": "Ширина",
+        "placeholder-label": "Дополнительный текст",
+        "placeholder-soft-max": "См. «Стандартные параметры > Макс.»",
+        "placeholder-soft-min": "См. «Стандартные параметры > Мин.»",
+        "placeholder-width": "Авто",
+        "scale-distribution-editor": {
+          "distribution-options": {
+            "label-linear": "Линейная",
+            "label-log": "Логарифмическая",
+            "label-symlog": "Симметричная логарифмическая"
+          }
+        }
+      },
+      "legend": {
+        "category": "Условные обозначения",
+        "description-limit": "Ограничивает количество элементов, отображаемых по умолчанию",
+        "description-values": "Выберите значения или расчеты для отображения в условных обозначениях",
+        "mode-options": {
+          "label-list": "Список",
+          "label-table": "Таблица"
+        },
+        "name-limit": "Лимит",
+        "name-mode": "Режим",
+        "name-overflow": "Переполнение",
+        "name-placement": "Размещение",
+        "name-values": "Значения",
+        "name-visibility": "Видимость",
+        "name-width": "Ширина",
+        "overflow-options": {
+          "label-ellipsis": "Многоточие",
+          "label-wrap": "Перенос"
+        },
+        "placeholder-width": "Авто, px или % (например, 220 или 35%)",
+        "placement-options": {
+          "label-bottom": "Снизу",
+          "label-right": "Справа"
+        }
+      },
+      "stacking": {
+        "name-stack-series": "Располагать ряды в стеке"
+      },
+      "text": {
+        "category-text-size": "Размер текста",
+        "name-percent-change": "Процентное изменение",
+        "name-title": "Заголовок",
+        "name-value": "Значение",
+        "placeholder-percent-change": "Авто",
+        "placeholder-title": "Авто",
+        "placeholder-value": "Авто"
+      },
+      "tooltip": {
+        "category": "Подсказка",
+        "description-hover-proximity": "Насколько близко курсор должен быть к точке, чтобы вызвать всплывающую подсказку, в пикселях",
+        "modeOptions": {
+          "label-all": "Все",
+          "label-hidden": "Скрыты",
+          "label-single": "Один"
+        },
+        "name-hide-zeros": "Скрывать нули",
+        "name-hover-proximity": "Близость наведения",
+        "name-max-height": "Макс. высота",
+        "name-max-width": "Макс. ширина",
+        "name-tooltip-mode": "Режим подсказок",
+        "name-values-sort-order": "Порядок сортировки значений",
+        "sortOptions": {
+          "label-ascending": "По возрастанию",
+          "label-descending": "По убыванию",
+          "label-none": "Нет"
+        }
+      }
+    },
+    "card": {
+      "option": "параметр"
+    },
+    "carousel": {
+      "aria-label-open-image": "Открыть предварительный просмотр изображения"
+    },
+    "cascader": {
+      "clear-button": "Очистить выбор"
+    },
+    "code-mirror": {
+      "error-label": "Не удалось загрузить редактор CodeMirror",
+      "language-load-failed": "Не удалось загрузить подсветку синтаксиса",
+      "language-load-failed-description": "Редактор продолжит работу без возможностей, зависящих от языка.",
+      "loading-placeholder": "Загрузка редактора"
+    },
+    "color-picker-popover": {
+      "palette-tab": "Цвета",
+      "spectrum-tab": "Пользовательский"
+    },
+    "color-picker": {
+      "input-label": "Значение RGBA"
+    },
+    "color-swatch": {
+      "aria-label-default": "Выбрать цвет",
+      "aria-label-selected-color": "{{colorLabel}} цвет"
+    },
+    "components": {
+      "sparkline": {
+        "warning": {
+          "too-few-values": "Для визуализации спарклайна требуется как минимум два значения."
+        }
+      }
+    },
+    "confirm-button": {
+      "aria-label-delete": "Удалить",
+      "cancel": "Отмена",
+      "confirmText-delete": "Удалить"
+    },
+    "confirm-content": {
+      "placeholder": "Введите «{{confirmPromptText}}» для подтверждения"
+    },
+    "data-link-editor-modal": {
+      "cancel": "Отмена",
+      "one-click-description": "Только одна ссылка может быть активирована одним нажатием за раз",
+      "save": "Сохранить"
+    },
+    "data-link-editor": {
+      "info": "Связь данных позволяет вам ссылаться на их переменные, такие как имя ряда, метки и значения. Чтобы открыть варианты переменных, введите CMD+пробел, CTRL+пробел или $.",
+      "new-tab-label": "Открыть в новой вкладке",
+      "title-label": "Название",
+      "title-placeholder": "Показать подробности",
+      "url-label": "URL"
+    },
+    "data-link-inline-editor": {
+      "one-click": "Одно нажатие"
+    },
+    "data-links-inline-editor": {
+      "add-link": "Добавить ссылку",
+      "drag-handle-label": "Изменить порядок ссылки на данные {{title}}",
+      "edit-link": "Редактировать ссылку",
+      "one-click": "Одно нажатие",
+      "one-click-enabled": "Одно нажатие включено",
+      "title-not-provided": "Название не указано",
+      "tooltip-edit": "Редактировать",
+      "tooltip-remove": "Удалить",
+      "url-not-provided": "URL-адрес ссылки на данные не указан"
+    },
+    "data-source-basic-auth-settings": {
+      "user-label": "Пользователь",
+      "user-placeholder": "пользователь"
+    },
+    "data-source-http-proxy-settings": {
+      "oauth-identity-label": "Переслать идентификационные данные OAuth",
+      "oauth-identity-tooltip": "Переслать исходные идентификационные данные OAuth пользователя в источник данных. (Токен доступа передается вместе с ними.)",
+      "skip-tls-verify-label": "Пропустить проверку TLS",
+      "ts-client-auth-label": "Аутентификация клиента TLS",
+      "with-ca-cert-label": "С сертификатом CA",
+      "with-ca-cert-tooltip": "Необходимо для проверки самозаверенных сертификатов TLS"
+    },
+    "data-source-http-settings": {
+      "access-help": "Справка <1></1>",
+      "access-help-details": "Режим доступа определяет, как будут обрабатываться запросы к источнику данных. Предпочтителен режим <strong><i>Сервер</i></strong>, если не указано иное.",
+      "access-help-title": "Справка по доступу",
+      "access-label": "Доступ",
+      "allowed-cookies": "Разрешенные файлы cookie",
+      "allowed-cookies-description": "Прокси-сервер Grafana по умолчанию удаляет пересылаемые файлы cookie. Укажите имя файлов cookie, которые следует переслать в источник данных.",
+      "auth": "Аутентификация",
+      "azure-auth-label": "Аутентификация Azure",
+      "azure-auth-tooltip": "Используйте аутентификацию Azure для конечной точки Azure.",
+      "basic-auth": "Основные данные аутентификации",
+      "basic-auth-label": "Основная аутентификация",
+      "browser-mode-description": "Все запросы будут отправляться из браузера непосредственно в источник данных и могут регулироваться требованиями совместного использования ресурсов между разными источниками (CORS). Если вы выберете этот метод доступа, URL-адрес должен быть доступен из браузера.",
+      "browser-mode-label": "Браузер",
+      "browser-mode-title": "<0>Метод доступа через браузер:</0>",
+      "default-url-tooltip": "Укажите полный URL-адрес HTTP (например, http://your_server:8080)",
+      "direct-url-tooltip": "Вашим методом доступа является <1>Браузер</1>, то есть URL-адрес должен быть доступен из браузера.",
+      "heading": "HTTP",
+      "invalid-url-error": "Недопустимый URL",
+      "proxy-url-tooltip": "Вашим методом доступа является <1>Сервер</1>, то есть URL-адрес должен быть доступен из серверной части/сервера Grafana.",
+      "server-mode-description": "Все запросы будут отправляться из браузера на серверную часть/сервер Grafana. Оттуда запросы будут пересылаться в источник данных, что позволит обойти возможные требования совместного использования ресурсов между разными источниками (CORS). Если вы выберете этот метод доступа, URL-адрес должен быть доступен из серверной части/сервера Grafana.",
+      "server-mode-label": "Сервер (по умолчанию)",
+      "server-mode-title": "<0>Метод доступа через сервер (по умолчанию):</0>",
+      "sigv4-auth-label": "Аутентификация SigV4",
+      "timeout-description": "Время ожидания HTTP-запроса (в секундах)",
+      "timeout-label": "Время ожидания",
+      "timeout-placeholder": "Время ожидания (в секундах)",
+      "with-credentials-label": "С учетными данными",
+      "with-credentials-tooltip": "Указывает, следует ли отправлять учетные данные, такие как файлы cookie или заголовки аутентификации, с межсайтовыми запросами."
+    },
+    "data-source-settings": {
+      "alerting-settings-heading": "Оповещение",
+      "alerting-settings-label": "Управление правилами оповещения в пользовательском интерфейсе Alerting",
+      "alerting-settings-tooltip": "Управление правилами оповещения для этого источника данных. Чтобы управлять другими ресурсами Alerting, добавьте обработчик оповещений Alertmanager в качестве источника данных.",
+      "cert-key-reset": "Сброс",
+      "custom-headers-add": "Добавить заголовок",
+      "custom-headers-header": "Заголовок",
+      "custom-headers-header-placeholder": "Значение заголовка",
+      "custom-headers-header-remove": "Удалить заголовок",
+      "custom-headers-header-value": "Значение",
+      "custom-headers-title": "Пользовательские HTTP-заголовки",
+      "secure-socks-heading": "Безопасный Socks-прокси",
+      "secure-socks-label": "Включено",
+      "secure-socks-tooltip": "Подключитесь к этому источнику данных через безопасный прокси-сервер Socks.",
+      "tls-certification-label": "Сертификат CA",
+      "tls-certification-placeholder": "Начинается с {{certificateBeginsWith}}",
+      "tls-client-certification-label": "Сертификат клиента",
+      "tls-client-key-label": "Ключ клиента",
+      "tls-client-key-placeholder": "Начинается с {{privateKeyBeginsWith}}",
+      "tls-heading": "Данные аутентификации TLS/SSL",
+      "tls-server-name-label": "Имя сервера",
+      "tls-tooltip": "Сертификаты TLS/SSL зашифрованы и хранятся в базе данных Grafana."
+    },
+    "date-time-picker": {
+      "apply": "Применить",
+      "calendar-icon-label": "Выбор даты и времени",
+      "cancel": "Отмена",
+      "next-label": "Следующий месяц",
+      "previous-label": "Предыдущий месяц",
+      "select-placeholder": "Выберите дату и время"
+    },
+    "date-time-pickers": {
+      "month-options": {
+        "label-april": "Апрель",
+        "label-august": "Август",
+        "label-december": "Декабрь",
+        "label-february": "Февраль",
+        "label-january": "Январь",
+        "label-july": "Июль",
+        "label-june": "Июнь",
+        "label-march": "Март",
+        "label-may": "Май",
+        "label-november": "Ноябрь",
+        "label-october": "Октябрь",
+        "label-september": "Сентябрь"
+      },
+      "quick-options": {
+        "day-before-yesterday": "Позавчера",
+        "last-1-hour": "Последний час",
+        "last-1-year": "Последний год",
+        "last-12-hours": "Последние 12 часов",
+        "last-15-mins": "Последние 15 минут",
+        "last-2-days": "Последние 2 дня",
+        "last-2-years": "Последние 2 года",
+        "last-24-hours": "Последние 24 часа",
+        "last-3-hours": "Последние 3 часа",
+        "last-30-days": "Последние 30 дней",
+        "last-30-mins": "Последние 30 минут",
+        "last-5-mins": "Последние 5 минут",
+        "last-5-years": "Последние 5 лет",
+        "last-6-hours": "Последние 6 часов",
+        "last-6-months": "Последние 6 месяцев",
+        "last-7-days": "Последние 7 дней",
+        "last-90-days": "Последние 90 дней",
+        "previous-fiscal-quarter": "Предыдущий финансовый квартал",
+        "previous-fiscal-year": "Предыдущий финансовый год",
+        "previous-month": "Предыдущий месяц",
+        "previous-week": "Предыдущая неделя",
+        "previous-year": "Предыдущий год",
+        "this-day-last-week": "Этот день на прошлой неделе",
+        "this-fiscal-quarter": "Текущий финансовый квартал",
+        "this-fiscal-quarter-so-far": "Текущий финансовый квартал по состоянию на настоящий момент",
+        "this-fiscal-year": "Текущий финансовый год",
+        "this-fiscal-year-so-far": "Текущий финансовый год по состоянию на настоящий момент",
+        "this-month": "Текущий месяц",
+        "this-month-so-far": "Текущий месяц по состоянию на настоящий момент",
+        "this-week": "Текущая неделя",
+        "this-week-so-far": "Текущая неделя по состоянию на настоящий момент",
+        "this-year": "Текущий год",
+        "this-year-so-far": "Текущий год по состоянию на настоящий момент",
+        "today": "Сегодня",
+        "today-so-far": "Сегодня по состоянию на настоящий момент",
+        "yesterday": "Вчера"
+      }
+    },
+    "drawer": {
+      "close": "Закрыть"
+    },
+    "error-boundary": {
+      "title": "Непредвиденная ошибка"
+    },
+    "feature-badge": {
+      "experimental": "Экспериментальный",
+      "new": "Новое",
+      "preview": "Предварительный просмотр",
+      "private-preview": "Частный предварительный просмотр"
+    },
+    "field-link-list": {
+      "external-links-heading": "Внешние ссылки"
+    },
+    "field-name-by-regex-matcher": {
+      "input-placeholder": "Ввести регулярное выражение"
+    },
+    "field-value-matcher": {
+      "operator-label": "Оператор сравнения",
+      "reducer-value-label": "Значение преобразования",
+      "select-field-placeholder": "Выбрать редуктор полей"
+    },
+    "file-dropzone": {
+      "cancel-upload": "Отменить загрузку",
+      "error-title": "Сбой загрузки",
+      "file-too-large": "Файл больше, чем {{size}}",
+      "item-retry": "Повторить попытку"
+    },
+    "file-upload": {
+      "file-name": "Имя файла"
+    },
+    "filter-input": {
+      "clear": "Очистить"
+    },
+    "interactive-table": {
+      "aria-label-collapse-all": "Свернуть все строки",
+      "aria-label-expand-all": "Развернуть все строки",
+      "aria-label-sort-column": "Сортировать столбец {{columnName}}",
+      "expand-row-header": "Расширитель строк",
+      "expand-row-tooltip": "Развернута строка переключения",
+      "tooltip-collapse-all": "Свернуть все строки",
+      "tooltip-expand-all": "Развернуть все строки"
+    },
+    "matchers-ui": {
+      "description-field-name-by-regex-matcher": "Установить свойства для полей с именами, соответствующими регулярному выражению",
+      "description-fields-by-query": "Установить свойства для полей из определенного запроса",
+      "description-fields-with-name": "Установить свойства для определенного поля",
+      "description-fields-with-type": "Установить свойства для полей определенного типа (число, строка, логическое значение)",
+      "description-fields-with-value": "Установить свойства для полей с условием преобразования",
+      "get-all-field-type-icon-options": {
+        "label-boolean": "Логическое значение",
+        "label-enum": "Перечисление",
+        "label-number": "Число",
+        "label-other": "Прочее",
+        "label-string": "Строка",
+        "label-time": "Время",
+        "label-traces": "Трассировки"
+      },
+      "get-list-of-query-ref-ids": {
+        "description": "Фреймы ({{framesCount}}): {{framesNames}}",
+        "label": "Запрос: {{refId}}",
+        "label-missing-ref-id": "Запрос: (отсутствует идентификатор ссылки)"
+      },
+      "name-field-name-by-regex-matcher": "Поля с именем, соответствующим регулярному выражению",
+      "name-fields-by-query": "Поля, возвращенные запросом",
+      "name-fields-with-name": "Поля с именем",
+      "name-fields-with-type": "Поля с типом",
+      "name-fields-with-value": "Поля со значениями"
+    },
+    "matchers": {
+      "groups": {
+        "annotation": "Аннотации",
+        "annotation-description": "Серии аннотаций этой панели.",
+        "exemplar": "Образцы",
+        "exemplar-description": "Экземпляры трассировок этой панели.",
+        "nested": "Вложенные",
+        "nested-description": "Поля из вложенных фреймов данных.",
+        "series": "Фрейм данных",
+        "series-description": "Поля из фреймов данных этой панели."
+      },
+      "labels": {
+        "base-field-name": "{{name}} (имя базового поля)",
+        "not-found": "{{name}} (не найдено)"
+      }
+    },
+    "menu-item": {
+      "keyboard-shortcut-label": "Сочетание клавиш"
+    },
+    "modal": {
+      "close-tooltip": "Закрыть"
+    },
+    "monaco": {
+      "error-label": "Не удалось загрузить редактор React Monaco Editor",
+      "loading-placeholder": "Загрузка редактора"
+    },
+    "named-colors-palette": {
+      "text-color-swatch": "Цвет текста",
+      "transparent-swatch": "Прозрачный"
+    },
+    "page-loader": {
+      "label": "Загрузка"
+    },
+    "page-toolbar": {
+      "go-back": "Назад (Esc)",
+      "search-dashboard-name": "Поиск дашборда по имени",
+      "search-links": "Поиск ссылок",
+      "search-parent-folder": "Поиск дашборда в папке {{parent}}"
+    },
+    "pagination": {
+      "next-page": "Следующая страница",
+      "previous-page": "Предыдущая страница"
+    },
+    "panel-chrome": {
+      "aria-label-toggle-collapse": "Свернуть или развернуть панель",
+      "ariaLabel-panel-loading": "Полоса загрузки панели",
+      "ariaLabel-panel-status": "Статус панели",
+      "errors-and-notices": "Ошибки и уведомления",
+      "inspect-errors-notices": "Подробнее",
+      "tooltip-cancel": "Отмена запроса",
+      "tooltip-cancel-loading": "Отмена запроса",
+      "tooltip-stop-streaming": "Остановка потоковой передачи",
+      "tooltip-streaming": "Потоковая передача"
+    },
+    "panel-menu": {
+      "label": "Меню для панели {{ title }}",
+      "title": "Меню"
+    },
+    "range-slider": {
+      "drag-handle-aria-label": "Используйте клавиши со стрелками для изменения значения"
+    },
+    "row-expander-ng": {
+      "aria-label-collapse": "Свернуть строку"
+    },
+    "row-expander": {
+      "aria-label-expand": "Развернуть строку",
+      "collapse": "Свернуть строку",
+      "expand": "Развернуть строку"
+    },
+    "secret-form-field": {
+      "reset": "Сброс"
+    },
+    "secret-input": {
+      "hide": "Скрыть секрет",
+      "show": "Показать секрет"
+    },
+    "secret-text-area": {
+      "hide-content": "Скрыть секретное содержимое",
+      "show-content": "Показать секретное содержимое"
+    },
+    "segment-async": {
+      "error": "Не удалось загрузить параметры",
+      "loading": "Загрузка параметров...",
+      "no-options": "Параметры не найдены"
+    },
+    "select": {
+      "clear-value": "Очистить значение",
+      "default-create-label": "Нажмите Enter, чтобы добавить",
+      "empty-options": "Нет вариантов",
+      "menu-label": "Список вариантов",
+      "multi-value-remove": "Удалить",
+      "no-options-label": "Ничего не найдено",
+      "placeholder": "Выберите"
+    },
+    "series-color-picker-popover": {
+      "y-axis-usage": "Использовать правую ось y"
+    },
+    "sidebar": {
+      "close": "Закрыть",
+      "dock": "Закрепить",
+      "go-back": "Назад",
+      "show": "Показать",
+      "undock": "Открепить"
+    },
+    "slider": {
+      "drag-handle-aria-label": "Используйте клавиши со стрелками для изменения значения"
+    },
+    "spinner": {
+      "aria-label": "Загрузка"
+    },
+    "stacking-builder": {
+      "group": "Группа",
+      "group-tooltip": "Имя группы стекирования"
+    },
+    "stats-picker": {
+      "placeholder": "Выбрать"
+    },
+    "table": {
+      "cell-filter-on": "Фильтровать по значению",
+      "cell-filter-out": "Отсеять значение",
+      "cell-inspect": "Проверить значение",
+      "cell-inspect-tooltip": "Проверить значение",
+      "copy": "Копировать в буфер обмена",
+      "csv-counts": "Строки:{{rows}}, столбцы:{{columns}}",
+      "csv-placeholder": "Ввести CSV...",
+      "filter-placeholder": "Значения фильтра",
+      "filter-popup-apply": "Ок",
+      "filter-popup-aria-label-match-case": "С учетом регистра",
+      "filter-popup-cancel": "Отмена",
+      "filter-popup-clear": "Очистить фильтр",
+      "filter-popup-heading": "Фильтр по значениям:",
+      "filter-popup-input-placeholder": "Значения фильтра",
+      "filter-popup-match-case": "С учетом регистра",
+      "filter": {
+        "add-all": "Добавить все отображаемые значения в фильтр",
+        "blanks": "(Пустые ячейки)",
+        "button": "Фильтр {{name}}",
+        "operator": {
+          "contains": "Содержит",
+          "equals": "Равно",
+          "expression": "Выражение",
+          "expression-description": "Логическое выражение (символ $ — это значение столбца в выражении, например $ >= 10 && $ <= 12)",
+          "greater": "Больше",
+          "greater-or-equal": "Больше или равно",
+          "less": "Меньше",
+          "less-or-equal": "Меньше или равно",
+          "not-equals": "Не равно"
+        },
+        "remove-all": "Удалить все отображаемые значения из фильтра",
+        "select-all": "Выбрать все",
+        "selected": "Выбрано: {{ numSelected }}",
+        "selected-some-hidden": "Выбрано: {{ numSelected }} (скрыто: {{ numHidden }})"
+      },
+      "footer": {
+        "reducer": {
+          "count": "Количество"
+        }
+      },
+      "inspect-drawer-title": "Проверить значение",
+      "nested-table": {
+        "expander-column-name": "Развернуть вложенные строки",
+        "no-data": "Нет данных"
+      },
+      "no-rows": "Нет строк",
+      "no-values-label": "Нет значений",
+      "pagination-summary": "Строки: {{itemsRangeStart}} - {{displayedEnd}} из {{numRows}}",
+      "sort-by-column": "Сортировать по столбцу {{column}}",
+      "sort-by-column-ascending": "Сортировать по столбцу {{column}}, по возрастанию",
+      "sort-by-column-descending": "Сортировать по столбцу {{column}}, по убыванию",
+      "sort-column": "Сортировать столбец",
+      "sparkline": {
+        "no-data": "нет данных"
+      },
+      "tooltip": {
+        "trigger": "Переключить подсказку"
+      }
+    },
+    "tags-input": {
+      "add": "Добавить",
+      "placeholder-new-tag": "Новый тег (введите ключ для добавления)",
+      "remove": "Удалить тег: {{name}} "
+    },
+    "tags": {
+      "list-label": "Теги"
+    },
+    "time-sync-button": {
+      "aria-label-sync": "Синхронизировать время",
+      "aria-label-unsync": "Не синхронизировать время"
+    },
+    "toggletip": {
+      "close": "Закрыть"
+    },
+    "toolbar-button-row": {
+      "show-more": "Показать больше элементов"
+    },
+    "u-plot": {
+      "config": {
+        "get-graph-field-options": {
+          "axis-placement": {
+            "description-auto": "Первое поле слева, всё остальное справа",
+            "label-auto": "Авто",
+            "label-hidden": "Скрыты",
+            "label-left": "Слева",
+            "label-right": "Справа"
+          },
+          "bar-alignment": {
+            "description-after": "После",
+            "description-before": "Перед",
+            "description-center": "По центру"
+          },
+          "draw-style": {
+            "label-bars": "Столбцы",
+            "label-lines": "Линии",
+            "label-points": "Точки"
+          },
+          "fill-gradient": {
+            "description-hue": "Небольшой градиент оттенка цвета",
+            "description-opacity": "Включить градиент прозрачности заливки",
+            "description-scheme": "Использовать цветовую схему для определения градиента",
+            "label-hue": "Оттенок",
+            "label-none": "Нет",
+            "label-opacity": "Прозрачность",
+            "label-scheme": "Схема"
+          },
+          "line-interpolation": {
+            "description-linear": "Линейная",
+            "description-smooth": "Гладкая",
+            "description-step-after": "Шаг после",
+            "description-step-before": "Шаг до"
+          },
+          "show-points": {
+            "description-auto": "Показывать точки при низкой плотности",
+            "label-always": "Всегда",
+            "label-auto": "Авто",
+            "label-never": "Никогда"
+          },
+          "stacking": {
+            "label-100": "100%",
+            "label-normal": "Нормальное",
+            "label-off": "Выкл."
+          },
+          "thresholds-display-mode": {
+            "label-dashed-lines": "В виде линий (пунктирных)",
+            "label-filled-regions": "В виде заполненных областей",
+            "label-filled-regions-and-dashed-lines": "В виде заполненных областей и линий (пунктирных)",
+            "label-filled-regions-and-lines": "В виде заполненных областей и линий",
+            "label-lines": "В виде линий",
+            "label-off": "Выкл."
+          }
+        }
+      }
+    },
+    "unit-picker": {
+      "placeholder": "Выбрать"
+    },
+    "user-icon": {
+      "active-text": "Активен последние 15 м",
+      "label": "значок {{name}}"
+    },
+    "users-indicator": {
+      "container-label": "Контейнер пользовательского индикатора"
+    },
+    "value-pill": {
+      "remove-button": "Удалить {{children}}"
+    },
+    "viz-legend": {
+      "all-series-selected": "Выбраны все ряды",
+      "clear-filters": "Очистить все",
+      "color-picker": "Изменить цвет для {{seriesName}}",
+      "faceted-by-labels": "По меткам",
+      "faceted-by-name": "По имени",
+      "faceted-deselect-all": "Отменить все",
+      "faceted-select-all": "Выбрать все",
+      "only-this-series-selected": "Выбрана только {{label}}",
+      "pin-filter": "Закрепить на боковой панели",
+      "right-axis-indicator": "(правая ось y)",
+      "series-visibility": "Видимость рядов",
+      "unpin-sidebar": "Открепить"
+    },
+    "viz-tooltip": {
+      "footer-add-annotation": "Добавить аннотацию",
+      "footer-apply-series-as-filter": "Фильтровать по этому значению",
+      "footer-apply-series-as-inverse-filter": "Отфильтровать это значение",
+      "footer-click-to-action": "Нажмите, чтобы {{actionTitle}}",
+      "footer-click-to-navigate": "Нажмите, чтобы открыть {{linkTitle}}",
+      "footer-filter-for-value": "Фильтр по «{{value}}»",
+      "timestamp": "Метка времени"
+    },
+    "week-start-picker": {
+      "weekStarts-label-default": "По умолчанию",
+      "weekStarts-label-monday": "Понедельник",
+      "weekStarts-label-saturday": "Суббота",
+      "weekStarts-label-sunday": "Воскресенье"
+    }
+  },
+  "legend": {
+    "container": {
+      "series-color-and-icon": "Цвет серии",
+      "show-all-series": "... показать все элементы ({{total}})"
+    }
+  },
+  "multicombobox": {
+    "all": {
+      "title-deselect": "Снять выбор со всех",
+      "title-deselect-filtered": "Снять выбор со всех (отфильтрованных)",
+      "title-select": "Выбрать все",
+      "title-select-filtered": "Выбрать все (отфильтрованные)"
+    },
+    "clear": {
+      "title": "Очистить всё"
+    }
+  },
+  "refresh-picker": {
+    "aria-label": {
+      "choose-interval": "Автообновление выключено. Выбрать интервал времени обновления",
+      "duration-selected": "Выбрать интервал времени обновления с использованием текущего интервала {{durationAriaLabel}}"
+    },
+    "auto-option": {
+      "label": "Авто"
+    },
+    "live-option": {
+      "label": "В реальном времени"
+    },
+    "off-option": {
+      "label": "Выкл."
+    },
+    "tooltip": {
+      "interval-selected": "Установить интервал автообновления",
+      "turned-off": "Автообновление выключено"
+    }
+  },
+  "select": {
+    "select-menu": {
+      "selected-count": "Выбрано"
+    }
+  },
+  "table": {
+    "link-wrapper": {
+      "menu": "просмотр ссылок на данные и действий"
+    }
+  },
+  "time-picker": {
+    "absolute": {
+      "recent-title": "Последние использованные абсолютные диапазоны",
+      "title": "Абсолютный временной диапазон"
+    },
+    "calendar": {
+      "apply-button": "Применить временной диапазон",
+      "cancel-button": "Отмена",
+      "close": "Закрыть календарь",
+      "next-month": "Следующий месяц",
+      "previous-month": "Предыдущий месяц",
+      "select-time": "Выбрать временной диапазон"
+    },
+    "content": {
+      "empty-recent-list-docs": "Чтобы узнать, как вводить пользовательские временные диапазоны, <0><0>ознакомьтесь с документацией</0><1>.</1></0>",
+      "empty-recent-list-info": "Похоже, вы еще не пользовались этой функцией. Как только вы укажете временные интервалы, здесь отобразятся последние использованные значения.",
+      "filter-placeholder": "Поиск быстрых диапазонов"
+    },
+    "copy-paste": {
+      "tooltip-copy": "Копировать временной диапазон в буфер обмена",
+      "tooltip-paste": "Вставить временной диапазон"
+    },
+    "footer": {
+      "change-settings-button": "Изменить параметры времени",
+      "fiscal-year-option": "Финансовый год",
+      "fiscal-year-start": "Месяц начала финансового года",
+      "time-zone-option": "Часовой пояс",
+      "time-zone-selection": "Выбор часового пояса"
+    },
+    "range-content": {
+      "apply-button": "Применить временной диапазон",
+      "default-error": "Введите дату ({{dateExample}}) или относительное время ({{relativeTimeExample1}}, {{relativeTimeExample2}})",
+      "fiscal-year": "Финансовый год: {{from}} – {{to}}",
+      "from-input": "С",
+      "open-input-calendar": "Открыть календарь",
+      "range-error": "Дата «С» должна быть раньше даты «По»",
+      "to-input": "По"
+    },
+    "range-picker": {
+      "backwards-time-aria-label": "Переместить временной диапазон назад",
+      "current-time-selected": "Выбранный временной диапазон: {{currentTimeRange}}",
+      "forwards-time-aria-label": "Переместить временной диапазон вперед",
+      "to": "—",
+      "zoom-out-button": "Уменьшить масштаб временного диапазона",
+      "zoom-out-tooltip-new": "Уменьшить масштаб диапазона <br/> t -"
+    },
+    "time-range": {
+      "apply": "Применить временной диапазон",
+      "aria-role": "Выбор временного диапазона",
+      "default-title": "Временные диапазоны",
+      "example-title": "Примеры временных диапазонов",
+      "from-label": "С",
+      "from-to": "{{timeOptionFrom}} — {{timeOptionTo}}",
+      "specify": "Указать временной диапазон",
+      "submit-button-label": "Применить временной диапазон",
+      "to-label": "По"
+    },
+    "zone": {
+      "select-aria-label": "Выбор часового пояса",
+      "select-search-input": "Начните вводить для поиска (город, аббревиатура)"
+    }
+  }
+}

@@ -1,4 +1,9 @@
-import { type AdminTenant, adminMutations, adminQueries } from '@api/queries/admin'
+import {
+  type AdminTenant,
+  type AdminTenantsQuery,
+  adminMutations,
+  adminQueries,
+} from '@api/queries/admin'
 import { AppLink } from '@app/AppLink'
 import { PageFill } from '@app/Page'
 import { toast } from '@app/Toaster'
@@ -6,6 +11,7 @@ import { ConfirmAction } from '@components/ConfirmAction'
 import { Dash } from '@components/DataTable/cells'
 import { col } from '@components/DataTable/columns'
 import { DataTable, type DataTableColumn } from '@components/DataTable/DataTable'
+import { orderSchema } from '@components/DataTable/list-search'
 import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar'
 import { KeyValueList } from '@components/KeyValueList'
@@ -29,11 +35,25 @@ import { AssignOwnerModal } from './AssignOwnerModal'
 import { SuspendModal } from './SuspendModal'
 import { TenantLimitsDrawer } from './TenantLimitsDrawer'
 
+// Server sort keys of adminListTenants (default created_at).
+const TENANT_SORT_KEYS = [
+  'name',
+  'slug',
+  'status',
+  'members',
+  'runs',
+  'created_at',
+  'last_activity',
+] as const satisfies readonly NonNullable<AdminTenantsQuery['sort']>[]
+
 export const adminTenantsSearchSchema = z.object({
   search: z.string().optional().catch(undefined),
   status: z.enum(['active', 'orphaned', 'suspended']).optional().catch(undefined),
+  sort: z.enum(TENANT_SORT_KEYS).default('created_at').catch('created_at'),
+  order: orderSchema.default('desc').catch('desc'),
 })
 export type AdminTenantsSearch = z.infer<typeof adminTenantsSearchSchema>
+export const ADMIN_TENANTS_DEFAULTS = { sort: 'created_at', order: 'desc' } as const
 
 type Dialog =
   | { kind: 'detail'; tenant: AdminTenant }
@@ -56,7 +76,12 @@ export function AdminTenantsPage({
   const navigate = useNavigate()
   const copy = useCopy()
   const list = useInfiniteQuery({
-    ...adminQueries.tenants({ search: search.search, status: search.status }),
+    ...adminQueries.tenants({
+      search: search.search,
+      status: search.status,
+      sort: search.sort,
+      order: search.order,
+    }),
     placeholderData: keepPreviousData,
   })
   const rows = useMemo(() => list.data?.pages.flatMap((p) => p.data) ?? [], [list.data])
@@ -166,6 +191,7 @@ export function AdminTenantsPage({
         id: 'status',
         title: t('common.fields.status'),
         status: (x) => x.status,
+        sortKey: 'status',
         filter: {
           kind: 'checklist',
           single: true,
@@ -177,6 +203,10 @@ export function AdminTenantsPage({
       col.identity<AdminTenant>({
         id: 'name',
         header: t('common.fields.name'),
+        sortOptions: [
+          { key: 'name', label: t('admin.sort.name') },
+          { key: 'slug', label: t('admin.sort.slug') },
+        ],
         render: (x) => ({
           title: x.name,
           subtitle: [x.slug, x.status === 'suspended' ? x.suspended_reason : x.description]
@@ -198,6 +228,7 @@ export function AdminTenantsPage({
         id: 'members',
         header: t('admin.tenants.members'),
         width: 128,
+        sortKey: 'members',
         value: (x) => x.counters?.members ?? x.member_count,
         format: (v) => String(v),
       }),
@@ -206,6 +237,7 @@ export function AdminTenantsPage({
         header: t('admin.tenants.runs'),
         width: 128,
         align: 'right',
+        sortKey: 'runs',
         value: (x) => x.counters?.runs_total,
         render: (x) => {
           const c = x.counters
@@ -219,6 +251,10 @@ export function AdminTenantsPage({
         id: 'activity',
         header: t('admin.table.activity'),
         width: 180,
+        sortOptions: [
+          { key: 'last_activity', label: t('admin.sort.lastActivity') },
+          { key: 'created_at', label: t('admin.sort.created') },
+        ],
         value: (x) => x.last_activity_at ?? x.created_at,
         render: (x) => ({
           primary: x.last_activity_at ? <RelativeTime value={x.last_activity_at} /> : <Dash />,
@@ -269,6 +305,13 @@ export function AdminTenantsPage({
         loading={list.isPending}
         error={list.isError ? list.error : undefined}
         onRetry={() => void list.refetch()}
+        sort={{ field: search.sort, order: search.order }}
+        onSortChange={(s) =>
+          onSearchChange({
+            sort: (s?.field as AdminTenantsSearch['sort']) ?? 'created_at',
+            order: s?.order ?? 'desc',
+          })
+        }
         onRowClick={(tn) => setDialog({ kind: 'detail', tenant: tn })}
         filtered={pills.length > 0 || !!search.search}
         onClearFilters={clearAll}

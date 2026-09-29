@@ -1,6 +1,10 @@
 import { match } from './router'
+import { getSimulation } from './simulation'
 import { store } from './store'
 import './handlers/index'
+
+// Seeded running runs advance from the first request, not only once a WS topic is subscribed.
+getSimulation(store)
 
 const MIN_LATENCY = 60
 const MAX_LATENCY = 220

@@ -5,7 +5,8 @@
   "filters": {
     "kind": "Kind",
     "db": "Database",
-    "all": "All"
+    "all": "All",
+    "anyDb": "Any database"
   },
   "kind": {
     "database": "Databases",
@@ -54,5 +55,22 @@
     "example": "Example",
     "onlyTests": "Quick run is available for tests only",
     "disabled": "Examples are disabled on this installation"
+  },
+  "card": {
+    "engine": "Engine",
+    "topology": "Topology",
+    "singleNode": "single node",
+    "protocol": "Protocol",
+    "database": "Database",
+    "sizes": "Sizes",
+    "concurrency": "Concurrency",
+    "segments_one": "{{count}} segment",
+    "segments_other": "{{count}} segments",
+    "tests_one": "{{count}} test",
+    "tests_other": "{{count}} tests",
+    "sizeVariants_one": "{{count}} size variant",
+    "sizeVariants_other": "{{count}} size variants",
+    "iterations_one": "{{count}} iteration",
+    "iterations_other": "{{count}} iterations"
   }
 }

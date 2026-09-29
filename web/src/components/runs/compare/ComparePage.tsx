@@ -297,7 +297,11 @@ export function ComparePage({
       </div>
 
       {ids.length < 2 ? (
-        <EmptyState variant="call-to-action" message={t('runs.compare.pickTitle')}>
+        <EmptyState
+          variant="call-to-action"
+          image={<Icon name="columns" size="xxxl" />}
+          message={t('runs.compare.pickTitle')}
+        >
           {t('runs.compare.pickHint')}
         </EmptyState>
       ) : cmp.isPending ? (

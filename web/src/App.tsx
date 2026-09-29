@@ -7,6 +7,7 @@ import { GlobalStyles } from '@grafana/ui'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import '@lib/i18n'
 import { routeTree } from './routeTree.gen'
 import { getAppTheme, type ThemeMode } from './styles/theme'
@@ -68,6 +69,10 @@ export function App() {
     }
   }
   const theme = getAppTheme(mode)
+  // @grafana/ui reads its strings through a plain `t()` (no subscription) and memoizes parts of
+  // TimeRangePicker & co., so a language switch remounts the routed tree; router state lives in
+  // the URL and data in the Query cache, so only transient local UI state is reset.
+  const { i18n } = useTranslation()
   useEffect(() => {
     document.documentElement.style.colorScheme = mode
   }, [mode])
@@ -77,7 +82,7 @@ export function App() {
       <Global styles={bodyReset} />
       <ThemeModeContext.Provider value={{ mode, setMode }}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
+          <RouterProvider key={i18n.language} router={router} />
           <Toaster />
         </QueryClientProvider>
       </ThemeModeContext.Provider>

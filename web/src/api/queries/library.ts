@@ -16,6 +16,9 @@ export type DatabaseListQuery = NonNullable<
 export type WorkloadListQuery = NonNullable<
   Paths['/api/v1/t/{slug}/workloads']['get']['parameters']['query']
 >
+export type TestRunsQuery = NonNullable<
+  Paths['/api/v1/t/{slug}/tests/{id}/runs']['get']['parameters']['query']
+>
 export type TestListQuery = NonNullable<
   Paths['/api/v1/t/{slug}/tests']['get']['parameters']['query']
 >
@@ -156,13 +159,13 @@ export const testQueries = {
       queryFn: () =>
         unwrap(api.GET('/api/v1/t/{slug}/tests/{id}', { params: { path: { slug, id } } })),
     }),
-  runs: (slug: string, id: string, limit = 50) =>
+  runs: (slug: string, id: string, q: TestRunsQuery = {}) =>
     queryOptions({
-      queryKey: [...keys.t(slug), 'tests', 'runs', id, limit],
+      queryKey: [...keys.t(slug), 'tests', 'runs', id, q],
       queryFn: () =>
         unwrap(
           api.GET('/api/v1/t/{slug}/tests/{id}/runs', {
-            params: { path: { slug, id }, query: { limit } },
+            params: { path: { slug, id }, query: { limit: 50, ...q } },
           })
         ),
     }),

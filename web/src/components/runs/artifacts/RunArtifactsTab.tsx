@@ -89,10 +89,10 @@ export function RunArtifactsTab({ id }: { id: string }) {
         format: formatBytes,
         bar: true,
       }),
-      col.text<Artifact>({
+      col.code<Artifact>({
         id: 'digest',
         header: t('runs.artifacts.digest'),
-        width: 180,
+        max: 22,
         value: (a) => a.digest,
       }),
       col.time<Artifact>({

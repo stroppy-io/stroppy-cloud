@@ -1,3 +1,4 @@
+import { UserAvatar } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Dropdown, Menu, Text, ToolbarButton, useStyles2 } from '@grafana/ui'
@@ -8,19 +9,6 @@ import { useTranslation } from 'react-i18next'
 import { useThemeMode } from './theme-context'
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  // Grafana's Avatar is image-only; initials go in a token-coloured circle inside a ToolbarButton.
-  initials: css({
-    width: 24,
-    height: 24,
-    borderRadius: theme.shape.radius.circle,
-    background: theme.colors.primary.main,
-    color: theme.colors.primary.contrastText,
-    display: 'grid',
-    placeItems: 'center',
-    fontSize: theme.typography.bodySmall.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    lineHeight: 1,
-  }),
   header: css({
     display: 'flex',
     flexDirection: 'column',
@@ -35,11 +23,6 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
   const me = useMe()
   const navigate = useNavigate()
   const { mode, setMode } = useThemeMode()
-  const initials = (me.display_name || me.email)
-    .split(/\s+/)
-    .map((p) => p[0]?.toUpperCase())
-    .slice(0, 2)
-    .join('')
   return (
     <Dropdown
       placement="bottom-end"
@@ -109,7 +92,7 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
         aria-label={me.display_name}
         iconOnly
         narrow
-        icon={<span className={styles.initials}>{initials}</span>}
+        icon={<UserAvatar user={me} size={24} />}
       />
     </Dropdown>
   )

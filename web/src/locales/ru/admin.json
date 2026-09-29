@@ -158,5 +158,12 @@
     "createdAt": "Создан: {{time}}",
     "lastActivityAt": "Последняя активность: {{time}}",
     "lastSeenAt": "Был в сети: {{time}}"
+  },
+  "sort": {
+    "name": "Имя",
+    "slug": "Slug",
+    "email": "E-mail",
+    "lastActivity": "Последняя активность",
+    "created": "Создан"
   }
 }

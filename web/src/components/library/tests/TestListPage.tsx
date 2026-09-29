@@ -23,6 +23,7 @@ import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { TableSettings } from '@components/DataTable/TableSettings'
 import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar'
 import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
+import { UserLabel } from '@components/UserAvatar'
 import { Badge, Button, ConfirmModal, Stack } from '@grafana/ui'
 import { useTenant } from '@hooks/useTenant'
 import {
@@ -486,13 +487,14 @@ export function TestListPage({
         sortKey: 'updated_at',
         value: (r) => r.updated_at,
       }),
-      col.text<Test>({
+      col.stack<Test>({
         id: 'author',
         header: t('library.columns.author'),
         width: 160,
         defaultHidden: true,
         sortKey: 'author',
         value: (r) => r.author.display_name,
+        render: (r) => ({ primary: <UserLabel user={r.author} /> }),
         filter: {
           kind: 'checklist',
           options: authors.map((a) => ({

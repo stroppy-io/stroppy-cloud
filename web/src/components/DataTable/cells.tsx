@@ -94,6 +94,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   tags: css({ display: 'flex', gap: theme.spacing(0.5), minWidth: 0, overflow: 'hidden' }),
   link: css({ display: 'flex', alignItems: 'center', gap: theme.spacing(0.75), minWidth: 0 }),
   ok: css({ color: theme.colors.success.text }),
+  code: css({
+    fontFamily: theme.typography.fontFamilyMonospace,
+    fontSize: theme.typography.bodySmall.fontSize,
+    whiteSpace: 'nowrap',
+  }),
 })
 
 // Missing value. Never an empty cell, `0` or «n/a» (§2).
@@ -322,6 +327,22 @@ export function TextCell({ value }: { value: string | undefined | null }) {
   return (
     <span className={styles.ellipsis} title={value}>
       {value}
+    </span>
+  )
+}
+
+// Identifier-like value (digest, id, token prefix, image ref): one monospace line, shortened in
+// the middle so both the scheme and the tail stay visible; the full value is in the tooltip.
+export function CodeCell({ value, max = 24 }: { value: string | undefined | null; max?: number }) {
+  const styles = useStyles2(getStyles)
+  if (!value) return <Dash />
+  const short =
+    value.length <= max
+      ? value
+      : `${value.slice(0, Math.ceil((max - 1) / 2))}…${value.slice(-Math.floor((max - 1) / 2))}`
+  return (
+    <span className={styles.code} title={value}>
+      {short}
     </span>
   )
 }

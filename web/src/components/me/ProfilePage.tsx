@@ -3,6 +3,7 @@ import type { Me } from '@api/types'
 import { toast } from '@app/Toaster'
 import { useThemeMode } from '@app/theme-context'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
+import { UserAvatar } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import {
@@ -34,40 +35,9 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: theme.spacing(1.5),
     marginBottom: theme.spacing(2),
   }),
-  avatar: css({
-    width: 56,
-    height: 56,
-    borderRadius: '50%',
-    display: 'grid',
-    placeItems: 'center',
-    overflow: 'hidden',
-    border: `1px solid ${theme.colors.border.medium}`,
-    background: theme.colors.background.secondary,
-    fontSize: theme.typography.h3.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    img: { width: '100%', height: '100%', objectFit: 'cover' },
-  }),
 })
 
 type Theme = NonNullable<Me['preferences']['theme']>
-
-function identicon(seed: string): string {
-  // Deterministic 5×5 symmetric pattern; enough for a visual identity without an upload.
-  let h = 0
-  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0
-  const cells: string[] = []
-  for (let y = 0; y < 5; y++)
-    for (let x = 0; x < 3; x++) {
-      h = (h * 1664525 + 1013904223) >>> 0
-      if (h & 0x8000) {
-        cells.push(`<rect x="${x}" y="${y}" width="1" height="1"/>`)
-        if (x < 2) cells.push(`<rect x="${4 - x}" y="${y}" width="1" height="1"/>`)
-      }
-    }
-  const hue = h % 360
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-0.5 -0.5 6 6" shape-rendering="crispEdges"><g fill="hsl(${hue} 55% 55%)">${cells.join('')}</g></svg>`
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
-}
 
 export function ProfilePage() {
   const { t } = useTranslation()
@@ -158,13 +128,10 @@ export function ProfilePage() {
         >
           {([kind, url, name]) => (
             <div className={styles.preview}>
-              <div className={styles.avatar} aria-hidden>
-                {kind === 'url' && /^https:\/\/\S+$/.test(url) ? (
-                  <img src={url} alt="" />
-                ) : (
-                  <img src={identicon(me.id)} alt="" />
-                )}
-              </div>
+              <UserAvatar
+                user={{ id: me.id, avatar: kind === 'url' ? url : undefined }}
+                size={56}
+              />
               <div>
                 <Text weight="medium">{name || me.display_name}</Text>
                 <br />
