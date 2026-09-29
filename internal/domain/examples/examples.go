@@ -51,7 +51,7 @@ var Gallery = []Example{
 		ID: "tpcc-smoke", Kind: "workload", Title: "TPC-C smoke, 5 minutes", Description: "Scale factor 1, 8 virtual users, five minutes — a quick functional pass.",
 		Tags: map[string]string{"example": "smoke", "script": "tpcc/tx"},
 		Document: doc("Workload", "Example: TPC-C smoke", "Scale factor 1, 8 VUs, 5 minutes.", map[string]any{
-			"stroppy_version": "6.0.0", "protocol": "pg",
+			"stroppy_version": "6.1.0", "protocol": "pg",
 			"segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}},
 		}),
 	},
@@ -59,7 +59,7 @@ var Gallery = []Example{
 		ID: "tpcc-standard", Kind: "workload", Title: "TPC-C, 50 warehouses, 30 minutes", Description: "The reference TPC-C pass: scale factor 50, 64 virtual users.",
 		Tags: map[string]string{"example": "benchmark", "script": "tpcc/tx"},
 		Document: doc("Workload", "Example: TPC-C 50 warehouses", "Scale factor 50, 64 VUs, 30 minutes.", map[string]any{
-			"stroppy_version": "6.0.0", "protocol": "pg",
+			"stroppy_version": "6.1.0", "protocol": "pg",
 			"segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 50}, "run": map[string]any{"vus": 64, "duration": "30m"}}},
 		}),
 	},
@@ -67,7 +67,7 @@ var Gallery = []Example{
 		ID: "tpch-split", Kind: "workload", Title: "TPC-H, load then queries", Description: "The eight-table load as one segment and the 22-query suite as another.",
 		Tags: map[string]string{"example": "analytics", "script": "tpch/tx"},
 		Document: doc("Workload", "Example: TPC-H split", "Load segment, then the query suite.", map[string]any{
-			"stroppy_version": "6.0.0", "protocol": "pg",
+			"stroppy_version": "6.1.0", "protocol": "pg",
 			"segments": []any{
 				map[string]any{"name": "load", "workload": map[string]any{"script": "tpch/tx", "scale_factor": 1}, "run": map[string]any{"executor": "shared-iterations", "vus": 4, "iterations": 1}},
 				map[string]any{"name": "queries", "workload": map[string]any{"script": "tpch/tx", "scale_factor": 1}, "run": map[string]any{"vus": 4, "duration": "10m"}},
@@ -79,7 +79,7 @@ var Gallery = []Example{
 		Tags: map[string]string{"example": "self-check"},
 		Document: doc("Test", "Example: PostgreSQL self-check", "Single node + TPC-C smoke.", map[string]any{
 			"database": map[string]any{"inline": map[string]any{"kind": "postgres", "version": "17", "params": map[string]any{"version": "17"}}},
-			"workload": map[string]any{"inline": map[string]any{"stroppy_version": "6.0.0", "protocol": "pg", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}}}},
+			"workload": map[string]any{"inline": map[string]any{"stroppy_version": "6.1.0", "protocol": "pg", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 2, "duration": "5m"}}}}},
 			"sizes":    map[string]any{"db": map[string]any{"size": "S"}, "runner": map[string]any{"size": "S"}},
 		}),
 	},
@@ -90,12 +90,12 @@ var Gallery = []Example{
 			"tests": []any{
 				map[string]any{"inline": map[string]any{
 					"database_inline": map[string]any{"kind": "postgres", "version": "17", "params": map[string]any{"version": "17"}},
-					"workload_inline": map[string]any{"stroppy_version": "6.0.0", "protocol": "pg", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}}},
+					"workload_inline": map[string]any{"stroppy_version": "6.1.0", "protocol": "pg", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}}},
 					"rating_tenant":   true,
 				}, "inline_name": "postgres"},
 				map[string]any{"inline": map[string]any{
 					"database_inline": map[string]any{"kind": "cockroach", "version": "25.4", "params": map[string]any{"version": "25.4", "nodes": 3}},
-					"workload_inline": map[string]any{"stroppy_version": "6.0.0", "protocol": "cockroach", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}}},
+					"workload_inline": map[string]any{"stroppy_version": "6.1.0", "protocol": "cockroach", "segments": []any{map[string]any{"name": "main", "workload": map[string]any{"script": "tpcc/tx", "scale_factor": 1}, "run": map[string]any{"vus": 8, "duration": "5m"}}}},
 					"rating_tenant":   true,
 				}, "inline_name": "cockroach"},
 			},

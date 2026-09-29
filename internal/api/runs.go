@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"math"
 	"sort"
 	"strconv"
 	"time"
@@ -166,6 +167,9 @@ func summaryOf(s run.Summary) oas.RunSummary {
 // runSummaryOf adds what is derived from the live run to its stored summary.
 func runSummaryOf(r run.Run) oas.RunSummary {
 	out := summaryOf(r.Summary)
+	now := time.Now()
+	out.ProgressPct = oas.NewOptFloat64(math.Round(r.ProgressPct(now)))
+	out.PhaseProgressPct = oas.NewOptFloat64(math.Round(r.PhaseProgressPct(now)))
 	if at := r.ExpectedFinishAt(); at != nil {
 		out.ExpectedFinishAt = oas.NewOptNilDateTime(*at)
 	}
@@ -672,17 +676,20 @@ func (h *Handler) GetRunOverview(ctx context.Context, params oas.GetRunOverviewP
 	if err != nil {
 		return nil, err
 	}
-	return overviewOf(r), nil
+	return overviewOf(r, h.live(r.ID)), nil
 }
 
-func overviewOf(r run.Run) *oas.RunOverview {
+func overviewOf(r run.Run, live bool) *oas.RunOverview {
 	st := r.State
 	source := oas.RunOverviewSourcePersisted
-	if len(st.Phases) == 0 {
+	switch {
+	case len(st.Phases) == 0:
 		source = oas.RunOverviewSourceSynthetic
+	case live && !r.Status.Terminal():
+		source = oas.RunOverviewSourceLive
 	}
 	out := &oas.RunOverview{
-		RunID: r.ID, Status: oas.RunStatus(r.Status), Phase: oas.RunPhase(r.Phase), ProgressPct: oas.NewOptFloat64(st.Progress(r.Phase)),
+		RunID: r.ID, Status: oas.RunStatus(r.Status), Phase: oas.RunPhase(r.Phase), ProgressPct: oas.NewOptFloat64(math.Round(r.ProgressPct(time.Now()))),
 		Source: source, ObservedAt: st.ObservedAt, DegradedReasons: st.Degraded,
 		Phases: []oas.RunOverviewPhasesItem{}, Components: []oas.RunOverviewComponentsItem{}, Machines: []oas.RunOverviewMachinesItem{}, Flows: []oas.RunOverviewFlowsItem{}, WorkloadSegments: []oas.RunOverviewWorkloadSegmentsItem{},
 	}

@@ -260,3 +260,80 @@ func (r Run) ExpectedFinishAt() *time.Time {
 	}
 	return &at
 }
+
+// ProgressPct is the run's progress at now: the phase weight
+// (State.Progress), and inside the workload the elapsed share of the time
+// planned up to ExpectedFinishAt. A finished run keeps its stored value.
+func (r Run) ProgressPct(now time.Time) float64 {
+	if r.Status.Terminal() {
+		return r.Summary.ProgressPct
+	}
+	if r.Phase == PhaseWorkload {
+		if f, ok := r.workloadShare(now); ok {
+			return State{}.Progress(PhaseWorkload) + 50*f
+		}
+	}
+	return r.State.Progress(r.Phase)
+}
+
+// PhaseProgressPct is how far the current phase is at now: the workload
+// by the elapsed share of its planned time (by finished segments when the
+// plan is unknown), any other phase by its finished steps. Zero for a
+// phase with nothing to count yet; 100 once the run completed.
+func (r Run) PhaseProgressPct(now time.Time) float64 {
+	if r.Status == StatusCompleted {
+		return 100
+	}
+	if r.Status.Terminal() {
+		return 0
+	}
+	if r.Phase == PhaseWorkload {
+		if f, ok := r.workloadShare(now); ok {
+			return 100 * f
+		}
+		if n := len(r.State.Segments); n > 0 {
+			done := 0
+			for _, s := range r.State.Segments {
+				if finished(s.Status) {
+					done++
+				}
+			}
+			return 100 * float64(done) / float64(n)
+		}
+		return 0
+	}
+	for _, p := range r.State.Phases {
+		if p.ID != r.Phase || len(p.Steps) == 0 {
+			continue
+		}
+		done := 0
+		for _, st := range p.Steps {
+			if finished(st.Status) {
+				done++
+			}
+		}
+		return 100 * float64(done) / float64(len(p.Steps))
+	}
+	return 0
+}
+
+func finished(status string) bool {
+	return status == "completed" || status == "failed" || status == "skipped"
+}
+
+// workloadShare is the elapsed share [0, 1] of the workload's planned
+// time at now; ok is false when the plan is unknown.
+func (r Run) workloadShare(now time.Time) (float64, bool) {
+	eta := r.ExpectedFinishAt()
+	var start time.Time
+	for _, p := range r.State.Phases {
+		if p.ID == PhaseWorkload && p.StartedAt != nil {
+			start = *p.StartedAt
+		}
+	}
+	if eta == nil || start.IsZero() || !eta.After(start) {
+		return 0, false
+	}
+	f := float64(now.Sub(start)) / float64(eta.Sub(start))
+	return min(max(f, 0), 1), true
+}

@@ -101,6 +101,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	lib := library.NewService(repositories.NewLibraryRepo(db), registry, cat, tenants, providerRepo, keepLimit{settingsSvc}, auditSvc)
 	webhooks := webhook.NewService(webhookRepo, tenants, auditSvc)
 	compiler := compile.NewService(registry, cat, lib)
+	compiler.RegistryMirror = cfg.Infra.RegistryMirror
 	runRepo := repositories.NewRunRepo(db, tx)
 	runs := run.NewService(runRepo, infra.Graphene, tenants, lib, providers, settingsSvc, compiler, webhooks, auditSvc, graphene.WithNamespace)
 	projector := run.NewProjector(runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)

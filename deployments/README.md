@@ -75,6 +75,30 @@ their lifecycle through the server API before stopping the server. Do not use
 To change the published port, update both `STROPPY_LOCAL_PORT` and
 `STROPPY_HTTP_PUBLIC_URL` in `.env.compose`.
 
+## Image registry mirror
+
+Two registries live on the same host (51.250.43.123) and are easy to confuse:
+
+| Host | What | Serves |
+|---|---|---|
+| `graphene.stroppy.io:443/v2` | Graphene's own registry (door `/v2` proxy → internal `registry:2` on S3), basic auth | pipeline images the server pushes per tenant namespace (`t-<slug>/stroppy-run:…`). Not a proxy for public registries. |
+| `docker.stroppy.io` | Nexus 3 (community), anonymous pull | proxy group for Docker Hub, GHCR and Quay, plus hosted `stroppy-io/*` images (stroppy, patroni, pg-noop). |
+
+`STROPPY_INFRA_REGISTRY_MIRROR=docker.stroppy.io` makes the compiler route
+every public image of a run — databases, exporters, proxies, stroppy —
+through Nexus (`quay.io/prometheus/node-exporter:v1.12.1` →
+`docker.stroppy.io/prometheus/node-exporter:v1.12.1`, `postgres:17` →
+`docker.stroppy.io/library/postgres:17`); other private registries keep
+their reference (`spec.MirrorImage`). Empty pulls directly.
+
+Why: YC machines could not reach Quay's CDN (`cdn01.quay.io … i/o timeout`),
+and the agent retried `stroppy.image.pull` for node-exporter forever — the
+deploy phase never finished.
+
+Status: interim. Graphene has no pull-through for public images; until it
+does, the Nexus mirror is the only route. Revisit when Graphene can proxy
+public registries itself (then the setting is dropped or pointed there).
+
 ## Run telemetry
 
 Run logs and metrics are read through the authenticated Graphene Observe API.

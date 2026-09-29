@@ -184,6 +184,7 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 		Admin:     a.services.Admin,
 		Examples:  a.services.Examples,
 		Observe:   a.services.Observe,
+		Live:      a.services.Projector,
 		Schemas:   a.services.Schemas,
 		Public: api.PublicConfig{
 			IAMBaseURL: "", IAMClientID: a.cfg.IAM.ClientID, IAMEnvironment: a.cfg.IAM.Environment,

@@ -34208,6 +34208,12 @@ func (s *RunSummary) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.PhaseProgressPct.Set {
+			e.FieldStart("phase_progress_pct")
+			s.PhaseProgressPct.Encode(e)
+		}
+	}
+	{
 		if s.Segment.Set {
 			e.FieldStart("segment")
 			s.Segment.Encode(e)
@@ -34237,7 +34243,7 @@ func (s *RunSummary) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRunSummary = [16]string{
+var jsonFieldsNameOfRunSummary = [17]string{
 	0:  "db_kind",
 	1:  "db_version",
 	2:  "workload_name",
@@ -34250,10 +34256,11 @@ var jsonFieldsNameOfRunSummary = [16]string{
 	9:  "sizes",
 	10: "league",
 	11: "progress_pct",
-	12: "segment",
-	13: "headline",
-	14: "qps_series",
-	15: "expected_finish_at",
+	12: "phase_progress_pct",
+	13: "segment",
+	14: "headline",
+	15: "qps_series",
+	16: "expected_finish_at",
 }
 
 // Decode decodes RunSummary from json.
@@ -34383,6 +34390,16 @@ func (s *RunSummary) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"progress_pct\"")
+			}
+		case "phase_progress_pct":
+			if err := func() error {
+				s.PhaseProgressPct.Reset()
+				if err := s.PhaseProgressPct.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"phase_progress_pct\"")
 			}
 		case "segment":
 			if err := func() error {

@@ -54,8 +54,8 @@ func stroppy() StroppyCatalog {
 		}
 	}
 	return StroppyCatalog{Source: "static", Versions: []StroppyVersion{
-		{Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Default: true, Baseline: true, Protocols: all, Scripts: scripts},
-		{Version: "6.1.0", Image: "ghcr.io/stroppy-io/stroppy:v6.1.0.63", Baseline: true, Protocols: all, Scripts: scripts},
+		{Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Baseline: true, Protocols: all, Scripts: scripts},
+		{Version: "6.1.0", Image: "ghcr.io/stroppy-io/stroppy:v6.1.0.63", Default: true, Baseline: true, Protocols: all, Scripts: scripts},
 	}}
 }
 

@@ -26,6 +26,9 @@ type Service struct {
 	Observability spec.Observability
 	// StroppyImage overrides the catalog image of every run (staging).
 	StroppyImage string
+	// RegistryMirror proxies Docker Hub, GHCR and Quay for the machines;
+	// every public image of a run is pulled through it. Empty = direct.
+	RegistryMirror string
 }
 
 // NewService wires the compiler.
@@ -58,7 +61,7 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	if err != nil {
 		return run.Compiled{}, err
 	}
-	raw, err := json.Marshal(out.Spec)
+	raw, err := json.Marshal(spec.MirrorImages(out.Spec, s.RegistryMirror))
 	if err != nil {
 		return run.Compiled{}, err
 	}

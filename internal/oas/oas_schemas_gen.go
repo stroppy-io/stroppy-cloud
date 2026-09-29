@@ -21128,6 +21128,9 @@ type RunSummary struct {
 	// Size league key for rating.
 	League      OptString  `json:"league"`
 	ProgressPct OptFloat64 `json:"progress_pct"`
+	// How far the current phase is (read-time): the workload by elapsed planned time, other phases by
+	// finished steps.
+	PhaseProgressPct OptFloat64 `json:"phase_progress_pct"`
 	// Current workload segment while running.
 	Segment OptString `json:"segment"`
 	// Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`,
@@ -21204,6 +21207,11 @@ func (s *RunSummary) GetLeague() OptString {
 // GetProgressPct returns the value of ProgressPct.
 func (s *RunSummary) GetProgressPct() OptFloat64 {
 	return s.ProgressPct
+}
+
+// GetPhaseProgressPct returns the value of PhaseProgressPct.
+func (s *RunSummary) GetPhaseProgressPct() OptFloat64 {
+	return s.PhaseProgressPct
 }
 
 // GetSegment returns the value of Segment.
@@ -21284,6 +21292,11 @@ func (s *RunSummary) SetLeague(val OptString) {
 // SetProgressPct sets the value of ProgressPct.
 func (s *RunSummary) SetProgressPct(val OptFloat64) {
 	s.ProgressPct = val
+}
+
+// SetPhaseProgressPct sets the value of PhaseProgressPct.
+func (s *RunSummary) SetPhaseProgressPct(val OptFloat64) {
+	s.PhaseProgressPct = val
 }
 
 // SetSegment sets the value of Segment.

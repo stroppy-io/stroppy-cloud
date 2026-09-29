@@ -184,9 +184,9 @@ func generate() error {
 					compiled.Spec.Workload.Baseline = &spec.Baseline{Enabled: true, Quick: true}
 				}
 				for i := range compiled.Spec.Containers {
-					compiled.Spec.Containers[i].Image = mirrorImage(compiled.Spec.Containers[i].Image, *mirror)
+					compiled.Spec.Containers[i].Image = spec.MirrorImage(compiled.Spec.Containers[i].Image, *mirror)
 				}
-				compiled.Spec.Workload.StroppyImage = mirrorImage(compiled.Spec.Workload.StroppyImage, *mirror)
+				compiled.Spec.Workload.StroppyImage = spec.MirrorImage(compiled.Spec.Workload.StroppyImage, *mirror)
 				payload, err := json.MarshalIndent(compiled.Spec, "", "  ")
 				if err != nil {
 					return err

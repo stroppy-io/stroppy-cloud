@@ -1,4 +1,4 @@
-package main
+package spec
 
 import "testing"
 
@@ -14,8 +14,8 @@ func TestMirrorImage(t *testing.T) {
 		{"docker.stroppy.io/library/postgres:17", "docker.stroppy.io", "docker.stroppy.io/library/postgres:17"},
 		{"postgres:17", "", "postgres:17"},
 	} {
-		if got := mirrorImage(tc.image, tc.mirror); got != tc.want {
-			t.Errorf("mirrorImage(%q, %q) = %q; want %q", tc.image, tc.mirror, got, tc.want)
+		if got := MirrorImage(tc.image, tc.mirror); got != tc.want {
+			t.Errorf("MirrorImage(%q, %q) = %q; want %q", tc.image, tc.mirror, got, tc.want)
 		}
 	}
 }

@@ -75,6 +75,10 @@ type InfraConfig struct {
 	// Pipelines is where the pipeline binaries shipped with the server
 	// live (pushed into every tenant namespace, §7); empty = no push.
 	Pipelines PipelinesConfig `mapstructure:"pipelines"`
+	// RegistryMirror is a registry host proxying Docker Hub, GHCR and
+	// Quay (for example docker.stroppy.io); run machines pull public
+	// images through it. Empty = pull from the registries directly.
+	RegistryMirror string `mapstructure:"registry_mirror"`
 }
 
 // PipelinesConfig is the pipeline push worker.

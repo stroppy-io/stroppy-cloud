@@ -212,3 +212,47 @@ func TestSeriesWindow(t *testing.T) {
 }
 
 func ptrTime(v time.Time) *time.Time { return &v }
+
+func TestProgressPct(t *testing.T) {
+	snap := segmentsSnapshot(t, map[string]any{"name": "main", "warmup": "0s", "run": map[string]any{"duration": "10m"}})
+	workload := run.PhaseState{ID: run.PhaseWorkload, Status: "running", StartedAt: at(0)}
+	running := run.Run{Status: run.StatusRunning, Phase: run.PhaseWorkload, Snapshot: snap, State: run.State{Phases: []run.PhaseState{workload}}}
+	cases := []struct {
+		name string
+		r    run.Run
+		now  time.Time
+		want float64
+	}{
+		{name: "workload start", r: running, now: *at(0), want: 40},
+		{name: "half the workload", r: running, now: *at(5), want: 65},
+		{name: "past the plan", r: running, now: *at(20), want: 90},
+		{name: "deploying", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseDeploying}, now: *at(0), want: 30},
+		{name: "finished keeps the stored value", r: run.Run{Status: run.StatusFailed, Summary: run.Summary{ProgressPct: 55}}, now: *at(0), want: 55},
+	}
+	for _, c := range cases {
+		if got := c.r.ProgressPct(c.now); got != c.want {
+			t.Errorf("%s: ProgressPct = %v; want %v", c.name, got, c.want)
+		}
+	}
+}
+
+func TestPhaseProgressPct(t *testing.T) {
+	snap := segmentsSnapshot(t, map[string]any{"name": "main", "warmup": "0s", "run": map[string]any{"duration": "10m"}})
+	workload := run.PhaseState{ID: run.PhaseWorkload, Status: "running", StartedAt: at(0)}
+	deploy := run.PhaseState{ID: run.PhaseDeploying, Status: "running", Steps: []run.Step{{Status: "completed"}, {Status: "running"}, {Status: "pending"}, {Status: "skipped"}}}
+	cases := []struct {
+		name string
+		r    run.Run
+		want float64
+	}{
+		{name: "workload by time", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseWorkload, Snapshot: snap, State: run.State{Phases: []run.PhaseState{workload}}}, want: 30},
+		{name: "deploy by steps", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseDeploying, State: run.State{Phases: []run.PhaseState{deploy}}}, want: 50},
+		{name: "no steps yet", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseProvisioning}, want: 0},
+		{name: "completed", r: run.Run{Status: run.StatusCompleted}, want: 100},
+	}
+	for _, c := range cases {
+		if got := c.r.PhaseProgressPct(*at(3)); got != c.want {
+			t.Errorf("%s: PhaseProgressPct = %v; want %v", c.name, got, c.want)
+		}
+	}
+}

@@ -241,7 +241,7 @@ func TestE2ERuns(t *testing.T) {
 				t.Fatalf("machine %+v", m)
 			}
 		}
-		if ov.Source != "persisted" || len(ov.Machines) != 2 || len(ov.WorkloadSegments) != 1 || ov.WorkloadSegments[0].Status != "running" || ov.ProgressPct <= 0 {
+		if ov.Source != "live" || len(ov.Machines) != 2 || len(ov.WorkloadSegments) != 1 || ov.WorkloadSegments[0].Status != "running" || ov.ProgressPct <= 0 {
 			t.Fatalf("overview %+v", ov)
 		}
 		comp := map[string]string{}

@@ -78,7 +78,8 @@ func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) 
 		if err != nil {
 			return nil, "", err
 		}
-		return overviewOf(r), fmt.Sprintf("%d/%s/%s", r.LastEventID, r.Status, r.UpdatedAt.Format("20060102150405.000")), nil
+		live := s.h.live(r.ID)
+		return overviewOf(r, live), fmt.Sprintf("%d/%s/%s/%t", r.LastEventID, r.Status, r.UpdatedAt.Format("20060102150405.000"), live), nil
 	case "run":
 		r, err := s.runOf(ctx, actor, arg)
 		if err != nil {

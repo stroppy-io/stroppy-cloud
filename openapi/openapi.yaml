@@ -6941,6 +6941,12 @@ components:
           type: number
           minimum: 0
           maximum: 100
+        phase_progress_pct:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 'How far the current phase is (read-time): the workload by elapsed planned time,
+            other phases by finished steps.'
         segment:
           type: string
           description: Current workload segment while running.

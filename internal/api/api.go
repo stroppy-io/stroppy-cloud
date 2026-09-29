@@ -5,6 +5,8 @@
 package api
 
 import (
+	"github.com/google/uuid"
+
 	"github.com/gopherex/xlog"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/admin"
@@ -49,11 +51,22 @@ type Deps struct {
 	Admin     *admin.Service
 	Examples  *examples.Service
 	Observe   *observe.Service
+	Live      LiveProjection
 	Grafana   GrafanaConfig
 	Schemas   *schemas.Registry
 	Public    PublicConfig
 	Probes    Probes
 	Log       *xlog.Logger
+}
+
+// LiveProjection tells whether a run's projection is fed from Graphene
+// right now (run.Projector); nil reports every run as persisted.
+type LiveProjection interface {
+	Live(id uuid.UUID) bool
+}
+
+func (h *Handler) live(id uuid.UUID) bool {
+	return h.deps.Live != nil && h.deps.Live.Live(id)
 }
 
 // Handler is the ogen Handler.

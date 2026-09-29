@@ -28,14 +28,19 @@ type Projector struct {
 	log       *xlog.Logger
 	telemetry Telemetry
 
-	mu     sync.Mutex
-	active map[uuid.UUID]struct{}
-	wg     sync.WaitGroup
+	mu       sync.Mutex
+	active   map[uuid.UUID]struct{}
+	released map[uuid.UUID]time.Time
+	wg       sync.WaitGroup
 }
+
+// liveGrace bridges the gap between one follower's window closing and the
+// next tick starting another, so a followed run does not flicker to stale.
+const liveGrace = 10 * time.Second
 
 // NewProjector wires the worker.
 func NewProjector(repo Repository, g Graphene, publisher Publisher, scope func(context.Context, string) context.Context, log *xlog.Logger) *Projector {
-	return &Projector{repo: repo, graphene: g, publisher: publisher, scope: scope, log: log, active: map[uuid.UUID]struct{}{}}
+	return &Projector{repo: repo, graphene: g, publisher: publisher, scope: scope, log: log, active: map[uuid.UUID]struct{}{}, released: map[uuid.UUID]time.Time{}}
 }
 
 // Telemetry reads a run's workload throughput from the metric store
@@ -105,6 +110,24 @@ func (p *Projector) release(id uuid.UUID) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	delete(p.active, id)
+	p.released[id] = time.Now()
+	for k, at := range p.released {
+		if time.Since(at) > liveGrace {
+			delete(p.released, k)
+		}
+	}
+}
+
+// Live reports whether the run's projection is being fed right now: a
+// follower holds its Graphene event stream, or held it a moment ago.
+func (p *Projector) Live(id uuid.UUID) bool {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if _, ok := p.active[id]; ok {
+		return true
+	}
+	at, ok := p.released[id]
+	return ok && time.Since(at) <= liveGrace
 }
 
 // Following reports whether a run has a follower (tests).

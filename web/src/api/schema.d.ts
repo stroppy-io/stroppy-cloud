@@ -3296,6 +3296,8 @@ export interface components {
             /** @description Size league key for rating */
             league?: string;
             progress_pct?: number;
+            /** @description How far the current phase is (read-time): the workload by elapsed planned time, other phases by finished steps. */
+            phase_progress_pct?: number;
             /** @description Current workload segment while running. */
             segment?: string;
             /**
