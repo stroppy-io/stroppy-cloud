@@ -1,0 +1,85 @@
+{
+  "title": "Dashboard",
+  "tiles": {
+    "running": "Running",
+    "pending": "Pending",
+    "completed7d": "Completed · 7d",
+    "failed7d": "Failed · 7d",
+    "successRate": "Success rate · 7d",
+    "kept": "Kept stands",
+    "noData": "no runs in the last 7 days"
+  },
+  "quick": {
+    "title": "Quick actions",
+    "newTest": "New test",
+    "example": "Launch example",
+    "import": "Import",
+    "compare": "Compare runs"
+  },
+  "live": {
+    "title": "Live now",
+    "empty": "Nothing is running right now.",
+    "viewAll": "All runs"
+  },
+  "recent": {
+    "title": "Recent runs",
+    "empty": "No completed runs yet.",
+    "viewAll": "All runs"
+  },
+  "suiteRuns": {
+    "title": "Recent suite runs",
+    "empty": "No suite runs yet.",
+    "cells": "{{done}}/{{total}} cells",
+    "viewAll": "All suites"
+  },
+  "upcoming": {
+    "title": "Upcoming schedules",
+    "empty": "No enabled schedules.",
+    "next": "next {{when}}",
+    "viewAll": "All schedules"
+  },
+  "top": {
+    "title": "Top results · TPS",
+    "empty": "Complete a run with rating enabled to see it here.",
+    "viewAll": "Rating",
+    "league": "league {{league}}"
+  },
+  "providers": {
+    "title": "Providers",
+    "empty": "No provider profiles yet.",
+    "manage": "Manage providers",
+    "quotaOf": "{{used}} / {{limit}} {{unit}}",
+    "stale": "quotas are stale",
+    "unavailable": "quotas unavailable",
+    "observed": "observed {{when}}"
+  },
+  "limits": {
+    "title": "Limits",
+    "concurrent": "Concurrent runs",
+    "machines": "Machines per run",
+    "maxSize": "Max size",
+    "maxKeep": "Max keep",
+    "retention": "Retention, days"
+  },
+  "onboarding": {
+    "title": "Welcome to {{tenant}}",
+    "subtitle": "Three steps to your first benchmark.",
+    "provider": {
+      "title": "Add a cloud provider",
+      "hint": "A provider profile holds credentials and quotas for the stands.",
+      "cta": "Add provider"
+    },
+    "test": {
+      "title": "Create a test",
+      "hint": "Pick a database, a workload and sizes — or clone an example.",
+      "cta": "New test",
+      "example": "Browse examples"
+    },
+    "launch": {
+      "title": "Launch it",
+      "hint": "Watch the run live: phases, machines, logs and metrics.",
+      "cta": "Go to tests"
+    },
+    "done": "done"
+  }
+}

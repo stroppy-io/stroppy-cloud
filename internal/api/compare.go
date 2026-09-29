@@ -13,7 +13,7 @@ func comparisonOf(c compare.Comparison) oas.Comparison {
 	out := oas.Comparison{BaselineRunID: oas.NewOptUUID(c.BaselineID), Columns: make([]oas.ComparisonColumnsItem, 0, len(c.Columns)), Metrics: make([]oas.ComparisonMetricsItem, 0, len(c.Metrics)), SpecDiff: oas.ComparisonSpecDiff{}}
 	for _, col := range c.Columns {
 		item := oas.ComparisonColumnsItem{
-			RunID: col.Run.ID, Name: oas.NewOptString(col.Run.Name), Status: oas.NewOptRunStatus(oas.RunStatus(col.Run.Status)), Summary: oas.NewOptRunSummary(summaryOf(col.Run.Summary)),
+			RunID: col.Run.ID, Name: oas.NewOptString(col.Run.Name), Status: oas.NewOptRunStatus(oas.RunStatus(col.Run.Status)), Summary: oas.NewOptRunSummary(runSummaryOf(col.Run)),
 			Verdict: oas.NewOptComparisonColumnsItemVerdict(oas.ComparisonColumnsItemVerdict{Better: oas.NewOptInt(col.Verdict.Better), Worse: oas.NewOptInt(col.Verdict.Worse), Same: oas.NewOptInt(col.Verdict.Same), Missing: oas.NewOptInt(col.Verdict.Missing)}),
 		}
 		if col.Run.StartedAt != nil {

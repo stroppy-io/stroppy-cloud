@@ -2029,7 +2029,7 @@ export interface paths {
         delete: operations["revokeShare"];
         options?: never;
         head?: never;
-        /** Change TTL or scope. */
+        /** Change TTL, scope or title. */
         patch: operations["patchShare"];
         trace?: never;
     };
@@ -3206,7 +3206,12 @@ export interface components {
                 [key: string]: string;
             };
         } & components["schemas"]["TestSpec"];
-        TestPatch: components["schemas"]["EntityPatch"] & components["schemas"]["TestSpec"];
+        TestPatch: components["schemas"]["EntityPatch"] & components["schemas"]["TestSpec"] & {
+            /** @description Require the test to be `ready` after this patch; otherwise 400 `validation_failed` with the fit issues and nothing is saved. */
+            finalize?: boolean;
+            /** @description Re-run validation against the current library records (clears `needs_attention`). Every patch revalidates; this flag allows an otherwise empty patch. */
+            revalidate?: boolean;
+        };
         TestValidation: {
             status: components["schemas"]["TestStatus"];
             validation: components["schemas"]["Fit"];
@@ -3291,9 +3296,11 @@ export interface components {
             /** @description Current workload segment while running. */
             segment?: string;
             /**
-             * @description Key result metrics once available.
+             * @description Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`, `qps` (queries per second of the whole workload — the segments' `queries_per_second` weighted by their `measurement_seconds`, else their plain mean), `errors` (terminal errors over all segments; absent = none), and every segment metric as `<segment>.<metric>`.
              * @example {
              *       "tps": 12345.6,
+             *       "qps": 48210.3,
+             *       "latency_p50_ms": 3.1,
              *       "latency_p99_ms": 12.4,
              *       "errors": 0
              *     }
@@ -3301,6 +3308,21 @@ export interface components {
             headline?: {
                 [key: string]: number;
             };
+            /** @description Queries per second over the workload (its segments, else the workload phase), about 30 points in time order, summed across runners — for an inline sparkline. Stored when the run finishes; absent while running or not yet sampled, empty when the metric store had no throughput for the run. */
+            qps_series?: {
+                /**
+                 * Format: int64
+                 * @description Sample time
+                 */
+                t: number;
+                /** @description Queries per second. */
+                v: number;
+            }[];
+            /**
+             * Format: date-time
+             * @description When the workload is planned to end — the workload phase start plus every segment's warmup + duration, re-anchored on the segments already started or finished. Workload time only (collecting and teardown are not predicted). Absent before the workload starts, for finished runs and for workloads with a segment of unbounded length.
+             */
+            expected_finish_at?: string | null;
         };
         Run: {
             /** Format: uuid */
@@ -5828,7 +5850,7 @@ export interface operations {
                 author?: components["parameters"]["author"];
                 favorites?: components["parameters"]["favorites"];
                 kind?: components["schemas"]["DatabaseKind"][];
-                sort?: "name" | "created_at" | "updated_at" | "kind";
+                sort?: "name" | "created_at" | "updated_at" | "kind" | "version" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -6110,7 +6132,7 @@ export interface operations {
                 protocol?: components["schemas"]["Protocol"][];
                 stroppy_version?: string[];
                 script?: string;
-                sort?: "name" | "created_at" | "updated_at" | "protocol" | "stroppy_version";
+                sort?: "name" | "created_at" | "updated_at" | "protocol" | "stroppy_version" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -6390,7 +6412,7 @@ export interface operations {
                 favorites?: components["parameters"]["favorites"];
                 status?: components["schemas"]["TestStatus"][];
                 kind?: components["schemas"]["DatabaseKind"][];
-                sort?: "name" | "created_at" | "updated_at" | "kind" | "last_run_at";
+                sort?: "name" | "created_at" | "updated_at" | "kind" | "database" | "workload" | "provider" | "status" | "author" | "last_run_at";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -6746,7 +6768,8 @@ export interface operations {
                 duration_min?: string;
                 duration_max?: string;
                 stand_kept?: boolean;
-                sort?: "started_at" | "finished_at" | "duration" | "tps" | "status" | "name" | "created_at";
+                /** @description Sort key. `default` puts the caller's favorites first, then live runs (pending, running, cancelling), then the newest; `order` is ignored for it. `qps`, `p50`, `p99` read the headline; `errors` sorts a run without errors as 0. Missing values sort last. */
+                sort?: "default" | "started_at" | "finished_at" | "duration" | "tps" | "qps" | "p50" | "p99" | "errors" | "status" | "name" | "db_kind" | "workload" | "topology" | "provider" | "trigger" | "author" | "created_at" | "updated_at";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -7338,7 +7361,10 @@ export interface operations {
         };
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["LaunchOverrides"];
+                "application/json": components["schemas"]["LaunchOverrides"] & {
+                    /** @description Continue on the kept stand of this run from the failed segment. Degrades to a plain rerun when the stand is gone; the run's `notes` say so. */
+                    resume?: boolean;
+                };
             };
         };
         responses: {
@@ -7483,7 +7509,7 @@ export interface operations {
                 tags?: components["parameters"]["tags"];
                 author?: components["parameters"]["author"];
                 favorites?: components["parameters"]["favorites"];
-                sort?: "name" | "created_at" | "updated_at" | "last_run_at" | "cell_count";
+                sort?: "name" | "created_at" | "updated_at" | "last_run_at" | "cell_count" | "test_count" | "author";
                 order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -7978,6 +8004,8 @@ export interface operations {
             query?: {
                 target_kind?: "test" | "suite";
                 enabled?: boolean;
+                sort?: "name" | "enabled" | "target" | "cron" | "next_run_at" | "last_run_at" | "created_at" | "updated_at" | "author";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };
@@ -8254,6 +8282,8 @@ export interface operations {
                 target_kind?: components["schemas"]["ShareTargetKind"];
                 target_id?: string;
                 active?: boolean;
+                sort?: "title" | "target" | "scope" | "expires_at" | "views" | "created_at";
+                order?: components["parameters"]["order"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
             };
@@ -8340,6 +8370,8 @@ export interface operations {
                     /** @description Go duration from now; `0s` = never expires. */
                     ttl?: string;
                     scope?: components["schemas"]["ShareScope"];
+                    /** @description Report title shown on the public page. */
+                    title?: string;
                 };
             };
         };

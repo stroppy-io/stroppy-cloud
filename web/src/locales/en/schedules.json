@@ -1,0 +1,163 @@
+{
+  "title": "Schedules",
+  "new": "New schedule",
+  "one": "Schedule",
+  "search": "Search schedules…",
+  "columns": {
+    "enabled": "On",
+    "name": "Schedule",
+    "target": "Target",
+    "cron": "Cron",
+    "timezone": "Timezone",
+    "nextRun": "Next run",
+    "lastRun": "Last run",
+    "author": "Author",
+    "status": "Status",
+    "when": "When"
+  },
+  "filters": {
+    "kind": "Target",
+    "kindTest": "Tests",
+    "kindSuite": "Suites",
+    "state": "State",
+    "enabled": "Enabled",
+    "paused": "Paused"
+  },
+  "empty": {
+    "title": "No schedules yet",
+    "hint": "A schedule launches a test or a suite on a cron; the server runs the clock.",
+    "cta": "Create a schedule"
+  },
+  "paused": "Paused",
+  "enabled": "Enabled",
+  "neverRan": "never ran",
+  "firingFailed": "Last firing failed",
+  "target": {
+    "test": "Test",
+    "suite": "Suite",
+    "missing": "Target missing"
+  },
+  "tabs": {
+    "settings": "Settings",
+    "history": "History"
+  },
+  "actions": {
+    "runNow": "Run now",
+    "pause": "Pause",
+    "resume": "Resume",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save schedule",
+    "create": "Create schedule",
+    "openTest": "Open test",
+    "openSuite": "Open suite"
+  },
+  "toasts": {
+    "created": "Schedule created",
+    "saved": "Schedule saved",
+    "deleted": "Schedule deleted",
+    "paused": "Schedule paused",
+    "resumed": "Schedule resumed",
+    "ran": "Started {{name}}",
+    "ranOpen": "Open"
+  },
+  "confirm": {
+    "deleteBody": "Runs already triggered are kept."
+  },
+  "form": {
+    "title": "New schedule",
+    "subtitle": "Pick what to launch, when, and with which overrides.",
+    "name": "Name",
+    "namePlaceholder": "e.g. nightly 02:00",
+    "targetKind": "Launch",
+    "target": "Target",
+    "targetPlaceholderTest": "Pick a test…",
+    "targetPlaceholderSuite": "Pick a suite…",
+    "cron": "Cron expression",
+    "cronHint": "5 fields: minute hour day-of-month month day-of-week. Names and */n are fine.",
+    "cronPresets": "Presets",
+    "presets": {
+      "hourly": "Every hour",
+      "every6h": "Every 6 hours",
+      "daily": "Daily 02:00",
+      "weekdays": "Weekdays 09:00",
+      "weekly": "Saturday 03:00",
+      "monthly": "1st of month 03:00"
+    },
+    "timezone": "Timezone",
+    "timezoneLocal": "Your timezone",
+    "enabled": "Enabled",
+    "enabledHint": "Paused schedules keep their settings and can be resumed any time.",
+    "overrides": "Launch overrides",
+    "overridesHint": "Applied on top of the target's own settings. Leave empty to inherit.",
+    "provider": "Provider profile",
+    "providerPlaceholder": "Inherit from target",
+    "sizesToggle": "Override sizes per role",
+    "keep": "Keep stands",
+    "keepPlaceholder": "e.g. 2h — empty inherits",
+    "rating": "Rating",
+    "ratingTenant": "Tenant rating",
+    "ratingGlobal": "Global rating",
+    "errors": {
+      "name": "Name is required (up to 120 characters)",
+      "target": "Pick a test or a suite",
+      "cron": "5 fields: minute hour day month weekday — e.g. 0 2 * * *",
+      "timezone": "Pick a timezone from the list",
+      "keep": "Use a duration like 30m or 2h"
+    }
+  },
+  "preview": {
+    "title": "Next fire times",
+    "inZone": "in {{tz}}",
+    "none": "No fire times — check the expression.",
+    "local": "your time"
+  },
+  "cron": {
+    "invalid": "Invalid cron expression",
+    "everyMinute": "Every minute",
+    "everyNMinutes": "Every {{n}} minutes",
+    "everyHourAt": "Every hour at :{{minute}}",
+    "everyNHours": "Every {{n}} hours at :{{minute}}",
+    "at": "At {{times}}",
+    "atMinutesHours": "At minute {{minutes}} past hour {{hours}}",
+    "everyDay": "every day",
+    "onWeekdays": "on weekdays",
+    "onDays": "on {{days}}",
+    "onDom": "on day {{days}} of the month",
+    "inMonths": "in {{months}}",
+    "or": " or "
+  },
+  "history": {
+    "columns": {
+      "kind": "Kind",
+      "name": "Run",
+      "status": "Status",
+      "at": "Fired",
+      "error": "Error"
+    },
+    "kind": {
+      "run": "Run",
+      "suite_run": "Suite run"
+    },
+    "empty": "No firings yet",
+    "emptyHint": "Runs triggered by this schedule appear here."
+  },
+  "about": {
+    "title": "About",
+    "author": "Author",
+    "created": "Created",
+    "updated": "Updated",
+    "nextRun": "Next run",
+    "lastRun": "Last run",
+    "description": "Description"
+  },
+  "state": {
+    "active": "Active",
+    "paused": "Paused",
+    "error": "Last firing failed"
+  },
+  "sort": {
+    "name": "Name",
+    "target": "Target"
+  }
+}

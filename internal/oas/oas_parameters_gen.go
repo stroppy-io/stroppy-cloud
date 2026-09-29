@@ -14554,13 +14554,16 @@ type ListRunsParams struct {
 	FinishedAfter  OptDateTime `json:",omitempty,omitzero"`
 	FinishedBefore OptDateTime `json:",omitempty,omitzero"`
 	// Go duration.
-	DurationMin OptString       `json:",omitempty,omitzero"`
-	DurationMax OptString       `json:",omitempty,omitzero"`
-	StandKept   OptBool         `json:",omitempty,omitzero"`
-	Sort        OptListRunsSort `json:",omitempty,omitzero"`
-	Order       OptOrder        `json:",omitempty,omitzero"`
-	Cursor      OptString       `json:",omitempty,omitzero"`
-	Limit       OptInt          `json:",omitempty,omitzero"`
+	DurationMin OptString `json:",omitempty,omitzero"`
+	DurationMax OptString `json:",omitempty,omitzero"`
+	StandKept   OptBool   `json:",omitempty,omitzero"`
+	// Sort key. `default` puts the caller's favorites first, then live runs (pending, running,
+	// cancelling), then the newest; `order` is ignored for it. `qps`, `p50`, `p99` read the headline;
+	// `errors` sorts a run without errors as 0. Missing values sort last.
+	Sort   OptListRunsSort `json:",omitempty,omitzero"`
+	Order  OptOrder        `json:",omitempty,omitzero"`
+	Cursor OptString       `json:",omitempty,omitzero"`
+	Limit  OptInt          `json:",omitempty,omitzero"`
 }
 
 func unpackListRunsParams(packed middleware.Parameters) (params ListRunsParams) {
@@ -15757,7 +15760,7 @@ func decodeListRunsParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 	}
 	// Set default value for query: sort.
 	{
-		val := ListRunsSort("created_at")
+		val := ListRunsSort("default")
 		params.Sort.SetTo(val)
 	}
 	// Decode query: sort.
@@ -16324,6 +16327,8 @@ type ListSchedulesParams struct {
 	Slug       string
 	TargetKind OptListSchedulesTargetKind `json:",omitempty,omitzero"`
 	Enabled    OptBool                    `json:",omitempty,omitzero"`
+	Sort       OptListSchedulesSort       `json:",omitempty,omitzero"`
+	Order      OptOrder                   `json:",omitempty,omitzero"`
 	Cursor     OptString                  `json:",omitempty,omitzero"`
 	Limit      OptInt                     `json:",omitempty,omitzero"`
 }
@@ -16352,6 +16357,24 @@ func unpackListSchedulesParams(packed middleware.Parameters) (params ListSchedul
 		}
 		if v, ok := packed[key]; ok {
 			params.Enabled = v.(OptBool)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptListSchedulesSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
 		}
 	}
 	{
@@ -16535,6 +16558,128 @@ func decodeListSchedulesParams(args [1]string, argsEscaped bool, r *http.Request
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "enabled",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := ListSchedulesSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal ListSchedulesSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = ListSchedulesSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
 			In:   "query",
 			Err:  err,
 		}
@@ -16753,6 +16898,8 @@ type ListSharesParams struct {
 	TargetKind OptShareTargetKind `json:",omitempty,omitzero"`
 	TargetID   OptUUID            `json:",omitempty,omitzero"`
 	Active     OptBool            `json:",omitempty,omitzero"`
+	Sort       OptListSharesSort  `json:",omitempty,omitzero"`
+	Order      OptOrder           `json:",omitempty,omitzero"`
 	Cursor     OptString          `json:",omitempty,omitzero"`
 	Limit      OptInt             `json:",omitempty,omitzero"`
 }
@@ -16790,6 +16937,24 @@ func unpackListSharesParams(packed middleware.Parameters) (params ListSharesPara
 		}
 		if v, ok := packed[key]; ok {
 			params.Active = v.(OptBool)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "sort",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Sort = v.(OptListSharesSort)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "order",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Order = v.(OptOrder)
 		}
 	}
 	{
@@ -17014,6 +17179,128 @@ func decodeListSharesParams(args [1]string, argsEscaped bool, r *http.Request) (
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
 			Name: "active",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: sort.
+	{
+		val := ListSharesSort("created_at")
+		params.Sort.SetTo(val)
+	}
+	// Decode query: sort.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotSortVal ListSharesSort
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotSortVal = ListSharesSort(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Sort.SetTo(paramsDotSortVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Sort.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "sort",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Set default value for query: order.
+	{
+		val := Order("desc")
+		params.Order.SetTo(val)
+	}
+	// Decode query: order.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotOrderVal Order
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotOrderVal = Order(c)
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Order.SetTo(paramsDotOrderVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Order.Get(); ok {
+					if err := func() error {
+						if err := value.Validate(); err != nil {
+							return err
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "order",
 			In:   "query",
 			Err:  err,
 		}

@@ -141,10 +141,18 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		issue("database", "required", "ERROR", "choose a database", nil)
 	}
 	if dbSpec != nil {
-		_, derived, err := s.DeriveDatabase(ctx, *dbSpec)
+		normalized, derived, err := s.DeriveDatabase(ctx, *dbSpec)
 		if err != nil {
 			issue("database", "invalid", "ERROR", err.Error(), nil)
 		} else {
+			if res.Database == nil {
+				// Inline definition: present it like a library record (no id) so readers
+				// see the same shape whether the test references or embeds its database.
+				res.Database = &Database{
+					Entity: Entity{TenantID: tenantID, Name: fmt.Sprintf("%s %s", normalized.Kind, normalized.Version)},
+					Spec:   normalized,
+				}
+			}
 			res.DatabaseDerived = &derived
 			for role, req := range derived.Plan.Requirements {
 				res.Requirements[role] = req
@@ -169,10 +177,17 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		issue("workload", "required", "ERROR", "choose a workload", nil)
 	}
 	if wlSpec != nil {
-		_, _, derived, err := s.DeriveWorkload(ctx, *wlSpec)
+		normalized, baked, derived, err := s.DeriveWorkload(ctx, *wlSpec)
 		if err != nil {
 			issue("workload", "invalid", "ERROR", err.Error(), nil)
 		} else {
+			if res.Workload == nil {
+				res.Workload = &Workload{
+					Entity: Entity{TenantID: tenantID, Name: fmt.Sprintf("%s · stroppy %s", normalized.Protocol, normalized.StroppyVersion)},
+					Spec:   normalized,
+					Baked:  baked,
+				}
+			}
 			res.WorkloadDerived = &derived
 			res.Requirements[topology.RoleRunner] = derived.Runner
 		}
@@ -457,6 +472,9 @@ func (s *Service) UpdateTest(ctx context.Context, actor auth.Actor, tenantID, id
 	fit, _, err := s.Validate(ctx, tenantID, merged)
 	if err != nil {
 		return Test{}, Fit{}, Resolved{}, err
+	}
+	if p.Finalize && !fit.Fits {
+		return Test{}, Fit{}, Resolved{}, &errs.Error{Code: errs.CodeValidation, Detail: "test does not fit; fix the issues before marking it ready", Validation: fit.Issues}
 	}
 	now := time.Now().UTC()
 	t.Spec = merged

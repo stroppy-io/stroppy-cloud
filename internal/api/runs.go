@@ -153,6 +153,21 @@ func summaryOf(s run.Summary) oas.RunSummary {
 	if len(s.Headline) > 0 {
 		out.Headline = oas.NewOptRunSummaryHeadline(oas.RunSummaryHeadline(s.Headline))
 	}
+	if s.QPSSeries != nil {
+		out.QPSSeries = make([]oas.RunSummaryQPSSeriesItem, 0, len(s.QPSSeries))
+		for _, p := range s.QPSSeries {
+			out.QPSSeries = append(out.QPSSeries, oas.RunSummaryQPSSeriesItem{T: p.T, V: p.V})
+		}
+	}
+	return out
+}
+
+// runSummaryOf adds what is derived from the live run to its stored summary.
+func runSummaryOf(r run.Run) oas.RunSummary {
+	out := summaryOf(r.Summary)
+	if at := r.ExpectedFinishAt(); at != nil {
+		out.ExpectedFinishAt = oas.NewOptNilDateTime(*at)
+	}
 	return out
 }
 
@@ -200,7 +215,7 @@ func (h *Handler) runOf(r run.Run, favorite *bool) *oas.Run {
 		Trigger: oas.Trigger(r.Trigger), Snapshot: snapshotOf(r.Snapshot),
 		Rating: oas.RatingFlags{Tenant: oas.NewOptBool(r.RatingTenant), Global: oas.NewOptBool(r.RatingGlobal)},
 		Labels: oas.NewOptRunLabels(oas.RunLabels(tagsOf(r.Labels))), CreatedAt: r.CreatedAt, StartedAt: optTime(r.StartedAt), FinishedAt: optTime(r.FinishedAt),
-		Summary: oas.NewOptRunSummary(summaryOf(r.Summary)), Result: resultOf(r.Result), Shares: h.sharesOf(share.KindRun, r.ID),
+		Summary: oas.NewOptRunSummary(runSummaryOf(r)), Result: resultOf(r.Result), Shares: h.sharesOf(share.KindRun, r.ID),
 		Graphene: oas.NewOptRunGraphene(oas.RunGraphene{RunRef: oas.NewOptString(r.GrapheneRef()), Namespace: oas.NewOptString(r.GrapheneNamespace)}),
 	}
 	if r.StatusReason != "" {
@@ -301,15 +316,25 @@ func (h *Handler) LaunchTest(ctx context.Context, req oas.OptLaunchOverrides, pa
 }
 
 // RerunRun — new run from a snapshot.
-func (h *Handler) RerunRun(ctx context.Context, req oas.OptLaunchOverrides, params oas.RerunRunParams) (*oas.Run, error) {
+func (h *Handler) RerunRun(ctx context.Context, req oas.OptRerunRunReq, params oas.RerunRunParams) (*oas.Run, error) {
 	a, t, err := h.tenantOf(ctx, params.Slug)
 	if err != nil {
 		return nil, err
 	}
-	o, err := overridesOf(req)
+	var lo oas.OptLaunchOverrides
+	resume := false
+	if v, ok := req.Get(); ok {
+		lo = oas.NewOptLaunchOverrides(oas.LaunchOverrides{Name: v.Name, ProviderProfileID: v.ProviderProfileID, Sizes: v.Sizes, Keep: v.Keep, Rating: v.Rating, Notes: v.Notes})
+		if l, ok := v.Labels.Get(); ok {
+			lo.Value.Labels = oas.NewOptLaunchOverridesLabels(oas.LaunchOverridesLabels(l))
+		}
+		resume = v.Resume.Or(false)
+	}
+	o, err := overridesOf(lo)
 	if err != nil {
 		return nil, err
 	}
+	o.Resume = resume
 	r, err := h.deps.Runs.Rerun(ctx, a, t.ID, params.ID, o, params.IdempotencyKey.Or(""))
 	if err != nil {
 		return nil, err
@@ -330,7 +355,7 @@ func runListQueryOf(p oas.ListRunsParams) (run.ListQuery, int, error) {
 	}
 	q := run.ListQuery{
 		Search: p.Search.Or(""), AuthorID: p.Author.Or(""), Labels: tagsFilterOf(p.Labels), Standalone: p.Standalone.Or(false), StandKeptOnly: p.StandKept.Or(false),
-		Sort: string(p.Sort.Or(oas.ListRunsSortCreatedAt)), Desc: p.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: lim + 1, Offset: offset,
+		Sort: string(p.Sort.Or(oas.ListRunsSortDefault)), Desc: p.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: lim + 1, Offset: offset,
 	}
 	for _, s := range p.Status {
 		q.Statuses = append(q.Statuses, string(s))

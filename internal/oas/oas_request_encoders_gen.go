@@ -786,7 +786,7 @@ func encodeRenderSchemaValueRequest(
 }
 
 func encodeRerunRunRequest(
-	req OptLaunchOverrides,
+	req OptRerunRunReq,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

@@ -5841,6 +5841,8 @@ const (
 	ListDatabasesSortCreatedAt ListDatabasesSort = "created_at"
 	ListDatabasesSortUpdatedAt ListDatabasesSort = "updated_at"
 	ListDatabasesSortKind      ListDatabasesSort = "kind"
+	ListDatabasesSortVersion   ListDatabasesSort = "version"
+	ListDatabasesSortAuthor    ListDatabasesSort = "author"
 )
 
 // AllValues returns all ListDatabasesSort values.
@@ -5850,6 +5852,8 @@ func (ListDatabasesSort) AllValues() []ListDatabasesSort {
 		ListDatabasesSortCreatedAt,
 		ListDatabasesSortUpdatedAt,
 		ListDatabasesSortKind,
+		ListDatabasesSortVersion,
+		ListDatabasesSortAuthor,
 	}
 }
 
@@ -5863,6 +5867,10 @@ func (s ListDatabasesSort) MarshalText() ([]byte, error) {
 	case ListDatabasesSortUpdatedAt:
 		return []byte(s), nil
 	case ListDatabasesSortKind:
+		return []byte(s), nil
+	case ListDatabasesSortVersion:
+		return []byte(s), nil
+	case ListDatabasesSortAuthor:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -5883,6 +5891,12 @@ func (s *ListDatabasesSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListDatabasesSortKind:
 		*s = ListDatabasesSortKind
+		return nil
+	case ListDatabasesSortVersion:
+		*s = ListDatabasesSortVersion
+		return nil
+	case ListDatabasesSortAuthor:
+		*s = ListDatabasesSortAuthor
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -6109,31 +6123,57 @@ func (s *ListRunsOK) SetMeta(val PageMeta) {
 type ListRunsSort string
 
 const (
+	ListRunsSortDefault    ListRunsSort = "default"
 	ListRunsSortStartedAt  ListRunsSort = "started_at"
 	ListRunsSortFinishedAt ListRunsSort = "finished_at"
 	ListRunsSortDuration   ListRunsSort = "duration"
 	ListRunsSortTps        ListRunsSort = "tps"
+	ListRunsSortQPS        ListRunsSort = "qps"
+	ListRunsSortP50        ListRunsSort = "p50"
+	ListRunsSortP99        ListRunsSort = "p99"
+	ListRunsSortErrors     ListRunsSort = "errors"
 	ListRunsSortStatus     ListRunsSort = "status"
 	ListRunsSortName       ListRunsSort = "name"
+	ListRunsSortDbKind     ListRunsSort = "db_kind"
+	ListRunsSortWorkload   ListRunsSort = "workload"
+	ListRunsSortTopology   ListRunsSort = "topology"
+	ListRunsSortProvider   ListRunsSort = "provider"
+	ListRunsSortTrigger    ListRunsSort = "trigger"
+	ListRunsSortAuthor     ListRunsSort = "author"
 	ListRunsSortCreatedAt  ListRunsSort = "created_at"
+	ListRunsSortUpdatedAt  ListRunsSort = "updated_at"
 )
 
 // AllValues returns all ListRunsSort values.
 func (ListRunsSort) AllValues() []ListRunsSort {
 	return []ListRunsSort{
+		ListRunsSortDefault,
 		ListRunsSortStartedAt,
 		ListRunsSortFinishedAt,
 		ListRunsSortDuration,
 		ListRunsSortTps,
+		ListRunsSortQPS,
+		ListRunsSortP50,
+		ListRunsSortP99,
+		ListRunsSortErrors,
 		ListRunsSortStatus,
 		ListRunsSortName,
+		ListRunsSortDbKind,
+		ListRunsSortWorkload,
+		ListRunsSortTopology,
+		ListRunsSortProvider,
+		ListRunsSortTrigger,
+		ListRunsSortAuthor,
 		ListRunsSortCreatedAt,
+		ListRunsSortUpdatedAt,
 	}
 }
 
 // MarshalText implements encoding.TextMarshaler.
 func (s ListRunsSort) MarshalText() ([]byte, error) {
 	switch s {
+	case ListRunsSortDefault:
+		return []byte(s), nil
 	case ListRunsSortStartedAt:
 		return []byte(s), nil
 	case ListRunsSortFinishedAt:
@@ -6142,11 +6182,33 @@ func (s ListRunsSort) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case ListRunsSortTps:
 		return []byte(s), nil
+	case ListRunsSortQPS:
+		return []byte(s), nil
+	case ListRunsSortP50:
+		return []byte(s), nil
+	case ListRunsSortP99:
+		return []byte(s), nil
+	case ListRunsSortErrors:
+		return []byte(s), nil
 	case ListRunsSortStatus:
 		return []byte(s), nil
 	case ListRunsSortName:
 		return []byte(s), nil
+	case ListRunsSortDbKind:
+		return []byte(s), nil
+	case ListRunsSortWorkload:
+		return []byte(s), nil
+	case ListRunsSortTopology:
+		return []byte(s), nil
+	case ListRunsSortProvider:
+		return []byte(s), nil
+	case ListRunsSortTrigger:
+		return []byte(s), nil
+	case ListRunsSortAuthor:
+		return []byte(s), nil
 	case ListRunsSortCreatedAt:
+		return []byte(s), nil
+	case ListRunsSortUpdatedAt:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -6156,6 +6218,9 @@ func (s ListRunsSort) MarshalText() ([]byte, error) {
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (s *ListRunsSort) UnmarshalText(data []byte) error {
 	switch ListRunsSort(data) {
+	case ListRunsSortDefault:
+		*s = ListRunsSortDefault
+		return nil
 	case ListRunsSortStartedAt:
 		*s = ListRunsSortStartedAt
 		return nil
@@ -6168,14 +6233,47 @@ func (s *ListRunsSort) UnmarshalText(data []byte) error {
 	case ListRunsSortTps:
 		*s = ListRunsSortTps
 		return nil
+	case ListRunsSortQPS:
+		*s = ListRunsSortQPS
+		return nil
+	case ListRunsSortP50:
+		*s = ListRunsSortP50
+		return nil
+	case ListRunsSortP99:
+		*s = ListRunsSortP99
+		return nil
+	case ListRunsSortErrors:
+		*s = ListRunsSortErrors
+		return nil
 	case ListRunsSortStatus:
 		*s = ListRunsSortStatus
 		return nil
 	case ListRunsSortName:
 		*s = ListRunsSortName
 		return nil
+	case ListRunsSortDbKind:
+		*s = ListRunsSortDbKind
+		return nil
+	case ListRunsSortWorkload:
+		*s = ListRunsSortWorkload
+		return nil
+	case ListRunsSortTopology:
+		*s = ListRunsSortTopology
+		return nil
+	case ListRunsSortProvider:
+		*s = ListRunsSortProvider
+		return nil
+	case ListRunsSortTrigger:
+		*s = ListRunsSortTrigger
+		return nil
+	case ListRunsSortAuthor:
+		*s = ListRunsSortAuthor
+		return nil
 	case ListRunsSortCreatedAt:
 		*s = ListRunsSortCreatedAt
+		return nil
+	case ListRunsSortUpdatedAt:
+		*s = ListRunsSortUpdatedAt
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -6230,6 +6328,96 @@ func (s *ListSchedulesOK) SetData(val []Schedule) {
 // SetMeta sets the value of Meta.
 func (s *ListSchedulesOK) SetMeta(val PageMeta) {
 	s.Meta = val
+}
+
+type ListSchedulesSort string
+
+const (
+	ListSchedulesSortName      ListSchedulesSort = "name"
+	ListSchedulesSortEnabled   ListSchedulesSort = "enabled"
+	ListSchedulesSortTarget    ListSchedulesSort = "target"
+	ListSchedulesSortCron      ListSchedulesSort = "cron"
+	ListSchedulesSortNextRunAt ListSchedulesSort = "next_run_at"
+	ListSchedulesSortLastRunAt ListSchedulesSort = "last_run_at"
+	ListSchedulesSortCreatedAt ListSchedulesSort = "created_at"
+	ListSchedulesSortUpdatedAt ListSchedulesSort = "updated_at"
+	ListSchedulesSortAuthor    ListSchedulesSort = "author"
+)
+
+// AllValues returns all ListSchedulesSort values.
+func (ListSchedulesSort) AllValues() []ListSchedulesSort {
+	return []ListSchedulesSort{
+		ListSchedulesSortName,
+		ListSchedulesSortEnabled,
+		ListSchedulesSortTarget,
+		ListSchedulesSortCron,
+		ListSchedulesSortNextRunAt,
+		ListSchedulesSortLastRunAt,
+		ListSchedulesSortCreatedAt,
+		ListSchedulesSortUpdatedAt,
+		ListSchedulesSortAuthor,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListSchedulesSort) MarshalText() ([]byte, error) {
+	switch s {
+	case ListSchedulesSortName:
+		return []byte(s), nil
+	case ListSchedulesSortEnabled:
+		return []byte(s), nil
+	case ListSchedulesSortTarget:
+		return []byte(s), nil
+	case ListSchedulesSortCron:
+		return []byte(s), nil
+	case ListSchedulesSortNextRunAt:
+		return []byte(s), nil
+	case ListSchedulesSortLastRunAt:
+		return []byte(s), nil
+	case ListSchedulesSortCreatedAt:
+		return []byte(s), nil
+	case ListSchedulesSortUpdatedAt:
+		return []byte(s), nil
+	case ListSchedulesSortAuthor:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListSchedulesSort) UnmarshalText(data []byte) error {
+	switch ListSchedulesSort(data) {
+	case ListSchedulesSortName:
+		*s = ListSchedulesSortName
+		return nil
+	case ListSchedulesSortEnabled:
+		*s = ListSchedulesSortEnabled
+		return nil
+	case ListSchedulesSortTarget:
+		*s = ListSchedulesSortTarget
+		return nil
+	case ListSchedulesSortCron:
+		*s = ListSchedulesSortCron
+		return nil
+	case ListSchedulesSortNextRunAt:
+		*s = ListSchedulesSortNextRunAt
+		return nil
+	case ListSchedulesSortLastRunAt:
+		*s = ListSchedulesSortLastRunAt
+		return nil
+	case ListSchedulesSortCreatedAt:
+		*s = ListSchedulesSortCreatedAt
+		return nil
+	case ListSchedulesSortUpdatedAt:
+		*s = ListSchedulesSortUpdatedAt
+		return nil
+	case ListSchedulesSortAuthor:
+		*s = ListSchedulesSortAuthor
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type ListSchedulesTargetKind string
@@ -6310,6 +6498,75 @@ func (s *ListSharesOK) SetData(val []Share) {
 // SetMeta sets the value of Meta.
 func (s *ListSharesOK) SetMeta(val PageMeta) {
 	s.Meta = val
+}
+
+type ListSharesSort string
+
+const (
+	ListSharesSortTitle     ListSharesSort = "title"
+	ListSharesSortTarget    ListSharesSort = "target"
+	ListSharesSortScope     ListSharesSort = "scope"
+	ListSharesSortExpiresAt ListSharesSort = "expires_at"
+	ListSharesSortViews     ListSharesSort = "views"
+	ListSharesSortCreatedAt ListSharesSort = "created_at"
+)
+
+// AllValues returns all ListSharesSort values.
+func (ListSharesSort) AllValues() []ListSharesSort {
+	return []ListSharesSort{
+		ListSharesSortTitle,
+		ListSharesSortTarget,
+		ListSharesSortScope,
+		ListSharesSortExpiresAt,
+		ListSharesSortViews,
+		ListSharesSortCreatedAt,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListSharesSort) MarshalText() ([]byte, error) {
+	switch s {
+	case ListSharesSortTitle:
+		return []byte(s), nil
+	case ListSharesSortTarget:
+		return []byte(s), nil
+	case ListSharesSortScope:
+		return []byte(s), nil
+	case ListSharesSortExpiresAt:
+		return []byte(s), nil
+	case ListSharesSortViews:
+		return []byte(s), nil
+	case ListSharesSortCreatedAt:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListSharesSort) UnmarshalText(data []byte) error {
+	switch ListSharesSort(data) {
+	case ListSharesSortTitle:
+		*s = ListSharesSortTitle
+		return nil
+	case ListSharesSortTarget:
+		*s = ListSharesSortTarget
+		return nil
+	case ListSharesSortScope:
+		*s = ListSharesSortScope
+		return nil
+	case ListSharesSortExpiresAt:
+		*s = ListSharesSortExpiresAt
+		return nil
+	case ListSharesSortViews:
+		*s = ListSharesSortViews
+		return nil
+	case ListSharesSortCreatedAt:
+		*s = ListSharesSortCreatedAt
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type ListSuiteRunsOK struct {
@@ -6457,6 +6714,8 @@ const (
 	ListSuitesSortUpdatedAt ListSuitesSort = "updated_at"
 	ListSuitesSortLastRunAt ListSuitesSort = "last_run_at"
 	ListSuitesSortCellCount ListSuitesSort = "cell_count"
+	ListSuitesSortTestCount ListSuitesSort = "test_count"
+	ListSuitesSortAuthor    ListSuitesSort = "author"
 )
 
 // AllValues returns all ListSuitesSort values.
@@ -6467,6 +6726,8 @@ func (ListSuitesSort) AllValues() []ListSuitesSort {
 		ListSuitesSortUpdatedAt,
 		ListSuitesSortLastRunAt,
 		ListSuitesSortCellCount,
+		ListSuitesSortTestCount,
+		ListSuitesSortAuthor,
 	}
 }
 
@@ -6482,6 +6743,10 @@ func (s ListSuitesSort) MarshalText() ([]byte, error) {
 	case ListSuitesSortLastRunAt:
 		return []byte(s), nil
 	case ListSuitesSortCellCount:
+		return []byte(s), nil
+	case ListSuitesSortTestCount:
+		return []byte(s), nil
+	case ListSuitesSortAuthor:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -6505,6 +6770,12 @@ func (s *ListSuitesSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListSuitesSortCellCount:
 		*s = ListSuitesSortCellCount
+		return nil
+	case ListSuitesSortTestCount:
+		*s = ListSuitesSortTestCount
+		return nil
+	case ListSuitesSortAuthor:
+		*s = ListSuitesSortAuthor
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -6557,6 +6828,11 @@ const (
 	ListTestsSortCreatedAt ListTestsSort = "created_at"
 	ListTestsSortUpdatedAt ListTestsSort = "updated_at"
 	ListTestsSortKind      ListTestsSort = "kind"
+	ListTestsSortDatabase  ListTestsSort = "database"
+	ListTestsSortWorkload  ListTestsSort = "workload"
+	ListTestsSortProvider  ListTestsSort = "provider"
+	ListTestsSortStatus    ListTestsSort = "status"
+	ListTestsSortAuthor    ListTestsSort = "author"
 	ListTestsSortLastRunAt ListTestsSort = "last_run_at"
 )
 
@@ -6567,6 +6843,11 @@ func (ListTestsSort) AllValues() []ListTestsSort {
 		ListTestsSortCreatedAt,
 		ListTestsSortUpdatedAt,
 		ListTestsSortKind,
+		ListTestsSortDatabase,
+		ListTestsSortWorkload,
+		ListTestsSortProvider,
+		ListTestsSortStatus,
+		ListTestsSortAuthor,
 		ListTestsSortLastRunAt,
 	}
 }
@@ -6581,6 +6862,16 @@ func (s ListTestsSort) MarshalText() ([]byte, error) {
 	case ListTestsSortUpdatedAt:
 		return []byte(s), nil
 	case ListTestsSortKind:
+		return []byte(s), nil
+	case ListTestsSortDatabase:
+		return []byte(s), nil
+	case ListTestsSortWorkload:
+		return []byte(s), nil
+	case ListTestsSortProvider:
+		return []byte(s), nil
+	case ListTestsSortStatus:
+		return []byte(s), nil
+	case ListTestsSortAuthor:
 		return []byte(s), nil
 	case ListTestsSortLastRunAt:
 		return []byte(s), nil
@@ -6603,6 +6894,21 @@ func (s *ListTestsSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListTestsSortKind:
 		*s = ListTestsSortKind
+		return nil
+	case ListTestsSortDatabase:
+		*s = ListTestsSortDatabase
+		return nil
+	case ListTestsSortWorkload:
+		*s = ListTestsSortWorkload
+		return nil
+	case ListTestsSortProvider:
+		*s = ListTestsSortProvider
+		return nil
+	case ListTestsSortStatus:
+		*s = ListTestsSortStatus
+		return nil
+	case ListTestsSortAuthor:
+		*s = ListTestsSortAuthor
 		return nil
 	case ListTestsSortLastRunAt:
 		*s = ListTestsSortLastRunAt
@@ -6684,6 +6990,7 @@ const (
 	ListWorkloadsSortUpdatedAt      ListWorkloadsSort = "updated_at"
 	ListWorkloadsSortProtocol       ListWorkloadsSort = "protocol"
 	ListWorkloadsSortStroppyVersion ListWorkloadsSort = "stroppy_version"
+	ListWorkloadsSortAuthor         ListWorkloadsSort = "author"
 )
 
 // AllValues returns all ListWorkloadsSort values.
@@ -6694,6 +7001,7 @@ func (ListWorkloadsSort) AllValues() []ListWorkloadsSort {
 		ListWorkloadsSortUpdatedAt,
 		ListWorkloadsSortProtocol,
 		ListWorkloadsSortStroppyVersion,
+		ListWorkloadsSortAuthor,
 	}
 }
 
@@ -6709,6 +7017,8 @@ func (s ListWorkloadsSort) MarshalText() ([]byte, error) {
 	case ListWorkloadsSortProtocol:
 		return []byte(s), nil
 	case ListWorkloadsSortStroppyVersion:
+		return []byte(s), nil
+	case ListWorkloadsSortAuthor:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -6732,6 +7042,9 @@ func (s *ListWorkloadsSort) UnmarshalText(data []byte) error {
 		return nil
 	case ListWorkloadsSortStroppyVersion:
 		*s = ListWorkloadsSortStroppyVersion
+		return nil
+	case ListWorkloadsSortAuthor:
+		*s = ListWorkloadsSortAuthor
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -9549,6 +9862,52 @@ func (o OptListRunsSort) Or(d ListRunsSort) ListRunsSort {
 	return d
 }
 
+// NewOptListSchedulesSort returns new OptListSchedulesSort with value set to v.
+func NewOptListSchedulesSort(v ListSchedulesSort) OptListSchedulesSort {
+	return OptListSchedulesSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListSchedulesSort is optional ListSchedulesSort.
+type OptListSchedulesSort struct {
+	Value ListSchedulesSort
+	Set   bool
+}
+
+// IsSet returns true if OptListSchedulesSort was set.
+func (o OptListSchedulesSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListSchedulesSort) Reset() {
+	var v ListSchedulesSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListSchedulesSort) SetTo(v ListSchedulesSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListSchedulesSort) Get() (v ListSchedulesSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListSchedulesSort) Or(d ListSchedulesSort) ListSchedulesSort {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptListSchedulesTargetKind returns new OptListSchedulesTargetKind with value set to v.
 func NewOptListSchedulesTargetKind(v ListSchedulesTargetKind) OptListSchedulesTargetKind {
 	return OptListSchedulesTargetKind{
@@ -9589,6 +9948,52 @@ func (o OptListSchedulesTargetKind) Get() (v ListSchedulesTargetKind, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptListSchedulesTargetKind) Or(d ListSchedulesTargetKind) ListSchedulesTargetKind {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptListSharesSort returns new OptListSharesSort with value set to v.
+func NewOptListSharesSort(v ListSharesSort) OptListSharesSort {
+	return OptListSharesSort{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListSharesSort is optional ListSharesSort.
+type OptListSharesSort struct {
+	Value ListSharesSort
+	Set   bool
+}
+
+// IsSet returns true if OptListSharesSort was set.
+func (o OptListSharesSort) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListSharesSort) Reset() {
+	var v ListSharesSort
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListSharesSort) SetTo(v ListSharesSort) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListSharesSort) Get() (v ListSharesSort, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListSharesSort) Or(d ListSharesSort) ListSharesSort {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -10686,6 +11091,98 @@ func (o OptRequirements) Get() (v Requirements, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptRequirements) Or(d Requirements) Requirements {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRerunRunReq returns new OptRerunRunReq with value set to v.
+func NewOptRerunRunReq(v RerunRunReq) OptRerunRunReq {
+	return OptRerunRunReq{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRerunRunReq is optional RerunRunReq.
+type OptRerunRunReq struct {
+	Value RerunRunReq
+	Set   bool
+}
+
+// IsSet returns true if OptRerunRunReq was set.
+func (o OptRerunRunReq) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRerunRunReq) Reset() {
+	var v RerunRunReq
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRerunRunReq) SetTo(v RerunRunReq) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRerunRunReq) Get() (v RerunRunReq, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRerunRunReq) Or(d RerunRunReq) RerunRunReq {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRerunRunReqLabels returns new OptRerunRunReqLabels with value set to v.
+func NewOptRerunRunReqLabels(v RerunRunReqLabels) OptRerunRunReqLabels {
+	return OptRerunRunReqLabels{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRerunRunReqLabels is optional RerunRunReqLabels.
+type OptRerunRunReqLabels struct {
+	Value RerunRunReqLabels
+	Set   bool
+}
+
+// IsSet returns true if OptRerunRunReqLabels was set.
+func (o OptRerunRunReqLabels) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRerunRunReqLabels) Reset() {
+	var v RerunRunReqLabels
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRerunRunReqLabels) SetTo(v RerunRunReqLabels) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRerunRunReqLabels) Get() (v RerunRunReqLabels, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRerunRunReqLabels) Or(d RerunRunReqLabels) RerunRunReqLabels {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -15101,6 +15598,8 @@ type PatchShareReq struct {
 	// Go duration from now; `0s` = never expires.
 	TTL   OptString     `json:"ttl"`
 	Scope OptShareScope `json:"scope"`
+	// Report title shown on the public page.
+	Title OptString `json:"title"`
 }
 
 // GetTTL returns the value of TTL.
@@ -15113,6 +15612,11 @@ func (s *PatchShareReq) GetScope() OptShareScope {
 	return s.Scope
 }
 
+// GetTitle returns the value of Title.
+func (s *PatchShareReq) GetTitle() OptString {
+	return s.Title
+}
+
 // SetTTL sets the value of TTL.
 func (s *PatchShareReq) SetTTL(val OptString) {
 	s.TTL = val
@@ -15121,6 +15625,11 @@ func (s *PatchShareReq) SetTTL(val OptString) {
 // SetScope sets the value of Scope.
 func (s *PatchShareReq) SetScope(val OptShareScope) {
 	s.Scope = val
+}
+
+// SetTitle sets the value of Title.
+func (s *PatchShareReq) SetTitle(val OptString) {
+	s.Title = val
 }
 
 // Native pipeline headline; absent throughput is not zero throughput. Other workload metrics remain
@@ -16819,6 +17328,112 @@ func (s *Requirements) init() Requirements {
 	m := *s
 	if m == nil {
 		m = map[string]RoleRequirement{}
+		*s = m
+	}
+	return m
+}
+
+// Merged schema.
+type RerunRunReq struct {
+	Name OptString `json:"name"`
+	// Required when the test has no default.
+	ProviderProfileID OptUUID              `json:"provider_profile_id"`
+	Sizes             OptRoleSizes         `json:"sizes"`
+	Keep              OptString            `json:"keep"`
+	Rating            OptRatingFlags       `json:"rating"`
+	Labels            OptRerunRunReqLabels `json:"labels"`
+	Notes             OptString            `json:"notes"`
+	// Continue on the kept stand of this run from the failed segment. Degrades to a plain rerun when the
+	// stand is gone; the run's `notes` say so.
+	Resume OptBool `json:"resume"`
+}
+
+// GetName returns the value of Name.
+func (s *RerunRunReq) GetName() OptString {
+	return s.Name
+}
+
+// GetProviderProfileID returns the value of ProviderProfileID.
+func (s *RerunRunReq) GetProviderProfileID() OptUUID {
+	return s.ProviderProfileID
+}
+
+// GetSizes returns the value of Sizes.
+func (s *RerunRunReq) GetSizes() OptRoleSizes {
+	return s.Sizes
+}
+
+// GetKeep returns the value of Keep.
+func (s *RerunRunReq) GetKeep() OptString {
+	return s.Keep
+}
+
+// GetRating returns the value of Rating.
+func (s *RerunRunReq) GetRating() OptRatingFlags {
+	return s.Rating
+}
+
+// GetLabels returns the value of Labels.
+func (s *RerunRunReq) GetLabels() OptRerunRunReqLabels {
+	return s.Labels
+}
+
+// GetNotes returns the value of Notes.
+func (s *RerunRunReq) GetNotes() OptString {
+	return s.Notes
+}
+
+// GetResume returns the value of Resume.
+func (s *RerunRunReq) GetResume() OptBool {
+	return s.Resume
+}
+
+// SetName sets the value of Name.
+func (s *RerunRunReq) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetProviderProfileID sets the value of ProviderProfileID.
+func (s *RerunRunReq) SetProviderProfileID(val OptUUID) {
+	s.ProviderProfileID = val
+}
+
+// SetSizes sets the value of Sizes.
+func (s *RerunRunReq) SetSizes(val OptRoleSizes) {
+	s.Sizes = val
+}
+
+// SetKeep sets the value of Keep.
+func (s *RerunRunReq) SetKeep(val OptString) {
+	s.Keep = val
+}
+
+// SetRating sets the value of Rating.
+func (s *RerunRunReq) SetRating(val OptRatingFlags) {
+	s.Rating = val
+}
+
+// SetLabels sets the value of Labels.
+func (s *RerunRunReq) SetLabels(val OptRerunRunReqLabels) {
+	s.Labels = val
+}
+
+// SetNotes sets the value of Notes.
+func (s *RerunRunReq) SetNotes(val OptString) {
+	s.Notes = val
+}
+
+// SetResume sets the value of Resume.
+func (s *RerunRunReq) SetResume(val OptBool) {
+	s.Resume = val
+}
+
+type RerunRunReqLabels map[string]string
+
+func (s *RerunRunReqLabels) init() RerunRunReqLabels {
+	m := *s
+	if m == nil {
+		m = map[string]string{}
 		*s = m
 	}
 	return m
@@ -19815,8 +20430,20 @@ type RunSummary struct {
 	ProgressPct OptFloat64 `json:"progress_pct"`
 	// Current workload segment while running.
 	Segment OptString `json:"segment"`
-	// Key result metrics once available.
+	// Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`,
+	// `qps` (queries per second of the whole workload — the segments' `queries_per_second` weighted by
+	// their `measurement_seconds`, else their plain mean), `errors` (terminal errors over all segments;
+	// absent = none), and every segment metric as `<segment>.<metric>`.
 	Headline OptRunSummaryHeadline `json:"headline"`
+	// Queries per second over the workload (its segments, else the workload phase), about 30 points in
+	// time order, summed across runners — for an inline sparkline. Stored when the run finishes;
+	// absent while running or not yet sampled, empty when the metric store had no throughput for the run.
+	QPSSeries []RunSummaryQPSSeriesItem `json:"qps_series"`
+	// When the workload is planned to end — the workload phase start plus every segment's warmup +
+	// duration, re-anchored on the segments already started or finished. Workload time only (collecting
+	// and teardown are not predicted). Absent before the workload starts, for finished runs and for
+	// workloads with a segment of unbounded length.
+	ExpectedFinishAt OptNilDateTime `json:"expected_finish_at"`
 }
 
 // GetDbKind returns the value of DbKind.
@@ -19889,6 +20516,16 @@ func (s *RunSummary) GetHeadline() OptRunSummaryHeadline {
 	return s.Headline
 }
 
+// GetQPSSeries returns the value of QPSSeries.
+func (s *RunSummary) GetQPSSeries() []RunSummaryQPSSeriesItem {
+	return s.QPSSeries
+}
+
+// GetExpectedFinishAt returns the value of ExpectedFinishAt.
+func (s *RunSummary) GetExpectedFinishAt() OptNilDateTime {
+	return s.ExpectedFinishAt
+}
+
 // SetDbKind sets the value of DbKind.
 func (s *RunSummary) SetDbKind(val OptDatabaseKind) {
 	s.DbKind = val
@@ -19959,7 +20596,20 @@ func (s *RunSummary) SetHeadline(val OptRunSummaryHeadline) {
 	s.Headline = val
 }
 
-// Key result metrics once available.
+// SetQPSSeries sets the value of QPSSeries.
+func (s *RunSummary) SetQPSSeries(val []RunSummaryQPSSeriesItem) {
+	s.QPSSeries = val
+}
+
+// SetExpectedFinishAt sets the value of ExpectedFinishAt.
+func (s *RunSummary) SetExpectedFinishAt(val OptNilDateTime) {
+	s.ExpectedFinishAt = val
+}
+
+// Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`,
+// `qps` (queries per second of the whole workload — the segments' `queries_per_second` weighted by
+// their `measurement_seconds`, else their plain mean), `errors` (terminal errors over all segments;
+// absent = none), and every segment metric as `<segment>.<metric>`.
 type RunSummaryHeadline map[string]float64
 
 func (s *RunSummaryHeadline) init() RunSummaryHeadline {
@@ -19969,6 +20619,33 @@ func (s *RunSummaryHeadline) init() RunSummaryHeadline {
 		*s = m
 	}
 	return m
+}
+
+type RunSummaryQPSSeriesItem struct {
+	// Sample time.
+	T int64 `json:"t"`
+	// Queries per second.
+	V float64 `json:"v"`
+}
+
+// GetT returns the value of T.
+func (s *RunSummaryQPSSeriesItem) GetT() int64 {
+	return s.T
+}
+
+// GetV returns the value of V.
+func (s *RunSummaryQPSSeriesItem) GetV() float64 {
+	return s.V
+}
+
+// SetT sets the value of T.
+func (s *RunSummaryQPSSeriesItem) SetT(val int64) {
+	s.T = val
+}
+
+// SetV sets the value of V.
+func (s *RunSummaryQPSSeriesItem) SetV(val float64) {
+	s.V = val
 }
 
 type RunTriggerRef struct {
@@ -25663,6 +26340,12 @@ type TestPatch struct {
 	// Go duration; default from tenant settings.
 	Keep   OptString      `json:"keep"`
 	Rating OptRatingFlags `json:"rating"`
+	// Require the test to be `ready` after this patch; otherwise 400 `validation_failed` with the fit
+	// issues and nothing is saved.
+	Finalize OptBool `json:"finalize"`
+	// Re-run validation against the current library records (clears `needs_attention`). Every patch
+	// revalidates; this flag allows an otherwise empty patch.
+	Revalidate OptBool `json:"revalidate"`
 }
 
 // GetName returns the value of Name.
@@ -25715,6 +26398,16 @@ func (s *TestPatch) GetRating() OptRatingFlags {
 	return s.Rating
 }
 
+// GetFinalize returns the value of Finalize.
+func (s *TestPatch) GetFinalize() OptBool {
+	return s.Finalize
+}
+
+// GetRevalidate returns the value of Revalidate.
+func (s *TestPatch) GetRevalidate() OptBool {
+	return s.Revalidate
+}
+
 // SetName sets the value of Name.
 func (s *TestPatch) SetName(val OptString) {
 	s.Name = val
@@ -25763,6 +26456,16 @@ func (s *TestPatch) SetKeep(val OptString) {
 // SetRating sets the value of Rating.
 func (s *TestPatch) SetRating(val OptRatingFlags) {
 	s.Rating = val
+}
+
+// SetFinalize sets the value of Finalize.
+func (s *TestPatch) SetFinalize(val OptBool) {
+	s.Finalize = val
+}
+
+// SetRevalidate sets the value of Revalidate.
+func (s *TestPatch) SetRevalidate(val OptBool) {
+	s.Revalidate = val
 }
 
 // TestPatchDatabase represents sum type.

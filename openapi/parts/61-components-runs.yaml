@@ -36,9 +36,39 @@ components:
         segment: { type: string, description: Current workload segment while running. }
         headline:
           type: object
-          description: Key result metrics once available.
+          description: >-
+            Key result metrics once available: `tps`, `latency_p50_ms`,
+            `latency_p95_ms`, `latency_p99_ms`, `qps` (queries per second of
+            the whole workload — the segments' `queries_per_second` weighted
+            by their `measurement_seconds`, else their plain mean), `errors`
+            (terminal errors over all segments; absent = none), and every
+            segment metric as `<segment>.<metric>`.
           additionalProperties: { type: number }
-          example: { tps: 12345.6, latency_p99_ms: 12.4, errors: 0 }
+          example: { tps: 12345.6, qps: 48210.3, latency_p50_ms: 3.1, latency_p99_ms: 12.4, errors: 0 }
+        qps_series:
+          type: array
+          description: >-
+            Queries per second over the workload (its segments, else the
+            workload phase), about 30 points in time order, summed across
+            runners — for an inline sparkline. Stored when the run finishes;
+            absent while running or not yet sampled, empty when the metric
+            store had no throughput for the run.
+          items:
+            type: object
+            required: [t, v]
+            properties:
+              t: { type: integer, format: int64, description: Sample time, unix milliseconds. }
+              v: { type: number, description: Queries per second. }
+        expected_finish_at:
+          type: [string, 'null']
+          format: date-time
+          description: >-
+            When the workload is planned to end — the workload phase start
+            plus every segment's warmup + duration, re-anchored on the
+            segments already started or finished. Workload time only
+            (collecting and teardown are not predicted). Absent before the
+            workload starts, for finished runs and for workloads with a
+            segment of unbounded length.
     Run:
       type: object
       required: [id, name, status, phase, trigger, test_ref, snapshot, author, created_at, rating, stand_kept]

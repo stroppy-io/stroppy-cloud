@@ -8243,7 +8243,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 											return r, true
 										case "PATCH":
 											r.name = PatchShareOperation
-											r.summary = "Change TTL or scope."
+											r.summary = "Change TTL, scope or title."
 											r.operationID = "patchShare"
 											r.operationGroup = ""
 											r.pathPattern = "/api/v1/t/{slug}/shares/{id}"

@@ -18,7 +18,7 @@ are documented in [the integration handoff](pipelines/live/tests/platform/contra
 - `pipelines/` — Graphene pipelines (`stroppy-run`, `stroppy-suite`), a separate
   Go module; `pipelines/spec` is the run specification shared with the server.
 - `openapi/parts/` — OpenAPI sources for the Go server and TypeScript API types.
-- `web/` — SPA (React, Vite, Tailwind).
+- `web/` — SPA (React 19, Vite, `@grafana/ui`); правила — `web/AGENTS.md`.
 - `docs/` — documentation and design notes.
 
 ## Development

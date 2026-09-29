@@ -254,6 +254,8 @@ type TestPatch struct {
 	Keep              *time.Duration
 	RatingTenant      *bool
 	RatingGlobal      *bool
+	// Finalize refuses the patch (nothing saved) unless the merged spec fits.
+	Finalize bool
 }
 
 // Validator bakes values.

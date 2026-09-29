@@ -22583,6 +22583,14 @@ func (s *Server) handleListSchedulesRequest(args [1]string, argsEscaped bool, w 
 					In:   "query",
 				}: params.Enabled,
 				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
+				{
 					Name: "cursor",
 					In:   "query",
 				}: params.Cursor,
@@ -23002,6 +23010,14 @@ func (s *Server) handleListSharesRequest(args [1]string, argsEscaped bool, w htt
 					Name: "active",
 					In:   "query",
 				}: params.Active,
+				{
+					Name: "sort",
+					In:   "query",
+				}: params.Sort,
+				{
+					Name: "order",
+					In:   "query",
+				}: params.Order,
 				{
 					Name: "cursor",
 					In:   "query",
@@ -26566,7 +26582,7 @@ func (s *Server) handlePatchScheduleRequest(args [2]string, argsEscaped bool, w 
 
 // handlePatchShareRequest handles patchShare operation.
 //
-// Change TTL or scope.
+// Change TTL, scope or title.
 //
 // PATCH /api/v1/t/{slug}/shares/{id}
 func (s *Server) handlePatchShareRequest(args [2]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -26719,7 +26735,7 @@ func (s *Server) handlePatchShareRequest(args [2]string, argsEscaped bool, w htt
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    PatchShareOperation,
-			OperationSummary: "Change TTL or scope.",
+			OperationSummary: "Change TTL, scope or title.",
 			OperationID:      "patchShare",
 			Body:             request,
 			RawBody:          rawBody,
@@ -31679,7 +31695,7 @@ func (s *Server) handleRerunRunRequest(args [2]string, argsEscaped bool, w http.
 		}
 
 		type (
-			Request  = OptLaunchOverrides
+			Request  = OptRerunRunReq
 			Params   = RerunRunParams
 			Response = *Run
 		)

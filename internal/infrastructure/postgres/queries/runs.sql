@@ -38,19 +38,46 @@ WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@stand_kept_only::boolean = false OR stand_kept)
   AND (@favorites_of::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = @favorites_of::text))
 ORDER BY
+  -- default: the viewer's favorites, then live runs, then the newest.
+  CASE WHEN @sort_key::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = @viewer_id::text) END DESC,
+  CASE WHEN @sort_key::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,
   CASE WHEN @sort_key::text = 'name' AND NOT @desc::boolean THEN name END ASC,
   CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
   CASE WHEN @sort_key::text = 'status' AND NOT @desc::boolean THEN status END ASC,
   CASE WHEN @sort_key::text = 'status' AND @desc::boolean THEN status END DESC,
+  CASE WHEN @sort_key::text = 'trigger' AND NOT @desc::boolean THEN trigger END ASC,
+  CASE WHEN @sort_key::text = 'trigger' AND @desc::boolean THEN trigger END DESC,
+  CASE WHEN @sort_key::text = 'db_kind' AND NOT @desc::boolean THEN summary->>'db_kind' END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'db_kind' AND @desc::boolean THEN summary->>'db_kind' END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'workload' AND NOT @desc::boolean THEN summary->>'workload_name' END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'workload' AND @desc::boolean THEN summary->>'workload_name' END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN summary->>'topology_label' END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN summary->>'topology_label' END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'provider' AND NOT @desc::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'provider' AND @desc::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'tps' AND NOT @desc::boolean THEN tps END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'tps' AND @desc::boolean THEN tps END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'p99' AND NOT @desc::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'p99' AND @desc::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'p50' AND NOT @desc::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'p50' AND @desc::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'qps' AND NOT @desc::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'qps' AND @desc::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,
+  -- A run without errors in its headline had none: it sorts as 0.
+  CASE WHEN @sort_key::text = 'errors' AND NOT @desc::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,
+  CASE WHEN @sort_key::text = 'errors' AND @desc::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,
   CASE WHEN @sort_key::text = 'duration' AND NOT @desc::boolean THEN duration_seconds END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'duration' AND @desc::boolean THEN duration_seconds END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'started_at' AND NOT @desc::boolean THEN started_at END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'started_at' AND @desc::boolean THEN started_at END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'finished_at' AND NOT @desc::boolean THEN finished_at END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'finished_at' AND @desc::boolean THEN finished_at END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
+  CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
   CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
+  CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   created_at DESC, id
 LIMIT @lim OFFSET @off;
 
@@ -118,6 +145,20 @@ UPDATE runs SET runtime_state = @runtime_state, last_event_id = GREATEST(last_ev
 -- name: SetRunResult :exec
 UPDATE runs SET result = @result, summary = @summary, tps = @tps, updated_at = now() WHERE id = @id;
 
+-- name: RunsWithoutQPSSeries :many
+-- Finished runs with a result whose throughput series was never stored (backfill).
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+FROM runs
+WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND result IS NOT NULL AND NOT (summary ? 'qps_series')
+ORDER BY finished_at DESC NULLS LAST
+LIMIT @lim;
+
+-- name: SetRunQPSSeries :exec
+-- A derived field: updated_at stays, the run did not change.
+UPDATE runs SET summary = jsonb_set(summary, '{qps_series}', @series::jsonb) WHERE id = @id;
+
 -- name: SetRunKeep :exec
 UPDATE runs SET stand_kept = @stand_kept, keep_until = @keep_until, updated_at = now() WHERE id = @id;
 
@@ -184,3 +225,8 @@ SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
        graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
 FROM runs WHERE id = ANY(@ids::uuid[]) AND deleted_at IS NULL;
+
+-- name: TestRunStats :many
+SELECT DISTINCT ON (test_id) test_id, id, name, status, started_at, count(*) OVER (PARTITION BY test_id) AS run_count
+FROM runs WHERE test_id = ANY(@test_ids::uuid[]) AND deleted_at IS NULL
+ORDER BY test_id, created_at DESC;

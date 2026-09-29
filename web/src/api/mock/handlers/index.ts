@@ -1,0 +1,10 @@
+// Every handler module registers its routes on import. Area workers add their file here.
+import './public-me'
+import './tenants'
+import './catalog'
+import './runs'
+import './library'
+import './settings'
+import './admin'
+import './suites'
+import './results'

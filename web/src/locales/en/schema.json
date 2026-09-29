@@ -1,0 +1,18 @@
+{
+  "auto": "auto",
+  "refHint": "Filled from a referenced form; edit it in its own section.",
+  "err": {
+    "integer": "Must be an integer",
+    "number": "Must be a number",
+    "gte": "Must be ≥ {{n}}",
+    "lte": "Must be ≤ {{n}}",
+    "gt": "Must be > {{n}}",
+    "lt": "Must be < {{n}}",
+    "pattern": "Must match {{p}}"
+  },
+  "validating": "Checking with the server…",
+  "valid": "Valid",
+  "reset": "Reset to default",
+  "diffOnly": "Only changed",
+  "showAll": "Show all fields"
+}

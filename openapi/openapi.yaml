@@ -1468,6 +1468,8 @@ paths:
           - created_at
           - updated_at
           - kind
+          - version
+          - author
           default: updated_at
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
@@ -1727,6 +1729,7 @@ paths:
           - updated_at
           - protocol
           - stroppy_version
+          - author
           default: updated_at
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
@@ -1980,6 +1983,11 @@ paths:
           - created_at
           - updated_at
           - kind
+          - database
+          - workload
+          - provider
+          - status
+          - author
           - last_run_at
           default: updated_at
       - $ref: '#/components/parameters/order'
@@ -2343,17 +2351,32 @@ paths:
           type: boolean
       - name: sort
         in: query
+        description: Sort key. `default` puts the caller's favorites first, then live runs (pending, running,
+          cancelling), then the newest; `order` is ignored for it. `qps`, `p50`, `p99` read the headline;
+          `errors` sorts a run without errors as 0. Missing values sort last.
         schema:
           type: string
           enum:
+          - default
           - started_at
           - finished_at
           - duration
           - tps
+          - qps
+          - p50
+          - p99
+          - errors
           - status
           - name
+          - db_kind
+          - workload
+          - topology
+          - provider
+          - trigger
+          - author
           - created_at
-          default: created_at
+          - updated_at
+          default: default
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
@@ -2952,7 +2975,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LaunchOverrides'
+              allOf:
+              - $ref: '#/components/schemas/LaunchOverrides'
+              - type: object
+                properties:
+                  resume:
+                    type: boolean
+                    description: Continue on the kept stand of this run from the failed segment. Degrades
+                      to a plain rerun when the stand is gone; the run's `notes` say so.
       responses:
         '201':
           description: Run.
@@ -3092,6 +3122,8 @@ paths:
           - updated_at
           - last_run_at
           - cell_count
+          - test_count
+          - author
           default: updated_at
       - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
@@ -3545,6 +3577,22 @@ paths:
         in: query
         schema:
           type: boolean
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum:
+          - name
+          - enabled
+          - target
+          - cron
+          - next_run_at
+          - last_run_at
+          - created_at
+          - updated_at
+          - author
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: Schedules.
@@ -3777,6 +3825,19 @@ paths:
         in: query
         schema:
           type: boolean
+      - name: sort
+        in: query
+        schema:
+          type: string
+          enum:
+          - title
+          - target
+          - scope
+          - expires_at
+          - views
+          - created_at
+          default: created_at
+      - $ref: '#/components/parameters/order'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
       summary: Shares of the tenant.
@@ -3824,7 +3885,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
-      summary: Change TTL or scope.
+      summary: Change TTL, scope or title.
       requestBody:
         required: true
         content:
@@ -3837,6 +3898,10 @@ paths:
                   description: Go duration from now; `0s` = never expires.
                 scope:
                   $ref: '#/components/schemas/ShareScope'
+                title:
+                  type: string
+                  maxLength: 256
+                  description: Report title shown on the public page.
       responses:
         '200':
           description: Share.
@@ -6583,6 +6648,16 @@ components:
       allOf:
       - $ref: '#/components/schemas/EntityPatch'
       - $ref: '#/components/schemas/TestSpec'
+      - type: object
+        properties:
+          finalize:
+            type: boolean
+            description: Require the test to be `ready` after this patch; otherwise 400 `validation_failed`
+              with the fit issues and nothing is saved.
+          revalidate:
+            type: boolean
+            description: Re-run validation against the current library records (clears `needs_attention`).
+              Every patch revalidates; this flag allows an otherwise empty patch.
     TestValidation:
       type: object
       required:
@@ -6765,13 +6840,47 @@ components:
           description: Current workload segment while running.
         headline:
           type: object
-          description: Key result metrics once available.
+          description: 'Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`,
+            `latency_p99_ms`, `qps` (queries per second of the whole workload — the segments'' `queries_per_second`
+            weighted by their `measurement_seconds`, else their plain mean), `errors` (terminal errors
+            over all segments; absent = none), and every segment metric as `<segment>.<metric>`.'
           additionalProperties:
             type: number
           example:
             tps: 12345.6
+            qps: 48210.3
+            latency_p50_ms: 3.1
             latency_p99_ms: 12.4
             errors: 0
+        qps_series:
+          type: array
+          description: Queries per second over the workload (its segments, else the workload phase), about
+            30 points in time order, summed across runners — for an inline sparkline. Stored when the
+            run finishes; absent while running or not yet sampled, empty when the metric store had no
+            throughput for the run.
+          items:
+            type: object
+            required:
+            - t
+            - v
+            properties:
+              t:
+                type: integer
+                format: int64
+                description: Sample time
+                unix milliseconds.: null
+              v:
+                type: number
+                description: Queries per second.
+        expected_finish_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When the workload is planned to end — the workload phase start plus every segment's
+            warmup + duration, re-anchored on the segments already started or finished. Workload time
+            only (collecting and teardown are not predicted). Absent before the workload starts, for finished
+            runs and for workloads with a segment of unbounded length.
     Run:
       type: object
       required:

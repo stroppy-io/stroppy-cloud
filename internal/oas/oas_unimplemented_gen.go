@@ -1179,7 +1179,7 @@ func (UnimplementedHandler) PatchSchedule(ctx context.Context, req *SchedulePatc
 
 // PatchShare implements patchShare operation.
 //
-// Change TTL or scope.
+// Change TTL, scope or title.
 //
 // PATCH /api/v1/t/{slug}/shares/{id}
 func (UnimplementedHandler) PatchShare(ctx context.Context, req *PatchShareReq, params PatchShareParams) (r *Share, _ error) {
@@ -1389,7 +1389,7 @@ func (UnimplementedHandler) ReplayWebhookDelivery(ctx context.Context, params Re
 // New run from this run's snapshot (overrides allowed).
 //
 // POST /api/v1/t/{slug}/runs/{id}:rerun
-func (UnimplementedHandler) RerunRun(ctx context.Context, req OptLaunchOverrides, params RerunRunParams) (r *Run, _ error) {
+func (UnimplementedHandler) RerunRun(ctx context.Context, req OptRerunRunReq, params RerunRunParams) (r *Run, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

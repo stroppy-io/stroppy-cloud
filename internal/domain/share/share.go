@@ -141,11 +141,12 @@ type Create struct {
 	Title      string
 }
 
-// Patch changes the ttl or scope.
+// Patch changes the ttl, scope or title.
 type Patch struct {
 	TTL      *time.Duration
 	ClearTTL bool
 	Scope    *Scope
+	Title    *string
 }
 
 // ListQuery filters shares.
@@ -153,6 +154,8 @@ type ListQuery struct {
 	Kind     string
 	TargetID string
 	Active   *bool
+	Sort     string
+	Desc     bool
 	Limit    int
 	Offset   int
 }
@@ -443,8 +446,16 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 	if err := s.repo.Update(ctx, id, p, expires); err != nil {
 		return Share{}, err
 	}
+	rebuild := false
 	if p.Scope != nil && *p.Scope != sh.Scope {
 		sh.Scope = *p.Scope
+		rebuild = true
+	}
+	if p.Title != nil && *p.Title != sh.Title {
+		sh.Title = *p.Title
+		rebuild = true
+	}
+	if rebuild {
 		if _, err := s.rebuild(ctx, actor, sh); err != nil {
 			return Share{}, err
 		}

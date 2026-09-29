@@ -113,7 +113,7 @@ func (r *RunRepo) List(ctx context.Context, tenantID uuid.UUID, q run.ListQuery)
 		TestID: q.TestID, SuiteRunID: q.SuiteRunID, Standalone: q.Standalone, Labels: tagsFilter(q.Labels),
 		StartedAfter: q.StartedAfter, StartedBefore: q.StartedBefore, FinishedAfter: q.FinishedAfter, FinishedBefore: q.FinishedBefore,
 		DurationMin: q.DurationMin.Seconds(), DurationMax: q.DurationMax.Seconds(), StandKeptOnly: q.StandKeptOnly, FavoritesOf: q.FavoritesOf,
-		SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset),
+		ViewerID: q.ViewerID, SortKey: q.Sort, Desc: q.Desc, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
 		return nil, infraf("run: list: %v", err)
@@ -148,6 +148,21 @@ func (r *RunRepo) OfTest(ctx context.Context, testID uuid.UUID, limit, offset in
 	out := make([]run.Run, 0, len(rows))
 	for _, row := range rows {
 		out = append(out, runOf(db.RunByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *RunRepo) TestRunStats(ctx context.Context, testIDs []uuid.UUID) (map[uuid.UUID]run.TestRunStat, error) {
+	rows, err := r.q.TestRunStats(ctx, db.TestRunStatsParams{TestIds: testIDs})
+	if err != nil {
+		return nil, infraf("run: test stats: %v", err)
+	}
+	out := make(map[uuid.UUID]run.TestRunStat, len(rows))
+	for _, row := range rows {
+		if row.TestID == nil {
+			continue
+		}
+		out[*row.TestID] = run.TestRunStat{Last: run.Ref{ID: row.ID, Name: row.Name}, Status: run.Status(row.Status), StartedAt: row.StartedAt, Count: int(row.RunCount)}
 	}
 	return out, nil
 }
@@ -291,6 +306,29 @@ func (r *RunRepo) SetResult(ctx context.Context, id uuid.UUID, result json.RawMe
 	raw, _ := json.Marshal(summary) //nolint:errcheck // struct
 	if err := r.q.SetRunResult(ctx, db.SetRunResultParams{ID: id, Result: orEmpty(result), Summary: raw, Tps: tps}); err != nil {
 		return infraf("run: set result: %v", err)
+	}
+	return nil
+}
+
+func (r *RunRepo) WithoutQPSSeries(ctx context.Context, limit int) ([]run.Run, error) {
+	rows, err := r.q.RunsWithoutQpsSeries(ctx, ptrInt64(int64(limit)))
+	if err != nil {
+		return nil, infraf("run: without qps series: %v", err)
+	}
+	out := make([]run.Run, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, runOf(db.RunByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *RunRepo) SetQPSSeries(ctx context.Context, id uuid.UUID, series []run.Point) error {
+	if series == nil {
+		series = []run.Point{}
+	}
+	raw, _ := json.Marshal(series) //nolint:errcheck // plain struct slice
+	if err := r.q.SetRunQpsSeries(ctx, db.SetRunQpsSeriesParams{ID: id, Series: raw}); err != nil {
+		return infraf("run: set qps series: %v", err)
 	}
 	return nil
 }

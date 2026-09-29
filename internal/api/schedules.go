@@ -63,7 +63,7 @@ func (h *Handler) ListSchedules(ctx context.Context, params oas.ListSchedulesPar
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	q := schedule.ListQuery{Limit: limit + 1, Offset: offset}
+	q := schedule.ListQuery{Sort: string(params.Sort.Or(oas.ListSchedulesSortCreatedAt)), Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset}
 	if v, ok := params.TargetKind.Get(); ok {
 		q.TargetKind = string(v)
 	}

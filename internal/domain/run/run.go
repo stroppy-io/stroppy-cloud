@@ -125,6 +125,10 @@ type Summary struct {
 	ProgressPct     float64            `json:"progress_pct"`
 	Segment         string             `json:"segment,omitempty"`
 	Headline        map[string]float64 `json:"headline,omitempty"`
+	// QPSSeries is the workload throughput sampled for the list sparkline,
+	// stored when the run finishes. Empty (not nil) means the metric store
+	// was asked and had nothing: the backfill does not ask again.
+	QPSSeries []Point `json:"qps_series,omitzero"`
 }
 
 // Run is the record.
@@ -216,10 +220,12 @@ type ListQuery struct {
 	DurationMax    time.Duration
 	StandKeptOnly  bool
 	FavoritesOf    string
-	Sort           string
-	Desc           bool
-	Limit          int
-	Offset         int
+	// ViewerID orders the viewer's favorites first under Sort "default".
+	ViewerID string
+	Sort     string
+	Desc     bool
+	Limit    int
+	Offset   int
 }
 
 // Facet is one filter field with its value counts.
@@ -252,6 +258,14 @@ type MetaPatch struct {
 	RatingGlobal *bool
 }
 
+// TestRunStat is the latest run of a test plus how many runs it has.
+type TestRunStat struct {
+	Last      Ref
+	Status    Status
+	StartedAt *time.Time
+	Count     int
+}
+
 // Repository is the storage port.
 type Repository interface {
 	// Admit serializes preparation and persistence against other launches and
@@ -263,6 +277,8 @@ type Repository interface {
 	List(ctx context.Context, tenantID uuid.UUID, q ListQuery) ([]Run, error)
 	Facets(ctx context.Context, tenantID uuid.UUID) ([]Facet, error)
 	OfTest(ctx context.Context, testID uuid.UUID, limit, offset int) ([]Run, error)
+	// TestRunStats returns the latest run and the run count per test id.
+	TestRunStats(ctx context.Context, testIDs []uuid.UUID) (map[uuid.UUID]TestRunStat, error)
 	OfSuiteRun(ctx context.Context, suiteRunID uuid.UUID) ([]Run, error)
 	LiveRuns(ctx context.Context) ([]Live, error)
 	LiveCount(ctx context.Context, tenantID uuid.UUID) (int, error)
@@ -271,6 +287,10 @@ type Repository interface {
 	SetStatus(ctx context.Context, id uuid.UUID, status Status, phase Phase, reason string, startedAt, finishedAt *time.Time) error
 	SetProjection(ctx context.Context, id uuid.UUID, state State, lastEventID int64) error
 	SetResult(ctx context.Context, id uuid.UUID, result json.RawMessage, summary Summary, tps *float64) error
+	// WithoutQPSSeries lists finished runs with a result but no stored
+	// throughput series (backfill).
+	WithoutQPSSeries(ctx context.Context, limit int) ([]Run, error)
+	SetQPSSeries(ctx context.Context, id uuid.UUID, series []Point) error
 	SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *time.Time) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
 

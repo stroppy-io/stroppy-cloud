@@ -137,7 +137,8 @@ func seriesOf(list []observe.Series) []oas.RunMetricsSeriesItem {
 			item.Machine = oas.NewOptString(s.Machine)
 		}
 		for _, p := range s.Points {
-			item.Points = append(item.Points, []float64{p[0], p[1]})
+			// Prometheus range queries return unix seconds; the contract is `[unix_ms, value]`.
+			item.Points = append(item.Points, []float64{p[0] * 1000, p[1]})
 		}
 		out = append(out, item)
 	}

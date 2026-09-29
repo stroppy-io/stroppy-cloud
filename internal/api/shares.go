@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/go-faster/jx"
@@ -147,7 +148,7 @@ func (h *Handler) ListShares(ctx context.Context, params oas.ListSharesParams) (
 	if limit <= 0 || limit > 200 {
 		limit = 50
 	}
-	q := share.ListQuery{Limit: limit + 1, Offset: offset}
+	q := share.ListQuery{Sort: string(params.Sort.Or(oas.ListSharesSortCreatedAt)), Desc: params.Order.Or(oas.OrderDesc) == oas.OrderDesc, Limit: limit + 1, Offset: offset}
 	if v, ok := params.TargetKind.Get(); ok {
 		q.Kind = string(v)
 	}
@@ -203,6 +204,10 @@ func (h *Handler) PatchShare(ctx context.Context, req *oas.PatchShareReq, params
 	if v, ok := req.Scope.Get(); ok {
 		sc := share.Scope(v)
 		p.Scope = &sc
+	}
+	if v, ok := req.Title.Get(); ok {
+		v = strings.TrimSpace(v)
+		p.Title = &v
 	}
 	s, err := h.deps.Shares.Update(ctx, a, t.ID, params.ID, p)
 	if err != nil {

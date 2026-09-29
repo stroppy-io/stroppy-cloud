@@ -1,0 +1,83 @@
+// Convenience aliases over the generated OpenAPI types. Import domain types from here,
+// never from schema.d.ts directly, so renames stay one-line.
+import type { components, paths } from './schema'
+
+export type Schemas = components['schemas']
+export type Paths = paths
+
+export type Problem = Schemas['Problem']
+export type ValidationResult = Schemas['ValidationResult']
+export type ValidationError = Schemas['ValidationError']
+export type PageMeta = Schemas['PageMeta']
+export type Facet = Schemas['Facet']
+export type Entity = Schemas['Entity']
+export type UserRef = Schemas['UserRef']
+export type Ref = Schemas['Ref']
+
+export type PublicConfig = Schemas['PublicConfig']
+export type Me = Schemas['Me']
+export type MePatch = Schemas['MePatch']
+export type Tenant = Schemas['Tenant']
+export type TenantMembership = Schemas['TenantMembership']
+export type TenantRole = Schemas['TenantRole']
+export type Member = Schemas['Member']
+export type Invite = Schemas['Invite']
+export type ApiToken = Schemas['ApiToken']
+export type AuditEntry = Schemas['AuditEntry']
+export type TenantSettings = Schemas['TenantSettings']
+export type TenantLimits = Schemas['TenantLimits']
+export type ProviderProfile = Schemas['ProviderProfile']
+export type ProviderKind = Schemas['ProviderKind']
+export type QuotaReport = Schemas['QuotaReport']
+export type Webhook = Schemas['Webhook']
+export type WebhookDelivery = Schemas['WebhookDelivery']
+
+export type CatalogDatabase = Schemas['CatalogDatabase']
+export type CatalogProvider = Schemas['CatalogProvider']
+export type StroppyCatalog = Schemas['StroppyCatalog']
+export type Example = Schemas['Example']
+export type SchemaInfo = Schemas['SchemaInfo']
+export type MetricDef = Schemas['MetricDef']
+export type DatabaseKind = Schemas['DatabaseKind']
+export type Protocol = Schemas['Protocol']
+
+export type DatabaseSpec = Schemas['DatabaseSpec']
+export type DatabaseWrite = Schemas['DatabaseWrite']
+export type DatabasePreview = Schemas['DatabasePreview']
+export type WorkloadSpec = Schemas['WorkloadSpec']
+export type WorkloadWrite = Schemas['WorkloadWrite']
+export type TestSpec = Schemas['TestSpec']
+export type TestWrite = Schemas['TestWrite']
+export type TestValidation = Schemas['TestValidation']
+export type LaunchOverrides = Schemas['LaunchOverrides']
+
+export type Run = Schemas['Run']
+export type RunRef = Schemas['RunRef']
+export type RunStatus = Schemas['RunStatus']
+export type RunPhase = Schemas['RunPhase']
+export type Trigger = Schemas['Trigger']
+export type RunSummary = Schemas['RunSummary']
+export type RunOverview = Schemas['RunOverview']
+export type RunEvent = Schemas['RunEvent']
+export type LogLine = Schemas['LogLine']
+export type LogPage = Schemas['LogPage']
+export type RunMetrics = Schemas['RunMetrics']
+export type Artifact = Schemas['Artifact']
+export type Comparison = Schemas['Comparison']
+
+export type SuiteSpec = Schemas['SuiteSpec']
+export type SuiteRun = Schemas['SuiteRun']
+export type SuiteRunSummary = Schemas['SuiteRunSummary']
+export type Schedule = Schemas['Schedule']
+export type RatingEntry = Schemas['RatingEntry']
+export type Share = Schemas['Share']
+export type SharedRun = Schemas['SharedRun']
+export type TenantDashboard = Schemas['TenantDashboard']
+export type AdminStatus = Schemas['AdminStatus']
+export type AdminUser = Schemas['AdminUser']
+export type SystemSettings = Schemas['SystemSettings']
+
+export interface Page<T> {
+  data: T[]
+  meta?: PageMeta
+}

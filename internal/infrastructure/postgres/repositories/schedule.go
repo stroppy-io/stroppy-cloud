@@ -53,7 +53,7 @@ func (r *ScheduleRepo) List(ctx context.Context, tenantID uuid.UUID, q schedule.
 	if q.Enabled != nil {
 		onlyEnabled, onlyDisabled = *q.Enabled, !*q.Enabled
 	}
-	rows, err := r.q.SchedulesOfTenant(ctx, db.SchedulesOfTenantParams{TenantID: tenantID, TargetKind: &q.TargetKind, OnlyEnabled: &onlyEnabled, OnlyDisabled: &onlyDisabled, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(q.Offset))})
+	rows, err := r.q.SchedulesOfTenant(ctx, db.SchedulesOfTenantParams{TenantID: tenantID, TargetKind: &q.TargetKind, OnlyEnabled: &onlyEnabled, OnlyDisabled: &onlyDisabled, SortKey: &q.Sort, Desc: &q.Desc, Lim: ptrInt64(int64(limit)), Off: ptrInt64(int64(q.Offset))})
 	if err != nil {
 		return nil, infraf("schedule: list: %v", err)
 	}

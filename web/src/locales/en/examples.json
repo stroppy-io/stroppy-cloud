@@ -1,0 +1,58 @@
+{
+  "title": "Examples",
+  "subtitle": "Ready-made databases, workloads, tests and suites. Clone into your library or run right away.",
+  "disabled": "Examples are disabled on this installation. The gallery is shown read-only.",
+  "filters": {
+    "kind": "Kind",
+    "db": "Database",
+    "all": "All"
+  },
+  "kind": {
+    "database": "Databases",
+    "workload": "Workloads",
+    "test": "Tests",
+    "suite": "Suites"
+  },
+  "kindOne": {
+    "database": "Database",
+    "workload": "Workload",
+    "test": "Test",
+    "suite": "Suite"
+  },
+  "empty": {
+    "title": "No examples match the filters",
+    "hint": "Try another kind or database.",
+    "none": "No examples yet"
+  },
+  "actions": {
+    "clone": "Clone to library",
+    "quickRun": "Quick run"
+  },
+  "clone": {
+    "title": "Clone «{{name}}»",
+    "tenant": "Target tenant",
+    "name": "Name in the library",
+    "nameHint": "Leave as is or rename — the example itself stays untouched.",
+    "submit": "Clone",
+    "done": "Cloned into {{tenant}}",
+    "open": "Open",
+    "noTenant": "You have no tenant with write access. Create one first."
+  },
+  "quickRun": {
+    "title": "Quick run «{{name}}»",
+    "hint": "Launches the example as a run in the selected tenant without saving it to the library.",
+    "tenant": "Tenant",
+    "provider": "Provider profile",
+    "providerHint": "Only verified (ready) profiles can host a stand.",
+    "noProviders": "This tenant has no ready provider profile — add one in Settings → Providers.",
+    "runName": "Run name",
+    "submit": "Launch",
+    "launched": "Run launched",
+    "openRun": "Open run"
+  },
+  "table": {
+    "example": "Example",
+    "onlyTests": "Quick run is available for tests only",
+    "disabled": "Examples are disabled on this installation"
+  }
+}

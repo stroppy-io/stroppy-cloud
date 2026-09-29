@@ -1,0 +1,401 @@
+{
+  "title": "Сьюты",
+  "new": "Новая сьюта",
+  "search": "Искать сьюты…",
+  "one": "Сьюта",
+  "columns": {
+    "name": "Сьюта",
+    "tests": "Тесты",
+    "cells": "Ячейки",
+    "lastRun": "Последний запуск",
+    "schedules": "Расписания",
+    "tags": "Теги",
+    "author": "Автор",
+    "updated": "Обновлена",
+    "composition": "Состав"
+  },
+  "filters": {
+    "tags": "Теги",
+    "favorites": "Только избранные"
+  },
+  "empty": {
+    "title": "Сьют пока нет",
+    "hint": "Сьюта запускает матрицу тестов по провайдерам, размерам, версиям и вариантам нагрузки.",
+    "cta": "Создать сьюту",
+    "import": "Импорт из файла"
+  },
+  "cellsOf": "{{enabled}} из {{total}} включены",
+  "cells_one": "{{count}} ячейка",
+  "cells_few": "{{count}} ячейки",
+  "cells_many": "{{count}} ячеек",
+  "cells_other": "{{count}} ячеек",
+  "tests_one": "{{count}} тест",
+  "tests_few": "{{count}} теста",
+  "tests_many": "{{count}} тестов",
+  "tests_other": "{{count}} тестов",
+  "runs_one": "{{count}} запуск",
+  "runs_few": "{{count}} запуска",
+  "runs_many": "{{count}} запусков",
+  "runs_other": "{{count}} запусков",
+  "noRuns": "Не запускалась",
+  "tabs": {
+    "overview": "Обзор",
+    "axes": "Оси",
+    "cells": "Ячейки",
+    "runs": "Запуски"
+  },
+  "actions": {
+    "launch": "Запустить",
+    "clone": "Клонировать",
+    "export": "Экспорт JSON",
+    "delete": "Удалить",
+    "import": "Импорт",
+    "editMeta": "Изменить описание",
+    "saveAxes": "Сохранить оси",
+    "saveCells": "Сохранить ячейки",
+    "regenerate": "Пересобрать из осей",
+    "discard": "Отменить изменения",
+    "addSizesSet": "Добавить набор размеров",
+    "addVariant": "Добавить вариант",
+    "overrides": "Переопределения",
+    "clearOverrides": "Сбросить переопределения",
+    "enableAll": "Включить все",
+    "disableAll": "Выключить все",
+    "noEnabledCells": "Нет включённых ячеек",
+    "schedule": "Создать расписание"
+  },
+  "toasts": {
+    "created": "Сьюта создана",
+    "saved": "Сьюта сохранена",
+    "deleted": "Сьюта удалена",
+    "cloned": "Сьюта склонирована",
+    "imported": "Сьюта импортирована",
+    "exported": "Экспорт скачан",
+    "launched": "Запуск сьюты начат",
+    "launchFailed": "Не удалось запустить сьюту"
+  },
+  "confirm": {
+    "deleteBody": "Уже выполненные запуски останутся в истории. Расписания на эту сьюту будут приостановлены."
+  },
+  "form": {
+    "title": "Новая сьюта",
+    "subtitle": "Назовите сьюту и выберите тесты. Оси и ячейки настраиваются следующим шагом.",
+    "name": "Название",
+    "namePlaceholder": "например, Матрица размеров MySQL",
+    "description": "Описание",
+    "descriptionPlaceholder": "На какой вопрос отвечает матрица и когда её запускать",
+    "tags": "Теги",
+    "tagsPlaceholder": "team=core, purpose=regression",
+    "tests": "Тесты",
+    "testsHint": "Каждая включённая ячейка — один из этих тестов с применёнными значениями осей.",
+    "testsPlaceholder": "Выберите тесты из библиотеки…",
+    "concurrency": "Параллельность",
+    "concurrencyHint": "Сколько ячеек выполняются одновременно (1–16).",
+    "keep": "Держать стенды",
+    "keepHint": "Go-длительность (2h, 30m). Пусто — стенд сносится сразу после запуска.",
+    "rating": "Рейтинг",
+    "ratingTenant": "Рейтинг тенанта",
+    "ratingGlobal": "Глобальный рейтинг",
+    "createAndContinue": "Создать и настроить оси",
+    "errors": {
+      "name": "Укажите название (до 120 символов)",
+      "tests": "Выберите хотя бы один тест",
+      "concurrency": "От 1 до 16",
+      "keep": "Длительность вида 30m или 2h"
+    }
+  },
+  "overview": {
+    "description": "Описание",
+    "noDescription": "Описания пока нет.",
+    "tests": "Тесты",
+    "noTests": "Тестов пока нет — добавьте их на вкладке «Оси».",
+    "axes": "Оси",
+    "defaults": "Значения по умолчанию",
+    "about": "О сьюте",
+    "stats": {
+      "cells": "Ячеек",
+      "enabled": "Включено",
+      "runs": "Запусков",
+      "lastRun": "Последний запуск"
+    },
+    "concurrency": "Параллельность",
+    "keep": "Держать стенд",
+    "keepNone": "Сносить сразу",
+    "rating": "Рейтинг",
+    "ratingNone": "Не участвует",
+    "schedules": "Расписания",
+    "noSchedules": "Расписаний нет",
+    "addSchedule": "Добавить расписание",
+    "testStatus": "Статус",
+    "testRuns": "{{count}} запусков"
+  },
+  "axes": {
+    "intro": "Ячейки — произведение тестов на каждую ось ниже. Пустая ось оставляет значение из теста.",
+    "tests": "Тесты",
+    "providers": "Профили провайдеров",
+    "providersPlaceholder": "Провайдер из теста",
+    "providersHint": "По ячейке на каждый выбранный провайдер. Запускать можно только готовые профили.",
+    "sizes": "Наборы размеров",
+    "sizesHint": "Каждая строка — полный набор размеров по ролям; по ячейке на строку.",
+    "noSizes": "Наборов нет — ячейки используют размеры из тестов.",
+    "versions": "Версии базы",
+    "versionsPlaceholder": "Версия из базы теста",
+    "versionsHint": "Из каталога для видов баз выбранных тестов.",
+    "variants": "Варианты нагрузки",
+    "variantsHint": "Переопределения, применяемые к каждому сегменту нагрузки.",
+    "noVariants": "Вариантов нет — ячейки используют нагрузку как есть.",
+    "variant": {
+      "name": "Название",
+      "namePlaceholder": "например, 64vu",
+      "vus": "VU",
+      "scale": "Scale factor",
+      "duration": "Длительность",
+      "durationPlaceholder": "10m"
+    },
+    "preview": "Предпросмотр",
+    "previewCells_one": "Будет сгенерирована {{count}} ячейка",
+    "previewCells_few": "Будет сгенерировано {{count}} ячейки",
+    "previewCells_many": "Будет сгенерировано {{count}} ячеек",
+    "previewCells_other": "Будет сгенерировано {{count}} ячеек",
+    "previewMachines": "{{machines}} машин · {{cpu}} vCPU · {{ram}} ГБ RAM на полную волну",
+    "previewInvalid_one": "{{count}} ячейка не проходит валидацию",
+    "previewInvalid_few": "{{count}} ячейки не проходят валидацию",
+    "previewInvalid_many": "{{count}} ячеек не проходят валидацию",
+    "previewInvalid_other": "{{count}} ячеек не проходят валидацию",
+    "dirty": "Есть несохранённые изменения",
+    "saved": "Оси сохранены — ячейки пересобраны",
+    "errors": {
+      "variantName": "Назовите вариант",
+      "duration": "Длительность вида 10m или 1h"
+    }
+  },
+  "cells": {
+    "intro": "Включайте ячейки, настраивайте переопределения и проверяйте итоги перед запуском.",
+    "columns": {
+      "enabled": "Вкл",
+      "name": "Ячейка",
+      "test": "Тест",
+      "axis": "Значения осей",
+      "overrides": "Переопределения",
+      "validation": "Валидация",
+      "status": "Статус"
+    },
+    "axis": {
+      "provider": "Провайдер",
+      "sizes": "Размеры",
+      "version": "Версия",
+      "variant": "Вариант",
+      "none": "Как в тесте",
+      "testProvider": "Провайдер из теста"
+    },
+    "manual": "вручную",
+    "noOverrides": "—",
+    "overridesCount_one": "{{count}} переопределение",
+    "overridesCount_few": "{{count}} переопределения",
+    "overridesCount_many": "{{count}} переопределений",
+    "overridesCount_other": "{{count}} переопределений",
+    "valid": "OK",
+    "warnings_one": "{{count}} предупреждение",
+    "warnings_few": "{{count}} предупреждения",
+    "warnings_many": "{{count}} предупреждений",
+    "warnings_other": "{{count}} предупреждений",
+    "errors_one": "{{count}} ошибка",
+    "errors_few": "{{count}} ошибки",
+    "errors_many": "{{count}} ошибок",
+    "errors_other": "{{count}} ошибок",
+    "empty": "Ячеек пока нет",
+    "emptyHint": "Сначала добавьте тесты и оси, затем пересоберите матрицу.",
+    "totals": "Итого по включённым ячейкам",
+    "totalsLine": "{{machines}} машин · {{cpu}} vCPU · {{ram}} ГБ RAM · {{disk}} ГБ диск",
+    "waves": "{{waves}} волн при параллельности {{concurrency}} · ~{{duration}}",
+    "quota": "Проверка квот",
+    "quotaOk": "{{provider}}: укладывается в квоты",
+    "quotaFail": "{{provider}}: {{issues}}",
+    "quotaNone": "Провайдер не выбран — квоты не проверены.",
+    "regenerated": "Матрица пересобрана из осей ({{count}} ячеек). Сохраните, чтобы применить.",
+    "saved": "Ячейки сохранены",
+    "drawer": {
+      "title": "Переопределения ячейки",
+      "subtitle": "Применяются поверх значений осей и настроек теста.",
+      "name": "Название ячейки",
+      "provider": "Профиль провайдера",
+      "providerPlaceholder": "Наследовать",
+      "sizes": "Размеры",
+      "sizesToggle": "Переопределить размеры",
+      "keep": "Держать стенд",
+      "rating": "Рейтинг",
+      "labels": "Метки",
+      "apply": "Применить"
+    },
+    "readOnly": "Нет прав на изменение сьюты",
+    "off": "выкл",
+    "status": {
+      "off": "Выключена — не запускается",
+      "checking": "Проверяется…",
+      "ready": "Готова к запуску"
+    },
+    "actions": {
+      "enable": "Включить ячейку",
+      "disable": "Выключить ячейку",
+      "copyId": "Копировать ID ячейки"
+    }
+  },
+  "launch": {
+    "title": "Запустить {{name}}",
+    "name": "Название запуска",
+    "concurrency": "Параллельность",
+    "rating": "Рейтинг",
+    "keep": "Держать стенды",
+    "keepPlaceholder": "например, 2h — пусто сносит сразу",
+    "cellsTitle_one": "Будет запущена {{count}} ячейка",
+    "cellsTitle_few": "Будут запущены {{count}} ячейки",
+    "cellsTitle_many": "Будут запущены {{count}} ячеек",
+    "cellsTitle_other": "Будут запущены {{count}} ячеек",
+    "invalidCells_one": "{{count}} ячейка не проходит валидацию и заблокирует запуск",
+    "invalidCells_few": "{{count}} ячейки не проходят валидацию и заблокируют запуск",
+    "invalidCells_many": "{{count}} ячеек не проходят валидацию и заблокируют запуск",
+    "invalidCells_other": "{{count}} ячеек не проходят валидацию и заблокируют запуск",
+    "noCells": "Нет включённых ячеек. Включите хотя бы одну на вкладке «Ячейки».",
+    "totals": "{{machines}} машин · {{cpu}} vCPU · {{ram}} ГБ RAM",
+    "submit": "Запустить"
+  },
+  "import": {
+    "title": "Импорт сьюты",
+    "hint": "Вставьте экспорт-документ (JSON, kind: Suite) или перетащите файл.",
+    "placeholder": "{ \"api_version\": \"stroppy.io/v1\", \"kind\": \"Suite\", … }",
+    "invalidJson": "Некорректный JSON",
+    "submit": "Импортировать"
+  },
+  "suiteRuns": {
+    "title": "Запуски сьют",
+    "one": "Запуск сьюты",
+    "columns": {
+      "name": "Запуск",
+      "progress": "Прогресс",
+      "trigger": "Триггер",
+      "concurrency": "Параллельность",
+      "started": "Старт",
+      "duration": "Длительность",
+      "author": "Автор"
+    },
+    "empty": "Запусков пока нет",
+    "emptyHint": "Запустите сьюту, чтобы заполнить таблицу.",
+    "tabs": {
+      "summary": "Сводка",
+      "cells": "Ячейки"
+    },
+    "progress": {
+      "done": "готово",
+      "failed": "упало",
+      "running": "выполняется",
+      "pending": "в очереди",
+      "cancelled": "отменено"
+    },
+    "meta": {
+      "suite": "Сьюта",
+      "trigger": "Триггер",
+      "concurrency": "Параллельность",
+      "started": "Старт",
+      "duration": "Длительность",
+      "author": "Автор",
+      "schedule": "Расписание",
+      "retryOf": "Повтор для",
+      "labels": "Метки"
+    },
+    "actions": {
+      "cancel": "Отменить",
+      "retryFailed": "Повторить упавшие",
+      "share": "Поделиться",
+      "delete": "Удалить",
+      "openSuite": "Открыть сьюту",
+      "allRuns": "Все запуски этого запуска сьюты",
+      "noFailed": "Упавших ячеек нет"
+    },
+    "confirm": {
+      "cancelTitle": "Отменить {{name}}?",
+      "cancelBody": "Выполняющиеся ячейки будут отменены, ожидающие не стартуют.",
+      "yesCancel": "Да, отменить",
+      "deleteBody": "Дочерние запуски останутся в истории."
+    },
+    "toasts": {
+      "cancelled": "Отмена запрошена",
+      "retried": "Повтор запущен",
+      "deleted": "Запуск сьюты удалён",
+      "shared": "Ссылка создана"
+    },
+    "summary": {
+      "columns": {
+        "cell": "Ячейка",
+        "run": "Запуск",
+        "tps": "TPS",
+        "p99": "p99",
+        "errors": "Ошибки"
+      },
+      "comparedTo": "Сравнение с",
+      "noPrevious": "Более ранних запусков этой сьюты для сравнения нет.",
+      "noRun": "не запущен",
+      "verdict": {
+        "better": "лучше предыдущего",
+        "worse": "регрессия к предыдущему",
+        "same": "в пределах ±5% от предыдущего",
+        "missing": "нет предыдущего значения"
+      },
+      "legend": "Разница с предыдущим запуском; красное — регрессия за пределами ±5%.",
+      "empty": "Сводки пока нет"
+    },
+    "cells": {
+      "columns": {
+        "status": "",
+        "cell": "Ячейка",
+        "run": "Запуск",
+        "database": "База",
+        "tps": "TPS",
+        "p99": "p99",
+        "started": "Старт",
+        "duration": "Длительность"
+      },
+      "notStarted": "Ожидает свободный слот",
+      "actions": {
+        "openRun": "Открыть запуск"
+      },
+      "empty": "Ячеек нет"
+    },
+    "share": {
+      "title": "Поделиться запуском сьюты",
+      "ttl": "Срок ссылки",
+      "ttlHint": "Go-длительность; 0s — бессрочно.",
+      "scope": "Область",
+      "scopes": {
+        "overview": "Только обзор",
+        "metrics": "Обзор + метрики",
+        "configs": "Обзор + метрики + конфиги"
+      },
+      "linkTitle": "Заголовок",
+      "submit": "Создать ссылку",
+      "ready": "Ссылка готова — скопируйте ниже."
+    },
+    "list": {
+      "live": "выполняется {{running}} · в очереди {{pending}}",
+      "cells_one": "{{done}} из {{count}} ячейки",
+      "cells_few": "{{done}} из {{count}} ячеек",
+      "cells_many": "{{done}} из {{count}} ячеек",
+      "cells_other": "{{done}} из {{count}} ячейки"
+    }
+  },
+  "sort": {
+    "updated": "Изменена",
+    "created": "Создана"
+  },
+  "list": {
+    "favorite": "В избранном",
+    "cells_one": "{{enabled}} из {{count}} ячейки",
+    "cells_few": "{{enabled}} из {{count}} ячеек",
+    "cells_many": "{{enabled}} из {{count}} ячеек",
+    "cells_other": "{{enabled}} из {{count}} ячейки",
+    "axes": "оси: {{axes}}",
+    "schedules_one": "{{count}} расписание",
+    "schedules_few": "{{count}} расписания",
+    "schedules_many": "{{count}} расписаний",
+    "schedules_other": "{{count}} расписания"
+  }
+}

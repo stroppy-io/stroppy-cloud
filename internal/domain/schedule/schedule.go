@@ -89,6 +89,8 @@ type Patch struct {
 type ListQuery struct {
 	TargetKind string
 	Enabled    *bool
+	Sort       string
+	Desc       bool
 	Limit      int
 	Offset     int
 }

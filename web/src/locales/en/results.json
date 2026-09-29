@@ -1,0 +1,146 @@
+{
+  "rating": {
+    "title": "Rating",
+    "tabs": {
+      "tenant": "Tenant",
+      "global": "Global"
+    },
+    "globalDisabled": "The public rating is disabled on this installation.",
+    "filters": {
+      "metric": "Metric",
+      "kind": "Database",
+      "version": "Version",
+      "provider": "Provider",
+      "stroppy": "Stroppy",
+      "league": "League",
+      "period": "Period",
+      "allLeagues": "All leagues"
+    },
+    "period": {
+      "7d": "7d",
+      "30d": "30d",
+      "90d": "90d",
+      "1y": "1y",
+      "all": "All time"
+    },
+    "league": "League {{league}}",
+    "leagueHint": "db size / runner size — same hardware class",
+    "entries_one": "{{count}} result",
+    "entries_other": "{{count}} results",
+    "columns": {
+      "rank": "#",
+      "value": "Value",
+      "database": "Database",
+      "topology": "Topology",
+      "workload": "Workload",
+      "stroppy": "Stroppy",
+      "provider": "Provider",
+      "date": "Date",
+      "author": "Author",
+      "tenant": "Tenant",
+      "link": "Link",
+      "run": "Run"
+    },
+    "openRun": "Open run",
+    "openShare": "Public report",
+    "empty": {
+      "title": "No rated runs",
+      "hint": "Runs enter the rating when they complete with the rating flag enabled."
+    },
+    "first": "1st place",
+    "anonymous": "Tenant hidden"
+  },
+  "shares": {
+    "title": "Shares",
+    "subtitle": "Public read-only snapshots of runs, suite runs and comparisons.",
+    "filters": {
+      "kind": "Target",
+      "active": "State",
+      "activeOnly": "Active",
+      "inactiveOnly": "Revoked / expired"
+    },
+    "kind": {
+      "run": "Run",
+      "suite_run": "Suite run",
+      "comparison": "Comparison"
+    },
+    "scope": {
+      "overview": "overview",
+      "metrics": "+ metrics",
+      "configs": "+ configs"
+    },
+    "scopeHint": {
+      "overview": "Summary, timeline, setup and results",
+      "metrics": "Overview plus time-series charts",
+      "configs": "Metrics plus rendered software configs (secrets masked)"
+    },
+    "state": {
+      "active": "Active",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "columns": {
+      "title": "Share",
+      "target": "Target",
+      "scope": "Scope",
+      "state": "State",
+      "expires": "Expires",
+      "views": "Views",
+      "created": "Created",
+      "term": "Term"
+    },
+    "never": "never",
+    "untitled": "Untitled share",
+    "actions": {
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "open": "Open public page",
+      "edit": "Edit",
+      "rebuild": "Rebuild snapshot",
+      "rebuilt": "Snapshot rebuilt",
+      "revoke": "Revoke",
+      "revoked": "Share revoked",
+      "saved": "Share updated",
+      "alreadyRevoked": "Share is already revoked",
+      "notActive": "Share is not active",
+      "deleteHint": "Revokes the share — the link stops working"
+    },
+    "edit": {
+      "title": "Edit share",
+      "titleField": "Title",
+      "titlePlaceholder": "Shown as the report heading",
+      "ttl": "Expires in",
+      "ttlHint": "Counted from now. The link stops working after that.",
+      "scope": "Scope",
+      "ttlOptions": {
+        "never": "Never",
+        "1d": "1 day",
+        "7d": "7 days",
+        "30d": "30 days",
+        "90d": "90 days"
+      }
+    },
+    "revokeConfirm": {
+      "title": "Revoke share?",
+      "body": "The public link {{url}} stops working immediately. This cannot be undone."
+    },
+    "empty": {
+      "title": "No shares yet",
+      "hint": "Share a run from its page — the public link appears here."
+    },
+    "search": "Search shares…",
+    "runsCount_one": "{{count}} run",
+    "runsCount_other": "{{count}} runs",
+    "sort": {
+      "title": "Title",
+      "target": "Target",
+      "expires": "Expires",
+      "created": "Created"
+    },
+    "revokedAt": "Revoked",
+    "expiredAt": "Expired",
+    "expiresAt": "Expires",
+    "createdAt": "created",
+    "noExpiry": "No expiry"
+  }
+}

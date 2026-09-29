@@ -1,0 +1,375 @@
+{
+  "title": "Suites",
+  "new": "New suite",
+  "search": "Search suites…",
+  "one": "Suite",
+  "columns": {
+    "name": "Suite",
+    "tests": "Tests",
+    "cells": "Cells",
+    "lastRun": "Last run",
+    "schedules": "Schedules",
+    "tags": "Tags",
+    "author": "Author",
+    "updated": "Updated",
+    "composition": "Composition"
+  },
+  "filters": {
+    "tags": "Tags",
+    "favorites": "Favorites only"
+  },
+  "empty": {
+    "title": "No suites yet",
+    "hint": "A suite runs a matrix of tests across providers, sizes, versions and workload variants.",
+    "cta": "Create a suite",
+    "import": "Import from file"
+  },
+  "cellsOf": "{{enabled}} of {{total}} enabled",
+  "cells_one": "{{count}} cell",
+  "cells_other": "{{count}} cells",
+  "tests_one": "{{count}} test",
+  "tests_other": "{{count}} tests",
+  "runs_one": "{{count}} run",
+  "runs_other": "{{count}} runs",
+  "noRuns": "Never launched",
+  "tabs": {
+    "overview": "Overview",
+    "axes": "Axes",
+    "cells": "Cells",
+    "runs": "Runs"
+  },
+  "actions": {
+    "launch": "Launch",
+    "clone": "Clone",
+    "export": "Export JSON",
+    "delete": "Delete",
+    "import": "Import",
+    "editMeta": "Edit details",
+    "saveAxes": "Save axes",
+    "saveCells": "Save cells",
+    "regenerate": "Regenerate from axes",
+    "discard": "Discard changes",
+    "addSizesSet": "Add sizes set",
+    "addVariant": "Add variant",
+    "overrides": "Overrides",
+    "clearOverrides": "Clear overrides",
+    "enableAll": "Enable all",
+    "disableAll": "Disable all",
+    "noEnabledCells": "No enabled cells",
+    "schedule": "Create schedule"
+  },
+  "toasts": {
+    "created": "Suite created",
+    "saved": "Suite saved",
+    "deleted": "Suite deleted",
+    "cloned": "Suite cloned",
+    "imported": "Suite imported",
+    "exported": "Export downloaded",
+    "launched": "Suite run started",
+    "launchFailed": "Could not launch the suite"
+  },
+  "confirm": {
+    "deleteBody": "Runs already produced stay in history. Schedules targeting this suite are paused."
+  },
+  "form": {
+    "title": "New suite",
+    "subtitle": "Name the suite and pick tests. Axes and cells are configured next.",
+    "name": "Name",
+    "namePlaceholder": "e.g. MySQL sizes matrix",
+    "description": "Description",
+    "descriptionPlaceholder": "What this matrix answers and when it should be run",
+    "tags": "Tags",
+    "tagsPlaceholder": "team=core, purpose=regression",
+    "tests": "Tests",
+    "testsHint": "Every enabled cell is one of these tests with axis values applied.",
+    "testsPlaceholder": "Pick tests from the library…",
+    "concurrency": "Concurrency",
+    "concurrencyHint": "How many cells run at the same time (1–16).",
+    "keep": "Keep stands",
+    "keepHint": "Go duration (2h, 30m). Leave empty to tear down right after the run.",
+    "rating": "Rating",
+    "ratingTenant": "Tenant rating",
+    "ratingGlobal": "Global rating",
+    "createAndContinue": "Create and configure axes",
+    "errors": {
+      "name": "Name is required (up to 120 characters)",
+      "tests": "Pick at least one test",
+      "concurrency": "Between 1 and 16",
+      "keep": "Use a duration like 30m or 2h"
+    }
+  },
+  "overview": {
+    "description": "Description",
+    "noDescription": "No description yet.",
+    "tests": "Tests",
+    "noTests": "No tests yet — add them on the Axes tab.",
+    "axes": "Axes",
+    "defaults": "Defaults",
+    "about": "About",
+    "stats": {
+      "cells": "Cells",
+      "enabled": "Enabled",
+      "runs": "Runs",
+      "lastRun": "Last run"
+    },
+    "concurrency": "Concurrency",
+    "keep": "Keep",
+    "keepNone": "Tear down immediately",
+    "rating": "Rating",
+    "ratingNone": "Not rated",
+    "schedules": "Schedules",
+    "noSchedules": "No schedules",
+    "addSchedule": "Add schedule",
+    "testStatus": "Status",
+    "testRuns": "{{count}} runs"
+  },
+  "axes": {
+    "intro": "Cells are the product of tests × every axis below. Leave an axis empty to keep the test's own value.",
+    "tests": "Tests",
+    "providers": "Provider profiles",
+    "providersPlaceholder": "Use the test's provider",
+    "providersHint": "One cell per selected provider. Only ready profiles can launch.",
+    "sizes": "Sizes sets",
+    "sizesHint": "Each row is a full set of role sizes; one cell per row.",
+    "noSizes": "No sizes sets — cells use the sizes from each test.",
+    "versions": "Database versions",
+    "versionsPlaceholder": "Use the version from the test's database",
+    "versionsHint": "From the catalog for the database kinds of the selected tests.",
+    "variants": "Workload variants",
+    "variantsHint": "Overrides applied to every segment of the workload.",
+    "noVariants": "No variants — cells use the workload as defined.",
+    "variant": {
+      "name": "Name",
+      "namePlaceholder": "e.g. 64vu",
+      "vus": "VUs",
+      "scale": "Scale factor",
+      "duration": "Duration",
+      "durationPlaceholder": "10m"
+    },
+    "preview": "Preview",
+    "previewCells_one": "{{count}} cell would be generated",
+    "previewCells_other": "{{count}} cells would be generated",
+    "previewMachines": "{{machines}} machines · {{cpu}} vCPU · {{ram}} GB RAM per full wave",
+    "previewInvalid_one": "{{count}} cell fails validation",
+    "previewInvalid_other": "{{count}} cells fail validation",
+    "dirty": "Unsaved changes",
+    "saved": "Axes saved — cells regenerated",
+    "errors": {
+      "variantName": "Give the variant a name",
+      "duration": "Use a duration like 10m or 1h"
+    }
+  },
+  "cells": {
+    "intro": "Toggle cells, adjust per-cell overrides and check the totals before launching.",
+    "columns": {
+      "enabled": "On",
+      "name": "Cell",
+      "test": "Test",
+      "axis": "Axis values",
+      "overrides": "Overrides",
+      "validation": "Validation",
+      "status": "Status"
+    },
+    "axis": {
+      "provider": "Provider",
+      "sizes": "Sizes",
+      "version": "Version",
+      "variant": "Variant",
+      "none": "Test defaults",
+      "testProvider": "Test's provider"
+    },
+    "manual": "manual",
+    "noOverrides": "—",
+    "overridesCount_one": "{{count}} override",
+    "overridesCount_other": "{{count}} overrides",
+    "valid": "OK",
+    "warnings_one": "{{count}} warning",
+    "warnings_other": "{{count}} warnings",
+    "errors_one": "{{count}} error",
+    "errors_other": "{{count}} errors",
+    "empty": "No cells yet",
+    "emptyHint": "Add tests and axes first, then regenerate the matrix.",
+    "totals": "Totals for enabled cells",
+    "totalsLine": "{{machines}} machines · {{cpu}} vCPU · {{ram}} GB RAM · {{disk}} GB disk",
+    "waves": "{{waves}} waves at concurrency {{concurrency}} · ~{{duration}}",
+    "quota": "Quota check",
+    "quotaOk": "{{provider}}: fits within quotas",
+    "quotaFail": "{{provider}}: {{issues}}",
+    "quotaNone": "No provider selected — quotas not checked.",
+    "regenerated": "Matrix regenerated from axes ({{count}} cells). Save to apply.",
+    "saved": "Cells saved",
+    "drawer": {
+      "title": "Cell overrides",
+      "subtitle": "Applied over axis values and the test's own settings.",
+      "name": "Cell name",
+      "provider": "Provider profile",
+      "providerPlaceholder": "Inherit",
+      "sizes": "Sizes",
+      "sizesToggle": "Override sizes",
+      "keep": "Keep stand",
+      "rating": "Rating",
+      "labels": "Labels",
+      "apply": "Apply"
+    },
+    "readOnly": "You cannot edit this suite",
+    "off": "off",
+    "status": {
+      "off": "Disabled — will not run",
+      "checking": "Validating…",
+      "ready": "Ready to run"
+    },
+    "actions": {
+      "enable": "Enable cell",
+      "disable": "Disable cell",
+      "copyId": "Copy cell ID"
+    }
+  },
+  "launch": {
+    "title": "Launch {{name}}",
+    "name": "Run name",
+    "concurrency": "Concurrency",
+    "rating": "Rating",
+    "keep": "Keep stands",
+    "keepPlaceholder": "e.g. 2h — empty tears down",
+    "cellsTitle_one": "{{count}} enabled cell will run",
+    "cellsTitle_other": "{{count}} enabled cells will run",
+    "invalidCells_one": "{{count}} cell fails validation and will block the launch",
+    "invalidCells_other": "{{count}} cells fail validation and will block the launch",
+    "noCells": "No enabled cells. Enable at least one on the Cells tab.",
+    "totals": "{{machines}} machines · {{cpu}} vCPU · {{ram}} GB RAM",
+    "submit": "Launch"
+  },
+  "import": {
+    "title": "Import suite",
+    "hint": "Paste an export document (JSON, kind: Suite) or drop a file.",
+    "placeholder": "{ \"api_version\": \"stroppy.io/v1\", \"kind\": \"Suite\", … }",
+    "invalidJson": "Not valid JSON",
+    "submit": "Import"
+  },
+  "suiteRuns": {
+    "title": "Suite runs",
+    "one": "Suite run",
+    "columns": {
+      "name": "Suite run",
+      "progress": "Progress",
+      "trigger": "Trigger",
+      "concurrency": "Concurrency",
+      "started": "Started",
+      "duration": "Duration",
+      "author": "Author"
+    },
+    "empty": "No suite runs yet",
+    "emptyHint": "Launch the suite to fill this table.",
+    "tabs": {
+      "summary": "Summary",
+      "cells": "Cells"
+    },
+    "progress": {
+      "done": "done",
+      "failed": "failed",
+      "running": "running",
+      "pending": "pending",
+      "cancelled": "cancelled"
+    },
+    "meta": {
+      "suite": "Suite",
+      "trigger": "Trigger",
+      "concurrency": "Concurrency",
+      "started": "Started",
+      "duration": "Duration",
+      "author": "Author",
+      "schedule": "Schedule",
+      "retryOf": "Retry of",
+      "labels": "Labels"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "retryFailed": "Retry failed",
+      "share": "Share",
+      "delete": "Delete",
+      "openSuite": "Open suite",
+      "allRuns": "All runs of this suite run",
+      "noFailed": "No failed cells"
+    },
+    "confirm": {
+      "cancelTitle": "Cancel {{name}}?",
+      "cancelBody": "Running cells are cancelled; pending cells will not start.",
+      "yesCancel": "Yes, cancel",
+      "deleteBody": "Child runs are kept in history."
+    },
+    "toasts": {
+      "cancelled": "Cancellation requested",
+      "retried": "Retry started",
+      "deleted": "Suite run deleted",
+      "shared": "Share link created"
+    },
+    "summary": {
+      "columns": {
+        "cell": "Cell",
+        "run": "Run",
+        "tps": "TPS",
+        "p99": "p99",
+        "errors": "Errors"
+      },
+      "comparedTo": "Compared to",
+      "noPrevious": "No earlier run of this suite to compare with.",
+      "noRun": "not started",
+      "verdict": {
+        "better": "better than previous",
+        "worse": "regression vs previous",
+        "same": "within ±5% of previous",
+        "missing": "no previous value"
+      },
+      "legend": "Diff vs previous run; red = regression beyond the ±5% deadband.",
+      "empty": "No summary yet"
+    },
+    "cells": {
+      "columns": {
+        "status": "",
+        "cell": "Cell",
+        "run": "Run",
+        "database": "Database",
+        "tps": "TPS",
+        "p99": "p99",
+        "started": "Started",
+        "duration": "Duration"
+      },
+      "notStarted": "Waiting for a free slot",
+      "actions": {
+        "openRun": "Open run"
+      },
+      "empty": "No cells"
+    },
+    "share": {
+      "title": "Share suite run",
+      "ttl": "Link lifetime",
+      "ttlHint": "Go duration; 0s = never expires.",
+      "scope": "Scope",
+      "scopes": {
+        "overview": "Overview only",
+        "metrics": "Overview + metrics",
+        "configs": "Overview + metrics + configs"
+      },
+      "linkTitle": "Title",
+      "submit": "Create link",
+      "ready": "Link ready — copy it below."
+    },
+    "list": {
+      "live": "{{running}} running · {{pending}} queued",
+      "cells_one": "{{done}} of {{count}} cell",
+      "cells_other": "{{done}} of {{count}} cells"
+    }
+  },
+  "sort": {
+    "updated": "Updated",
+    "created": "Created"
+  },
+  "list": {
+    "favorite": "Favorite",
+    "cells_one": "{{enabled}} of {{count}} cell",
+    "cells_other": "{{enabled}} of {{count}} cells",
+    "axes": "axes: {{axes}}",
+    "schedules_one": "{{count}} schedule",
+    "schedules_other": "{{count}} schedules"
+  }
+}

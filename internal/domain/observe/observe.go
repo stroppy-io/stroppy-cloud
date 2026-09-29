@@ -6,9 +6,11 @@
 package observe
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -397,4 +399,49 @@ func (s Scope) Matchers() (component, native string) {
 // second spelling-specific constraint here would hide otherwise valid OTLP.
 func KeyExpr(m catalog.Metric, _ Scope) string {
 	return strings.NewReplacer("$run,", "", ",$run", "", "$run", "", "$native,", "", ",$native", "", "$native", "").Replace(m.Expr)
+}
+
+// QPSSeries samples the run's queries per second (the catalog's
+// `queries_per_second` series, in the run's native scope) over [from, to]
+// at step, summed across the runner processes that report it, as
+// [unix_ms, value] points in time order. It implements run.Telemetry; no
+// actor check — the caller is the server itself.
+func (s *Service) QPSSeries(ctx context.Context, r run.Run, from, to time.Time, step time.Duration) ([]run.Point, error) {
+	if s.metrics == nil {
+		return nil, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+	}
+	var def catalog.Metric
+	for _, m := range s.catalog.Metrics {
+		if m.Key == "queries_per_second" {
+			def = m
+		}
+	}
+	if def.Expr == "" {
+		return nil, errs.New(errs.CodeInternal, "catalog has no queries_per_second series")
+	}
+	series, failures, err := s.metrics.Query(ctx, MetricQuery{Scope: ScopeOf(r), Start: from, End: to, Step: step, Metrics: []catalog.Metric{def}})
+	if err != nil {
+		return nil, err
+	}
+	if len(failures) > 0 {
+		return nil, failures[0]
+	}
+	return sumSeries(series), nil
+}
+
+// sumSeries folds parallel series into one line: values at the same
+// timestamp add up. Timestamps are unix seconds in, unix ms out.
+func sumSeries(series []Series) []run.Point {
+	sum := map[int64]float64{}
+	for _, s := range series {
+		for _, p := range s.Points {
+			sum[int64(p[0]*1000)] += p[1]
+		}
+	}
+	out := make([]run.Point, 0, len(sum))
+	for t, v := range sum {
+		out = append(out, run.Point{T: t, V: v})
+	}
+	slices.SortFunc(out, func(a, b run.Point) int { return cmp.Compare(a.T, b.T) })
+	return out
 }

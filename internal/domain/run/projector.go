@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/gopherex/xlog"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -25,6 +26,7 @@ type Projector struct {
 	publisher Publisher
 	scope     func(ctx context.Context, namespace string) context.Context
 	log       *xlog.Logger
+	telemetry Telemetry
 
 	mu     sync.Mutex
 	active map[uuid.UUID]struct{}
@@ -34,6 +36,21 @@ type Projector struct {
 // NewProjector wires the worker.
 func NewProjector(repo Repository, g Graphene, publisher Publisher, scope func(context.Context, string) context.Context, log *xlog.Logger) *Projector {
 	return &Projector{repo: repo, graphene: g, publisher: publisher, scope: scope, log: log, active: map[uuid.UUID]struct{}{}}
+}
+
+// Telemetry reads a run's workload throughput from the metric store
+// (observe.Service); nil disables the stored series.
+type Telemetry interface {
+	// QPSSeries samples queries per second over [from, to] at step. An
+	// empty answer means the store has no such series.
+	QPSSeries(ctx context.Context, r Run, from, to time.Time, step time.Duration) ([]Point, error)
+}
+
+// WithTelemetry connects the metric store the finish path samples the
+// throughput series from.
+func (p *Projector) WithTelemetry(t Telemetry) *Projector {
+	p.telemetry = t
+	return p
 }
 
 // Run ticks until ctx ends, then waits for the followers.
@@ -164,6 +181,9 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 			var startedAt *time.Time
 			if out.Status == StatusRunning && status == StatusPending {
 				startedAt = ptr(e.At)
+				if r.StartedAt == nil {
+					r.StartedAt = startedAt
+				}
 			}
 			phase := out.Phase
 			if phase == "" {
@@ -180,6 +200,7 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		}
 		if out.Finished {
 			finished = true
+			r.State = state
 			p.finish(ctx, sctx, r, out.Status, out.Reason, e.At)
 			return errFinished
 		}
@@ -205,6 +226,7 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		if final == StatusFailed {
 			reason = st
 		}
+		r.State = state
 		p.finish(ctx, sctx, r, final, reason, time.Now().UTC())
 	}
 }
@@ -269,6 +291,9 @@ func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reas
 				summary.ProgressPct = 100
 			}
 			summary.Headline = headlineOf(res)
+			if series, ok := p.qpsSeries(ctx, r, at); ok {
+				summary.QPSSeries = series
+			}
 			var tps *float64
 			if status == StatusCompleted && res.Summary.TPS > 0 {
 				v := res.Summary.TPS
@@ -347,5 +372,108 @@ func headlineOf(res spec.Result) map[string]float64 {
 			out[k] = v.Value
 		}
 	}
-	return out
+	return CompleteHeadline(out)
+}
+
+// qpsSeries samples the run's throughput for the list sparkline. A store
+// failure never fails finalization: ok is false and the startup backfill
+// retries later.
+func (p *Projector) qpsSeries(ctx context.Context, r Run, end time.Time) ([]Point, bool) {
+	if p.telemetry == nil {
+		return nil, false
+	}
+	from, to, step, ok := SeriesWindow(r, end)
+	if !ok {
+		return nil, false
+	}
+	// Bounded apart from the follower's budget: a slow store must not
+	// starve the writes that finalize the run.
+	ctx, cancel := context.WithTimeout(ctx, qpsSeriesTimeout)
+	defer cancel()
+	series, err := p.telemetry.QPSSeries(ctx, r, from, to, step)
+	if err != nil {
+		p.log.Warn("projector: qps series", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		return nil, false
+	}
+	if series == nil {
+		series = []Point{}
+	}
+	return series, true
+}
+
+const qpsSeriesTimeout = 10 * time.Second
+
+// BackfillQPSSeries stores the throughput series of finished runs that
+// have none — runs older than the series, or whose finish could not reach
+// the metric store. One pass, at most `concurrency` store queries at a
+// time. A run the store does not know (telemetry expired) or that never
+// measured anything gets an empty series and is not asked again; a store
+// outage leaves the run for the next pass.
+func (p *Projector) BackfillQPSSeries(ctx context.Context, concurrency int) (stored, empty, skipped int) {
+	if p.telemetry == nil {
+		return 0, 0, 0
+	}
+	runs, err := p.repo.WithoutQPSSeries(ctx, backfillLimit)
+	if err != nil {
+		p.log.Warn("qps backfill: list", xlog.Error("error", err))
+		return 0, 0, 0
+	}
+	if concurrency < 1 {
+		concurrency = 1
+	}
+	var mu sync.Mutex
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, concurrency)
+	for _, r := range runs {
+		if ctx.Err() != nil {
+			break
+		}
+		sem <- struct{}{}
+		wg.Add(1)
+		go func(r Run) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			series, ok := p.backfillOne(ctx, r)
+			mu.Lock()
+			defer mu.Unlock()
+			switch {
+			case !ok:
+				skipped++
+			case len(series) == 0:
+				empty++
+			default:
+				stored++
+			}
+		}(r)
+	}
+	wg.Wait()
+	return stored, empty, skipped
+}
+
+const backfillLimit = 10000
+
+func (p *Projector) backfillOne(ctx context.Context, r Run) ([]Point, bool) {
+	end := time.Now().UTC()
+	if r.FinishedAt != nil {
+		end = *r.FinishedAt
+	}
+	series := []Point{}
+	if from, to, step, ok := SeriesWindow(r, end); ok {
+		qctx, cancel := context.WithTimeout(ctx, qpsSeriesTimeout)
+		got, err := p.telemetry.QPSSeries(qctx, r, from, to, step)
+		cancel()
+		switch {
+		case errs.CodeOf(err) == errs.CodeNotFound:
+		case err != nil:
+			p.log.Debug("qps backfill: query", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+			return nil, false
+		case got != nil:
+			series = got
+		}
+	}
+	if err := p.repo.SetQPSSeries(ctx, r.ID, series); err != nil {
+		p.log.Warn("qps backfill: store", xlog.String("run", r.ID.String()), xlog.Error("error", err))
+		return nil, false
+	}
+	return series, true
 }

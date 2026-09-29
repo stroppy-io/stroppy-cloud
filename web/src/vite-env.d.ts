@@ -2,9 +2,9 @@
 
 interface ImportMetaEnv {
   /** "1" enables the throwaway mock backend (see src/mock/). */
-  readonly VITE_MOCK?: string;
+  readonly VITE_MOCK?: string
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  readonly env: ImportMetaEnv
 }

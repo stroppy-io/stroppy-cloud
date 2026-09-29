@@ -866,7 +866,7 @@ type Invoker interface {
 	PatchSchedule(ctx context.Context, request *SchedulePatch, params PatchScheduleParams, options ...RequestOption) (*Schedule, error)
 	// PatchShare invokes patchShare operation.
 	//
-	// Change TTL or scope.
+	// Change TTL, scope or title.
 	//
 	// PATCH /api/v1/t/{slug}/shares/{id}
 	PatchShare(ctx context.Context, request *PatchShareReq, params PatchShareParams, options ...RequestOption) (*Share, error)
@@ -1007,7 +1007,7 @@ type Invoker interface {
 	// New run from this run's snapshot (overrides allowed).
 	//
 	// POST /api/v1/t/{slug}/runs/{id}:rerun
-	RerunRun(ctx context.Context, request OptLaunchOverrides, params RerunRunParams, options ...RequestOption) (*Run, error)
+	RerunRun(ctx context.Context, request OptRerunRunReq, params RerunRunParams, options ...RequestOption) (*Run, error)
 	// ResumeSchedule invokes resumeSchedule operation.
 	//
 	// Resume.
@@ -19524,6 +19524,40 @@ func (c *Client) sendListSchedules(ctx context.Context, params ListSchedulesPara
 		}
 	}
 	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Sort.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "order" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Order.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
 		// Encode "cursor" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
 			Name:    "cursor",
@@ -19896,6 +19930,40 @@ func (c *Client) sendListShares(ctx context.Context, params ListSharesParams, re
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.Active.Get(); ok {
 				return e.EncodeValue(conv.BoolToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Sort.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "order" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Order.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
 			}
 			return nil
 		}); err != nil {
@@ -23427,7 +23495,7 @@ func (c *Client) sendPatchSchedule(ctx context.Context, request *SchedulePatch, 
 
 // PatchShare invokes patchShare operation.
 //
-// Change TTL or scope.
+// Change TTL, scope or title.
 //
 // PATCH /api/v1/t/{slug}/shares/{id}
 func (c *Client) PatchShare(ctx context.Context, request *PatchShareReq, params PatchShareParams, options ...RequestOption) (*Share, error) {
@@ -27524,12 +27592,12 @@ func (c *Client) sendReplayWebhookDelivery(ctx context.Context, params ReplayWeb
 // New run from this run's snapshot (overrides allowed).
 //
 // POST /api/v1/t/{slug}/runs/{id}:rerun
-func (c *Client) RerunRun(ctx context.Context, request OptLaunchOverrides, params RerunRunParams, options ...RequestOption) (*Run, error) {
+func (c *Client) RerunRun(ctx context.Context, request OptRerunRunReq, params RerunRunParams, options ...RequestOption) (*Run, error) {
 	res, err := c.sendRerunRun(ctx, request, params, options...)
 	return res, err
 }
 
-func (c *Client) sendRerunRun(ctx context.Context, request OptLaunchOverrides, params RerunRunParams, requestOptions ...RequestOption) (res *Run, err error) {
+func (c *Client) sendRerunRun(ctx context.Context, request OptRerunRunReq, params RerunRunParams, requestOptions ...RequestOption) (res *Run, err error) {
 	// Validate request before sending.
 	if err := func() error {
 		if value, ok := request.Get(); ok {

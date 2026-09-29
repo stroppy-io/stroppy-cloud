@@ -31,6 +31,8 @@ paths:
         - { name: target_kind, in: query, schema: { $ref: '#/components/schemas/ShareTargetKind' } }
         - { name: target_id, in: query, schema: { type: string, format: uuid } }
         - { name: active, in: query, schema: { type: boolean } }
+        - { name: sort, in: query, schema: { type: string, enum: [title, target, scope, expires_at, views, created_at], default: created_at } }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: Shares of the tenant.
@@ -69,7 +71,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
-      summary: Change TTL or scope.
+      summary: Change TTL, scope or title.
       requestBody:
         required: true
         content:
@@ -79,6 +81,7 @@ paths:
               properties:
                 ttl: { type: string, description: Go duration from now; `0s` = never expires. }
                 scope: { $ref: '#/components/schemas/ShareScope' }
+                title: { type: string, maxLength: 256, description: Report title shown on the public page. }
       responses:
         '200':
           description: Share.

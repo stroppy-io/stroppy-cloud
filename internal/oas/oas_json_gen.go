@@ -20242,6 +20242,73 @@ func (s *OptRequirements) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes RerunRunReq as json.
+func (o OptRerunRunReq) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RerunRunReq from json.
+func (o *OptRerunRunReq) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRerunRunReq to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRerunRunReq) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRerunRunReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RerunRunReqLabels as json.
+func (o OptRerunRunReqLabels) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RerunRunReqLabels from json.
+func (o *OptRerunRunReqLabels) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRerunRunReqLabels to nil")
+	}
+	o.Set = true
+	o.Value = make(RerunRunReqLabels)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRerunRunReqLabels) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRerunRunReqLabels) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes ResourceTreeLabels as json.
 func (o OptResourceTreeLabels) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -23571,11 +23638,18 @@ func (s *PatchShareReq) encodeFields(e *jx.Encoder) {
 			s.Scope.Encode(e)
 		}
 	}
+	{
+		if s.Title.Set {
+			e.FieldStart("title")
+			s.Title.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfPatchShareReq = [2]string{
+var jsonFieldsNameOfPatchShareReq = [3]string{
 	0: "ttl",
 	1: "scope",
+	2: "title",
 }
 
 // Decode decodes PatchShareReq from json.
@@ -23605,6 +23679,16 @@ func (s *PatchShareReq) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"scope\"")
+			}
+		case "title":
+			if err := func() error {
+				s.Title.Reset()
+				if err := s.Title.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"title\"")
 			}
 		default:
 			return d.Skip()
@@ -27043,6 +27127,244 @@ func (s Requirements) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Requirements) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RerunRunReq) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RerunRunReq) encodeFields(e *jx.Encoder) {
+	{
+		if s.Name.Set {
+			e.FieldStart("name")
+			s.Name.Encode(e)
+		}
+	}
+	{
+		if s.ProviderProfileID.Set {
+			e.FieldStart("provider_profile_id")
+			s.ProviderProfileID.Encode(e)
+		}
+	}
+	{
+		if s.Sizes.Set {
+			e.FieldStart("sizes")
+			s.Sizes.Encode(e)
+		}
+	}
+	{
+		if s.Keep.Set {
+			e.FieldStart("keep")
+			s.Keep.Encode(e)
+		}
+	}
+	{
+		if s.Rating.Set {
+			e.FieldStart("rating")
+			s.Rating.Encode(e)
+		}
+	}
+	{
+		if s.Labels.Set {
+			e.FieldStart("labels")
+			s.Labels.Encode(e)
+		}
+	}
+	{
+		if s.Notes.Set {
+			e.FieldStart("notes")
+			s.Notes.Encode(e)
+		}
+	}
+	{
+		if s.Resume.Set {
+			e.FieldStart("resume")
+			s.Resume.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfRerunRunReq = [8]string{
+	0: "name",
+	1: "provider_profile_id",
+	2: "sizes",
+	3: "keep",
+	4: "rating",
+	5: "labels",
+	6: "notes",
+	7: "resume",
+}
+
+// Decode decodes RerunRunReq from json.
+func (s *RerunRunReq) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RerunRunReq to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "name":
+			if err := func() error {
+				s.Name.Reset()
+				if err := s.Name.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"name\"")
+			}
+		case "provider_profile_id":
+			if err := func() error {
+				s.ProviderProfileID.Reset()
+				if err := s.ProviderProfileID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"provider_profile_id\"")
+			}
+		case "sizes":
+			if err := func() error {
+				s.Sizes.Reset()
+				if err := s.Sizes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"sizes\"")
+			}
+		case "keep":
+			if err := func() error {
+				s.Keep.Reset()
+				if err := s.Keep.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"keep\"")
+			}
+		case "rating":
+			if err := func() error {
+				s.Rating.Reset()
+				if err := s.Rating.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"rating\"")
+			}
+		case "labels":
+			if err := func() error {
+				s.Labels.Reset()
+				if err := s.Labels.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"labels\"")
+			}
+		case "notes":
+			if err := func() error {
+				s.Notes.Reset()
+				if err := s.Notes.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"notes\"")
+			}
+		case "resume":
+			if err := func() error {
+				s.Resume.Reset()
+				if err := s.Resume.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"resume\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RerunRunReq")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RerunRunReq) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RerunRunReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RerunRunReqLabels) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RerunRunReqLabels) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		e.Str(elem)
+	}
+}
+
+// Decode decodes RerunRunReqLabels from json.
+func (s *RerunRunReqLabels) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RerunRunReqLabels to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem string
+		if err := func() error {
+			v, err := d.Str()
+			elem = string(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RerunRunReqLabels")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RerunRunReqLabels) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RerunRunReqLabels) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -33897,9 +34219,25 @@ func (s *RunSummary) encodeFields(e *jx.Encoder) {
 			s.Headline.Encode(e)
 		}
 	}
+	{
+		if s.QPSSeries != nil {
+			e.FieldStart("qps_series")
+			e.ArrStart()
+			for _, elem := range s.QPSSeries {
+				elem.Encode(e)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
+		if s.ExpectedFinishAt.Set {
+			e.FieldStart("expected_finish_at")
+			s.ExpectedFinishAt.Encode(e, json.EncodeDateTime)
+		}
+	}
 }
 
-var jsonFieldsNameOfRunSummary = [14]string{
+var jsonFieldsNameOfRunSummary = [16]string{
 	0:  "db_kind",
 	1:  "db_version",
 	2:  "workload_name",
@@ -33914,6 +34252,8 @@ var jsonFieldsNameOfRunSummary = [14]string{
 	11: "progress_pct",
 	12: "segment",
 	13: "headline",
+	14: "qps_series",
+	15: "expected_finish_at",
 }
 
 // Decode decodes RunSummary from json.
@@ -34064,6 +34404,33 @@ func (s *RunSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"headline\"")
 			}
+		case "qps_series":
+			if err := func() error {
+				s.QPSSeries = make([]RunSummaryQPSSeriesItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem RunSummaryQPSSeriesItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.QPSSeries = append(s.QPSSeries, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"qps_series\"")
+			}
+		case "expected_finish_at":
+			if err := func() error {
+				s.ExpectedFinishAt.Reset()
+				if err := s.ExpectedFinishAt.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"expected_finish_at\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -34140,6 +34507,119 @@ func (s RunSummaryHeadline) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunSummaryHeadline) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunSummaryQPSSeriesItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunSummaryQPSSeriesItem) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("t")
+		e.Int64(s.T)
+	}
+	{
+		e.FieldStart("v")
+		e.Float64(s.V)
+	}
+}
+
+var jsonFieldsNameOfRunSummaryQPSSeriesItem = [2]string{
+	0: "t",
+	1: "v",
+}
+
+// Decode decodes RunSummaryQPSSeriesItem from json.
+func (s *RunSummaryQPSSeriesItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunSummaryQPSSeriesItem to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "t":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Int64()
+				s.T = int64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"t\"")
+			}
+		case "v":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Float64()
+				s.V = float64(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"v\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunSummaryQPSSeriesItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunSummaryQPSSeriesItem) {
+					name = jsonFieldsNameOfRunSummaryQPSSeriesItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunSummaryQPSSeriesItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunSummaryQPSSeriesItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -47531,19 +48011,33 @@ func (s *TestPatch) encodeFields(e *jx.Encoder) {
 			s.Rating.Encode(e)
 		}
 	}
+	{
+		if s.Finalize.Set {
+			e.FieldStart("finalize")
+			s.Finalize.Encode(e)
+		}
+	}
+	{
+		if s.Revalidate.Set {
+			e.FieldStart("revalidate")
+			s.Revalidate.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfTestPatch = [10]string{
-	0: "name",
-	1: "description",
-	2: "tags",
-	3: "execution",
-	4: "database",
-	5: "workload",
-	6: "sizes",
-	7: "provider_profile_id",
-	8: "keep",
-	9: "rating",
+var jsonFieldsNameOfTestPatch = [12]string{
+	0:  "name",
+	1:  "description",
+	2:  "tags",
+	3:  "execution",
+	4:  "database",
+	5:  "workload",
+	6:  "sizes",
+	7:  "provider_profile_id",
+	8:  "keep",
+	9:  "rating",
+	10: "finalize",
+	11: "revalidate",
 }
 
 // Decode decodes TestPatch from json.
@@ -47653,6 +48147,26 @@ func (s *TestPatch) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"rating\"")
+			}
+		case "finalize":
+			if err := func() error {
+				s.Finalize.Reset()
+				if err := s.Finalize.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"finalize\"")
+			}
+		case "revalidate":
+			if err := func() error {
+				s.Revalidate.Reset()
+				if err := s.Revalidate.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"revalidate\"")
 			}
 		default:
 			return d.Skip()

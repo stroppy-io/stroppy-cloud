@@ -18,14 +18,28 @@ WHERE tenant_id = @tenant_id
   AND (@target_id::text = '' OR target_id::text = @target_id::text)
   AND (NOT @only_active::boolean OR (revoked_at IS NULL AND (expires_at IS NULL OR expires_at > now())))
   AND (NOT @only_inactive::boolean OR (revoked_at IS NOT NULL OR (expires_at IS NOT NULL AND expires_at <= now())))
-ORDER BY created_at DESC LIMIT @lim OFFSET @off;
+ORDER BY
+  CASE WHEN @sort_key::text = 'title' AND NOT @desc::boolean THEN title END ASC,
+  CASE WHEN @sort_key::text = 'title' AND @desc::boolean THEN title END DESC,
+  CASE WHEN @sort_key::text = 'target' AND NOT @desc::boolean THEN target_name END ASC,
+  CASE WHEN @sort_key::text = 'target' AND @desc::boolean THEN target_name END DESC,
+  CASE WHEN @sort_key::text = 'scope' AND NOT @desc::boolean THEN scope END ASC,
+  CASE WHEN @sort_key::text = 'scope' AND @desc::boolean THEN scope END DESC,
+  CASE WHEN @sort_key::text = 'views' AND NOT @desc::boolean THEN view_count END ASC,
+  CASE WHEN @sort_key::text = 'views' AND @desc::boolean THEN view_count END DESC,
+  CASE WHEN @sort_key::text = 'expires_at' AND NOT @desc::boolean THEN expires_at END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'expires_at' AND @desc::boolean THEN expires_at END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
+  CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
+  created_at DESC, id
+LIMIT @lim OFFSET @off;
 
 -- name: SharesOfTarget :many
 SELECT id, title FROM shares WHERE target_kind = @target_kind AND target_id = @target_id AND revoked_at IS NULL ORDER BY created_at DESC;
 
 -- name: UpdateShare :exec
 UPDATE shares
-SET scope = COALESCE(@scope::text, scope), expires_at = CASE WHEN @set_expires::boolean THEN @expires_at ELSE expires_at END, updated_at = now()
+SET scope = COALESCE(@scope::text, scope), title = COALESCE(@title::text, title), expires_at = CASE WHEN @set_expires::boolean THEN @expires_at ELSE expires_at END, updated_at = now()
 WHERE id = @id;
 
 -- name: SetShareSnapshot :exec

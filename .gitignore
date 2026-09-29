@@ -20,3 +20,6 @@ docs/.docusaurus
 openapi/.build
 __pycache__/
 *.py[cod]
+.playwright-mcp/
+web/.tanstack/
+/temp.md

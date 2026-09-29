@@ -11,7 +11,7 @@ paths:
         - $ref: '#/components/parameters/author'
         - $ref: '#/components/parameters/favorites'
         - { name: kind, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/DatabaseKind' } } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, kind], default: updated_at } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, kind, version, author], default: updated_at } }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -193,7 +193,7 @@ paths:
         - { name: protocol, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/Protocol' } } }
         - { name: stroppy_version, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: script, in: query, schema: { type: string } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, protocol, stroppy_version], default: updated_at } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, protocol, stroppy_version, author], default: updated_at } }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -374,7 +374,7 @@ paths:
         - $ref: '#/components/parameters/favorites'
         - { name: status, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/TestStatus' } } }
         - { name: kind, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/DatabaseKind' } } }
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, kind, last_run_at], default: updated_at } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, kind, database, workload, provider, status, author, last_run_at], default: updated_at } }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -864,6 +864,14 @@ components:
       allOf:
         - $ref: '#/components/schemas/EntityPatch'
         - $ref: '#/components/schemas/TestSpec'
+        - type: object
+          properties:
+            finalize:
+              type: boolean
+              description: Require the test to be `ready` after this patch; otherwise 400 `validation_failed` with the fit issues and nothing is saved.
+            revalidate:
+              type: boolean
+              description: Re-run validation against the current library records (clears `needs_attention`). Every patch revalidates; this flag allows an otherwise empty patch.
     TestValidation:
       type: object
       required: [validation, status]

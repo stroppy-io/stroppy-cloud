@@ -1,0 +1,152 @@
+{
+  "sharedReport": "Shared report",
+  "captured": "captured {{when}}",
+  "by": "by {{tenant}}",
+  "kind": {
+    "run": "Run report",
+    "suite_run": "Suite run report",
+    "comparison": "Comparison report"
+  },
+  "scope": {
+    "overview": "overview",
+    "metrics": "metrics included",
+    "configs": "metrics + configs"
+  },
+  "poweredBy": "Made with Stroppy Cloud",
+  "print": "Print",
+  "export": {
+    "title": "Export",
+    "md": "Markdown",
+    "json": "JSON",
+    "csv": "CSV",
+    "pdf": "PDF",
+    "pdfNote": "PDF is delivered as Markdown source by the mock API",
+    "done": "Report downloaded",
+    "failed": "Export failed"
+  },
+  "nav": {
+    "summary": "Summary",
+    "timeline": "Timeline",
+    "setup": "Setup",
+    "results": "Results",
+    "configs": "Configs"
+  },
+  "summary": {
+    "title": "Summary",
+    "tps": "Throughput",
+    "p99": "Latency p99",
+    "p95": "Latency p95",
+    "p50": "Latency p50",
+    "errors": "Errors",
+    "duration": "Duration",
+    "started": "Started",
+    "finished": "Finished",
+    "status": "Status",
+    "noHeadline": "No headline metrics — the run did not reach the workload phase."
+  },
+  "timeline": {
+    "title": "Timeline",
+    "hint": "What happened and when — phases, machines, workload segments.",
+    "phases": "Phases",
+    "segments": "Workload segments",
+    "empty": "No events were captured.",
+    "showAll": "Show all {{count}} events",
+    "showLess": "Show fewer",
+    "attempt": "attempt {{n}}"
+  },
+  "setup": {
+    "title": "Setup",
+    "hint": "How the system under test was configured.",
+    "database": "Database",
+    "kind": "Kind",
+    "version": "Version",
+    "image": "Image",
+    "topology": "Topology",
+    "nodes_one": "{{count}} node",
+    "nodes_other": "{{count}} nodes",
+    "params": "Database parameters",
+    "noParams": "Default parameters.",
+    "workload": "Workload",
+    "stroppy": "Stroppy",
+    "protocol": "Protocol",
+    "segments": "Segments",
+    "segment": "Segment",
+    "script": "Script",
+    "executor": "Executor",
+    "vus": "VUs",
+    "duration": "Duration",
+    "thresholds": "Thresholds",
+    "machines": "Machines",
+    "machine": {
+      "name": "Name",
+      "role": "Role",
+      "size": "Size",
+      "cpu": "vCPU",
+      "ram": "RAM",
+      "disk": "Disk",
+      "type": "Instance",
+      "location": "Location"
+    },
+    "provider": "Provider",
+    "league": "League",
+    "sizes": "Sizes"
+  },
+  "results": {
+    "title": "Results",
+    "hint": "What came out of the workload.",
+    "segments": "Segments",
+    "segment": {
+      "name": "Segment",
+      "status": "Status",
+      "tps": "TPS",
+      "errors": "Failed queries",
+      "exit": "Exit code",
+      "error": "Error"
+    },
+    "baseline": "Baseline checks",
+    "baselineOk": "All baseline checks passed",
+    "baselineFailed": "Baseline checks failed",
+    "metrics": "Metrics",
+    "metricsHint": "Time series over the workload window.",
+    "metricsNotShared": "Metrics were not included in this share.",
+    "noMetrics": "No metric series were captured."
+  },
+  "configs": {
+    "title": "Configs",
+    "hint": "Rendered software configuration per role. Secrets are masked.",
+    "empty": "No configuration files were captured."
+  },
+  "suite": {
+    "cells": "Cells",
+    "cell": "Cell",
+    "status": "Status",
+    "tps": "TPS",
+    "p99": "p99",
+    "errors": "Errors",
+    "database": "Database",
+    "topology": "Topology",
+    "progress": "{{done}} of {{total}} cells completed"
+  },
+  "comparison": {
+    "title": "Comparison",
+    "hint": "Metric by metric against the baseline (first column).",
+    "baseline": "baseline",
+    "metric": "Metric",
+    "better": "better",
+    "worse": "worse",
+    "same": "same",
+    "missing": "n/a",
+    "verdict": "{{better}} better · {{worse}} worse · {{same}} same",
+    "specDiff": "Spec differences",
+    "noDiff": "Specs are identical to the baseline.",
+    "path": "Path",
+    "baselineValue": "Baseline",
+    "value": "Value"
+  },
+  "gone": {
+    "title": "This report is no longer available",
+    "hint": "The share was revoked or has expired. Ask the author for a new link.",
+    "notFound": "There is no shared report with this link.",
+    "home": "Go to Stroppy Cloud"
+  }
+}

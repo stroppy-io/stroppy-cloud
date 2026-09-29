@@ -29,6 +29,19 @@ func (h *Handler) me(ctx context.Context, a auth.Actor, p profile.Profile) *oas.
 	if h.deps.Admin != nil && h.deps.Admin.IsAdmin(ctx, a) {
 		me.IsPlatformAdmin = true
 	}
+	// Memberships travel with the profile so the SPA picks a tenant in one call.
+	if h.deps.Tenants != nil {
+		if ms, err := h.deps.Tenants.Mine(ctx, a.UserID); err == nil {
+			me.Tenants = make([]oas.TenantMembership, 0, len(ms))
+			for _, m := range ms {
+				me.Tenants = append(me.Tenants, membershipOf(m))
+				if m.Role == "owner" && m.Tenant.OwnerID == a.UserID {
+					id := m.Tenant.ID
+					me.OwnedTenantID = oas.NewOptNilUUID(id)
+				}
+			}
+		}
+	}
 	return me
 }
 

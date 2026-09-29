@@ -20,9 +20,14 @@ ORDER BY
   CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
   CASE WHEN @sort_key::text = 'kind' AND NOT @desc::boolean THEN kind END ASC,
   CASE WHEN @sort_key::text = 'kind' AND @desc::boolean THEN kind END DESC,
+  CASE WHEN @sort_key::text = 'version' AND NOT @desc::boolean THEN version END ASC,
+  CASE WHEN @sort_key::text = 'version' AND @desc::boolean THEN version END DESC,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
   CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
+  CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
   updated_at DESC, id
 LIMIT @lim OFFSET @off;
 
@@ -67,9 +72,12 @@ ORDER BY
   CASE WHEN @sort_key::text = 'protocol' AND @desc::boolean THEN protocol END DESC,
   CASE WHEN @sort_key::text = 'stroppy_version' AND NOT @desc::boolean THEN stroppy_version END ASC,
   CASE WHEN @sort_key::text = 'stroppy_version' AND @desc::boolean THEN stroppy_version END DESC,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
   CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
+  CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
   updated_at DESC, id
 LIMIT @lim OFFSET @off;
 
@@ -110,9 +118,24 @@ WHERE tenant_id = @tenant_id AND deleted_at IS NULL
 ORDER BY
   CASE WHEN @sort_key::text = 'name' AND NOT @desc::boolean THEN name END ASC,
   CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
+  CASE WHEN @sort_key::text = 'status' AND NOT @desc::boolean THEN status END ASC,
+  CASE WHEN @sort_key::text = 'status' AND @desc::boolean THEN status END DESC,
+  CASE WHEN @sort_key::text = 'kind' AND NOT @desc::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'kind' AND @desc::boolean THEN COALESCE((SELECT d.kind FROM databases d WHERE d.id = tests.database_id), database_inline->>'kind') END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'database' AND NOT @desc::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'database' AND @desc::boolean THEN COALESCE((SELECT d.name FROM databases d WHERE d.id = tests.database_id), database_inline->>'name') END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'workload' AND NOT @desc::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'workload' AND @desc::boolean THEN COALESCE((SELECT w.name FROM workloads w WHERE w.id = tests.workload_id), workload_inline->>'name') END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'provider' AND NOT @desc::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'provider' AND @desc::boolean THEN (SELECT pp.name FROM provider_profiles pp WHERE pp.id = tests.provider_profile_id) END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'last_run_at' AND NOT @desc::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'last_run_at' AND @desc::boolean THEN (SELECT max(r.created_at) FROM runs r WHERE r.test_id = tests.id AND r.deleted_at IS NULL) END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
   CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
+  CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
   updated_at DESC, id
 LIMIT @lim OFFSET @off;
 

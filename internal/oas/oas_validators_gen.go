@@ -2787,6 +2787,10 @@ func (s ListDatabasesSort) Validate() error {
 		return nil
 	case "kind":
 		return nil
+	case "version":
+		return nil
+	case "author":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
@@ -3214,6 +3218,8 @@ func (s *ListRunsOK) Validate() error {
 
 func (s ListRunsSort) Validate() error {
 	switch s {
+	case "default":
+		return nil
 	case "started_at":
 		return nil
 	case "finished_at":
@@ -3222,11 +3228,33 @@ func (s ListRunsSort) Validate() error {
 		return nil
 	case "tps":
 		return nil
+	case "qps":
+		return nil
+	case "p50":
+		return nil
+	case "p99":
+		return nil
+	case "errors":
+		return nil
 	case "status":
 		return nil
 	case "name":
 		return nil
+	case "db_kind":
+		return nil
+	case "workload":
+		return nil
+	case "topology":
+		return nil
+	case "provider":
+		return nil
+	case "trigger":
+		return nil
+	case "author":
+		return nil
 	case "created_at":
+		return nil
+	case "updated_at":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -3335,6 +3363,31 @@ func (s *ListSchedulesOK) Validate() error {
 	return nil
 }
 
+func (s ListSchedulesSort) Validate() error {
+	switch s {
+	case "name":
+		return nil
+	case "enabled":
+		return nil
+	case "target":
+		return nil
+	case "cron":
+		return nil
+	case "next_run_at":
+		return nil
+	case "last_run_at":
+		return nil
+	case "created_at":
+		return nil
+	case "updated_at":
+		return nil
+	case "author":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s ListSchedulesTargetKind) Validate() error {
 	switch s {
 	case "test":
@@ -3418,6 +3471,25 @@ func (s *ListSharesOK) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s ListSharesSort) Validate() error {
+	switch s {
+	case "title":
+		return nil
+	case "target":
+		return nil
+	case "scope":
+		return nil
+	case "expires_at":
+		return nil
+	case "views":
+		return nil
+	case "created_at":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *ListSuiteRunsOK) Validate() error {
@@ -3602,6 +3674,10 @@ func (s ListSuitesSort) Validate() error {
 		return nil
 	case "cell_count":
 		return nil
+	case "test_count":
+		return nil
+	case "author":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
@@ -3707,6 +3783,16 @@ func (s ListTestsSort) Validate() error {
 	case "updated_at":
 		return nil
 	case "kind":
+		return nil
+	case "database":
+		return nil
+	case "workload":
+		return nil
+	case "provider":
+		return nil
+	case "status":
+		return nil
+	case "author":
 		return nil
 	case "last_run_at":
 		return nil
@@ -3868,6 +3954,8 @@ func (s ListWorkloadsSort) Validate() error {
 	case "protocol":
 		return nil
 	case "stroppy_version":
+		return nil
+	case "author":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -4372,6 +4460,36 @@ func (s *PatchShareReq) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "scope",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Title.Get(); ok {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:     0,
+					MinLengthSet:  false,
+					MaxLength:     256,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
+				}).Validate(string(value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "title",
 			Error: err,
 		})
 	}
@@ -5257,6 +5375,66 @@ func (s Requirements) Validate() error {
 		}
 	}
 
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *RerunRunReq) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Name.Get(); ok {
+			if err := func() error {
+				if err := (validate.String{
+					MinLength:     0,
+					MinLengthSet:  false,
+					MaxLength:     128,
+					MaxLengthSet:  true,
+					Email:         false,
+					Hostname:      false,
+					Regex:         nil,
+					MinNumeric:    0,
+					MinNumericSet: false,
+					MaxNumeric:    0,
+					MaxNumericSet: false,
+				}).Validate(string(value)); err != nil {
+					return errors.Wrap(err, "string")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "name",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Sizes.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "sizes",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -6604,6 +6782,31 @@ func (s *RunSummary) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		var failures []validate.FieldError
+		for i, elem := range s.QPSSeries {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "qps_series",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -6626,6 +6829,29 @@ func (s RunSummaryHeadline) Validate() error {
 		}
 	}
 
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *RunSummaryQPSSeriesItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := (validate.Float{}).Validate(float64(s.V)); err != nil {
+			return errors.Wrap(err, "float")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "v",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}

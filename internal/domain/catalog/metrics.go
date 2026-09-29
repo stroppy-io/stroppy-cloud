@@ -24,6 +24,12 @@ func metrics() []Metric {
 			Key: "tps", Title: "Throughput", Description: "Committed transactions per second; workloads that run no transactions (query sets) report none.", Unit: "tps", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true,
 			Expr: `stroppy_tps{$native}`,
 		},
+		{
+			// A number of the result: the per-segment queries_per_second
+			// weighted by each segment's measurement window
+			// (run.CompleteHeadline). Its series is queries_per_second.
+			Key: "qps", Title: "Queries per second", Description: "Statements per second over the whole workload: segments weighted by their measured time.", Unit: "1/s", HigherIsBetter: true, Group: "Headline", Scope: "result", RatingEligible: true,
+		},
 		{Key: "latency_p50_ms", Title: "Latency p50", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.5")},
 		{Key: "latency_p95_ms", Title: "Latency p95", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.95")},
 		{Key: "latency_p99_ms", Title: "Latency p99", Unit: "ms", Group: "Headline", Scope: "result", RatingEligible: true, Expr: quantile("0.99")},

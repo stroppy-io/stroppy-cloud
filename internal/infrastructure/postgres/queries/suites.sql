@@ -20,10 +20,19 @@ WHERE tenant_id = @tenant_id AND deleted_at IS NULL
 ORDER BY
   CASE WHEN @sort_key::text = 'name' AND NOT @desc::boolean THEN name END ASC,
   CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'test_count' AND NOT @desc::boolean THEN jsonb_array_length(tests) END ASC,
+  CASE WHEN @sort_key::text = 'test_count' AND @desc::boolean THEN jsonb_array_length(tests) END DESC,
+  CASE WHEN @sort_key::text = 'cell_count' AND NOT @desc::boolean THEN jsonb_array_length(cells) END ASC,
+  CASE WHEN @sort_key::text = 'cell_count' AND @desc::boolean THEN jsonb_array_length(cells) END DESC,
+  CASE WHEN @sort_key::text = 'last_run_at' AND NOT @desc::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'last_run_at' AND @desc::boolean THEN (SELECT max(sr.created_at) FROM suite_runs sr WHERE sr.suite_id = suites.id AND sr.deleted_at IS NULL) END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
+  CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
   CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
   CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
-  CASE WHEN NOT @desc::boolean THEN created_at END ASC,
-  created_at DESC
+  updated_at DESC, id
 LIMIT @lim OFFSET @off;
 
 -- name: UpdateSuite :execrows
@@ -121,7 +130,27 @@ WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@target_kind::text = '' OR target_kind = @target_kind::text)
   AND (NOT @only_enabled::boolean OR enabled)
   AND (NOT @only_disabled::boolean OR NOT enabled)
-ORDER BY created_at DESC LIMIT @lim OFFSET @off;
+ORDER BY
+  CASE WHEN @sort_key::text = 'name' AND NOT @desc::boolean THEN name END ASC,
+  CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
+  CASE WHEN @sort_key::text = 'enabled' AND NOT @desc::boolean THEN enabled END ASC,
+  CASE WHEN @sort_key::text = 'enabled' AND @desc::boolean THEN enabled END DESC,
+  CASE WHEN @sort_key::text = 'target' AND NOT @desc::boolean THEN target_name END ASC,
+  CASE WHEN @sort_key::text = 'target' AND @desc::boolean THEN target_name END DESC,
+  CASE WHEN @sort_key::text = 'cron' AND NOT @desc::boolean THEN cron END ASC,
+  CASE WHEN @sort_key::text = 'cron' AND @desc::boolean THEN cron END DESC,
+  CASE WHEN @sort_key::text = 'next_run_at' AND NOT @desc::boolean THEN next_run_at END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'next_run_at' AND @desc::boolean THEN next_run_at END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'last_run_at' AND NOT @desc::boolean THEN (last_run->>'at')::timestamptz END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'last_run_at' AND @desc::boolean THEN (last_run->>'at')::timestamptz END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'author' AND @desc::boolean THEN author_id::text END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'updated_at' AND NOT @desc::boolean THEN updated_at END ASC,
+  CASE WHEN @sort_key::text = 'updated_at' AND @desc::boolean THEN updated_at END DESC,
+  CASE WHEN @sort_key::text = 'created_at' AND NOT @desc::boolean THEN created_at END ASC,
+  CASE WHEN @sort_key::text = 'created_at' AND @desc::boolean THEN created_at END DESC,
+  created_at DESC, id
+LIMIT @lim OFFSET @off;
 
 -- name: SchedulesOfTarget :many
 SELECT id, name FROM schedules WHERE target_kind = @target_kind AND target_id = @target_id AND deleted_at IS NULL ORDER BY name;

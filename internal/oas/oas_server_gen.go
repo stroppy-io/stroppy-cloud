@@ -787,7 +787,7 @@ type Handler interface {
 	PatchSchedule(ctx context.Context, req *SchedulePatch, params PatchScheduleParams) (*Schedule, error)
 	// PatchShare implements patchShare operation.
 	//
-	// Change TTL or scope.
+	// Change TTL, scope or title.
 	//
 	// PATCH /api/v1/t/{slug}/shares/{id}
 	PatchShare(ctx context.Context, req *PatchShareReq, params PatchShareParams) (*Share, error)
@@ -928,7 +928,7 @@ type Handler interface {
 	// New run from this run's snapshot (overrides allowed).
 	//
 	// POST /api/v1/t/{slug}/runs/{id}:rerun
-	RerunRun(ctx context.Context, req OptLaunchOverrides, params RerunRunParams) (*Run, error)
+	RerunRun(ctx context.Context, req OptRerunRunReq, params RerunRunParams) (*Run, error)
 	// ResumeSchedule implements resumeSchedule operation.
 	//
 	// Resume.

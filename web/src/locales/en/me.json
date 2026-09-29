@@ -1,0 +1,74 @@
+{
+  "platformAdmin": "Platform admin",
+  "tabs": {
+    "profile": "Profile",
+    "tokens": "API tokens",
+    "invites": "Invites"
+  },
+  "profile": {
+    "identity": "Identity",
+    "displayName": "Display name",
+    "avatar": "Avatar",
+    "avatarHint": "No uploads: either a generated identicon or a link to an image you host.",
+    "avatarIdenticon": "Identicon",
+    "avatarUrl": "Image URL",
+    "avatarUrlLabel": "Image URL (https)",
+    "preferences": "Preferences",
+    "themeHint": "Applies immediately; saved with the profile so it follows you to other browsers.",
+    "timezoneHint": "Used for schedules and absolute timestamps.",
+    "defaultTenant": "Default tenant",
+    "defaultTenantHint": "Where / opens. Empty — the first tenant you are a member of.",
+    "notifications": "E-mail notifications",
+    "notify": {
+      "run_finished": "Run finished",
+      "run_failed": "Run failed",
+      "suite_finished": "Suite run finished"
+    },
+    "notifyHint": {
+      "run_finished": "One e-mail per completed run you launched.",
+      "run_failed": "Failures of your runs, including cancellations by admins.",
+      "suite_finished": "Summary when a whole suite run finishes."
+    },
+    "saved": "Profile saved"
+  },
+  "tokens": {
+    "title": "Personal API tokens",
+    "hint": "Scoped to one tenant; rights equal the chosen role but never exceed your own. They stop working when you leave the tenant.",
+    "create": "New token",
+    "createTitle": "New personal token",
+    "tenantHint": "The token grants access to this tenant only.",
+    "roleHint": "Not above your role in the tenant ({{role}}).",
+    "expiresHint": "Optional. Empty — never expires.",
+    "expiresFuture": "Expiry must be in the future",
+    "empty": "No personal tokens",
+    "emptyHint": "Create one for the CLI or scripts running as you.",
+    "secretTitle": "Token {{name}}",
+    "secretHint": "Pass it as Authorization: Bearer <token>.",
+    "revokeTitle": "Revoke token {{name}}?",
+    "revokeBody": "Requests with this token start failing with 401 immediately.",
+    "revoke": "Revoke",
+    "revoked": "Token revoked",
+    "copyPrefix": "Copy prefix",
+    "copyId": "Copy ID",
+    "noExpiry": "never expires",
+    "expiresIn": "expires {{time}}",
+    "expiredAgo": "expired {{time}}",
+    "lastUsedAt": "Last used: {{time}}",
+    "expiresAt": "Expires: {{time}}",
+    "createdAt": "Created: {{time}}"
+  },
+  "invites": {
+    "pending_one": "{{count}} pending invite",
+    "pending_other": "{{count}} pending invites",
+    "empty": "No pending invites",
+    "emptyHint": "When someone invites you to their tenant it shows up here.",
+    "past": "Earlier",
+    "invitedBy": "Invited by",
+    "expires": "Expires",
+    "expiredAt": "Expired",
+    "accept": "Accept",
+    "decline": "Decline",
+    "accepted": "You joined {{name}}",
+    "declined": "Invite declined"
+  }
+}

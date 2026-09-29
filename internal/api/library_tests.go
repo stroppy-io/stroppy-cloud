@@ -3,12 +3,16 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"sync"
 	"time"
 
 	"github.com/go-faster/jx"
+	"github.com/google/uuid"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
 
@@ -164,7 +168,7 @@ func estimatedOf(res library.Resolved) oas.TestValidationEstimated {
 	return out
 }
 
-func (h *Handler) testOf(t library.Test, fit library.Fit, res library.Resolved) *oas.Test {
+func (h *Handler) testOf(t library.Test, fit library.Fit, res library.Resolved, stats ...run.TestRunStat) *oas.Test {
 	hd := entityHeader(t.Entity)
 	out := &oas.Test{
 		ID: hd.id, Name: hd.name, Description: hd.description, Tags: oas.NewOptTestTags(tagsOf(t.Tags)), Author: hd.author, CreatedAt: hd.created, UpdatedAt: hd.updated,
@@ -221,8 +225,33 @@ func (h *Handler) testOf(t library.Test, fit library.Fit, res library.Resolved) 
 		summary.Protocol = oas.NewOptProtocol(oas.Protocol(t.Spec.WorkloadInline.Protocol))
 		summary.StroppyVersion = oas.NewOptString(t.Spec.WorkloadInline.StroppyVersion)
 	}
+	if len(stats) > 0 && stats[0].Count > 0 {
+		st := stats[0]
+		ref := oas.RunRef{ID: st.Last.ID, Name: oas.NewOptString(st.Last.Name), Status: oas.NewOptRunStatus(oas.RunStatus(st.Status))}
+		if st.StartedAt != nil {
+			ref.StartedAt = oas.NewOptNilDateTime(*st.StartedAt)
+		}
+		summary.LastRun = oas.NewOptRunRef(ref)
+		summary.RunCount = oas.NewOptInt(st.Count)
+	}
 	out.Summary = oas.NewOptTestSummary(summary)
 	return out
+}
+
+// testStats loads latest-run stats for the given tests; failures degrade to no stats.
+func (h *Handler) testStats(ctx context.Context, a auth.Actor, tenantID uuid.UUID, tests []library.Test) map[uuid.UUID]run.TestRunStat {
+	if h.deps.Runs == nil || len(tests) == 0 {
+		return nil
+	}
+	ids := make([]uuid.UUID, 0, len(tests))
+	for _, t := range tests {
+		ids = append(ids, t.ID)
+	}
+	stats, err := h.deps.Runs.TestRunStats(ctx, a, tenantID, ids)
+	if err != nil {
+		return nil
+	}
+	return stats
 }
 
 // ListTests — tests of the tenant.
@@ -250,13 +279,37 @@ func (h *Handler) ListTests(ctx context.Context, params oas.ListTestsParams) (*o
 		return nil, err
 	}
 	list, meta := page(list, q.Offset, limit)
-	out := &oas.ListTestsOK{Data: make([]oas.Test, 0, len(list)), Meta: meta}
-	for _, item := range list {
-		fit, res, verr := h.deps.Library.Validate(ctx, t.ID, item.Spec)
-		if verr != nil {
-			return nil, verr
-		}
-		out.Data = append(out.Data, *h.testOf(item, fit, res))
+	stats := h.testStats(ctx, a, t.ID, list)
+	out := &oas.ListTestsOK{Data: make([]oas.Test, len(list)), Meta: meta}
+	// Validation resolves references and provider fit per test; run it in parallel,
+	// a page of 50 sequential validations took seconds.
+	var (
+		wg       sync.WaitGroup
+		sem      = make(chan struct{}, 8)
+		firstErr error
+		mu       sync.Mutex
+	)
+	for i, item := range list {
+		wg.Add(1)
+		go func(i int, item library.Test) {
+			defer wg.Done()
+			sem <- struct{}{}
+			defer func() { <-sem }()
+			fit, res, verr := h.deps.Library.Validate(ctx, t.ID, item.Spec)
+			mu.Lock()
+			defer mu.Unlock()
+			if verr != nil {
+				if firstErr == nil {
+					firstErr = verr
+				}
+				return
+			}
+			out.Data[i] = *h.testOf(item, fit, res, stats[item.ID])
+		}(i, item)
+	}
+	wg.Wait()
+	if firstErr != nil {
+		return nil, firstErr
 	}
 	return out, nil
 }
@@ -292,7 +345,7 @@ func (h *Handler) GetTest(ctx context.Context, params oas.GetTestParams) (*oas.T
 	if err != nil {
 		return nil, err
 	}
-	return h.testOf(test, fit, res), nil
+	return h.testOf(test, fit, res, h.testStats(ctx, a, t.ID, []library.Test{test})[test.ID]), nil
 }
 
 // PatchTest — incremental update, status recomputed.
@@ -301,7 +354,7 @@ func (h *Handler) PatchTest(ctx context.Context, req *oas.TestPatch, params oas.
 	if err != nil {
 		return nil, err
 	}
-	p := library.TestPatch{Sizes: sizesFrom(req.Sizes)}
+	p := library.TestPatch{Sizes: sizesFrom(req.Sizes), Finalize: req.Finalize.Or(false)}
 	if v, ok := req.Execution.Get(); ok {
 		p.Execution = rawOf(v)
 	}

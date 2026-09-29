@@ -122,6 +122,8 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	pusher := pipelines.New(runner, repositories.NewPipelineRepo(db), tenantNamespaces{tenantRepo}, log)
 	tenants.WithPipelines(pusher)
 	adminSvc.WithPipelines(pusherStates{pusher})
+	observeSvc := observe.NewService(runs, graphene.NewLogs(infra.Graphene), graphene.NewMetrics(infra.Graphene), cat)
+	projector.WithTelemetry(observeSvc)
 	return &Services{
 		Profiles:   profile.NewService(repositories.NewProfileRepo(db)),
 		Tenants:    tenants,
@@ -142,7 +144,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 		Admin:      adminSvc,
 		Pipelines:  pusher,
 		Examples:   examples.NewService(lib, suites),
-		Observe:    observe.NewService(runs, graphene.NewLogs(infra.Graphene), graphene.NewMetrics(infra.Graphene), cat),
+		Observe:    observeSvc,
 		Schemas:    registry,
 		Catalog:    cat,
 		IAM:        repositories.NewIAMRepo(db),

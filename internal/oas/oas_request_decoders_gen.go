@@ -3928,7 +3928,7 @@ func (s *Server) decodeRenderSchemaValueRequest(r *http.Request) (
 }
 
 func (s *Server) decodeRerunRunRequest(r *http.Request) (
-	req OptLaunchOverrides,
+	req OptRerunRunReq,
 	rawBody []byte,
 	close func() error,
 	rerr error,
@@ -3978,7 +3978,7 @@ func (s *Server) decodeRerunRunRequest(r *http.Request) (
 		rawBody = append(rawBody, buf...)
 		d := jx.DecodeBytes(buf)
 
-		var request OptLaunchOverrides
+		var request OptRerunRunReq
 		if err := func() error {
 			request.Reset()
 			if err := request.Decode(d); err != nil {

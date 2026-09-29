@@ -24,7 +24,14 @@ paths:
         - { name: duration_min, in: query, schema: { type: string }, description: Go duration. }
         - { name: duration_max, in: query, schema: { type: string } }
         - { name: stand_kept, in: query, schema: { type: boolean } }
-        - { name: sort, in: query, schema: { type: string, enum: [started_at, finished_at, duration, tps, status, name, created_at], default: created_at } }
+        - name: sort
+          in: query
+          description: >-
+            Sort key. `default` puts the caller's favorites first, then live
+            runs (pending, running, cancelling), then the newest; `order` is
+            ignored for it. `qps`, `p50`, `p99` read the headline; `errors`
+            sorts a run without errors as 0. Missing values sort last.
+          schema: { type: string, enum: [default, started_at, finished_at, duration, tps, qps, p50, p99, errors, status, name, db_kind, workload, topology, provider, trigger, author, created_at, updated_at], default: default }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -418,7 +425,14 @@ paths:
       requestBody:
         content:
           application/json:
-            schema: { $ref: '#/components/schemas/LaunchOverrides' }
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/LaunchOverrides'
+                - type: object
+                  properties:
+                    resume:
+                      type: boolean
+                      description: Continue on the kept stand of this run from the failed segment. Degrades to a plain rerun when the stand is gone; the run's `notes` say so.
       responses:
         '201':
           description: Run.

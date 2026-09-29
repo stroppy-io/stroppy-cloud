@@ -10,6 +10,7 @@ ARG NODE_VERSION=22
 FROM node:${NODE_VERSION}-alpine AS web
 WORKDIR /src/web
 COPY web/package.json web/yarn.lock ./
+COPY web/scripts ./scripts
 RUN yarn install --frozen-lockfile
 COPY web/ ./
 RUN yarn build

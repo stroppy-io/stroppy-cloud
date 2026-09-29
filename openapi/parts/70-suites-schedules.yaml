@@ -9,7 +9,7 @@ paths:
         - $ref: '#/components/parameters/tags'
         - $ref: '#/components/parameters/author'
         - $ref: '#/components/parameters/favorites'
-        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, last_run_at, cell_count], default: updated_at } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, created_at, updated_at, last_run_at, cell_count, test_count, author], default: updated_at } }
         - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -335,6 +335,8 @@ paths:
         - $ref: '#/components/parameters/slug'
         - { name: target_kind, in: query, schema: { type: string, enum: [test, suite] } }
         - { name: enabled, in: query, schema: { type: boolean } }
+        - { name: sort, in: query, schema: { type: string, enum: [name, enabled, target, cron, next_run_at, last_run_at, created_at, updated_at, author], default: created_at } }
+        - $ref: '#/components/parameters/order'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
       summary: Schedules.

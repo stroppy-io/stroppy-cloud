@@ -1,0 +1,22 @@
+{
+  "create": {
+    "title": "Create a tenant",
+    "subtitle": "A tenant is your workspace: library, runs, members and cloud profiles.",
+    "firstTitle": "Welcome to Stroppy Cloud",
+    "firstBody": "You are not a member of any tenant yet. Create your own — it takes a few seconds — or wait for an invite.",
+    "ownedTitle": "One owned tenant per account",
+    "ownedBody": "You already own {{name}}. You can be a member of any number of other tenants, but only one can be yours.",
+    "openOwned": "Open {{name}}",
+    "nameHint": "Human-readable, shown everywhere. 2–64 characters.",
+    "namePlaceholder": "e.g. Core team benchmarks",
+    "suggestion": "Suggested name:",
+    "slug": "Slug",
+    "slugHint": "Lowercase letters, digits and dashes. Becomes part of URLs and API paths; cannot be changed later.",
+    "slugTaken": "This slug is taken — try {{alt}}",
+    "available": "available",
+    "descriptionPlaceholder": "What this tenant benchmarks (optional)",
+    "whatHappens": "Creating a tenant provisions a Graphene namespace and pushes the pipelines; you become its owner.",
+    "cta": "Create tenant",
+    "created": "Tenant {{name}} created"
+  }
+}

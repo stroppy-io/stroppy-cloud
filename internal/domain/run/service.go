@@ -56,6 +56,10 @@ type Overrides struct {
 	Labels            map[string]string
 	Notes             string
 	Trigger           Trigger
+	// Resume asks to continue on the previous run's kept stand. Stand reuse is
+	// not wired into the pipeline yet, so it always degrades to a rerun and
+	// says so in the notes.
+	Resume bool
 	// Suite / schedule provenance.
 	SuiteRunID  *uuid.UUID
 	CellID      string
@@ -148,6 +152,17 @@ func (s *Service) Rerun(ctx context.Context, actor auth.Actor, tenantID, runID u
 	}
 	if o.Name == "" {
 		o.Name = prev.Name
+	}
+	if o.Resume {
+		why := "the stand of " + prev.Name + " is gone"
+		if prev.StandKept {
+			why = "stand reuse is not supported by the pipeline yet"
+		}
+		note := "Resume requested but " + why + " — degraded to a full rerun."
+		if o.Notes != "" {
+			note = o.Notes + "\n\n" + note
+		}
+		o.Notes = note
 	}
 	var testRef *Ref
 	if prev.TestID != nil {
@@ -552,6 +567,9 @@ func (s *Service) List(ctx context.Context, actor auth.Actor, tenantID uuid.UUID
 	if q.FavoritesOf != "" && actor.UserID != uuid.Nil {
 		q.FavoritesOf = actor.UserID.String()
 	}
+	if actor.UserID != uuid.Nil {
+		q.ViewerID = actor.UserID.String()
+	}
 	return s.repo.List(ctx, tenantID, q)
 }
 
@@ -572,6 +590,17 @@ func (s *Service) Facets(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 }
 
 // OfTest lists the runs of one test, newest first.
+// TestRunStats — latest run + run count for a set of tests (member+).
+func (s *Service) TestRunStats(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, testIDs []uuid.UUID) (map[uuid.UUID]TestRunStat, error) {
+	if err := s.member(ctx, actor, tenantID); err != nil {
+		return nil, err
+	}
+	if len(testIDs) == 0 {
+		return map[uuid.UUID]TestRunStat{}, nil
+	}
+	return s.repo.TestRunStats(ctx, testIDs)
+}
+
 func (s *Service) OfTest(ctx context.Context, actor auth.Actor, tenantID, testID uuid.UUID, limit, offset int) ([]Run, error) {
 	if err := s.member(ctx, actor, tenantID); err != nil {
 		return nil, err

@@ -394,7 +394,7 @@ func (h *Handler) suiteRunOf(r suite.SuiteRun) *oas.SuiteRun {
 		if x, ok := byCell[c.CellID]; ok {
 			item.Status = oas.RunStatus(x.Status)
 			item.Run = oas.NewOptRunRef(oas.RunRef{ID: x.ID, Name: oas.NewOptString(x.Name), Status: oas.NewOptRunStatus(oas.RunStatus(x.Status)), StartedAt: optTime(x.StartedAt)})
-			item.Summary = oas.NewOptRunSummary(summaryOf(x.Summary))
+			item.Summary = oas.NewOptRunSummary(runSummaryOf(x))
 		}
 		out.Cells = append(out.Cells, item)
 	}

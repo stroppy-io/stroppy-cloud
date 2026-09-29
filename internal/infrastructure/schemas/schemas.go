@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -96,10 +98,51 @@ func (r *Registry) Render(_ context.Context, id, template string, value json.Raw
 	return out, nil
 }
 
-// Schema returns a schema by id.
+// Schema returns a schema by id. An unversioned id (`db.postgres.params`)
+// resolves to the highest registered version.
 func (r *Registry) Schema(id string) (*schemapb.Schema, bool) {
-	s, ok := r.byID[id]
-	return s, ok
+	if s, ok := r.byID[id]; ok {
+		return s, true
+	}
+	if strings.Contains(id, "@") {
+		return nil, false
+	}
+	best, bestVer := "", ""
+	for k := range r.byID {
+		if !strings.HasPrefix(k, id+"@") {
+			continue
+		}
+		ver := strings.TrimPrefix(k, id+"@")
+		if best == "" || versionLess(bestVer, ver) {
+			best, bestVer = k, ver
+		}
+	}
+	if best == "" {
+		return nil, false
+	}
+	return r.byID[best], true
+}
+
+// versionLess compares dotted numeric versions ("10.11" > "9").
+func versionLess(a, b string) bool {
+	as, bs := strings.Split(a, "."), strings.Split(b, ".")
+	for i := 0; i < len(as) || i < len(bs); i++ {
+		var x, y int
+		if i < len(as) {
+			if n, err := strconv.Atoi(as[i]); err == nil {
+				x = n
+			}
+		}
+		if i < len(bs) {
+			if n, err := strconv.Atoi(bs[i]); err == nil {
+				y = n
+			}
+		}
+		if x != y {
+			return x < y
+		}
+	}
+	return false
 }
 
 func (r *Registry) engine(id string) (*schemapb.Engine, error) {

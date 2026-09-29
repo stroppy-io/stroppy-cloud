@@ -19,6 +19,9 @@ const (
 	denylistPurge = time.Hour
 	projectorTick = 3 * time.Second
 	scheduleTick  = 30 * time.Second
+	// qpsBackfillConcurrency bounds the metric store queries of the
+	// startup series backfill.
+	qpsBackfillConcurrency = 4
 )
 
 func (a *Application) startWorkers() {
@@ -30,6 +33,15 @@ func (a *Application) startWorkers() {
 	})
 	a.shutdown.Go(func(ctx context.Context) {
 		a.services.SuiteProj.Run(ctx, projectorTick)
+	})
+	// One pass at startup: finished runs without a stored throughput
+	// series (older than the series, or finished while the metric store
+	// was unreachable) get one. Idempotent: a run is asked once.
+	a.shutdown.Go(func(ctx context.Context) {
+		stored, empty, skipped := a.services.Projector.BackfillQPSSeries(ctx, qpsBackfillConcurrency)
+		if stored+empty+skipped > 0 {
+			a.log.Ctx().Info(ctx, "qps series backfill", xlog.Int("stored", stored), xlog.Int("empty", empty), xlog.Int("skipped", skipped))
+		}
 	})
 	a.shutdown.Go(func(ctx context.Context) {
 		a.services.Schedules.Run(ctx, scheduleTick)
