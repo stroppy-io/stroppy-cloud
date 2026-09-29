@@ -41,6 +41,7 @@ import {
   useStyles2,
 } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
+import { runStageProgress } from '@helpers/run-status'
 import { useTenant } from '@hooks/useTenant'
 import {
   keepPreviousData,
@@ -722,7 +723,7 @@ function RunsTab({
             ? [
                 t(`common.phase.${r.phase}`),
                 r.summary?.segment ? t('runs.segment', { name: r.summary.segment }) : undefined,
-                t('runs.progress', { pct: r.summary?.progress_pct ?? 0 }),
+                t('runs.progress', { pct: r.summary?.phase_progress_pct ?? 0 }),
               ]
                 .filter(Boolean)
                 .join(' · ')
@@ -744,7 +745,7 @@ function RunsTab({
             ) : (
               second
             ),
-            progress: running ? (r.summary?.progress_pct ?? 0) : undefined,
+            progress: running ? runStageProgress(r, t) : undefined,
             badges:
               r.is_favorite || r.stand_kept ? (
                 <>

@@ -73,6 +73,26 @@ const getStyles = (theme: GrafanaTheme2) => ({
     marginTop: 3,
     div: { height: '100%', background: theme.colors.info.main },
   }),
+  stages: css({ display: 'flex', gap: 2, marginTop: 3 }),
+  stageCol: css({ flex: 1, minWidth: 0 }),
+  stageLabel: css({
+    display: 'block',
+    marginTop: 1,
+    color: theme.colors.text.disabled,
+    fontSize: 10,
+    lineHeight: '12px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }),
+  stageCurrent: css({ color: theme.colors.text.secondary }),
+  stage: css({
+    height: 3,
+    borderRadius: 2,
+    background: theme.colors.background.secondary,
+    overflow: 'hidden',
+    div: { height: '100%', background: theme.colors.info.main },
+  }),
   stack: css({ minWidth: 0 }),
   pair: css({ display: 'flex', alignItems: 'baseline', gap: theme.spacing(0.5), minWidth: 0 }),
   primary: css({ flexShrink: 0, maxWidth: '100%' }),
@@ -111,6 +131,57 @@ function isEmpty(v: ReactNode): boolean {
   return v === undefined || v === null || v === '' || v === false
 }
 
+// A progress line: a plain share 0..100, or `stages` equal segments where
+// the ones before `current` are full and `current` is filled to `pct` —
+// the stage's own progress and the overall position in one line.
+export type CellProgress =
+  | number
+  | { stages: number; current: number; pct: number; labels?: string[] }
+
+function ProgressLine({ progress }: { progress: CellProgress }) {
+  const styles = useStyles2(getStyles)
+  const density = useDensity()
+  const clamp = (v: number) => Math.max(0, Math.min(100, v))
+  if (typeof progress === 'number')
+    return (
+      <div
+        className={styles.progress}
+        role="progressbar"
+        aria-valuenow={Math.round(progress)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div style={{ width: `${clamp(progress)}%` }} />
+      </div>
+    )
+  const { stages, current, pct, labels } = progress
+  // Stage names under the segments; compact rows keep one line of text.
+  const named = labels && density !== 'compact'
+  return (
+    <div
+      className={styles.stages}
+      role="progressbar"
+      aria-valuenow={Math.round(pct)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuetext={`${current + 1}/${stages} · ${Math.round(pct)}%`}
+    >
+      {Array.from({ length: stages }, (_, i) => (
+        <div key={i} className={styles.stageCol} title={labels?.[i]}>
+          <div className={styles.stage}>
+            <div style={{ width: `${i < current ? 100 : i === current ? clamp(pct) : 0}%` }} />
+          </div>
+          {named && (
+            <span className={cx(styles.stageLabel, i === current && styles.stageCurrent)}>
+              {labels[i]}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // First column: bold name that links to the record, a secondary line under it (description,
 // reason, current phase), optional trailing badges and a progress line for running records.
 // The secondary line is dropped in compact density.
@@ -130,8 +201,8 @@ export function IdentityCell({
   // Small marker before the name (trigger icon with its tooltip); `icon` is the plain variant.
   lead?: ReactNode
   badges?: ReactNode
-  // 0..100; shows a thin progress line under the text.
-  progress?: number
+  // Thin progress line under the text: 0..100, or staged (see CellProgress).
+  progress?: CellProgress
 }) {
   const styles = useStyles2(getStyles)
   const density = useDensity()
@@ -165,17 +236,7 @@ export function IdentityCell({
       <div className={styles.identityBody}>
         {name}
         {sub}
-        {progress !== undefined && (
-          <div
-            className={styles.progress}
-            role="progressbar"
-            aria-valuenow={Math.round(progress)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <div style={{ width: `${Math.max(0, Math.min(100, progress))}%` }} />
-          </div>
-        )}
+        {progress !== undefined && <ProgressLine progress={progress} />}
       </div>
       {badges && <span className={styles.badges}>{badges}</span>}
     </div>

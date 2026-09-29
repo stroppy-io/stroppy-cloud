@@ -24,6 +24,7 @@ import {
 import { css } from '@emotion/css'
 import type { GrafanaTheme2, IconName } from '@grafana/data'
 import { Badge, Button, ConfirmModal, Stack, Text, useStyles2 } from '@grafana/ui'
+import { runStageProgress } from '@helpers/run-status'
 import { useCopy } from '@hooks/useCopy'
 import {
   keepPreviousData,
@@ -228,12 +229,12 @@ export function AdminRunsPage({
               ? [
                   t(`common.phase.${r.phase}`),
                   r.summary?.segment ? t('runs.segment', { name: r.summary.segment }) : undefined,
-                  t('runs.progress', { pct: r.summary?.progress_pct ?? 0 }),
+                  t('runs.progress', { pct: r.summary?.phase_progress_pct ?? 0 }),
                 ]
                   .filter(Boolean)
                   .join(' · ')
               : r.status_reason || r.test_ref.name,
-            progress: running ? (r.summary?.progress_pct ?? 0) : undefined,
+            progress: running ? runStageProgress(r, t) : undefined,
             badges: r.stand_kept ? <Badge text="keep" color="purple" icon="lock" /> : undefined,
           }
         },

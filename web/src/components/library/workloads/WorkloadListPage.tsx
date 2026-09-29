@@ -21,6 +21,7 @@ import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { TableSettings } from '@components/DataTable/TableSettings'
 import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar'
 import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
+import { SeedExamplesButton } from '@components/examples/SeedExamplesButton'
 import { RelativeTime } from '@components/RelativeTime'
 import { UserLabel } from '@components/UserAvatar'
 import { Button, ConfirmModal, Stack } from '@grafana/ui'
@@ -599,6 +600,7 @@ export function WorkloadListPage({
               >
                 {t('common.actions.import')}
               </Button>
+              <SeedExamplesButton slug={slug} kind="workload" disabled={!canEdit} />
             </Stack>
           ),
         }}

@@ -87,14 +87,20 @@ function ResultStats({ run }: { run: Run }) {
   const { t } = useTranslation()
   const m = run.result?.metrics
   const h = run.summary?.headline
+  // Run-level qps (the segments weighted by their measured time); old results only carry tps.
+  const qps = h?.qps
   const tps = m?.tps?.value ?? h?.tps
+  const throughput =
+    qps !== undefined
+      ? { label: 'QPS', value: formatMetric(qps, 'count') }
+      : { label: 'TPS', value: formatMetric(tps, 'tps') }
   const p99 = m?.latency_p99_ms?.value ?? h?.latency_p99_ms
   const p95 = m?.latency_p95_ms?.value
   const p50 = m?.latency_p50_ms?.value
   const errors = m?.errors?.value ?? h?.errors
-  if (tps === undefined && p99 === undefined) return null
+  if (qps === undefined && tps === undefined && p99 === undefined) return null
   const cells: { label: string; value: string }[] = [
-    { label: 'TPS', value: formatMetric(tps, 'tps') },
+    throughput,
     { label: 'p99', value: formatMetric(p99, 'ms') },
     ...(p95 !== undefined ? [{ label: 'p95', value: formatMetric(p95, 'ms') }] : []),
     ...(p50 !== undefined ? [{ label: 'p50', value: formatMetric(p50, 'ms') }] : []),

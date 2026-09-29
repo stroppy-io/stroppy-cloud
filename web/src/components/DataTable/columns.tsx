@@ -10,6 +10,7 @@ import type { SortOption } from './ColumnHeader'
 import {
   BoolCell,
   type CellLink,
+  type CellProgress,
   CodeCell,
   Dash,
   IdentityCell,
@@ -113,7 +114,7 @@ export const col = {
         icon?: IconName
         lead?: ReactNode
         badges?: ReactNode
-        progress?: number
+        progress?: CellProgress
       }
     }
   ): DataTableColumn<T> {

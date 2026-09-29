@@ -23,6 +23,7 @@ import type { RowAction } from '@components/DataTable/RowActionsMenu'
 import { TableSettings } from '@components/DataTable/TableSettings'
 import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar'
 import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
+import { SeedExamplesButton } from '@components/examples/SeedExamplesButton'
 import { UserLabel } from '@components/UserAvatar'
 import { Badge, Button, ConfirmModal, Stack } from '@grafana/ui'
 import { useTenant } from '@hooks/useTenant'
@@ -635,9 +636,12 @@ export function TestListPage({
         empty={{
           message: t('library.tests.empty.title'),
           button: (
-            <Button icon="plus" disabled={!canEdit && !canRun} onClick={newTest}>
-              {t('library.tests.new')}
-            </Button>
+            <Stack gap={1} justifyContent="center">
+              <Button icon="plus" disabled={!canEdit && !canRun} onClick={newTest}>
+                {t('library.tests.new')}
+              </Button>
+              <SeedExamplesButton slug={slug} kind="test" disabled={!canEdit} />
+            </Stack>
           ),
         }}
         footer={

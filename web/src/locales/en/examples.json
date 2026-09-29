@@ -77,5 +77,11 @@
     "script": "Script",
     "length": "Length",
     "workload": "Workload"
+  },
+  "seed": {
+    "button": "Add examples ({{count}})",
+    "failed": "Could not add examples",
+    "done_one": "Added {{count}} example",
+    "done_other": "Added {{count}} examples"
   }
 }
