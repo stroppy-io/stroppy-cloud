@@ -4,8 +4,7 @@ import { iso, uuid } from '../util'
 
 route('GET', '/api/v1/public/config', ({ store }) => ({
   json: {
-    iam: { base_url: '', client_id: '', environment: 'dev' },
-    auth_mode: 'dev',
+    auth: { mode: 'dev', kratos: { public_url: '' } },
     tenant_creation: store.system.tenant_creation,
     public_rating_enabled: store.system.public_rating_enabled,
     examples_enabled: store.system.examples_enabled,
@@ -32,7 +31,7 @@ route('GET', '/api/v1/public/health', ({ store }) => ({
     version: store.version,
     components: {
       graphene: { status: 'ok' },
-      iam: { status: 'ok', detail: 'dev mode' },
+      kratos: { status: 'ok', detail: 'mock mode' },
       victoria: { status: 'ok' },
       postgres: { status: 'ok' },
     },

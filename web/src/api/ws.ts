@@ -1,4 +1,4 @@
-import { getToken } from '@lib/auth'
+import { getAccessToken } from '@lib/auth'
 import { apiMode } from './mode'
 
 // One WebSocket per tab. Frames (server code is the truth, see internal/transport/ws):
@@ -51,39 +51,41 @@ function createRealWs(path: string): WsClient {
     )
       return
     setStatus('connecting')
-    const proto = location.protocol === 'https:' ? 'wss' : 'ws'
-    socket = new WebSocket(
-      `${proto}://${location.host}${path}?token=${encodeURIComponent(getToken())}`
-    )
-    socket.onopen = () => {
-      attempt = 0
-      setStatus('open')
-      for (const [id, s] of subs)
-        send({ type: 'subscribe', sub_id: id, topic: s.topic, cursor: s.cursor ?? undefined })
-    }
-    socket.onmessage = (ev) => {
-      let frame: Frame
-      try {
-        frame = JSON.parse(ev.data)
-      } catch {
-        return
+    void getAccessToken().then((token) => {
+      const proto = location.protocol === 'https:' ? 'wss' : 'ws'
+      socket = new WebSocket(
+        `${proto}://${location.host}${path}?token=${encodeURIComponent(token)}`
+      )
+      socket.onopen = () => {
+        attempt = 0
+        setStatus('open')
+        for (const [id, s] of subs)
+          send({ type: 'subscribe', sub_id: id, topic: s.topic, cursor: s.cursor ?? undefined })
       }
-      const s = frame.sub_id ? subs.get(frame.sub_id) : undefined
-      if (!s) return
-      if (frame.type === 'event') {
-        if (frame.cursor) s.cursor = frame.cursor
-        s.onEvent(frame.payload, frame.cursor)
-      } else if (frame.type === 'error') {
-        s.onError?.(frame.problem ?? frame.payload)
+      socket.onmessage = (ev) => {
+        let frame: Frame
+        try {
+          frame = JSON.parse(ev.data)
+        } catch {
+          return
+        }
+        const s = frame.sub_id ? subs.get(frame.sub_id) : undefined
+        if (!s) return
+        if (frame.type === 'event') {
+          if (frame.cursor) s.cursor = frame.cursor
+          s.onEvent(frame.payload, frame.cursor)
+        } else if (frame.type === 'error') {
+          s.onError?.(frame.problem ?? frame.payload)
+        }
       }
-    }
-    socket.onclose = () => {
-      setStatus('closed')
-      if (subs.size === 0) return
-      const delay = Math.min(30_000, 1000 * 2 ** attempt++)
-      window.setTimeout(connect, delay)
-    }
-    socket.onerror = () => socket?.close()
+      socket.onclose = () => {
+        setStatus('closed')
+        if (subs.size === 0) return
+        const delay = Math.min(30_000, 1000 * 2 ** attempt++)
+        window.setTimeout(connect, delay)
+      }
+      socket.onerror = () => socket?.close()
+    })
   }
 
   const ping = window.setInterval(() => send({ type: 'ping' }), 25_000)

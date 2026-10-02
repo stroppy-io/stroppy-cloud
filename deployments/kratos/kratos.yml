@@ -1,0 +1,90 @@
+# Ory Kratos, self-hosted, as the only identity provider of Stroppy Cloud.
+#
+# This file is the DEV COMPOSE shape (make dev): Mailpit courier, dev JWT key
+# set committed next to it, plaintext Postgres over the compose network.
+# Production overrides (see README.md): DSN and secrets via environment,
+# per-installation signing keys, real SMTP in courier, public base_url on
+# https://iam.stroppy.io.
+#
+# The contract with the server is one template: `stroppy`. The SPA exchanges
+# a Kratos session for the template's JWT (whoami?tokenize_as=stroppy) and
+# calls the API with it as a Bearer; the server verifies locally (JWKS),
+# no per-request calls to Kratos.
+version: v26.2.0
+
+dsn: postgres://postgres@postgres:5432/kratos?sslmode=disable&max_conns=20
+
+serve:
+  public:
+    port: 4433
+    base_url: http://localhost:4433
+    cors:
+      enabled: true
+      allowed_origins:
+        - http://localhost:18347
+        - http://localhost:5173
+      allowed_methods: [POST, GET, PUT, PATCH, DELETE]
+      allowed_headers: [Authorization, Content-Type, Accept, X-Session-Token]
+      exposed_headers: [Content-Type, Set-Cookie]
+      allow_credentials: true
+  admin:
+    port: 4434
+    base_url: http://localhost:4434
+
+identity:
+  default_schema_id: default
+  schemas:
+    - id: default
+      url: file:///etc/config/kratos/identity.schema.json
+
+selfservice:
+  default_browser_return_url: http://localhost:18347/
+  allowed_return_urls:
+    - http://localhost:18347
+    - http://localhost:5173
+  methods:
+    password:
+      enabled: true
+    totp:
+      enabled: true
+      config:
+        issuer: Stroppy Cloud
+    code:
+      enabled: true
+  flows:
+    registration:
+      # The kill switch of public sign-up: `false` closes the platform —
+      # nobody (invited people included) can self-register until it is back
+      # on; the admin API can still create identities. Prod overlay sets it.
+      enabled: true
+    login:
+      enabled: true
+    recovery:
+      enabled: true
+    verification:
+      enabled: true
+    settings:
+      enabled: true
+
+session:
+  lifespan: 720h
+  whoami:
+    required_aal: aal1
+    tokenizer:
+      templates:
+        stroppy:
+          jwks_url: file:///etc/config/kratos/jwks/kratos-jwks.json
+          claims_mapper_url: file:///etc/config/kratos/claims.jsonnet
+          ttl: 10m
+
+courier:
+  smtp:
+    connection_uri: smtp://mailpit:1025/?disable_starttls=true
+
+secrets:
+  default:
+    - dev-only-insecure-kratos-session-secret
+
+log:
+  level: info
+  format: text

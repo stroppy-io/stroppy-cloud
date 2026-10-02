@@ -163,6 +163,9 @@ dev: ## Build and start the local server with embedded UI and PostgreSQL
 dev-down: ## Stop the local stack, keeping PostgreSQL data and cloud resources
 	$(COMPOSE) down
 
+dev-reset: ## Stop the local stack and DROP local data (postgres volume included)
+	$(COMPOSE) down -v
+
 dev-logs: ## Follow local server logs
 	$(COMPOSE) logs -f server
 

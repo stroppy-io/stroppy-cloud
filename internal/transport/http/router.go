@@ -1,14 +1,11 @@
 // Package http is the single public listener: the ogen API under /api/v1,
-// the IAM reverse proxy under /v1, the
-// IAM webhook, probes under /healthz and the SPA for everything else.
+// the WebSocket beside it, probes under /healthz and the SPA for everything
+// else. Kratos is a separate origin (deployments/kratos/), not proxied.
 package http
 
 import (
-	"fmt"
 	"io/fs"
 	"net/http"
-	"net/http/httputil"
-	"net/url"
 	"strings"
 	"time"
 
@@ -26,13 +23,7 @@ type Deps struct {
 	API http.Handler
 	// WS is the WebSocket at /api/v1/ws; nil = not mounted.
 	WS http.Handler
-	// IAMURL is the IAM base URL proxied under /v1 (same-origin for the
-	// SPA; Set-Cookie domains are rewritten to this host).
-	IAMURL string
-	// Webhook is the IAM webhook handler at WebhookPath; nil = not mounted.
-	Webhook     http.Handler
-	WebhookPath string
-	// PublicConfig is served at /config.json for the SPA (IAM base, client id).
+	// PublicConfig is served at /config.json for the SPA (auth mode, Kratos origin).
 	PublicConfig http.Handler
 	// SPA is the built web app (index.html + assets); nil = 404.
 	SPA fs.FS
@@ -45,7 +36,6 @@ type Deps struct {
 }
 
 const (
-	iamPrefix         = "/v1"
 	apiPrefix         = "/api"
 	readHeaderTimeout = 10 * time.Second
 )
@@ -66,20 +56,8 @@ func New(d Deps) (http.Handler, error) {
 		xprobe.Startup(d.Readiness),
 	))
 
-	if d.Webhook != nil {
-		r.Handle(d.WebhookPath, d.Webhook)
-	}
 	if d.PublicConfig != nil {
 		r.Handle("/config.json", d.PublicConfig)
-	}
-
-	// No IAM (dev mode): nothing to proxy.
-	if d.IAMURL != "" {
-		iam, err := reverseProxy(d.IAMURL, true)
-		if err != nil {
-			return nil, fmt.Errorf("iam proxy: %w", err)
-		}
-		r.Handle(iamPrefix+"/*", iam)
 	}
 
 	// The socket lives beside the API (the upgrade bypasses ogen; the log
@@ -112,38 +90,6 @@ func propagateRequestID(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
-}
-
-// reverseProxy forwards to base without rewriting paths. stripCookieDomain
-// pins upstream Set-Cookie to this host: a cookie scoped to the IAM domain
-// would never reach the browser behind the proxy.
-func reverseProxy(base string, stripCookieDomain bool) (http.Handler, error) {
-	target, err := url.Parse(base)
-	if err != nil {
-		return nil, fmt.Errorf("upstream url %q: %w", base, err)
-	}
-	proxy := &httputil.ReverseProxy{
-		Rewrite: func(pr *httputil.ProxyRequest) {
-			pr.SetURL(target)
-			pr.Out.Host = target.Host
-			pr.SetXForwarded()
-		},
-	}
-	if stripCookieDomain {
-		proxy.ModifyResponse = func(resp *http.Response) error {
-			cookies := resp.Cookies()
-			if len(cookies) == 0 {
-				return nil
-			}
-			resp.Header.Del("Set-Cookie")
-			for _, c := range cookies {
-				c.Domain = ""
-				resp.Header.Add("Set-Cookie", c.String())
-			}
-			return nil
-		}
-	}
-	return proxy, nil
 }
 
 // spa serves the built web app: real files as-is, every other path gets

@@ -1,8 +1,10 @@
 import { ErrorState } from '@app/ErrorState'
 import { Page } from '@app/Page'
 import { Button, EmptyState, ErrorBoundary, Icon, LoadingPlaceholder } from '@grafana/ui'
+import { hasSession } from '@lib/auth'
+import { loadPublicConfig } from '@lib/config'
 import type { QueryClient } from '@tanstack/react-query'
-import { createRootRouteWithContext, Outlet, useNavigate } from '@tanstack/react-router'
+import { createRootRouteWithContext, Outlet, redirect, useNavigate } from '@tanstack/react-router'
 import { lazy } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -85,7 +87,18 @@ function ChunkReload({ error, reset }: { error: unknown; reset: () => void }) {
   )
 }
 
+// Everything outside these prefixes needs a session (kratos mode) or the
+// static dev token.
+const PUBLIC_PREFIXES = ['/login', '/register', '/s/']
+
 export const Route = createRootRouteWithContext<RouterContext>()({
+  beforeLoad: async ({ location }) => {
+    if (PUBLIC_PREFIXES.some((p) => location.pathname.startsWith(p))) return
+    const cfg = await loadPublicConfig()
+    if (cfg.auth.mode === 'kratos' && !hasSession()) {
+      throw redirect({ to: '/login', search: { next: location.href } })
+    }
+  },
   component: () => (
     <ErrorBoundary>
       {({ error }) =>

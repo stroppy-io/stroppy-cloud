@@ -331,19 +331,25 @@ workload, провайдеры, sizes): generic-рендерер `components/sch
   «Browser Time»/«Default» в TimeZonePicker, дефолтный `loadingMessage` Select.
   Проверка — `src/lib/i18n.test.ts`.
 
-## 11. Авторизация: сейчас dev, шов под IAM
+## 11. Авторизация: Kratos (локальный JWT) + dev-режим
 
-- Сервер в dev-режиме (`STROPPY_DEV_USERS=admin=admin@stroppy.local=Admin`,
-  `STROPPY_ADMIN_EMAILS=admin@stroppy.local`) принимает статический bearer
-  `admin`. `GET /api/v1/public/config` отдаёт `auth_mode: dev|iam`.
-- SPA: `lib/auth.ts` — единственный модуль, знающий про токен:
-  `getToken()`, `onAuthLost()`. В dev: токен из `VITE_DEV_TOKEN` (по
-  умолчанию `admin`), при 401 — простое поле ввода токена. Ни логина, ни
-  регистрации, ни `@gopherex/iam-sdk` сейчас.
-- IAM позже подключается заменой реализации `lib/auth.ts` + FlowPage по
-  образцу komeet; остальной код не меняется. Роли (`owner|admin|member|
-  viewer`) читаются из `/me.tenants[].role` и уже сейчас скрывают/дизейблят
-  действия (`useCan(action)`).
+- Сервер в kratos-режиме (прод/compose) проверяет Bearer-JWT **локально**
+  (`deployments/kratos/`); в dev-режиме (`STROPPY_DEV_USERS=…`) принимает
+  статический bearer. `GET /api/v1/public/config` отдаёт
+  `auth{mode: kratos|dev, kratos{public_url}}`.
+- SPA: `lib/auth.ts` — единственный модуль, знающий про токены. Kratos:
+  login/регистрация — API-флоу Kratos (`/self-service/*/api`) → session
+  token → обмен на JWT (`/sessions/whoami?tokenize_as=stroppy`, TTL 10м);
+  `getAccessToken()` — Bearer для API и `?token=` для WS, рефреш тихий по
+  мере протухания. Страницы — `components/auth/` (Login/Register, роуты
+  `/login`, `/register`, bare). Гейт — `beforeLoad` корневого роута: без
+  сессии в kratos-режиме → `/login?next=…`. 401 из API → `notifyAuthLost()`:
+  сброс кэша + `/login`.
+- Dev-режим: страница логина превращается в поле ввода статического токена.
+  Роли (`owner|admin|member|viewer`) читаются из `/me.tenants[].role` и
+  скрывают/дизейблят действия (`useCan(action)`).
+- `Me.email` отсутствует, пока адрес не подтверждён в Kratos; инвайты и
+  админство матчатся сервером только по verified email.
 
 ## 12. Живой ран (Run detail) — ядро продукта
 

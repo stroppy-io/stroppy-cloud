@@ -8,6 +8,7 @@
   "profile": {
     "identity": "Идентичность",
     "displayName": "Отображаемое имя",
+    "emailUnverified": "Почта ещё не подтверждена",
     "avatar": "Аватар",
     "avatarHint": "Без загрузок: либо сгенерированный identicon, либо ссылка на ваше изображение.",
     "avatarIdenticon": "Identicon",

@@ -29,13 +29,13 @@ type Config struct {
 	Log   LogConfig   `mapstructure:"log"`
 	Trace TraceConfig `mapstructure:"trace"`
 	HTTP  HTTPConfig  `mapstructure:"http"`
-	IAM   IAMConfig   `mapstructure:"iam"`
-	// Dev turns a local installation's login into static tokens (no IAM).
+	Auth  AuthConfig  `mapstructure:"auth"`
+	// Dev turns a local installation's login into static tokens (no Kratos).
 	Dev   DevConfig   `mapstructure:"dev"`
 	Mail  mail.Config `mapstructure:"mail"`
 	Infra InfraConfig `mapstructure:"infra"`
-	// AdminEmails are the bootstrap platform admins (IAM e-mails); the
-	// database flag adds more from the admin UI.
+	// AdminEmails are the bootstrap platform admins (verified Kratos
+	// e-mails); the database flag adds more from the admin UI.
 	AdminEmails []string `mapstructure:"admin_emails"`
 	// Migrate applies the schema on startup. The migrator takes an advisory
 	// lock, so several replicas starting together are safe.

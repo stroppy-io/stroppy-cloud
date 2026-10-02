@@ -5,74 +5,46 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/google/uuid"
-
-	iamsdk "github.com/gopherex/iam/pkg/sdk"
 	"github.com/gopherex/xlog"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/profile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	apitoken "github.com/stroppy-io/stroppy-cloud/internal/domain/token"
-	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/iam"
-	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/repositories"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/kratos"
 )
 
 /*
 THE ACTOR comes ONLY from a verified token: login and registration live in
-IAM; the server has no password table and never will.
+Kratos (deployments/kratos/); the server has no password table and never
+will. The server never calls Kratos per request — the SPA exchanges its
+Kratos session for a short-lived JWT (template `stroppy`) and the verifier
+checks it locally against the public key set.
 
 Two passes, dispatched by token FORM:
-  - personal API token `stc_...` — ours, hashed in the DB (lands with the
-    tokens area);
-  - IAM access token — a person.
+  - personal API token `stc_...` — ours, hashed in the DB;
+  - Kratos session JWT — a person.
 
-Hybrid verification does not see revocations, so the IAM webhook writes
-revoked sessions into a denylist the verifier consults; the window is the
-project's access_ttl.
+Revocation window = the JWT's TTL (10m): the SPA refreshes from the Kratos
+session, a logged-out session stops refreshing. An e-mail is trusted only
+with email_verified=true — invites and the admin bootstrap match by e-mail.
 */
 
-// IAMConfig is the `iam` section.
-type IAMConfig struct {
-	Mode string `default:"hybrid" mapstructure:"mode"        validate:"oneof=remote local hybrid"`
-	// BaseURL, ProjectID and ClientID are required unless dev mode is on.
-	BaseURL     string `mapstructure:"base_url"                     validate:"omitempty,url"`
-	Credential  string `mapstructure:"credential"`
-	ProjectID   string `mapstructure:"project_id"`
-	Environment string `default:"live"   mapstructure:"environment" validate:"required"`
-	Issuer      string `mapstructure:"issuer"`
-	Audience    string `mapstructure:"audience"`
-	JWKSURL     string `mapstructure:"jwks_url"`
-	// ClientID is the SPA's app client (X-Client-Id); served to the SPA
-	// through the public config.
-	ClientID string `mapstructure:"client_id"`
-	// WebhookSigningSecret verifies IAM lifecycle events; empty = the
-	// endpoint is not mounted.
-	WebhookSigningSecret string `mapstructure:"webhook_signing_secret"`
-	WebhookPath          string `default:"/webhooks/iam" mapstructure:"webhook_path" validate:"required"`
-	// AccessTTL is the project's access-token lifetime: how long a revoked
-	// session stays on the denylist.
-	AccessTTL       time.Duration `default:"10m" mapstructure:"access_ttl"`
-	JWKSCacheTTLSec int           `default:"3600" mapstructure:"jwks_cache_ttl_sec"`
-	WarmTimeout     time.Duration `default:"5s" mapstructure:"warm_timeout"`
+// AuthConfig is the `auth` section.
+type AuthConfig struct {
+	kratos.Config `mapstructure:",squash"`
+	// KratosPublicURL is the origin the browser reaches Kratos at; served
+	// to the SPA through the public config. The server itself does not
+	// call this URL.
+	KratosPublicURL string `default:"http://localhost:4433" mapstructure:"kratos_public_url" validate:"omitempty,url"`
 }
 
-func (c *IAMConfig) WebhookEnabled() bool { return c.WebhookSigningSecret != "" }
-
-// complete reports the settings IAM verification needs.
-func (c *IAMConfig) complete() error {
-	if c.BaseURL == "" || c.ProjectID == "" || c.ClientID == "" {
-		return errors.New("iam.base_url, iam.project_id and iam.client_id are required (or turn dev mode on: dev.users)")
-	}
-	return nil
-}
-
-// DevConfig is the `dev` section: a local installation without IAM.
+// DevConfig is the `dev` section: a local installation without Kratos.
 type DevConfig struct {
 	// Users are static bearer tokens, `token=email[=Display name]`. Any
-	// entry turns dev mode on: IAM is not asked, a token is a user.
+	// entry turns dev mode on: Kratos is not asked, a token is a user.
 	// NEVER for a shared installation — the tokens are the passwords.
 	Users []string `mapstructure:"users"`
 }
@@ -90,8 +62,8 @@ type devUser struct {
 var devNamespace = uuid.MustParse("6f9d1c02-5d0b-4d8e-9d44-5e0b2a1f7c11")
 
 // devVerifier recognizes the static tokens of dev mode. The profile is
-// ensured and named on every call; invites for the e-mail apply as in IAM
-// mode, so a local stand can rehearse membership flows.
+// ensured and named on every call; invites for the e-mail apply as in
+// Kratos mode, so a local stand can rehearse membership flows.
 type devVerifier struct {
 	users    map[string]devUser
 	profiles *profile.Service
@@ -140,10 +112,10 @@ func (v *devVerifier) Verify(ctx context.Context, token string) (auth.Actor, boo
 var errUnauthenticated = errors.New("token not recognized")
 
 // verifierChain dispatches by token form: `stc_` is ours, anything else
-// is IAM's.
+// must be a Kratos session JWT.
 type verifierChain struct {
 	tokens *apitoken.Service
-	iam    *iamVerifier
+	kratos *kratosVerifier
 	// dev, when set, recognizes the static tokens of dev mode first.
 	dev *devVerifier
 }
@@ -160,109 +132,59 @@ func (v verifierChain) Verify(ctx context.Context, token string) (auth.Actor, er
 	if apitoken.IsWire(token) {
 		return v.tokens.Verify(ctx, token)
 	}
-	if v.iam == nil {
+	if v.kratos == nil {
 		return auth.Actor{}, errUnauthenticated
 	}
-	return v.iam.Verify(ctx, token)
+	return v.kratos.Verify(ctx, token)
 }
 
-// iamVerifier verifies IAM access tokens. The IAM subject IS the profile
-// id: no numbering of our own, it would diverge from IAM on day one. The
+// kratosVerifier verifies session JWTs. The Kratos identity id IS the
+// profile id: no numbering of our own, it would diverge on day one. The
 // profile is ensured on every verified call (cheap upsert) so the rest of
-// the server can assume it exists.
-type iamVerifier struct {
-	auth     iamsdk.Authenticator
-	users    *iam.Users
-	denylist *repositories.IAMRepo
+// the server can assume it exists. Display name and (once verified) e-mail
+// are seeded from the token's claims — there is no users/me call.
+type kratosVerifier struct {
+	jwt      *kratos.Verifier
 	profiles *profile.Service
 	tenants  *tenant.Service
 	log      *xlog.Logger
 }
 
-// newIAMVerifier builds the verifier and probes IAM. A failed warm-up does
-// NOT disable verification: hybrid caches JWKS as soon as IAM answers.
-func newIAMVerifier(
-	ctx context.Context,
-	cfg *IAMConfig,
-	denylist *repositories.IAMRepo,
-	profiles *profile.Service,
-	tenants *tenant.Service,
-	log *xlog.Logger,
-) (v *iamVerifier, warmErr, err error) {
-	authenticator, err := iamsdk.NewAuthenticator(iamsdk.AuthenticatorConfig{
-		Mode:            iamsdk.ValidationMode(cfg.Mode),
-		BaseURL:         cfg.BaseURL,
-		Credential:      cfg.Credential,
-		ProjectID:       cfg.ProjectID,
-		Environment:     cfg.Environment,
-		Issuer:          cfg.Issuer,
-		Audience:        cfg.Audience,
-		JWKSURL:         cfg.JWKSURL,
-		JWKSCacheTTLSec: cfg.JWKSCacheTTLSec,
-	})
+func newKratosVerifier(cfg *AuthConfig, profiles *profile.Service, tenants *tenant.Service, log *xlog.Logger) (*kratosVerifier, error) {
+	jwtv, err := kratos.New(cfg.Config)
 	if err != nil {
-		return nil, nil, fmt.Errorf("iam authenticator: %w", err)
+		return nil, err
 	}
-	warmCtx, cancel := context.WithTimeout(ctx, cfg.WarmTimeout)
-	defer cancel()
-	if err := iamsdk.Warm(warmCtx, authenticator); err != nil {
-		warmErr = fmt.Errorf("iam warm: %w", err)
-	}
-	return &iamVerifier{
-		auth: authenticator, users: iam.NewUsers(cfg.BaseURL, cfg.ClientID, cfg.Environment),
-		denylist: denylist, profiles: profiles, tenants: tenants, log: log,
-	}, warmErr, nil
+	return &kratosVerifier{jwt: jwtv, profiles: profiles, tenants: tenants, log: log}, nil
 }
 
-func (v *iamVerifier) Verify(ctx context.Context, token string) (auth.Actor, error) {
-	principal, err := v.auth.Authenticate(ctx, token)
+func (v *kratosVerifier) Verify(ctx context.Context, token string) (auth.Actor, error) {
+	p, err := v.jwt.Verify(token)
 	if err != nil {
 		// A rejected token is normal client state; a misconfigured verifier
 		// lands here too, so keep it at debug — first place to look.
-		v.log.Ctx().Debug(ctx, "iam: token rejected", xlog.ErrorCause(err))
+		v.log.Ctx().Debug(ctx, "kratos: token rejected", xlog.ErrorCause(err))
 		return auth.Actor{}, errUnauthenticated
 	}
-	user, err := uuid.Parse(principal.UserID)
+	user, err := uuid.Parse(p.Subject)
 	if err != nil {
-		v.log.Ctx().Error(ctx, "iam: subject is not a uuid", xlog.String("subject", principal.UserID))
+		v.log.Ctx().Error(ctx, "kratos: subject is not a uuid", xlog.String("subject", p.Subject))
 		return auth.Actor{}, errUnauthenticated
 	}
-	if principal.SessionID != "" {
-		denied, err := v.denylist.SessionDenied(ctx, principal.SessionID)
-		if err != nil {
-			return auth.Actor{}, err
-		}
-		if denied {
-			return auth.Actor{}, errUnauthenticated
-		}
-	}
-	email, _ := principal.Claims["email"].(string) //nolint:errcheck // absent claim = empty email
-	p, created, err := v.profiles.Ensure(ctx, user, email)
+	prof, created, err := v.profiles.Ensure(ctx, user, p.Email)
 	if err != nil {
 		return auth.Actor{}, err
 	}
-	if created || p.Email == "" {
-		p = v.firstSight(ctx, token, user, p)
+	if created || (prof.Email == "" && p.Email != "") || prof.DisplayName == "" {
+		if _, err := v.profiles.Seed(ctx, user, p.Email, p.Name, ""); err != nil {
+			v.log.Ctx().Warn(ctx, "kratos: seed profile failed", xlog.ErrorCause(err))
+		}
 	}
-	return auth.Actor{UserID: user, SessionID: principal.SessionID, Email: p.Email}, nil
-}
-
-// firstSight fills the profile from IAM users/me (the token carries no
-// email) and applies invites waiting for that email. Failures degrade:
-// the actor is still valid, the next call tries again.
-func (v *iamVerifier) firstSight(ctx context.Context, token string, user uuid.UUID, p profile.Profile) profile.Profile {
-	me, err := v.users.Me(ctx, token)
-	if err != nil {
-		v.log.Ctx().Warn(ctx, "iam: users/me failed", xlog.ErrorCause(err))
-		return p
+	// Invites apply once the e-mail is verified; Ensure has recorded it.
+	if p.EmailVerified {
+		if err := v.tenants.ApplyPending(ctx, user, p.Email); err != nil {
+			v.log.Ctx().Warn(ctx, "invites: apply pending failed", xlog.ErrorCause(err))
+		}
 	}
-	seeded, err := v.profiles.Seed(ctx, user, me.Email, me.Profile.Name, me.Profile.AvatarURL)
-	if err != nil {
-		v.log.Ctx().Warn(ctx, "profile: seed failed", xlog.ErrorCause(err))
-		return p
-	}
-	if err := v.tenants.ApplyPending(ctx, user, seeded.Email); err != nil {
-		v.log.Ctx().Warn(ctx, "invites: apply pending failed", xlog.ErrorCause(err))
-	}
-	return seeded
+	return auth.Actor{UserID: user, SessionID: p.SessionID, Email: p.Email}, nil
 }

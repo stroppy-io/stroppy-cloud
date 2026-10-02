@@ -4,6 +4,7 @@ import { ThemeModeContext } from '@app/theme-context'
 import { css, Global } from '@emotion/react'
 import { ThemeContext } from '@grafana/data'
 import { GlobalStyles } from '@grafana/ui'
+import { onAuthLost } from '@lib/auth'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -69,6 +70,14 @@ export function App() {
     }
   }
   const theme = getAppTheme(mode)
+  // A 401 anywhere (expired session, revoked token) drops the cache and
+  // returns to the login page.
+  useEffect(() => {
+    onAuthLost(() => {
+      queryClient.clear()
+      void router.navigate({ to: '/login' })
+    })
+  }, [])
   // @grafana/ui reads its strings through a plain `t()` (no subscription) and memoizes parts of
   // TimeRangePicker & co., so a language switch remounts the routed tree; router state lives in
   // the URL and data in the Query cache, so only transient local UI state is reset.

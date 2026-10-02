@@ -17043,8 +17043,10 @@ func (s *Me) encodeFields(e *jx.Encoder) {
 		e.Str(s.ID)
 	}
 	{
-		e.FieldStart("email")
-		e.Str(s.Email)
+		if s.Email.Set {
+			e.FieldStart("email")
+			s.Email.Encode(e)
+		}
 	}
 	{
 		e.FieldStart("display_name")
@@ -17125,11 +17127,9 @@ func (s *Me) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"id\"")
 			}
 		case "email":
-			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Email = string(v)
-				if err != nil {
+				s.Email.Reset()
+				if err := s.Email.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -17238,7 +17238,7 @@ func (s *Me) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
-		0b10110111,
+		0b10110101,
 		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
@@ -25178,8 +25178,8 @@ func (s *PublicConfig) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *PublicConfig) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("iam")
-		s.Iam.Encode(e)
+		e.FieldStart("auth")
+		s.Auth.Encode(e)
 	}
 	{
 		e.FieldStart("tenant_creation")
@@ -25208,7 +25208,7 @@ func (s *PublicConfig) encodeFields(e *jx.Encoder) {
 }
 
 var jsonFieldsNameOfPublicConfig = [6]string{
-	0: "iam",
+	0: "auth",
 	1: "tenant_creation",
 	2: "public_rating_enabled",
 	3: "examples_enabled",
@@ -25225,15 +25225,15 @@ func (s *PublicConfig) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "iam":
+		case "auth":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				if err := s.Iam.Decode(d); err != nil {
+				if err := s.Auth.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"iam\"")
+				return errors.Wrap(err, "decode field \"auth\"")
 			}
 		case "tenant_creation":
 			requiredBitSet[0] |= 1 << 1
@@ -25346,90 +25346,69 @@ func (s *PublicConfig) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *PublicConfigIam) Encode(e *jx.Encoder) {
+func (s *PublicConfigAuth) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *PublicConfigIam) encodeFields(e *jx.Encoder) {
+func (s *PublicConfigAuth) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("base_url")
-		e.Str(s.BaseURL)
+		e.FieldStart("mode")
+		s.Mode.Encode(e)
 	}
 	{
-		e.FieldStart("client_id")
-		e.Str(s.ClientID)
-	}
-	{
-		e.FieldStart("environment")
-		e.Str(s.Environment)
+		e.FieldStart("kratos")
+		s.Kratos.Encode(e)
 	}
 }
 
-var jsonFieldsNameOfPublicConfigIam = [3]string{
-	0: "base_url",
-	1: "client_id",
-	2: "environment",
+var jsonFieldsNameOfPublicConfigAuth = [2]string{
+	0: "mode",
+	1: "kratos",
 }
 
-// Decode decodes PublicConfigIam from json.
-func (s *PublicConfigIam) Decode(d *jx.Decoder) error {
+// Decode decodes PublicConfigAuth from json.
+func (s *PublicConfigAuth) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode PublicConfigIam to nil")
+		return errors.New("invalid: unable to decode PublicConfigAuth to nil")
 	}
 	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "base_url":
+		case "mode":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.BaseURL = string(v)
-				if err != nil {
+				if err := s.Mode.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"base_url\"")
+				return errors.Wrap(err, "decode field \"mode\"")
 			}
-		case "client_id":
+		case "kratos":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.ClientID = string(v)
-				if err != nil {
+				if err := s.Kratos.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"client_id\"")
-			}
-		case "environment":
-			requiredBitSet[0] |= 1 << 2
-			if err := func() error {
-				v, err := d.Str()
-				s.Environment = string(v)
-				if err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"environment\"")
+				return errors.Wrap(err, "decode field \"kratos\"")
 			}
 		default:
 			return d.Skip()
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode PublicConfigIam")
+		return errors.Wrap(err, "decode PublicConfigAuth")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -25441,8 +25420,8 @@ func (s *PublicConfigIam) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfPublicConfigIam) {
-					name = jsonFieldsNameOfPublicConfigIam[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfPublicConfigAuth) {
+					name = jsonFieldsNameOfPublicConfigAuth[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -25463,14 +25442,150 @@ func (s *PublicConfigIam) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *PublicConfigIam) MarshalJSON() ([]byte, error) {
+func (s *PublicConfigAuth) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *PublicConfigIam) UnmarshalJSON(data []byte) error {
+func (s *PublicConfigAuth) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *PublicConfigAuthKratos) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *PublicConfigAuthKratos) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("public_url")
+		e.Str(s.PublicURL)
+	}
+}
+
+var jsonFieldsNameOfPublicConfigAuthKratos = [1]string{
+	0: "public_url",
+}
+
+// Decode decodes PublicConfigAuthKratos from json.
+func (s *PublicConfigAuthKratos) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PublicConfigAuthKratos to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "public_url":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.PublicURL = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"public_url\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode PublicConfigAuthKratos")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfPublicConfigAuthKratos) {
+					name = jsonFieldsNameOfPublicConfigAuthKratos[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *PublicConfigAuthKratos) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PublicConfigAuthKratos) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes PublicConfigAuthMode as json.
+func (s PublicConfigAuthMode) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes PublicConfigAuthMode from json.
+func (s *PublicConfigAuthMode) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode PublicConfigAuthMode to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch PublicConfigAuthMode(v) {
+	case PublicConfigAuthModeKratos:
+		*s = PublicConfigAuthModeKratos
+	case PublicConfigAuthModeDev:
+		*s = PublicConfigAuthModeDev
+	default:
+		*s = PublicConfigAuthMode(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s PublicConfigAuthMode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *PublicConfigAuthMode) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -65,10 +65,6 @@ type LiveProjection interface {
 	Live(id uuid.UUID) bool
 }
 
-func (h *Handler) live(id uuid.UUID) bool {
-	return h.deps.Live != nil && h.deps.Live.Live(id)
-}
-
 // Handler is the ogen Handler.
 type Handler struct {
 	oas.UnimplementedHandler
@@ -79,3 +75,7 @@ var _ oas.Handler = (*Handler)(nil)
 
 // New builds the handler.
 func New(deps Deps) *Handler { return &Handler{deps: deps} }
+
+func (h *Handler) live(id uuid.UUID) bool {
+	return h.deps.Live != nil && h.deps.Live.Live(id)
+}

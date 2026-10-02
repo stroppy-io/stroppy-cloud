@@ -1,0 +1,31 @@
+{
+  "$id": "https://schemas.stroppy.io/kratos/identity.default.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Stroppy Cloud account",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "title": "E-Mail",
+      "minLength": 3,
+      "description": "Login identifier, invite target and the address all mail goes to.",
+      "ory.sh/kratos": {
+        "credentials": {
+          "password": { "identifier": true },
+          "webauthn": { "identifier": true },
+          "code": { "identifier": true }
+        },
+        "recovery": { "via": "email" },
+        "verification": { "via": "email" }
+      }
+    },
+    "name": {
+      "type": "string",
+      "title": "Display name",
+      "maxLength": 80
+    }
+  },
+  "required": ["email"],
+  "additionalProperties": false
+}

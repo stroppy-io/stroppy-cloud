@@ -88,11 +88,14 @@ func (h *Handler) PatchMe(ctx context.Context, req *oas.MePatch) (*oas.Me, error
 func meOf(p profile.Profile) *oas.Me {
 	me := &oas.Me{
 		ID:              p.ID.String(),
-		Email:           p.Email,
 		DisplayName:     p.DisplayName,
 		IsPlatformAdmin: p.IsPlatformAdmin,
 		Tenants:         []oas.TenantMembership{}, // tenants land with their area
 		CreatedAt:       oas.NewOptDateTime(p.CreatedAt),
+	}
+	// The e-mail is served once Kratos confirmed the address.
+	if p.Email != "" {
+		me.Email = oas.NewOptString(p.Email)
 	}
 	if p.Avatar != "" {
 		me.Avatar = oas.NewOptString(p.Avatar)

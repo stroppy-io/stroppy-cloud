@@ -84,7 +84,7 @@ function status(store: MockStore): AdminStatus {
     started_at: STARTED_AT,
     components: {
       graphene: { status: 'ok', version: '1.8.2', detail: 'door: 2 namespaces behind' },
-      iam: { status: 'ok', detail: 'dev mode (static bearer)' },
+      kratos: { status: 'ok', detail: 'mock mode (static bearer)' },
       victoria: { status: 'degraded', detail: 'vmstorage disk 84% full', version: '1.113.0' },
       postgres: { status: 'ok', version: '17.4' },
     },

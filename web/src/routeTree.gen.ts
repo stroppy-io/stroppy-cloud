@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteRouteImport } from './routes/me/route'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as AdminRunsRouteImport } from './routes/admin/runs'
@@ -88,9 +90,19 @@ const ExamplesRouteRoute = ExamplesRouteRouteImport.update({
   path: '/examples',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeRouteRoute = MeRouteRouteImport.update({
   id: '/me',
   path: '/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -400,6 +412,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -463,6 +477,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/me': typeof MeRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/runs': typeof AdminRunsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -519,6 +535,8 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -586,6 +604,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/login'
+    | '/register'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -649,6 +669,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/me'
+    | '/login'
+    | '/register'
     | '/admin/audit'
     | '/admin/runs'
     | '/admin/settings'
@@ -704,6 +726,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/login'
+    | '/register'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -770,6 +794,8 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ExamplesRouteRoute: typeof ExamplesRouteRouteWithChildren
   MeRouteRoute: typeof MeRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
   TSlugRouteRoute: typeof TSlugRouteRouteWithChildren
   TenantsNewRouteRoute: typeof TenantsNewRouteRouteWithChildren
   STokenRoute: typeof STokenRoute
@@ -798,11 +824,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamplesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/me': {
       id: '/me'
       path: '/me'
       fullPath: '/me'
       preLoaderRoute: typeof MeRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1479,6 +1519,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ExamplesRouteRoute: ExamplesRouteRouteWithChildren,
   MeRouteRoute: MeRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
   TSlugRouteRoute: TSlugRouteRouteWithChildren,
   TenantsNewRouteRoute: TenantsNewRouteRouteWithChildren,
   STokenRoute: STokenRoute,

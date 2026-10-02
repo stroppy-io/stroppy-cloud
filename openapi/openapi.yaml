@@ -5099,25 +5099,32 @@ components:
     PublicConfig:
       type: object
       required:
-      - iam
+      - auth
       - tenant_creation
       - public_rating_enabled
       - version
       properties:
-        iam:
+        auth:
           type: object
           required:
-          - base_url
-          - client_id
-          - environment
+          - mode
+          - kratos
+          description: How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without
+            Kratos asks for a static token).
           properties:
-            base_url:
+            mode:
               type: string
-              description: Same-origin proxy base ('' in prod).
-            client_id:
-              type: string
-            environment:
-              type: string
+              enum:
+              - kratos
+              - dev
+            kratos:
+              type: object
+              required:
+              - public_url
+              description: The origin the browser reaches Ory Kratos at.
+              properties:
+                public_url:
+                  type: string
         tenant_creation:
           type: string
           enum:
@@ -5195,7 +5202,6 @@ components:
       type: object
       required:
       - id
-      - email
       - display_name
       - is_platform_admin
       - tenants
@@ -5207,6 +5213,7 @@ components:
         email:
           type: string
           format: email
+          description: Absent until the Kratos e-mail address is verified.
         display_name:
           type: string
         avatar:

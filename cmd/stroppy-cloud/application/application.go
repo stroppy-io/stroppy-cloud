@@ -109,7 +109,7 @@ func (a *Application) Run(ctx context.Context) (runErr error) {
 		}
 	}()
 
-	handler, err := a.handler(ctx)
+	handler, err := a.handler()
 	if err != nil {
 		return err
 	}
@@ -130,41 +130,31 @@ func (a *Application) Run(ctx context.Context) (runErr error) {
 	}
 }
 
-// handler assembles the HTTP surface: the IAM verifier and webhook, then
-// the transport over them.
-func (a *Application) handler(ctx context.Context) (http.Handler, error) {
+// handler assembles the HTTP surface: the verifier, then the transport.
+func (a *Application) handler() (http.Handler, error) {
 	if a.cfg.Dev.Enabled() {
 		dev, err := newDevVerifier(&a.cfg.Dev, a.services.Profiles, a.services.Tenants, a.log)
 		if err != nil {
 			return nil, err
 		}
-		a.log.Warn("DEV MODE: static tokens log in, IAM is not asked — never expose this installation",
+		a.log.Warn("DEV MODE: static tokens log in, Kratos is not asked — never expose this installation",
 			xlog.Int("users", len(a.cfg.Dev.Users)))
-		return a.httpHandler(verifierChain{tokens: a.services.Tokens, dev: dev}, nil)
+		return a.httpHandler(verifierChain{tokens: a.services.Tokens, dev: dev})
 	}
-	if err := a.cfg.IAM.complete(); err != nil {
-		return nil, err
-	}
-	iamVerifier, warmErr, err := newIAMVerifier(ctx, &a.cfg.IAM, a.services.IAM, a.services.Profiles, a.services.Tenants, a.log)
+	kratos, err := newKratosVerifier(&a.cfg.Auth, a.services.Profiles, a.services.Tenants, a.log)
 	if err != nil {
 		return nil, err
 	}
-	if warmErr != nil {
-		a.log.Warn("iam unreachable at startup, verification degraded", xlog.ErrorCause(warmErr))
-	} else {
-		a.log.Info("iam is active", xlog.String("mode", a.cfg.IAM.Mode))
-	}
-	webhook, err := newIAMWebhook(&a.cfg.IAM, a.services.IAM, a.services.Profiles, a.log)
-	if err != nil {
-		return nil, err
-	}
-	return a.httpHandler(verifierChain{tokens: a.services.Tokens, iam: iamVerifier}, webhook)
+	a.log.Info("kratos is active",
+		xlog.String("jwks", a.cfg.Auth.JWKSFile+""+a.cfg.Auth.JWKSURL),
+		xlog.String("issuer", a.cfg.Auth.Issuer))
+	return a.httpHandler(verifierChain{tokens: a.services.Tokens, kratos: kratos})
 }
 
 // httpHandler is the transport over an already-built verifier: the API
-// server, the SPA, the proxies and the probes. Tests build it with a
-// verifier of their own.
-func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (http.Handler, error) {
+// server, the SPA and the probes. Tests build it with a verifier of their
+// own.
+func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 	handler := api.New(api.Deps{
 		Profiles:  a.services.Profiles,
 		Tenants:   a.services.Tenants,
@@ -187,7 +177,7 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 		Live:      a.services.Projector,
 		Schemas:   a.services.Schemas,
 		Public: api.PublicConfig{
-			IAMBaseURL: "", IAMClientID: a.cfg.IAM.ClientID, IAMEnvironment: a.cfg.IAM.Environment,
+			AuthMode: "kratos", KratosPublicURL: a.cfg.Auth.KratosPublicURL,
 			TenantCreation: "anyone", PublicRating: true, Examples: true,
 		},
 		Probes: a.infra.Probes(),
@@ -220,9 +210,6 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 	return transport.New(transport.Deps{
 		API:          api.AcceptMiddleware(apiServer),
 		WS:           socket,
-		IAMURL:       map[bool]string{false: a.cfg.IAM.BaseURL}[a.cfg.Dev.Enabled()],
-		Webhook:      webhook,
-		WebhookPath:  a.cfg.IAM.WebhookPath,
 		PublicConfig: a.publicConfig(),
 		SPA:          dist,
 		Liveness:     alive,
@@ -232,22 +219,18 @@ func (a *Application) httpHandler(verifier api.Verifier, webhook http.Handler) (
 	})
 }
 
-// publicConfig is what the SPA needs before login: where IAM is (same
-// origin, proxied) and which app client it is.
+// publicConfig is what the SPA needs before login: the auth mode and where
+// the browser reaches Kratos.
 func (a *Application) publicConfig() http.Handler {
-	mode := "iam"
+	mode := "kratos"
 	if a.cfg.Dev.Enabled() {
-		// The SPA asks for a token instead of redirecting to IAM.
+		// The SPA asks for a token instead of talking to Kratos.
 		mode = "dev"
 	}
 	body, _ := json.Marshal(map[string]any{ //nolint:errcheck // static map
 		"auth_mode": mode,
-		"iam": map[string]string{
-			"base_url":    "",
-			"client_id":   a.cfg.IAM.ClientID,
-			"environment": a.cfg.IAM.Environment,
-		},
-		"version": map[string]string{"version": buildVersion(), "commit": buildCommit()},
+		"kratos":    map[string]string{"public_url": a.cfg.Auth.KratosPublicURL},
+		"version":   map[string]string{"version": buildVersion(), "commit": buildCommit()},
 	})
 	return http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

@@ -7753,9 +7753,10 @@ func (s *LogPage) SetTruncated(val OptBool) {
 
 // Ref: #/components/schemas/Me
 type Me struct {
-	ID          string `json:"id"`
-	Email       string `json:"email"`
-	DisplayName string `json:"display_name"`
+	ID string `json:"id"`
+	// Absent until the Kratos e-mail address is verified.
+	Email       OptString `json:"email"`
+	DisplayName string    `json:"display_name"`
 	// Identicon:<seed> or https URL.
 	Avatar          OptString          `json:"avatar"`
 	IsPlatformAdmin bool               `json:"is_platform_admin"`
@@ -7772,7 +7773,7 @@ func (s *Me) GetID() string {
 }
 
 // GetEmail returns the value of Email.
-func (s *Me) GetEmail() string {
+func (s *Me) GetEmail() OptString {
 	return s.Email
 }
 
@@ -7822,7 +7823,7 @@ func (s *Me) SetID(val string) {
 }
 
 // SetEmail sets the value of Email.
-func (s *Me) SetEmail(val string) {
+func (s *Me) SetEmail(val OptString) {
 	s.Email = val
 }
 
@@ -17079,7 +17080,9 @@ func (s *PublicCatalogDatabasesItem) SetTopologies(val []string) {
 
 // Ref: #/components/schemas/PublicConfig
 type PublicConfig struct {
-	Iam                 PublicConfigIam            `json:"iam"`
+	// How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without Kratos asks for a
+	// static token).
+	Auth                PublicConfigAuth           `json:"auth"`
 	TenantCreation      PublicConfigTenantCreation `json:"tenant_creation"`
 	PublicRatingEnabled bool                       `json:"public_rating_enabled"`
 	ExamplesEnabled     OptBool                    `json:"examples_enabled"`
@@ -17087,9 +17090,9 @@ type PublicConfig struct {
 	Commit              OptString                  `json:"commit"`
 }
 
-// GetIam returns the value of Iam.
-func (s *PublicConfig) GetIam() PublicConfigIam {
-	return s.Iam
+// GetAuth returns the value of Auth.
+func (s *PublicConfig) GetAuth() PublicConfigAuth {
+	return s.Auth
 }
 
 // GetTenantCreation returns the value of TenantCreation.
@@ -17117,9 +17120,9 @@ func (s *PublicConfig) GetCommit() OptString {
 	return s.Commit
 }
 
-// SetIam sets the value of Iam.
-func (s *PublicConfig) SetIam(val PublicConfigIam) {
-	s.Iam = val
+// SetAuth sets the value of Auth.
+func (s *PublicConfig) SetAuth(val PublicConfigAuth) {
+	s.Auth = val
 }
 
 // SetTenantCreation sets the value of TenantCreation.
@@ -17147,41 +17150,88 @@ func (s *PublicConfig) SetCommit(val OptString) {
 	s.Commit = val
 }
 
-type PublicConfigIam struct {
-	// Same-origin proxy base ('' in prod).
-	BaseURL     string `json:"base_url"`
-	ClientID    string `json:"client_id"`
-	Environment string `json:"environment"`
+// How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without Kratos asks for a
+// static token).
+type PublicConfigAuth struct {
+	Mode PublicConfigAuthMode `json:"mode"`
+	// The origin the browser reaches Ory Kratos at.
+	Kratos PublicConfigAuthKratos `json:"kratos"`
 }
 
-// GetBaseURL returns the value of BaseURL.
-func (s *PublicConfigIam) GetBaseURL() string {
-	return s.BaseURL
+// GetMode returns the value of Mode.
+func (s *PublicConfigAuth) GetMode() PublicConfigAuthMode {
+	return s.Mode
 }
 
-// GetClientID returns the value of ClientID.
-func (s *PublicConfigIam) GetClientID() string {
-	return s.ClientID
+// GetKratos returns the value of Kratos.
+func (s *PublicConfigAuth) GetKratos() PublicConfigAuthKratos {
+	return s.Kratos
 }
 
-// GetEnvironment returns the value of Environment.
-func (s *PublicConfigIam) GetEnvironment() string {
-	return s.Environment
+// SetMode sets the value of Mode.
+func (s *PublicConfigAuth) SetMode(val PublicConfigAuthMode) {
+	s.Mode = val
 }
 
-// SetBaseURL sets the value of BaseURL.
-func (s *PublicConfigIam) SetBaseURL(val string) {
-	s.BaseURL = val
+// SetKratos sets the value of Kratos.
+func (s *PublicConfigAuth) SetKratos(val PublicConfigAuthKratos) {
+	s.Kratos = val
 }
 
-// SetClientID sets the value of ClientID.
-func (s *PublicConfigIam) SetClientID(val string) {
-	s.ClientID = val
+// The origin the browser reaches Ory Kratos at.
+type PublicConfigAuthKratos struct {
+	PublicURL string `json:"public_url"`
 }
 
-// SetEnvironment sets the value of Environment.
-func (s *PublicConfigIam) SetEnvironment(val string) {
-	s.Environment = val
+// GetPublicURL returns the value of PublicURL.
+func (s *PublicConfigAuthKratos) GetPublicURL() string {
+	return s.PublicURL
+}
+
+// SetPublicURL sets the value of PublicURL.
+func (s *PublicConfigAuthKratos) SetPublicURL(val string) {
+	s.PublicURL = val
+}
+
+type PublicConfigAuthMode string
+
+const (
+	PublicConfigAuthModeKratos PublicConfigAuthMode = "kratos"
+	PublicConfigAuthModeDev    PublicConfigAuthMode = "dev"
+)
+
+// AllValues returns all PublicConfigAuthMode values.
+func (PublicConfigAuthMode) AllValues() []PublicConfigAuthMode {
+	return []PublicConfigAuthMode{
+		PublicConfigAuthModeKratos,
+		PublicConfigAuthModeDev,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s PublicConfigAuthMode) MarshalText() ([]byte, error) {
+	switch s {
+	case PublicConfigAuthModeKratos:
+		return []byte(s), nil
+	case PublicConfigAuthModeDev:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *PublicConfigAuthMode) UnmarshalText(data []byte) error {
+	switch PublicConfigAuthMode(data) {
+	case PublicConfigAuthModeKratos:
+		*s = PublicConfigAuthModeKratos
+		return nil
+	case PublicConfigAuthModeDev:
+		*s = PublicConfigAuthModeDev
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type PublicConfigTenantCreation string

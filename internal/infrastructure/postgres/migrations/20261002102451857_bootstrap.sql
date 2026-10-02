@@ -58,17 +58,6 @@ CREATE TABLE "public"."favorites" (
   "created_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("user_id", "kind", "target_id")
 );
-CREATE TABLE "public"."iam_denylist" (
-  "session_id" text NOT NULL,
-  "user_id" uuid NOT NULL,
-  "expires_at" timestamptz NOT NULL,
-  PRIMARY KEY ("session_id")
-);
-CREATE TABLE "public"."iam_webhook_events" (
-  "id" text NOT NULL,
-  "received_at" timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY ("id")
-);
 CREATE TABLE "public"."pipeline_pushes" (
   "namespace" text NOT NULL,
   "revision" text NOT NULL DEFAULT ''::text,
@@ -394,7 +383,6 @@ CREATE INDEX "audit_log_tenant_idx" ON "public"."audit_log" ("tenant_id", "id" D
 CREATE UNIQUE INDEX "databases_name_idx" ON "public"."databases" ("tenant_id", "name") WHERE (deleted_at IS NULL);
 CREATE INDEX "databases_tenant_idx" ON "public"."databases" ("tenant_id", "updated_at" DESC) WHERE (deleted_at IS NULL);
 CREATE INDEX "favorites_tenant_idx" ON "public"."favorites" ("tenant_id", "user_id", "kind");
-CREATE INDEX "iam_denylist_expires_at_idx" ON "public"."iam_denylist" ("expires_at");
 CREATE UNIQUE INDEX "provider_profiles_name_idx" ON "public"."provider_profiles" ("tenant_id", "name") WHERE (deleted_at IS NULL);
 CREATE INDEX "provider_profiles_tenant_idx" ON "public"."provider_profiles" ("tenant_id") WHERE (deleted_at IS NULL);
 CREATE UNIQUE INDEX "run_events_graphene_idx" ON "public"."run_events" ("run_id", "graphene_id") WHERE (graphene_id <> 0);

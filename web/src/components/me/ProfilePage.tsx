@@ -136,7 +136,7 @@ export function ProfilePage() {
                 <Text weight="medium">{name || me.display_name}</Text>
                 <br />
                 <Text color="secondary" variant="bodySmall">
-                  {me.email}
+                  {me.email ?? t('me.profile.emailUnverified')}
                 </Text>
               </div>
             </div>

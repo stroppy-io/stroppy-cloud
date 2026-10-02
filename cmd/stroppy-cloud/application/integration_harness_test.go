@@ -30,10 +30,11 @@ import (
 
 /*
 HARNESS: the real application core (services over testDB) behind the real
-transport, with two substitutions — the IAM verifier (tokens are `stc_`
-API tokens minted through the token service, so no IAM is needed) and the
-Graphene door (fakeGraphene, integration_door_test.go: an in-process
-Connect server running the real pipelines in virtual time).
+transport, with two substitutions — the person tokens (`stc_` API tokens
+minted through the token service, so no Kratos is needed) and the Graphene
+door (fakeGraphene, integration_door_test.go: an in-process Connect server
+running the real pipelines in virtual time). Kratos JWTs are covered by
+integration_auth_test.go, which signs them with a test key.
 */
 
 // e2e is one assembled application under test.
@@ -47,7 +48,10 @@ type e2e struct {
 	// it so their followers stop at cleanup.
 	ctx context.Context
 	// pushes records the pipeline pushes the server asked for.
-	pushes         *fakePusher
+	pushes *fakePusher
+	// jwt signs Kratos session JWTs when the server runs the kratos
+	// verifier (e2eOptions.JWTKeys); nil otherwise.
+	jwt            *jwtSigner
 	acceptanceMu   sync.Mutex
 	acceptanceHTTP map[string]map[int]int
 }
@@ -92,8 +96,11 @@ type e2eOptions struct {
 	// Speed is the door's virtual seconds per wall second (0 = instant).
 	Speed float64
 	// DevUsers turn dev mode on (`token=email[=name]`): the real handler
-	// of a dev installation, no IAM.
+	// of a dev installation, no Kratos.
 	DevUsers []string
+	// JWTKeys turns the Kratos verifier on with a fresh test key set;
+	// e.jwt signs tokens for it (integration_auth_test.go).
+	JWTKeys bool
 	// Addr is where the server listens ("" = a random local port).
 	Addr string
 	// PublicURL overrides the SPA origin.
@@ -118,17 +125,18 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 	cfg := &Config{}
 	cfg.HTTP.PublicURL = "http://stroppy.test"
 	cfg.HTTP.WSPoll = 200 * time.Millisecond
-	cfg.IAM.ClientID = "web"
-	cfg.IAM.Environment = "test"
-	cfg.IAM.BaseURL = "http://iam.test"
-	cfg.IAM.WebhookPath = "/webhooks/iam"
-	cfg.IAM.WebhookSigningSecret = "whsec-test"
-	cfg.IAM.ProjectID = "proj-test"
-	cfg.IAM.AccessTTL = 10 * time.Minute
+	cfg.Auth.KratosPublicURL = "http://kratos.test"
 	cfg.AdminEmails = []string{"root@example.com"}
 	cfg.Dev.Users = opts.DevUsers
 	if opts.PublicURL != "" {
 		cfg.HTTP.PublicURL = opts.PublicURL
+	}
+	var jwt *jwtSigner
+	if opts.JWTKeys {
+		jwt = newJWTSigner(t)
+		cfg.Auth.JWKSFile = jwt.jwksPath
+		cfg.Auth.Issuer = "stroppy-cloud"
+		cfg.Auth.Audience = "stroppy-cloud"
 	}
 	pushes := &fakePusher{}
 	cfg.Infra.Pipelines.Runner = pushes
@@ -154,15 +162,13 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 	app.ready.Set(true)
 
 	var handler http.Handler
-	if cfg.Dev.Enabled() {
-		handler, err = app.handler(ctx)
-	} else {
-		var webhook http.Handler
-		webhook, err = newIAMWebhook(&cfg.IAM, app.services.IAM, app.services.Profiles, testLog)
-		if err != nil {
-			t.Fatalf("iam webhook: %v", err)
-		}
-		handler, err = app.httpHandler(verifierChain{tokens: app.services.Tokens, iam: nil}, webhook)
+	switch {
+	case cfg.Dev.Enabled(), cfg.Auth.JWKSFile != "":
+		// The real assembly of the corresponding mode.
+		handler, err = app.handler()
+	default:
+		// Tokens-only: the person tokens are minted directly below.
+		handler, err = app.httpHandler(verifierChain{tokens: app.services.Tokens})
 	}
 	if err != nil {
 		t.Fatalf("build handler: %v", err)
@@ -182,7 +188,7 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 		cancel()
 		_ = manager.Stop()
 	})
-	e := &e2e{t: t, ts: ts, app: app, graphene: fake, faults: faults, ctx: ctx, pushes: pushes}
+	e := &e2e{t: t, ts: ts, app: app, graphene: fake, faults: faults, ctx: ctx, pushes: pushes, jwt: jwt}
 	t.Cleanup(e.reportAcceptanceHTTP)
 	return e
 }

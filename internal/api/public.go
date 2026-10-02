@@ -11,9 +11,10 @@ import (
 
 // PublicConfig is what the SPA needs before login.
 type PublicConfig struct {
-	IAMBaseURL     string
-	IAMClientID    string
-	IAMEnvironment string
+	// AuthMode is "kratos" (the normal mode) or "dev".
+	AuthMode string
+	// KratosPublicURL is the origin the browser reaches Kratos at.
+	KratosPublicURL string
 	// TenantCreation is "anyone" or "admin_only".
 	TenantCreation string
 	PublicRating   bool
@@ -24,7 +25,7 @@ type PublicConfig struct {
 func (h *Handler) GetPublicConfig(ctx context.Context) (*oas.PublicConfig, error) {
 	c := h.publicConfig(ctx)
 	return &oas.PublicConfig{
-		Iam:                 oas.PublicConfigIam{BaseURL: c.IAMBaseURL, ClientID: c.IAMClientID, Environment: c.IAMEnvironment},
+		Auth:                oas.PublicConfigAuth{Mode: oas.PublicConfigAuthMode(c.AuthMode), Kratos: oas.PublicConfigAuthKratos{PublicURL: c.KratosPublicURL}},
 		TenantCreation:      oas.PublicConfigTenantCreation(c.TenantCreation),
 		PublicRatingEnabled: c.PublicRating,
 		ExamplesEnabled:     oas.NewOptBool(c.Examples),

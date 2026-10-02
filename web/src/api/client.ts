@@ -1,4 +1,4 @@
-import { getToken, notifyAuthLost } from '@lib/auth'
+import { getAccessToken, notifyAuthLost } from '@lib/auth'
 import createClient, { type Middleware } from 'openapi-fetch'
 import { toApiError } from './errors'
 import { stringifyRequest } from './json'
@@ -10,7 +10,7 @@ const IDEMPOTENT_ACTIONS =
 
 const auth: Middleware = {
   async onRequest({ request }) {
-    request.headers.set('Authorization', `Bearer ${getToken()}`)
+    request.headers.set('Authorization', `Bearer ${await getAccessToken()}`)
     if (request.method === 'POST' && IDEMPOTENT_ACTIONS.test(new URL(request.url).pathname)) {
       request.headers.set('Idempotency-Key', crypto.randomUUID())
     }

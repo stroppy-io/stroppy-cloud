@@ -8,6 +8,7 @@
   "profile": {
     "identity": "Identity",
     "displayName": "Display name",
+    "emailUnverified": "E-mail not confirmed yet",
     "avatar": "Avatar",
     "avatarHint": "No uploads: either a generated identicon or a link to an image you host.",
     "avatarIdenticon": "Identicon",

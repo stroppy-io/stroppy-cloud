@@ -2,9 +2,9 @@
 -- this file (make migrate-generate name=...); generated queries live in
 -- gen/db. Keep it readable: one section per aggregate, comments say why.
 
--- profiles: people, keyed by the IAM subject. Created lazily on the first
--- authenticated call; email mirrors IAM (GET /v1/users/me + webhook
--- email.changed) because the access token deliberately carries none.
+-- profiles: people, keyed by the Kratos identity id. Created lazily on the
+-- first authenticated call; email and display name mirror the session JWT's
+-- claims (email only once Kratos confirmed the address).
 CREATE TABLE profiles (
     id            uuid        PRIMARY KEY,
     email         text        NOT NULL DEFAULT '',
@@ -15,22 +15,6 @@ CREATE TABLE profiles (
     notifications jsonb       NOT NULL DEFAULT '{}'::jsonb,
     created_at    timestamptz NOT NULL DEFAULT now(),
     updated_at    timestamptz NOT NULL DEFAULT now()
-);
-
--- iam_denylist: sessions revoked by IAM before their access token expires.
--- Hybrid verification does not see revocations, so the webhook lands here
--- and the verifier consults it for the access_ttl window.
-CREATE TABLE iam_denylist (
-    session_id  text        PRIMARY KEY,
-    user_id     uuid        NOT NULL,
-    expires_at  timestamptz NOT NULL
-);
-CREATE INDEX iam_denylist_expires_at_idx ON iam_denylist (expires_at);
-
--- iam_webhook_events: dedupe of at-least-once webhook delivery by event id.
-CREATE TABLE iam_webhook_events (
-    id          text        PRIMARY KEY,
-    received_at timestamptz NOT NULL DEFAULT now()
 );
 
 -- tenants: the organisation. One owned tenant per account; membership in

@@ -3,7 +3,9 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Dropdown, Menu, Text, ToolbarButton, useStyles2 } from '@grafana/ui'
 import { useMe } from '@hooks/useMe'
+import { logout } from '@lib/auth'
 import { type Lang, setLang } from '@lib/i18n'
+import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
 import { useThemeMode } from './theme-context'
@@ -22,7 +24,13 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
   const { t, i18n } = useTranslation()
   const me = useMe()
   const navigate = useNavigate()
+  const qc = useQueryClient()
   const { mode, setMode } = useThemeMode()
+  const signOut = async () => {
+    await logout()
+    qc.clear()
+    void navigate({ to: '/login' })
+  }
   return (
     <Dropdown
       placement="bottom-end"
@@ -32,7 +40,7 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
             <div className={styles.header}>
               <Text weight="medium">{me.display_name}</Text>
               <Text variant="bodySmall" color="secondary">
-                {me.email}
+                {me.email ?? me.id}
               </Text>
             </div>
           }
@@ -84,7 +92,7 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
               onClick={() => void navigate({ to: '/admin' as never })}
             />
           )}
-          <Menu.Item label={t('nav.signOut')} icon="signout" disabled />
+          <Menu.Item label={t('nav.signOut')} icon="signout" onClick={() => void signOut()} />
         </Menu>
       }
     >

@@ -11,9 +11,16 @@ publishes those binaries to tenant namespaces through Graphene using the SDK's
 does not invoke the pipeline CLI's `push` command, which rebuilds from source
 and requires a Go toolchain.
 
-Compose starts this image and PostgreSQL 17, waits for PostgreSQL's healthcheck,
-and lets the server apply migrations. PostgreSQL data lives in the `pgdata`
-volume. Only the server is published, on `127.0.0.1:18347` by default.
+Compose starts this image, PostgreSQL 17 and Ory Kratos (`kratos/`, the
+identity: login, registration, verification and recovery codes, TOTP),
+waits for the healthchecks and lets the server apply migrations. Kratos
+keeps its state in a `kratos` database of the same PostgreSQL instance
+(created by `postgres/init`); its courier sends every e-mail to Mailpit
+(`http://localhost:8025`), nothing leaves the machine. PostgreSQL data
+lives in the `pgdata` volume. The server is published on `127.0.0.1:18347`,
+Kratos public on `127.0.0.1:4433` (admin on `:4434`). Sign in through the
+UI — register, then confirm the e-mail in Mailpit; invites and the admin
+bootstrap match by verified e-mail (`deployments/kratos/README.md`).
 
 ## Start
 

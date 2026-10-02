@@ -20,17 +20,6 @@ type Profiles struct {
 	UpdatedAt       time.Time
 }
 
-type IamDenylist struct {
-	SessionID string
-	UserID    uuid.UUID
-	ExpiresAt time.Time
-}
-
-type IamWebhookEvents struct {
-	ID         string
-	ReceivedAt time.Time
-}
-
 type Tenants struct {
 	Retiring          bool
 	ID                uuid.UUID

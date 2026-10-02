@@ -1,5 +1,6 @@
-# Same packaging as IAM: the server serves its embedded UI; PostgreSQL is
-# the only local dependency. Graphene and run telemetry stay in the cluster.
+# Same packaging pattern: the server serves its embedded UI; PostgreSQL and
+# Ory Kratos (identity, deployments/kratos/) are the local dependencies.
+# Graphene and run telemetry stay in the cluster.
 # Start with `make dev` (reads .env.compose, not the legacy root .env).
 name: stroppy-cloud-dev
 
@@ -13,11 +14,41 @@ services:
       POSTGRES_PASSWORD: ${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./deployments/postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 5s
       timeout: 3s
       retries: 10
+
+  kratos:
+    image: oryd/kratos:v26.2.0
+    restart: unless-stopped
+    command: serve -c /etc/config/kratos/kratos.yml
+    environment:
+      DSN: postgres://stroppy:${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}@postgres:5432/kratos?sslmode=disable&max_conns=20
+    volumes:
+      - ./deployments/kratos:/etc/config/kratos:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:4433:4433"
+      - "127.0.0.1:4434:4434"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4434/admin/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Dev courier sink: every Kratos e-mail (verification, recovery) is
+  # visible at http://localhost:8025 and never leaves the machine.
+  mailpit:
+    image: axllent/mailpit:v1.24
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
 
   server:
     build:
@@ -30,6 +61,10 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    volumes:
+      # Public half of the Kratos signing key: local JWT verification,
+      # the server never calls Kratos per request.
+      - ./deployments/kratos:/etc/stroppy/kratos:ro
     environment:
       STROPPY_HTTP_ADDR: :18347
       STROPPY_HTTP_PUBLIC_URL: ${STROPPY_HTTP_PUBLIC_URL:-http://localhost:18347}
@@ -45,8 +80,10 @@ services:
       STROPPY_INFRA_POSTGRES_DATABASE: stroppy
       STROPPY_INFRA_POSTGRES_SSLMODE: disable
       STROPPY_INFRA_POSTGRES_POOL_MAX_CONNS: "10"
-      # Local login, like IAM's development master key. Loopback binding below.
-      STROPPY_DEV_USERS: ${STROPPY_DEV_USERS:-dev=dev@stroppy.local=Developer}
+      # Identity: Kratos mode. JWT verification is local (JWKS below);
+      # registration/login happen in the UI against the kratos service.
+      STROPPY_AUTH_JWKS_FILE: /etc/stroppy/kratos/jwks/kratos-public-jwks.json
+      STROPPY_AUTH_KRATOS_PUBLIC_URL: ${STROPPY_AUTH_KRATOS_PUBLIC_URL:-http://localhost:4433}
       STROPPY_ADMIN_EMAILS: ${STROPPY_ADMIN_EMAILS:-dev@stroppy.local}
       STROPPY_INFRA_GRAPHENE_ADDRESS: ${STROPPY_INFRA_GRAPHENE_ADDRESS:-graphene.stroppy.io:443}
       STROPPY_INFRA_GRAPHENE_TOKEN: ${STROPPY_INFRA_GRAPHENE_TOKEN:?set the Graphene token in .env.compose}

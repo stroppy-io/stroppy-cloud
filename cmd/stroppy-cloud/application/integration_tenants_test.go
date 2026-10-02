@@ -333,12 +333,15 @@ func TestE2EMeAndPublic(t *testing.T) {
 
 	t.Run("public config and health", func(t *testing.T) {
 		var cfg struct {
-			Iam struct {
-				ClientID string `json:"client_id"`
-			} `json:"iam"`
+			Auth struct {
+				Mode   string `json:"mode"`
+				Kratos struct {
+					PublicURL string `json:"public_url"`
+				} `json:"kratos"`
+			} `json:"auth"`
 		}
 		e.want(e.req(http.MethodGet, "/api/v1/public/config", nil, ""), http.StatusOK, &cfg)
-		if cfg.Iam.ClientID != "web" {
+		if cfg.Auth.Mode != "kratos" || cfg.Auth.Kratos.PublicURL == "" {
 			t.Fatalf("got %+v", cfg)
 		}
 		var health struct {

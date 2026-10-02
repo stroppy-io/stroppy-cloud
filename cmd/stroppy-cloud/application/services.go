@@ -69,7 +69,6 @@ type Services struct {
 	Pipelines *pipelines.Pusher
 	Examples  *examples.Service
 	Observe   *observe.Service
-	IAM       *repositories.IAMRepo
 	// Dispatcher delivers webhooks; started by the worker loop.
 	Dispatcher *webhook.Dispatcher
 }
@@ -148,7 +147,6 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 		Observe:    observeSvc,
 		Schemas:    registry,
 		Catalog:    cat,
-		IAM:        repositories.NewIAMRepo(db),
 		Dispatcher: webhook.NewDispatcher(webhookRepo),
 	}, nil
 }

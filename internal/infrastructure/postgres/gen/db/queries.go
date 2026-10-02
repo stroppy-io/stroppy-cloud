@@ -458,57 +458,6 @@ func (q *Queries) AuditOfTenant(ctx context.Context, arg AuditOfTenantParams) ([
 	return items, nil
 }
 
-const denySessionSQL = `INSERT INTO iam_denylist (session_id, user_id, expires_at)
-VALUES ($1, $2, $3)
-ON CONFLICT (session_id) DO UPDATE SET expires_at = EXCLUDED.expires_at;`
-
-type DenySessionParams struct {
-	SessionID string
-	UserID    uuid.UUID
-	ExpiresAt time.Time
-}
-
-func (q *Queries) DenySession(ctx context.Context, arg DenySessionParams) error {
-	_, err := q.db.Exec(ctx, denySessionSQL, arg.SessionID, arg.UserID, arg.ExpiresAt)
-	return err
-}
-
-const deniedSessionSQL = `-- No row = not denied.
-SELECT expires_at FROM iam_denylist WHERE session_id = $1 AND expires_at > now();`
-
-type DeniedSessionRow struct {
-	ExpiresAt time.Time
-}
-
-func (q *Queries) DeniedSession(ctx context.Context, sessionID string) (DeniedSessionRow, error) {
-	row := q.db.QueryRow(ctx, deniedSessionSQL, sessionID)
-	var i DeniedSessionRow
-	err := row.Scan(&i.ExpiresAt)
-	return i, err
-}
-
-const purgeDenylistSQL = `DELETE FROM iam_denylist WHERE expires_at <= now();`
-
-func (q *Queries) PurgeDenylist(ctx context.Context) (int64, error) {
-	tag, err := q.db.Exec(ctx, purgeDenylistSQL)
-	return tag.RowsAffected(), err
-}
-
-const recordWebhookEventSQL = `-- 0 rows = duplicate delivery, the caller skips the side effects.
-INSERT INTO iam_webhook_events (id) VALUES ($1) ON CONFLICT DO NOTHING;`
-
-func (q *Queries) RecordWebhookEvent(ctx context.Context, id string) (int64, error) {
-	tag, err := q.db.Exec(ctx, recordWebhookEventSQL, id)
-	return tag.RowsAffected(), err
-}
-
-const purgeWebhookEventsSQL = `DELETE FROM iam_webhook_events WHERE received_at < $1;`
-
-func (q *Queries) PurgeWebhookEvents(ctx context.Context, before time.Time) (int64, error) {
-	tag, err := q.db.Exec(ctx, purgeWebhookEventsSQL, before)
-	return tag.RowsAffected(), err
-}
-
 const insertInviteSQL = `INSERT INTO tenant_invites (id, tenant_id, email, role, invited_by, message, expires_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7);`
 

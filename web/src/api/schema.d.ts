@@ -2523,11 +2523,14 @@ export interface components {
             }[];
         };
         PublicConfig: {
-            iam: {
-                /** @description Same-origin proxy base ('' in prod). */
-                base_url: string;
-                client_id: string;
-                environment: string;
+            /** @description How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without Kratos asks for a static token). */
+            auth: {
+                /** @enum {string} */
+                mode: "kratos" | "dev";
+                /** @description The origin the browser reaches Ory Kratos at. */
+                kratos: {
+                    public_url: string;
+                };
             };
             /** @enum {string} */
             tenant_creation: "anyone" | "admin_only";
@@ -2559,8 +2562,11 @@ export interface components {
         };
         Me: {
             id: string;
-            /** Format: email */
-            email: string;
+            /**
+             * Format: email
+             * @description Absent until the Kratos e-mail address is verified.
+             */
+            email?: string;
             display_name: string;
             /** @description identicon:<seed> or https URL */
             avatar?: string;
