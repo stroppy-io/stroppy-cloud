@@ -15,8 +15,8 @@ LDFLAGS := -w -s -X $(MODULE)/internal/build.Version=$(VERSION) -X $(MODULE)/int
 GOFLAGS := -trimpath -ldflags="$(LDFLAGS)"
 GOLANGCI_LINT := go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 
-DOCKER_IMAGE := docker.stroppy.io/stroppy-io/stroppy-server
-DOCKER_TAG   := $(VERSION)
+DOCKER_IMAGE ?= ghcr.io/stroppy-io/stroppy-cloud
+DOCKER_TAG   ?= $(VERSION)
 COMPOSE_ENV ?= .env.compose
 COMPOSE := docker compose --env-file "$(COMPOSE_ENV)"
 
@@ -170,7 +170,11 @@ dev-logs: ## Follow local server logs
 	$(COMPOSE) logs -f server
 
 docker-build: ## Build the server image (server + pipeline binaries)
-	docker build --build-arg VERSION=$(VERSION) --build-arg COMMIT=$(COMMIT) -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f deployments/Dockerfile .
+	docker build --platform linux/amd64 --build-arg VERSION=$(VERSION) --build-arg COMMIT=$(COMMIT) -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f deployments/Dockerfile .
+
+.PHONY: release
+release: ## Create and push a vX.Y.Z tag; no local builds or tests
+	bash scripts/release.sh "$(RELEASE_VERSION)"
 
 # ============================================================
 # Clean

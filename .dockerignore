@@ -5,6 +5,10 @@
 .local
 .env
 .env.*
+**/.env
+**/.env.*
+**/.npmrc
+**/.yarnrc
 temp.md
 bin
 **/node_modules
