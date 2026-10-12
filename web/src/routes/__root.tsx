@@ -1,7 +1,7 @@
 import { ErrorState } from '@app/ErrorState'
 import { Page } from '@app/Page'
 import { Button, EmptyState, ErrorBoundary, Icon, LoadingPlaceholder } from '@grafana/ui'
-import { hasSession } from '@lib/auth'
+import { getAccessToken } from '@lib/auth'
 import { loadPublicConfig } from '@lib/config'
 import type { QueryClient } from '@tanstack/react-query'
 import { createRootRouteWithContext, Outlet, redirect, useNavigate } from '@tanstack/react-router'
@@ -87,15 +87,15 @@ function ChunkReload({ error, reset }: { error: unknown; reset: () => void }) {
   )
 }
 
-// Everything outside these prefixes needs a session (kratos mode) or the
-// static dev token.
-const PUBLIC_PREFIXES = ['/login', '/register', '/s/']
+// Everything outside these prefixes needs a Kratos session (whose cookie
+// must exchange into a JWT) or the static dev token.
+const PUBLIC_PREFIXES = ['/login', '/register', '/verify', '/recovery', '/auth/', '/s/']
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ location }) => {
     if (PUBLIC_PREFIXES.some((p) => location.pathname.startsWith(p))) return
     const cfg = await loadPublicConfig()
-    if (cfg.auth.mode === 'kratos' && !hasSession()) {
+    if (cfg.auth.mode === 'kratos' && !(await getAccessToken())) {
       throw redirect({ to: '/login', search: { next: location.href } })
     }
   },

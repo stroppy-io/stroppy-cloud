@@ -4,6 +4,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Dropdown, Menu, Text, ToolbarButton, useStyles2 } from '@grafana/ui'
 import { useMe } from '@hooks/useMe'
 import { logout } from '@lib/auth'
+import { getPublicConfig } from '@lib/config'
 import { type Lang, setLang } from '@lib/i18n'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -55,6 +56,13 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
             icon="key-skeleton-alt"
             onClick={() => void navigate({ to: '/me/tokens' as never })}
           />
+          {getPublicConfig()?.auth.mode === 'kratos' && (
+            <Menu.Item
+              label={t('me.tabs.security')}
+              icon="lock"
+              onClick={() => void navigate({ to: '/me/security', search: {} })}
+            />
+          )}
           <Menu.Item
             label={t('nav.invites')}
             icon="envelope"

@@ -17,7 +17,10 @@ dsn: postgres://postgres@postgres:5432/kratos?sslmode=disable&max_conns=20
 serve:
   public:
     port: 4433
-    base_url: http://localhost:4433
+    # Same-origin through the server's /v1 proxy: the SPA's browser flows
+    # (login, registration) keep their cookies and CSRF without any
+    # cross-site setup. Flow links and ui.action URLs come out under /v1.
+    base_url: http://localhost:18347/v1
     cors:
       enabled: true
       allowed_origins:
@@ -45,26 +48,44 @@ selfservice:
   methods:
     password:
       enabled: true
-    totp:
-      enabled: true
-      config:
-        issuer: Stroppy Cloud
+    # One-time codes for verification and recovery mails.
     code:
       enabled: true
   flows:
+    # Every flow has its screen in the SPA: links in mails and Kratos
+    # redirects land there with ?flow=<id>, the page continues the flow.
+    error:
+      ui_url: http://localhost:18347/auth/error
+    login:
+      ui_url: http://localhost:18347/login
     registration:
       # The kill switch of public sign-up: `false` closes the platform —
       # nobody (invited people included) can self-register until it is back
       # on; the admin API can still create identities. Prod overlay sets it.
       enabled: true
-    login:
-      enabled: true
-    recovery:
-      enabled: true
+      ui_url: http://localhost:18347/register
+      after:
+        password:
+          hooks:
+            # Signed in right away; the address is confirmed afterwards
+            # (the SPA continues to /verify via continue_with).
+            - hook: session
+            - hook: show_verification_ui
     verification:
       enabled: true
-    settings:
+      use: code
+      ui_url: http://localhost:18347/verify
+      after:
+        default_browser_return_url: http://localhost:18347/
+    recovery:
       enabled: true
+      use: code
+      ui_url: http://localhost:18347/recovery
+    # A successful recovery code opens a privileged settings flow: the
+    # new password is set there.
+    settings:
+      ui_url: http://localhost:18347/me/security
+      privileged_session_max_age: 15m
 
 session:
   lifespan: 720h

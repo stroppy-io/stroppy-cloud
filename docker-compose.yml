@@ -24,7 +24,12 @@ services:
   kratos:
     image: oryd/kratos:v26.2.0
     restart: unless-stopped
-    command: serve -c /etc/config/kratos/kratos.yml
+    # v26 does not migrate on serve and does not run the courier either:
+    # migrate, then serve with the courier as a background task.
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - kratos migrate sql -e -y && exec kratos serve --watch-courier -c /etc/config/kratos/kratos.yml
     environment:
       DSN: postgres://stroppy:${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}@postgres:5432/kratos?sslmode=disable&max_conns=20
     volumes:
@@ -81,9 +86,10 @@ services:
       STROPPY_INFRA_POSTGRES_SSLMODE: disable
       STROPPY_INFRA_POSTGRES_POOL_MAX_CONNS: "10"
       # Identity: Kratos mode. JWT verification is local (JWKS below);
-      # registration/login happen in the UI against the kratos service.
+      # the SPA's browser flows go through the server's /v1 proxy.
       STROPPY_AUTH_JWKS_FILE: /etc/stroppy/kratos/jwks/kratos-public-jwks.json
-      STROPPY_AUTH_KRATOS_PUBLIC_URL: ${STROPPY_AUTH_KRATOS_PUBLIC_URL:-http://localhost:4433}
+      STROPPY_AUTH_KRATOS_PUBLIC_URL: ${STROPPY_AUTH_KRATOS_PUBLIC_URL:-http://localhost:18347/v1}
+      STROPPY_AUTH_KRATOS_UPSTREAM: http://kratos:4433
       STROPPY_ADMIN_EMAILS: ${STROPPY_ADMIN_EMAILS:-dev@stroppy.local}
       STROPPY_INFRA_GRAPHENE_ADDRESS: ${STROPPY_INFRA_GRAPHENE_ADDRESS:-graphene.stroppy.io:443}
       STROPPY_INFRA_GRAPHENE_TOKEN: ${STROPPY_INFRA_GRAPHENE_TOKEN:?set the Graphene token in .env.compose}

@@ -1,7 +1,8 @@
 # Kratos — identity of Stroppy Cloud
 
 Self-hosted [Ory Kratos](https://www.ory.sh/docs/kratos): вход, регистрация,
-verification/recovery (коды по почте), TOTP, сессии. Заменил `gopherex/iam`;
+подтверждение почты и восстановление пароля (коды по почте), смена пароля,
+сессии. Заменил `gopherex/iam`;
 сервер не имеет таблицы паролей и не вызывает Kratos на запросах — см. ниже.
 
 ## Файлы
@@ -9,28 +10,52 @@ verification/recovery (коды по почте), TOTP, сессии. Замен
 | Файл | Что это |
 |---|---|
 | `kratos.yml` | конфиг dev-compose (прод переопределяет env/секреты) |
-| `identity.schema.json` | traits: `email` (идентификатор логина) + `name` |
+| `identity.schema.json` | traits: `email` (идентификатор логина) + `name`, оба обязательны |
 | `claims.jsonnet` | claims JWT шаблона `stroppy`: iss/aud, email, email_verified, name, aal |
 | `jwks/kratos-jwks.json` | приватный ES256-ключ подписи токенов (dev, в репо) |
 | `jwks/kratos-public-jwks.json` | публичная половина — её читает сервер для локальной проверки |
 
 ## Контракт со stroppy-server
 
-1. SPA логинится через **API-флоу** Kratos (`/self-service/login/api`) →
-   opaque session token.
-2. SPA зовёт `GET /sessions/whoami?tokenize_as=stroppy`
-   (`X-Session-Token`) → получает JWT (TTL 10m, claims из `claims.jsonnet`).
-3. Дальше весь API — `Authorization: Bearer <jwt>`; сервер проверяет
-   подпись **локально** по `kratos-public-jwks.json` (без хопа в Kratos).
-   `sub` = identity id = ключ профиля, `sid` = сессия, `email`+`email_verified`
-   заменяют прежний `users/me`.
-4. Инвайты в тенант матчатся **только по verified email**.
+1. Kratos живёт на том же origin, что SPA: сервер проксирует `/v1/*` в
+   Kratos public (`STROPPY_AUTH_KRATOS_UPSTREAM`, префикс срезается);
+   `serve.public.base_url` = `<origin>/v1`. Cookie сессии и CSRF работают
+   без cross-site настроек.
+2. SPA проходит **browser-флоу** с `Accept: application/json` (API-флоу
+   Kratos v26 из браузера отсекает CSRF-защита): начать или продолжить flow
+   по `flow`-id, отправить форму с `csrf_token` из `ui.nodes`.
+3. Сессия — cookie Kratos. SPA меняет её на JWT:
+   `GET /v1/sessions/whoami?tokenize_as=stroppy` (TTL 10m, claims из
+   `claims.jsonnet`), тихо обновляет до протухания.
+4. Весь API — `Authorization: Bearer <jwt>`; сервер проверяет подпись
+   **локально** по `kratos-public-jwks.json`. `sub` = identity id = ключ
+   профиля, `email`+`email_verified` — адрес и его подтверждение.
+5. Инвайты в тенант и админство матчатся **только по подтверждённой почте**.
 
-WS (`/api/v1/ws?token=`) принимает тот же JWT — путь через верификатор общий.
+WS (`/api/v1/ws?token=`) принимает тот же JWT.
+
+## Экраны flow'ов (`ui_url`)
+
+Каждый flow ведёт в свой экран SPA, ссылки из писем и редиректы Kratos
+приходят туда с `?flow=<id>`:
+
+| Flow | Экран | Что происходит |
+|---|---|---|
+| login | `/login` | почта + пароль; «Забыли пароль?» → `/recovery` |
+| registration | `/register` | почта, имя, пароль; хуки `session` + `show_verification_ui` — сразу вход и переход на `/verify` |
+| verification | `/verify` | код из письма; ссылка из письма приходит с кодом в flow — экран отправляет его сам; повторная отправка |
+| recovery | `/recovery` | почта → код → Kratos выдаёт привилегированную сессию и settings-flow → `/me/security?flow=` |
+| settings | `/me/security` | статус почты, смена пароля (старой сессии — сначала повторный вход, `session_refresh_required`) |
+| error | `/auth/error?id=` | текст ошибки Kratos |
+
+Пока почта не подтверждена, в каркасе приложения висит баннер с переходом
+на `/verify`. Сообщения Kratos SPA показывает по их числовым `id`
+(`auth.kratos.<id>` в локалях, значения из `context`) под полем, к которому
+они относятся; неизвестный `id` — текстом Kratos.
 
 ## Dev (make dev)
 
-- Kratos public: `http://localhost:4433` (CORS на :18347 и :5173), admin: `:4434`.
+- Kratos public: через сервер `http://localhost:18347/v1` (напрямую `:4433`), admin: `:4434`.
 - Courier → **Mailpit**: письма видны на `http://localhost:8025`, наружу не уходят.
 - СУБД — общий postgres-контейнер, база `kratos` (создаётся init-скриптом
   `deployments/postgres/init/`); миграции Kratos применяет сам.

@@ -1,11 +1,14 @@
 import { Page } from '@app/Page'
 import { toast } from '@app/Toaster'
+import { applyKratosErrors } from '@components/auth/kratos-errors'
+import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Button, Field, Input, Stack, Text, useStyles2 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
+import { firstError } from '@helpers/form'
 import { login, setToken } from '@lib/auth'
-import { useForm } from '@tanstack/react-form'
+import { type Lang, setLang } from '@lib/i18n'
+import { revalidateLogic, useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
@@ -21,7 +24,35 @@ const getStyles = (theme: GrafanaTheme2) => ({
     background: theme.colors.background.primary,
     padding: theme.spacing(3),
   }),
+  lang: css({
+    position: 'absolute',
+    top: theme.spacing(2),
+    right: theme.spacing(2),
+    display: 'flex',
+    gap: theme.spacing(0.5),
+  }),
 })
+
+/** RU/EN switch available before the profile (and its preference) exists. */
+export function LangSwitch() {
+  const { i18n } = useTranslation()
+  const styles = useStyles2(getStyles)
+  return (
+    <div className={styles.lang}>
+      {(['ru', 'en'] as Lang[]).map((l) => (
+        <Button
+          key={l}
+          size="sm"
+          variant={i18n.language.startsWith(l) ? 'primary' : 'secondary'}
+          fill="text"
+          onClick={() => setLang(l)}
+        >
+          {l === 'ru' ? 'Русский' : 'English'}
+        </Button>
+      ))}
+    </div>
+  )
+}
 
 /** Kratos login (e-mail + password) or, in dev mode, a static token. */
 export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: string }) {
@@ -46,13 +77,14 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
   const form = useForm({
     defaultValues: { email: '', password: '' },
     validators: { onDynamic: schema },
+    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
     onSubmit: async ({ value, formApi }) => {
       try {
         await login(value.email.trim(), value.password)
         done()
       } catch (e) {
         // Kratos flow failures (bad credentials, throttling) are plain text.
-        applyServerErrors(formApi, e, e instanceof Error ? e.message : t('common.errors.generic'))
+        applyKratosErrors(formApi, e, t, { identifier: 'email', password: 'password' })
       }
     },
   })
@@ -63,6 +95,7 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
 
   return (
     <Page>
+      <LangSwitch />
       <div className={styles.card}>
         <Stack direction="column" gap={2}>
           <Text variant="h4" weight="medium">
@@ -114,21 +147,41 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
                   </Field>
                 )}
               </form.Field>
-              <Button type="submit" disabled={form.state.isSubmitting}>
-                {t('auth.login.submit')}
-              </Button>
-              <Text variant="bodySmall" color="secondary">
-                {t('auth.login.noAccount')}{' '}
+              <form.Subscribe selector={(s) => [s.isSubmitting, s.errorMap.onServer] as const}>
+                {([isSubmitting, serverError]) => (
+                  <Stack direction="column" gap={1}>
+                    <ServerErrorAlert error={serverError} />
+                    <Button type="submit" disabled={isSubmitting}>
+                      {t('auth.login.submit')}
+                    </Button>
+                  </Stack>
+                )}
+              </form.Subscribe>
+              <Stack justifyContent="space-between" alignItems="center">
                 <Button
                   size="sm"
                   variant="secondary"
                   fill="text"
                   type="button"
-                  onClick={() => void navigate({ to: '/register', search: { next } })}
+                  onClick={() => void navigate({ to: '/recovery', search: {} })}
                 >
-                  {t('auth.login.register')}
+                  {t('auth.login.forgot')}
                 </Button>
-              </Text>
+                <Stack alignItems="center" gap={0.5}>
+                  <Text variant="bodySmall" color="secondary">
+                    {t('auth.login.noAccount')}
+                  </Text>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    fill="text"
+                    type="button"
+                    onClick={() => void navigate({ to: '/register', search: { next } })}
+                  >
+                    {t('auth.login.register')}
+                  </Button>
+                </Stack>
+              </Stack>
             </Stack>
           </form>
         </Stack>

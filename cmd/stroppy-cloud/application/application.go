@@ -207,15 +207,21 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 	if a.cfg.HTTP.WSPoll > 0 {
 		socket.Poll = a.cfg.HTTP.WSPoll
 	}
+	// The Kratos proxy is pointless (and confusing) in dev mode.
+	kratosUpstream := a.cfg.Auth.KratosUpstream
+	if a.cfg.Dev.Enabled() {
+		kratosUpstream = ""
+	}
 	return transport.New(transport.Deps{
-		API:          api.AcceptMiddleware(apiServer),
-		WS:           socket,
-		PublicConfig: a.publicConfig(),
-		SPA:          dist,
-		Liveness:     alive,
-		Readiness:    xprobe.All(a.infra.Probe(), a.ready),
-		CORSOrigins:  a.cfg.HTTP.CORSOrigins,
-		Log:          a.log,
+		API:            api.AcceptMiddleware(apiServer),
+		WS:             socket,
+		KratosUpstream: kratosUpstream,
+		PublicConfig:   a.publicConfig(),
+		SPA:            dist,
+		Liveness:       alive,
+		Readiness:      xprobe.All(a.infra.Probe(), a.ready),
+		CORSOrigins:    a.cfg.HTTP.CORSOrigins,
+		Log:            a.log,
 	})
 }
 

@@ -3,7 +3,8 @@
   "tabs": {
     "profile": "Profile",
     "tokens": "API tokens",
-    "invites": "Invites"
+    "invites": "Invites",
+    "security": "Security"
   },
   "profile": {
     "identity": "Identity",
@@ -71,5 +72,21 @@
     "decline": "Decline",
     "accepted": "You joined {{name}}",
     "declined": "Invite declined"
+  },
+  "security": {
+    "email": "E-mail",
+    "verified": "Confirmed",
+    "unverified": "Not confirmed",
+    "verify": "Confirm e-mail",
+    "password": "Password",
+    "newPassword": "New password",
+    "confirm": "Repeat password",
+    "mismatch": "Passwords do not match",
+    "change": "Change password",
+    "changed": "Password changed",
+    "recovered": "Signed in with the code. Set a new password within 15 minutes.",
+    "reauthTitle": "Sign in again",
+    "reauthBody": "The password can only change in a recently opened session. Sign in again and retry.",
+    "reauth": "Sign in again"
   }
 }

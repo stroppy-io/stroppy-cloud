@@ -1,11 +1,15 @@
 // Package http is the single public listener: the ogen API under /api/v1,
-// the WebSocket beside it, probes under /healthz and the SPA for everything
-// else. Kratos is a separate origin (deployments/kratos/), not proxied.
+// the WebSocket beside it, the Kratos reverse proxy under /v1 (same-origin
+// browser flows of the SPA), probes under /healthz and the SPA for
+// everything else.
 package http
 
 import (
+	"fmt"
 	"io/fs"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"strings"
 	"time"
 
@@ -23,6 +27,10 @@ type Deps struct {
 	API http.Handler
 	// WS is the WebSocket at /api/v1/ws; nil = not mounted.
 	WS http.Handler
+	// KratosUpstream is the Kratos public URL proxied under /v1: the SPA's
+	// browser flows (login, registration, whoami) stay same-origin, so
+	// their cookies need no cross-site games. Empty = not mounted.
+	KratosUpstream string
 	// PublicConfig is served at /config.json for the SPA (auth mode, Kratos origin).
 	PublicConfig http.Handler
 	// SPA is the built web app (index.html + assets); nil = 404.
@@ -36,6 +44,7 @@ type Deps struct {
 }
 
 const (
+	kratosPrefix      = "/v1"
 	apiPrefix         = "/api"
 	readHeaderTimeout = 10 * time.Second
 )
@@ -58,6 +67,17 @@ func New(d Deps) (http.Handler, error) {
 
 	if d.PublicConfig != nil {
 		r.Handle("/config.json", d.PublicConfig)
+	}
+
+	// Kratos browser flows of the SPA (cookies, CSRF) go through the same
+	// origin; reverseProxy strips /v1 (Kratos's base_url only shapes the
+	// links it generates).
+	if d.KratosUpstream != "" {
+		proxy, err := reverseProxy(d.KratosUpstream)
+		if err != nil {
+			return nil, fmt.Errorf("kratos proxy: %w", err)
+		}
+		r.Handle(kratosPrefix+"/*", proxy)
 	}
 
 	// The socket lives beside the API (the upgrade bypasses ogen; the log
@@ -90,6 +110,28 @@ func propagateRequestID(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+// reverseProxy forwards to Kratos under /v1: the prefix is stripped (base_url
+// only affects link generation, Kratos serves its paths at the root), so
+// /v1/self-service/... upstream sees /self-service/....
+func reverseProxy(base string) (http.Handler, error) {
+	target, err := url.Parse(base)
+	if err != nil {
+		return nil, fmt.Errorf("upstream url %q: %w", base, err)
+	}
+	proxy := &httputil.ReverseProxy{
+		Rewrite: func(pr *httputil.ProxyRequest) {
+			pr.SetURL(target)
+			pr.Out.Host = target.Host
+			pr.Out.URL.Path = strings.TrimPrefix(pr.In.URL.Path, kratosPrefix)
+			if pr.Out.URL.Path == "" {
+				pr.Out.URL.Path = "/"
+			}
+			pr.SetXForwarded()
+		},
+	}
+	return proxy, nil
 }
 
 // spa serves the built web app: real files as-is, every other path gets

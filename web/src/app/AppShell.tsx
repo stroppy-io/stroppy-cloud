@@ -15,6 +15,7 @@ import { ShortcutsModal } from './ShortcutsModal'
 import { Sidebar } from './Sidebar'
 import { TenantSwitcher } from './TenantSwitcher'
 import { UserMenu } from './UserMenu'
+import { VerifyEmailBanner } from './VerifyEmailBanner'
 
 export const HEADER_HEIGHT = 48
 export const CRUMB_BAR_HEIGHT = 36
@@ -152,6 +153,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       <div className={styles.body}>
         {!bare && <Sidebar />}
         <main className={styles.main}>
+          {!bare && <VerifyEmailBanner />}
           {/* A single crumb only repeats the page title: no empty bar for top-level pages. */}
           {!bare && crumbCount > 1 && (
             <div className={styles.crumbBar}>

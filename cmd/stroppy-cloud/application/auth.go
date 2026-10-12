@@ -35,10 +35,13 @@ with email_verified=true — invites and the admin bootstrap match by e-mail.
 // AuthConfig is the `auth` section.
 type AuthConfig struct {
 	kratos.Config `mapstructure:",squash"`
-	// KratosPublicURL is the origin the browser reaches Kratos at; served
-	// to the SPA through the public config. The server itself does not
-	// call this URL.
-	KratosPublicURL string `default:"http://localhost:4433" mapstructure:"kratos_public_url" validate:"omitempty,url"`
+	// KratosPublicURL is the origin the browser reaches Kratos at — same
+	// origin through the server's /v1 proxy in the normal setup; served to
+	// the SPA through the public config.
+	KratosPublicURL string `default:"http://localhost:18347/v1" mapstructure:"kratos_public_url" validate:"omitempty,url"`
+	// KratosUpstream is where the server proxies /v1/* to (the Kratos
+	// public listener); empty disables the proxy.
+	KratosUpstream string `default:"http://localhost:4433" mapstructure:"kratos_upstream" validate:"omitempty,url"`
 }
 
 // DevConfig is the `dev` section: a local installation without Kratos.

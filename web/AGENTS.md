@@ -209,7 +209,8 @@ Grafana-плагин-ориентированные компоненты.
 /t/:slug/rating
 /t/:slug/shares
 /t/:slug/settings/(general|members|providers|quotas|webhooks|tokens|audit)
-/me/(profile|tokens|invites)
+/me/(profile|tokens|security|invites)
+/login · /register · /verify · /recovery · /auth/error   → вход (bare, публичные)
 /admin/(status|tenants|users|runs|settings|audit)
 /examples                          → галерея (clone / quick-run в текущий тенант)
 /s/:token                          → публичный lab-report (без auth, без AppShell)
@@ -337,14 +338,26 @@ workload, провайдеры, sizes): generic-рендерер `components/sch
   (`deployments/kratos/`); в dev-режиме (`STROPPY_DEV_USERS=…`) принимает
   статический bearer. `GET /api/v1/public/config` отдаёт
   `auth{mode: kratos|dev, kratos{public_url}}`.
-- SPA: `lib/auth.ts` — единственный модуль, знающий про токены. Kratos:
-  login/регистрация — API-флоу Kratos (`/self-service/*/api`) → session
-  token → обмен на JWT (`/sessions/whoami?tokenize_as=stroppy`, TTL 10м);
-  `getAccessToken()` — Bearer для API и `?token=` для WS, рефреш тихий по
-  мере протухания. Страницы — `components/auth/` (Login/Register, роуты
-  `/login`, `/register`, bare). Гейт — `beforeLoad` корневого роута: без
-  сессии в kratos-режиме → `/login?next=…`. 401 из API → `notifyAuthLost()`:
-  сброс кэша + `/login`.
+- SPA: `lib/auth.ts` — единственный модуль, знающий про токены и Kratos.
+  Kratos на том же origin под `/v1` (прокси сервера); все self-service
+  flow'ы — browser-флоу с `Accept: application/json` (`getFlow(kind, id?)`,
+  `submitFlow`): cookie-сессия Kratos → JWT через
+  `/v1/sessions/whoami?tokenize_as=stroppy` (TTL 10м); `getAccessToken()` —
+  Bearer для API и `?token=` для WS, рефреш тихий. Экраны —
+  `components/auth/` (`/login`, `/register`, `/verify`, `/recovery`,
+  `/auth/error`, bare, публичные префиксы гейта) и `components/me/SecurityPage`
+  (`/me/security`: почта, смена пароля; сюда же приходит восстановление).
+  Карта flow → экран — `deployments/kratos/README.md`. Гейт — `beforeLoad`
+  корневого роута: без сессии в kratos-режиме → `/login?next=…`. 401 из API →
+  `notifyAuthLost()`: сброс кэша + `/login`.
+- Ошибки Kratos — только через `components/auth/kratos-errors.ts`:
+  `applyKratosErrors(form, e, t, { '<kratos node>': '<поле формы>' })`
+  кладёт сообщение под поле, остальное — в ошибку формы; тексты по
+  числовому `id` сообщения (`auth.kratos.<id>`, значения из `context`), по
+  `error.id` (`auth.kratosError.<id>`). Английский текст Kratos — только
+  fallback неизвестного id. Формы входа, как все формы, — `revalidateLogic`.
+- Неподтверждённая почта: баннер `app/VerifyEmailBanner` в каркасе
+  (claim `email_verified` JWT).
 - Dev-режим: страница логина превращается в поле ввода статического токена.
   Роли (`owner|admin|member|viewer`) читаются из `/me.tenants[].role` и
   скрывают/дизейблят действия (`useCan(action)`).

@@ -1,10 +1,13 @@
 import { Page } from '@app/Page'
+import { applyKratosErrors } from '@components/auth/kratos-errors'
+import { LangSwitch } from '@components/auth/LoginPage'
+import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Button, Field, Input, Stack, Text, useStyles2 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
-import { register, registrationOpen } from '@lib/auth'
-import { useForm } from '@tanstack/react-form'
+import { firstError } from '@helpers/form'
+import { register, registrationStatus } from '@lib/auth'
+import { revalidateLogic, useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
@@ -28,19 +31,28 @@ export function RegisterPage({ next }: { next?: string }) {
   const styles = useStyles2(getStyles)
   const qc = useQueryClient()
   const navigate = useNavigate()
-  // A closed platform (registration flow off in Kratos) is learned by probing.
+  // The registration flow's state for this browser: closed platforms show a
+  // notice; a signed-in visitor is taken to the app instead.
   const [closed, setClosed] = useState(false)
   useEffect(() => {
-    void registrationOpen().then(setClosed)
-  }, [])
+    void registrationStatus().then((s) => {
+      if (s === 'signedin') {
+        void navigate({ to: '/' })
+        return
+      }
+      setClosed(s === 'closed')
+    })
+  }, [navigate])
 
   const schema = useMemo(
     () =>
       z.object({
         email: z.string().trim().email(t('common.validation.email')),
+        // Other members see people by this name; Kratos requires it too.
         name: z
           .string()
           .trim()
+          .min(1, t('auth.register.nameRequired'))
           .max(80, t('common.validation.max', { max: 80 })),
         password: z.string().min(8, t('auth.register.passwordMin')),
       }),
@@ -49,19 +61,27 @@ export function RegisterPage({ next }: { next?: string }) {
   const form = useForm({
     defaultValues: { email: '', name: '', password: '' },
     validators: { onDynamic: schema },
+    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
     onSubmit: async ({ value, formApi }) => {
       try {
-        await register(value.email.trim(), value.name.trim(), value.password)
+        const verification = await register(value.email.trim(), value.name.trim(), value.password)
         qc.clear()
-        void navigate({ to: next?.startsWith('/') ? next : '/' })
+        // Signed in already; the address is confirmed next (the code is mailed).
+        if (verification) void navigate({ to: '/verify', search: { flow: verification } })
+        else void navigate({ to: next?.startsWith('/') ? next : '/' })
       } catch (e) {
-        applyServerErrors(formApi, e, e instanceof Error ? e.message : t('common.errors.generic'))
+        applyKratosErrors(formApi, e, t, {
+          'traits.email': 'email',
+          'traits.name': 'name',
+          password: 'password',
+        })
       }
     },
   })
 
   return (
     <Page>
+      <LangSwitch />
       <div className={styles.card}>
         <Stack direction="column" gap={2}>
           <Text variant="h4" weight="medium">
@@ -106,6 +126,7 @@ export function RegisterPage({ next }: { next?: string }) {
                       invalid={!!firstError(field.state.meta)}
                       error={firstError(field.state.meta)}
                       htmlFor={field.name}
+                      required
                     >
                       <Input
                         id={field.name}
@@ -136,16 +157,18 @@ export function RegisterPage({ next }: { next?: string }) {
                     </Field>
                   )}
                 </form.Field>
-                <Button type="submit" disabled={form.state.isSubmitting}>
-                  {t('auth.register.submit')}
-                </Button>
+                <form.Subscribe selector={(s) => [s.isSubmitting, s.errorMap.onServer] as const}>
+                  {([isSubmitting, serverError]) => (
+                    <Stack direction="column" gap={1}>
+                      <ServerErrorAlert error={serverError} />
+                      <Button type="submit" disabled={isSubmitting}>
+                        {t('auth.register.submit')}
+                      </Button>
+                    </Stack>
+                  )}
+                </form.Subscribe>
               </Stack>
             </form>
-          )}
-          {!closed && (
-            <Alert severity="info" title={t('auth.register.verifyTitle')}>
-              {t('auth.register.verifyBody')}
-            </Alert>
           )}
           <Text variant="bodySmall" color="secondary">
             {t('auth.register.hasAccount')}{' '}

@@ -14,16 +14,20 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteRouteImport } from './routes/me/route'
+import { Route as RecoveryRouteImport } from './routes/recovery'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as AdminRunsRouteImport } from './routes/admin/runs'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminTenantsRouteImport } from './routes/admin/tenants'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
+import { Route as AuthErrorRouteImport } from './routes/auth/error'
 import { Route as ExamplesIndexRouteImport } from './routes/examples/index'
 import { Route as MeInvitesRouteImport } from './routes/me/invites'
 import { Route as MeProfileRouteImport } from './routes/me/profile'
+import { Route as MeSecurityRouteImport } from './routes/me/security'
 import { Route as MeTokensRouteImport } from './routes/me/tokens'
 import { Route as STokenRouteImport } from './routes/s/$token'
 import { Route as TSlugRouteRouteImport } from './routes/t/$slug/route'
@@ -100,9 +104,19 @@ const MeRouteRoute = MeRouteRouteImport.update({
   path: '/me',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecoveryRoute = RecoveryRouteImport.update({
+  id: '/recovery',
+  path: '/recovery',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyRoute = VerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -135,6 +149,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AdminRouteRoute,
 } as any)
+const AuthErrorRoute = AuthErrorRouteImport.update({
+  id: '/auth/error',
+  path: '/auth/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExamplesIndexRoute = ExamplesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -148,6 +167,11 @@ const MeInvitesRoute = MeInvitesRouteImport.update({
 const MeProfileRoute = MeProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => MeRouteRoute,
+} as any)
+const MeSecurityRoute = MeSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
   getParentRoute: () => MeRouteRoute,
 } as any)
 const MeTokensRoute = MeTokensRouteImport.update({
@@ -413,7 +437,9 @@ export interface FileRoutesByFullPath {
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
+  '/verify': typeof VerifyRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -421,8 +447,10 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/auth/error': typeof AuthErrorRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
+  '/me/security': typeof MeSecurityRoute
   '/me/tokens': typeof MeTokensRoute
   '/s/$token': typeof STokenRoute
   '/admin/': typeof AdminIndexRoute
@@ -478,14 +506,18 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/me': typeof MeRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
+  '/verify': typeof VerifyRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/runs': typeof AdminRunsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/auth/error': typeof AuthErrorRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
+  '/me/security': typeof MeSecurityRoute
   '/me/tokens': typeof MeTokensRoute
   '/s/$token': typeof STokenRoute
   '/admin': typeof AdminIndexRoute
@@ -536,7 +568,9 @@ export interface FileRoutesById {
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
+  '/verify': typeof VerifyRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -544,8 +578,10 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
+  '/auth/error': typeof AuthErrorRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
+  '/me/security': typeof MeSecurityRoute
   '/me/tokens': typeof MeTokensRoute
   '/s/$token': typeof STokenRoute
   '/admin/': typeof AdminIndexRoute
@@ -605,7 +641,9 @@ export interface FileRouteTypes {
     | '/examples'
     | '/me'
     | '/login'
+    | '/recovery'
     | '/register'
+    | '/verify'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -613,8 +651,10 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/tenants'
     | '/admin/users'
+    | '/auth/error'
     | '/me/invites'
     | '/me/profile'
+    | '/me/security'
     | '/me/tokens'
     | '/s/$token'
     | '/admin/'
@@ -670,14 +710,18 @@ export interface FileRouteTypes {
     | '/'
     | '/me'
     | '/login'
+    | '/recovery'
     | '/register'
+    | '/verify'
     | '/admin/audit'
     | '/admin/runs'
     | '/admin/settings'
     | '/admin/tenants'
     | '/admin/users'
+    | '/auth/error'
     | '/me/invites'
     | '/me/profile'
+    | '/me/security'
     | '/me/tokens'
     | '/s/$token'
     | '/admin'
@@ -727,7 +771,9 @@ export interface FileRouteTypes {
     | '/examples'
     | '/me'
     | '/login'
+    | '/recovery'
     | '/register'
+    | '/verify'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -735,8 +781,10 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/tenants'
     | '/admin/users'
+    | '/auth/error'
     | '/me/invites'
     | '/me/profile'
+    | '/me/security'
     | '/me/tokens'
     | '/s/$token'
     | '/admin/'
@@ -795,9 +843,12 @@ export interface RootRouteChildren {
   ExamplesRouteRoute: typeof ExamplesRouteRouteWithChildren
   MeRouteRoute: typeof MeRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RecoveryRoute: typeof RecoveryRoute
   RegisterRoute: typeof RegisterRoute
+  VerifyRoute: typeof VerifyRoute
   TSlugRouteRoute: typeof TSlugRouteRouteWithChildren
   TenantsNewRouteRoute: typeof TenantsNewRouteRouteWithChildren
+  AuthErrorRoute: typeof AuthErrorRoute
   STokenRoute: typeof STokenRoute
 }
 
@@ -838,11 +889,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MeRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recovery': {
+      id: '/recovery'
+      path: '/recovery'
+      fullPath: '/recovery'
+      preLoaderRoute: typeof RecoveryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify': {
+      id: '/verify'
+      path: '/verify'
+      fullPath: '/verify'
+      preLoaderRoute: typeof VerifyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -887,6 +952,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRouteRoute
     }
+    '/auth/error': {
+      id: '/auth/error'
+      path: '/auth/error'
+      fullPath: '/auth/error'
+      preLoaderRoute: typeof AuthErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/examples/': {
       id: '/examples/'
       path: '/'
@@ -906,6 +978,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/me/profile'
       preLoaderRoute: typeof MeProfileRouteImport
+      parentRoute: typeof MeRouteRoute
+    }
+    '/me/security': {
+      id: '/me/security'
+      path: '/security'
+      fullPath: '/me/security'
+      preLoaderRoute: typeof MeSecurityRouteImport
       parentRoute: typeof MeRouteRoute
     }
     '/me/tokens': {
@@ -1298,12 +1377,14 @@ const ExamplesRouteRouteWithChildren = ExamplesRouteRoute._addFileChildren(
 interface MeRouteRouteChildren {
   MeInvitesRoute: typeof MeInvitesRoute
   MeProfileRoute: typeof MeProfileRoute
+  MeSecurityRoute: typeof MeSecurityRoute
   MeTokensRoute: typeof MeTokensRoute
 }
 
 const MeRouteRouteChildren: MeRouteRouteChildren = {
   MeInvitesRoute: MeInvitesRoute,
   MeProfileRoute: MeProfileRoute,
+  MeSecurityRoute: MeSecurityRoute,
   MeTokensRoute: MeTokensRoute,
 }
 
@@ -1520,9 +1601,12 @@ const rootRouteChildren: RootRouteChildren = {
   ExamplesRouteRoute: ExamplesRouteRouteWithChildren,
   MeRouteRoute: MeRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  RecoveryRoute: RecoveryRoute,
   RegisterRoute: RegisterRoute,
+  VerifyRoute: VerifyRoute,
   TSlugRouteRoute: TSlugRouteRouteWithChildren,
   TenantsNewRouteRoute: TenantsNewRouteRouteWithChildren,
+  AuthErrorRoute: AuthErrorRoute,
   STokenRoute: STokenRoute,
 }
 export const routeTree = rootRouteImport

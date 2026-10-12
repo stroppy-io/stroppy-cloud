@@ -2,6 +2,7 @@ import { meQueries } from '@api/queries/me'
 import { PageHeader, type TabDef } from '@app/PageHeader'
 import { Badge } from '@grafana/ui'
 import { useMe } from '@hooks/useMe'
+import { getPublicConfig } from '@lib/config'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 
@@ -13,6 +14,12 @@ export function MeHeader() {
   const tabs: TabDef[] = [
     { id: 'profile', label: t('me.tabs.profile'), icon: 'user', to: '/me/profile' },
     { id: 'tokens', label: t('me.tabs.tokens'), icon: 'key-skeleton-alt', to: '/me/tokens' },
+    // Password and e-mail confirmation live in Kratos; dev stands have neither.
+    ...(getPublicConfig()?.auth.mode === 'kratos'
+      ? ([
+          { id: 'security', label: t('me.tabs.security'), icon: 'lock', to: '/me/security' },
+        ] satisfies TabDef[])
+      : []),
     {
       id: 'invites',
       label: t('me.tabs.invites'),
