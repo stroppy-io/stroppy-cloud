@@ -6,13 +6,14 @@ import { PageHeader } from '@app/PageHeader'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, LoadingPlaceholder, useStyles2 } from '@grafana/ui'
+import { useOnboarding } from '@hooks/useOnboarding'
 import { useTenant } from '@hooks/useTenant'
 import { useTopic } from '@hooks/useTopic'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Onboarding } from './Onboarding'
+import { checklistOpen, Onboarding } from './Onboarding'
 import { ProvidersHealth } from './ProvidersHealth'
 import { LiveNow, RecentRuns, RecentSuiteRuns, TopResults, Upcoming } from './RunLists'
 import { StatTiles } from './StatTiles'
@@ -51,6 +52,7 @@ export function DashboardPage() {
   const styles = useStyles2(getStyles)
   const { slug, tenant } = useTenant()
   const navigate = useNavigate()
+  const onboarding = useOnboarding()
   const q = useQuery(dashboardQueries.get(slug))
   useTopic<{ data: Run[] }, TenantDashboard>({
     topic: `tenant.runs/${slug}`,
@@ -109,14 +111,13 @@ export function DashboardPage() {
         <ErrorState error={q.error} onRetry={() => void q.refetch()} />
       ) : !data ? (
         <LoadingPlaceholder text={t('common.misc.loading')} />
-      ) : (data.run_counts.total ?? 0) === 0 ? (
-        <Onboarding
-          slug={slug}
-          tenantName={tenant?.name ?? slug}
-          hasProvider={(data.providers ?? []).some((p) => p.status === 'ready')}
-        />
+      ) : (data.run_counts.total ?? 0) === 0 && !onboarding.checklistHidden ? (
+        <Onboarding slug={slug} tenantName={tenant?.name ?? slug} data={data} />
       ) : (
         <>
+          {checklistOpen(data, onboarding.checklistHidden) && (
+            <Onboarding slug={slug} tenantName={tenant?.name ?? slug} data={data} />
+          )}
           <StatTiles data={data} slug={slug} />
           <div className={styles.grid}>
             <div className={styles.col}>

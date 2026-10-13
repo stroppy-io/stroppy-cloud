@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
+import { Route as InvitesRouteImport } from './routes/invites'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteRouteImport } from './routes/me/route'
 import { Route as RecoveryRouteImport } from './routes/recovery'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as VerifyRouteImport } from './routes/verify'
+import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
 import { Route as AdminRunsRouteImport } from './routes/admin/runs'
@@ -94,6 +96,11 @@ const ExamplesRouteRoute = ExamplesRouteRouteImport.update({
   path: '/examples',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvitesRoute = InvitesRouteImport.update({
+  id: '/invites',
+  path: '/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -117,6 +124,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const VerifyRoute = VerifyRouteImport.update({
   id: '/verify',
   path: '/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WelcomeRoute = WelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -436,10 +448,12 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/invites': typeof InvitesRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -505,10 +519,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/me': typeof MeRouteRouteWithChildren
+  '/invites': typeof InvitesRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/admin/runs': typeof AdminRunsRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -567,10 +583,12 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/invites': typeof InvitesRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
   '/verify': typeof VerifyRoute
+  '/welcome': typeof WelcomeRoute
   '/t/$slug': typeof TSlugRouteRouteWithChildren
   '/tenants/new': typeof TenantsNewRouteRouteWithChildren
   '/admin/audit': typeof AdminAuditRoute
@@ -640,10 +658,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/invites'
     | '/login'
     | '/recovery'
     | '/register'
     | '/verify'
+    | '/welcome'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -709,10 +729,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/me'
+    | '/invites'
     | '/login'
     | '/recovery'
     | '/register'
     | '/verify'
+    | '/welcome'
     | '/admin/audit'
     | '/admin/runs'
     | '/admin/settings'
@@ -770,10 +792,12 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/invites'
     | '/login'
     | '/recovery'
     | '/register'
     | '/verify'
+    | '/welcome'
     | '/t/$slug'
     | '/tenants/new'
     | '/admin/audit'
@@ -842,10 +866,12 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ExamplesRouteRoute: typeof ExamplesRouteRouteWithChildren
   MeRouteRoute: typeof MeRouteRouteWithChildren
+  InvitesRoute: typeof InvitesRoute
   LoginRoute: typeof LoginRoute
   RecoveryRoute: typeof RecoveryRoute
   RegisterRoute: typeof RegisterRoute
   VerifyRoute: typeof VerifyRoute
+  WelcomeRoute: typeof WelcomeRoute
   TSlugRouteRoute: typeof TSlugRouteRouteWithChildren
   TenantsNewRouteRoute: typeof TenantsNewRouteRouteWithChildren
   AuthErrorRoute: typeof AuthErrorRoute
@@ -873,6 +899,13 @@ declare module '@tanstack/react-router' {
       path: '/examples'
       fullPath: '/examples'
       preLoaderRoute: typeof ExamplesRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invites': {
+      id: '/invites'
+      path: '/invites'
+      fullPath: '/invites'
+      preLoaderRoute: typeof InvitesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -908,6 +941,13 @@ declare module '@tanstack/react-router' {
       path: '/verify'
       fullPath: '/verify'
       preLoaderRoute: typeof VerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/welcome': {
+      id: '/welcome'
+      path: '/welcome'
+      fullPath: '/welcome'
+      preLoaderRoute: typeof WelcomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -1600,10 +1640,12 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ExamplesRouteRoute: ExamplesRouteRouteWithChildren,
   MeRouteRoute: MeRouteRouteWithChildren,
+  InvitesRoute: InvitesRoute,
   LoginRoute: LoginRoute,
   RecoveryRoute: RecoveryRoute,
   RegisterRoute: RegisterRoute,
   VerifyRoute: VerifyRoute,
+  WelcomeRoute: WelcomeRoute,
   TSlugRouteRoute: TSlugRouteRouteWithChildren,
   TenantsNewRouteRoute: TenantsNewRouteRouteWithChildren,
   AuthErrorRoute: AuthErrorRoute,

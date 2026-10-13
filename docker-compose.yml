@@ -91,6 +91,10 @@ services:
       STROPPY_AUTH_KRATOS_PUBLIC_URL: ${STROPPY_AUTH_KRATOS_PUBLIC_URL:-http://localhost:18347/v1}
       STROPPY_AUTH_KRATOS_UPSTREAM: http://kratos:4433
       STROPPY_ADMIN_EMAILS: ${STROPPY_ADMIN_EMAILS:-dev@stroppy.local}
+      # Server mail (tenant invites) goes to Mailpit like Kratos's: http://localhost:8025.
+      STROPPY_MAIL_HOST: mailpit
+      STROPPY_MAIL_PORT: "1025"
+      STROPPY_MAIL_TLS: none
       STROPPY_INFRA_GRAPHENE_ADDRESS: ${STROPPY_INFRA_GRAPHENE_ADDRESS:-graphene.stroppy.io:443}
       STROPPY_INFRA_GRAPHENE_TOKEN: ${STROPPY_INFRA_GRAPHENE_TOKEN:?set the Graphene token in .env.compose}
       STROPPY_INFRA_GRAPHENE_INSECURE: ${STROPPY_INFRA_GRAPHENE_INSECURE:-false}

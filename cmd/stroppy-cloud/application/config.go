@@ -37,6 +37,9 @@ type Config struct {
 	// AdminEmails are the bootstrap platform admins (verified Kratos
 	// e-mails); the database flag adds more from the admin UI.
 	AdminEmails []string `mapstructure:"admin_emails"`
+	// DemoReportURL is a public report (`<public url>/s/<token>`) of a real
+	// run that first-run screens offer as an example result; empty = none.
+	DemoReportURL string `mapstructure:"demo_report_url" validate:"omitempty,url"`
 	// Migrate applies the schema on startup. The migrator takes an advisory
 	// lock, so several replicas starting together are safe.
 	Migrate bool `default:"true" mapstructure:"migrate"`

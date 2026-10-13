@@ -819,6 +819,7 @@ export function RunListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('runs.empty.title'),
+          hint: t('onboarding.empty.runs'),
           button: (
             <Button
               icon="vial"

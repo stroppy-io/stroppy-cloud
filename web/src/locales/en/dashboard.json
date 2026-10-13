@@ -62,24 +62,46 @@
     "retention": "Retention, days"
   },
   "onboarding": {
-    "title": "Welcome to {{tenant}}",
-    "subtitle": "Three steps to your first benchmark.",
+    "title": "First run: {{tenant}}",
+    "subtitle": "Five steps to the first result. Steps tick themselves off.",
+    "hide": "Hide",
+    "progress": "{{done}} of {{total}}",
+    "tenant": {
+      "title": "Tenant created",
+      "hint": "Your team's space is ready."
+    },
     "provider": {
-      "title": "Add a cloud provider",
-      "hint": "A provider profile holds credentials and quotas for the stands.",
-      "cta": "Add provider"
+      "title": "Connect a cloud",
+      "hint": "Stands come up in your cloud: add a Yandex Cloud or AWS profile and verify it.",
+      "cta": "Add a provider",
+      "guideYc": "Where to get a Yandex Cloud key",
+      "yc1": "In the Yandex Cloud console create a service account in the folder for the stands.",
+      "yc2": "Grant it the editor role on that folder.",
+      "yc3": "Create an authorized key for the account and download the JSON.",
+      "yc4": "In Settings → Providers add Yandex Cloud, paste the key and press Verify.",
+      "guideAws": "Where to get an AWS key",
+      "aws1": "In IAM create a user with EC2 and VPC rights in the region.",
+      "aws2": "Issue an access key for it.",
+      "aws3": "In Settings → Providers add AWS, paste the key and press Verify."
     },
     "test": {
-      "title": "Create a test",
-      "hint": "Pick a database, a workload and sizes — or clone an example.",
+      "title": "Get a test",
+      "hint": "Easiest is cloning an example: database, workload and sizes are set up.",
       "cta": "New test",
-      "example": "Browse examples"
+      "example": "Pick an example"
     },
     "launch": {
       "title": "Launch it",
-      "hint": "Watch the run live: phases, machines, logs and metrics.",
-      "cta": "Go to tests"
+      "hint": "Open the test and press Launch — the stand comes up in a few minutes.",
+      "cta": "To tests"
     },
+    "results": {
+      "title": "See the results",
+      "hint": "When the run finishes: QPS, latency, errors and charts over the load.",
+      "cta": "To results"
+    },
+    "demoLead": "Want to see what you will get?",
+    "demo": "Example report",
     "done": "done"
   }
 }

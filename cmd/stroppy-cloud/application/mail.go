@@ -21,8 +21,9 @@ type inviteMailer struct {
 func (m inviteMailer) SendInvite(ctx context.Context, to string, t tenant.Tenant, inv tenant.Invite) error {
 	text := fmt.Sprintf(`You are invited to join the tenant "%s" on Stroppy Cloud as %s.
 
-Sign in with this e-mail address and accept the invite:
-%s/invites
+Sign in (or sign up) with this e-mail address and confirm it — the invite
+applies on its own; it is also listed here:
+%s/me/invites
 
 `, t.Name, inv.Role, strings.TrimRight(m.publicURL, "/"))
 	if inv.Message != "" {

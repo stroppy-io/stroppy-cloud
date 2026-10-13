@@ -178,7 +178,7 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 		Schemas:   a.services.Schemas,
 		Public: api.PublicConfig{
 			AuthMode: "kratos", KratosPublicURL: a.cfg.Auth.KratosPublicURL,
-			TenantCreation: "anyone", PublicRating: true, Examples: true,
+			TenantCreation: "anyone", PublicRating: true, Examples: true, DemoReportURL: a.cfg.DemoReportURL,
 		},
 		Probes: a.infra.Probes(),
 		Log:    a.log,

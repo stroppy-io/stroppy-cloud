@@ -82,6 +82,20 @@ their lifecycle through the server API before stopping the server. Do not use
 To change the published port, update both `STROPPY_LOCAL_PORT` and
 `STROPPY_HTTP_PUBLIC_URL` in `.env.compose`.
 
+## Graphene calls, mail, first-run example
+
+- `STROPPY_INFRA_GRAPHENE_CALL_TIMEOUT` (default `10s`) bounds one
+  request-response call to Graphene, retries included; event streams are
+  not bounded. A hung Graphene fails user actions (tenant creation, launch)
+  within this time with a reason the UI explains, instead of hanging.
+- Server mail (tenant invites) uses `STROPPY_MAIL_*`; the dev compose sends it
+  to Mailpit (`http://localhost:8025`) like Kratos's mail. Empty
+  `STROPPY_MAIL_HOST` disables server mail; invites still apply on sign-in.
+- `STROPPY_DEMO_REPORT_URL` — a public report (`<public url>/s/<token>`) of a
+  real run that the welcome screen and the first-run checklist offer as
+  "what a result looks like". Publish a share of a good run, put its link
+  here; empty hides the link.
+
 ## Image registry mirror
 
 Two registries live on the same host (51.250.43.123) and are easy to confuse:

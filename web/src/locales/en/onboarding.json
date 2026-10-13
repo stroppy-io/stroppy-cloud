@@ -1,0 +1,114 @@
+{
+  "welcome": {
+    "title": "Welcome, {{name}}",
+    "subtitle": "Stroppy Cloud brings up databases in your cloud, drives load against them and compares the results.",
+    "verifyTitle": "Confirm your e-mail",
+    "verifyBody": "We mailed you a code. If someone invited you to a tenant, the invite applies right after you confirm.",
+    "verify": "Confirm e-mail",
+    "notInvited": "Nobody invited me — create my tenant",
+    "invitedTitle": "You are already on a team:",
+    "goTenant": "Go to {{tenant}}",
+    "createTitle": "Start with your tenant",
+    "createBody": "A tenant is your team's space: tests, runs, cloud providers and members. Invite colleagues later.",
+    "create": "Create a tenant",
+    "demo": "See what a result looks like",
+    "howTitle": "How Stroppy Cloud works",
+    "skip": "Skip"
+  },
+  "concepts": {
+    "database": {
+      "title": "Database",
+      "body": "Which DBMS, version and topology: single node, replicas, cluster."
+    },
+    "workload": {
+      "title": "Workload",
+      "body": "What to run: Stroppy scenarios (TPC-C, TPC-H…) in segments."
+    },
+    "test": {
+      "title": "Test",
+      "body": "Database + workload + machine sizes. This is what you launch."
+    },
+    "run": {
+      "title": "Run",
+      "body": "A stand comes up in the cloud, the load runs, everything is live."
+    },
+    "results": {
+      "title": "Results",
+      "body": "QPS, latency, errors, charts; compare and rate."
+    },
+    "suite": {
+      "title": "Suite",
+      "body": "A matrix of tests and sizes — compare variants in one go."
+    },
+    "schedule": {
+      "title": "Schedule",
+      "body": "Runs a test or a suite on a cron."
+    },
+    "provider": {
+      "title": "Provider",
+      "body": "Your cloud (Yandex Cloud, AWS): stands come up in it."
+    },
+    "tenant": {
+      "title": "Tenant",
+      "body": "Your team's space: everything above lives in it."
+    }
+  },
+  "tour": {
+    "progress": "{{current}} of {{total}}",
+    "next": "Next",
+    "prev": "Back",
+    "done": "Done",
+    "tests": {
+      "title": "Tests",
+      "body": "The core: test = database + workload + sizes. Benchmarks start here."
+    },
+    "runs": {
+      "title": "Runs",
+      "body": "Every run: live view, logs, metrics and results."
+    },
+    "databases": {
+      "title": "Databases",
+      "body": "DBMS definitions the tests use."
+    },
+    "workloads": {
+      "title": "Workloads",
+      "body": "Stroppy scenarios that run against databases."
+    },
+    "suites": {
+      "title": "Suites",
+      "body": "Test matrices — compare several variants in one run."
+    },
+    "examples": {
+      "title": "Examples",
+      "body": "Ready databases, workloads and tests: clone and run."
+    },
+    "settings": {
+      "title": "Settings",
+      "body": "Cloud providers, members, limits and webhooks of the tenant."
+    },
+    "search": {
+      "title": "Search",
+      "body": "Runs, tests, databases by name. Shortcut — /."
+    },
+    "tenant": {
+      "title": "Tenant",
+      "body": "Switch between tenants or create a new one."
+    },
+    "userMenu": {
+      "title": "Your menu",
+      "body": "Profile, theme, language. You can take this tour again from here."
+    }
+  },
+  "menu": {
+    "tour": "Take the tour",
+    "concepts": "How Stroppy works"
+  },
+  "empty": {
+    "runs": "A run is one execution of a test: a cloud stand, the load, metrics and a result. Runs appear when you launch a test or a suite.",
+    "tests": "A test is a database, a workload and machine sizes together. Start from an example — it is set up — or build one from your databases and workloads.",
+    "databases": "A database is a DBMS definition: engine, version, topology and configs. Tests reference it; a test can also define its database inline.",
+    "workloads": "A workload is Stroppy scenarios (TPC-C, TPC-H…) in segments: what to run, how hard and for how long.",
+    "suites": "A suite is a matrix of tests and sizes: several variants in one run, easy to compare.",
+    "schedules": "A schedule runs a test or a suite on a cron — e.g. nightly, to catch regressions."
+  }
+}

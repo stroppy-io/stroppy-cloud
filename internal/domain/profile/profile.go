@@ -34,6 +34,23 @@ type Preferences struct {
 	Theme         string  `json:"theme,omitempty"`
 	Timezone      string  `json:"timezone,omitempty"`
 	DefaultTenant *string `json:"default_tenant,omitempty"`
+	// Onboarding lives with the preferences in storage but is patched on
+	// its own: a preferences patch never resets it.
+	Onboarding Onboarding `json:"onboarding,omitzero"`
+}
+
+// Onboarding is the account's first-run progress.
+type Onboarding struct {
+	WelcomeDone     bool `json:"welcome_done,omitempty"`
+	TourDone        bool `json:"tour_done,omitempty"`
+	ChecklistHidden bool `json:"checklist_hidden,omitempty"`
+}
+
+// OnboardingPatch sets the given flags; nil keeps one.
+type OnboardingPatch struct {
+	WelcomeDone     *bool
+	TourDone        *bool
+	ChecklistHidden *bool
 }
 
 // Notifications are the e-mail switches.
@@ -49,6 +66,7 @@ type Patch struct {
 	Avatar        *string
 	Preferences   *Preferences
 	Notifications *Notifications
+	Onboarding    *OnboardingPatch
 }
 
 // Repository is the storage port.
@@ -143,7 +161,7 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, patch Patch) (Profil
 	}
 	if patch.DisplayName != nil {
 		if len(*patch.DisplayName) > 64 {
-			return Profile{}, errs.Invalid("display_name longer than 64")
+			return Profile{}, errs.Invalid("display_name longer than 64").Because("display_name_longer_than_64")
 		}
 		p.DisplayName = *patch.DisplayName
 	}
@@ -154,7 +172,19 @@ func (s *Service) Update(ctx context.Context, id uuid.UUID, patch Patch) (Profil
 		if err := validateTheme(patch.Preferences.Theme); err != nil {
 			return Profile{}, err
 		}
+		onboarding := p.Preferences.Onboarding
 		p.Preferences = *patch.Preferences
+		p.Preferences.Onboarding = onboarding
+	}
+	if o := patch.Onboarding; o != nil {
+		set := func(dst *bool, v *bool) {
+			if v != nil {
+				*dst = *v
+			}
+		}
+		set(&p.Preferences.Onboarding.WelcomeDone, o.WelcomeDone)
+		set(&p.Preferences.Onboarding.TourDone, o.TourDone)
+		set(&p.Preferences.Onboarding.ChecklistHidden, o.ChecklistHidden)
 	}
 	if patch.Notifications != nil {
 		p.Notifications = *patch.Notifications
@@ -194,7 +224,7 @@ func validateTheme(theme string) error {
 	case "", "system", "light", "dark":
 		return nil
 	}
-	return errs.Invalid(fmt.Sprintf("unknown theme %q", theme))
+	return errs.Invalid(fmt.Sprintf("unknown theme %q", theme)).Because("theme_unknown", "theme", theme)
 }
 
 // EncodeJSON / DecodeJSON are the storage shape of the jsonb columns.

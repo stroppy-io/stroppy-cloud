@@ -38,7 +38,10 @@ route('GET', '/api/v1/public/health', ({ store }) => ({
   },
 }))
 
-route('GET', '/api/v1/me', ({ store }) => ({ json: store.me }))
+// The seeded account has been through the first run (the demo shows a lived-in workspace).
+route('GET', '/api/v1/me', ({ store }) => ({
+  json: { ...store.me, onboarding: store.me.onboarding ?? { welcome_done: true, tour_done: true } },
+}))
 
 route('PATCH', '/api/v1/me', ({ store, body }) => {
   const patch = body as MePatch
@@ -47,6 +50,7 @@ route('PATCH', '/api/v1/me', ({ store, body }) => {
   if (patch.avatar !== undefined) me.avatar = patch.avatar
   if (patch.preferences) me.preferences = { ...me.preferences, ...patch.preferences }
   if (patch.notifications) me.notifications = { ...me.notifications, ...patch.notifications }
+  if (patch.onboarding) me.onboarding = { ...me.onboarding, ...patch.onboarding }
   store.me = me
   return { json: me }
 })

@@ -1,4 +1,5 @@
 import { apiMode } from '@api/mode'
+import { TourAutoStart } from '@components/onboarding/tour'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Tooltip, useStyles2 } from '@grafana/ui'
@@ -143,10 +144,18 @@ export function AppShell({ children }: { children?: ReactNode }) {
               </Tooltip>
             )}
           </AppLink>
-          <div className={styles.center}>{tenant && <GlobalSearch ref={searchRef} />}</div>
+          <div className={styles.center} data-tour="search">
+            {tenant && <GlobalSearch ref={searchRef} />}
+          </div>
           <div className={styles.right}>
-            {!bare && <TenantSwitcher />}
-            <UserMenu onShortcuts={() => setHelpOpen(true)} />
+            {!bare && (
+              <span data-tour="tenant">
+                <TenantSwitcher />
+              </span>
+            )}
+            <span data-tour="user-menu">
+              <UserMenu onShortcuts={() => setHelpOpen(true)} />
+            </span>
           </div>
         </div>
       </header>
@@ -166,6 +175,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
         </main>
       </div>
       <ShortcutsModal isOpen={helpOpen} onClose={() => setHelpOpen(false)} />
+      {!bare && tenant && <TourAutoStart />}
     </div>
   )
 }

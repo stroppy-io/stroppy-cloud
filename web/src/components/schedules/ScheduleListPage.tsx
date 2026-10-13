@@ -536,6 +536,7 @@ export function ScheduleListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('schedules.empty.title'),
+          hint: t('onboarding.empty.schedules'),
           button: (
             <Button
               icon="plus"

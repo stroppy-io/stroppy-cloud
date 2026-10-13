@@ -78,6 +78,19 @@ func (h *Handler) PatchMe(ctx context.Context, req *oas.MePatch) (*oas.Me, error
 		}
 		patch.Notifications = &n
 	}
+	if v, ok := req.Onboarding.Get(); ok {
+		o := profile.OnboardingPatch{}
+		if b, ok := v.WelcomeDone.Get(); ok {
+			o.WelcomeDone = &b
+		}
+		if b, ok := v.TourDone.Get(); ok {
+			o.TourDone = &b
+		}
+		if b, ok := v.ChecklistHidden.Get(); ok {
+			o.ChecklistHidden = &b
+		}
+		patch.Onboarding = &o
+	}
 	p, err := h.deps.Profiles.Update(ctx, a.UserID, patch)
 	if err != nil {
 		return nil, err
@@ -109,6 +122,12 @@ func meOf(p profile.Profile) *oas.Me {
 	if p.Preferences.DefaultTenant != nil {
 		me.Preferences.DefaultTenant = oas.NewOptNilString(*p.Preferences.DefaultTenant)
 	}
+	ob := p.Preferences.Onboarding
+	me.Onboarding = oas.NewOptOnboarding(oas.Onboarding{
+		WelcomeDone:     oas.NewOptBool(ob.WelcomeDone),
+		TourDone:        oas.NewOptBool(ob.TourDone),
+		ChecklistHidden: oas.NewOptBool(ob.ChecklistHidden),
+	})
 	if p.Notifications.RunFinished != nil {
 		me.Notifications.RunFinished = oas.NewOptBool(*p.Notifications.RunFinished)
 	}

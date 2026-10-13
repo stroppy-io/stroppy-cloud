@@ -581,6 +581,7 @@ export function WorkloadListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('library.workloads.empty.title'),
+          hint: t('onboarding.empty.workloads'),
           button: (
             <Stack gap={1} justifyContent="center">
               <Button

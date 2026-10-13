@@ -216,6 +216,7 @@ export function Sidebar() {
         className={cx(styles.item, !expanded && styles.itemRail)}
         activeOptions={{ exact: it.exact, includeSearch: false }}
         aria-label={label}
+        data-tour={`nav-${it.id}`}
       >
         <Icon name={it.icon} size="md" className={styles.itemIcon} />
         {expanded && <span className={styles.label}>{label}</span>}

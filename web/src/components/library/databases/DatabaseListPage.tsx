@@ -479,6 +479,7 @@ export function DatabaseListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('library.databases.empty.title'),
+          hint: t('onboarding.empty.databases'),
           button: (
             <Stack gap={1} justifyContent="center">
               <Button

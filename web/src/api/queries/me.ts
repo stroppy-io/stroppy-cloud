@@ -30,6 +30,9 @@ export const meQueries = {
 
 export const meMutations = {
   patch: (body: MePatch) => unwrap(api.PATCH('/api/v1/me', { body })),
+  // First-run progress; the server merges the given flags.
+  onboarding: (flags: NonNullable<MePatch['onboarding']>) =>
+    unwrap(api.PATCH('/api/v1/me', { body: { onboarding: flags } })),
   createToken: (body: {
     name: string
     tenant_id: string

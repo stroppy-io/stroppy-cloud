@@ -548,6 +548,7 @@ export function SuiteListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('suites.empty.title'),
+          hint: t('onboarding.empty.suites'),
           button: (
             <Stack gap={1}>
               <Button

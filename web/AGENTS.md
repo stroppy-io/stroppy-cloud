@@ -276,9 +276,13 @@ Grafana-плагин-ориентированные компоненты.
   schemapb) — **только** сервером через `:validate`/`:preview`: поле или
   форма объявляет `validators.onChangeAsync` с `asyncDebounceMs: 400`,
   ответ мапится на поля по `path`. Клиент правила не дублирует.
-- Тайминг «reward early, punish late»: синхронная схема на `onBlur`,
-  после первой ошибки — `onChange`; `onChangeAsync` только после валидного
-  формата (`fieldApi.parseValueWithSchema` первым шагом).
+- Тайминг «reward early, punish late» — один на все формы: `...REWARD_EARLY`
+  (`helpers/form.ts`) в `useForm`. Схема `onDynamic` проверяет поле на
+  потере фокуса до первого сабмита и на каждом изменении после; поле, у
+  которого уже висит ошибка, перепроверяется прямо при вводе — иначе ошибка
+  исчезала бы на blur от клика по кнопке, форма сжималась под курсором и
+  клик терялся. `onChangeAsync` — только после валидного формата
+  (`fieldApi.parseValueWithSchema` первым шагом).
 - Серверные ошибки при submit → `form.setErrorMap({ onServer: { fields:
   { [path]: message }, form: rootMessage } })` из `ApiError.validation.
   issues[]{path, code, severity, suggested}`; неатрибутируемое — в `form`,
@@ -363,6 +367,26 @@ workload, провайдеры, sizes): generic-рендерер `components/sch
   скрывают/дизейблят действия (`useCan(action)`).
 - `Me.email` отсутствует, пока адрес не подтверждён в Kratos; инвайты и
   админство матчатся сервером только по verified email.
+
+## 11a. Первый вход и обучение
+
+- `/` ведёт на `/welcome` (bare), пока `Me.onboarding.welcome_done` ложно.
+  Три ветки: почта не подтверждена (приглашение применится после
+  подтверждения), уже в тенанте (по приглашению) — «перейти», ничего нет —
+  «создать тенант» и `PublicConfig.demo_report_url`, если он задан. Ниже —
+  карта понятий (`components/onboarding/ConceptMap`), она же открывается из
+  меню пользователя.
+- Тур по интерфейсу — `components/onboarding/tour.tsx` на driver.js,
+  оформление переопределено токенами темы. Шаги цепляются к `data-tour`
+  (пункты сайдбара `nav-<id>`, `search`, `tenant`, `user-menu`); шаг без
+  якоря выпадает. Стартует сам один раз в тенанте после приветствия,
+  повторно — «Пройти обучение» в меню; завершение пишет `tour_done`.
+- Дашборд: чек-лист первого прогона (`components/dashboard/Onboarding`) —
+  тенант → провайдер (с инструкцией по ключам YC/AWS) → тест → запуск →
+  результаты; шаги отмечаются по данным тенанта, «Скрыть» пишет
+  `checklist_hidden`. Пустые списки объясняют раздел (`onboarding.empty.*`).
+- Состояние — на сервере (`Me.onboarding`, `PATCH /me {onboarding}` сливает
+  флаги), хук `hooks/useOnboarding`.
 
 ## 12. Живой ран (Run detail) — ядро продукта
 
@@ -649,11 +673,24 @@ Shares) строятся на `components/DataTable` и обязаны дава�
   копированием, закрытие). `sonner` напрямую не импортировать.
 - **Ошибку передавать целиком**: `onError: (e) => toast.error(e)` или
   `toast.error(e, { title: t('…failed') })`, когда нужно назвать действие.
-  `describeError` (`app/describe-error.ts`) строит заголовок по стабильному
-  `code` сервера (`common.errors.codes.*`), пояснение — из `detail`,
-  проблемы — из `validation`. Заменять ошибку общей строкой («Что-то пошло не
-  так»), `e.title` или пустой строкой — баг: пользователь не узнаёт, что
-  случилось.
+- **Текст ошибки — по `reason` сервера.** Problem несёт `code` (вид сбоя) и
+  `reason` + `params` (почему именно: `tenant_slug_taken {slug}`,
+  `limit_concurrent_runs {live, limit}`, `<сущность>_not_found`). Текст —
+  `common.errors.reasons.<reason>` (ru/en, значения из `params`); без
+  известной причины — вид сбоя по `code` (`common.errors.codes.*`) и
+  английский `detail` пояснением. HTTP-заголовок («Service Unavailable»)
+  пользователю не показывается никогда. Всё это — `api/errors.ts`
+  (`reasonText`, `codeText`, `issueText`); `describeError` (тосты) и
+  `serverErrors` (формы) им пользуются.
+- Сервер: каждая ошибка, которую видит пользователь, ставит причину —
+  `errs.Invalid("…").Because("<reason>", "k", v…)`; `errs.NotFound(what)`
+  ставит `<what>_not_found` сам. Go-тест `internal/domain/errs/reasons_test.go`
+  падает, если у причины нет текста в обеих локалях.
+- Проверки полей schemapb (`ERROR_CODE_GTE_VIOLATED` и т. п.) переводятся
+  по коду (`common.errors.checks.*`, значение — `constraint`); проверки
+  ресурсов и пригодности (`capacity_*`, `disk_*`) пока идут текстом сервера.
+- `ApiError` строится из тела, уже разобранного openapi-fetch
+  (`toApiError(response, error)`): поток ответа к этому моменту прочитан.
 - Формы: ошибки полей — в `setErrorMap` у полей; тост — для того, что к полю
   не привязано (и только если оно есть).
 - Предотвращать лучше, чем сообщать: действие, недоступное в текущем

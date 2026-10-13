@@ -2623,6 +2623,11 @@ downshift@^9.0.6:
     react-is "^18.2.0"
     tslib "^2.8.1"
 
+driver.js@1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/driver.js/-/driver.js-1.9.0.tgz#f8bffc39d2fda5a9cda4aa0d4c0887c29228a98f"
+  integrity sha512-+YWVdNVUrY1/2spszQshohWYY4soIjNBnMFS6lfmousT8igos2lmswhlqyuuNMhr+qbV0EjJ+L6i2FECPr6Ygg==
+
 earcut@^3.0.0:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/earcut/-/earcut-3.2.4.tgz#a030635fbb9a639984ce0e319b0f16e17e6e15ad"

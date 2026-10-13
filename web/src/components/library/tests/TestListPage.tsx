@@ -635,6 +635,7 @@ export function TestListPage({
         onClearFilters={clearAll}
         empty={{
           message: t('library.tests.empty.title'),
+          hint: t('onboarding.empty.tests'),
           button: (
             <Stack gap={1} justifyContent="center">
               <Button icon="plus" disabled={!canEdit && !canRun} onClick={newTest}>

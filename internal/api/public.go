@@ -19,19 +19,25 @@ type PublicConfig struct {
 	TenantCreation string
 	PublicRating   bool
 	Examples       bool
+	// DemoReportURL is a public report of a real run shown to newcomers.
+	DemoReportURL string
 }
 
 // GetPublicConfig — bootstrap config.
 func (h *Handler) GetPublicConfig(ctx context.Context) (*oas.PublicConfig, error) {
 	c := h.publicConfig(ctx)
-	return &oas.PublicConfig{
+	out := &oas.PublicConfig{
 		Auth:                oas.PublicConfigAuth{Mode: oas.PublicConfigAuthMode(c.AuthMode), Kratos: oas.PublicConfigAuthKratos{PublicURL: c.KratosPublicURL}},
 		TenantCreation:      oas.PublicConfigTenantCreation(c.TenantCreation),
 		PublicRatingEnabled: c.PublicRating,
 		ExamplesEnabled:     oas.NewOptBool(c.Examples),
 		Version:             build.Version,
 		Commit:              oas.NewOptString(build.Commit),
-	}, nil
+	}
+	if c.DemoReportURL != "" {
+		out.DemoReportURL = oas.NewOptString(c.DemoReportURL)
+	}
+	return out, nil
 }
 
 // publicConfig is the static config overlaid with the system settings.
