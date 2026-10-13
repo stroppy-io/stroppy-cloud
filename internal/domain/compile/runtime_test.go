@@ -10,6 +10,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
@@ -19,7 +20,7 @@ func runtimeInput(t *testing.T) (*schemas.Registry, compile.Input) {
 	t.Helper()
 	ctx := context.Background()
 	reg := schemas.New()
-	cat, err := catalog.New(ctx, reg, reg)
+	cat, err := catalog.New(ctx, reg, reg, dbkind.Databases())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,5 +122,41 @@ func TestCompileRejectsImpossibleExplicitDisk(t *testing.T) {
 	}
 	if out.Spec.MachineByName()["db-1"].Disks[0].GB < 30000 {
 		t.Fatal("default did not grow with workload")
+	}
+}
+
+// The selector the run-tweaks form writes: a role narrowed by kind reaches the
+// database containers and leaves the exporters on the same machines alone.
+func TestCompileRuntimeKindSelector(t *testing.T) {
+	reg, in := runtimeInput(t)
+	in.Database.Runtime = json.RawMessage(`{"containers":[{"role":"db","kind":"database","set":{"env":{"TZ":"UTC"}}}],"host_prep":[{"role":"db","kind":"sysctl","content":"vm.swappiness = 1"}]}`)
+	out, err := compile.Compile(context.Background(), reg, in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	databases := 0
+	for _, c := range out.Spec.Containers {
+		if c.Role != "db" {
+			continue
+		}
+		got := c.Env["TZ"] == "UTC"
+		if c.Kind == spec.ContainerKindDatabase {
+			databases++
+			if !got {
+				t.Fatalf("database container %s missed the tweak", c.Name)
+			}
+		} else if got {
+			t.Fatalf("%s container %s got a tweak meant for the database", c.Kind, c.Name)
+		}
+	}
+	if databases == 0 {
+		t.Fatal("no database container on role db")
+	}
+	sysctl := false
+	for _, h := range out.Spec.HostPrep {
+		sysctl = sysctl || (h.Role == "db" && h.Kind == spec.HostPrepSysctl && h.Content == "vm.swappiness = 1")
+	}
+	if !sysctl {
+		t.Fatal("host_prep step lost")
 	}
 }

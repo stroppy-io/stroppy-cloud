@@ -1,0 +1,210 @@
+{
+  "coerce": true,
+  "description": "Your own database image on the stand's machines, reached in a protocol stroppy speaks.",
+  "fields": [
+    {
+      "description": "Docker image of the database, with a tag or digest; a private registry login comes from the provider profile.",
+      "examples": [
+        {
+          "stringValue": "ghcr.io/acme/mydb:1.4.2"
+        }
+      ],
+      "group": "Engine",
+      "name": "image",
+      "required": true,
+      "string": {
+        "maxLen": "256",
+        "minLen": "1"
+      },
+      "title": "Image"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "pg"
+        },
+        "options": [
+          {
+            "label": "PostgreSQL wire protocol",
+            "value": {
+              "stringValue": "pg"
+            }
+          },
+          {
+            "label": "MySQL / MariaDB",
+            "value": {
+              "stringValue": "mysql"
+            }
+          },
+          {
+            "label": "Picodata",
+            "value": {
+              "stringValue": "picodata"
+            }
+          },
+          {
+            "label": "YDB (grpc://)",
+            "value": {
+              "stringValue": "ydb_grpc"
+            }
+          },
+          {
+            "label": "YDB (grpcs://, TLS)",
+            "value": {
+              "stringValue": "ydb_grpcs"
+            }
+          },
+          {
+            "label": "CockroachDB",
+            "value": {
+              "stringValue": "cockroach"
+            }
+          }
+        ]
+      },
+      "description": "Wire protocol the workload speaks to it; decides the stroppy driver and the shape of the URL.",
+      "group": "Connection",
+      "name": "protocol",
+      "required": true,
+      "title": "Protocol"
+    },
+    {
+      "description": "Port the database listens on; the container uses the host network, so it is the machine's port too.",
+      "group": "Connection",
+      "int64": {
+        "default": "5432",
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "port",
+      "title": "Port"
+    },
+    {
+      "description": "Login the workload connects with; the image has to create it, usually through env.",
+      "group": "Connection",
+      "name": "user",
+      "string": {
+        "default": "stroppy",
+        "maxLen": "128"
+      },
+      "title": "User"
+    },
+    {
+      "description": "Password of that login. Empty connects without one. The stand is throwaway; this is not a secret store.",
+      "group": "Connection",
+      "name": "password",
+      "string": {
+        "default": "stroppy",
+        "maxLen": "256"
+      },
+      "title": "Password"
+    },
+    {
+      "description": "Database the workload opens: a name, or a path for YDB (/Root/db).",
+      "group": "Connection",
+      "name": "database",
+      "string": {
+        "default": "stroppy",
+        "maxLen": "256"
+      },
+      "title": "Database"
+    },
+    {
+      "description": "Full URL instead of the one built from the fields above, for options they can't say. ${ip:role:db} is the first db machine.",
+      "examples": [
+        {
+          "stringValue": "postgresql://stroppy:stroppy@${ip:role:db}:5432/stroppy?sslmode=disable"
+        }
+      ],
+      "group": "Connection",
+      "name": "url",
+      "string": {
+        "maxLen": "2048"
+      },
+      "title": "Connection URL"
+    },
+    {
+      "description": "Machines running the image; the workload connects to the first, the rest are yours to join through env or command.",
+      "group": "Topology",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "16"
+      },
+      "name": "nodes",
+      "title": "Machines"
+    },
+    {
+      "description": "Variables of the container: the login above, cluster settings. Values may use ${ip:...} placeholders.",
+      "group": "Container",
+      "map": {
+        "maxEntries": "128",
+        "valueField": {
+          "name": "value",
+          "string": {
+            "maxLen": "4096"
+          }
+        }
+      },
+      "name": "env",
+      "title": "Environment"
+    },
+    {
+      "description": "Arguments replacing the image command; empty keeps the image's own.",
+      "group": "Container",
+      "list": {
+        "items": [
+          {
+            "string": {
+              "maxLen": "1024"
+            }
+          }
+        ],
+        "maxItems": "128"
+      },
+      "name": "cmd",
+      "title": "Command"
+    },
+    {
+      "description": "Path inside the container to keep on the machine's data disk; empty keeps data in the container.",
+      "examples": [
+        {
+          "stringValue": "/var/lib/postgresql/data"
+        }
+      ],
+      "group": "Container",
+      "name": "data_dir",
+      "string": {
+        "maxLen": "256"
+      },
+      "title": "Data directory"
+    },
+    {
+      "description": "Shell command run inside the container that exits 0 once the database accepts connections; the workload waits for it. Empty waits only for the container to start.",
+      "examples": [
+        {
+          "stringValue": "pg_isready -U stroppy"
+        }
+      ],
+      "group": "Container",
+      "name": "healthcheck",
+      "string": {
+        "maxLen": "256"
+      },
+      "title": "Ready check"
+    }
+  ],
+  "id": {
+    "name": "custom.params",
+    "namespace": "db",
+    "version": "v1.0.0"
+  },
+  "rules": [
+    {
+      "expr": "!(root.protocol in [\"ydb_grpc\", \"ydb_grpcs\"]) || root.database.startsWith(\"/\")",
+      "id": "ydb-database-path",
+      "message": "a YDB database is a path, like /Root/stroppy"
+    }
+  ],
+  "strict": true
+}

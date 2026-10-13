@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
@@ -382,77 +383,42 @@ func (c *compilation) workload() error {
 	return nil
 }
 
-// clientURL is the driver URL per protocol; the host is a placeholder the
-// pipeline resolves after provisioning.
+// clientURL is where stroppy connects: the tenant's DSN of an external
+// database, otherwise the plan's client endpoint at its role's first
+// address, spoken in the workload's protocol with the kind's login.
 func (c *compilation) clientURL(conn map[string]any) (url, driverType string) {
 	if c.in.Database.Kind == catalog.External && c.in.Database.ExternalDSN != "" {
-		return c.in.Database.ExternalDSN, driverTypeOf(c.in.Workload.Protocol)
+		return c.in.Database.ExternalDSN, dbkind.Driver(c.in.Workload.Protocol)
 	}
 	ep := c.in.Plan.Client
 	host := "127.0.0.1"
 	if ep.Role != "" {
 		host = "${ip:role:" + ep.Role + "}"
 	}
-	proto := c.in.Workload.Protocol
-	switch proto { //nolint:exhaustive // pg is the default branch
-	case catalog.ProtoNoop:
-		return "noop://localhost", "noop"
-	case catalog.ProtoMySQL:
-		return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", mysqlUser, mysqlPassword, host, ep.Port, mysqlDatabase), "mysql"
-	case catalog.ProtoPicodata:
-		return fmt.Sprintf("postgres://%s:%s@%s:%d?sslmode=disable", picodataUser, picodataPassword, host, ep.Port), "picodata"
-	case catalog.ProtoYDBGrpc:
-		return fmt.Sprintf("grpc://%s:%d%s", host, ep.Port, strParam(c.params(), "database_path", ydbDatabasePath)), "ydb"
-	case catalog.ProtoYDBGrpcs:
-		return fmt.Sprintf("grpcs://%s:%d%s", host, ep.Port, strParam(c.params(), "database_path", ydbDatabasePath)), "ydb"
-	case catalog.ProtoCockroach:
-		return fmt.Sprintf("postgresql://root@%s:%d/%s?sslmode=disable", host, ep.Port, cockroachDatabase), "postgres"
-	default: // catalog.ProtoPg and anything external
-		sslmode := "disable"
-		if v, ok := conn["sslmode"].(string); ok && v != "" {
-			sslmode = v
-		}
-		if c.in.Database.Kind == catalog.PgNoop {
-			return fmt.Sprintf("postgresql://%s@%s:%d/postgres?sslmode=%s", pgUser, host, ep.Port, sslmode), "postgres"
-		}
-		return fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=%s", pgUser, pgPassword, host, ep.Port, pgDatabase, sslmode), "postgres"
-	}
-}
-
-func driverTypeOf(p catalog.Protocol) string {
-	switch p {
-	case catalog.ProtoMySQL:
-		return "mysql"
-	case catalog.ProtoPicodata:
-		return "picodata"
-	case catalog.ProtoYDBGrpc, catalog.ProtoYDBGrpcs:
-		return "ydb"
-	case catalog.ProtoNoop:
-		return "noop"
-	case catalog.ProtoPg, catalog.ProtoCockroach:
-		return "postgres"
-	default:
-		return "postgres"
-	}
+	sslmode, _ := conn["sslmode"].(string) //nolint:errcheck // absent = disable
+	return dbkind.URL(c.in.Workload.Protocol, host, ep, sslmode)
 }
 
 // --- helpers ----------------------------------------------------------------
 
-// Well-known credentials and names of the deployed databases (the
-// benchmark stand is throwaway; nothing here is a secret).
+// Logins of the deployed databases: dbkind owns them, because the client
+// URL is built there from the same values the recipes create users with.
+var (
+	pgUser, pgPassword, pgDatabase = dbkind.PostgresLogin.User, dbkind.PostgresLogin.Password, dbkind.PostgresLogin.Database
+	mysqlUser, mysqlPassword       = dbkind.MySQLLogin.User, dbkind.MySQLLogin.Password
+	mysqlDatabase                  = dbkind.MySQLLogin.Database
+	picodataPassword               = dbkind.PicodataLogin.Password
+)
+
+// Deploy-only names and ports of the stands.
 //
 //nolint:gosec // G101: fixed benchmark-stand passwords, not credentials
 const (
-	pgUser, pgPassword, pgDatabase = "postgres", "stroppy_postgres", "postgres"
-	replUser, replPassword         = "replicator", "stroppy_replication"
-	mysqlUser, mysqlPassword       = "root", "stroppy_mysql"
-	mysqlDatabase                  = "stroppy"
-	picodataUser, picodataPassword = "admin", "T0psecret"
-	ydbDatabasePath                = "/Root/testdb"
-	cockroachDatabase              = "defaultdb"
-	dataMount                      = "/data"
-	pgDataDir                      = dataMount + "/pg"
-	confDir                        = "/etc/stroppy"
+	replUser, replPassword = "replicator", "stroppy_replication"
+	ydbDatabasePath        = dbkind.YDBDatabasePath
+	dataMount              = "/data"
+	pgDataDir              = dataMount + "/pg"
+	confDir                = "/etc/stroppy"
 
 	nodeExporterPort, postgresExporterPort = 9100, 9187
 	mysqldExporterPort                     = 9104

@@ -17,6 +17,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compare"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/examples"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/observe"
@@ -82,7 +83,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 		WithMailer(inviteMailer{sender: mail.New(&cfg.Mail, log), publicURL: cfg.HTTP.PublicURL, log: log})
 	tokens := token.NewService(tokenRepo, tenants, auditSvc)
 	registry := schemas.New()
-	cat, err := catalog.New(ctx, registry, registry)
+	cat, err := catalog.New(ctx, registry, registry, dbkind.Databases())
 	if err != nil {
 		return nil, err
 	}
@@ -206,6 +207,7 @@ type pusherStates struct{ p *pipelines.Pusher }
 func (a pusherStates) Revision() string                            { return a.p.Revision() }
 func (a pusherStates) Sync(ctx context.Context, ns string) bool    { return a.p.Sync(ctx, ns) }
 func (a pusherStates) SyncAll(ctx context.Context, force bool) int { return a.p.SyncAll(ctx, force) }
+
 func (a pusherStates) States(ctx context.Context) ([]admin.Namespace, error) {
 	states, err := a.p.States(ctx)
 	if err != nil {

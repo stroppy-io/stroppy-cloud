@@ -2885,8 +2885,11 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /** @enum {string} */
-        DatabaseKind: "postgres" | "mysql" | "mariadb" | "picodata" | "ydb" | "ydb_managed" | "cockroach" | "orioledb" | "external" | "noop" | "pg_noop";
+        /**
+         * @description A database kind id; the kinds that exist are listed by GET /catalog/databases.
+         * @example postgres
+         */
+        DatabaseKind: string;
         /** @enum {string} */
         Protocol: "pg" | "mysql" | "picodata" | "ydb_grpc" | "ydb_grpcs" | "cockroach" | "noop";
         CatalogDatabase: {
@@ -3104,6 +3107,7 @@ export interface components {
         DatabasePatch: components["schemas"]["EntityPatch"] & {
             runtime?: components["schemas"]["SchemaValue"];
             version?: string;
+            /** @description Docker image override; an empty string drops it and goes back to the catalog image. */
             image?: string;
             params?: components["schemas"]["SchemaValue"];
             configs?: {

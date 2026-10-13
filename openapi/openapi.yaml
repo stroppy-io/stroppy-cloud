@@ -5986,18 +5986,9 @@ components:
           format: date-time
     DatabaseKind:
       type: string
-      enum:
-      - postgres
-      - mysql
-      - mariadb
-      - picodata
-      - ydb
-      - ydb_managed
-      - cockroach
-      - orioledb
-      - external
-      - noop
-      - pg_noop
+      pattern: ^[a-z][a-z0-9_]{0,31}$
+      description: A database kind id; the kinds that exist are listed by GET /catalog/databases.
+      example: postgres
     Protocol:
       type: string
       enum:
@@ -6509,6 +6500,8 @@ components:
             type: string
           image:
             type: string
+            description: Docker image override; an empty string drops it and goes back to the catalog
+              image.
           params:
             $ref: '#/components/schemas/SchemaValue'
           configs:

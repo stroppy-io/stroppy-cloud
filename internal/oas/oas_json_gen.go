@@ -8715,7 +8715,9 @@ func (s *DatabaseExternal) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DatabaseKind as json.
 func (s DatabaseKind) Encode(e *jx.Encoder) {
-	e.Str(string(s))
+	unwrapped := string(s)
+
+	e.Str(unwrapped)
 }
 
 // Decode decodes DatabaseKind from json.
@@ -8723,38 +8725,18 @@ func (s *DatabaseKind) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DatabaseKind to nil")
 	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
+	var unwrapped string
+	if err := func() error {
+		v, err := d.Str()
+		unwrapped = string(v)
+		if err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "alias")
 	}
-	// Try to use constant string.
-	switch DatabaseKind(v) {
-	case DatabaseKindPostgres:
-		*s = DatabaseKindPostgres
-	case DatabaseKindMysql:
-		*s = DatabaseKindMysql
-	case DatabaseKindMariadb:
-		*s = DatabaseKindMariadb
-	case DatabaseKindPicodata:
-		*s = DatabaseKindPicodata
-	case DatabaseKindYdb:
-		*s = DatabaseKindYdb
-	case DatabaseKindYdbManaged:
-		*s = DatabaseKindYdbManaged
-	case DatabaseKindCockroach:
-		*s = DatabaseKindCockroach
-	case DatabaseKindOrioledb:
-		*s = DatabaseKindOrioledb
-	case DatabaseKindExternal:
-		*s = DatabaseKindExternal
-	case DatabaseKindNoop:
-		*s = DatabaseKindNoop
-	case DatabaseKindPgNoop:
-		*s = DatabaseKindPgNoop
-	default:
-		*s = DatabaseKind(v)
-	}
-
+	*s = DatabaseKind(unwrapped)
 	return nil
 }
 
@@ -19302,7 +19284,7 @@ func (o OptDatabaseKind) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
-	e.Str(string(o.Value))
+	o.Value.Encode(e)
 }
 
 // Decode decodes DatabaseKind from json.

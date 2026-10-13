@@ -47,6 +47,7 @@ import {
   usageView,
 } from '../shared/cells'
 import { ImportModal } from '../shared/ImportModal'
+import { kindVersion } from './DatabaseDetailPage'
 
 type Database = Schemas['Database']
 
@@ -297,7 +298,11 @@ export function DatabaseListPage({
         },
         value: (r) => r.kind,
         render: (r) => {
-          const primary = `${kindTitle(r.kind)} ${r.version}`
+          const primary = kindVersion(
+            catalog.data?.data.find((c) => c.kind === r.kind),
+            r.kind,
+            r.version
+          )
           return {
             primary,
             secondary: r.image,

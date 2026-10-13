@@ -23,8 +23,9 @@ func Runtime() *schemapb.Schema {
 			schemapb.List("containers", schemapb.Object("",
 				schemapb.Str("role").Title("Role").Group("Selector").Desc("Select containers by role, optionally narrowed by name.").Pattern(`^[a-z][a-z0-9_-]{0,63}$`),
 				schemapb.Str("name").Title("Name").Group("Selector").Desc("Exact generated container name; at least one selector is required.").Pattern(`^[a-z][a-z0-9_-]{0,63}$`),
+				schemapb.Str("kind").Title("Kind").Group("Selector").Desc("What the container is: database, proxy, coordinator, exporter or addon. A role also holds the exporters on its machines; kind database leaves them out.").Pattern(`^[a-z][a-z0-9_-]{0,63}$`),
 				schemapb.Ref("set", "container").Title("Settings").Group("Deployment").Desc("Explicit fields replace defaults; env/ulimits merge by key and files merge by absolute path. Empty files list removes generated files.").Required(),
-			).Strict().Rule(schemapb.Rule(`"role" in this || "name" in this`, "at least one container selector is required").ID("selector-required"))).Title("Container overrides").Group("Deployment").Desc("Applied in order; later matching entries win. Unknown selectors fail compilation.").MaxItems(256),
+			).Strict().Rule(schemapb.Rule(`"role" in this || "name" in this || "kind" in this`, "at least one container selector is required").ID("selector-required"))).Title("Container overrides").Group("Deployment").Desc("Applied in order; later matching entries win. Unknown selectors fail compilation.").MaxItems(256),
 		).MustBuild()
 	for _, f := range run.Fields {
 		switch f.Name {

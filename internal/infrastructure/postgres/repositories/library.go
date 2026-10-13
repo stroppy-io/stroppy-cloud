@@ -70,6 +70,7 @@ func (r *LibraryRepo) InsertDatabase(ctx context.Context, d library.Database) er
 	err := r.q.InsertDatabase(ctx, db.InsertDatabaseParams{
 		ID: d.ID, TenantID: d.TenantID, Name: d.Name, Description: d.Description, Tags: tagsJSON(d.Tags), AuthorID: d.AuthorID,
 		Kind: string(d.Spec.Kind), Version: d.Spec.Version, Image: d.Spec.Image, Params: orEmpty(d.Spec.Params), Configs: orEmpty(configs), External: external, Runtime: orEmpty(d.Spec.Runtime),
+		TopologyLabel: d.Spec.TopologyLabel,
 	})
 	if err != nil {
 		if isUnique(err) {
@@ -118,6 +119,7 @@ func (r *LibraryRepo) UpdateDatabase(ctx context.Context, id uuid.UUID, p librar
 		params.Runtime = orEmpty(spec.Runtime)
 		configs, _ := json.Marshal(spec.Configs) //nolint:errcheck // map always marshals
 		params.Configs = orEmpty(configs)
+		params.TopologyLabel = &spec.TopologyLabel
 	}
 	n, err := r.q.UpdateDatabase(ctx, params)
 	if err != nil {

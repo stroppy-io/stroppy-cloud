@@ -207,9 +207,12 @@ func (h *Handler) PatchDatabase(ctx context.Context, req *oas.DatabasePatch, par
 	if v, ok := req.Tags.Get(); ok {
 		p.Tags = v
 	}
-	var spec *library.DatabaseSpec
+	var spec *library.DatabaseSpecPatch
 	if req.Version.Set || req.Image.Set || req.Params.Set || req.Configs.Set || req.Runtime.Set {
-		spec = &library.DatabaseSpec{Version: req.Version.Or(""), Image: req.Image.Or("")}
+		spec = &library.DatabaseSpecPatch{Version: req.Version.Or("")}
+		if v, ok := req.Image.Get(); ok {
+			spec.Image = &v
+		}
 		if v, ok := req.Runtime.Get(); ok {
 			spec.Runtime = rawOf(v)
 		}

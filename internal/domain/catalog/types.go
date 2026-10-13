@@ -16,6 +16,7 @@ const (
 	External   DatabaseKind = "external"
 	Noop       DatabaseKind = "noop"
 	PgNoop     DatabaseKind = "pg_noop"
+	Custom     DatabaseKind = "custom"
 )
 
 // Protocol is a stroppy driver protocol.

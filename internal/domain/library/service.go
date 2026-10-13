@@ -15,6 +15,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
@@ -120,7 +121,7 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 	spec.Params = baked
 	var params map[string]any
 	_ = json.Unmarshal(baked, &params) //nolint:errcheck // baked by us
-	plan, err := topology.Compile(spec.Kind, params)
+	plan, err := dbkind.Plan(spec.Kind, params)
 	if err != nil {
 		return spec, DatabaseDerived{}, errs.Wrap(errs.CodeInvalid, "topology", err)
 	}
@@ -178,6 +179,7 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 			spec.ExternalDSN = dsn
 		}
 	}
+	spec.TopologyLabel = plan.Label
 	return spec, DatabaseDerived{Plan: plan, EffectiveConfigs: effective}, nil
 }
 
@@ -243,7 +245,7 @@ func (s *Service) ListDatabases(ctx context.Context, actor auth.Actor, tenantID 
 }
 
 // UpdateDatabase patches header and/or spec (member+).
-func (s *Service) UpdateDatabase(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID, p EntityPatch, specPatch *DatabaseSpec) (Database, DatabaseDerived, error) {
+func (s *Service) UpdateDatabase(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID, p EntityPatch, specPatch *DatabaseSpecPatch) (Database, DatabaseDerived, error) {
 	if err := s.writer(ctx, actor, tenantID); err != nil {
 		return Database{}, DatabaseDerived{}, err
 	}
@@ -267,8 +269,8 @@ func (s *Service) UpdateDatabase(ctx context.Context, actor auth.Actor, tenantID
 		if specPatch.Version != "" {
 			merged.Version = specPatch.Version
 		}
-		if specPatch.Image != "" {
-			merged.Image = specPatch.Image
+		if specPatch.Image != nil {
+			merged.Image = strings.TrimSpace(*specPatch.Image)
 		}
 		if specPatch.Params != nil {
 			merged.Params = specPatch.Params

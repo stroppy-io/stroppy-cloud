@@ -107,11 +107,24 @@ type FieldIssue = NonNullable<ValidationResult['errors']>[number]
  * code with the constraint; domain checks (fit, resources) carry numbers in their own
  * message, which is shown as is.
  */
+/**
+ * The bound of a check. schemapb puts the rule name in `constraint` ("min_len") and the
+ * bound at the end of its English message ("length must be at least 1").
+ */
+function constraintValue(v: FieldIssue): string {
+  const c = v.constraint ?? ''
+  if (c && !/^[a-z_]+$/.test(c)) return c
+  const last = v.message?.trim().split(/\s+/).pop() ?? ''
+  return last.replace(/^["'`]|["'`]$/g, '') || c
+}
+
 export function issueText(v: FieldIssue): string {
   const code = v.code.replace(/^ERROR_CODE_/, '').toLowerCase()
-  const key = `common.errors.checks.${code}`
+  const bound = constraintValue(v)
+  // "at least 1 character" is an empty required field and reads as one.
+  const key = `common.errors.checks.${code === 'min_len_violated' && bound === '1' ? 'required_missing' : code}`
   if (v.code.startsWith('ERROR_CODE_') && i18n.exists(key)) {
-    return i18n.t(key, { constraint: v.constraint ?? '' })
+    return i18n.t(key, { constraint: bound })
   }
   return v.message ?? `${v.code}${v.constraint ? ` (${v.constraint})` : ''}`
 }

@@ -13,7 +13,8 @@
     "segments": "Segments",
     "options": "Options",
     "validation": "Validation",
-    "runs": "Runs"
+    "runs": "Runs",
+    "build": "Custom build"
   },
   "columns": {
     "name": "Name",
@@ -386,5 +387,101 @@
     "usedIn_one": "in {{count}} record",
     "usedIn_other": "in {{count}} records",
     "andMore": "and {{count}} more"
+  },
+  "build": {
+    "badge": "Custom image",
+    "image": {
+      "title": "Database image",
+      "hint": "The Docker image of the database itself: the primary and the replicas. Leave it empty and runs use the official image for this version. Set your own for a fork or a patched build; the login to a private registry comes from the provider profile. The image of a proxy or an exporter is changed in the container tweaks below.",
+      "label": "Custom image",
+      "catalog": "Catalog image: {{image}}",
+      "fromCatalog": "from the catalog",
+      "reset": "Use catalog image",
+      "saved": "Image saved; the next runs use it",
+      "cleared": "Back to the catalog image",
+      "spaces": "An image name has no spaces. Example: ghcr.io/acme/postgres:17-patched"
+    },
+    "runtime": {
+      "title": "Run tweaks",
+      "hint": "What to change in the containers and machines we bring up for this database. Database settings (postgresql.conf and the like) live on the Configs tab; this is for what a config can't say. The tweaks apply to every run with this database.",
+      "notMap": "Expected a YAML map with keys like containers, additional_containers, host_prep.",
+      "parse": "Can't read the YAML: {{error}}",
+      "empty": "No tweaks; containers start the way the recipe makes them.",
+      "valid": "Checked; ready to save.",
+      "applied": "Saved. The tweaks apply to every run with this database.",
+      "saved": "Tweaks saved",
+      "modeForm": "Form",
+      "otherKeys": "The tweaks hold keys the form doesn't show: {{keys}}. They are kept as they are; edit them in YAML.",
+      "fixAbove_one": "{{count}} field has a problem, highlighted above.",
+      "fixAbove_other": "{{count}} fields have problems, highlighted above."
+    },
+    "target": {
+      "database": "Database · {{role}}",
+      "proxy": "Proxy · {{role}}",
+      "coordinator": "Coordinator · {{role}}",
+      "exporters": "All metrics exporters"
+    },
+    "containers": {
+      "title": "Container tweaks",
+      "hint": "Change the image, environment, command, or add a file to a container we make. Empty fields stay as the recipe sets them.",
+      "add": "Container tweak",
+      "target": "Which container",
+      "image": "Image",
+      "imageHint": "Empty means the recipe image.",
+      "imagePlaceholder": "as in the recipe",
+      "cmd": "Command",
+      "cmdHint": "One argument per line. It replaces the recipe command entirely, so write all of it."
+    },
+    "env": {
+      "label": "Environment variables",
+      "hint": "Added to the recipe variables; the same key overwrites its value.",
+      "add": "Variable"
+    },
+    "files": {
+      "label": "Files",
+      "hint": "Put into the container before it starts. A file at the same path as the recipe one replaces it. The second field is the mode, 0644 by default.",
+      "add": "File",
+      "contentPlaceholder": "File contents"
+    },
+    "steps": {
+      "title": "Before the run, on the machines",
+      "hint": "Runs on the VM itself before any container starts: kernel parameters or a script of your own.",
+      "add": "Machine step",
+      "role": "Machines of role",
+      "kind": "What to do",
+      "kinds": {
+        "sysctl": "sysctl",
+        "script": "Script",
+        "disks": "Disks"
+      },
+      "contentHint": {
+        "sysctl": "sysctl.conf lines: key = value.",
+        "script": "A shell script run as root. A non-zero exit stops the run.",
+        "disks": "Disk layout; we normally do it ourselves."
+      }
+    },
+    "extra": {
+      "title": "Your own containers",
+      "hint": "A container the recipe doesn't have: your exporter, agent or sidecar. It runs next to the database on the machine you pick, on the host network.",
+      "add": "Own container",
+      "name": "Name",
+      "machine": "Machine",
+      "image": "Image",
+      "ports": "Ports",
+      "portsHint": "Comma-separated; the host port equals the container port.",
+      "cmdHint": "One argument per line. Empty means the image command."
+    },
+    "help": {
+      "intro": "Run tweaks are a YAML map. Every key below is optional; write only what you change. We lay it over what the parameters and configs produce and check it before saving.",
+      "insert": "Insert",
+      "merge": "How it applies: a field you set replaces the recipe value, env and files merge by key and path, lists are replaced whole. A selector that matches no container or machine fails the run instead of being skipped.",
+      "keys": {
+        "containers": "Tweaks to containers we make. Pick them by role (machine role), kind (database, proxy, exporter) or an exact name; set holds container fields: image, env, cmd, files, ulimits, healthcheck.",
+        "host_prep": "Steps on the VM before containers start: kind sysctl (sysctl.conf lines) or script (shell as root), for every machine of a role or one machine.",
+        "additional_containers": "Your containers next to the database. name, role, machine (machines are named <role>-<n>, e.g. db-1) and image are required.",
+        "machines": "Hardware of one machine over the test sizes: cpu, memory_gb, disks.",
+        "scrapes": "Where the agent collects Prometheus metrics from: usually an exporter from additional_containers."
+      }
+    }
   }
 }

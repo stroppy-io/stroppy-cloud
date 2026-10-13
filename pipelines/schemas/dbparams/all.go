@@ -17,5 +17,6 @@ func All() []*schemapb.Schema {
 		External(),
 		Noop(),
 		PgNoop(),
+		Custom(),
 	}
 }

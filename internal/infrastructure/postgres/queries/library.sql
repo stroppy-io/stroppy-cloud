@@ -1,6 +1,6 @@
 -- name: InsertDatabase :exec
-INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external)
-VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @runtime, @external);
+INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology_label)
+VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @runtime, @external, @topology_label);
 
 -- name: DatabaseByID :one
 SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
@@ -8,41 +8,10 @@ FROM databases WHERE id = @id AND deleted_at IS NULL;
 
 -- name: DatabasesOfTenant :many
 -- Filters are optional; sort is decided by the caller through sort_key/desc.
--- `topology` sorts by the plan label topology.Compile derives at read time
--- (the UI's topology column), recomputed here from the baked params: they
--- carry every key the kind declares. Keep in step with topology.go labels.
+-- `topology` sorts by the plan label written with the params.
 -- `usages` counts the live tests referencing the definition.
 SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
-FROM databases, LATERAL (SELECT CASE kind
-    WHEN 'postgres' THEN concat_ws(' + ', 'postgres',
-        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,
-        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,
-        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,
-        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)
-    WHEN 'orioledb' THEN concat_ws(' + ', 'orioledb',
-        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,
-        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,
-        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,
-        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)
-    WHEN 'mysql' THEN concat_ws(' + ', 'mysql',
-        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,
-        CASE WHEN params->>'replication' = 'group' THEN 'group replication' END,
-        CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN 'proxysql' END)
-    WHEN 'mariadb' THEN CASE WHEN params->>'replication' = 'galera'
-        THEN 'galera ×' || COALESCE((params->>'galera_nodes')::numeric::int, 3)
-             || CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN ' + proxysql' WHEN params->>'maxscale' = 'true' THEN ' + maxscale' ELSE '' END
-        ELSE concat_ws(' + ', 'mariadb',
-             CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,
-             CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 OR params->>'maxscale' = 'true' THEN 'proxy' END) END
-    WHEN 'picodata' THEN 'picodata ×' || GREATEST(1, COALESCE((SELECT sum(COALESCE((t->>'instances')::numeric::int, 1)) FROM jsonb_array_elements(CASE WHEN jsonb_typeof(params->'tiers') = 'array' THEN params->'tiers' ELSE '[]'::jsonb END) t), 0))
-        || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END
-    WHEN 'ydb' THEN 'ydb ' || COALESCE(NULLIF(params->>'fault_tolerance', ''), 'none') || ': ' || COALESCE((params->>'storage_nodes')::numeric::int, 1) || ' storage + ' || COALESCE((params->>'database_nodes')::numeric::int, 1) || ' database'
-    WHEN 'cockroach' THEN 'cockroach ×' || COALESCE((params->>'nodes')::numeric::int, 3) || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END
-    WHEN 'pg_noop' THEN 'pg-noop'
-    WHEN 'noop' THEN 'noop (runner only)'
-    WHEN 'ydb_managed' THEN 'managed ydb ' || COALESCE(NULLIF(params->>'type', ''), 'dedicated')
-    WHEN 'external' THEN 'external ' || COALESCE(NULLIF(params->>'protocol', ''), 'pg')
-  END AS topology_label) tl
+FROM databases
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@search::text = '' OR name ILIKE '%' || @search::text || '%' OR description ILIKE '%' || @search::text || '%')
   AND (@author_id::text = '' OR author_id::text = @author_id::text)
@@ -55,8 +24,8 @@ ORDER BY
   CASE WHEN @sort_key::text = 'kind' AND @desc::boolean THEN kind END DESC,
   CASE WHEN @sort_key::text = 'version' AND NOT @desc::boolean THEN version END ASC,
   CASE WHEN @sort_key::text = 'version' AND @desc::boolean THEN version END DESC,
-  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN tl.topology_label END ASC NULLS LAST,
-  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN tl.topology_label END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN topology_label END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN topology_label END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'usages' AND NOT @desc::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,
   CASE WHEN @sort_key::text = 'usages' AND @desc::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,
   CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
@@ -78,6 +47,7 @@ SET name        = COALESCE(@name::text, name),
     params      = COALESCE(@params::jsonb, params),
     configs     = COALESCE(@configs::jsonb, configs),
     runtime     = COALESCE(@runtime::jsonb, runtime),
+    topology_label = COALESCE(@topology_label::text, topology_label),
     updated_at  = now()
 WHERE id = @id AND deleted_at IS NULL;
 

@@ -682,7 +682,7 @@ components:
               allOf: [{ $ref: '#/components/schemas/SchemaValue' }]
               x-schema: test.runtime@1
             version: { type: string }
-            image: { type: string }
+            image: { type: string, description: "Docker image override; an empty string drops it and goes back to the catalog image." }
             params: { $ref: '#/components/schemas/SchemaValue' }
             configs:
               type: object

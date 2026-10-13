@@ -75,3 +75,20 @@ func TestRuntimeWorkloadPreservesUint64AndEmptyObjects(t *testing.T) {
 		t.Fatal("explicit empty/null did not clear defaults")
 	}
 }
+
+func TestRuntimeKindNarrowsRole(t *testing.T) {
+	raw, err := NormalizeRuntime(json.RawMessage(`{"containers":[{"role":"db","kind":"database","set":{"cmd":["postgres","-c","fsync=off"]}}]}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := Run{Containers: []Container{
+		{Name: "db-1-postgres", Role: "db", Kind: ContainerKindDatabase, Cmd: []string{"postgres"}},
+		{Name: "db-1-postgres-exporter", Role: "db", Kind: ContainerKindExporter},
+	}}
+	if err := ApplyRuntime(&r, raw); err != nil {
+		t.Fatal(err)
+	}
+	if len(r.Containers[0].Cmd) != 3 || r.Containers[1].Cmd != nil {
+		t.Fatalf("kind did not narrow the role: %+v", r.Containers)
+	}
+}

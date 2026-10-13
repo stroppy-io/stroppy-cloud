@@ -16,6 +16,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -195,9 +196,13 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 
 	// protocol match
 	if dbSpec != nil && wlSpec != nil {
-		if kind, ok := s.catalog.Database(dbSpec.Kind); ok && !hasProtocol(kind.Protocols, wlSpec.Protocol) {
-			issue("workload.protocol", "protocol_mismatch", "ERROR",
-				fmt.Sprintf("%s speaks %s, the workload uses %s", kind.Title, joinProtocols(kind.Protocols), wlSpec.Protocol), string(kind.Protocols[0]))
+		var params map[string]any
+		_ = json.Unmarshal(dbSpec.Params, &params) //nolint:errcheck // baked by DeriveDatabase
+		if kind, ok := s.catalog.Database(dbSpec.Kind); ok {
+			if speaks := dbkind.Protocols(dbSpec.Kind, params); len(speaks) > 0 && !hasProtocol(speaks, wlSpec.Protocol) {
+				issue("workload.protocol", "protocol_mismatch", "ERROR",
+					fmt.Sprintf("%s speaks %s, the workload uses %s", kind.Title, joinProtocols(speaks), wlSpec.Protocol), string(speaks[0]))
+			}
 		}
 	}
 

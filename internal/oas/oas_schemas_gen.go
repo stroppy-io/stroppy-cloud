@@ -3837,122 +3837,20 @@ func (s *DatabaseExternal) SetDsn(val OptString) {
 	s.Dsn = val
 }
 
-// Ref: #/components/schemas/DatabaseKind
 type DatabaseKind string
-
-const (
-	DatabaseKindPostgres   DatabaseKind = "postgres"
-	DatabaseKindMysql      DatabaseKind = "mysql"
-	DatabaseKindMariadb    DatabaseKind = "mariadb"
-	DatabaseKindPicodata   DatabaseKind = "picodata"
-	DatabaseKindYdb        DatabaseKind = "ydb"
-	DatabaseKindYdbManaged DatabaseKind = "ydb_managed"
-	DatabaseKindCockroach  DatabaseKind = "cockroach"
-	DatabaseKindOrioledb   DatabaseKind = "orioledb"
-	DatabaseKindExternal   DatabaseKind = "external"
-	DatabaseKindNoop       DatabaseKind = "noop"
-	DatabaseKindPgNoop     DatabaseKind = "pg_noop"
-)
-
-// AllValues returns all DatabaseKind values.
-func (DatabaseKind) AllValues() []DatabaseKind {
-	return []DatabaseKind{
-		DatabaseKindPostgres,
-		DatabaseKindMysql,
-		DatabaseKindMariadb,
-		DatabaseKindPicodata,
-		DatabaseKindYdb,
-		DatabaseKindYdbManaged,
-		DatabaseKindCockroach,
-		DatabaseKindOrioledb,
-		DatabaseKindExternal,
-		DatabaseKindNoop,
-		DatabaseKindPgNoop,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s DatabaseKind) MarshalText() ([]byte, error) {
-	switch s {
-	case DatabaseKindPostgres:
-		return []byte(s), nil
-	case DatabaseKindMysql:
-		return []byte(s), nil
-	case DatabaseKindMariadb:
-		return []byte(s), nil
-	case DatabaseKindPicodata:
-		return []byte(s), nil
-	case DatabaseKindYdb:
-		return []byte(s), nil
-	case DatabaseKindYdbManaged:
-		return []byte(s), nil
-	case DatabaseKindCockroach:
-		return []byte(s), nil
-	case DatabaseKindOrioledb:
-		return []byte(s), nil
-	case DatabaseKindExternal:
-		return []byte(s), nil
-	case DatabaseKindNoop:
-		return []byte(s), nil
-	case DatabaseKindPgNoop:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *DatabaseKind) UnmarshalText(data []byte) error {
-	switch DatabaseKind(data) {
-	case DatabaseKindPostgres:
-		*s = DatabaseKindPostgres
-		return nil
-	case DatabaseKindMysql:
-		*s = DatabaseKindMysql
-		return nil
-	case DatabaseKindMariadb:
-		*s = DatabaseKindMariadb
-		return nil
-	case DatabaseKindPicodata:
-		*s = DatabaseKindPicodata
-		return nil
-	case DatabaseKindYdb:
-		*s = DatabaseKindYdb
-		return nil
-	case DatabaseKindYdbManaged:
-		*s = DatabaseKindYdbManaged
-		return nil
-	case DatabaseKindCockroach:
-		*s = DatabaseKindCockroach
-		return nil
-	case DatabaseKindOrioledb:
-		*s = DatabaseKindOrioledb
-		return nil
-	case DatabaseKindExternal:
-		*s = DatabaseKindExternal
-		return nil
-	case DatabaseKindNoop:
-		*s = DatabaseKindNoop
-		return nil
-	case DatabaseKindPgNoop:
-		*s = DatabaseKindPgNoop
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
 
 // Merged schema.
 // Ref: #/components/schemas/DatabasePatch
 type DatabasePatch struct {
-	Name        OptString               `json:"name"`
-	Description OptString               `json:"description"`
-	Tags        OptDatabasePatchTags    `json:"tags"`
-	Runtime     OptSchemaValue          `json:"runtime"`
-	Version     OptString               `json:"version"`
-	Image       OptString               `json:"image"`
-	Params      OptSchemaValue          `json:"params"`
-	Configs     OptDatabasePatchConfigs `json:"configs"`
+	Name        OptString            `json:"name"`
+	Description OptString            `json:"description"`
+	Tags        OptDatabasePatchTags `json:"tags"`
+	Runtime     OptSchemaValue       `json:"runtime"`
+	Version     OptString            `json:"version"`
+	// Docker image override; an empty string drops it and goes back to the catalog image.
+	Image   OptString               `json:"image"`
+	Params  OptSchemaValue          `json:"params"`
+	Configs OptDatabasePatchConfigs `json:"configs"`
 }
 
 // GetName returns the value of Name.

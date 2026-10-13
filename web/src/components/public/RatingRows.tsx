@@ -1,3 +1,4 @@
+import { catalogQueries } from '@api/queries/catalog'
 import type { RatingEntry } from '@api/types'
 import { ProductIcon } from '@components/ProductIcon'
 import { RankBadge } from '@components/RankBadge'
@@ -6,6 +7,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
 import { formatMetric } from '@helpers/format'
 import { hardwareLabel } from '@helpers/rating'
+import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 
@@ -19,18 +21,6 @@ export type RatingPalette = {
   line: string
   text: string
   muted: string
-}
-
-export const KIND_TITLE: Record<string, string> = {
-  postgres: 'PostgreSQL',
-  mysql: 'MySQL',
-  mariadb: 'MariaDB',
-  picodata: 'Picodata',
-  ydb: 'YDB',
-  ydb_managed: 'YDB Managed',
-  cockroach: 'CockroachDB',
-  orioledb: 'OrioleDB',
-  external: 'External',
 }
 
 const getStyles = (theme: GrafanaTheme2, p: RatingPalette) => ({
@@ -102,6 +92,10 @@ export function RatingRows({
   const { t } = useTranslation()
   const styles = useStyles2(getStyles, palette)
   const reduce = useReducedMotion() ?? false
+  // Kind titles come from the catalog, the one list of kinds there is.
+  const catalog = useQuery(catalogQueries.public())
+  const kindTitle = (kind: string) =>
+    catalog.data?.databases.find((d) => d.kind === kind)?.title ?? kind
 
   if (loading) {
     return (
@@ -142,7 +136,7 @@ export function RatingRows({
               <RankBadge rank={e.rank} size="lg" className={styles.rank} />
               <div style={{ minWidth: 0 }}>
                 <div className={styles.name}>
-                  {KIND_TITLE[e.db_kind] ?? e.db_kind} {e.db_version}
+                  {kindTitle(e.db_kind)} {e.db_version}
                 </div>
                 <div className={styles.meta}>{meta.join(' · ')}</div>
               </div>

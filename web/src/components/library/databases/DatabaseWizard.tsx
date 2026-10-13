@@ -136,7 +136,14 @@ export function DatabaseWizard({
     () => (schema ? applyDefaults(schema.fields, params) : params),
     [schema, params]
   )
-  const { errors, checking } = useSchemaValidate(schemaId, schema, fullParams, step === 3)
+  // The version travels in params only for kinds whose schema has the field;
+  // the rest would reject it as unknown.
+  const specParams = useMemo(() => {
+    const p = { ...fullParams }
+    if (!hasVersionField) delete p.version
+    return p
+  }, [fullParams, hasVersionField])
+  const { errors, checking } = useSchemaValidate(schemaId, schema, specParams, step === 3)
 
   // live topology / requirements preview from the server
   const [preview, setPreview] = useState<Preview | undefined>()
@@ -147,7 +154,7 @@ export function DatabaseWizard({
   const runPreview = useDebouncedCallback((body: DatabaseWrite) => previewM.mutate(body), {
     wait: 400,
   })
-  const serializedParams = JSON.stringify(fullParams)
+  const serializedParams = JSON.stringify(specParams)
   // biome-ignore lint/correctness/useExhaustiveDependencies: re-run when the serialized params change
   useEffect(() => {
     if (kind && version && step >= 2)
@@ -155,7 +162,7 @@ export function DatabaseWizard({
         name: 'preview',
         kind: kind as DatabaseWrite['kind'],
         version,
-        params: fullParams,
+        params: specParams,
       })
   }, [serializedParams, kind, version, step, runPreview])
 
@@ -178,11 +185,6 @@ export function DatabaseWizard({
     setVersion(v)
     setParams((p) => ({ ...p, version: v }))
   }
-  const specParams = useMemo(() => {
-    const p = { ...fullParams }
-    if (!hasVersionField) delete p.version
-    return p
-  }, [fullParams, hasVersionField])
 
   const create = useMutation({
     mutationFn: (body: DatabaseWrite) => libraryMutations.createDatabase(slug, body),

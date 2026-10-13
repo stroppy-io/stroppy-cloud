@@ -124,7 +124,10 @@ function Frame({
           <ul className={styles.points}>
             {POINTS.map((p) => (
               <li key={p} className={styles.point}>
-                <Icon name={POINT_ICON[p]} size="lg" className={styles.pointIcon} />
+                {/* Its own cell: Icon renders nothing until the SVG loads, and the text must not slide into its column. */}
+                <span className={styles.pointIcon}>
+                  <Icon name={POINT_ICON[p]} size="lg" />
+                </span>
                 <div>
                   <div className={styles.pointTitle}>{t(`auth.shell.${p}.title`)}</div>
                   <div className={styles.pointBody}>{t(`auth.shell.${p}.body`)}</div>

@@ -39,13 +39,14 @@ import { Panel, WithSidebar } from '../shared/Panel'
 import { RequirementsTable } from '../shared/RequirementsTable'
 import { TopologyPreview } from '../shared/TopologyPreview'
 import { UsagesList } from '../shared/UsagesList'
+import { buildChanges, DatabaseBuildTab } from './DatabaseBuildTab'
 
 type Database = Schemas['Database']
 type Preview = Schemas['DatabasePreview']
 
 export const databaseDetailSearchSchema = z.object({
   tab: z
-    .enum(['overview', 'params', 'configs', 'usages', 'diff'])
+    .enum(['overview', 'params', 'configs', 'build', 'usages', 'diff'])
     .default('overview')
     .catch('overview'),
   diff: z.string().optional().catch(undefined),
@@ -113,6 +114,7 @@ export function DatabaseDetailPage({
     { id: 'overview', label: t('library.tabs.overview') },
     { id: 'params', label: t('library.tabs.params') },
     { id: 'configs', label: t('library.tabs.configs'), counter: countOverrides(db.configs) },
+    { id: 'build', label: t('library.tabs.build'), counter: buildChanges(db) || undefined },
     { id: 'usages', label: t('library.tabs.usages'), counter: db.usages?.length ?? 0 },
     { id: 'diff', label: t('library.tabs.diff') },
   ]
@@ -129,8 +131,9 @@ export function DatabaseDetailPage({
         ]}
         badge={
           <Stack gap={0.5}>
-            <Badge color="blue" text={`${cat?.title ?? db.kind} ${db.version}`} />
+            <Badge color="blue" text={kindVersion(cat, db.kind, db.version)} />
             {db.topology_preview && <Badge color="darkgrey" text={db.topology_preview.label} />}
+            {db.image && <Badge color="purple" icon="cube" text={t('library.build.badge')} />}
             {!cat?.deployable && cat && (
               <Badge color="orange" text={t('library.wizard.db.notDeployable')} />
             )}
@@ -205,6 +208,14 @@ export function DatabaseDetailPage({
                   ),
                 },
                 { label: t('library.columns.topology'), value: db.topology_preview?.label ?? '—' },
+                {
+                  label: t('library.build.image.title'),
+                  value: ownImage(db) ? (
+                    <span className={styles.mono}>{ownImage(db)}</span>
+                  ) : (
+                    t('library.build.image.fromCatalog')
+                  ),
+                },
                 {
                   label: t('library.columns.usages'),
                   value: (
@@ -295,6 +306,15 @@ export function DatabaseDetailPage({
         />
       )}
 
+      {search.tab === 'build' && (
+        <DatabaseBuildTab
+          db={db}
+          cat={cat}
+          canEdit={canEdit}
+          onSave={(p) => patch.mutateAsync(p)}
+        />
+      )}
+
       {search.tab === 'usages' && (
         <Panel
           title={t('library.usages.title')}
@@ -324,6 +344,23 @@ export function DatabaseDetailPage({
       />
     </Page>
   )
+}
+
+/**
+ * "PostgreSQL 17"; a kind whose only version is a placeholder with no image
+ * (custom, external, noop) is just its title.
+ */
+export function kindVersion(cat: CatalogDatabase | undefined, kind: string, version: string) {
+  const title = cat?.title ?? kind
+  const real = cat?.versions.find((v) => v.version === version)?.image
+  return real || !cat ? `${title} ${version}` : title
+}
+
+/** The image this database runs instead of the catalog one, if any. */
+function ownImage(db: Database): string {
+  if (db.image) return db.image
+  const fromParams = (db.params as Record<string, unknown> | undefined)?.image
+  return typeof fromParams === 'string' ? fromParams : ''
 }
 
 function countOverrides(configs: Database['configs']): number {

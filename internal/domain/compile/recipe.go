@@ -27,6 +27,7 @@ var recipes = map[catalog.DatabaseKind]recipe{
 	catalog.PgNoop:     pgNoopRecipe,
 	catalog.Noop:       noopRecipe,
 	catalog.External:   noopRecipe,
+	catalog.Custom:     customRecipe,
 }
 
 // Supported reports whether a kind has a recipe.

@@ -1,4 +1,4 @@
-package topology_test
+package dbkind_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 )
@@ -25,7 +26,7 @@ func bake(t *testing.T, kind catalog.DatabaseKind, params map[string]any) map[st
 }
 
 func TestCompilePostgresPatroni(t *testing.T) {
-	p, err := topology.Compile(catalog.Postgres, bake(t, catalog.Postgres, map[string]any{
+	p, err := dbkind.Plan(catalog.Postgres, bake(t, catalog.Postgres, map[string]any{
 		"version": "17", "replicas": 2, "sync_replicas": 1, "ha": "patroni", "etcd_nodes": 3, "haproxy": 1, "pgbouncer": true,
 	}))
 	if err != nil {
@@ -47,13 +48,13 @@ func TestCompilePostgresPatroni(t *testing.T) {
 
 func TestCompileEveryCatalogTemplate(t *testing.T) {
 	reg := schemas.New()
-	c, err := catalog.New(context.Background(), reg, reg)
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, d := range c.Databases {
 		for _, tpl := range d.Topologies {
-			plan, err := topology.Compile(d.Kind, bake(t, d.Kind, tpl.Params))
+			plan, err := dbkind.Plan(d.Kind, bake(t, d.Kind, tpl.Params))
 			if err != nil {
 				t.Fatalf("%s/%s: %v", d.Kind, tpl.ID, err)
 			}

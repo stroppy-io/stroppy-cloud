@@ -607,27 +607,28 @@ func (q *Queries) ExpireInvites(ctx context.Context) (int64, error) {
 	return tag.RowsAffected(), err
 }
 
-const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`
+const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology_label)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);`
 
 type InsertDatabaseParams struct {
-	ID          uuid.UUID
-	TenantID    uuid.UUID
-	Name        string
-	Description string
-	Tags        json.RawMessage
-	AuthorID    *uuid.UUID
-	Kind        string
-	Version     string
-	Image       string
-	Params      json.RawMessage
-	Configs     json.RawMessage
-	Runtime     json.RawMessage
-	External    json.RawMessage
+	ID            uuid.UUID
+	TenantID      uuid.UUID
+	Name          string
+	Description   string
+	Tags          json.RawMessage
+	AuthorID      *uuid.UUID
+	Kind          string
+	Version       string
+	Image         string
+	Params        json.RawMessage
+	Configs       json.RawMessage
+	Runtime       json.RawMessage
+	External      json.RawMessage
+	TopologyLabel string
 }
 
 func (q *Queries) InsertDatabase(ctx context.Context, arg InsertDatabaseParams) error {
-	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.External)
+	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.External, arg.TopologyLabel)
 	return err
 }
 
@@ -668,23 +669,25 @@ SET name        = COALESCE($1::text, name),
     params      = COALESCE($6::jsonb, params),
     configs     = COALESCE($7::jsonb, configs),
     runtime     = COALESCE($8::jsonb, runtime),
+    topology_label = COALESCE($9::text, topology_label),
     updated_at  = now()
-WHERE id = $9 AND deleted_at IS NULL;`
+WHERE id = $10 AND deleted_at IS NULL;`
 
 type UpdateDatabaseParams struct {
-	Name        *string
-	Description *string
-	Tags        json.RawMessage
-	Version     *string
-	Image       *string
-	Params      json.RawMessage
-	Configs     json.RawMessage
-	Runtime     json.RawMessage
-	ID          uuid.UUID
+	Name          *string
+	Description   *string
+	Tags          json.RawMessage
+	Version       *string
+	Image         *string
+	Params        json.RawMessage
+	Configs       json.RawMessage
+	Runtime       json.RawMessage
+	TopologyLabel *string
+	ID            uuid.UUID
 }
 
 func (q *Queries) UpdateDatabase(ctx context.Context, arg UpdateDatabaseParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.ID)
+	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.TopologyLabel, arg.ID)
 	return tag.RowsAffected(), err
 }
 
@@ -4255,7 +4258,7 @@ func (q *Queries) DatabasesOfTenant(ctx context.Context, arg DatabasesOfTenantPa
 		args = append(args, arg.Off)
 		positions[9] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("-- Filters are optional; sort is decided by the caller through sort_key/desc.\n-- `topology` sorts by the plan label topology.Compile derives at read time\n-- (the UI's topology column), recomputed here from the baked params: they\n-- carry every key the kind declares. Keep in step with topology.go labels.\n-- `usages` counts the live tests referencing the definition.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases, LATERAL (SELECT CASE kind\n    WHEN 'postgres' THEN concat_ws(' + ', 'postgres',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,\n        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,\n        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)\n    WHEN 'orioledb' THEN concat_ws(' + ', 'orioledb',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'ha' = 'patroni' THEN 'patroni' END,\n        CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN 'haproxy' END,\n        CASE WHEN params->>'pgbouncer' = 'true' THEN 'pgbouncer' END)\n    WHEN 'mysql' THEN concat_ws(' + ', 'mysql',\n        CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n        CASE WHEN params->>'replication' = 'group' THEN 'group replication' END,\n        CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN 'proxysql' END)\n    WHEN 'mariadb' THEN CASE WHEN params->>'replication' = 'galera'\n        THEN 'galera ×' || COALESCE((params->>'galera_nodes')::numeric::int, 3)\n             || CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 THEN ' + proxysql' WHEN params->>'maxscale' = 'true' THEN ' + maxscale' ELSE '' END\n        ELSE concat_ws(' + ', 'mariadb',\n             CASE WHEN COALESCE((params->>'replicas')::numeric::int, 0) = 1 THEN '1 replica' WHEN COALESCE((params->>'replicas')::numeric::int, 0) > 1 THEN (params->>'replicas')::numeric::int || ' replicas' END,\n             CASE WHEN COALESCE((params->>'proxysql')::numeric::int, 0) > 0 OR params->>'maxscale' = 'true' THEN 'proxy' END) END\n    WHEN 'picodata' THEN 'picodata ×' || GREATEST(1, COALESCE((SELECT sum(COALESCE((t->>'instances')::numeric::int, 1)) FROM jsonb_array_elements(CASE WHEN jsonb_typeof(params->'tiers') = 'array' THEN params->'tiers' ELSE '[]'::jsonb END) t), 0))\n        || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END\n    WHEN 'ydb' THEN 'ydb ' || COALESCE(NULLIF(params->>'fault_tolerance', ''), 'none') || ': ' || COALESCE((params->>'storage_nodes')::numeric::int, 1) || ' storage + ' || COALESCE((params->>'database_nodes')::numeric::int, 1) || ' database'\n    WHEN 'cockroach' THEN 'cockroach ×' || COALESCE((params->>'nodes')::numeric::int, 3) || CASE WHEN COALESCE((params->>'haproxy')::numeric::int, 0) > 0 THEN ' + haproxy' ELSE '' END\n    WHEN 'pg_noop' THEN 'pg-noop'\n    WHEN 'noop' THEN 'noop (runner only)'\n    WHEN 'ydb_managed' THEN 'managed ydb ' || COALESCE(NULLIF(params->>'type', ''), 'dedicated')\n    WHEN 'external' THEN 'external ' || COALESCE(NULLIF(params->>'protocol', ''), 'pg')\n  END AS topology_label) tl\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR kind = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN tl.topology_label END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN tl.topology_label END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
+	b.WriteString(fmt.Sprintf("-- Filters are optional; sort is decided by the caller through sort_key/desc.\n-- `topology` sorts by the plan label written with the params.\n-- `usages` counts the live tests referencing the definition.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR kind = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN topology_label END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN topology_label END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err

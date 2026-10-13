@@ -87,7 +87,9 @@ func (s *Service) ImportDatabase(ctx context.Context, actor auth.Actor, tenantID
 	}
 	for _, e := range existing {
 		if e.Name == w.Name {
-			d, derived, err := s.UpdateDatabase(ctx, actor, tenantID, e.ID, EntityPatch{Description: &w.Description, Tags: w.Tags}, &spec)
+			d, derived, err := s.UpdateDatabase(ctx, actor, tenantID, e.ID, EntityPatch{Description: &w.Description, Tags: w.Tags}, &DatabaseSpecPatch{
+				Version: spec.Version, Image: &spec.Image, Params: spec.Params, Configs: spec.Configs, Runtime: spec.Runtime,
+			})
 			return d, derived, false, err
 		}
 	}

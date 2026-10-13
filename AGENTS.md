@@ -26,6 +26,20 @@ identity — self-hosted Ory Kratos (`deployments/kratos/`). Рабочий до
 своей области. Правило меняется — правится там же (документ = текущее
 состояние, не лог).
 
+## Kind базы данных
+
+Всё, что продукт знает о kind'е, кроме развёртывания, — один файл в
+`internal/domain/dbkind/<kind>.go`: запись каталога (роли, версии,
+протоколы, шаблоны), план машин из параметров, логин клиента, протоколы
+workload. URL подключения строит `dbkind.URL` из плана. Развёртывание —
+рецепт в `internal/domain/compile/recipe_<kind>.go`, регистрация в
+`compile.recipes`. Параметры — схема `pipelines/schemas/dbparams/<kind>.go`.
+
+Новый kind = схема + файл в `dbkind` (и строка в `kinds()`) + рецепт.
+Свитчей по kind вне этих мест нет; тест `TestEveryDeployableKindHasRecipe`
+ловит kind без рецепта. Список kind'ов в API — только `/catalog/databases`
+(в OpenAPI `DatabaseKind` — строка, не enum).
+
 ## Generated code — не править руками
 
 `internal/oas/*` (ogen), `web/src/api/schema.d.ts` (openapi-typescript),

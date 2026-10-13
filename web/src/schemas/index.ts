@@ -71,6 +71,8 @@ import cfgYdbConfigYaml26Schema from './cfg.ydb.config.yaml_v26.json';
 import type { CfgYdbConfigYaml26 } from './cfg.ydb.config.yaml_v26';
 import dbCockroachParams1Schema from './db.cockroach.params_v1.json';
 import type { DbCockroachParams1 } from './db.cockroach.params_v1';
+import dbCustomParams1Schema from './db.custom.params_v1.json';
+import type { DbCustomParams1 } from './db.custom.params_v1';
 import dbExternalParams1Schema from './db.external.params_v1.json';
 import type { DbExternalParams1 } from './db.external.params_v1';
 import dbMariadbParams1Schema from './db.mariadb.params_v1.json';
@@ -172,6 +174,7 @@ export const schemaIds = [
   "cfg.ydb.config.yaml@25",
   "cfg.ydb.config.yaml@26",
   "db.cockroach.params@1",
+  "db.custom.params@1",
   "db.external.params@1",
   "db.mariadb.params@1",
   "db.mysql.params@1",
@@ -244,6 +247,7 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "cfg.ydb.config.yaml@25" ? CfgYdbConfigYaml25 :
   Id extends "cfg.ydb.config.yaml@26" ? CfgYdbConfigYaml26 :
   Id extends "db.cockroach.params@1" ? DbCockroachParams1 :
+  Id extends "db.custom.params@1" ? DbCustomParams1 :
   Id extends "db.external.params@1" ? DbExternalParams1 :
   Id extends "db.mariadb.params@1" ? DbMariadbParams1 :
   Id extends "db.mysql.params@1" ? DbMysqlParams1 :
@@ -314,6 +318,7 @@ export const schemas: Record<SchemaId, unknown> = {
   "cfg.ydb.config.yaml@25": cfgYdbConfigYaml25Schema,
   "cfg.ydb.config.yaml@26": cfgYdbConfigYaml26Schema,
   "db.cockroach.params@1": dbCockroachParams1Schema,
+  "db.custom.params@1": dbCustomParams1Schema,
   "db.external.params@1": dbExternalParams1Schema,
   "db.mariadb.params@1": dbMariadbParams1Schema,
   "db.mysql.params@1": dbMysqlParams1Schema,
@@ -384,6 +389,7 @@ export type {
   CfgYdbConfigYaml25,
   CfgYdbConfigYaml26,
   DbCockroachParams1,
+  DbCustomParams1,
   DbExternalParams1,
   DbMariadbParams1,
   DbMysqlParams1,

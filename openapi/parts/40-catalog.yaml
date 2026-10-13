@@ -237,7 +237,9 @@ components:
   schemas:
     DatabaseKind:
       type: string
-      enum: [postgres, mysql, mariadb, picodata, ydb, ydb_managed, cockroach, orioledb, external, noop, pg_noop]
+      pattern: '^[a-z][a-z0-9_]{0,31}$'
+      description: A database kind id; the kinds that exist are listed by GET /catalog/databases.
+      example: postgres
     Protocol:
       type: string
       enum: [pg, mysql, picodata, ydb_grpc, ydb_grpcs, cockroach, noop]

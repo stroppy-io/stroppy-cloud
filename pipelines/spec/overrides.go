@@ -21,11 +21,22 @@ type Runtime struct {
 	ResultExpectations   *[]string                  `json:"result_expectations,omitempty"`
 }
 
-// ContainerOverride selects generated containers; both selectors mean intersection.
+// ContainerOverride selects generated containers; several selectors mean
+// intersection. Kind narrows a role to what the container is: role "db"
+// also holds the exporters on the db machines, kind "database" is only the
+// database itself.
 type ContainerOverride struct {
 	Role string          `json:"role,omitempty"`
 	Name string          `json:"name,omitempty"`
+	Kind string          `json:"kind,omitempty"`
 	Set  json.RawMessage `json:"set"`
+}
+
+func (p ContainerOverride) matches(c Container) bool {
+	if p.Role == "" && p.Name == "" && p.Kind == "" {
+		return false
+	}
+	return (p.Role == "" || p.Role == c.Role) && (p.Name == "" || p.Name == c.Name) && (p.Kind == "" || p.Kind == c.Kind)
 }
 
 // Overlay merges objects, replaces scalar/array values, and merges container files
@@ -133,7 +144,7 @@ func ApplyRuntime(run *Run, raw json.RawMessage) error {
 	for i, p := range r.Containers {
 		found := false
 		for j, c := range run.Containers {
-			if (p.Role != "" || p.Name != "") && (p.Role == "" || p.Role == c.Role) && (p.Name == "" || p.Name == c.Name) {
+			if p.matches(c) {
 				found = true
 				if err := Overlay(c, p.Set, &run.Containers[j]); err != nil {
 					return err

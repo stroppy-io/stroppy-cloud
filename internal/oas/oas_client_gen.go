@@ -10870,7 +10870,10 @@ func (c *Client) sendGetCatalogMetrics(ctx context.Context, params GetCatalogMet
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.DbKind.Get(); ok {
-				return e.EncodeValue(conv.StringToString(string(val)))
+				if unwrapped := string(val); true {
+					return e.EncodeValue(conv.StringToString(unwrapped))
+				}
+				return nil
 			}
 			return nil
 		}); err != nil {
@@ -12195,7 +12198,10 @@ func (c *Client) sendGetPublicRating(ctx context.Context, params GetPublicRating
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Kind {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							if unwrapped := string(item); true {
+								return e.EncodeValue(conv.StringToString(unwrapped))
+							}
+							return nil
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}
@@ -15381,7 +15387,10 @@ func (c *Client) sendGetTenantRating(ctx context.Context, params GetTenantRating
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Kind {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							if unwrapped := string(item); true {
+								return e.EncodeValue(conv.StringToString(unwrapped))
+							}
+							return nil
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}
@@ -17322,7 +17331,10 @@ func (c *Client) sendListDatabases(ctx context.Context, params ListDatabasesPara
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Kind {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							if unwrapped := string(item); true {
+								return e.EncodeValue(conv.StringToString(unwrapped))
+							}
+							return nil
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}
@@ -17559,7 +17571,10 @@ func (c *Client) sendListExamples(ctx context.Context, params ListExamplesParams
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
 			if val, ok := params.DbKind.Get(); ok {
-				return e.EncodeValue(conv.StringToString(string(val)))
+				if unwrapped := string(val); true {
+					return e.EncodeValue(conv.StringToString(unwrapped))
+				}
+				return nil
 			}
 			return nil
 		}); err != nil {
@@ -18992,7 +19007,10 @@ func (c *Client) sendListRuns(ctx context.Context, params ListRunsParams, reques
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Kind {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							if unwrapped := string(item); true {
+								return e.EncodeValue(conv.StringToString(unwrapped))
+							}
+							return nil
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}
@@ -21847,7 +21865,10 @@ func (c *Client) sendListTests(ctx context.Context, params ListTestsParams, requ
 				return e.EncodeArray(func(e uri.Encoder) error {
 					for i, item := range params.Kind {
 						if err := func() error {
-							return e.EncodeValue(conv.StringToString(string(item)))
+							if unwrapped := string(item); true {
+								return e.EncodeValue(conv.StringToString(unwrapped))
+							}
+							return nil
 						}(); err != nil {
 							return errors.Wrapf(err, "[%d]", i)
 						}

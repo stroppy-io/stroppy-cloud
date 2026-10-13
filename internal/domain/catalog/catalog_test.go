@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 )
 
@@ -13,11 +14,11 @@ import (
 // and every referenced schema id must exist.
 func TestCatalogBakes(t *testing.T) {
 	reg := schemas.New()
-	c, err := catalog.New(context.Background(), reg, reg)
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(c.Databases) != 11 {
+	if len(c.Databases) != 12 {
 		t.Fatalf("databases = %d", len(c.Databases))
 	}
 	for _, d := range c.Databases {

@@ -200,6 +200,9 @@ CREATE TABLE databases (
     configs     jsonb       NOT NULL DEFAULT '{}'::jsonb,
     runtime     jsonb       NOT NULL DEFAULT '{}'::jsonb,
     external    jsonb       NOT NULL DEFAULT '{}'::jsonb,
+    -- topology_label is the plan label dbkind derives from the params,
+    -- written with them so the list can sort by it.
+    topology_label text     NOT NULL DEFAULT '',
     created_at  timestamptz NOT NULL DEFAULT now(),
     updated_at  timestamptz NOT NULL DEFAULT now(),
     deleted_at  timestamptz

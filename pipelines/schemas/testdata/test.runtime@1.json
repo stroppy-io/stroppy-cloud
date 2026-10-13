@@ -3146,6 +3146,15 @@
                     "title": "Name"
                   },
                   {
+                    "description": "What the container is: database, proxy, coordinator, exporter or addon. A role also holds the exporters on its machines; kind database leaves them out.",
+                    "group": "Selector",
+                    "name": "kind",
+                    "string": {
+                      "pattern": "^[a-z][a-z0-9_-]{0,63}$"
+                    },
+                    "title": "Kind"
+                  },
+                  {
                     "description": "Explicit fields replace defaults; env/ulimits merge by key and files merge by absolute path. Empty files list removes generated files.",
                     "group": "Deployment",
                     "name": "set",
@@ -3158,7 +3167,7 @@
                 ],
                 "rules": [
                   {
-                    "expr": "\"role\" in this || \"name\" in this",
+                    "expr": "\"role\" in this || \"name\" in this || \"kind\" in this",
                     "id": "selector-required",
                     "message": "at least one container selector is required"
                   }

@@ -9,6 +9,7 @@ import (
 	schemasinfra "github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 )
 
@@ -29,7 +30,7 @@ func TestConnectionOptionsReachDSNAndNativeDriver(t *testing.T) {
 		}
 	}
 	registry := schemasinfra.New()
-	cat, err := catalog.New(context.Background(), registry, registry)
+	cat, err := catalog.New(context.Background(), registry, registry, dbkind.Databases())
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -58,6 +58,20 @@ type DatabaseSpec struct {
 	Runtime json.RawMessage                       `json:"runtime,omitempty"`
 	// ExternalDSN is set for kind external only (write-only on the API).
 	ExternalDSN string `json:"external_dsn,omitempty"`
+	// TopologyLabel is the plan label DeriveDatabase computes; stored so
+	// the list sorts by it, never part of an exported document.
+	TopologyLabel string `json:"-"`
+}
+
+// DatabaseSpecPatch changes part of a stored spec. Nil and empty fields keep
+// what is stored; Image is a pointer because "" is a value here: it drops the
+// custom image and goes back to the catalog one.
+type DatabaseSpecPatch struct {
+	Version string
+	Image   *string
+	Params  json.RawMessage
+	Configs map[string]map[string]json.RawMessage
+	Runtime json.RawMessage
 }
 
 // Database is a stored definition.

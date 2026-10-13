@@ -1767,32 +1767,23 @@ func (s *Database) Validate() error {
 }
 
 func (s DatabaseKind) Validate() error {
-	switch s {
-	case "postgres":
-		return nil
-	case "mysql":
-		return nil
-	case "mariadb":
-		return nil
-	case "picodata":
-		return nil
-	case "ydb":
-		return nil
-	case "ydb_managed":
-		return nil
-	case "cockroach":
-		return nil
-	case "orioledb":
-		return nil
-	case "external":
-		return nil
-	case "noop":
-		return nil
-	case "pg_noop":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
+	alias := (string)(s)
+	if err := (validate.String{
+		MinLength:     0,
+		MinLengthSet:  false,
+		MaxLength:     0,
+		MaxLengthSet:  false,
+		Email:         false,
+		Hostname:      false,
+		Regex:         regexMap["^[a-z][a-z0-9_]{0,31}$"],
+		MinNumeric:    0,
+		MinNumericSet: false,
+		MaxNumeric:    0,
+		MaxNumericSet: false,
+	}).Validate(string(alias)); err != nil {
+		return errors.Wrap(err, "string")
 	}
+	return nil
 }
 
 func (s *DatabasePatch) Validate() error {

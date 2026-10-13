@@ -10,6 +10,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 )
@@ -17,7 +18,7 @@ import (
 func TestCompileMySQLFamilyConfigVersions(t *testing.T) {
 	ctx := context.Background()
 	reg := schemas.New()
-	cat, err := catalog.New(ctx, reg, reg)
+	cat, err := catalog.New(ctx, reg, reg, dbkind.Databases())
 	if err != nil {
 		t.Fatal(err)
 	}

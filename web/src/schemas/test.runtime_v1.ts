@@ -511,6 +511,8 @@ export interface TestRuntime1Item {
   role?: string;
   /** Name. Exact generated container name; at least one selector is required. */
   name?: string;
+  /** Kind. What the container is: database, proxy, coordinator, exporter or addon. A role also holds the exporters on its machines; kind database leaves them out. */
+  kind?: string;
   /** Settings. Explicit fields replace defaults; env/ulimits merge by key and files merge by absolute path. Empty files list removes generated files. */
   set: TestRuntime1Container;
 }

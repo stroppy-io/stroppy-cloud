@@ -45,9 +45,10 @@ type Catalog struct {
 	schemas   Schemas
 }
 
-// New assembles the static catalog and checks the schema-backed tables.
-func New(ctx context.Context, v Validator, schemas Schemas) (*Catalog, error) {
-	c := &Catalog{Databases: databases(), Providers: providers(), Stroppy: stroppy(), Metrics: metrics(), schemas: schemas}
+// New assembles the static catalog over the database matrix (dbkind owns
+// it) and checks the schema-backed tables.
+func New(ctx context.Context, v Validator, schemas Schemas, databases []Database) (*Catalog, error) {
+	c := &Catalog{Databases: databases, Providers: providers(), Stroppy: stroppy(), Metrics: metrics(), schemas: schemas}
 	if err := c.check(ctx, v); err != nil {
 		return nil, err
 	}
