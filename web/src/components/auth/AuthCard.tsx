@@ -120,7 +120,7 @@ function Frame({
           </div>
         </div>
         <aside className={styles.brandSide} aria-label={t('auth.shell.label')}>
-          <HeroMark open={OPEN} className={styles.mark} />
+          <HeroMark open={OPEN} className={styles.mark} tone="solid" />
           <ul className={styles.points}>
             {POINTS.map((p) => (
               <li key={p} className={styles.point}>

@@ -147,7 +147,7 @@ export function RunChrome({ phase, scrub }: { phase: number; scrub: MotionValue<
       <span className={styles.clock}>{text}</span>
       <span className={styles.cloud}>
         <Icon name="cloud" size="xs" />
-        Yandex Cloud · ru-central1
+        {t('landing.story.cloud')}
       </span>
     </div>
   )

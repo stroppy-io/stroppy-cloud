@@ -1,9 +1,12 @@
 import { useTheme2 } from '@grafana/ui'
 
 // The Stroppy mark, drawn inline so it takes the theme: the body follows the
-// surrounding text colour, the rays and the middle band are the app's accent
-// (primary). An <img> of public/org-logo.svg could not do either; that file
-// stays the source and the favicon.
+// surrounding text colour, the rays and the middle band are orange: a
+// database under stress. An <img> of public/org-logo.svg could not take the
+// text colour; that file stays the source and the favicon.
+
+/** The orange of the mark, as in public/logo_no_background.svg. Same in both themes. */
+export const MARK_ORANGE = '#F16A39'
 
 // Full mark — the geometry of public/org-logo.svg.
 export const RAYS = [
@@ -22,8 +25,7 @@ export const BODY = [
 ]
 
 // Compact mark for small sizes (headers, ≤ COMPACT_MAX px): the same rays,
-// thickened by a stroke of their own colour (hairlines vanish there), in the
-// brighter accent tone. The cylinder is unchanged.
+// thickened by a stroke of their own colour (hairlines vanish there). The cylinder is unchanged.
 const COMPACT_MAX = 40
 const COMPACT_STROKE = 3.5
 
@@ -36,7 +38,8 @@ const BOX_COMPACT = { x: 28, y: 16, w: 72, h: 112.8 }
 
 /**
  * The Stroppy logo, `size` px tall; `color` overrides the body colour
- * (default: theme text). Sizes up to 40px draw the compact mark.
+ * (default: secondary text, so the orange carries the mark and the name next
+ * to it stays brighter). Sizes up to 40px draw the compact mark.
  */
 export function Logo({
   size = 24,
@@ -50,7 +53,7 @@ export function Logo({
   const theme = useTheme2()
   const compact = size <= COMPACT_MAX
   const box = compact ? BOX_COMPACT : BOX_FULL
-  const accent = compact ? theme.colors.primary.text : theme.colors.primary.main
+  const accent = MARK_ORANGE
   return (
     <svg
       className={className}
@@ -73,7 +76,7 @@ export function Logo({
         ))}
       </g>
       <path d={BAND} fill={accent} />
-      <g fill={color ?? theme.colors.text.primary}>
+      <g fill={color ?? theme.colors.text.secondary}>
         {BODY.map((d) => (
           <path key={d} d={d} />
         ))}

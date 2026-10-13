@@ -168,7 +168,7 @@ export function PublicHeader({ onHome }: { onHome?: () => void }) {
   const current: Lang = i18n.language.startsWith('ru') ? 'ru' : 'en'
   const logo = (
     <>
-      <Logo size={32} color={brand.text} />
+      <Logo size={32} color={brand.muted} />
       Stroppy Cloud
     </>
   )

@@ -1,7 +1,7 @@
-import { BAND, BODY, RAYS } from '@components/Logo'
+import { BAND, BODY, MARK_ORANGE, RAYS } from '@components/Logo'
 import { css, cx, keyframes } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
-import { useStyles2, useTheme2 } from '@grafana/ui'
+import { useStyles2 } from '@grafana/ui'
 import { type MotionValue, motion, useTransform } from 'motion/react'
 import type { ReactNode } from 'react'
 import { brand } from '@/styles/brand'
@@ -14,8 +14,11 @@ import { brand } from '@/styles/brand'
 // for the test.
 //
 // Every layer and every ray is its own <svg> over the same viewBox, so all
-// motion is opacity and transform on separate elements — composited, never a
-// repaint of one large drawing per frame.
+// motion is opacity and transform on separate elements, never a repaint of one
+// large drawing per frame. The tilt of the open mark (scale + rotate) is an SVG
+// transform inside each layer, not a CSS transform on the wrapper: a rotated
+// HTML box makes the browser raster the layers flat and resample the bitmap,
+// and a large logo comes out soft. Inside the SVG the tilt stays vector.
 
 // The drawing area; layers translate in % of it, so units convert exactly.
 const VB = { x: 14, y: -2, w: 100, h: 132 }
@@ -51,6 +54,15 @@ const PULSES = RAY_DIRS.map(([dx, dy]) =>
     '14%': { opacity: 1, transform: `translate(${ux(dx * NUDGE)}, ${uy(dy * NUDGE)})` },
   })
 )
+// How loud the mark is, closed → open. `muted` sits under text (landing hero,
+// /how) and must not compete with it; `solid` stands on its own (auth panel,
+// the landing's last screen) and reads as the logo.
+const TONES = {
+  muted: { body: [0.05, 0.09], band: [0.16, 0.3], rays: [0.55, 0.8] },
+  solid: { body: [0.2, 0.26], band: [0.75, 0.9], rays: [0.85, 1] },
+} as const
+export type HeroMarkTone = keyof typeof TONES
+
 const breathe = keyframes({
   '0%, 100%': { opacity: 0.75 },
   '50%': { opacity: 1 },
@@ -59,7 +71,7 @@ const breathe = keyframes({
 const getStyles = (theme: GrafanaTheme2) => ({
   wrap: css({
     position: 'absolute',
-    // Centred by margins: `transform` belongs to the scroll (scale, rotate).
+    // Centred by margins, no transform: the tilt lives inside the SVGs.
     top: 0,
     bottom: 0,
     margin: 'auto 0',
@@ -70,12 +82,31 @@ const getStyles = (theme: GrafanaTheme2) => ({
     zIndex: 0,
     [theme.breakpoints.down('lg')]: { right: '-12vw', opacity: 0.6 },
   }),
-  layer: css({ position: 'absolute', inset: 0, willChange: 'transform, opacity' }),
+  layer: css({ position: 'absolute', inset: 0 }),
   svg: css({ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }),
   reduced: css({ '@media (prefers-reduced-motion: reduce)': { animation: 'none !important' } }),
 })
 
-function Layer({ children, style }: { children: ReactNode; style?: object }) {
+// The tilt turns the whole mark about the centre of the drawing area.
+const TILT_ORIGIN = '50% 50%'
+
+function Tilt({ tilt, children }: { tilt: MotionValue<string>; children: ReactNode }) {
+  return (
+    <motion.g style={{ transform: tilt, transformOrigin: TILT_ORIGIN, transformBox: 'view-box' }}>
+      {children}
+    </motion.g>
+  )
+}
+
+function Layer({
+  children,
+  style,
+  tilt,
+}: {
+  children: ReactNode
+  style?: object
+  tilt: MotionValue<string>
+}) {
   const styles = useStyles2(getStyles)
   return (
     <motion.div className={styles.layer} style={style}>
@@ -85,7 +116,7 @@ function Layer({ children, style }: { children: ReactNode; style?: object }) {
         preserveAspectRatio="xMidYMid meet"
         aria-hidden="true"
       >
-        {children}
+        <Tilt tilt={tilt}>{children}</Tilt>
       </svg>
     </motion.div>
   )
@@ -96,18 +127,22 @@ function Ray({
   i,
   open,
   fill,
+  tilt,
+  tone,
 }: {
   d: string
   i: number
   open: MotionValue<number>
   fill: string
+  tilt: MotionValue<string>
+  tone: HeroMarkTone
 }) {
   const styles = useStyles2(getStyles)
   const [dx, dy] = RAY_DIRS[i]
   const x = useTransform(open, (v) => ux(dx * THROW * v))
   const y = useTransform(open, (v) => uy(dy * THROW * v))
-  // Scaled by the pulse (0.4–1): idle 0.22–0.55, open up to 0.8.
-  const opacity = useTransform(open, [0, 1], [0.55, 0.8])
+  // Scaled by the pulse (0.4–1).
+  const opacity = useTransform(open, [0, 1], [...TONES[tone].rays])
   return (
     <motion.div className={styles.layer} style={{ x, y, opacity }}>
       <div
@@ -122,36 +157,47 @@ function Ray({
           preserveAspectRatio="xMidYMid meet"
           aria-hidden="true"
         >
-          <path d={d} fill={fill} />
+          <Tilt tilt={tilt}>
+            <path d={d} fill={fill} />
+          </Tilt>
         </svg>
       </div>
     </motion.div>
   )
 }
 
-/** `className` places and sizes the mark (default: the landing's right half). */
-export function HeroMark({ open, className }: { open: MotionValue<number>; className?: string }) {
+/**
+ * `className` places and sizes the mark (default: the landing's right half);
+ * `tone` is `muted` under text, `solid` where nothing overlaps it.
+ */
+export function HeroMark({
+  open,
+  className,
+  tone = 'muted',
+}: {
+  open: MotionValue<number>
+  className?: string
+  tone?: HeroMarkTone
+}) {
   const styles = useStyles2(getStyles)
-  const theme = useTheme2()
-  const accent = theme.colors.primary.main
+  const accent = MARK_ORANGE
   const top = useTransform(open, (v) => uy(LIFT.top * v))
   const middle = useTransform(open, (v) => uy(LIFT.middle * v))
   const band = useTransform(open, (v) => uy(LIFT.band * v))
   const bottom = useTransform(open, (v) => uy(LIFT.bottom * v))
-  const body = useTransform(open, [0, 1], [0.05, 0.09])
-  const bandOpacity = useTransform(open, [0, 1], [0.16, 0.3])
-  const scale = useTransform(open, [0, 1], [1, 1.05])
-  const rotate = useTransform(open, [0, 1], [0, -3])
+  const body = useTransform(open, [0, 1], [...TONES[tone].body])
+  const bandOpacity = useTransform(open, [0, 1], [...TONES[tone].band])
+  const tilt = useTransform(open, (v) => `rotate(${-3 * v}deg) scale(${1 + 0.05 * v})`)
   return (
-    <motion.div className={cx(styles.wrap, className)} style={{ scale, rotate }} aria-hidden>
+    <div className={cx(styles.wrap, className)} aria-hidden>
       <motion.div className={styles.layer} style={{ opacity: body }}>
-        <Layer style={{ y: top }}>
+        <Layer style={{ y: top }} tilt={tilt}>
           <path d={BODY[0]} fill={brand.text} />
         </Layer>
-        <Layer style={{ y: middle }}>
+        <Layer style={{ y: middle }} tilt={tilt}>
           <path d={BODY[1]} fill={brand.text} />
         </Layer>
-        <Layer style={{ y: bottom }}>
+        <Layer style={{ y: bottom }} tilt={tilt}>
           <path d={BODY[2]} fill={brand.text} />
         </Layer>
       </motion.div>
@@ -159,13 +205,13 @@ export function HeroMark({ open, className }: { open: MotionValue<number>; class
         className={`${styles.layer} ${styles.reduced}`}
         style={{ animation: `${breathe} 6s ease-in-out infinite` }}
       >
-        <Layer style={{ y: band, opacity: bandOpacity }}>
+        <Layer style={{ y: band, opacity: bandOpacity }} tilt={tilt}>
           <path d={BAND} fill={accent} />
         </Layer>
       </div>
       {RAYS.map((d, i) => (
-        <Ray key={d} d={d} i={i} open={open} fill={accent} />
+        <Ray key={d} d={d} i={i} open={open} fill={accent} tilt={tilt} tone={tone} />
       ))}
-    </motion.div>
+    </div>
   )
 }

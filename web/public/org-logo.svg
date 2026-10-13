@@ -3,7 +3,7 @@
     .body { fill: #080320 }
     @media (prefers-color-scheme: dark) { .body { fill: #e8eaee } }
   </style>
-  <g fill="#3D71D9">
+  <g fill="#F16A39">
     <path d="M32 24.5 42 29.5 36 29 30.5 26.5Z"/>
     <path d="M44 18 48.5 18.5 50 27 46.8 23Z"/>
     <path d="M62 18 65.5 18 65 27 62.5 24Z"/>

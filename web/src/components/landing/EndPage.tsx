@@ -89,7 +89,7 @@ export function EndPage() {
   return (
     <div className={styles.page}>
       <div className={styles.stage}>
-        <HeroMark open={OPEN} />
+        <HeroMark open={OPEN} tone="solid" />
         <div className={styles.cta}>
           <div className={styles.text}>
             <h2 className={styles.title}>{t('landing.end.title')}</h2>

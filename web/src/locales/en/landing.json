@@ -34,7 +34,7 @@
     },
     "provision": {
       "title": "A stand in your cloud",
-      "body": "Machines for the database and the load are created in your Yandex Cloud account (AWS soon). The database and its data stay with you, and the cloud bills you for the machines directly.",
+      "body": "Machines for the database and the load are created in your cloud account. The database and its data stay with you, and the cloud bills you for the machines directly.",
       "time": "~1 min"
     },
     "deploy": {
@@ -55,7 +55,8 @@
     "vm": "VM",
     "errors": "errors",
     "heading": "How a run goes",
-    "sub": "Here's what it looks like for PostgreSQL 17 with Patroni on three nodes: the path from the Launch button to a line in the rating."
+    "sub": "Here's what it looks like for PostgreSQL 17 with Patroni on three nodes: the path from the Launch button to a line in the rating.",
+    "cloud": "your cloud"
   },
   "footer": {
     "about": "Database load testing with stroppy, in your own cloud.",
