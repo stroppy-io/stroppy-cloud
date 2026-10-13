@@ -36,7 +36,7 @@ func (r *RunRepo) Admit(ctx context.Context, tenantID uuid.UUID, fn func(context
 			return err
 		}
 		if tenant.Retiring {
-			return errs.Conflict("tenant is being deleted")
+			return errs.Conflict("tenant is being deleted").Because("tenant_is_being_deleted")
 		}
 		return fn(ctx)
 	})
@@ -49,14 +49,14 @@ func (r *RunRepo) Insert(ctx context.Context, x run.Run, idempotencyKey string) 
 			return err
 		}
 		if tenant.Retiring {
-			return errs.Conflict("tenant is being deleted")
+			return errs.Conflict("tenant is being deleted").Because("tenant_is_being_deleted")
 		}
 		profile, err := r.q.LockProviderLifecycle(ctx, x.Snapshot.ProviderProfile.ID)
 		if err != nil {
-			return errs.Conflict("provider is unavailable")
+			return errs.Conflict("provider is unavailable").Because("provider_is_unavailable")
 		}
 		if profile.Status != "ready" {
-			return errs.Conflict("provider is not ready")
+			return errs.Conflict("provider is not ready").Because("provider_is_not_ready")
 		}
 		return r.insert(ctx, x, idempotencyKey)
 	})
@@ -74,7 +74,7 @@ func (r *RunRepo) insert(ctx context.Context, x run.Run, idempotencyKey string) 
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a run with this idempotency key exists")
+			return errs.Conflict("a run with this idempotency key exists").Because("run_idempotency_conflict")
 		}
 		return infraf("run: insert: %v", err)
 	}

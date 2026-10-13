@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,7 +62,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return err
 	}
 	if role == string(tenant.RoleViewer) {
-		return errs.Forbidden("viewers cannot change suites")
+		return errs.Forbidden("viewers cannot change suites").Because("viewers_cannot_change_suites")
 	}
 	return nil
 }
@@ -98,7 +99,7 @@ func (s *Service) normalize(ctx context.Context, actor auth.Actor, tenantID uuid
 		switch {
 		case t.Ref != nil:
 			if _, _, _, err := s.library.GetTest(ctx, actor, tenantID, *t.Ref); err != nil {
-				return nil, errs.Invalid(fmt.Sprintf("tests[%d]: %v", i, err))
+				return nil, errs.Invalid(fmt.Sprintf("tests[%d]: %v", i, err)).Because("suite_test_invalid", "index", strconv.Itoa(i+1), "error", err.Error())
 			}
 		case t.Inline != nil:
 			if t.InlineID == uuid.Nil {
@@ -108,7 +109,7 @@ func (s *Service) normalize(ctx context.Context, actor auth.Actor, tenantID uuid
 				t.InlineName = fmt.Sprintf("inline-%d", i+1)
 			}
 		default:
-			return nil, errs.Invalid(fmt.Sprintf("tests[%d]: ref or inline", i))
+			return nil, errs.Invalid(fmt.Sprintf("tests[%d]: ref or inline", i)).Because("suite_test_ref_or_inline", "index", strconv.Itoa(i+1))
 		}
 		out = append(out, t)
 	}
@@ -121,7 +122,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return Computed{}, err
 	}
 	if strings.TrimSpace(w.Name) == "" {
-		return Computed{}, errs.Invalid("name is required")
+		return Computed{}, errs.Invalid("name is required").Because("name_is_required")
 	}
 	tests, err := s.normalize(ctx, actor, tenantID, w.Tests)
 	if err != nil {
@@ -130,7 +131,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 	if _, taken, err := s.repo.ByName(ctx, tenantID, w.Name); err != nil {
 		return Computed{}, err
 	} else if taken {
-		return Computed{}, errs.Conflict("a suite with this name exists")
+		return Computed{}, errs.Conflict("a suite with this name exists").Because("a_suite_with_this_name_exists")
 	}
 	now := time.Now().UTC()
 	x := Suite{
@@ -197,7 +198,7 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 		if other, taken, err := s.repo.ByName(ctx, tenantID, *p.Name); err != nil {
 			return Computed{}, err
 		} else if taken && other != id {
-			return Computed{}, errs.Conflict("a suite with this name exists")
+			return Computed{}, errs.Conflict("a suite with this name exists").Because("a_suite_with_this_name_exists")
 		}
 	}
 	if err := s.repo.Update(ctx, id, p); err != nil {
@@ -257,7 +258,7 @@ func (s *Service) Export(ctx context.Context, actor auth.Actor, tenantID, id uui
 // Import creates or updates by name.
 func (s *Service) Import(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, doc library.Document) (Computed, bool, error) {
 	if doc.Kind != "Suite" {
-		return Computed{}, false, errs.Invalid("document kind must be Suite")
+		return Computed{}, false, errs.Invalid("document kind must be Suite").Because("document_kind_must_be_suite")
 	}
 	var sp struct {
 		Tests       []TestEntry `json:"tests"`
@@ -519,7 +520,7 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 		for _, p := range prepared {
 			_ = s.runRepo.SetStatus(ctx, p.Run.ID, run.StatusFailed, run.PhaseDone, reason, nil, &fin) //nolint:errcheck // best-effort
 		}
-		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the suite run", err)
+		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the suite run", err).Because("run_submit_unavailable")
 	}
 	for _, p := range prepared {
 		s.runs.MarkStarted(ctx, p.Run)
@@ -550,7 +551,7 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 		chosen = append(chosen, c)
 	}
 	if len(chosen) == 0 {
-		return SuiteRun{}, nil, spec.Suite{}, errs.Invalid("no cells to run")
+		return SuiteRun{}, nil, spec.Suite{}, errs.Invalid("no cells to run").Because("no_cells_to_run")
 	}
 	concurrency := x.Concurrency
 	if in.Concurrency > 0 {
@@ -575,7 +576,7 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 	for i, c := range chosen {
 		testSpec, o, err := s.cellSpec(ctx, actor, x, c)
 		if err != nil {
-			return SuiteRun{}, nil, spec.Suite{}, errs.Invalid(err.Error())
+			return SuiteRun{}, nil, spec.Suite{}, errs.Invalid(err.Error()).Because("suite_cell_invalid", "error", err.Error())
 		}
 		if in.Keep != nil {
 			o.Keep = in.Keep
@@ -739,7 +740,7 @@ func (s *Service) CancelRun(ctx context.Context, actor auth.Actor, tenantID, id 
 		return SuiteRun{}, err
 	}
 	if r.Status.Terminal() {
-		return SuiteRun{}, errs.Conflict("suite run already finished")
+		return SuiteRun{}, errs.Conflict("suite run already finished").Because("suite_run_already_finished")
 	}
 	// Mark first (suite and cells): the projectors may record terminal
 	// statuses the moment Graphene acknowledges; terminal never moves back.
@@ -752,7 +753,7 @@ func (s *Service) CancelRun(ctx context.Context, actor auth.Actor, tenantID, id 
 		}
 	}
 	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.ID.String()); err != nil {
-		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "cancel", err)
+		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "suite_run.cancel", Target: audit.Target{Kind: "suite_run", ID: id.String()}}) //nolint:errcheck // audit never blocks
 	return s.ownedRun(ctx, tenantID, id)
@@ -768,10 +769,10 @@ func (s *Service) DeleteRun(ctx context.Context, actor auth.Actor, tenantID, id 
 		return err
 	}
 	if !r.Status.Terminal() {
-		return errs.Conflict("cancel the suite run before deleting it")
+		return errs.Conflict("cancel the suite run before deleting it").Because("cancel_suite_run_before_delete")
 	}
 	if err := s.graphene.DeleteRef(s.scope(ctx, r.GrapheneNamespace), r.GrapheneRef()); err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err)
+		return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err).Because("delete_resources_unavailable")
 	}
 	for _, child := range r.Runs {
 		_ = s.runRepo.SoftDelete(ctx, child.ID) //nolint:errcheck // best-effort
@@ -791,7 +792,7 @@ func (s *Service) RetryFailed(ctx context.Context, actor auth.Actor, tenantID, i
 		return SuiteRun{}, err
 	}
 	if r.SuiteID == nil {
-		return SuiteRun{}, errs.Conflict("the suite of this run is gone")
+		return SuiteRun{}, errs.Conflict("the suite of this run is gone").Because("the_suite_of_this_run_is_gone")
 	}
 	var cells []string
 	for _, child := range r.Runs {
@@ -800,7 +801,7 @@ func (s *Service) RetryFailed(ctx context.Context, actor auth.Actor, tenantID, i
 		}
 	}
 	if len(cells) == 0 {
-		return SuiteRun{}, errs.Conflict("no failed cells")
+		return SuiteRun{}, errs.Conflict("no failed cells").Because("no_failed_cells")
 	}
 	return s.LaunchSuite(ctx, actor, tenantID, *r.SuiteID, Launch{Name: r.Name + " (retry)", Concurrency: r.Concurrency, CellIDs: cells, Labels: r.Labels, RetryOf: &r.ID}, "")
 }

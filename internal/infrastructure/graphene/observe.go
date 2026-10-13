@@ -293,10 +293,10 @@ func downloadError(ref string, err error) error {
 	name := strings.TrimPrefix(ref, "artifact/")
 	switch connect.CodeOf(err) { //nolint:exhaustive // three outcomes the caller can act on; the rest is upstream
 	case connect.CodeNotFound:
-		return errs.NotFound("artifact " + name)
+		return errs.Newf(errs.CodeNotFound, "artifact %s not found", name).Because("artifact_not_found", "name", name)
 	case connect.CodeFailedPrecondition:
-		return errs.Conflict("artifact " + name + " has no downloadable bytes")
+		return errs.Conflict("artifact "+name+" has no downloadable bytes").Because("artifact_not_downloadable", "name", name)
 	default:
-		return errs.Wrap(errs.CodeUnavailable, "download "+ref, err)
+		return errs.Wrap(errs.CodeUnavailable, "download "+ref, err).Because("artifact_unavailable")
 	}
 }

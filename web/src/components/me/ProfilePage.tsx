@@ -19,9 +19,9 @@ import {
   TimeZonePicker,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
+import { applyServerErrors, firstError, REWARD_EARLY } from '@helpers/form'
 import { useMe } from '@hooks/useMe'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -74,7 +74,7 @@ export function ProfilePage() {
       run_failed: me.notifications.run_failed ?? true,
       suite_finished: me.notifications.suite_finished ?? false,
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: {
       onDynamic: schema.refine(
         (v) => v.avatar_kind !== 'url' || /^https:\/\/\S+$/.test(v.avatar_url),

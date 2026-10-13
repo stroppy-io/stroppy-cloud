@@ -57,7 +57,7 @@ func cursorOffset(cursor oas.OptString) (int, error) {
 	}
 	n, err := strconv.Atoi(c)
 	if err != nil || n < 0 {
-		return 0, errs.Invalid("cursor")
+		return 0, errs.Invalid("cursor").Because("cursor_invalid")
 	}
 	return n, nil
 }
@@ -288,7 +288,7 @@ func documentOf(req any) (library.Document, error) {
 	case *oas.ImportSuiteReqApplicationYaml:
 		return documentFromYAML(r.Data)
 	}
-	return library.Document{}, errs.Invalid("unsupported document body")
+	return library.Document{}, errs.Invalid("unsupported document body").Because("unsupported_document_body")
 }
 
 type acceptKey struct{}

@@ -8,6 +8,7 @@ import (
 	"io"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -89,7 +90,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return err
 	}
 	if role == string(tenant.RoleViewer) {
-		return errs.Forbidden("viewers cannot launch or change runs")
+		return errs.Forbidden("viewers cannot launch or change runs").Because("viewers_cannot_launch_or_change_runs")
 	}
 	return nil
 }
@@ -269,12 +270,12 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		return Prepared{}, err
 	}
 	if !fit.Fits {
-		err := errs.Invalid("test does not fit")
+		err := errs.Invalid("test does not fit").Because("test_does_not_fit")
 		err.Validation = fit.Issues
 		return Prepared{}, err
 	}
 	if res.Profile == nil || res.DatabaseDerived == nil || res.WorkloadDerived == nil {
-		return Prepared{}, errs.Invalid("test is not fully resolved")
+		return Prepared{}, errs.Invalid("test is not fully resolved").Because("test_is_not_fully_resolved")
 	}
 	// Inline definitions have no library entry: the spec is the source.
 	dbSpec, dbName := spec.DatabaseInline, ""
@@ -286,10 +287,10 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		wlSpec, wlName = &res.Workload.Spec, res.Workload.Name
 	}
 	if dbSpec == nil || wlSpec == nil {
-		return Prepared{}, errs.Invalid("test is not fully resolved")
+		return Prepared{}, errs.Invalid("test is not fully resolved").Because("test_is_not_fully_resolved")
 	}
 	if res.Profile.Status != provider.StatusReady {
-		return Prepared{}, errs.Invalid(fmt.Sprintf("provider profile %q is %s", res.Profile.Name, res.Profile.Status))
+		return Prepared{}, errs.Invalid(fmt.Sprintf("provider profile %q is %s", res.Profile.Name, res.Profile.Status)).Because("profile_not_ready", "name", res.Profile.Name, "status", string(res.Profile.Status))
 	}
 	if err := s.checkLimits(ctx, tenantID, spec, res, opts.ExtraLive); err != nil {
 		return Prepared{}, err
@@ -375,7 +376,7 @@ func (s *Service) Start(ctx context.Context, r Run) (Run, error) {
 	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.CreatedAt, r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
 		if errors.Is(err, ErrStartRejected) {
 			_ = s.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // reported below
-			return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene rejected the run", err)
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene rejected the run", err).Because("run_submit_unavailable")
 		}
 		// The durable row is the accepted command. A lost answer does not
 		// mean rejection; the projector submits it after connection recovery.
@@ -461,24 +462,24 @@ func (s *Service) checkLimits(ctx context.Context, tenantID uuid.UUID, spec libr
 	}
 	live += extraLive
 	if lim.MaxConcurrentRuns > 0 && live >= lim.MaxConcurrentRuns {
-		return errs.Newf(errs.CodeLimit, "max_concurrent_runs: %d runs are live, limit %d", live, lim.MaxConcurrentRuns)
+		return errs.Newf(errs.CodeLimit, "max_concurrent_runs: %d runs are live, limit %d", live, lim.MaxConcurrentRuns).Because("limit_concurrent_runs", "live", strconv.Itoa(live), "limit", strconv.Itoa(lim.MaxConcurrentRuns))
 	}
 	machines := 0
 	for _, m := range res.Machines {
 		machines += m.Count
 	}
 	if lim.MaxMachinesPerRun > 0 && machines > lim.MaxMachinesPerRun {
-		return errs.Newf(errs.CodeLimit, "max_machines_per_run: %d machines, limit %d", machines, lim.MaxMachinesPerRun)
+		return errs.Newf(errs.CodeLimit, "max_machines_per_run: %d machines, limit %d", machines, lim.MaxMachinesPerRun).Because("limit_machines_per_run", "machines", strconv.Itoa(machines), "limit", strconv.Itoa(lim.MaxMachinesPerRun))
 	}
 	if lim.MaxSize != "" {
 		for role, rs := range spec.Sizes {
 			if sizeIndex(rs.Size) > sizeIndex(lim.MaxSize) {
-				return errs.Newf(errs.CodeLimit, "max_size: sizes.%s is %s, limit %s", role, rs.Size, lim.MaxSize)
+				return errs.Newf(errs.CodeLimit, "max_size: sizes.%s is %s, limit %s", role, rs.Size, lim.MaxSize).Because("limit_size", "role", role, "size", string(rs.Size), "limit", string(lim.MaxSize))
 			}
 		}
 	}
 	if lim.MaxKeep > 0 && spec.Keep > lim.MaxKeep {
-		return errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", spec.Keep, lim.MaxKeep)
+		return errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", spec.Keep, lim.MaxKeep).Because("limit_keep", "keep", spec.Keep.String(), "limit", lim.MaxKeep.String())
 	}
 	return nil
 }
@@ -497,7 +498,7 @@ func sizeIndex(size string) int {
 func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipelinespec.Run) error {
 	quotas, err := s.profiles.FreshQuotas(ctx, p)
 	if err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "provider quotas", err)
+		return errs.Wrap(errs.CodeUnavailable, "provider quotas", err).Because("provider_quota_check_unavailable")
 	}
 	cpu, mem, highFreqCPU := 0, 0, 0
 	for _, m := range res.Machines {
@@ -557,7 +558,7 @@ func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipel
 			continue
 		}
 		if q.Limit >= 0 && need > 0 && q.Used+need > q.Limit {
-			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", q.Name, q.Used, need, q.Limit, q.Unit)
+			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", q.Name, q.Used, need, q.Limit, q.Unit).Because("provider_quota_exceeded", "quota", q.Name, "used", strconv.FormatFloat(q.Used, 'f', 0, 64), "need", strconv.FormatFloat(need, 'f', 0, 64), "limit", strconv.FormatFloat(q.Limit, 'f', 0, 64), "unit", q.Unit)
 		}
 	}
 	return nil
@@ -649,7 +650,7 @@ func (s *Service) Favorites(ctx context.Context, actor auth.Actor, tenantID uuid
 // SetFavorite marks or unmarks a favorite of the actor.
 func (s *Service) SetFavorite(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, kind string, target uuid.UUID, on bool) error {
 	if actor.UserID == uuid.Nil {
-		return errs.Forbidden("favorites belong to users, not tokens")
+		return errs.Forbidden("favorites belong to users, not tokens").Because("favorites_belong_to_users_not_tokens")
 	}
 	if err := s.member(ctx, actor, tenantID); err != nil {
 		return err
@@ -788,7 +789,7 @@ func (s *Service) Cancel(ctx context.Context, actor auth.Actor, tenantID, id uui
 		return Run{}, err
 	}
 	if r.Status.Terminal() {
-		return Run{}, errs.Conflict("run already finished")
+		return Run{}, errs.Conflict("run already finished").Because("run_already_finished")
 	}
 	// Mark first: the projector may record the terminal status the
 	// moment Graphene acknowledges, and a terminal status never moves back.
@@ -796,7 +797,7 @@ func (s *Service) Cancel(ctx context.Context, actor auth.Actor, tenantID, id uui
 		return Run{}, err
 	}
 	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err)
+		return Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "run.cancel", Target: audit.Target{Kind: "run", ID: id.String()}, Details: nil}) //nolint:errcheck // audit never blocks
 	return s.repo.ByID(ctx, id)
@@ -812,10 +813,10 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, tenantID, id uui
 		return err
 	}
 	if !r.Status.Terminal() {
-		return errs.Conflict("cancel the run before deleting it")
+		return errs.Conflict("cancel the run before deleting it").Because("cancel_run_before_delete")
 	}
 	if err := s.graphene.DeleteRef(s.scope(ctx, r.GrapheneNamespace), r.GrapheneRef()); err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err)
+		return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err).Because("delete_resources_unavailable")
 	}
 	if err := s.repo.SoftDelete(ctx, id); err != nil {
 		return err
@@ -834,27 +835,27 @@ func (s *Service) KeepExtend(ctx context.Context, actor auth.Actor, tenantID, id
 		return Run{}, err
 	}
 	if !r.StandKept {
-		return Run{}, errs.Conflict("the stand is not kept")
+		return Run{}, errs.Conflict("the stand is not kept").Because("the_stand_is_not_kept")
 	}
 	lim, err := s.limits.EffectiveLimits(ctx, tenantID)
 	if err != nil {
 		return Run{}, err
 	}
 	if lim.MaxKeep > 0 && d > lim.MaxKeep {
-		return Run{}, errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", d, lim.MaxKeep)
+		return Run{}, errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", d, lim.MaxKeep).Because("limit_keep", "keep", d.String(), "limit", lim.MaxKeep.String())
 	}
 	sctx := s.scope(ctx, r.GrapheneNamespace)
 	held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
 	if err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
+		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err).Because("stand_unavailable")
 	}
 	held = standHoldings(held)
 	if len(held) == 0 {
-		return Run{}, errs.Conflict("the stand holds nothing of this run any more")
+		return Run{}, errs.Conflict("the stand holds nothing of this run any more").Because("stand_lost_run")
 	}
 	for _, h := range held {
 		if err := s.graphene.KeepExtend(sctx, h.Ref, d); err != nil {
-			return Run{}, errs.Wrap(errs.CodeUnavailable, "extend", err)
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "extend", err).Because("stand_unavailable")
 		}
 	}
 	until := time.Now().UTC().Add(d)
@@ -875,16 +876,16 @@ func (s *Service) KeepRelease(ctx context.Context, actor auth.Actor, tenantID, i
 		return Run{}, err
 	}
 	if !r.StandKept {
-		return Run{}, errs.Conflict("the stand is not kept")
+		return Run{}, errs.Conflict("the stand is not kept").Because("the_stand_is_not_kept")
 	}
 	sctx := s.scope(ctx, r.GrapheneNamespace)
 	held, err := s.graphene.Holdings(sctx, r.GrapheneRef())
 	if err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err)
+		return Run{}, errs.Wrap(errs.CodeUnavailable, "stand", err).Because("stand_unavailable")
 	}
 	for _, h := range standHoldings(held) {
 		if err := s.graphene.KeepRelease(sctx, h.Ref); err != nil {
-			return Run{}, errs.Wrap(errs.CodeUnavailable, "release", err)
+			return Run{}, errs.Wrap(errs.CodeUnavailable, "release", err).Because("stand_unavailable")
 		}
 	}
 	if err := s.repo.SetKeep(ctx, id, false, nil); err != nil {

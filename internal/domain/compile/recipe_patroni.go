@@ -20,10 +20,10 @@ const (
 
 func patroniRecipe(c *compilation) error {
 	if len(c.machinesOf(topology.RoleProxy)) == 0 {
-		return errs.Newf(errs.CodeInvalid, "params.haproxy: Patroni requires HAProxy to route workload connections to the elected leader")
+		return errs.Newf(errs.CodeInvalid, "params.haproxy: Patroni requires HAProxy to route workload connections to the elected leader").Because("patroni_requires_haproxy")
 	}
 	if c.in.Database.Image != "" {
-		return errs.Newf(errs.CodeInvalid, "database.image: Patroni uses the versioned Patroni/PostgreSQL image; a plain PostgreSQL image cannot run Patroni")
+		return errs.Newf(errs.CodeInvalid, "database.image: Patroni uses the versioned Patroni/PostgreSQL image; a plain PostgreSQL image cannot run Patroni").Because("patroni_image_required")
 	}
 	etcdNames, hosts, err := c.patroniEtcd()
 	if err != nil {

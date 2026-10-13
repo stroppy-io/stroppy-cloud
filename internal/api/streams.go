@@ -33,7 +33,7 @@ func (s *Streams) IsEvents(topic string) bool {
 func splitTopic(topic string) (kind, arg string, err error) {
 	kind, arg, ok := strings.Cut(topic, "/")
 	if !ok || arg == "" {
-		return "", "", errs.Invalid("topic must be <kind>/<id>")
+		return "", "", errs.Invalid("topic must be <kind>/<id>").Because("topic_must_be_kind_id")
 	}
 	if i := strings.IndexByte(arg, '?'); i >= 0 {
 		arg = arg[:i]
@@ -45,7 +45,7 @@ func splitTopic(topic string) (kind, arg string, err error) {
 func (s *Streams) runOf(ctx context.Context, actor auth.Actor, id string) (run.Run, error) {
 	rid, err := uuid.Parse(id)
 	if err != nil {
-		return run.Run{}, errs.Invalid("run id is not a uuid")
+		return run.Run{}, errs.Invalid("run id is not a uuid").Because("run_id_is_not_a_uuid")
 	}
 	r, err := s.h.deps.Runs.Peek(ctx, rid)
 	if err != nil {
@@ -89,7 +89,7 @@ func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) 
 	case "suite_run":
 		id, err := uuid.Parse(arg)
 		if err != nil {
-			return nil, "", errs.Invalid("suite run id is not a uuid")
+			return nil, "", errs.Invalid("suite run id is not a uuid").Because("suite_run_id_is_not_a_uuid")
 		}
 		sr, err := s.h.deps.Suites.Peek(ctx, id)
 		if err != nil {
@@ -132,7 +132,7 @@ func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) 
 		}
 		return out, w.End.Format(time.RFC3339), nil
 	case "agent.pty":
-		return nil, "", errs.New(errs.CodeUnavailable, "pty streams are not connected yet")
+		return nil, "", errs.New(errs.CodeUnavailable, "pty streams are not connected yet").Because("pty_streams_are_not_connected_yet")
 	default:
 		return nil, "", errs.Invalid("unknown topic " + kind)
 	}
@@ -173,7 +173,7 @@ func (s *Streams) Events(ctx context.Context, actor auth.Actor, topic, cursor st
 	after := int64(0)
 	if cursor != "" {
 		if after, err = strconv.ParseInt(cursor, 10, 64); err != nil {
-			return nil, "", errs.Invalid("cursor is not an event id")
+			return nil, "", errs.Invalid("cursor is not an event id").Because("cursor_is_not_an_event_id")
 		}
 	}
 	list, err := s.h.deps.Runs.Events(ctx, actor, r.TenantID, r.ID, after, 500)

@@ -39,7 +39,7 @@ func mysqlRecipe(c *compilation) error {
 	case mode == "galera":
 		return mysqlClusterRecipe(c, true)
 	case boolParam(p, "maxscale"):
-		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet")
+		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet").Because("maxscale_not_launchable")
 	}
 	image, err := c.imageOf()
 	if err != nil {

@@ -1009,10 +1009,10 @@ type Handler interface {
 	ShareSuiteRun(ctx context.Context, req *ShareCreate, params ShareSuiteRunParams) (*Share, error)
 	// SuggestTenantName implements suggestTenantName operation.
 	//
-	// Unique name/slug suggestion derived from the account.
+	// Unique name/slug suggestion — from `name` when given, else from the account.
 	//
 	// GET /api/v1/tenants/suggest-name
-	SuggestTenantName(ctx context.Context) (*SuggestTenantNameOK, error)
+	SuggestTenantName(ctx context.Context, params SuggestTenantNameParams) (*SuggestTenantNameOK, error)
 	// TransferTenant implements transferTenant operation.
 	//
 	// Transfer ownership to another member (owner).

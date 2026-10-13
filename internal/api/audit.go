@@ -27,7 +27,7 @@ func (h *Handler) ListTenantAudit(ctx context.Context, params oas.ListTenantAudi
 	if c, ok := params.Cursor.Get(); ok && c != "" {
 		id, err := strconv.ParseInt(c, 10, 64)
 		if err != nil {
-			return nil, errs.Invalid("cursor")
+			return nil, errs.Invalid("cursor").Because("cursor_invalid")
 		}
 		q.BeforeID = id
 	}

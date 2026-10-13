@@ -27,7 +27,7 @@ const (
 // on restart. Full-cluster disaster recovery is deliberately not automatic.
 func mysqlClusterRecipe(c *compilation, maria bool) error {
 	if boolParam(c.params(), "maxscale") {
-		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet")
+		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet").Because("maxscale_not_launchable")
 	}
 	image, err := c.imageOf()
 	if err != nil {

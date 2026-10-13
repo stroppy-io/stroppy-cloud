@@ -30,7 +30,7 @@ func NewSecurity(v Verifier) *Security { return &Security{verifier: v} }
 func (s *Security) HandleBearerAuth(ctx context.Context, _ oas.OperationName, t oas.BearerAuth) (context.Context, error) {
 	actor, err := s.verifier.Verify(ctx, t.Token)
 	if err != nil {
-		return ctx, errs.Unauthenticated("token rejected")
+		return ctx, errs.Unauthenticated("token rejected").Because("token_rejected")
 	}
 	return auth.WithActor(ctx, actor), nil
 }
@@ -40,7 +40,7 @@ func (s *Security) HandleBearerAuth(ctx context.Context, _ oas.OperationName, t 
 func actor(ctx context.Context) (auth.Actor, error) {
 	a := auth.ActorFrom(ctx)
 	if a.IsAnonymous() {
-		return auth.Actor{}, errs.Unauthenticated("authentication required")
+		return auth.Actor{}, errs.Unauthenticated("authentication required").Because("authentication_required")
 	}
 	return a, nil
 }

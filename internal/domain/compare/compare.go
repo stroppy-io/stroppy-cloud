@@ -87,7 +87,7 @@ func (s *Service) Compare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		return Comparison{}, err
 	}
 	if len(req.RunIDs) < 2 || len(req.RunIDs) > 16 {
-		return Comparison{}, errs.Invalid("run_ids: 2 to 16 runs")
+		return Comparison{}, errs.Invalid("run_ids: 2 to 16 runs").Because("run_ids_2_to_16_runs")
 	}
 	list, err := s.runs.ByIDs(ctx, req.RunIDs)
 	if err != nil {
@@ -103,7 +103,7 @@ func (s *Service) Compare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	for _, id := range req.RunIDs {
 		r, ok := byID[id]
 		if !ok {
-			return Comparison{}, errs.NotFound("run " + id.String())
+			return Comparison{}, errs.Newf(errs.CodeNotFound, "run %s not found", id).Because("run_not_found")
 		}
 		runs = append(runs, r)
 	}

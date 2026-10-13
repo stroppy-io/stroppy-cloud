@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"strings"
 
 	"github.com/google/uuid"
 
@@ -34,7 +35,7 @@ func (h *Handler) CreateTenant(ctx context.Context, req *oas.TenantCreate) (*oas
 		return nil, err
 	}
 	if h.publicConfig(ctx).TenantCreation == "admin_only" && (h.deps.Admin == nil || !h.deps.Admin.IsAdmin(ctx, a)) {
-		return nil, errs.Forbidden("tenant creation is restricted to platform admins")
+		return nil, errs.Forbidden("tenant creation is restricted to platform admins").Because("tenant_creation_admin_only")
 	}
 	t, err := h.deps.Tenants.Create(ctx, a, tenant.Create{Name: req.Name, Slug: req.Slug.Or(""), Description: req.Description.Or("")})
 	if err != nil {
@@ -44,7 +45,7 @@ func (h *Handler) CreateTenant(ctx context.Context, req *oas.TenantCreate) (*oas
 }
 
 // SuggestTenantName — unique name/slug from the account.
-func (h *Handler) SuggestTenantName(ctx context.Context) (*oas.SuggestTenantNameOK, error) {
+func (h *Handler) SuggestTenantName(ctx context.Context, params oas.SuggestTenantNameParams) (*oas.SuggestTenantNameOK, error) {
 	a, err := actor(ctx)
 	if err != nil {
 		return nil, err
@@ -53,7 +54,11 @@ func (h *Handler) SuggestTenantName(ctx context.Context) (*oas.SuggestTenantName
 	if err != nil {
 		return nil, err
 	}
-	name, slug, err := h.deps.Tenants.SuggestName(ctx, p.DisplayName, p.Email)
+	base := p.DisplayName
+	if v, ok := params.Name.Get(); ok && strings.TrimSpace(v) != "" {
+		base = v
+	}
+	name, slug, err := h.deps.Tenants.SuggestName(ctx, base, p.Email)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +123,7 @@ func (h *Handler) TransferTenant(ctx context.Context, req *oas.TransferTenantReq
 	}
 	to, err := uuid.Parse(req.UserID)
 	if err != nil {
-		return nil, errs.Invalid("user_id is not a uuid")
+		return nil, errs.Invalid("user_id is not a uuid").Because("user_id_is_not_a_uuid")
 	}
 	t, err := h.deps.Tenants.Transfer(ctx, a, params.Slug, to)
 	if err != nil {
@@ -152,7 +157,7 @@ func (h *Handler) PatchMember(ctx context.Context, req *oas.PatchMemberReq, para
 	}
 	userID, err := uuid.Parse(params.UserId)
 	if err != nil {
-		return nil, errs.Invalid("userId is not a uuid")
+		return nil, errs.Invalid("userId is not a uuid").Because("user_id_is_not_a_uuid")
 	}
 	m, err := h.deps.Tenants.SetRole(ctx, a, params.Slug, userID, tenant.Role(req.Role))
 	if err != nil {
@@ -170,7 +175,7 @@ func (h *Handler) RemoveMember(ctx context.Context, params oas.RemoveMemberParam
 	}
 	userID, err := uuid.Parse(params.UserId)
 	if err != nil {
-		return errs.Invalid("userId is not a uuid")
+		return errs.Invalid("userId is not a uuid").Because("user_id_is_not_a_uuid")
 	}
 	return h.deps.Tenants.Remove(ctx, a, params.Slug, userID)
 }

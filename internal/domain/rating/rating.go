@@ -94,7 +94,7 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		}
 	}
 	if !found || !def.RatingEligible {
-		return Page{}, errs.Invalid("metric " + metric + " is not rating eligible")
+		return Page{}, errs.Invalid("metric "+metric+" is not rating eligible").Because("metric_not_rating_eligible", "metric", metric)
 	}
 	rq := run.RatingQuery{
 		Metric: metric, HigherIsBetter: def.HigherIsBetter, TenantID: tenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers,

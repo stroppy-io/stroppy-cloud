@@ -223,7 +223,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Unique name/slug suggestion derived from the account. */
+        /** Unique name/slug suggestion — from `name` when given, else from the account. */
         get: operations["suggestTenantName"];
         put?: never;
         post?: never;
@@ -2343,6 +2343,15 @@ export interface components {
              * @example test_not_ready
              */
             code: string;
+            /**
+             * @description Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`, `limit_concurrent_runs`, `<entity>_not_found`). Clients show their own text for it; `detail` is the English fallback for an unknown reason.
+             * @example tenant_slug_taken
+             */
+            reason?: string;
+            /** @description Values for the reason's text, e.g. slug=acme. */
+            params?: {
+                [key: string]: string;
+            };
             request_id?: string;
             validation?: components["schemas"]["ValidationResult"];
         };
@@ -2523,6 +2532,8 @@ export interface components {
             }[];
         };
         PublicConfig: {
+            /** @description A public report (`/s/<token>`) of a real run that first-run screens offer as "what a result looks like"; absent when the installation has none. */
+            demo_report_url?: string;
             /** @description How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without Kratos asks for a static token). */
             auth: {
                 /** @enum {string} */
@@ -2576,6 +2587,7 @@ export interface components {
             owned_tenant_id?: string | null;
             preferences: components["schemas"]["Preferences"];
             notifications: components["schemas"]["NotificationPrefs"];
+            onboarding?: components["schemas"]["Onboarding"];
             /** Format: date-time */
             created_at?: string;
         };
@@ -2584,6 +2596,17 @@ export interface components {
             avatar?: string;
             preferences?: components["schemas"]["Preferences"];
             notifications?: components["schemas"]["NotificationPrefs"];
+            /** @description Merged flag by flag; an absent flag keeps its value. */
+            onboarding?: components["schemas"]["Onboarding"];
+        };
+        /** @description First-run progress of the account, kept on the server so it does not come back in another browser. All flags default to false. */
+        Onboarding: {
+            /** @description The welcome screen was passed. */
+            welcome_done?: boolean;
+            /** @description The interface tour was finished or skipped. */
+            tour_done?: boolean;
+            /** @description The dashboard first-run checklist was hidden. */
+            checklist_hidden?: boolean;
         };
         Preferences: {
             /** @enum {string} */
@@ -4659,7 +4682,10 @@ export interface operations {
     };
     suggestTenantName: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description A name or slug the user typed; the answer is its slug when free, else the nearest free variant (`acme-2`). Cyrillic is transliterated. */
+                name?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;

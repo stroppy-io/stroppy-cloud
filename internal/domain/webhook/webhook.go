@@ -152,7 +152,7 @@ func (s *Service) admin(ctx context.Context, actor auth.Actor, tenantID uuid.UUI
 		return err
 	}
 	if role != "owner" && role != "admin" {
-		return errs.Forbidden("requires role admin")
+		return errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	return nil
 }
@@ -323,20 +323,20 @@ func (s *Service) Publish(ctx context.Context, tenantID uuid.UUID, event string,
 func validateURL(raw string) error {
 	u, err := url.Parse(raw)
 	if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" {
-		return errs.Invalid("url must be an absolute http(s) URL")
+		return errs.Invalid("url must be an absolute http(s) URL").Because("url_not_absolute_http")
 	}
 	return nil
 }
 
 func validateEvents(events []string) ([]string, error) {
 	if len(events) == 0 {
-		return nil, errs.Invalid("at least one event")
+		return nil, errs.Invalid("at least one event").Because("at_least_one_event")
 	}
 	seen := map[string]bool{}
 	out := make([]string, 0, len(events))
 	for _, e := range events {
 		if !knownEvents[e] {
-			return nil, errs.Invalid("unknown event " + e)
+			return nil, errs.Invalid("unknown event "+e).Because("webhook_event_unknown", "event", e)
 		}
 		if !seen[e] {
 			seen[e] = true

@@ -271,7 +271,7 @@ func ydbRecipe(c *compilation) error {
 	storage := c.machinesOf(topology.RoleDB)
 	compute := c.machinesOf(topology.RoleDBCompute)
 	if len(storage) == 0 {
-		return errs.Newf(errs.CodeInvalid, "params.storage_nodes: at least one storage node")
+		return errs.Newf(errs.CodeInvalid, "params.storage_nodes: at least one storage node").Because("ydb_storage_nodes_required")
 	}
 	pdisks := intParam(p, "pdisks_per_node", 1)
 	erasure := ydbErasure(strParam(p, "fault_tolerance", "none"))

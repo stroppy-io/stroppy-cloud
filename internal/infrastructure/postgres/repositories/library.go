@@ -73,7 +73,7 @@ func (r *LibraryRepo) InsertDatabase(ctx context.Context, d library.Database) er
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a database with this name exists")
+			return errs.Conflict("a database with this name exists").Because("a_database_with_this_name_exists")
 		}
 		return infraf("database: insert: %v", err)
 	}
@@ -122,7 +122,7 @@ func (r *LibraryRepo) UpdateDatabase(ctx context.Context, id uuid.UUID, p librar
 	n, err := r.q.UpdateDatabase(ctx, params)
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a database with this name exists")
+			return errs.Conflict("a database with this name exists").Because("a_database_with_this_name_exists")
 		}
 		return infraf("database: update: %v", err)
 	}
@@ -186,7 +186,7 @@ func (r *LibraryRepo) InsertWorkload(ctx context.Context, w library.Workload) er
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a workload with this name exists")
+			return errs.Conflict("a workload with this name exists").Because("a_workload_with_this_name_exists")
 		}
 		return infraf("workload: insert: %v", err)
 	}
@@ -232,7 +232,7 @@ func (r *LibraryRepo) UpdateWorkload(ctx context.Context, id uuid.UUID, p librar
 	n, err := r.q.UpdateWorkload(ctx, params)
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a workload with this name exists")
+			return errs.Conflict("a workload with this name exists").Because("a_workload_with_this_name_exists")
 		}
 		return infraf("workload: update: %v", err)
 	}
@@ -305,7 +305,7 @@ func (r *LibraryRepo) InsertTest(ctx context.Context, t library.Test) error {
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a test with this name exists")
+			return errs.Conflict("a test with this name exists").Because("a_test_with_this_name_exists")
 		}
 		return infraf("test: insert: %v", err)
 	}
@@ -385,7 +385,7 @@ func (r *LibraryRepo) UpdateTest(ctx context.Context, t library.Test, p library.
 	n, err := r.q.UpdateTest(ctx, params)
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a test with this name exists")
+			return errs.Conflict("a test with this name exists").Because("a_test_with_this_name_exists")
 		}
 		return infraf("test: update: %v", err)
 	}

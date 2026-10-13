@@ -68,7 +68,7 @@ func (s *Service) admin(ctx context.Context, actor auth.Actor, tenantID uuid.UUI
 		return err
 	}
 	if role != "owner" && role != "admin" {
-		return errs.Forbidden("requires role admin")
+		return errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	return nil
 }
@@ -120,10 +120,10 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" || len(name) > 64 {
-		return Profile{}, errs.Invalid("name must be 1..64 characters")
+		return Profile{}, errs.Invalid("name must be 1..64 characters").Because("name_must_be_1_64_characters")
 	}
 	if !req.Kind.Valid() {
-		return Profile{}, errs.Invalid("kind must be yandex or aws")
+		return Profile{}, errs.Invalid("kind must be yandex or aws").Because("kind_must_be_yandex_or_aws")
 	}
 	settings, err := s.validate.Bake(ctx, settingsSchema(req.Kind), req.Settings)
 	if err != nil {
@@ -147,7 +147,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		p.CreatedBy = &by
 	}
 	if err := s.secrets.SetSecret(s.scope(ctx, ns), p.SecretNames[0], string(creds)); err != nil {
-		return Profile{}, errs.Wrap(errs.CodeUnavailable, "graphene secret", err)
+		return Profile{}, errs.Wrap(errs.CodeUnavailable, "graphene secret", err).Because("provider_secret_unavailable")
 	}
 	if err := s.repo.Insert(ctx, p); err != nil {
 		_ = s.secrets.DeleteSecret(s.scope(ctx, ns), p.SecretNames[0]) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
@@ -169,12 +169,12 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 		return Profile{}, err
 	}
 	if p.Status == StatusDeleting || p.Status == StatusDeleteFailed {
-		return Profile{}, errs.Conflict("provider is being deleted")
+		return Profile{}, errs.Conflict("provider is being deleted").Because("provider_is_being_deleted")
 	}
 	if patch.Name != nil {
 		n := strings.TrimSpace(*patch.Name)
 		if n == "" || len(n) > 64 {
-			return Profile{}, errs.Invalid("name must be 1..64 characters")
+			return Profile{}, errs.Invalid("name must be 1..64 characters").Because("name_must_be_1_64_characters")
 		}
 		patch.Name = &n
 	}
@@ -251,15 +251,15 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, tenantID, id uui
 	}
 	out, err := s.pipelines.Configure(s.scope(ctx, ns), p.VerifyRunID, configureParams(p, "delete"))
 	if err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "provider cleanup pending; retry deletion", err)
+		return errs.Wrap(errs.CodeUnavailable, "provider cleanup pending; retry deletion", err).Because("provider_cleanup_pending")
 	}
 	if !out.OK {
 		_ = s.repo.FinishOperation(ctx, id, p.VerifyRunID, StatusDeleteFailed, out.Error) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
-		return errs.Conflict("provider cleanup failed: " + out.Error)
+		return errs.Conflict("provider cleanup failed: "+out.Error).Because("provider_cleanup_failed", "error", out.Error)
 	}
 	for _, name := range p.SecretNames {
 		if err := s.secrets.DeleteSecret(s.scope(ctx, ns), name); err != nil {
-			return errs.Wrap(errs.CodeUnavailable, "provider credential cleanup pending", err)
+			return errs.Wrap(errs.CodeUnavailable, "provider credential cleanup pending", err).Because("provider_cleanup_pending")
 		}
 	}
 	if err := s.repo.SoftDelete(ctx, id); err != nil {
@@ -369,14 +369,14 @@ func (s *Service) RefreshQuotas(ctx context.Context, actor auth.Actor, tenantID,
 		return Profile{}, err
 	}
 	if p.Status != StatusReady {
-		return Profile{}, errs.Conflict("profile is not verified")
+		return Profile{}, errs.Conflict("profile is not verified").Because("profile_is_not_verified")
 	}
 	ns, err := s.access.NamespaceOf(ctx, tenantID)
 	if err != nil {
 		return Profile{}, err
 	}
 	if err := s.refreshQuotas(ctx, ns, p); err != nil {
-		return Profile{}, errs.Wrap(errs.CodeUnavailable, "quota pipeline", err)
+		return Profile{}, errs.Wrap(errs.CodeUnavailable, "quota pipeline", err).Because("provider_quota_check_unavailable")
 	}
 	return s.repo.ByID(ctx, id)
 }

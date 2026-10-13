@@ -34,7 +34,7 @@ func (r *SuiteRepo) Insert(ctx context.Context, s suite.Suite) error {
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a suite with this name exists")
+			return errs.Conflict("a suite with this name exists").Because("a_suite_with_this_name_exists")
 		}
 		return infraf("suite: insert: %v", err)
 	}
@@ -103,7 +103,7 @@ func (r *SuiteRepo) Update(ctx context.Context, id uuid.UUID, p suite.Patch) err
 	n, err := r.q.UpdateSuite(ctx, params)
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a suite with this name exists")
+			return errs.Conflict("a suite with this name exists").Because("a_suite_with_this_name_exists")
 		}
 		return infraf("suite: update: %v", err)
 	}
@@ -160,7 +160,7 @@ func (r *SuiteRepo) InsertRun(ctx context.Context, x suite.SuiteRun, idempotency
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a suite run with this idempotency key exists")
+			return errs.Conflict("a suite run with this idempotency key exists").Because("suite_run_idempotency_conflict")
 		}
 		return infraf("suite run: insert: %v", err)
 	}

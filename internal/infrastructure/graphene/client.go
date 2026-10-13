@@ -45,7 +45,7 @@ func New(cfg *Config) *Client {
 	}
 	base := scheme + "://" + cfg.Address
 	hc := &http.Client{}
-	auth := connect.WithInterceptors(authInterceptor{token: cfg.Token})
+	auth := connect.WithInterceptors(authInterceptor{token: cfg.Token, timeout: cfg.CallTimeout})
 	return &Client{
 		Runs:      managementv1connect.NewRunsAPIClient(hc, base, auth),
 		Resources: managementv1connect.NewResourcesAPIClient(hc, base, auth),
@@ -75,7 +75,10 @@ func NamespaceFrom(ctx context.Context) string {
 // authInterceptor stamps the token and the namespace of the context onto
 // every call. Unary calls retry on Unavailable — a redeploy mid-request
 // otherwise surfaces as a one-off EOF; streams re-establish themselves.
-type authInterceptor struct{ token string }
+type authInterceptor struct {
+	token   string
+	timeout time.Duration
+}
 
 func (a authInterceptor) apply(ctx context.Context, h http.Header) {
 	h.Set("Authorization", "Bearer "+a.token)
@@ -87,6 +90,11 @@ func (a authInterceptor) apply(ctx context.Context, h http.Header) {
 func (a authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 		a.apply(ctx, req.Header())
+		if _, has := ctx.Deadline(); !has && a.timeout > 0 {
+			var cancel context.CancelFunc
+			ctx, cancel = context.WithTimeout(ctx, a.timeout)
+			defer cancel()
+		}
 		var res connect.AnyResponse
 		var err error
 		for attempt, backoff := 0, 300*time.Millisecond; ; attempt, backoff = attempt+1, backoff*2 {

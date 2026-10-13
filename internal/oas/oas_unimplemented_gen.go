@@ -1512,10 +1512,10 @@ func (UnimplementedHandler) ShareSuiteRun(ctx context.Context, req *ShareCreate,
 
 // SuggestTenantName implements suggestTenantName operation.
 //
-// Unique name/slug suggestion derived from the account.
+// Unique name/slug suggestion — from `name` when given, else from the account.
 //
 // GET /api/v1/tenants/suggest-name
-func (UnimplementedHandler) SuggestTenantName(ctx context.Context) (r *SuggestTenantNameOK, _ error) {
+func (UnimplementedHandler) SuggestTenantName(ctx context.Context, params SuggestTenantNameParams) (r *SuggestTenantNameOK, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

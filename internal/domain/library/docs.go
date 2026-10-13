@@ -3,7 +3,6 @@ package library
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"sort"
 	"strings"
 
@@ -47,16 +46,16 @@ func document(kind string, e Entity, spec any) (Document, error) {
 
 func (d Document) check(kind string) error {
 	if d.APIVersion != "" && d.APIVersion != APIVersion {
-		return errs.Invalid("api_version must be " + APIVersion)
+		return errs.Invalid("api_version must be "+APIVersion).Because("document_api_version", "version", APIVersion)
 	}
 	if d.Kind != kind {
-		return errs.Invalid("kind must be " + kind)
+		return errs.Invalid("kind must be "+kind).Because("document_kind", "kind", kind)
 	}
 	if strings.TrimSpace(d.Metadata.Name) == "" {
-		return errs.Invalid("metadata.name is required")
+		return errs.Invalid("metadata.name is required").Because("metadata_name_is_required")
 	}
 	if len(d.Spec) == 0 {
-		return errs.Invalid("spec is required")
+		return errs.Invalid("spec is required").Because("spec_is_required")
 	}
 	return nil
 }
@@ -259,14 +258,14 @@ func (s *Service) testSpecFromJSON(ctx context.Context, tenantID uuid.UUID, raw 
 	if doc.ProviderProfileID != "" {
 		id, err := uuid.Parse(doc.ProviderProfileID)
 		if err != nil {
-			return TestSpec{}, errs.Invalid("provider_profile_id is not a uuid")
+			return TestSpec{}, errs.Invalid("provider_profile_id is not a uuid").Because("provider_profile_id_is_not_a_uuid")
 		}
 		spec.ProviderProfileID = &id
 	}
 	if doc.Keep != "" {
 		d, err := parseDuration(doc.Keep)
 		if err != nil {
-			return TestSpec{}, errs.Invalid("keep is not a duration")
+			return TestSpec{}, errs.Invalid("keep is not a duration").Because("keep_is_not_a_duration")
 		}
 		spec.Keep = d
 	}
@@ -284,12 +283,12 @@ func (s *Service) resolveRef(ctx context.Context, tenantID uuid.UUID, kind, id, 
 	if id != "" {
 		u, err := uuid.Parse(id)
 		if err != nil {
-			return uuid.Nil, errs.Invalid(kind + ".ref.id is not a uuid")
+			return uuid.Nil, errs.Invalid(kind+".ref.id is not a uuid").Because("ref_id_not_uuid", "kind", kind)
 		}
 		return u, nil
 	}
 	if name == "" {
-		return uuid.Nil, errs.Invalid(kind + ".ref needs id or name")
+		return uuid.Nil, errs.Invalid(kind+".ref needs id or name").Because("ref_needs_id_or_name", "kind", kind)
 	}
 	switch kind {
 	case "database":
@@ -313,7 +312,7 @@ func (s *Service) resolveRef(ctx context.Context, tenantID uuid.UUID, kind, id, 
 			}
 		}
 	}
-	return uuid.Nil, errs.NotFound(fmt.Sprintf("%s %q", kind, name))
+	return uuid.Nil, errs.Newf(errs.CodeNotFound, "%s %q not found", kind, name).Because("ref_not_found", "kind", kind, "name", name)
 }
 
 // --- diff -----------------------------------------------------------------

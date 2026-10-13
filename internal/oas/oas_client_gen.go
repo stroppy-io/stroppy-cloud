@@ -1088,10 +1088,10 @@ type Invoker interface {
 	ShareSuiteRun(ctx context.Context, request *ShareCreate, params ShareSuiteRunParams, options ...RequestOption) (*Share, error)
 	// SuggestTenantName invokes suggestTenantName operation.
 	//
-	// Unique name/slug suggestion derived from the account.
+	// Unique name/slug suggestion — from `name` when given, else from the account.
 	//
 	// GET /api/v1/tenants/suggest-name
-	SuggestTenantName(ctx context.Context, options ...RequestOption) (*SuggestTenantNameOK, error)
+	SuggestTenantName(ctx context.Context, params SuggestTenantNameParams, options ...RequestOption) (*SuggestTenantNameOK, error)
 	// TransferTenant invokes transferTenant operation.
 	//
 	// Transfer ownership to another member (owner).
@@ -30048,15 +30048,15 @@ func (c *Client) sendShareSuiteRun(ctx context.Context, request *ShareCreate, pa
 
 // SuggestTenantName invokes suggestTenantName operation.
 //
-// Unique name/slug suggestion derived from the account.
+// Unique name/slug suggestion — from `name` when given, else from the account.
 //
 // GET /api/v1/tenants/suggest-name
-func (c *Client) SuggestTenantName(ctx context.Context, options ...RequestOption) (*SuggestTenantNameOK, error) {
-	res, err := c.sendSuggestTenantName(ctx, options...)
+func (c *Client) SuggestTenantName(ctx context.Context, params SuggestTenantNameParams, options ...RequestOption) (*SuggestTenantNameOK, error) {
+	res, err := c.sendSuggestTenantName(ctx, params, options...)
 	return res, err
 }
 
-func (c *Client) sendSuggestTenantName(ctx context.Context, requestOptions ...RequestOption) (res *SuggestTenantNameOK, err error) {
+func (c *Client) sendSuggestTenantName(ctx context.Context, params SuggestTenantNameParams, requestOptions ...RequestOption) (res *SuggestTenantNameOK, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("suggestTenantName"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -30106,6 +30106,27 @@ func (c *Client) sendSuggestTenantName(ctx context.Context, requestOptions ...Re
 	var pathParts [1]string
 	pathParts[0] = "/api/v1/tenants/suggest-name"
 	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "name" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Name.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u)

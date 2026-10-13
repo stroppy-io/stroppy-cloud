@@ -78,7 +78,7 @@ func (h *Handler) QuickRunExample(ctx context.Context, req *oas.LaunchOverrides,
 		o.Name = name
 	}
 	if o.ProviderProfileID == nil && spec.ProviderProfileID == nil {
-		return nil, errs.Invalid("provider_profile_id is required for a quick run")
+		return nil, errs.Invalid("provider_profile_id is required for a quick run").Because("quick_run_needs_profile")
 	}
 	r, err := h.deps.Runs.LaunchSpec(ctx, a, t.ID, spec, o, params.IdempotencyKey.Or(""))
 	if err != nil {

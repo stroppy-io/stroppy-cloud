@@ -246,7 +246,14 @@ paths:
     get:
       operationId: suggestTenantName
       tags: [Tenants]
-      summary: Unique name/slug suggestion derived from the account.
+      summary: Unique name/slug suggestion — from `name` when given, else from the account.
+      parameters:
+        - name: name
+          in: query
+          description: >-
+            A name or slug the user typed; the answer is its slug when free,
+            else the nearest free variant (`acme-2`). Cyrillic is transliterated.
+          schema: { type: string, maxLength: 64 }
       responses:
         '200':
           description: Suggestion.

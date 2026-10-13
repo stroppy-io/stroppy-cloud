@@ -35,7 +35,7 @@ func (r *ProviderRepo) Insert(ctx context.Context, p provider.Profile) error {
 			return err
 		}
 		if tenant.Retiring {
-			return errs.Conflict("tenant is being deleted")
+			return errs.Conflict("tenant is being deleted").Because("tenant_is_being_deleted")
 		}
 		return r.insert(ctx, p)
 	})
@@ -53,7 +53,7 @@ func (r *ProviderRepo) insert(ctx context.Context, p provider.Profile) error {
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a profile with this name exists")
+			return errs.Conflict("a profile with this name exists").Because("a_profile_with_this_name_exists")
 		}
 		return infraf("provider: insert: %v", err)
 	}
@@ -99,7 +99,7 @@ func (r *ProviderRepo) Update(ctx context.Context, id uuid.UUID, name *string, s
 	n, err := r.q.UpdateProviderProfile(ctx, db.UpdateProviderProfileParams{ID: id, Name: name, Settings: settings})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a profile with this name exists")
+			return errs.Conflict("a profile with this name exists").Because("a_profile_with_this_name_exists")
 		}
 		return infraf("provider: update: %v", err)
 	}
@@ -166,7 +166,7 @@ func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status 
 			return err
 		}
 		if tenant.Retiring && status != provider.StatusDeleting {
-			return errs.Conflict("tenant is being deleted")
+			return errs.Conflict("tenant is being deleted").Because("tenant_is_being_deleted")
 		}
 		if _, err := r.q.LockProviderLifecycle(ctx, id); err != nil {
 			return err
@@ -177,7 +177,7 @@ func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status 
 			return infraf("provider: begin operation: %v", err)
 		}
 		if n == 0 {
-			return errs.Conflict("provider is busy, being deleted, or has active runs or kept stands")
+			return errs.Conflict("provider is busy, being deleted, or has active runs or kept stands").Because("provider_busy")
 		}
 		return nil
 	})
@@ -214,7 +214,7 @@ func (r *ProviderRepo) BeginTenantDeletion(ctx context.Context, id uuid.UUID) er
 			return err
 		}
 		if n == 0 {
-			return errs.Conflict("tenant has active runs, kept stands or provider operations")
+			return errs.Conflict("tenant has active runs, kept stands or provider operations").Because("tenant_has_active_work")
 		}
 		return nil
 	})

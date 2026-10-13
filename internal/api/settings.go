@@ -43,7 +43,7 @@ func (h *Handler) PatchTenantSettings(ctx context.Context, req *oas.TenantSettin
 	if v, ok := req.DefaultKeep.Get(); ok {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return nil, errs.Invalid("default_keep is not a duration")
+			return nil, errs.Invalid("default_keep is not a duration").Because("default_keep_is_not_a_duration")
 		}
 		p.DefaultKeep = &d
 	}

@@ -71,7 +71,7 @@ func (r *Registry) Render(_ context.Context, id, template string, value json.Raw
 	if len(value) > 0 {
 		generic, err = spec.DecodeObject(value)
 		if err != nil || generic == nil {
-			return "", errs.Invalid("value is not a JSON object")
+			return "", errs.Invalid("value is not a JSON object").Because("value_is_not_a_json_object")
 		}
 	}
 	baked, res, err := e.Bake(generic)
@@ -89,7 +89,7 @@ func (r *Registry) Render(_ context.Context, id, template string, value json.Raw
 		}
 	}
 	if template == "" {
-		return "", errs.Invalid("schema has no templates")
+		return "", errs.Invalid("schema has no templates").Because("schema_has_no_templates")
 	}
 	out, err := baked.Render(schemapb.TemplateName(template))
 	if err != nil {
@@ -153,7 +153,7 @@ func (r *Registry) engine(id string) (*schemapb.Engine, error) {
 	}
 	s, ok := r.byID[id]
 	if !ok {
-		return nil, errs.NotFound("schema " + id)
+		return nil, errs.Newf(errs.CodeNotFound, "schema %s not found", id).Because("schema_not_found", "schema", id)
 	}
 	e, err := schemapb.Compile(s)
 	if err != nil {
@@ -175,7 +175,7 @@ func (r *Registry) Bake(_ context.Context, id string, value json.RawMessage) (js
 	if len(value) > 0 {
 		generic, err = spec.DecodeObject(value)
 		if err != nil || generic == nil {
-			return nil, errs.Invalid("value is not a JSON object")
+			return nil, errs.Invalid("value is not a JSON object").Because("value_is_not_a_json_object")
 		}
 	}
 	_, res, err := e.Bake(generic)
@@ -226,7 +226,7 @@ func (r *Registry) Validate(_ context.Context, id string, value json.RawMessage)
 	if len(value) > 0 {
 		generic, err = spec.DecodeObject(value)
 		if err != nil || generic == nil {
-			return nil, errs.Invalid("value is not a JSON object")
+			return nil, errs.Invalid("value is not a JSON object").Because("value_is_not_a_json_object")
 		}
 	}
 	return e.Validate(generic), nil

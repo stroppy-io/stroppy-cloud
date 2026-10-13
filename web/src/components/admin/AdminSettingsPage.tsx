@@ -22,8 +22,8 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError, isGoDuration } from '@helpers/form'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { applyServerErrors, firstError, isGoDuration, REWARD_EARLY } from '@helpers/form'
+import { useForm } from '@tanstack/react-form'
 import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -81,7 +81,7 @@ export function AdminSettingsPage() {
       max_keep: settings.default_limits.max_keep,
       default_retention_max_days: settings.default_limits.run_retention_max_days,
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       let nextCatalog: Values | undefined = catalog

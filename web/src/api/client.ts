@@ -43,6 +43,6 @@ export async function unwrap<T>(
   p: Promise<{ data?: T; error?: unknown; response: Response }>
 ): Promise<NonNullable<T>> {
   const { data, error, response } = await p
-  if (error !== undefined || !response.ok) throw await toApiError(response)
+  if (error !== undefined || !response.ok) throw await toApiError(response, error)
   return data as NonNullable<T>
 }

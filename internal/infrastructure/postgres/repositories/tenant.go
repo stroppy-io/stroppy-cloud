@@ -30,7 +30,7 @@ func (r *TenantRepo) Insert(ctx context.Context, t tenant.Tenant) error {
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("slug is taken")
+			return errs.Conflict("slug is taken").Because("slug_is_taken")
 		}
 		return infraf("tenant: insert: %v", err)
 	}
@@ -115,7 +115,7 @@ func (r *TenantRepo) Update(ctx context.Context, id uuid.UUID, p tenant.Patch) e
 func (r *TenantRepo) SetOwner(ctx context.Context, id, ownerID uuid.UUID) error {
 	if _, err := r.q.SetTenantOwner(ctx, db.SetTenantOwnerParams{ID: id, OwnerID: ownerID}); err != nil {
 		if isUnique(err) {
-			return errs.Conflict("the new owner already owns a tenant")
+			return errs.Conflict("the new owner already owns a tenant").Because("the_new_owner_already_owns_a_tenant")
 		}
 		return infraf("tenant: set owner: %v", err)
 	}
@@ -203,7 +203,7 @@ func (r *TenantRepo) InsertInvite(ctx context.Context, inv tenant.Invite) error 
 	})
 	if err != nil {
 		if isUnique(err) {
-			return errs.Conflict("a pending invite for this email exists")
+			return errs.Conflict("a pending invite for this email exists").Because("a_pending_invite_for_this_email_exists")
 		}
 		return infraf("invite: insert: %v", err)
 	}

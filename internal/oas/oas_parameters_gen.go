@@ -28797,6 +28797,99 @@ func decodeShareSuiteRunParams(args [2]string, argsEscaped bool, r *http.Request
 	return params, nil
 }
 
+// SuggestTenantNameParams is parameters of suggestTenantName operation.
+type SuggestTenantNameParams struct {
+	// A name or slug the user typed; the answer is its slug when free, else the nearest free variant
+	// (`acme-2`). Cyrillic is transliterated.
+	Name OptString `json:",omitempty,omitzero"`
+}
+
+func unpackSuggestTenantNameParams(packed middleware.Parameters) (params SuggestTenantNameParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "name",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Name = v.(OptString)
+		}
+	}
+	return params
+}
+
+func decodeSuggestTenantNameParams(args [0]string, argsEscaped bool, r *http.Request) (params SuggestTenantNameParams, _ error) {
+	q := uri.NewQueryDecoder(r.URL.Query())
+	// Decode query: name.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				var paramsDotNameVal string
+				if err := func() error {
+					val, err := d.DecodeValue()
+					if err != nil {
+						return err
+					}
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotNameVal = c
+					return nil
+				}(); err != nil {
+					return err
+				}
+				params.Name.SetTo(paramsDotNameVal)
+				return nil
+			}); err != nil {
+				return err
+			}
+			if err := func() error {
+				if value, ok := params.Name.Get(); ok {
+					if err := func() error {
+						if err := (validate.String{
+							MinLength:     0,
+							MinLengthSet:  false,
+							MaxLength:     64,
+							MaxLengthSet:  true,
+							Email:         false,
+							Hostname:      false,
+							Regex:         nil,
+							MinNumeric:    0,
+							MinNumericSet: false,
+							MaxNumeric:    0,
+							MaxNumericSet: false,
+						}).Validate(string(value)); err != nil {
+							return errors.Wrap(err, "string")
+						}
+						return nil
+					}(); err != nil {
+						return err
+					}
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "name",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // TransferTenantParams is parameters of transferTenant operation.
 type TransferTenantParams struct {
 	// Tenant slug.

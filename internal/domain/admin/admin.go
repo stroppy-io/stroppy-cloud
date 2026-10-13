@@ -255,7 +255,7 @@ func (s *Service) IsAdmin(ctx context.Context, actor auth.Actor) bool {
 // Require fails unless the actor is a platform admin.
 func (s *Service) Require(ctx context.Context, actor auth.Actor) error {
 	if !s.IsAdmin(ctx, actor) {
-		return errs.Forbidden("platform admin required")
+		return errs.Forbidden("platform admin required").Because("platform_admin_required")
 	}
 	return nil
 }
@@ -423,7 +423,7 @@ func (s *Service) AssignOwner(ctx context.Context, actor auth.Actor, slug string
 	if _, _, owned, err := s.ownedBy(ctx, userID); err != nil {
 		return TenantView{}, err
 	} else if owned {
-		return TenantView{}, errs.Conflict("user already owns a tenant")
+		return TenantView{}, errs.Conflict("user already owns a tenant").Because("user_already_owns_a_tenant")
 	}
 	if err := s.tenants.UpsertMember(ctx, t.ID, userID, tenant.RoleOwner); err != nil {
 		return TenantView{}, err
@@ -459,10 +459,10 @@ func (s *Service) DeleteTenant(ctx context.Context, actor auth.Actor, slug strin
 		return err
 	}
 	if live {
-		return errs.Conflict("tenant has live runs")
+		return errs.Conflict("tenant has live runs").Because("tenant_has_live_runs")
 	}
 	if err := s.namespaces.DeleteNamespace(ctx, t.GrapheneNamespace); err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "graphene namespace", err)
+		return errs.Wrap(errs.CodeUnavailable, "graphene namespace", err).Because("tenant_namespace_unavailable")
 	}
 	if err := s.tenants.SoftDelete(ctx, t.ID); err != nil {
 		return err
@@ -567,13 +567,13 @@ func (s *Service) CancelRun(ctx context.Context, actor auth.Actor, id uuid.UUID)
 		return run.Run{}, err
 	}
 	if r.Status.Terminal() || r.DeletedAt != nil {
-		return run.Run{}, errs.Conflict("run already finished")
+		return run.Run{}, errs.Conflict("run already finished").Because("run_already_finished")
 	}
 	if err := s.runs.SetStatus(ctx, id, run.StatusCancelling, r.Phase, "cancelled by platform admin", nil, nil); err != nil {
 		return run.Run{}, err
 	}
 	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
-		return run.Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err)
+		return run.Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
 	}
 	s.record(ctx, "admin.run.cancel", &r.TenantID, audit.Target{Kind: "run", ID: id.String(), Name: r.Name}, nil)
 	return s.runs.ByID(ctx, id)
@@ -600,10 +600,10 @@ func (s *Service) UpdateSystem(ctx context.Context, actor auth.Actor, p SystemPa
 		return SystemSettings{}, err
 	}
 	if p.TenantCreation != nil && *p.TenantCreation != "anyone" && *p.TenantCreation != "admin_only" {
-		return SystemSettings{}, errs.Invalid("tenant_creation must be anyone or admin_only")
+		return SystemSettings{}, errs.Invalid("tenant_creation must be anyone or admin_only").Because("tenant_creation_value")
 	}
 	if p.RunRetentionMaxDays != nil && *p.RunRetentionMaxDays <= 0 {
-		return SystemSettings{}, errs.Invalid("run_retention_max_days must be positive")
+		return SystemSettings{}, errs.Invalid("run_retention_max_days must be positive").Because("run_retention_max_days_must_be_positive")
 	}
 	var by *uuid.UUID
 	if actor.UserID != uuid.Nil {

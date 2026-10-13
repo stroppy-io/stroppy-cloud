@@ -10,7 +10,7 @@ func (c *compilation) placementZones(settings map[string]any) ([]string, error) 
 		return nil, nil
 	}
 	if c.in.ProviderKind != "yandex" {
-		return nil, errs.Newf(errs.CodeInvalid, "YDB mirror-3-dc placement is implemented for Yandex Cloud only")
+		return nil, errs.Newf(errs.CodeInvalid, "YDB mirror-3-dc placement is implemented for Yandex Cloud only").Because("ydb_mirror3dc_yandex_only")
 	}
 	return c.threeYandexZones(settings)
 }
@@ -21,7 +21,7 @@ func (c *compilation) threeYandexZones(settings map[string]any) ([]string, error
 		for _, z := range raw {
 			value, ok := z.(string)
 			if !ok {
-				return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB zones must be strings")
+				return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB zones must be strings").Because("ydb_zones_not_strings")
 			}
 			zones = append(zones, value)
 		}
@@ -34,7 +34,7 @@ func (c *compilation) threeYandexZones(settings map[string]any) ([]string, error
 		}
 	}
 	if len(zones) != 3 {
-		return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB needs exactly three physical provider zones")
+		return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB needs exactly three physical provider zones").Because("ydb_needs_three_zones")
 	}
 	seen := map[string]bool{}
 	for _, zone := range zones {
@@ -45,7 +45,7 @@ func (c *compilation) threeYandexZones(settings map[string]any) ([]string, error
 			}
 		}
 		if !valid || seen[zone] {
-			return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB zones must be distinct supported provider locations: %q", zone)
+			return nil, errs.Newf(errs.CodeInvalid, "Distributed YDB zones must be distinct supported provider locations: %q", zone).Because("ydb_zone_invalid", "zone", zone)
 		}
 		seen[zone] = true
 	}

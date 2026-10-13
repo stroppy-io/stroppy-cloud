@@ -14,7 +14,7 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
-import { firstError } from '@helpers/form'
+import { firstError, REWARD_EARLY } from '@helpers/form'
 import {
   changePassword,
   type Flow,
@@ -24,7 +24,7 @@ import {
   logout,
   tokenClaims,
 } from '@lib/auth'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -70,7 +70,7 @@ export function SecurityPage({ flowId }: { flowId?: string }) {
   const form = useForm({
     defaultValues: { password: '', confirm: '' },
     validators: { onDynamic: schema },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     onSubmit: async ({ value, formApi }) => {
       if (!flow) return
       try {

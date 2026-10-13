@@ -212,7 +212,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return err
 	}
 	if role == string(tenant.RoleViewer) {
-		return errs.Forbidden("viewers cannot share")
+		return errs.Forbidden("viewers cannot share").Because("viewers_cannot_share")
 	}
 	return nil
 }
@@ -237,7 +237,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		in.Scope = ScopeOverview
 	}
 	if in.Scope != ScopeOverview && in.Scope != ScopeMetrics && in.Scope != ScopeConfigs {
-		return Share{}, errs.Invalid("scope must be overview, metrics or configs")
+		return Share{}, errs.Invalid("scope must be overview, metrics or configs").Because("scope_must_be_overview_metrics_or_configs")
 	}
 	sh := Share{
 		ID: uuid.New(), TenantID: tenantID, Token: newToken(), Kind: in.Kind, TargetID: in.TargetID, RunIDs: in.RunIDs, Scope: in.Scope, Title: in.Title,
@@ -280,7 +280,7 @@ func (s *Service) capture(ctx context.Context, actor auth.Actor, sh Share) (Snap
 	switch sh.Kind {
 	case KindRun:
 		if sh.TargetID == nil {
-			return Snapshot{}, "", errs.Invalid("run id is required")
+			return Snapshot{}, "", errs.Invalid("run id is required").Because("run_id_is_required")
 		}
 		r, err := s.run(ctx, sh.TenantID, *sh.TargetID)
 		if err != nil {
@@ -294,7 +294,7 @@ func (s *Service) capture(ctx context.Context, actor auth.Actor, sh Share) (Snap
 		return snap, r.Name, nil
 	case KindSuiteRun:
 		if sh.TargetID == nil {
-			return Snapshot{}, "", errs.Invalid("suite run id is required")
+			return Snapshot{}, "", errs.Invalid("suite run id is required").Because("suite_run_id_is_required")
 		}
 		sr, err := s.suites.GetRun(ctx, actor, sh.TenantID, *sh.TargetID)
 		if err != nil {
@@ -316,7 +316,7 @@ func (s *Service) capture(ctx context.Context, actor auth.Actor, sh Share) (Snap
 		return snap, sr.Name, nil
 	case KindComparison:
 		if sh.Snapshot.Comparison == nil {
-			return Snapshot{}, "", errs.Invalid("comparison request is required")
+			return Snapshot{}, "", errs.Invalid("comparison request is required").Because("comparison_request_is_required")
 		}
 		req := sh.Snapshot.Comparison.Request
 		cmp, err := s.compare.Compare(ctx, actor, sh.TenantID, req)
@@ -334,7 +334,7 @@ func (s *Service) capture(ctx context.Context, actor auth.Actor, sh Share) (Snap
 		}
 		return snap, "comparison of " + itoa(len(cmp.Columns)) + " runs", nil
 	default:
-		return Snapshot{}, "", errs.Invalid("unknown share kind")
+		return Snapshot{}, "", errs.Invalid("unknown share kind").Because("unknown_share_kind")
 	}
 }
 
@@ -547,10 +547,10 @@ func (s *Service) MetricsRun(ctx context.Context, token string) (run.Run, error)
 		return run.Run{}, err
 	}
 	if sh.Scope == ScopeOverview {
-		return run.Run{}, errs.Forbidden("this share does not include metrics")
+		return run.Run{}, errs.Forbidden("this share does not include metrics").Because("this_share_does_not_include_metrics")
 	}
 	if sh.Kind != KindRun || sh.TargetID == nil || sh.Snapshot.Run == nil {
-		return run.Run{}, errs.Invalid("metrics endpoint requires a single-run share")
+		return run.Run{}, errs.Invalid("metrics endpoint requires a single-run share").Because("share_metrics_single_run_only")
 	}
 	r, err := s.run(ctx, sh.TenantID, *sh.TargetID)
 	if err != nil {

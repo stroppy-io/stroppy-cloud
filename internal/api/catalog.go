@@ -67,7 +67,7 @@ func (h *Handler) GetCatalogStroppy(ctx context.Context, params oas.GetCatalogSt
 	if v, ok := params.Version.Get(); ok && v != "" {
 		ver, found := h.deps.Catalog.StroppyVersion(v)
 		if !found {
-			return nil, errs.NotFound("stroppy version " + v)
+			return nil, errs.Newf(errs.CodeNotFound, "stroppy version %s not found", v).Because("stroppy_version_not_found", "version", v)
 		}
 		out.Versions = append(out.Versions, stroppyVersionOf(ver))
 		return out, nil
@@ -119,7 +119,7 @@ func (h *Handler) GetSchema(ctx context.Context, params oas.GetSchemaParams) (oa
 	}
 	s, ok := h.deps.Schemas.Schema(params.SchemaId)
 	if !ok {
-		return nil, errs.NotFound("schema " + params.SchemaId)
+		return nil, errs.Newf(errs.CodeNotFound, "schema %s not found", params.SchemaId).Because("schema_not_found", "schema", params.SchemaId)
 	}
 	raw, err := protojson.Marshal(s)
 	if err != nil {

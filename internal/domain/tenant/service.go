@@ -68,7 +68,7 @@ func (s *Service) Access(ctx context.Context, actor auth.Actor, slug string) (Te
 		return Tenant{}, "", err
 	}
 	if t.Status == StatusSuspended {
-		return Tenant{}, "", errs.Forbidden("tenant is suspended")
+		return Tenant{}, "", errs.Forbidden("tenant is suspended").Because("tenant_is_suspended")
 	}
 	if actor.IsAPIToken() {
 		if actor.TokenTenant != t.ID {
@@ -105,7 +105,7 @@ func (s *Service) Require(ctx context.Context, actor auth.Actor, slug string, re
 		return Tenant{}, "", err
 	}
 	if !role.AtLeast(required) {
-		return Tenant{}, "", errs.Forbidden(fmt.Sprintf("requires role %s", required))
+		return Tenant{}, "", errs.Forbidden(fmt.Sprintf("requires role %s", required)).Because("requires_role", "role", string(required))
 	}
 	return t, role, nil
 }
@@ -125,28 +125,28 @@ func (s *Service) Get(ctx context.Context, actor auth.Actor, slug string) (Tenan
 // Graphene namespace. One owned tenant per account.
 func (s *Service) Create(ctx context.Context, actor auth.Actor, req Create) (Tenant, error) {
 	if actor.IsAPIToken() {
-		return Tenant{}, errs.Forbidden("tokens cannot create tenants")
+		return Tenant{}, errs.Forbidden("tokens cannot create tenants").Because("tokens_cannot_create_tenants")
 	}
 	name := strings.TrimSpace(req.Name)
 	if name == "" || len(name) > 64 {
-		return Tenant{}, errs.Invalid("name must be 1..64 characters")
+		return Tenant{}, errs.Invalid("name must be 1..64 characters").Because("name_must_be_1_64_characters")
 	}
 	slug := req.Slug
 	if slug == "" {
 		slug = Slugify(name)
 	}
 	if !ValidSlug(slug) {
-		return Tenant{}, errs.Invalid("slug must be 3..40 of [a-z0-9-], starting with a letter")
+		return Tenant{}, errs.Invalid("slug must be 3..40 of [a-z0-9-], starting with a letter").Because("slug_format")
 	}
 	if _, _, owned, err := s.repo.OwnedBy(ctx, actor.UserID); err != nil {
 		return Tenant{}, err
 	} else if owned {
-		return Tenant{}, errs.Conflict("account already owns a tenant")
+		return Tenant{}, errs.Conflict("account already owns a tenant").Because("account_already_owns_a_tenant")
 	}
 	if taken, err := s.repo.SlugTaken(ctx, slug); err != nil {
 		return Tenant{}, err
 	} else if taken {
-		return Tenant{}, errs.Conflict(fmt.Sprintf("slug %q is taken", slug))
+		return Tenant{}, errs.Conflict(fmt.Sprintf("slug %q is taken", slug)).Because("tenant_slug_taken", "slug", slug)
 	}
 	t := Tenant{
 		ID:                uuid.New(),
@@ -164,7 +164,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, req Create) (Ten
 	if err := s.ns.EnsureNamespace(ctx, t.GrapheneNamespace, map[string]string{
 		"stroppy.io/tenant": t.ID.String(), "stroppy.io/slug": slug,
 	}); err != nil {
-		return Tenant{}, errs.Wrap(errs.CodeUnavailable, "graphene namespace", err)
+		return Tenant{}, errs.Wrap(errs.CodeUnavailable, "graphene namespace", err).Because("tenant_namespace_unavailable")
 	}
 	err := s.tx.Do(ctx, func(ctx context.Context) error {
 		if err := s.repo.Insert(ctx, t); err != nil {
@@ -195,7 +195,7 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, slug string, p P
 	if p.Name != nil {
 		n := strings.TrimSpace(*p.Name)
 		if n == "" || len(n) > 64 {
-			return Tenant{}, errs.Invalid("name must be 1..64 characters")
+			return Tenant{}, errs.Invalid("name must be 1..64 characters").Because("name_must_be_1_64_characters")
 		}
 		p.Name = &n
 	}
@@ -219,7 +219,7 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, slug string) err
 			return err
 		}
 		if live {
-			return errs.Conflict("tenant has live runs")
+			return errs.Conflict("tenant has live runs").Because("tenant_has_live_runs")
 		}
 	}
 	if s.providers != nil {
@@ -228,7 +228,7 @@ func (s *Service) Delete(ctx context.Context, actor auth.Actor, slug string) err
 		}
 	}
 	if err := s.ns.DeleteNamespace(ctx, t.GrapheneNamespace); err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "graphene namespace", err)
+		return errs.Wrap(errs.CodeUnavailable, "graphene namespace", err).Because("tenant_namespace_unavailable")
 	}
 	if s.push != nil {
 		s.push.Forget(ctx, t.GrapheneNamespace)
@@ -249,7 +249,7 @@ func (s *Service) Transfer(ctx context.Context, actor auth.Actor, slug string, t
 		return Tenant{}, err
 	}
 	if to == actor.UserID {
-		return Tenant{}, errs.Invalid("already the owner")
+		return Tenant{}, errs.Invalid("already the owner").Because("already_the_owner")
 	}
 	if _, ok, err := s.repo.MemberRole(ctx, t.ID, to); err != nil {
 		return Tenant{}, err
@@ -259,7 +259,7 @@ func (s *Service) Transfer(ctx context.Context, actor auth.Actor, slug string, t
 	if _, _, owned, err := s.repo.OwnedBy(ctx, to); err != nil {
 		return Tenant{}, err
 	} else if owned {
-		return Tenant{}, errs.Conflict("the new owner already owns a tenant")
+		return Tenant{}, errs.Conflict("the new owner already owns a tenant").Because("the_new_owner_already_owns_a_tenant")
 	}
 	err = s.tx.Do(ctx, func(ctx context.Context) error {
 		if err := s.repo.SetOwner(ctx, t.ID, to); err != nil {
@@ -296,10 +296,10 @@ func (s *Service) SetRole(ctx context.Context, actor auth.Actor, slug string, us
 		return Member{}, err
 	}
 	if !role.Valid() || role == RoleOwner {
-		return Member{}, errs.Invalid("role must be admin, member or viewer")
+		return Member{}, errs.Invalid("role must be admin, member or viewer").Because("role_must_be_admin_member_or_viewer")
 	}
 	if userID == t.OwnerID {
-		return Member{}, errs.Forbidden("the owner's role changes only by transfer")
+		return Member{}, errs.Forbidden("the owner's role changes only by transfer").Because("owner_role_by_transfer_only")
 	}
 	if _, ok, err := s.repo.MemberRole(ctx, t.ID, userID); err != nil {
 		return Member{}, err
@@ -327,7 +327,7 @@ func (s *Service) Remove(ctx context.Context, actor auth.Actor, slug string, use
 		return err
 	}
 	if userID == t.OwnerID {
-		return errs.Forbidden("the owner cannot be removed; transfer ownership first")
+		return errs.Forbidden("the owner cannot be removed; transfer ownership first").Because("owner_cannot_be_removed")
 	}
 	return s.tx.Do(ctx, func(ctx context.Context) error {
 		if err := s.repo.DeleteMember(ctx, t.ID, userID); err != nil {
@@ -367,10 +367,10 @@ func (s *Service) Invite(ctx context.Context, actor auth.Actor, slug, email stri
 	}
 	email = strings.ToLower(strings.TrimSpace(email))
 	if !strings.Contains(email, "@") || len(email) > 254 {
-		return Invite{}, errs.Invalid("email is not valid")
+		return Invite{}, errs.Invalid("email is not valid").Because("email_is_not_valid")
 	}
 	if !role.Valid() || role == RoleOwner {
-		return Invite{}, errs.Invalid("role must be admin, member or viewer")
+		return Invite{}, errs.Invalid("role must be admin, member or viewer").Because("role_must_be_admin_member_or_viewer")
 	}
 	inv := Invite{
 		ID: uuid.New(), TenantID: t.ID, Email: email, Role: role, Status: InvitePending,
@@ -414,7 +414,7 @@ func (s *Service) RevokeInvite(ctx context.Context, actor auth.Actor, slug strin
 		return err
 	}
 	if !ok {
-		return errs.Conflict("invite is not pending")
+		return errs.Conflict("invite is not pending").Because("invite_is_not_pending")
 	}
 	return s.audit.Record(ctx, audit.Entry{TenantID: &t.ID, Action: "invite.revoke", Target: audit.Target{Kind: "invite", ID: id.String(), Name: inv.Email}})
 }
@@ -439,7 +439,7 @@ func (s *Service) Accept(ctx context.Context, actor auth.Actor, id uuid.UUID) (M
 			return err
 		}
 		if !ok {
-			return errs.Conflict("invite is not pending")
+			return errs.Conflict("invite is not pending").Because("invite_is_not_pending")
 		}
 		if err := s.repo.UpsertMember(ctx, inv.TenantID, actor.UserID, inv.Role); err != nil {
 			return err
@@ -466,7 +466,7 @@ func (s *Service) Decline(ctx context.Context, actor auth.Actor, id uuid.UUID) e
 		return err
 	}
 	if !ok {
-		return errs.Conflict("invite is not pending")
+		return errs.Conflict("invite is not pending").Because("invite_is_not_pending")
 	}
 	return nil
 }
@@ -491,7 +491,7 @@ func (s *Service) ApplyPending(ctx context.Context, userID uuid.UUID, email stri
 
 func (s *Service) claimable(ctx context.Context, actor auth.Actor, id uuid.UUID) (Invite, error) {
 	if actor.IsAPIToken() {
-		return Invite{}, errs.Forbidden("tokens cannot accept invites")
+		return Invite{}, errs.Forbidden("tokens cannot accept invites").Because("tokens_cannot_accept_invites")
 	}
 	inv, err := s.repo.InviteByID(ctx, id)
 	if err != nil {
@@ -501,7 +501,7 @@ func (s *Service) claimable(ctx context.Context, actor auth.Actor, id uuid.UUID)
 		return Invite{}, errs.NotFound("invite")
 	}
 	if inv.Status != InvitePending || inv.ExpiresAt.Before(time.Now()) {
-		return Invite{}, errs.Conflict("invite is not pending")
+		return Invite{}, errs.Conflict("invite is not pending").Because("invite_is_not_pending")
 	}
 	return inv, nil
 }
@@ -519,7 +519,10 @@ func (s *Service) SuggestName(ctx context.Context, displayName, email string) (n
 		name = "workspace"
 	}
 	slug = Slugify(name)
-	if len(slug) < 3 {
+	switch {
+	case slug == "":
+		slug = "team"
+	case len(slug) < 3:
 		slug += "-team"
 	}
 	candidate := slug
@@ -536,11 +539,25 @@ func (s *Service) SuggestName(ctx context.Context, displayName, email string) (n
 	return name, slug + "-" + uuid.NewString()[:8], nil
 }
 
-// Slugify makes a slug: lowercase [a-z0-9-], letter first, ≤40.
+// cyrillic transliterates Russian letters for slugs (ГОСТ 7.79-2000 B, simplified).
+var cyrillic = map[rune]string{
+	'а': "a", 'б': "b", 'в': "v", 'г': "g", 'д': "d", 'е': "e", 'ё': "e", 'ж': "zh", 'з': "z",
+	'и': "i", 'й': "y", 'к': "k", 'л': "l", 'м': "m", 'н': "n", 'о': "o", 'п': "p", 'р': "r",
+	'с': "s", 'т': "t", 'у': "u", 'ф': "f", 'х': "kh", 'ц': "ts", 'ч': "ch", 'ш': "sh", 'щ': "shch",
+	'ъ': "", 'ы': "y", 'ь': "", 'э': "e", 'ю': "yu", 'я': "ya",
+}
+
+// Slugify makes a slug: lowercase [a-z0-9-], letter first, ≤40; Cyrillic is
+// transliterated.
 func Slugify(s string) string {
 	var b strings.Builder
 	lastDash := true
 	for _, r := range strings.ToLower(s) {
+		if lat, ok := cyrillic[r]; ok {
+			b.WriteString(lat)
+			lastDash = lat == "" && lastDash
+			continue
+		}
 		switch {
 		case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
 			b.WriteRune(r)

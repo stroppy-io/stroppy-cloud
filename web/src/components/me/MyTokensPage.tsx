@@ -23,11 +23,11 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
+import { applyServerErrors, firstError, REWARD_EARLY } from '@helpers/form'
 import { formatDateTime, relativeTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
 import { useMe } from '@hooks/useMe'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -252,7 +252,7 @@ function CreateDialog({
       role: (first?.role ?? 'viewer') as TenantRole,
       expires_at: '',
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       try {

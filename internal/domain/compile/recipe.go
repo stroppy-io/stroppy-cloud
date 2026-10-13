@@ -42,14 +42,14 @@ func (c *compilation) imageOf() (string, error) {
 	}
 	kind, ok := c.in.Catalog.Database(c.in.Database.Kind)
 	if !ok {
-		return "", errs.Newf(errs.CodeInvalid, "unknown database kind %s", c.in.Database.Kind)
+		return "", errs.Newf(errs.CodeInvalid, "unknown database kind %s", c.in.Database.Kind).Because("db_kind_unknown", "kind", string(c.in.Database.Kind))
 	}
 	for _, v := range kind.Versions {
 		if v.Version == c.in.Database.Version && v.Image != "" {
 			return v.Image, nil
 		}
 	}
-	return "", errs.Newf(errs.CodeInvalid, "%s %s has no image", c.in.Database.Kind, c.in.Database.Version)
+	return "", errs.Newf(errs.CodeInvalid, "%s %s has no image", c.in.Database.Kind, c.in.Database.Version).Because("db_version_no_image", "kind", string(c.in.Database.Kind), "version", c.in.Database.Version)
 }
 
 // machinesOf lists the machines of a role.

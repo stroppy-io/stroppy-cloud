@@ -1,8 +1,8 @@
 {
-  "version": "3.0.0",
+  "version": "3.1.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "1faa2d16537e2c259dc3a89b3514bbe4926aa41eb3d3ad945c391bf41045f256",
+    "openapi/openapi.yaml": "00036e0efbb1027a36f227bda2121ddbe9bc3b60afb3564e54baf6249e9513cb",
     "pipelines/go.mod": "bd4d22870924186c3a5bcc681a785bbde5a1d745267c7fad6f654f4130027452",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
@@ -74,7 +74,7 @@
     "pipelines/schemas/testdata/test.sizes@1.json": "581c6705c369321666b3d85b4b36b6effa113e50be1bff5513f47f13ff323a02",
     "pipelines/schemas/testdata/workload.segment@1.json": "25a098ec1e242e65a0fe5be3744e1d3aa199d2877f7721d7735e66d920a14594",
     "pipelines/schemas/testdata/workload.stroppy@1.json": "56cd34b441114369fdf706b7806a6d5ff920217189d2f97d371fca887b320bc2",
-    "pipelines/spec/contract_version.go": "fa92737d01086d6bde451b8c45fa9489bb9b9f136147a7c1a546423d722b3a9b",
+    "pipelines/spec/contract_version.go": "18e355290fa12d18e8e1f87e372dc4c140eca419967706c37f8fd4077f659b92",
     "pipelines/spec/provider_config.go": "83b2c0b23696c1ea2e87c919450b14ea28b78e35bfb01c390e7e60c66f205258",
     "pipelines/spec/result.go": "c9e6a3e4024f107018046cb90d8ccdea6bc2bcebc909a7805781ebb0a93b0030",
     "pipelines/spec/segment.go": "82df89e57423385e131be861190341f6ee4968ff7599362902c4849679101ff0",
@@ -85,7 +85,7 @@
     "pipelines/stroppycfg/testdata/stroppy-probe.json": "71f610804c74cbb110b1cc3a32f5dfba935064b7ff86751f78cbe7783a2cf6ba",
     "pipelines/stroppycfg/testdata/stroppy-run.schema.json": "1a518ee7a46c1c7850bcd17cc87df5e87ffa3ac20b1173f46183c018138c71e6",
     "web/src/api/json.ts": "fa18ed250071e855612c04227f3f6f20c79875811bbe1d2a95a2d42f1c84d341",
-    "web/src/api/schema.d.ts": "8b6550876c424d2887fd8af91cdab599db629a974c415d342c5b7c6cccddafd5",
+    "web/src/api/schema.d.ts": "b2b0335b1ce7900f83ea7fb74e5d07d10c14819e3adae5ca06fcc77ec8279979",
     "web/src/schemas/cfg.cockroach.flags_v24.json": "a4f4f4254798b90cc0bffbf3bd4ead586b608f1c2e7a33b0138b2e755a451e18",
     "web/src/schemas/cfg.cockroach.flags_v24.ts": "13b17665931de2c481c67f41f370b5a81fc08549f6bdb8646de4f8dbfd9d0e67",
     "web/src/schemas/cfg.cockroach.flags_v25.json": "cddb6590a487f21e661c19d8432e31b211869fb765dcc3d349d86b274445c5ef",

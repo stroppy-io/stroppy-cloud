@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -61,7 +62,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return err
 	}
 	if role == "viewer" {
-		return errs.Forbidden("requires role member")
+		return errs.Forbidden("requires role member").Because("requires_role_member")
 	}
 	return nil
 }
@@ -69,7 +70,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 func header(actor auth.Actor, tenantID uuid.UUID, w EntityWrite) (Entity, error) {
 	name := strings.TrimSpace(w.Name)
 	if name == "" || len(name) > 128 {
-		return Entity{}, errs.Invalid("name must be 1..128 characters")
+		return Entity{}, errs.Invalid("name must be 1..128 characters").Because("name_must_be_1_128_characters")
 	}
 	e := Entity{ID: uuid.New(), TenantID: tenantID, Name: name, Description: strings.TrimSpace(w.Description), Tags: w.Tags, CreatedAt: time.Now().UTC()}
 	if e.Tags == nil {
@@ -104,10 +105,10 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 	spec.Runtime = runtime
 	kind, ok := s.catalog.Database(spec.Kind)
 	if !ok {
-		return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("unknown database kind %q", spec.Kind))
+		return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("unknown database kind %q", spec.Kind)).Because("db_kind_unknown", "kind", string(spec.Kind))
 	}
 	if !versionKnown(kind, spec.Version) {
-		return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("%s has no version %q", spec.Kind, spec.Version))
+		return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("%s has no version %q", spec.Kind, spec.Version)).Because("db_version_unknown", "kind", string(spec.Kind), "version", spec.Version)
 	}
 	if len(spec.Params) == 0 {
 		spec.Params = json.RawMessage("{}")
@@ -127,7 +128,7 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 	for _, role := range kind.Roles {
 		for id := range spec.Configs[role.Role] {
 			if resolved := kind.ConfigSchema(spec.Version, id); resolved != id {
-				return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("configs.%s.%s: version %s requires %s", role.Role, id, spec.Version, resolved))
+				return spec, DatabaseDerived{}, errs.Invalid(fmt.Sprintf("configs.%s.%s: version %s requires %s", role.Role, id, spec.Version, resolved)).Because("config_version_mismatch", "config", id, "version", spec.Version, "required", resolved)
 			}
 		}
 		for _, templateID := range role.ConfigSchemas {
@@ -256,7 +257,7 @@ func (s *Service) UpdateDatabase(ctx context.Context, actor auth.Actor, tenantID
 	if p.Name != nil {
 		n := strings.TrimSpace(*p.Name)
 		if n == "" || len(n) > 128 {
-			return Database{}, DatabaseDerived{}, errs.Invalid("name must be 1..128 characters")
+			return Database{}, DatabaseDerived{}, errs.Invalid("name must be 1..128 characters").Because("name_must_be_1_128_characters")
 		}
 		p.Name = &n
 	}
@@ -310,7 +311,7 @@ func (s *Service) DeleteDatabase(ctx context.Context, actor auth.Actor, tenantID
 	}
 	if len(usages) > 0 {
 		if !inlineUsages {
-			return errs.Newf(errs.CodeConflict, "referenced by %d test(s); pass inline_usages to copy it into them", len(usages))
+			return errs.Newf(errs.CodeConflict, "referenced by %d test(s); pass inline_usages to copy it into them", len(usages)).Because("referenced_by_tests", "count", strconv.Itoa(len(usages)))
 		}
 		if err := s.repo.InlineDatabase(ctx, id, d.Spec); err != nil {
 			return err
@@ -341,18 +342,18 @@ func (s *Service) CloneDatabase(ctx context.Context, actor auth.Actor, tenantID,
 func (s *Service) DeriveWorkload(ctx context.Context, spec WorkloadSpec) (WorkloadSpec, json.RawMessage, WorkloadDerived, error) {
 	ver, ok := s.catalog.StroppyVersion(spec.StroppyVersion)
 	if !ok {
-		return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("unknown stroppy version %q", spec.StroppyVersion))
+		return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("unknown stroppy version %q", spec.StroppyVersion)).Because("stroppy_version_unknown", "version", spec.StroppyVersion)
 	}
 	if !hasProtocol(ver.Protocols, spec.Protocol) {
-		return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("stroppy %s does not speak %s", ver.Version, spec.Protocol))
+		return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("stroppy %s does not speak %s", ver.Version, spec.Protocol)).Because("stroppy_protocol_unsupported", "version", ver.Version, "protocol", string(spec.Protocol))
 	}
 	if len(spec.Segments) == 0 {
-		return spec, nil, WorkloadDerived{}, errs.Invalid("at least one segment")
+		return spec, nil, WorkloadDerived{}, errs.Invalid("at least one segment").Because("at_least_one_segment")
 	}
 	full := map[string]json.RawMessage{}
 	if len(spec.Options) > 0 {
 		if err := json.Unmarshal(spec.Options, &full); err != nil {
-			return spec, nil, WorkloadDerived{}, errs.Invalid("options is not a JSON object")
+			return spec, nil, WorkloadDerived{}, errs.Invalid("options is not a JSON object").Because("options_is_not_a_json_object")
 		}
 	}
 	full["stroppy_version"], _ = json.Marshal(spec.StroppyVersion) //nolint:errcheck // string
@@ -374,10 +375,10 @@ func (s *Service) DeriveWorkload(ctx context.Context, spec WorkloadSpec) (Worklo
 		wl, _ := seg["workload"].(map[string]any) //nolint:errcheck // baked shape
 		sum.Script = str(wl["script"])
 		if !ver.HasScript(sum.Script) {
-			return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("segments[%d]: stroppy %s has no script %q", i, ver.Version, sum.Script))
+			return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("segments[%d]: stroppy %s has no script %q", i, ver.Version, sum.Script)).Because("stroppy_script_unknown", "version", ver.Version, "script", sum.Script)
 		}
 		if sc, ok := ver.Script(sum.Script); ok && len(sc.Protocols) > 0 && !hasProtocol(sc.Protocols, spec.Protocol) {
-			return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("segments[%d]: script %s does not support %s", i, sum.Script, spec.Protocol))
+			return spec, nil, WorkloadDerived{}, errs.Invalid(fmt.Sprintf("segments[%d]: script %s does not support %s", i, sum.Script, spec.Protocol)).Because("script_protocol_unsupported", "script", sum.Script, "protocol", string(spec.Protocol))
 		}
 		if run, ok := seg["run"].(map[string]any); ok {
 			sum.VUs = intOf(run["vus"])
@@ -488,7 +489,7 @@ func (s *Service) UpdateWorkload(ctx context.Context, actor auth.Actor, tenantID
 	if p.Name != nil {
 		n := strings.TrimSpace(*p.Name)
 		if n == "" || len(n) > 128 {
-			return Workload{}, WorkloadDerived{}, errs.Invalid("name must be 1..128 characters")
+			return Workload{}, WorkloadDerived{}, errs.Invalid("name must be 1..128 characters").Because("name_must_be_1_128_characters")
 		}
 		p.Name = &n
 	}
@@ -540,7 +541,7 @@ func (s *Service) DeleteWorkload(ctx context.Context, actor auth.Actor, tenantID
 	}
 	if len(usages) > 0 {
 		if !inlineUsages {
-			return errs.Newf(errs.CodeConflict, "referenced by %d test(s); pass inline_usages to copy it into them", len(usages))
+			return errs.Newf(errs.CodeConflict, "referenced by %d test(s); pass inline_usages to copy it into them", len(usages)).Because("referenced_by_tests", "count", strconv.Itoa(len(usages)))
 		}
 		if err := s.repo.InlineWorkload(ctx, id, w.Spec); err != nil {
 			return err

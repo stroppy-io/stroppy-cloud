@@ -34483,7 +34483,7 @@ func (s *Server) handleShareSuiteRunRequest(args [2]string, argsEscaped bool, w 
 
 // handleSuggestTenantNameRequest handles suggestTenantName operation.
 //
-// Unique name/slug suggestion derived from the account.
+// Unique name/slug suggestion — from `name` when given, else from the account.
 //
 // GET /api/v1/tenants/suggest-name
 func (s *Server) handleSuggestTenantNameRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
@@ -34603,6 +34603,16 @@ func (s *Server) handleSuggestTenantNameRequest(args [0]string, argsEscaped bool
 			return
 		}
 	}
+	params, err := decodeSuggestTenantNameParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 
 	var rawBody []byte
 
@@ -34611,17 +34621,22 @@ func (s *Server) handleSuggestTenantNameRequest(args [0]string, argsEscaped bool
 		mreq := middleware.Request{
 			Context:          ctx,
 			OperationName:    SuggestTenantNameOperation,
-			OperationSummary: "Unique name/slug suggestion derived from the account.",
+			OperationSummary: "Unique name/slug suggestion — from `name` when given, else from the account.",
 			OperationID:      "suggestTenantName",
 			Body:             nil,
 			RawBody:          rawBody,
-			Params:           middleware.Parameters{},
-			Raw:              r,
+			Params: middleware.Parameters{
+				{
+					Name: "name",
+					In:   "query",
+				}: params.Name,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = struct{}
+			Params   = SuggestTenantNameParams
 			Response = *SuggestTenantNameOK
 		)
 		response, err = middleware.HookMiddleware[
@@ -34631,14 +34646,14 @@ func (s *Server) handleSuggestTenantNameRequest(args [0]string, argsEscaped bool
 		](
 			m,
 			mreq,
-			nil,
+			unpackSuggestTenantNameParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.SuggestTenantName(ctx)
+				response, err = s.h.SuggestTenantName(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.SuggestTenantName(ctx)
+		response, err = s.h.SuggestTenantName(ctx, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ProblemStatusCode](err); ok {

@@ -3,9 +3,9 @@ import { AuthCard } from '@components/auth/AuthCard'
 import { applyKratosErrors, kratosError, kratosErrorText } from '@components/auth/kratos-errors'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { Alert, Button, Field, Input, LoadingPlaceholder, Stack, Text } from '@grafana/ui'
-import { firstError } from '@helpers/form'
+import { firstError, REWARD_EARLY } from '@helpers/form'
 import { type Flow, getFlow, sendRecoveryCode, submitRecoveryCode } from '@lib/auth'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -36,7 +36,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
   const emailForm = useForm({
     defaultValues: { email: '' },
     validators: { onDynamic: emailSchema },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     onSubmit: async ({ value, formApi }) => {
       if (!flow) return
       try {
@@ -62,7 +62,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
   const codeForm = useForm({
     defaultValues: { code: '' },
     validators: { onDynamic: codeSchema },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     onSubmit: async ({ value, formApi }) => {
       if (!flow) return
       try {

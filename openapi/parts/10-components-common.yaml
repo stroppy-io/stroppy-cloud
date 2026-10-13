@@ -73,6 +73,18 @@ components:
           type: string
           description: Stable machine-readable code. Branch on this, never on `detail`.
           example: test_not_ready
+        reason:
+          type: string
+          description: >-
+            Stable machine key of why it failed, finer than `code`
+            (`tenant_slug_taken`, `limit_concurrent_runs`, `<entity>_not_found`).
+            Clients show their own text for it; `detail` is the English
+            fallback for an unknown reason.
+          example: tenant_slug_taken
+        params:
+          type: object
+          description: 'Values for the reason''s text, e.g. slug=acme.'
+          additionalProperties: { type: string }
         request_id: { type: string }
         validation:
           $ref: '#/components/schemas/ValidationResult'

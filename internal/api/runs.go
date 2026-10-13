@@ -395,14 +395,14 @@ func runListQueryOf(p oas.ListRunsParams) (run.ListQuery, int, error) {
 	if v, ok := p.DurationMin.Get(); ok {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return q, 0, errs.Invalid("duration_min is not a duration")
+			return q, 0, errs.Invalid("duration_min is not a duration").Because("duration_min_is_not_a_duration")
 		}
 		q.DurationMin = d
 	}
 	if v, ok := p.DurationMax.Get(); ok {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return q, 0, errs.Invalid("duration_max is not a duration")
+			return q, 0, errs.Invalid("duration_max is not a duration").Because("duration_max_is_not_a_duration")
 		}
 		q.DurationMax = d
 	}
@@ -571,7 +571,7 @@ func (h *Handler) ExtendRunKeep(ctx context.Context, req *oas.ExtendRunKeepReq, 
 	}
 	d, err := time.ParseDuration(req.Duration)
 	if err != nil || d <= 0 {
-		return nil, errs.Invalid("duration is not a positive duration")
+		return nil, errs.Invalid("duration is not a positive duration").Because("duration_is_not_a_positive_duration")
 	}
 	r, err := h.deps.Runs.KeepExtend(ctx, a, t.ID, params.ID, d)
 	if err != nil {
@@ -616,7 +616,7 @@ func (h *Handler) ListRunEvents(ctx context.Context, params oas.ListRunEventsPar
 	if v, ok := params.After.Get(); ok && v != "" {
 		after, err = strconv.ParseInt(v, 10, 64)
 		if err != nil {
-			return nil, errs.Invalid("after is not an event id")
+			return nil, errs.Invalid("after is not an event id").Because("after_is_not_an_event_id")
 		}
 	}
 	limit := params.Limit.Or(200)
@@ -919,9 +919,9 @@ func (h *Handler) ExportRun(ctx context.Context, params oas.ExportRunParams) (oa
 	case oas.ExportFormatCsv:
 		return &oas.ExportRunOKTextCsv{Data: runCSV(r)}, nil
 	case oas.ExportFormatPdf:
-		return nil, errs.Invalid("pdf export is not available yet")
+		return nil, errs.Invalid("pdf export is not available yet").Because("pdf_export_is_not_available_yet")
 	default:
-		return nil, errs.Invalid("format " + string(params.Format) + " is not available yet")
+		return nil, errs.Invalid("format "+string(params.Format)+" is not available yet").Because("export_format_unavailable", "format", string(params.Format))
 	}
 }
 

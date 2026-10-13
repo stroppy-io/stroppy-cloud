@@ -7,9 +7,9 @@ import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Button, Field, Icon, Input, Stack, Text, TextArea, useStyles2 } from '@grafana/ui'
-import { applyServerErrors, firstError, SLUG_RE, slugify } from '@helpers/form'
+import { applyServerErrors, firstError, REWARD_EARLY, SLUG_RE, slugify } from '@helpers/form'
 import { useMe } from '@hooks/useMe'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useDebouncedCallback } from '@tanstack/react-pacer'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -65,7 +65,7 @@ export function TenantCreatePage() {
   )
   const form = useForm({
     defaultValues: { name: '', slug: '', description: '' },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       try {
@@ -172,16 +172,18 @@ export function TenantCreatePage() {
               <form.Field
                 name="slug"
                 listeners={{
-                  onChange: ({ value }) => {
-                    setSlugTouched(true)
-                    debouncedSuggest(value)
-                  },
+                  // Also fires on the name's auto-fill: "touched" is set by real typing only.
+                  onChange: ({ value }) => debouncedSuggest(value),
                   onBlur: ({ value, fieldApi }) => fieldApi.setValue(slugify(value)),
                 }}
               >
                 {(field) => {
                   const err = firstError(field.state.meta)
-                  const known = suggested && slugify(suggestFor ?? '') === field.state.value
+                  // Only a typed slug the suggestion was asked about counts as checked.
+                  const known =
+                    !!suggested &&
+                    field.state.value !== '' &&
+                    slugify(suggestFor ?? '') === field.state.value
                   const taken = known && suggested.slug !== field.state.value
                   return (
                     <Field
@@ -200,7 +202,10 @@ export function TenantCreatePage() {
                         prefix="/t/"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) => field.handleChange(e.currentTarget.value)}
+                        onChange={(e) => {
+                          setSlugTouched(true)
+                          field.handleChange(e.currentTarget.value)
+                        }}
                         suffix={
                           field.state.value && known && !taken ? (
                             <span className={styles.availability}>

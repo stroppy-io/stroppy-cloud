@@ -151,13 +151,13 @@ func (s *session) run(ctx context.Context) {
 
 func (s *session) subscribe(ctx context.Context, f Frame) {
 	if f.SubID == "" || f.Topic == "" {
-		s.fail(ctx, f.SubID, errs.Invalid("sub_id and topic are required"))
+		s.fail(ctx, f.SubID, errs.Invalid("sub_id and topic are required").Because("sub_id_and_topic_are_required"))
 		return
 	}
 	s.mu.Lock()
 	if _, dup := s.subs[f.SubID]; dup || len(s.subs) >= maxSubscriptions {
 		s.mu.Unlock()
-		s.fail(ctx, f.SubID, errs.Conflict("subscription exists or too many"))
+		s.fail(ctx, f.SubID, errs.Conflict("subscription exists or too many").Because("subscription_exists_or_too_many"))
 		return
 	}
 	// Cancelled by unsubscribe or the session end.

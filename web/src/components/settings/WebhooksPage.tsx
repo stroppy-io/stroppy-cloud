@@ -31,11 +31,11 @@ import {
   TextArea,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
+import { applyServerErrors, firstError, REWARD_EARLY } from '@helpers/form'
 import { formatDateTime, relativeTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
 import { useTenant } from '@hooks/useTenant'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import {
   useInfiniteQuery,
   useMutation,
@@ -344,7 +344,7 @@ function WebhookDrawer({
       events: (webhook?.events ?? ['run.finished', 'run.failed']) as Webhook['events'],
       enabled: webhook?.enabled ?? true,
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       const body: WebhookCreate = {

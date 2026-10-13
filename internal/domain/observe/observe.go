@@ -146,7 +146,7 @@ func WindowOf(r run.Run, segment string, start, end time.Time) (Window, error) {
 			}
 		}
 		if !found {
-			return Window{}, errs.NotFound("segment " + segment)
+			return Window{}, errs.Newf(errs.CodeNotFound, "segment %s not found", segment).Because("segment_not_found", "segment", segment)
 		}
 	}
 	if w.Start.IsZero() {
@@ -180,7 +180,7 @@ func WindowOf(r run.Run, segment string, start, end time.Time) (Window, error) {
 // Logs answers the typed filter.
 func (s *Service) Logs(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, q LogQuery) (LogPage, Window, error) {
 	if s.logs == nil {
-		return LogPage{}, Window{}, errs.New(errs.CodeUnavailable, "logs store is not connected")
+		return LogPage{}, Window{}, errs.New(errs.CodeUnavailable, "logs store is not connected").Because("logs_store_is_not_connected")
 	}
 	r, err := s.runs.Get(ctx, actor, tenantID, q.RunID)
 	if err != nil {
@@ -233,10 +233,10 @@ func phaseSpan(r run.Run, phases []string) (start, end time.Time) {
 // RawLogs runs a LogsQL fragment inside the run scope.
 func (s *Service) RawLogs(ctx context.Context, actor auth.Actor, tenantID, runID uuid.UUID, query string, start, end time.Time, limit int) (LogPage, error) {
 	if s.logs == nil {
-		return LogPage{}, errs.New(errs.CodeUnavailable, "logs store is not connected")
+		return LogPage{}, errs.New(errs.CodeUnavailable, "logs store is not connected").Because("logs_store_is_not_connected")
 	}
 	if strings.TrimSpace(query) == "" {
-		return LogPage{}, errs.Invalid("query is required")
+		return LogPage{}, errs.Invalid("query is required").Because("query_is_required")
 	}
 	r, err := s.runs.Get(ctx, actor, tenantID, runID)
 	if err != nil {
@@ -262,7 +262,7 @@ func (s *Service) RawLogs(ctx context.Context, actor auth.Actor, tenantID, runID
 // LogFacets are the filter values seen in the run's logs.
 func (s *Service) LogFacets(ctx context.Context, actor auth.Actor, tenantID, runID uuid.UUID) ([]run.Facet, error) {
 	if s.logs == nil {
-		return nil, errs.New(errs.CodeUnavailable, "logs store is not connected")
+		return nil, errs.New(errs.CodeUnavailable, "logs store is not connected").Because("logs_store_is_not_connected")
 	}
 	r, err := s.runs.Get(ctx, actor, tenantID, runID)
 	if err != nil {
@@ -282,7 +282,7 @@ func (s *Service) LogFacets(ctx context.Context, actor auth.Actor, tenantID, run
 // Metrics answers catalog keys over a window.
 func (s *Service) Metrics(ctx context.Context, actor auth.Actor, tenantID, runID uuid.UUID, keys []string, segment string, start, end time.Time, step time.Duration) ([]Series, []error, Window, error) {
 	if s.metrics == nil {
-		return nil, nil, Window{}, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+		return nil, nil, Window{}, errs.New(errs.CodeUnavailable, "metrics store is not connected").Because("metrics_store_is_not_connected")
 	}
 	r, err := s.runs.Get(ctx, actor, tenantID, runID)
 	if err != nil {
@@ -314,14 +314,14 @@ func (s *Service) SharedMetrics(ctx context.Context, shares SharedRuns, token st
 		end = bounds.End
 	}
 	if !end.After(start) {
-		return nil, nil, Window{}, errs.Invalid("window does not overlap the shared run")
+		return nil, nil, Window{}, errs.Invalid("window does not overlap the shared run").Because("window_does_not_overlap_the_shared_run")
 	}
 	return s.metricsForRun(ctx, r, nil, "", start, end, 0)
 }
 
 func (s *Service) metricsForRun(ctx context.Context, r run.Run, keys []string, segment string, start, end time.Time, step time.Duration) ([]Series, []error, Window, error) {
 	if s.metrics == nil {
-		return nil, nil, Window{}, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+		return nil, nil, Window{}, errs.New(errs.CodeUnavailable, "metrics store is not connected").Because("metrics_store_is_not_connected")
 	}
 	w, err := WindowOf(r, segment, start, end)
 	if err != nil {
@@ -340,7 +340,7 @@ func (s *Service) metricsForRun(ctx context.Context, r run.Run, keys []string, s
 			}
 		}
 		if len(filtered) == 0 {
-			return nil, nil, w, errs.Invalid("no known metric keys among " + strings.Join(keys, ","))
+			return nil, nil, w, errs.Invalid("no known metric keys among "+strings.Join(keys, ",")).Because("metrics_unknown", "keys", strings.Join(keys, ", "))
 		}
 		defs = filtered
 	}
@@ -367,17 +367,17 @@ func (s *Service) metricsForRun(ctx context.Context, r run.Run, keys []string, s
 // injected by the store).
 func (s *Service) RawMetrics(ctx context.Context, actor auth.Actor, tenantID, runID uuid.UUID, query string, start, end time.Time, step time.Duration) (json.RawMessage, error) {
 	if s.metrics == nil {
-		return nil, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+		return nil, errs.New(errs.CodeUnavailable, "metrics store is not connected").Because("metrics_store_is_not_connected")
 	}
 	if strings.TrimSpace(query) == "" {
-		return nil, errs.Invalid("query is required")
+		return nil, errs.Invalid("query is required").Because("query_is_required")
 	}
 	r, err := s.runs.Get(ctx, actor, tenantID, runID)
 	if err != nil {
 		return nil, err
 	}
 	if !end.After(start) {
-		return nil, errs.Invalid("end must be after start")
+		return nil, errs.Invalid("end must be after start").Because("end_must_be_after_start")
 	}
 	if step <= 0 {
 		step = stepFor(end.Sub(start))
@@ -421,7 +421,7 @@ func KeyExpr(m catalog.Metric, _ Scope) string {
 // actor check — the caller is the server itself.
 func (s *Service) QPSSeries(ctx context.Context, r run.Run, from, to time.Time, step time.Duration) ([]run.Point, error) {
 	if s.metrics == nil {
-		return nil, errs.New(errs.CodeUnavailable, "metrics store is not connected")
+		return nil, errs.New(errs.CodeUnavailable, "metrics store is not connected").Because("metrics_store_is_not_connected")
 	}
 	var def catalog.Metric
 	for _, m := range s.catalog.Metrics {
@@ -430,7 +430,7 @@ func (s *Service) QPSSeries(ctx context.Context, r run.Run, from, to time.Time, 
 		}
 	}
 	if def.Expr == "" {
-		return nil, errs.New(errs.CodeInternal, "catalog has no queries_per_second series")
+		return nil, errs.New(errs.CodeInternal, "catalog has no queries_per_second series").Because("catalog_no_qps_series")
 	}
 	series, failures, err := s.metrics.Query(ctx, MetricQuery{Scope: ScopeOf(r), Start: from, End: to, Step: step, Metrics: []catalog.Metric{def}})
 	if err != nil {

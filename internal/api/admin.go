@@ -41,7 +41,7 @@ func limitsWriteOf(w oas.TenantLimitsWrite) (*settings.Limits, error) {
 	if v, ok := w.MaxKeep.Get(); ok {
 		d, err := time.ParseDuration(v)
 		if err != nil {
-			return nil, errs.Invalid("max_keep is not a duration")
+			return nil, errs.Invalid("max_keep is not a duration").Because("max_keep_is_not_a_duration")
 		}
 		l.MaxKeep, set = d, true
 	}
@@ -199,7 +199,7 @@ func (h *Handler) AdminAssignOwner(ctx context.Context, req *oas.AdminAssignOwne
 	}
 	id, err := uuid.Parse(req.UserID)
 	if err != nil {
-		return nil, errs.Invalid("user_id is not a uuid")
+		return nil, errs.Invalid("user_id is not a uuid").Because("user_id_is_not_a_uuid")
 	}
 	v, err := h.deps.Admin.AssignOwner(ctx, a, params.Slug, id)
 	if err != nil {
@@ -254,11 +254,11 @@ func (h *Handler) AdminPatchUser(ctx context.Context, req *oas.AdminPatchUserReq
 	}
 	id, err := uuid.Parse(params.UserId)
 	if err != nil {
-		return nil, errs.Invalid("user id is not a uuid")
+		return nil, errs.Invalid("user id is not a uuid").Because("user_id_is_not_a_uuid")
 	}
 	on, ok := req.IsPlatformAdmin.Get()
 	if !ok {
-		return nil, errs.Invalid("is_platform_admin is required")
+		return nil, errs.Invalid("is_platform_admin is required").Because("is_platform_admin_is_required")
 	}
 	u, err := h.deps.Admin.SetPlatformAdmin(ctx, a, id, on)
 	if err != nil {
@@ -337,7 +337,7 @@ func (h *Handler) AdminListAudit(ctx context.Context, params oas.AdminListAuditP
 	if c, ok := params.Cursor.Get(); ok && c != "" {
 		id, err := strconv.ParseInt(c, 10, 64)
 		if err != nil {
-			return nil, errs.Invalid("cursor")
+			return nil, errs.Invalid("cursor").Because("cursor_invalid")
 		}
 		q.BeforeID = id
 	}

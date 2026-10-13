@@ -64,10 +64,10 @@ func (s *Service) CreateTest(ctx context.Context, actor auth.Actor, tenantID uui
 // the tenant. A pair with neither ref nor inline stays empty (draft).
 func (s *Service) normalizeTestSpec(ctx context.Context, spec *TestSpec) error {
 	if spec.DatabaseRef != nil && spec.DatabaseInline != nil {
-		return errs.Invalid("database: ref and inline are exclusive")
+		return errs.Invalid("database: ref and inline are exclusive").Because("database_ref_and_inline_are_exclusive")
 	}
 	if spec.WorkloadRef != nil && spec.WorkloadInline != nil {
-		return errs.Invalid("workload: ref and inline are exclusive")
+		return errs.Invalid("workload: ref and inline are exclusive").Because("workload_ref_and_inline_are_exclusive")
 	}
 	if spec.DatabaseInline != nil {
 		baked, _, err := s.DeriveDatabase(ctx, *spec.DatabaseInline)
@@ -95,14 +95,14 @@ func (s *Service) normalizeTestSpec(ctx context.Context, spec *TestSpec) error {
 		}
 		spec.Sizes[role] = rs
 		if sizeRank[rs.Size] == 0 {
-			return errs.Invalid(fmt.Sprintf("sizes.%s: unknown size %q", role, rs.Size))
+			return errs.Invalid(fmt.Sprintf("sizes.%s: unknown size %q", role, rs.Size)).Because("size_unknown", "role", role, "size", string(rs.Size))
 		}
 		if rs.DiskGB < 0 || rs.DiskGB > 262144 {
-			return errs.Invalid(fmt.Sprintf("sizes.%s.disk.gb out of range", role))
+			return errs.Invalid(fmt.Sprintf("sizes.%s.disk.gb out of range", role)).Because("disk_size_out_of_range", "role", role)
 		}
 	}
 	if spec.Keep < 0 {
-		return errs.Invalid("keep must not be negative")
+		return errs.Invalid("keep must not be negative").Because("keep_must_not_be_negative")
 	}
 	return nil
 }
@@ -433,7 +433,7 @@ func (s *Service) UpdateTest(ctx context.Context, actor auth.Actor, tenantID, id
 	if p.Name != nil {
 		n := strings.TrimSpace(*p.Name)
 		if n == "" || len(n) > 128 {
-			return Test{}, Fit{}, Resolved{}, errs.Invalid("name must be 1..128 characters")
+			return Test{}, Fit{}, Resolved{}, errs.Invalid("name must be 1..128 characters").Because("name_must_be_1_128_characters")
 		}
 		p.Name = &n
 	}
@@ -509,7 +509,7 @@ func (s *Service) DeleteTest(ctx context.Context, actor auth.Actor, tenantID, id
 			for _, u := range usages {
 				names = append(names, u.Kind+" "+u.Name)
 			}
-			return errs.Conflict("test is used by " + strings.Join(names, ", "))
+			return errs.Conflict("test is used by "+strings.Join(names, ", ")).Because("test_used_by", "names", strings.Join(names, ", "))
 		}
 	}
 	if err := s.repo.DeleteTest(ctx, id); err != nil {

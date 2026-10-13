@@ -29,6 +29,11 @@ const (
 type Error struct {
 	Code   Code
 	Detail string
+	// Reason is the stable machine key of WHY it failed (`tenant_slug_taken`),
+	// finer than Code: the UI shows its own text for it, filled from Params.
+	// Detail stays the English explanation for logs and API clients.
+	Reason string
+	Params map[string]string
 	// Validation is the schemapb validation result for CodeValidation,
 	// serialized by the API; nil otherwise.
 	Validation any
@@ -43,6 +48,28 @@ func (e *Error) Error() string {
 		return string(e.Code)
 	}
 	return fmt.Sprintf("%s: %s", e.Code, e.Detail)
+}
+
+// Because names the reason and its parameters (key, value pairs). It is
+// called on a freshly built error, before anyone else sees it.
+func (e *Error) Because(reason string, kv ...string) *Error {
+	e.Reason = reason
+	if len(kv) > 1 {
+		e.Params = make(map[string]string, len(kv)/2)
+		for i := 0; i+1 < len(kv); i += 2 {
+			e.Params[kv[i]] = kv[i+1]
+		}
+	}
+	return e
+}
+
+// ReasonOf extracts the reason and its parameters of err ("" for none).
+func ReasonOf(err error) (string, map[string]string) {
+	var e *Error
+	if errors.As(err, &e) {
+		return e.Reason, e.Params
+	}
+	return "", nil
 }
 
 // Unwrap exposes the cause.
@@ -64,9 +91,11 @@ func Wrap(code Code, detail string, cause error) *Error {
 // Unauthenticated, NotFound and friends are the frequent shapes.
 func Unauthenticated(detail string) *Error { return New(CodeUnauthenticated, detail) }
 func Forbidden(detail string) *Error       { return New(CodeForbidden, detail) }
-func NotFound(what string) *Error          { return Newf(CodeNotFound, "%s not found", what) }
-func Conflict(detail string) *Error        { return New(CodeConflict, detail) }
-func Invalid(detail string) *Error         { return New(CodeInvalid, detail) }
+func NotFound(what string) *Error {
+	return Newf(CodeNotFound, "%s not found", what).Because(reasonKey(what) + "_not_found")
+}
+func Conflict(detail string) *Error { return New(CodeConflict, detail) }
+func Invalid(detail string) *Error  { return New(CodeInvalid, detail) }
 
 // AsValidation reports a CodeValidation error and returns it.
 func AsValidation(err error) (*Error, bool) {
@@ -108,4 +137,24 @@ func Status(code Code) int {
 	default:
 		return http.StatusInternalServerError
 	}
+}
+
+// reasonKey turns an entity name ("suite run") into a reason key part.
+func reasonKey(s string) string {
+	b := make([]byte, 0, len(s))
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		switch {
+		case c >= 'a' && c <= 'z', c >= '0' && c <= '9':
+			b = append(b, c)
+		case c >= 'A' && c <= 'Z':
+			b = append(b, c+'a'-'A')
+		case len(b) > 0 && b[len(b)-1] != '_':
+			b = append(b, '_')
+		}
+	}
+	for len(b) > 0 && b[len(b)-1] == '_' {
+		b = b[:len(b)-1]
+	}
+	return string(b)
 }

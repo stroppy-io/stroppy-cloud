@@ -174,7 +174,7 @@ func (s *Service) Clone(ctx context.Context, actor auth.Actor, tenantID uuid.UUI
 		return []library.Usage{{Kind: "test", ID: x.ID, Name: x.Name}}, nil
 	case "suite":
 		if s.suites == nil {
-			return nil, errs.New(errs.CodeUnavailable, "suites are not available")
+			return nil, errs.New(errs.CodeUnavailable, "suites are not available").Because("suites_are_not_available")
 		}
 		return s.suites.ImportDocument(ctx, actor, tenantID, d)
 	default:
@@ -189,7 +189,7 @@ func (s *Service) TestSpec(ctx context.Context, tenantID uuid.UUID, id string) (
 		return library.TestSpec{}, "", errs.NotFound("example")
 	}
 	if e.Kind != "test" {
-		return library.TestSpec{}, "", errs.Invalid("only test examples can be quick-run")
+		return library.TestSpec{}, "", errs.Invalid("only test examples can be quick-run").Because("only_test_examples_can_be_quick_run")
 	}
 	spec, err := s.library.TestSpecFromDocument(ctx, tenantID, e.Document)
 	if err != nil {

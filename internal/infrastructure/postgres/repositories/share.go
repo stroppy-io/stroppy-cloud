@@ -124,7 +124,7 @@ func (r *ShareRepo) Revoke(ctx context.Context, id uuid.UUID) error {
 		return infraf("share: revoke: %v", err)
 	}
 	if n == 0 {
-		return errs.Conflict("share already revoked")
+		return errs.Conflict("share already revoked").Because("share_already_revoked")
 	}
 	return nil
 }

@@ -161,7 +161,7 @@ func (h *Handler) GetRunMetrics(ctx context.Context, params oas.GetRunMetricsPar
 	var step time.Duration
 	if v, ok := params.Step.Get(); ok && v != "" {
 		if step, err = time.ParseDuration(v); err != nil {
-			return nil, errs.Invalid("step is not a duration")
+			return nil, errs.Invalid("step is not a duration").Because("step_is_not_a_duration")
 		}
 	}
 	series, failures, w, err := h.deps.Observe.Metrics(ctx, a, t.ID, params.ID, params.Keys, params.Segment.Or(""), start, end, step)
@@ -189,7 +189,7 @@ func (h *Handler) QueryRunMetricsRaw(ctx context.Context, req *oas.QueryRunMetri
 	var step time.Duration
 	if v, ok := req.Step.Get(); ok && v != "" {
 		if step, err = time.ParseDuration(v); err != nil {
-			return nil, errs.Invalid("step is not a duration")
+			return nil, errs.Invalid("step is not a duration").Because("step_is_not_a_duration")
 		}
 	}
 	raw, err := h.deps.Observe.RawMetrics(ctx, a, t.ID, params.ID, req.Query, req.Start, req.End, step)
@@ -198,7 +198,7 @@ func (h *Handler) QueryRunMetricsRaw(ctx context.Context, req *oas.QueryRunMetri
 	}
 	var m map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &m); err != nil {
-		return nil, errs.Wrap(errs.CodeUnavailable, "metrics store answer", err)
+		return nil, errs.Wrap(errs.CodeUnavailable, "metrics store answer", err).Because("metrics_unavailable")
 	}
 	out := oas.QueryRunMetricsRawOK{}
 	for k, v := range m {
@@ -222,7 +222,7 @@ func (h *Handler) CreateRunGrafanaSession(ctx context.Context, params oas.Create
 		return nil, err
 	}
 	if !h.deps.Grafana.Enabled {
-		return nil, errs.New(errs.CodeUnavailable, "grafana is not connected")
+		return nil, errs.New(errs.CodeUnavailable, "grafana is not connected").Because("grafana_is_not_connected")
 	}
 	r, err := h.deps.Runs.Get(ctx, a, t.ID, params.ID)
 	if err != nil {
@@ -260,10 +260,10 @@ func (h *Handler) CreatePublicShareGrafanaSession(ctx context.Context, params oa
 		return nil, err
 	}
 	if s.Scope == "overview" || s.Snapshot.Run == nil {
-		return nil, errs.Forbidden("this share does not include metrics")
+		return nil, errs.Forbidden("this share does not include metrics").Because("this_share_does_not_include_metrics")
 	}
 	if !h.deps.Grafana.Enabled {
-		return nil, errs.New(errs.CodeUnavailable, "grafana is not connected")
+		return nil, errs.New(errs.CodeUnavailable, "grafana is not connected").Because("grafana_is_not_connected")
 	}
 	run := s.Snapshot.Run
 	start, end := s.CapturedAt.Add(-time.Hour), s.CapturedAt

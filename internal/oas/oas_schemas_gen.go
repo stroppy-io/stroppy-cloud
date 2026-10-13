@@ -7764,6 +7764,7 @@ type Me struct {
 	OwnedTenantID   OptNilUUID         `json:"owned_tenant_id"`
 	Preferences     Preferences        `json:"preferences"`
 	Notifications   NotificationPrefs  `json:"notifications"`
+	Onboarding      OptOnboarding      `json:"onboarding"`
 	CreatedAt       OptDateTime        `json:"created_at"`
 }
 
@@ -7810,6 +7811,11 @@ func (s *Me) GetPreferences() Preferences {
 // GetNotifications returns the value of Notifications.
 func (s *Me) GetNotifications() NotificationPrefs {
 	return s.Notifications
+}
+
+// GetOnboarding returns the value of Onboarding.
+func (s *Me) GetOnboarding() OptOnboarding {
+	return s.Onboarding
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -7862,6 +7868,11 @@ func (s *Me) SetNotifications(val NotificationPrefs) {
 	s.Notifications = val
 }
 
+// SetOnboarding sets the value of Onboarding.
+func (s *Me) SetOnboarding(val OptOnboarding) {
+	s.Onboarding = val
+}
+
 // SetCreatedAt sets the value of CreatedAt.
 func (s *Me) SetCreatedAt(val OptDateTime) {
 	s.CreatedAt = val
@@ -7873,6 +7884,8 @@ type MePatch struct {
 	Avatar        OptString            `json:"avatar"`
 	Preferences   OptPreferences       `json:"preferences"`
 	Notifications OptNotificationPrefs `json:"notifications"`
+	// Merged flag by flag; an absent flag keeps its value.
+	Onboarding OptOnboarding `json:"onboarding"`
 }
 
 // GetDisplayName returns the value of DisplayName.
@@ -7895,6 +7908,11 @@ func (s *MePatch) GetNotifications() OptNotificationPrefs {
 	return s.Notifications
 }
 
+// GetOnboarding returns the value of Onboarding.
+func (s *MePatch) GetOnboarding() OptOnboarding {
+	return s.Onboarding
+}
+
 // SetDisplayName sets the value of DisplayName.
 func (s *MePatch) SetDisplayName(val OptString) {
 	s.DisplayName = val
@@ -7913,6 +7931,11 @@ func (s *MePatch) SetPreferences(val OptPreferences) {
 // SetNotifications sets the value of Notifications.
 func (s *MePatch) SetNotifications(val OptNotificationPrefs) {
 	s.Notifications = val
+}
+
+// SetOnboarding sets the value of Onboarding.
+func (s *MePatch) SetOnboarding(val OptOnboarding) {
+	s.Onboarding = val
 }
 
 // Ref: #/components/schemas/Member
@@ -8307,6 +8330,48 @@ func (s *NotificationPrefs) SetRunFailed(val OptBool) {
 // SetSuiteFinished sets the value of SuiteFinished.
 func (s *NotificationPrefs) SetSuiteFinished(val OptBool) {
 	s.SuiteFinished = val
+}
+
+// First-run progress of the account, kept on the server so it does not come back in another browser.
+// All flags default to false.
+// Ref: #/components/schemas/Onboarding
+type Onboarding struct {
+	// The welcome screen was passed.
+	WelcomeDone OptBool `json:"welcome_done"`
+	// The interface tour was finished or skipped.
+	TourDone OptBool `json:"tour_done"`
+	// The dashboard first-run checklist was hidden.
+	ChecklistHidden OptBool `json:"checklist_hidden"`
+}
+
+// GetWelcomeDone returns the value of WelcomeDone.
+func (s *Onboarding) GetWelcomeDone() OptBool {
+	return s.WelcomeDone
+}
+
+// GetTourDone returns the value of TourDone.
+func (s *Onboarding) GetTourDone() OptBool {
+	return s.TourDone
+}
+
+// GetChecklistHidden returns the value of ChecklistHidden.
+func (s *Onboarding) GetChecklistHidden() OptBool {
+	return s.ChecklistHidden
+}
+
+// SetWelcomeDone sets the value of WelcomeDone.
+func (s *Onboarding) SetWelcomeDone(val OptBool) {
+	s.WelcomeDone = val
+}
+
+// SetTourDone sets the value of TourDone.
+func (s *Onboarding) SetTourDone(val OptBool) {
+	s.TourDone = val
+}
+
+// SetChecklistHidden sets the value of ChecklistHidden.
+func (s *Onboarding) SetChecklistHidden(val OptBool) {
+	s.ChecklistHidden = val
 }
 
 // NewOptAdminListRunsOKDataItemGraphene returns new OptAdminListRunsOKDataItemGraphene with value set to v.
@@ -11292,6 +11357,52 @@ func (o OptNotificationPrefs) Or(d NotificationPrefs) NotificationPrefs {
 	return d
 }
 
+// NewOptOnboarding returns new OptOnboarding with value set to v.
+func NewOptOnboarding(v Onboarding) OptOnboarding {
+	return OptOnboarding{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptOnboarding is optional Onboarding.
+type OptOnboarding struct {
+	Value Onboarding
+	Set   bool
+}
+
+// IsSet returns true if OptOnboarding was set.
+func (o OptOnboarding) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptOnboarding) Reset() {
+	var v Onboarding
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptOnboarding) SetTo(v Onboarding) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptOnboarding) Get() (v Onboarding, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptOnboarding) Or(d Onboarding) Onboarding {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptOrder returns new OptOrder with value set to v.
 func NewOptOrder(v Order) OptOrder {
 	return OptOrder{
@@ -11470,6 +11581,52 @@ func (o OptPreferencesTheme) Get() (v PreferencesTheme, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptPreferencesTheme) Or(d PreferencesTheme) PreferencesTheme {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptProblemParams returns new OptProblemParams with value set to v.
+func NewOptProblemParams(v ProblemParams) OptProblemParams {
+	return OptProblemParams{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptProblemParams is optional ProblemParams.
+type OptProblemParams struct {
+	Value ProblemParams
+	Set   bool
+}
+
+// IsSet returns true if OptProblemParams was set.
+func (o OptProblemParams) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptProblemParams) Reset() {
+	var v ProblemParams
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptProblemParams) SetTo(v ProblemParams) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptProblemParams) Get() (v ProblemParams, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptProblemParams) Or(d ProblemParams) ProblemParams {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -16500,7 +16657,13 @@ type Problem struct {
 	Detail   OptString `json:"detail"`
 	Instance OptString `json:"instance"`
 	// Stable machine-readable code. Branch on this, never on `detail`.
-	Code       string              `json:"code"`
+	Code string `json:"code"`
+	// Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`,
+	// `limit_concurrent_runs`, `<entity>_not_found`). Clients show their own text for it; `detail` is
+	// the English fallback for an unknown reason.
+	Reason OptString `json:"reason"`
+	// Values for the reason's text, e.g. slug=acme.
+	Params     OptProblemParams    `json:"params"`
 	RequestID  OptString           `json:"request_id"`
 	Validation OptValidationResult `json:"validation"`
 }
@@ -16533,6 +16696,16 @@ func (s *Problem) GetInstance() OptString {
 // GetCode returns the value of Code.
 func (s *Problem) GetCode() string {
 	return s.Code
+}
+
+// GetReason returns the value of Reason.
+func (s *Problem) GetReason() OptString {
+	return s.Reason
+}
+
+// GetParams returns the value of Params.
+func (s *Problem) GetParams() OptProblemParams {
+	return s.Params
 }
 
 // GetRequestID returns the value of RequestID.
@@ -16575,6 +16748,16 @@ func (s *Problem) SetCode(val string) {
 	s.Code = val
 }
 
+// SetReason sets the value of Reason.
+func (s *Problem) SetReason(val OptString) {
+	s.Reason = val
+}
+
+// SetParams sets the value of Params.
+func (s *Problem) SetParams(val OptProblemParams) {
+	s.Params = val
+}
+
 // SetRequestID sets the value of RequestID.
 func (s *Problem) SetRequestID(val OptString) {
 	s.RequestID = val
@@ -16583,6 +16766,18 @@ func (s *Problem) SetRequestID(val OptString) {
 // SetValidation sets the value of Validation.
 func (s *Problem) SetValidation(val OptValidationResult) {
 	s.Validation = val
+}
+
+// Values for the reason's text, e.g. slug=acme.
+type ProblemParams map[string]string
+
+func (s *ProblemParams) init() ProblemParams {
+	m := *s
+	if m == nil {
+		m = map[string]string{}
+		*s = m
+	}
+	return m
 }
 
 // ProblemStatusCode wraps Problem with StatusCode.
@@ -17080,6 +17275,9 @@ func (s *PublicCatalogDatabasesItem) SetTopologies(val []string) {
 
 // Ref: #/components/schemas/PublicConfig
 type PublicConfig struct {
+	// A public report (`/s/<token>`) of a real run that first-run screens offer as "what a result looks
+	// like"; absent when the installation has none.
+	DemoReportURL OptString `json:"demo_report_url"`
 	// How the SPA signs in; `kratos` (the normal mode) or `dev` (a local stand without Kratos asks for a
 	// static token).
 	Auth                PublicConfigAuth           `json:"auth"`
@@ -17088,6 +17286,11 @@ type PublicConfig struct {
 	ExamplesEnabled     OptBool                    `json:"examples_enabled"`
 	Version             string                     `json:"version"`
 	Commit              OptString                  `json:"commit"`
+}
+
+// GetDemoReportURL returns the value of DemoReportURL.
+func (s *PublicConfig) GetDemoReportURL() OptString {
+	return s.DemoReportURL
 }
 
 // GetAuth returns the value of Auth.
@@ -17118,6 +17321,11 @@ func (s *PublicConfig) GetVersion() string {
 // GetCommit returns the value of Commit.
 func (s *PublicConfig) GetCommit() OptString {
 	return s.Commit
+}
+
+// SetDemoReportURL sets the value of DemoReportURL.
+func (s *PublicConfig) SetDemoReportURL(val OptString) {
+	s.DemoReportURL = val
 }
 
 // SetAuth sets the value of Auth.

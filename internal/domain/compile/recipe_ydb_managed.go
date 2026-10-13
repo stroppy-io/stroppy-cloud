@@ -10,19 +10,19 @@ import (
 func managedYDBRecipe(c *compilation) error {
 	p := c.params()
 	if c.in.ProviderKind != "yandex" {
-		return errs.Newf(errs.CodeInvalid, "Managed YDB requires Yandex Cloud")
+		return errs.Newf(errs.CodeInvalid, "Managed YDB requires Yandex Cloud").Because("managed_ydb_requires_yandex_cloud")
 	}
 	if c.in.CredentialsSecret == "" {
-		return errs.Newf(errs.CodeInvalid, "Managed YDB requires named YC credentials for IAM authentication")
+		return errs.Newf(errs.CodeInvalid, "Managed YDB requires named YC credentials for IAM authentication").Because("managed_ydb_requires_named_credentials")
 	}
 	if boolParam(p, "deletion_protection") {
-		return errs.Newf(errs.CodeInvalid, "Managed YDB run resources require deletion_protection=false so cleanup can remove them")
+		return errs.Newf(errs.CodeInvalid, "Managed YDB run resources require deletion_protection=false so cleanup can remove them").Because("managed_ydb_deletion_protection")
 	}
 	m := &spec.ManagedYDB{Type: strParam(p, "type", "dedicated"), LocationID: strParam(p, "location_id", "ru-central1")}
 	switch m.Type {
 	case "dedicated":
 		if strParam(p, "scale_policy", "fixed") != "fixed" {
-			return errs.Newf(errs.CodeInvalid, "Managed YDB autoscaling is unsupported by the installed Crossplane provider")
+			return errs.Newf(errs.CodeInvalid, "Managed YDB autoscaling is unsupported by the installed Crossplane provider").Because("managed_ydb_autoscaling_unsupported")
 		}
 		m.ResourcePresetID = strParam(p, "resource_preset_id", "medium")
 		m.NodeCount = intParam(p, "node_count", 3)
@@ -43,7 +43,7 @@ func managedYDBRecipe(c *compilation) error {
 		m.ProvisionedRCULimit = intParam(p, "provisioned_rcu_limit", 0)
 		m.StorageSizeLimitGB = intParam(p, "storage_size_limit_gb", 50)
 	default:
-		return errs.Newf(errs.CodeInvalid, "unknown Managed YDB type %q", m.Type)
+		return errs.Newf(errs.CodeInvalid, "unknown Managed YDB type %q", m.Type).Because("managed_ydb_type_unknown", "type", m.Type)
 	}
 	c.out.Spec.ManagedYDB = m
 	return nil

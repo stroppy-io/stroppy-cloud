@@ -41,7 +41,7 @@ func (s *Service) writer(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return err
 	}
 	if role == string(tenant.RoleViewer) {
-		return errs.Forbidden("viewers cannot change schedules")
+		return errs.Forbidden("viewers cannot change schedules").Because("viewers_cannot_change_schedules")
 	}
 	return nil
 }
@@ -61,15 +61,15 @@ func (s *Service) owned(ctx context.Context, tenantID, id uuid.UUID) (Schedule, 
 func next(expr, tz string, from time.Time) (*time.Time, error) {
 	c, err := ParseCron(expr)
 	if err != nil {
-		return nil, errs.Invalid(err.Error())
+		return nil, errs.Invalid(err.Error()).Because("cron_invalid", "error", err.Error())
 	}
 	loc, err := time.LoadLocation(orDefault(tz, "UTC"))
 	if err != nil {
-		return nil, errs.Invalid("unknown timezone " + tz)
+		return nil, errs.Invalid("unknown timezone "+tz).Because("timezone_unknown", "tz", tz)
 	}
 	t := c.Next(from.In(loc))
 	if t.IsZero() {
-		return nil, errs.Invalid("cron never fires")
+		return nil, errs.Invalid("cron never fires").Because("cron_never_fires")
 	}
 	u := t.UTC()
 	return &u, nil
@@ -81,10 +81,10 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return Schedule{}, err
 	}
 	if strings.TrimSpace(w.Name) == "" {
-		return Schedule{}, errs.Invalid("name is required")
+		return Schedule{}, errs.Invalid("name is required").Because("name_is_required")
 	}
 	if w.TargetKind != TargetTest && w.TargetKind != TargetSuite {
-		return Schedule{}, errs.Invalid("target.kind must be test or suite")
+		return Schedule{}, errs.Invalid("target.kind must be test or suite").Because("target_kind_must_be_test_or_suite")
 	}
 	name, err := s.launcher.TargetName(ctx, actor, tenantID, w.TargetKind, w.TargetID)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *Service) Create(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 			return Schedule{}, err
 		}
 	} else if _, err := ParseCron(w.Cron); err != nil {
-		return Schedule{}, errs.Invalid(err.Error())
+		return Schedule{}, errs.Invalid(err.Error()).Because("cron_invalid", "error", err.Error())
 	}
 	now := s.now()
 	x := Schedule{
@@ -154,7 +154,7 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 	targetName := x.TargetName
 	if p.TargetKind != nil || p.TargetID != nil {
 		if kind != TargetTest && kind != TargetSuite {
-			return Schedule{}, errs.Invalid("target.kind must be test or suite")
+			return Schedule{}, errs.Invalid("target.kind must be test or suite").Because("target_kind_must_be_test_or_suite")
 		}
 		if targetName, err = s.launcher.TargetName(ctx, actor, tenantID, kind, target); err != nil {
 			return Schedule{}, err
@@ -176,7 +176,7 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID, id uui
 			return Schedule{}, err
 		}
 	} else if _, err := ParseCron(expr); err != nil {
-		return Schedule{}, errs.Invalid(err.Error())
+		return Schedule{}, errs.Invalid(err.Error()).Because("cron_invalid", "error", err.Error())
 	}
 	if err := s.repo.Update(ctx, id, p, targetName, nextAt); err != nil {
 		return Schedule{}, err
@@ -224,7 +224,7 @@ func (s *Service) RunNow(ctx context.Context, actor auth.Actor, tenantID, id uui
 	}
 	ref := s.fire(ctx, actor, x)
 	if ref.Error != "" {
-		return ref, errs.Invalid(ref.Error)
+		return ref, errs.Invalid(ref.Error).Because("schedule_fire_failed", "error", ref.Error)
 	}
 	return ref, nil
 }

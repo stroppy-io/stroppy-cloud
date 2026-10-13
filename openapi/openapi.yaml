@@ -2,8 +2,8 @@
 openapi: 3.1.0
 info:
   title: Stroppy Cloud API
-  version: 3.0.0
-  x-pipeline-contract-version: 3.0.0
+  version: 3.1.0
+  x-pipeline-contract-version: 3.1.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -399,7 +399,15 @@ paths:
       operationId: suggestTenantName
       tags:
       - Tenants
-      summary: Unique name/slug suggestion derived from the account.
+      summary: Unique name/slug suggestion — from `name` when given, else from the account.
+      parameters:
+      - name: name
+        in: query
+        description: A name or slug the user typed; the answer is its slug when free, else the nearest
+          free variant (`acme-2`). Cyrillic is transliterated.
+        schema:
+          type: string
+          maxLength: 64
       responses:
         '200':
           description: Suggestion.
@@ -4733,6 +4741,17 @@ components:
           type: string
           description: Stable machine-readable code. Branch on this, never on `detail`.
           example: test_not_ready
+        reason:
+          type: string
+          description: Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`, `limit_concurrent_runs`,
+            `<entity>_not_found`). Clients show their own text for it; `detail` is the English fallback
+            for an unknown reason.
+          example: tenant_slug_taken
+        params:
+          type: object
+          description: Values for the reason's text, e.g. slug=acme.
+          additionalProperties:
+            type: string
         request_id:
           type: string
         validation:
@@ -5104,6 +5123,10 @@ components:
       - public_rating_enabled
       - version
       properties:
+        demo_report_url:
+          type: string
+          description: A public report (`/s/<token>`) of a real run that first-run screens offer as "what
+            a result looks like"; absent when the installation has none.
         auth:
           type: object
           required:
@@ -5234,6 +5257,8 @@ components:
           $ref: '#/components/schemas/Preferences'
         notifications:
           $ref: '#/components/schemas/NotificationPrefs'
+        onboarding:
+          $ref: '#/components/schemas/Onboarding'
         created_at:
           type: string
           format: date-time
@@ -5251,6 +5276,23 @@ components:
           $ref: '#/components/schemas/Preferences'
         notifications:
           $ref: '#/components/schemas/NotificationPrefs'
+        onboarding:
+          $ref: '#/components/schemas/Onboarding'
+          description: Merged flag by flag; an absent flag keeps its value.
+    Onboarding:
+      type: object
+      description: First-run progress of the account, kept on the server so it does not come back in another
+        browser. All flags default to false.
+      properties:
+        welcome_done:
+          type: boolean
+          description: The welcome screen was passed.
+        tour_done:
+          type: boolean
+          description: The interface tour was finished or skipped.
+        checklist_hidden:
+          type: boolean
+          description: The dashboard first-run checklist was hidden.
     Preferences:
       type: object
       properties:

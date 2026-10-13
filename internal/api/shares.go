@@ -62,7 +62,7 @@ func shareCreateFrom(req *oas.ShareCreate) (share.Create, error) {
 	if v, ok := req.TTL.Get(); ok && v != "" {
 		d, err := time.ParseDuration(v)
 		if err != nil || d <= 0 {
-			return in, errs.Invalid("ttl is not a positive duration")
+			return in, errs.Invalid("ttl is not a positive duration").Because("ttl_is_not_a_positive_duration")
 		}
 		in.TTL = &d
 	}
@@ -196,7 +196,7 @@ func (h *Handler) PatchShare(ctx context.Context, req *oas.PatchShareReq, params
 		} else {
 			d, err := time.ParseDuration(v)
 			if err != nil || d <= 0 {
-				return nil, errs.Invalid("ttl is not a positive duration")
+				return nil, errs.Invalid("ttl is not a positive duration").Because("ttl_is_not_a_positive_duration")
 			}
 			p.TTL = &d
 		}
@@ -388,8 +388,8 @@ func (h *Handler) ExportPublicShare(ctx context.Context, params oas.ExportPublic
 		}
 		return &oas.ExportPublicShareOKTextCsv{Data: b}, nil
 	case oas.ExportFormatPdf:
-		return nil, errs.Invalid("pdf export is not available yet")
+		return nil, errs.Invalid("pdf export is not available yet").Because("pdf_export_is_not_available_yet")
 	default:
-		return nil, errs.Invalid("format " + string(params.Format) + " is not available yet")
+		return nil, errs.Invalid("format "+string(params.Format)+" is not available yet").Because("export_format_unavailable", "format", string(params.Format))
 	}
 }

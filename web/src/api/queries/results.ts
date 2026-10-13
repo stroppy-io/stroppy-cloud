@@ -140,7 +140,16 @@ export const publicMutations = {
     })
     if (error !== undefined || !response.ok) {
       const { toApiError } = await import('@api/errors')
-      throw await toApiError(response)
+      // parseAs 'text' hands the problem+json over as a string.
+      let parsed: unknown = error
+      if (typeof error === 'string') {
+        try {
+          parsed = JSON.parse(error)
+        } catch {
+          parsed = undefined
+        }
+      }
+      throw await toApiError(response, parsed)
     }
     return {
       text: typeof data === 'string' ? data : JSON.stringify(data, null, 2),

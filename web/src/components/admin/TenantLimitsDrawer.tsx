@@ -2,8 +2,8 @@ import { type AdminTenant, adminMutations, adminQueries } from '@api/queries/adm
 import { toast } from '@app/Toaster'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { Alert, Button, Combobox, Drawer, Field, Input, Stack, Text } from '@grafana/ui'
-import { applyServerErrors, firstError, isGoDuration } from '@helpers/form'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { applyServerErrors, firstError, isGoDuration, REWARD_EARLY } from '@helpers/form'
+import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -43,7 +43,7 @@ export function TenantLimitsDrawer({
       max_keep: cur?.max_keep ?? d?.max_keep ?? '2h',
       run_retention_max_days: cur?.run_retention_max_days ?? d?.run_retention_max_days ?? 90,
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       try {

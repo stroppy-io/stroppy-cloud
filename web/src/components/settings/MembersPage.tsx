@@ -21,11 +21,11 @@ import {
   Text,
   TextArea,
 } from '@grafana/ui'
-import { applyServerErrors, firstError } from '@helpers/form'
+import { applyServerErrors, firstError, REWARD_EARLY } from '@helpers/form'
 import { formatDateTime, relativeTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
 import { useTenant } from '@hooks/useTenant'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
@@ -369,7 +369,7 @@ function InviteDialog({
   )
   const form = useForm({
     defaultValues: { email: '', role: 'member' as 'admin' | 'member' | 'viewer', message: '' },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       try {

@@ -77,7 +77,7 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 		direction = "older"
 	}
 	if direction != "older" && direction != "newer" {
-		return observe.LogPage{}, errs.Invalid("invalid log direction")
+		return observe.LogPage{}, errs.Invalid("invalid log direction").Because("invalid_log_direction")
 	}
 	req := &managementv1.LogsRequest{
 		Ref: "run/" + q.Scope.Run, Query: typedLogFilter(q), Text: q.Text, Severities: q.Levels,
@@ -91,7 +91,7 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 	if q.Cursor != "" {
 		b, err := base64.RawURLEncoding.DecodeString(q.Cursor)
 		if err != nil || json.Unmarshal(b, &cursor) != nil || cursor.Direction != direction || cursor.Scope != q.Scope || cursor.Filter != string(identity) || cursor.Skip < 0 || cursor.Skip > 10000 {
-			return observe.LogPage{}, errs.Invalid("invalid log cursor for this selection")
+			return observe.LogPage{}, errs.Invalid("invalid log cursor for this selection").Because("invalid_log_cursor_for_this_selection")
 		}
 		req.PageToken, req.SinceUnixNano = cursor.Token, cursor.Start
 		if direction == "older" {
@@ -108,7 +108,7 @@ func (l *Logs) Query(ctx context.Context, q observe.LogQuery) (observe.LogPage, 
 	known := map[int64][]observe.LogLine{}
 	if !q.Anchor.IsZero() {
 		if q.Cursor != "" {
-			return observe.LogPage{}, errs.Invalid("a log cursor is either a page cursor or a line seq")
+			return observe.LogPage{}, errs.Invalid("a log cursor is either a page cursor or a line seq").Because("log_cursor_ambiguous")
 		}
 		var err error
 		if cursor, back, err = l.anchor(ctx, q, req, cursor, known); err != nil {
@@ -270,7 +270,7 @@ func (l *Logs) assignSeqs(ctx context.Context, q observe.LogQuery, req *manageme
 
 func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.LogsRequest) (observe.LogPage, string, error) {
 	if scope.Namespace == "" || scope.Run == "" {
-		return observe.LogPage{}, "", errs.Invalid("telemetry requires a run scope")
+		return observe.LogPage{}, "", errs.Invalid("telemetry requires a run scope").Because("telemetry_requires_a_run_scope")
 	}
 	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
 	defer cancel()
@@ -291,7 +291,7 @@ func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.
 			page.Truncated, next = p.GetTruncated(), p.GetNextPageToken()
 		}
 		if chunk.GetDropped() > 0 {
-			return observe.LogPage{}, "", errs.New(errs.CodeUnavailable, "Graphene dropped log records")
+			return observe.LogPage{}, "", errs.New(errs.CodeUnavailable, "Graphene dropped log records").Because("graphene_dropped_log_records")
 		}
 	}
 	if err := stream.Err(); err != nil {
@@ -307,7 +307,7 @@ func (l *Logs) Raw(ctx context.Context, scope observe.Scope, query string, start
 
 func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.Time) ([]run.Facet, error) {
 	if scope.Namespace == "" || scope.Run == "" {
-		return nil, errs.Invalid("telemetry requires a run scope")
+		return nil, errs.Invalid("telemetry requires a run scope").Because("telemetry_requires_a_run_scope")
 	}
 	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
 	defer cancel()
@@ -363,11 +363,11 @@ func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.S
 
 func (m *Metrics) Raw(ctx context.Context, scope observe.Scope, query string, start, end time.Time, step time.Duration) (json.RawMessage, error) {
 	if scope.Namespace == "" || scope.Run == "" {
-		return nil, errs.Invalid("telemetry requires a run scope")
+		return nil, errs.Invalid("telemetry requires a run scope").Because("telemetry_requires_a_run_scope")
 	}
 	seconds := math.Ceil(step.Seconds())
 	if seconds < 0 || seconds > math.MaxInt32 {
-		return nil, errs.Invalid("invalid metric step")
+		return nil, errs.Invalid("invalid metric step").Because("invalid_metric_step")
 	}
 	ctx, cancel := context.WithTimeout(WithNamespace(ctx, scope.Namespace), 30*time.Second)
 	defer cancel()
@@ -382,14 +382,14 @@ func (m *Metrics) Raw(ctx context.Context, scope observe.Scope, query string, st
 			snapshot = slices.Clone(s)
 		}
 		if stream.Msg().GetDropped() > 0 {
-			return nil, errs.New(errs.CodeUnavailable, "Graphene dropped metric records")
+			return nil, errs.New(errs.CodeUnavailable, "Graphene dropped metric records").Because("graphene_dropped_metric_records")
 		}
 	}
 	if err := stream.Err(); err != nil {
 		return nil, telemetryError(err)
 	}
 	if !json.Valid(snapshot) {
-		return nil, errs.New(errs.CodeUnavailable, "Graphene returned no valid metric snapshot")
+		return nil, errs.New(errs.CodeUnavailable, "Graphene returned no valid metric snapshot").Because("metrics_snapshot_invalid")
 	}
 	return snapshot, nil
 }
@@ -403,6 +403,6 @@ func telemetryError(err error) error {
 	case connect.CodePermissionDenied, connect.CodeUnauthenticated:
 		return errs.Wrap(errs.CodeForbidden, "Graphene telemetry access", err)
 	default:
-		return errs.Wrap(errs.CodeUnavailable, "Graphene telemetry", err)
+		return errs.Wrap(errs.CodeUnavailable, "Graphene telemetry", err).Because("telemetry_unavailable")
 	}
 }

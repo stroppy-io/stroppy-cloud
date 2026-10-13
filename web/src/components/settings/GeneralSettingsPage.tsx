@@ -20,9 +20,15 @@ import {
   TextArea,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError, isGoDuration, serverErrors } from '@helpers/form'
+import {
+  applyServerErrors,
+  firstError,
+  isGoDuration,
+  REWARD_EARLY,
+  serverErrors,
+} from '@helpers/form'
 import { useTenant } from '@hooks/useTenant'
-import { revalidateLogic, useForm } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useMemo, useState } from 'react'
@@ -108,7 +114,7 @@ export function GeneralSettingsPage() {
       default_keep: settings.default_keep,
       notification_emails: settings.notification_emails ?? [],
     },
-    validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+    ...REWARD_EARLY,
     validators: { onDynamic: schema },
     onSubmit: async ({ value, formApi }) => {
       try {

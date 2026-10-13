@@ -96,7 +96,7 @@ type Created struct {
 // belongs to. Role defaults to the caller's role and can only be weaker.
 func (s *Service) CreatePersonal(ctx context.Context, actor auth.Actor, name string, tenantID uuid.UUID, role string, expires *time.Time) (Created, error) {
 	if actor.IsAPIToken() {
-		return Created{}, errs.Forbidden("tokens cannot mint tokens")
+		return Created{}, errs.Forbidden("tokens cannot mint tokens").Because("tokens_cannot_mint_tokens")
 	}
 	slug, own, err := s.access.RoleIn(ctx, actor, tenantID)
 	if err != nil {
@@ -106,7 +106,7 @@ func (s *Service) CreatePersonal(ctx context.Context, actor auth.Actor, name str
 		role = own
 	}
 	if rank(role) == 0 || rank(role) > rank(own) {
-		return Created{}, errs.Forbidden("token role cannot exceed your role")
+		return Created{}, errs.Forbidden("token role cannot exceed your role").Because("token_role_cannot_exceed_your_role")
 	}
 	owner := actor.UserID
 	return s.mint(ctx, Token{Kind: KindPersonal, Name: name, TenantID: tenantID, TenantSlug: slug, Role: role, OwnerID: &owner, ExpiresAt: expires})
@@ -119,10 +119,10 @@ func (s *Service) CreateService(ctx context.Context, actor auth.Actor, tenantID 
 		return Created{}, err
 	}
 	if rank(own) < rank("admin") {
-		return Created{}, errs.Forbidden("requires role admin")
+		return Created{}, errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	if role != "member" && role != "viewer" {
-		return Created{}, errs.Invalid("role must be member or viewer")
+		return Created{}, errs.Invalid("role must be member or viewer").Because("role_must_be_member_or_viewer")
 	}
 	return s.mint(ctx, Token{Kind: KindService, Name: name, TenantID: tenantID, TenantSlug: slug, Role: role, ExpiresAt: expires})
 }
@@ -130,10 +130,10 @@ func (s *Service) CreateService(ctx context.Context, actor auth.Actor, tenantID 
 func (s *Service) mint(ctx context.Context, t Token) (Created, error) {
 	t.Name = strings.TrimSpace(t.Name)
 	if t.Name == "" || len(t.Name) > 64 {
-		return Created{}, errs.Invalid("name must be 1..64 characters")
+		return Created{}, errs.Invalid("name must be 1..64 characters").Because("name_must_be_1_64_characters")
 	}
 	if t.ExpiresAt != nil && t.ExpiresAt.Before(time.Now()) {
-		return Created{}, errs.Invalid("expires_at is in the past")
+		return Created{}, errs.Invalid("expires_at is in the past").Because("expires_at_is_in_the_past")
 	}
 	t.ID = uuid.New()
 	t.Prefix = randomToken(prefixLen)
@@ -169,7 +169,7 @@ func (s *Service) ServiceTokens(ctx context.Context, actor auth.Actor, tenantID 
 	if _, own, err := s.access.RoleIn(ctx, actor, tenantID); err != nil {
 		return nil, err
 	} else if rank(own) < rank("admin") {
-		return nil, errs.Forbidden("requires role admin")
+		return nil, errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	return s.repo.ServiceOfTenant(ctx, tenantID)
 }
@@ -179,7 +179,7 @@ func (s *Service) RevokeService(ctx context.Context, actor auth.Actor, tenantID,
 	if _, own, err := s.access.RoleIn(ctx, actor, tenantID); err != nil {
 		return err
 	} else if rank(own) < rank("admin") {
-		return errs.Forbidden("requires role admin")
+		return errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	ok, err := s.repo.Revoke(ctx, id, nil, &tenantID)
 	if err != nil {
@@ -206,17 +206,17 @@ func (s *Service) Verify(ctx context.Context, wire string) (auth.Actor, error) {
 	rest := strings.TrimPrefix(wire, wirePrefix)
 	prefix, secret, ok := strings.Cut(rest, "_")
 	if !ok || len(prefix) != prefixLen || secret == "" {
-		return auth.Actor{}, errs.Unauthenticated("token not recognized")
+		return auth.Actor{}, errs.Unauthenticated("token not recognized").Because("token_not_recognized")
 	}
 	stored, err := s.repo.ByPrefix(ctx, prefix)
 	if err != nil {
-		return auth.Actor{}, errs.Unauthenticated("token not recognized")
+		return auth.Actor{}, errs.Unauthenticated("token not recognized").Because("token_not_recognized")
 	}
 	if subtle.ConstantTimeCompare(stored.SecretHash, hash(secret)) != 1 {
-		return auth.Actor{}, errs.Unauthenticated("token not recognized")
+		return auth.Actor{}, errs.Unauthenticated("token not recognized").Because("token_not_recognized")
 	}
 	if stored.ExpiresAt != nil && stored.ExpiresAt.Before(time.Now()) {
-		return auth.Actor{}, errs.Unauthenticated("token expired")
+		return auth.Actor{}, errs.Unauthenticated("token expired").Because("token_expired")
 	}
 	_ = s.repo.Touch(ctx, stored.ID) //nolint:errcheck // best-effort
 	a := auth.Actor{TokenID: stored.ID, TokenTenant: stored.TenantID, TokenRole: stored.Role}

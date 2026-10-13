@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -69,7 +70,7 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 	c := &compilation{ctx: ctx, r: r, in: in, out: Output{}}
 	recipe, ok := recipes[in.Database.Kind]
 	if !ok {
-		return Output{}, errs.Newf(errs.CodeInvalid, "database kind %s cannot be launched yet", in.Database.Kind)
+		return Output{}, errs.Newf(errs.CodeInvalid, "database kind %s cannot be launched yet", in.Database.Kind).Because("db_kind_not_launchable", "kind", string(in.Database.Kind))
 	}
 	if err := c.machines(); err != nil {
 		return Output{}, err
@@ -151,11 +152,11 @@ func (c *compilation) machines() error {
 		}
 		rs, ok := c.in.Sizes[node.Role]
 		if !ok {
-			return errs.Newf(errs.CodeInvalid, "sizes.%s: no size chosen", node.Role)
+			return errs.Newf(errs.CodeInvalid, "sizes.%s: no size chosen", node.Role).Because("size_not_chosen", "role", node.Role)
 		}
 		cell, ok := c.in.Provider.SizeTable(topology.Family(node.Role))[rs.Size]
 		if !ok {
-			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role))
+			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role)).Because("size_unavailable", "role", node.Role, "provider", string(c.in.Provider.Kind), "size", string(rs.Size))
 		}
 		disk := cell.DefaultDiskGB
 		if rs.DiskGB == 0 && c.in.Workload.Protocol != catalog.ProtoNoop && (node.Role == "db" || strings.HasPrefix(node.Role, "db-")) {
@@ -168,7 +169,7 @@ func (c *compilation) machines() error {
 			minimum := intParam(c.params(), "pdisks_per_node", 1)*ydbPdiskGB + 20
 			if disk < minimum {
 				if rs.DiskGB > 0 {
-					return errs.Newf(errs.CodeInvalid, "sizes.%s.disk_gb: need at least %d GB for YDB pdisks and filesystem headroom", node.Role, minimum)
+					return errs.Newf(errs.CodeInvalid, "sizes.%s.disk_gb: need at least %d GB for YDB pdisks and filesystem headroom", node.Role, minimum).Because("ydb_disk_too_small", "role", node.Role, "min", strconv.Itoa(minimum))
 				}
 				disk = minimum
 			}
@@ -294,7 +295,7 @@ const managedYDBPort = 2135
 func (c *compilation) workload() error {
 	ver, ok := c.in.Catalog.StroppyVersion(c.in.Workload.StroppyVersion)
 	if !ok {
-		return errs.Newf(errs.CodeInvalid, "unknown stroppy version %q", c.in.Workload.StroppyVersion)
+		return errs.Newf(errs.CodeInvalid, "unknown stroppy version %q", c.in.Workload.StroppyVersion).Because("stroppy_version_unknown", "version", c.in.Workload.StroppyVersion)
 	}
 	image := c.in.StroppyImage
 	if image == "" {

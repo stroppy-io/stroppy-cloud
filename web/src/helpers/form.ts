@@ -1,4 +1,5 @@
-import { fieldErrorsFrom, isApiError } from '@api/errors'
+import { codeText, fieldErrorsFrom, isApiError, reasonText } from '@api/errors'
+import { type AnyFieldApi, revalidateLogic } from '@tanstack/react-form'
 
 // TanStack Form collects errors as `unknown[]` (zod issues `{message}` or plain strings from
 // `setErrorMap`). Return the first human message for a grafana `Field`.
@@ -50,7 +51,10 @@ export interface ServerErrors {
 export function serverErrors(e: unknown, fallback: string): ServerErrors {
   if (!isApiError(e)) return { form: e instanceof Error ? e.message : fallback, fields: {} }
   const fields = fieldErrorsFrom(e.validation)
-  const form = Object.keys(fields).length ? undefined : (e.detail ?? e.title ?? fallback)
+  const form = Object.keys(fields).length
+    ? undefined
+    : // Never the HTTP title ("Service Unavailable"): the reason, else the kind of failure.
+      (reasonText(e) ?? (e.detail ? `${codeText(e)}: ${e.detail}` : codeText(e)))
   return { form, fields }
 }
 
@@ -78,12 +82,68 @@ export function isGoDuration(v: string): boolean {
   return v !== '' && GO_DURATION.test(v)
 }
 
+// Russian letters as the server transliterates them (tenant.Slugify).
+const CYRILLIC: Record<string, string> = {
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'g',
+  д: 'd',
+  е: 'e',
+  ё: 'e',
+  ж: 'zh',
+  з: 'z',
+  и: 'i',
+  й: 'y',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'kh',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'shch',
+  ъ: '',
+  ы: 'y',
+  ь: '',
+  э: 'e',
+  ю: 'yu',
+  я: 'ya',
+}
+
 export function slugify(name: string): string {
-  return name
-    .toLowerCase()
+  return [...name.toLowerCase()]
+    .map((c) => CYRILLIC[c] ?? c)
+    .join('')
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
+    .replace(/^[^a-z]+|-$/g, '')
     .slice(0, 40)
+    .replace(/-$/, '')
 }
 
 export const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])?$/
+
+/**
+ * Validation timing of every form ("reward early, punish late"): a field is
+ * checked when it loses focus until the first submit, on every change after
+ * it. A field already showing an error is re-checked as it is typed in, so
+ * the error goes away the moment the value is fixed — otherwise it would
+ * vanish only on the blur of the submit click, the form would shrink under
+ * the pointer and swallow that click.
+ */
+export const REWARD_EARLY = {
+  validationLogic: revalidateLogic({ mode: 'blur', modeAfterSubmission: 'change' }),
+  listeners: {
+    onChange: ({ fieldApi }: { fieldApi: AnyFieldApi }) => {
+      if (fieldApi.state.meta.errors.length) void fieldApi.validate('blur')
+    },
+  },
+}

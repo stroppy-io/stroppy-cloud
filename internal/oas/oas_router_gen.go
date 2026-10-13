@@ -9536,7 +9536,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								switch method {
 								case "GET":
 									r.name = SuggestTenantNameOperation
-									r.summary = "Unique name/slug suggestion derived from the account."
+									r.summary = "Unique name/slug suggestion — from `name` when given, else from the account."
 									r.operationID = "suggestTenantName"
 									r.operationGroup = ""
 									r.pathPattern = "/api/v1/tenants/suggest-name"

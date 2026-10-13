@@ -48,7 +48,7 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	}
 	prov, ok := s.catalog.Provider(string(req.Profile.Kind))
 	if !ok {
-		return run.Compiled{}, errs.Invalid(fmt.Sprintf("unknown provider %q", req.Profile.Kind))
+		return run.Compiled{}, errs.Invalid(fmt.Sprintf("unknown provider %q", req.Profile.Kind)).Because("provider_kind_unknown", "kind", string(req.Profile.Kind))
 	}
 	obs := s.Observability
 	obs.Labels = map[string]string{"stroppy_run_id": req.RunID.String(), "stroppy_tenant": req.Tenant}

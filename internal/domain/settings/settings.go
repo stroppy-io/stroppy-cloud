@@ -5,6 +5,7 @@ package settings
 
 import (
 	"context"
+	"strconv"
 	"strings"
 	"time"
 
@@ -133,29 +134,29 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 		return Settings{}, err
 	}
 	if role != "owner" && role != "admin" {
-		return Settings{}, errs.Forbidden("requires role admin")
+		return Settings{}, errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
 	limits, err := s.EffectiveLimits(ctx, tenantID)
 	if err != nil {
 		return Settings{}, err
 	}
 	if p.RunRetentionDays != nil && (*p.RunRetentionDays < 1 || *p.RunRetentionDays > limits.RunRetentionMaxDays) {
-		return Settings{}, errs.Newf(errs.CodeInvalid, "run_retention_days must be 1..%d", limits.RunRetentionMaxDays)
+		return Settings{}, errs.Newf(errs.CodeInvalid, "run_retention_days must be 1..%d", limits.RunRetentionMaxDays).Because("retention_days_range", "max", strconv.Itoa(limits.RunRetentionMaxDays))
 	}
 	if p.DefaultKeep != nil && (*p.DefaultKeep < 0 || *p.DefaultKeep > limits.MaxKeep) {
-		return Settings{}, errs.Newf(errs.CodeInvalid, "default_keep must be 0..%s", limits.MaxKeep)
+		return Settings{}, errs.Newf(errs.CodeInvalid, "default_keep must be 0..%s", limits.MaxKeep).Because("default_keep_range", "max", limits.MaxKeep.String())
 	}
 	if p.NotificationEmails != nil {
 		clean := make([]string, 0, len(p.NotificationEmails))
 		for _, e := range p.NotificationEmails {
 			e = strings.ToLower(strings.TrimSpace(e))
 			if !strings.Contains(e, "@") {
-				return Settings{}, errs.Invalid("notification_emails: " + e)
+				return Settings{}, errs.Invalid("notification_emails: "+e).Because("notification_email_invalid", "email", e)
 			}
 			clean = append(clean, e)
 		}
 		if len(clean) > 20 {
-			return Settings{}, errs.Invalid("at most 20 notification emails")
+			return Settings{}, errs.Invalid("at most 20 notification emails").Because("at_most_20_notification_emails")
 		}
 		p.NotificationEmails = clean
 	}

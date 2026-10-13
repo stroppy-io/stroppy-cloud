@@ -110,7 +110,7 @@ func (h *Handler) ListWebhookDeliveries(ctx context.Context, params oas.ListWebh
 	if c, ok := params.Cursor.Get(); ok && c != "" {
 		ts, err := time.Parse(time.RFC3339Nano, c)
 		if err != nil {
-			return nil, errs.Invalid("cursor")
+			return nil, errs.Invalid("cursor").Because("cursor_invalid")
 		}
 		before = &ts
 	}
@@ -142,7 +142,7 @@ func (h *Handler) ReplayWebhookDelivery(ctx context.Context, params oas.ReplayWe
 	}
 	deliveryID, err := uuid.Parse(params.DeliveryId)
 	if err != nil {
-		return nil, errs.Invalid("deliveryId is not a uuid")
+		return nil, errs.Invalid("deliveryId is not a uuid").Because("delivery_id_is_not_a_uuid")
 	}
 	d, err := h.deps.Webhooks.Replay(ctx, a, t.ID, params.ID, deliveryID)
 	if err != nil {

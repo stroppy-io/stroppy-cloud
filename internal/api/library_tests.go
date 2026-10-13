@@ -69,7 +69,7 @@ func keepFrom(s oas.OptString) (*time.Duration, error) {
 	}
 	d, err := time.ParseDuration(v)
 	if err != nil {
-		return nil, errs.Invalid("keep is not a duration")
+		return nil, errs.Invalid("keep is not a duration").Because("keep_is_not_a_duration")
 	}
 	return &d, nil
 }

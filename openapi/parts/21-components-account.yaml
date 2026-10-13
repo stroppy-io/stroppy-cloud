@@ -28,6 +28,12 @@ components:
       type: object
       required: [auth, tenant_creation, public_rating_enabled, version]
       properties:
+        demo_report_url:
+          type: string
+          description: >-
+            A public report (`/s/<token>`) of a real run that first-run
+            screens offer as "what a result looks like"; absent when the
+            installation has none.
         auth:
           type: object
           required: [mode, kratos]
@@ -95,6 +101,7 @@ components:
         owned_tenant_id: { type: [string, 'null'], format: uuid }
         preferences: { $ref: '#/components/schemas/Preferences' }
         notifications: { $ref: '#/components/schemas/NotificationPrefs' }
+        onboarding: { $ref: '#/components/schemas/Onboarding' }
         created_at: { type: string, format: date-time }
     MePatch:
       type: object
@@ -103,6 +110,18 @@ components:
         avatar: { type: string, maxLength: 512 }
         preferences: { $ref: '#/components/schemas/Preferences' }
         notifications: { $ref: '#/components/schemas/NotificationPrefs' }
+        onboarding:
+          $ref: '#/components/schemas/Onboarding'
+          description: Merged flag by flag; an absent flag keeps its value.
+    Onboarding:
+      type: object
+      description: >-
+        First-run progress of the account, kept on the server so it does not
+        come back in another browser. All flags default to false.
+      properties:
+        welcome_done: { type: boolean, description: The welcome screen was passed. }
+        tour_done: { type: boolean, description: The interface tour was finished or skipped. }
+        checklist_hidden: { type: boolean, description: The dashboard first-run checklist was hidden. }
     Preferences:
       type: object
       properties:
