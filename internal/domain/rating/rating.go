@@ -44,9 +44,10 @@ type Page struct {
 	Entries []Entry
 }
 
-// Shares resolves the public share of a run (global rating links there).
+// Shares resolves the public share a global-rating row links to (created
+// for the run on first appearance if it was never shared).
 type Shares interface {
-	PublicTokenOf(ctx context.Context, runID uuid.UUID) (string, bool)
+	RatingTokenOf(ctx context.Context, r run.Run) (string, bool)
 }
 
 // Access resolves the caller.
@@ -114,7 +115,7 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		if tenantID == "" {
 			e.TenantName = r.TenantPublicName
 			if s.shares != nil {
-				if tok, ok := s.shares.PublicTokenOf(ctx, r.Run.ID); ok {
+				if tok, ok := s.shares.RatingTokenOf(ctx, r.Run); ok {
 					e.ShareToken = tok
 				}
 			}

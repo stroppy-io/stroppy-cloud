@@ -3,6 +3,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Text, useStyles2 } from '@grafana/ui'
 import { useTranslation } from 'react-i18next'
+import { roleRank } from './SizesEditor'
 
 type Requirements = Schemas['Requirements']
 type RoleSizes = Schemas['RoleSizes']
@@ -25,7 +26,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   ok: css({ color: theme.colors.success.text }),
   bad: css({ color: theme.colors.error.text }),
-  reason: css({ color: theme.colors.text.secondary, whiteSpace: 'normal' }),
+  // Why the role needs this much — under the role, so the table stays narrow.
+  reason: css({
+    display: 'block',
+    color: theme.colors.text.secondary,
+    whiteSpace: 'normal',
+    fontWeight: theme.typography.fontWeightRegular,
+  }),
   empty: css({ color: theme.colors.text.secondary, padding: theme.spacing(1) }),
 })
 
@@ -41,7 +48,9 @@ export function RequirementsTable({
 }) {
   const styles = useStyles2(getStyles)
   const { t } = useTranslation()
-  const rows = Object.entries(requirements ?? {})
+  const rows = Object.entries(requirements ?? {}).sort(
+    ([a], [b]) => roleRank(a) - roleRank(b) || a.localeCompare(b)
+  )
   if (!rows.length) return <div className={styles.empty}>{t('library.requirements.empty')}</div>
   const withSizes = !!sizes && !!sizeTable
   return (
@@ -53,7 +62,6 @@ export function RequirementsTable({
           <th style={{ textAlign: 'right' }}>{t('library.requirements.memory')}</th>
           <th style={{ textAlign: 'right' }}>{t('library.requirements.disk')}</th>
           {withSizes && <th>{t('library.requirements.chosen')}</th>}
-          <th>{t('library.requirements.reason')}</th>
         </tr>
       </thead>
       <tbody>
@@ -63,8 +71,9 @@ export function RequirementsTable({
           const fits = spec && spec.cpu >= (r.cpu ?? 0) && spec.memory_gb >= (r.memory_gb ?? 0)
           return (
             <tr key={role}>
-              <td>
+              <td style={{ whiteSpace: 'normal' }}>
                 <Text weight="medium">{role}</Text>
+                {r.reason && <span className={styles.reason}>{r.reason}</span>}
               </td>
               <td className="num">{r.cpu ?? '—'}</td>
               <td className="num">{r.memory_gb !== undefined ? `${r.memory_gb} GB` : '—'}</td>
@@ -72,17 +81,17 @@ export function RequirementsTable({
               {withSizes && (
                 <td>
                   {chosen ? (
-                    <span className={fits ? styles.ok : styles.bad}>
+                    <span
+                      className={fits ? styles.ok : styles.bad}
+                      title={spec ? `${spec.cpu} vCPU · ${spec.memory_gb} GB` : undefined}
+                    >
                       {chosen.size}
-                      {spec ? ` · ${spec.cpu} CPU / ${spec.memory_gb} GB` : ''}
-                      {chosen.disk?.gb ? ` · ${chosen.disk.gb} GB` : ''}
                     </span>
                   ) : (
                     <span className={styles.bad}>{t('library.requirements.notSet')}</span>
                   )}
                 </td>
               )}
-              <td className={styles.reason}>{r.reason ?? ''}</td>
             </tr>
           )
         })}

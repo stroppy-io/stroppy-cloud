@@ -12,7 +12,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
+import { Route as HowRouteImport } from './routes/how'
 import { Route as InvitesRouteImport } from './routes/invites'
+import { Route as LandRouteImport } from './routes/land'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteRouteImport } from './routes/me/route'
@@ -27,6 +29,7 @@ import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as AdminTenantsRouteImport } from './routes/admin/tenants'
 import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as AuthErrorRouteImport } from './routes/auth/error'
+import { Route as EmbedLeaderboardRouteImport } from './routes/embed/leaderboard'
 import { Route as ExamplesIndexRouteImport } from './routes/examples/index'
 import { Route as MeInvitesRouteImport } from './routes/me/invites'
 import { Route as MeProfileRouteImport } from './routes/me/profile'
@@ -97,9 +100,19 @@ const ExamplesRouteRoute = ExamplesRouteRouteImport.update({
   path: '/examples',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HowRoute = HowRouteImport.update({
+  id: '/how',
+  path: '/how',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InvitesRoute = InvitesRouteImport.update({
   id: '/invites',
   path: '/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LandRoute = LandRouteImport.update({
+  id: '/land',
+  path: '/land',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LeaderboardRoute = LeaderboardRouteImport.update({
@@ -170,6 +183,11 @@ const AdminUsersRoute = AdminUsersRouteImport.update({
 const AuthErrorRoute = AuthErrorRouteImport.update({
   id: '/auth/error',
   path: '/auth/error',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EmbedLeaderboardRoute = EmbedLeaderboardRouteImport.update({
+  id: '/embed/leaderboard',
+  path: '/embed/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExamplesIndexRoute = ExamplesIndexRouteImport.update({
@@ -454,7 +472,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
@@ -469,6 +489,7 @@ export interface FileRoutesByFullPath {
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
+  '/embed/leaderboard': typeof EmbedLeaderboardRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
   '/me/security': typeof MeSecurityRoute
@@ -526,7 +547,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/me': typeof MeRouteRouteWithChildren
+  '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
@@ -539,6 +562,7 @@ export interface FileRoutesByTo {
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
+  '/embed/leaderboard': typeof EmbedLeaderboardRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
   '/me/security': typeof MeSecurityRoute
@@ -591,7 +615,9 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteRouteWithChildren
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
+  '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
@@ -606,6 +632,7 @@ export interface FileRoutesById {
   '/admin/tenants': typeof AdminTenantsRoute
   '/admin/users': typeof AdminUsersRoute
   '/auth/error': typeof AuthErrorRoute
+  '/embed/leaderboard': typeof EmbedLeaderboardRoute
   '/me/invites': typeof MeInvitesRoute
   '/me/profile': typeof MeProfileRoute
   '/me/security': typeof MeSecurityRoute
@@ -667,7 +694,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/how'
     | '/invites'
+    | '/land'
     | '/leaderboard'
     | '/login'
     | '/recovery'
@@ -682,6 +711,7 @@ export interface FileRouteTypes {
     | '/admin/tenants'
     | '/admin/users'
     | '/auth/error'
+    | '/embed/leaderboard'
     | '/me/invites'
     | '/me/profile'
     | '/me/security'
@@ -739,7 +769,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/me'
+    | '/how'
     | '/invites'
+    | '/land'
     | '/leaderboard'
     | '/login'
     | '/recovery'
@@ -752,6 +784,7 @@ export interface FileRouteTypes {
     | '/admin/tenants'
     | '/admin/users'
     | '/auth/error'
+    | '/embed/leaderboard'
     | '/me/invites'
     | '/me/profile'
     | '/me/security'
@@ -803,7 +836,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/examples'
     | '/me'
+    | '/how'
     | '/invites'
+    | '/land'
     | '/leaderboard'
     | '/login'
     | '/recovery'
@@ -818,6 +853,7 @@ export interface FileRouteTypes {
     | '/admin/tenants'
     | '/admin/users'
     | '/auth/error'
+    | '/embed/leaderboard'
     | '/me/invites'
     | '/me/profile'
     | '/me/security'
@@ -878,7 +914,9 @@ export interface RootRouteChildren {
   AdminRouteRoute: typeof AdminRouteRouteWithChildren
   ExamplesRouteRoute: typeof ExamplesRouteRouteWithChildren
   MeRouteRoute: typeof MeRouteRouteWithChildren
+  HowRoute: typeof HowRoute
   InvitesRoute: typeof InvitesRoute
+  LandRoute: typeof LandRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   RecoveryRoute: typeof RecoveryRoute
@@ -888,6 +926,7 @@ export interface RootRouteChildren {
   TSlugRouteRoute: typeof TSlugRouteRouteWithChildren
   TenantsNewRouteRoute: typeof TenantsNewRouteRouteWithChildren
   AuthErrorRoute: typeof AuthErrorRoute
+  EmbedLeaderboardRoute: typeof EmbedLeaderboardRoute
   STokenRoute: typeof STokenRoute
 }
 
@@ -914,11 +953,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExamplesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/how': {
+      id: '/how'
+      path: '/how'
+      fullPath: '/how'
+      preLoaderRoute: typeof HowRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/invites': {
       id: '/invites'
       path: '/invites'
       fullPath: '/invites'
       preLoaderRoute: typeof InvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/land': {
+      id: '/land'
+      path: '/land'
+      fullPath: '/land'
+      preLoaderRoute: typeof LandRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/leaderboard': {
@@ -1017,6 +1070,13 @@ declare module '@tanstack/react-router' {
       path: '/auth/error'
       fullPath: '/auth/error'
       preLoaderRoute: typeof AuthErrorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/embed/leaderboard': {
+      id: '/embed/leaderboard'
+      path: '/embed/leaderboard'
+      fullPath: '/embed/leaderboard'
+      preLoaderRoute: typeof EmbedLeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/examples/': {
@@ -1660,7 +1720,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRouteRoute: AdminRouteRouteWithChildren,
   ExamplesRouteRoute: ExamplesRouteRouteWithChildren,
   MeRouteRoute: MeRouteRouteWithChildren,
+  HowRoute: HowRoute,
   InvitesRoute: InvitesRoute,
+  LandRoute: LandRoute,
   LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   RecoveryRoute: RecoveryRoute,
@@ -1670,6 +1732,7 @@ const rootRouteChildren: RootRouteChildren = {
   TSlugRouteRoute: TSlugRouteRouteWithChildren,
   TenantsNewRouteRoute: TenantsNewRouteRouteWithChildren,
   AuthErrorRoute: AuthErrorRoute,
+  EmbedLeaderboardRoute: EmbedLeaderboardRoute,
   STokenRoute: STokenRoute,
 }
 export const routeTree = rootRouteImport

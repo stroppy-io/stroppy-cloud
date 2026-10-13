@@ -90,6 +90,8 @@ function ChunkReload({ error, reset }: { error: unknown; reset: () => void }) {
 // Everything outside these prefixes needs a Kratos session (whose cookie
 // must exchange into a JWT) or the static dev token.
 const PUBLIC_PREFIXES = [
+  '/land',
+  '/how',
   '/login',
   '/register',
   '/verify',

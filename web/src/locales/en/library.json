@@ -126,7 +126,13 @@
     "fitsWithWarnings": "Fits, with warnings.",
     "doesNotFit_one": "Does not fit — {{count}} error to fix.",
     "doesNotFit_other": "Does not fit — {{count}} errors to fix.",
-    "doesNotFitShort": "Does not fit yet"
+    "doesNotFitShort": "Does not fit yet",
+    "issue": {
+      "sizeRequired": "No size chosen for {{role}}"
+    },
+    "applyValue": "Apply {{value}}",
+    "applyAll_one": "Pick the size",
+    "applyAll_other": "Pick {{count}} sizes"
   },
   "import": {
     "title": "Import {{kind}}",
@@ -162,7 +168,9 @@
     "tooSmall": "smaller than required",
     "use": "Use {{value}}",
     "diskType": "Disk type",
-    "noDiskHint": "This role uses the default boot disk."
+    "noDiskHint": "This role uses the default boot disk.",
+    "auto": "auto",
+    "autoHint": "Picked automatically: the smallest preset that meets the role's requirements. Choose another if needed."
   },
   "segments": {
     "title": "Segments",
@@ -301,7 +309,11 @@
     "keepHint": "Go duration (30m, 2h) to keep machines after the run; 0s tears down.",
     "labelsHint": "Free key=value labels for filtering runs.",
     "started": "Run \"{{name}}\" started",
-    "launchAnyway": "Launch anyway"
+    "launchAnyway": "Launch anyway",
+    "autoSizes": {
+      "title": "Sizes picked automatically",
+      "body": "The test leaves these roles without a size, so each got the smallest preset that meets its requirements. These are machines in your cloud — check or change them before launching."
+    }
   },
   "wizard": {
     "intro": "Four steps: database → workload → sizes → review. A draft is saved after the first step.",

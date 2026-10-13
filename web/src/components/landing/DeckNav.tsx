@@ -1,6 +1,6 @@
-import { css, cx } from '@emotion/css'
+import { css, cx, keyframes } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
-import { useStyles2 } from '@grafana/ui'
+import { Icon, useStyles2 } from '@grafana/ui'
 import { useTranslation } from 'react-i18next'
 import { brand } from '@/styles/brand'
 
@@ -8,7 +8,46 @@ import { brand } from '@/styles/brand'
 // until hovered; the current step is the long bright one. A label shows on
 // hover or focus, and a click goes straight there.
 
+const nudgeDown = keyframes({
+  '0%, 100%': { transform: 'translateY(0)' },
+  '50%': { transform: 'translateY(6px)' },
+})
+const nudgeUp = keyframes({
+  '0%, 100%': { transform: 'translateY(0)' },
+  '50%': { transform: 'translateY(-6px)' },
+})
+
 const getStyles = (theme: GrafanaTheme2) => ({
+  // Centred at the bottom (next screen) or the top (previous screen).
+  cue: css({
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    margin: '0 auto',
+    width: 'fit-content',
+    zIndex: 5,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: theme.spacing(0.5),
+    color: brand.muted,
+    fontSize: theme.typography.body.fontSize,
+    background: 'none',
+    border: 'none',
+    cursor: 'pointer',
+    '&:hover': { color: brand.text },
+    '&:focus-visible': { outline: `2px solid ${brand.text}`, outlineOffset: 3 },
+  }),
+  cueDown: css({ bottom: theme.spacing(3) }),
+  cueUp: css({ top: theme.spacing(2), flexDirection: 'column-reverse' }),
+  iconDown: css({
+    animation: `${nudgeDown} 1.6s ease-in-out infinite`,
+    '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+  }),
+  iconUp: css({
+    animation: `${nudgeUp} 1.6s ease-in-out infinite`,
+    '@media (prefers-reduced-motion: reduce)': { animation: 'none' },
+  }),
   nav: css({
     position: 'absolute',
     right: theme.spacing(2.5),
@@ -65,12 +104,12 @@ const getStyles = (theme: GrafanaTheme2) => ({
 })
 
 export function DeckNav({
-  keys,
+  labels,
   current,
   onGo,
 }: {
-  /** One i18n key per step, under `landing.nav.steps`. */
-  keys: readonly string[]
+  /** One label per step, in deck order. */
+  labels: readonly string[]
   current: number
   onGo: (step: number) => void
 }) {
@@ -78,19 +117,50 @@ export function DeckNav({
   const styles = useStyles2(getStyles)
   return (
     <nav className={styles.nav} aria-label={t('landing.nav.steps.label')}>
-      {keys.map((k, i) => (
+      {labels.map((label, i) => (
         <button
-          key={k}
+          key={i}
           type="button"
           className={styles.item}
           aria-current={i === current ? 'step' : undefined}
-          aria-label={t(`landing.nav.steps.${k}`)}
+          aria-label={label}
           onClick={() => onGo(i)}
         >
-          <span className={styles.label}>{t(`landing.nav.steps.${k}`)}</span>
+          <span className={styles.label}>{label}</span>
           <i className={cx(styles.mark, i === current && styles.markActive)} />
         </button>
       ))}
     </nav>
+  )
+}
+
+/**
+ * The way to the next screen (at the bottom, `down`) or back to the previous
+ * one (at the top, `up`), named by where it leads.
+ */
+export function DeckCue({
+  label,
+  direction,
+  onGo,
+}: {
+  label: string
+  direction: 'up' | 'down'
+  onGo: () => void
+}) {
+  const styles = useStyles2(getStyles)
+  const up = direction === 'up'
+  return (
+    <button
+      type="button"
+      className={cx(styles.cue, up ? styles.cueUp : styles.cueDown)}
+      onClick={onGo}
+    >
+      {label}
+      <Icon
+        name={up ? 'angle-up' : 'angle-down'}
+        size="xl"
+        className={up ? styles.iconUp : styles.iconDown}
+      />
+    </button>
   )
 }

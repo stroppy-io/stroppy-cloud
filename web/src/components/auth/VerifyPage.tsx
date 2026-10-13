@@ -1,9 +1,11 @@
 import { toast } from '@app/Toaster'
 import { AuthCard } from '@components/auth/AuthCard'
+import { CodeInput } from '@components/auth/CodeInput'
 import { applyKratosErrors, kratosError, kratosErrorText } from '@components/auth/kratos-errors'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
-import { Alert, Button, Field, Input, LoadingPlaceholder, Stack, Text } from '@grafana/ui'
+import { Alert, Button, Field, LoadingPlaceholder, Stack, Text } from '@grafana/ui'
 import { firstError, REWARD_EARLY } from '@helpers/form'
+import { useCooldown } from '@hooks/useCooldown'
 import {
   type Flow,
   flowMessages,
@@ -85,12 +87,20 @@ export function VerifyPage({ flowId }: { flowId?: string }) {
   const email = (flow && nodeValue(flow, 'email')) || tokenClaims().email || ''
   const sent = flow?.state === 'sent_email'
   const [resending, setResending] = useState(false)
+  // A fresh code can be asked for once a minute.
+  const cooldown = useCooldown(60)
+  // A code already sent (from registration) starts the wait too.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: once, when the flow says it was sent
+  useEffect(() => {
+    if (sent) cooldown.start()
+  }, [sent])
   const resend = async () => {
     if (!flow || !email) return
     setResending(true)
     try {
       const next = await sendVerificationCode(flow, email)
       if (next) setFlow(next)
+      cooldown.start()
       toast.success(t('auth.verify.resent', { email }))
     } catch (e) {
       toast.error(kratosError(t, e))
@@ -110,25 +120,35 @@ export function VerifyPage({ flowId }: { flowId?: string }) {
         </Button>
       </AuthCard>
     )
-  if (!flow) return <LoadingPlaceholder text={t('common.misc.loading')} />
-
-  if (done || flow.state === 'passed_challenge')
+  if (!flow)
     return (
       <AuthCard title={t('auth.verify.title')}>
-        <Alert severity="success" title={t('auth.verify.done')} />
-        <Button onClick={() => void navigate({ to: '/' })}>{t('auth.verify.continue')}</Button>
+        <LoadingPlaceholder text={t('common.misc.loading')} />
+      </AuthCard>
+    )
+
+  // Nothing to confirm: the address is already confirmed and no mail link brought a flow here.
+  const already = !flowId && tokenClaims().emailVerified === true
+  if (done || already || flow.state === 'passed_challenge')
+    return (
+      <AuthCard title={t('auth.verify.doneTitle')} subtitle={t('auth.verify.doneBody')}>
+        <Button size="lg" icon="arrow-right" onClick={() => void navigate({ to: '/' })}>
+          {t('auth.verify.continue')}
+        </Button>
       </AuthCard>
     )
 
   return (
-    <AuthCard title={t('auth.verify.title')}>
-      <Text color="secondary">
-        {sent
+    <AuthCard
+      title={t('auth.verify.title')}
+      subtitle={
+        sent
           ? t('auth.verify.sentTo', { email: email || t('auth.verify.yourEmail') })
-          : t('auth.verify.intro')}
-      </Text>
+          : t('auth.verify.intro')
+      }
+    >
       {!sent ? (
-        <Button disabled={!email || resending} onClick={() => void resend()}>
+        <Button size="lg" disabled={!email || resending} onClick={() => void resend()}>
           {t('auth.verify.send', { email })}
         </Button>
       ) : (
@@ -138,7 +158,7 @@ export function VerifyPage({ flowId }: { flowId?: string }) {
             void form.handleSubmit()
           }}
         >
-          <Stack direction="column" gap={1}>
+          <Stack direction="column" gap={2}>
             <form.Field name="code">
               {(field) => (
                 <Field
@@ -146,16 +166,15 @@ export function VerifyPage({ flowId }: { flowId?: string }) {
                   invalid={!!firstError(field.state.meta)}
                   error={firstError(field.state.meta)}
                   htmlFor={field.name}
-                  required
                 >
-                  <Input
+                  <CodeInput
                     id={field.name}
                     autoFocus
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
                     value={field.state.value}
+                    invalid={!!firstError(field.state.meta)}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onChange={(v) => field.handleChange(v)}
+                    onComplete={() => void form.handleSubmit()}
                   />
                 </Field>
               )}
@@ -164,21 +183,29 @@ export function VerifyPage({ flowId }: { flowId?: string }) {
               {([isSubmitting, serverError]) => (
                 <Stack direction="column" gap={1}>
                   <ServerErrorAlert error={serverError} />
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button size="lg" type="submit" disabled={isSubmitting}>
                     {t('auth.verify.submit')}
                   </Button>
                 </Stack>
               )}
             </form.Subscribe>
-            <Button
-              variant="secondary"
-              fill="text"
-              type="button"
-              disabled={!email || resending}
-              onClick={() => void resend()}
-            >
-              {t('auth.verify.resend')}
-            </Button>
+            <Stack alignItems="center" gap={0.5}>
+              <Text variant="bodySmall" color="secondary">
+                {t('auth.verify.noCode')}
+              </Text>
+              <Button
+                size="sm"
+                variant="secondary"
+                fill="text"
+                type="button"
+                disabled={!email || resending || cooldown.left > 0}
+                onClick={() => void resend()}
+              >
+                {cooldown.left > 0
+                  ? t('auth.verify.resendIn', { seconds: cooldown.left })
+                  : t('auth.verify.resend')}
+              </Button>
+            </Stack>
           </Stack>
         </form>
       )}

@@ -2,6 +2,7 @@ import { AppLink } from '@app/AppLink'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { useStyles2 } from '@grafana/ui'
+import { useSignedIn } from '@hooks/useSignedIn'
 import { motionValue } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 import { brand } from '@/styles/brand'
@@ -83,6 +84,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
 /** The last screen of the landing: the next step, then the footer. */
 export function EndPage() {
   const { t } = useTranslation()
+  const signedIn = useSignedIn()
   const styles = useStyles2(getStyles)
   return (
     <div className={styles.page}>
@@ -93,8 +95,8 @@ export function EndPage() {
             <h2 className={styles.title}>{t('landing.end.title')}</h2>
             <p className={styles.lead}>{t('landing.end.lead')}</p>
             <div className={styles.actions}>
-              <AppLink to="/register" plain className={styles.primary}>
-                {t('landing.hero.start')}
+              <AppLink to={signedIn ? '/' : '/register'} plain className={styles.primary}>
+                {signedIn ? t('landing.nav.console') : t('landing.hero.start')}
               </AppLink>
               <a className={styles.secondary} href="https://stroppy.io/docs/introduction">
                 {t('landing.end.docs')}

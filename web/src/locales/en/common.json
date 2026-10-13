@@ -514,5 +514,12 @@
     "ascending": "Ascending",
     "descending": "Descending",
     "resetSort": "Reset sort"
+  },
+  "rating": {
+    "title": "Rating",
+    "tenant": "In the tenant rating",
+    "tenantHint": "Members of the tenant see the result.",
+    "global": "Publish to the public rating",
+    "globalHint": "The result shows in the public Stroppy Cloud rating and on its front page: database, topology, machine sizes, scenario and headline metrics."
   }
 }

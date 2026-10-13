@@ -1,9 +1,12 @@
 import { toast } from '@app/Toaster'
 import { AuthCard } from '@components/auth/AuthCard'
+import { AuthSteps } from '@components/auth/AuthSteps'
+import { CodeInput } from '@components/auth/CodeInput'
 import { applyKratosErrors, kratosError, kratosErrorText } from '@components/auth/kratos-errors'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { Alert, Button, Field, Input, LoadingPlaceholder, Stack, Text } from '@grafana/ui'
 import { firstError, REWARD_EARLY } from '@helpers/form'
+import { useCooldown } from '@hooks/useCooldown'
 import { type Flow, getFlow, sendRecoveryCode, submitRecoveryCode } from '@lib/auth'
 import { useForm } from '@tanstack/react-form'
 import { useNavigate } from '@tanstack/react-router'
@@ -43,6 +46,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
         const next = await sendRecoveryCode(flow, value.email.trim())
         setEmail(value.email.trim())
         if (next) setFlow(next)
+        cooldown.start()
       } catch (e) {
         applyKratosErrors(formApi, e, t, { email: 'email' })
       }
@@ -76,12 +80,14 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
 
   // A used or expired code needs a new one: a fresh flow mails it to the same address.
   const [resending, setResending] = useState(false)
+  const cooldown = useCooldown(60)
   const resend = async () => {
     setResending(true)
     try {
       const fresh = await getFlow('recovery')
       setFlow((await sendRecoveryCode(fresh, email)) ?? fresh)
       codeForm.reset()
+      cooldown.start()
       toast.success(t('auth.verify.resent', { email }))
     } catch (e) {
       toast.error(kratosError(t, e))
@@ -91,7 +97,10 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
   }
 
   const back = (
-    <Text variant="bodySmall" color="secondary">
+    <Stack alignItems="center" gap={0.5}>
+      <Text variant="bodySmall" color="secondary">
+        {t('auth.recovery.remembered')}
+      </Text>
       <Button
         size="sm"
         variant="secondary"
@@ -101,8 +110,13 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
       >
         {t('auth.recovery.backToLogin')}
       </Button>
-    </Text>
+    </Stack>
   )
+  const steps = [
+    t('auth.recovery.steps.email'),
+    t('auth.recovery.steps.code'),
+    t('auth.recovery.steps.password'),
+  ]
 
   if (loadError)
     return (
@@ -116,16 +130,24 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
         {back}
       </AuthCard>
     )
-  if (!flow) return <LoadingPlaceholder text={t('common.misc.loading')} />
+  if (!flow)
+    return (
+      <AuthCard title={t('auth.recovery.title')}>
+        <LoadingPlaceholder text={t('common.misc.loading')} />
+      </AuthCard>
+    )
 
   const sent = flow.state === 'sent_email'
   return (
-    <AuthCard title={t('auth.recovery.title')}>
-      <Text color="secondary">
-        {sent
+    <AuthCard
+      title={t('auth.recovery.title')}
+      subtitle={
+        sent
           ? t('auth.recovery.sentTo', { email: email || t('auth.verify.yourEmail') })
-          : t('auth.recovery.intro')}
-      </Text>
+          : t('auth.recovery.intro')
+      }
+    >
+      <AuthSteps steps={steps} current={sent ? 1 : 0} />
       {!sent ? (
         <form
           onSubmit={(e) => {
@@ -133,7 +155,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
             void emailForm.handleSubmit()
           }}
         >
-          <Stack direction="column" gap={1}>
+          <Stack direction="column" gap={2}>
             <emailForm.Field name="email">
               {(field) => (
                 <Field
@@ -158,7 +180,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
               {([isSubmitting, serverError]) => (
                 <Stack direction="column" gap={1}>
                   <ServerErrorAlert error={serverError} />
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button size="lg" type="submit" disabled={isSubmitting}>
                     {t('auth.recovery.send')}
                   </Button>
                 </Stack>
@@ -173,7 +195,7 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
             void codeForm.handleSubmit()
           }}
         >
-          <Stack direction="column" gap={1}>
+          <Stack direction="column" gap={2}>
             <codeForm.Field name="code">
               {(field) => (
                 <Field
@@ -181,16 +203,15 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
                   invalid={!!firstError(field.state.meta)}
                   error={firstError(field.state.meta)}
                   htmlFor={field.name}
-                  required
                 >
-                  <Input
+                  <CodeInput
                     id={field.name}
                     autoFocus
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
                     value={field.state.value}
+                    invalid={!!firstError(field.state.meta)}
                     onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    onChange={(v) => field.handleChange(v)}
+                    onComplete={() => void codeForm.handleSubmit()}
                   />
                 </Field>
               )}
@@ -199,21 +220,29 @@ export function RecoveryPage({ flowId }: { flowId?: string }) {
               {([isSubmitting, serverError]) => (
                 <Stack direction="column" gap={1}>
                   <ServerErrorAlert error={serverError} />
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button size="lg" type="submit" disabled={isSubmitting}>
                     {t('auth.recovery.submit')}
                   </Button>
                 </Stack>
               )}
             </codeForm.Subscribe>
-            <Button
-              variant="secondary"
-              fill="text"
-              type="button"
-              disabled={!email || resending}
-              onClick={() => void resend()}
-            >
-              {t('auth.verify.resend')}
-            </Button>
+            <Stack alignItems="center" gap={0.5}>
+              <Text variant="bodySmall" color="secondary">
+                {t('auth.verify.noCode')}
+              </Text>
+              <Button
+                size="sm"
+                variant="secondary"
+                fill="text"
+                type="button"
+                disabled={!email || resending || cooldown.left > 0}
+                onClick={() => void resend()}
+              >
+                {cooldown.left > 0
+                  ? t('auth.verify.resendIn', { seconds: cooldown.left })
+                  : t('auth.verify.resend')}
+              </Button>
+            </Stack>
           </Stack>
         </form>
       )}

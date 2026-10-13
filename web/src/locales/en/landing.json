@@ -11,16 +11,19 @@
       "provision": "Stand",
       "deploy": "Database",
       "load": "Load",
-      "result": "Rating",
-      "end": "Get started"
-    }
+      "result": "Result",
+      "end": "Get started",
+      "rating": "Rating"
+    },
+    "console": "Open console",
+    "account": "Account",
+    "how": "How it works"
   },
   "hero": {
     "title": "Database benchmarking as a service",
     "lead": "Describe what to test — Stroppy Cloud builds the stand, runs the load and keeps a result you can compare and share.",
     "start": "Create an account",
-    "rating": "See the rating",
-    "how": "How it works"
+    "rating": "See the rating"
   },
   "story": {
     "label": "How a run goes",
@@ -31,22 +34,28 @@
     },
     "provision": {
       "title": "A stand in your cloud",
-      "body": "Machines for the database and the load are created in your Yandex Cloud or AWS account — you pay the cloud directly."
+      "body": "Machines for the database and the load are created in your Yandex Cloud or AWS account — you pay the cloud directly.",
+      "time": "~1 min"
     },
     "deploy": {
       "title": "The database sets itself up",
-      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB — a single node, replicas or a cluster with Patroni, HAProxy, ProxySQL."
+      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB — from one node to a cluster. The stand is checked before the load; transient failures are retried, and a real problem stops the run with a clear reason.",
+      "time": "~3 min"
     },
     "load": {
       "title": "The load is live",
-      "body": "While stroppy runs the scenario you see QPS, latency and errors, logs and metrics of every machine."
+      "body": "While stroppy runs the scenario you see QPS, latency and errors, logs and metrics of every machine.",
+      "time": "10 min"
     },
     "result": {
       "title": "A place in the rating, a comparison",
-      "body": "The run joins the public rating next to other configurations and is compared with your past runs. The stand is removed afterwards."
+      "body": "The run joins the public rating next to other configurations and is compared with your past runs. The stand is removed afterwards.",
+      "time": "instant"
     },
     "vm": "VM",
-    "errors": "errors"
+    "errors": "errors",
+    "heading": "How a run goes",
+    "sub": "From the Launch button to a place in the rating — PostgreSQL 17 with Patroni on three nodes."
   },
   "footer": {
     "about": "Database load testing on stroppy — in your own cloud.",
@@ -67,9 +76,9 @@
     "network": "network, subnet, security group",
     "created": "machine created",
     "install": "installed postgresql-17, patroni, etcd",
+    "mirrorTimeout": "package mirror did not answer — retry 1/3",
+    "retryOk": "retry 1/3: packages installed",
     "leader": "patroni: cluster bootstrapped, leader",
-    "replica": "patroni: replica, streaming from {{primary}}",
-    "proxy": "haproxy :5000 → leader {{primary}}",
     "runner": "stroppy 6.1 ready"
   },
   "events": {
@@ -82,5 +91,45 @@
     "title": "Your first run in a few minutes",
     "lead": "Connect a cloud, pick a database and a scenario — Stroppy Cloud does the rest.",
     "docs": "stroppy docs"
+  },
+  "status": {
+    "provision": "Creating the stand",
+    "deploy": "Deploying the database",
+    "load": "Under load",
+    "result": "Completed"
+  },
+  "report": {
+    "duration": "duration",
+    "errors": "errors"
+  },
+  "link": {
+    "db": "leader · {{count}} replicas",
+    "db-replica": "← {{leader}} · lag 0.3 ms",
+    "runner": "→ {{leader}} · 64 VU"
+  },
+  "checks": {
+    "title": "Checks before the load",
+    "patroni": "Patroni: leader {{leader}}, both replicas in sync",
+    "lag": "replication lag 0.3 ms (< 1 s)",
+    "proxy": "HAProxy :5000 routes to the leader",
+    "spec": "config matches the run spec",
+    "selfcheck": "stroppy dry run · 2 VU · 30 s"
+  },
+  "rating": {
+    "title": "Public rating",
+    "sub": "Runs their authors opened to everyone. One league holds stands of one size, so its rows compare fairly.",
+    "all": "Full rating",
+    "join": "Get into the rating",
+    "metric": "Throughput",
+    "error": "Could not load the rating",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "Publish the first run and it opens the rating.",
+    "embedFooter": "Full rating on Stroppy Cloud"
+  },
+  "cue": {
+    "how": "How it works",
+    "rating": "Rating",
+    "end": "Getting started",
+    "start": "Top"
   }
 }

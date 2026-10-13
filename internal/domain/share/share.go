@@ -9,6 +9,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -195,6 +196,8 @@ type Service struct {
 	masker    Masker
 	audit     *audit.Service
 	publicURL string
+
+	ratingMu sync.Mutex // one auto-created rating share per run
 }
 
 // NewService wires the use cases; publicURL is the SPA origin the links
@@ -416,16 +419,49 @@ func (s *Service) OfTarget(ctx context.Context, kind Kind, id uuid.UUID) []run.R
 	return refs
 }
 
-// PublicTokenOf resolves the newest active share of a run (global rating).
-func (s *Service) PublicTokenOf(ctx context.Context, runID uuid.UUID) (string, bool) {
-	refs, err := s.repo.OfTarget(ctx, string(KindRun), runID)
-	if err != nil || len(refs) == 0 {
+// RatingTokenOf is the public link a global-rating row opens: the run's
+// newest share when it is active, else — when the run was never shared — an
+// overview share created now on the author's behalf (publishing to the rating
+// is consent to show the overview). A share the author revoked or let expire
+// is not replaced: no link then.
+func (s *Service) RatingTokenOf(ctx context.Context, r run.Run) (string, bool) {
+	refs, err := s.repo.OfTarget(ctx, string(KindRun), r.ID)
+	if err != nil {
 		return "", false
 	}
-	sh, err := s.repo.ByID(ctx, refs[0].ID)
-	if err != nil || !sh.Active() {
+	if len(refs) > 0 {
+		sh, err := s.repo.ByID(ctx, refs[0].ID)
+		if err != nil || !sh.Active() {
+			return "", false
+		}
+		return sh.Token, true
+	}
+	s.ratingMu.Lock()
+	defer s.ratingMu.Unlock()
+	// Another request may have created it while this one waited.
+	if refs, err := s.repo.OfTarget(ctx, string(KindRun), r.ID); err == nil && len(refs) > 0 {
+		sh, err := s.repo.ByID(ctx, refs[0].ID)
+		if err != nil || !sh.Active() {
+			return "", false
+		}
+		return sh.Token, true
+	}
+	id := r.ID
+	sh := Share{
+		ID: uuid.New(), TenantID: r.TenantID, Token: newToken(), Kind: KindRun, TargetID: &id, Scope: ScopeOverview,
+		CreatedBy: r.AuthorID, CreatedAt: time.Now().UTC(),
+	}
+	snap, name, err := s.capture(ctx, auth.Actor{}, sh)
+	if err != nil {
 		return "", false
 	}
+	sh.Snapshot, sh.TargetName, sh.CapturedAt, sh.Title = snap, name, snap.CapturedAt, name
+	sh.Snapshot.Title = name
+	if err := s.repo.Insert(ctx, sh); err != nil {
+		return "", false
+	}
+	tenantID := r.TenantID
+	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "share.create", Target: audit.Target{Kind: "share", ID: sh.ID.String(), Name: sh.Title}, Details: map[string]any{"kind": sh.Kind, "scope": sh.Scope, "reason": "global_rating"}}) //nolint:errcheck // audit never blocks
 	return sh.Token, true
 }
 

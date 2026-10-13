@@ -51,7 +51,7 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
   }
 
   return (
-    <AuthCard title={t('auth.login.title')}>
+    <AuthCard title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -102,7 +102,7 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
             {([isSubmitting, serverError]) => (
               <Stack direction="column" gap={1}>
                 <ServerErrorAlert error={serverError} />
-                <Button type="submit" disabled={isSubmitting}>
+                <Button size="lg" type="submit" disabled={isSubmitting}>
                   {t('auth.login.submit')}
                 </Button>
               </Stack>

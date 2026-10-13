@@ -1,8 +1,10 @@
 import { fieldErrorsFrom, isApiError } from '@api/errors'
+import { meQueries } from '@api/queries/me'
 import type { LaunchOverrides, Run } from '@api/types'
 import { TagsEditor } from '@components/TagsEditor'
 import { Alert, Button, Drawer, Field, Input, Stack, Switch, Text, TextArea } from '@grafana/ui'
 import { useForm } from '@tanstack/react-form'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -22,6 +24,8 @@ export function RerunDrawer({
   onSubmit: (body: RerunBody) => Promise<unknown>
 }) {
   const { t } = useTranslation()
+  // The public rating can be switched off for the whole platform; then there is nothing to opt into.
+  const publicRating = useQuery(meQueries.publicConfig()).data?.public_rating_enabled ?? false
   const schema = useMemo(
     () =>
       z.object({
@@ -149,7 +153,11 @@ export function RerunDrawer({
           <Stack gap={3}>
             <form.Field name="rating_tenant">
               {(field) => (
-                <Field label={t('runs.overview.rating.tenant')} htmlFor={field.name}>
+                <Field
+                  label={t('common.rating.tenant')}
+                  description={t('common.rating.tenantHint')}
+                  htmlFor={field.name}
+                >
                   <Switch
                     id={field.name}
                     value={field.state.value}
@@ -158,17 +166,23 @@ export function RerunDrawer({
                 </Field>
               )}
             </form.Field>
-            <form.Field name="rating_global">
-              {(field) => (
-                <Field label={t('runs.overview.rating.global')} htmlFor={field.name}>
-                  <Switch
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.currentTarget.checked)}
-                  />
-                </Field>
-              )}
-            </form.Field>
+            {publicRating && (
+              <form.Field name="rating_global">
+                {(field) => (
+                  <Field
+                    label={t('common.rating.global')}
+                    description={t('common.rating.globalHint')}
+                    htmlFor={field.name}
+                  >
+                    <Switch
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.checked)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+            )}
           </Stack>
           <form.Field name="notes">
             {(field) => (

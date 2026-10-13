@@ -128,7 +128,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
     <div className={styles.root}>
       <header className={styles.top}>
         <div className={styles.topInner}>
-          <AppLink to="/" className={styles.brand}>
+          <AppLink to="/land" className={styles.brand}>
             <Logo size={30} className={styles.logo} />
             {t('common.appName')}
             {apiMode === 'mock' && (

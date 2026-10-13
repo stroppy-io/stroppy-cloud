@@ -361,7 +361,8 @@ export async function logout(): Promise<void> {
     if (!res.ok) return
     const body = (await res.json()) as { logout_url?: string }
     if (body.logout_url) {
-      await fetch(body.logout_url)
+      // Following it revokes the session; its redirect back is not needed.
+      await fetch(body.logout_url, { redirect: 'manual' })
     }
   } catch {
     // the session dies server-side on its own timescale; locally it is gone

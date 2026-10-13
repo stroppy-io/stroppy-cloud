@@ -2,6 +2,7 @@ import { isApiError } from '@api/errors'
 import { catalogQueries } from '@api/queries/catalog'
 import { keys } from '@api/queries/keys'
 import { libraryMutations } from '@api/queries/library'
+import { meQueries } from '@api/queries/me'
 import { providerQueries } from '@api/queries/settings'
 import type { LaunchOverrides, Schemas, TestValidation } from '@api/types'
 import { toast } from '@app/Toaster'
@@ -30,6 +31,7 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { applyServerErrors, firstError, serverFormError } from '../shared/form'
 import { SizesEditor } from '../shared/SizesEditor'
+import { suggestedRoleSize } from '../shared/suggested'
 import { ValidationIssues } from '../shared/ValidationIssues'
 
 type Test = Schemas['Test']
@@ -69,6 +71,8 @@ export function LaunchDrawer({
 }) {
   const styles = useStyles2(getStyles)
   const { t } = useTranslation()
+  // The public rating can be switched off for the whole platform; then there is nothing to opt into.
+  const publicRating = useQuery(meQueries.publicConfig()).data?.public_rating_enabled ?? false
   const { slug } = useTenant()
   const qc = useQueryClient()
   const navigate = useNavigate()
@@ -278,7 +282,11 @@ export function LaunchDrawer({
             </form.Field>
             <form.Field name="rating_tenant">
               {(field) => (
-                <Field label={t('library.tests.ratingTenant')} htmlFor={field.name}>
+                <Field
+                  label={t('common.rating.tenant')}
+                  description={t('common.rating.tenantHint')}
+                  htmlFor={field.name}
+                >
                   <Switch
                     id={field.name}
                     value={field.state.value}
@@ -287,17 +295,23 @@ export function LaunchDrawer({
                 </Field>
               )}
             </form.Field>
-            <form.Field name="rating_global">
-              {(field) => (
-                <Field label={t('library.tests.ratingGlobal')} htmlFor={field.name}>
-                  <Switch
-                    id={field.name}
-                    value={field.state.value}
-                    onChange={(e) => field.handleChange(e.currentTarget.checked)}
-                  />
-                </Field>
-              )}
-            </form.Field>
+            {publicRating && (
+              <form.Field name="rating_global">
+                {(field) => (
+                  <Field
+                    label={t('common.rating.global')}
+                    description={t('common.rating.globalHint')}
+                    htmlFor={field.name}
+                  >
+                    <Switch
+                      id={field.name}
+                      value={field.state.value}
+                      onChange={(e) => field.handleChange(e.currentTarget.checked)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+            )}
           </Stack>
           <form.Field name="labels">
             {(field) => (
@@ -330,11 +344,17 @@ export function LaunchDrawer({
                       disk: { ...sizes[role]?.disk, gb: Number(i.suggested) },
                     },
                   })
-                else
+                else {
+                  const sug = suggestedRoleSize(i.suggested)
                   setSizes({
                     ...sizes,
-                    [role]: { ...sizes[role], size: String(i.suggested) as Schemas['Size'] },
+                    [role]: {
+                      ...sizes[role],
+                      size: sug ? sug.size : (String(i.suggested) as Schemas['Size']),
+                      ...(sug?.disk?.gb ? { disk: { ...sizes[role]?.disk, gb: sug.disk.gb } } : {}),
+                    },
                   })
+                }
               }}
             />
           </div>

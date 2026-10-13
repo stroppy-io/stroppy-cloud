@@ -1,5 +1,5 @@
 import { css } from '@emotion/css'
-import type { GrafanaTheme2 } from '@grafana/data'
+import { type GrafanaTheme2, ThemeContext } from '@grafana/data'
 import { useStyles2 } from '@grafana/ui'
 import {
   AnimatePresence,
@@ -10,20 +10,32 @@ import {
   useReducedMotion,
 } from 'motion/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { brand } from '@/styles/brand'
-import { DeckNav } from './DeckNav'
+import { getAppTheme } from '@/styles/theme'
+import { DeckCue, DeckNav } from './DeckNav'
 import { EndPage } from './EndPage'
 import { HEADER_HEIGHT, PublicHeader } from './PublicHeader'
+import { RatingScreen } from './RatingScreen'
 import { Headline, PHASES, PLAY, RunStage, SCRUBBED } from './RunStory'
 
-// The deck: the headline, one step per run phase, the closing screen. Nothing
+// The deck: the headline, one step per run phase, the public rating, the
+// closing screen. Each step has its own #anchor (replaced in place, so Back
+// leaves the page rather than walking the deck); opening /#load starts there,
+// played. Nothing
 // scrolls natively. A wheel gesture, a swipe or a key moves one step; on the
 // scrubbed phases (deploy, load) the wheel first plays the phase forward or
 // back, and only a fresh gesture at its end moves on. The headline has two
 // states: the first gesture down opens its logo in one go, the next moves on.
-const LAST = PHASES.length + 1
-// Names of the steps for the side navigation, in deck order.
-const STEP_KEYS = ['start', ...PHASES, 'end'] as const
+const RATING = PHASES.length + 1
+const LAST = RATING + 1
+// Names of the steps for the side navigation, in deck order, and their anchors.
+const STEP_KEYS = ['start', ...PHASES, 'rating', 'end'] as const
+const HASHES = ['', 'stand', 'database', 'load', 'result', 'rating', 'get-started'] as const
+const stepOfHash = (hash: string) => {
+  const i = HASHES.indexOf(hash.replace(/^#/, '') as (typeof HASHES)[number])
+  return i < 0 ? 0 : i
+}
 const phaseOf = (step: number) => step - 1
 const isScrubbed = (step: number) =>
   step === 0 || (step <= PHASES.length && SCRUBBED.has(phaseOf(step)))
@@ -53,23 +65,41 @@ const getStyles = (theme: GrafanaTheme2) => ({
   screen: css({ position: 'absolute', inset: 0 }),
 })
 
-type Screen = 'hero' | 'run' | 'end'
-const screenOf = (step: number): Screen => (step === 0 ? 'hero' : step === LAST ? 'end' : 'run')
+// The cue at the bottom leads to the next screen, not the next step: from
+// anywhere in the run story it goes on to the rating.
+const nextScreenStep = (step: number) => (step === 0 ? 1 : step <= PHASES.length ? RATING : LAST)
+// …and the one at the top back to the previous screen (the run from its start).
+const prevScreenStep = (step: number) => (step <= PHASES.length ? 0 : step === RATING ? 1 : RATING)
+// What a cue calls the screen it leads to.
+const CUE: Record<number, 'start' | 'how' | 'rating' | 'end'> = {
+  0: 'start',
+  1: 'how',
+  [RATING]: 'rating',
+  [LAST]: 'end',
+}
 
-/** The public front page: what Stroppy Cloud does, played as one benchmark run. */
-export function LandingPage() {
+type Screen = 'hero' | 'run' | 'rating' | 'end'
+const screenOf = (step: number): Screen =>
+  step === 0 ? 'hero' : step === LAST ? 'end' : step === RATING ? 'rating' : 'run'
+
+/** The deck itself (wheel, keys, screens); `LandingPage` wraps it in the dark theme. */
+function Deck() {
+  const { t: tr } = useTranslation()
   const styles = useStyles2(getStyles)
   const reduce = useReducedMotion() ?? false
-  const [step, setStep] = useState(0)
+  const [initial] = useState(() => stepOfHash(window.location.hash))
+  const [step, setStep] = useState(initial)
   const [dir, setDir] = useState(1)
-  const stepRef = useRef(0)
+  const stepRef = useRef(initial)
   // Bumped on every entry into provisioning, so its animation replays each time.
   const [entry, setEntry] = useState(0)
   const root = useRef<HTMLDivElement>(null)
   const lockedUntil = useRef(0)
   // Where a scrubbed phase stands, and where the wheel is taking it.
-  const scrub = useMotionValue(0)
-  const target = useRef(0)
+  // Opened at a scrubbed phase by its anchor: show it played.
+  const opened = initial > 0 && isScrubbed(initial) ? 1 : 0
+  const scrub = useMotionValue(opened)
+  const target = useRef(opened)
   const playing = useRef<AnimationPlaybackControls | null>(null)
 
   const scrubTo = useCallback(
@@ -209,6 +239,21 @@ export function LandingPage() {
 
   useEffect(() => () => playing.current?.stop(), [])
 
+  // The address follows the deck, replaced in place.
+  useEffect(() => {
+    const hash = HASHES[step]
+    const url = hash ? `#${hash}` : window.location.pathname + window.location.search
+    if (window.location.hash.replace(/^#/, '') !== hash) {
+      window.history.replaceState(window.history.state, '', url)
+    }
+  }, [step])
+  // A typed or pasted anchor moves the deck.
+  useEffect(() => {
+    const onHash = () => go(stepOfHash(window.location.hash), 'play')
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [go])
+
   const screen = screenOf(step)
   const t = reduce ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const }
 
@@ -231,7 +276,7 @@ export function LandingPage() {
             exit="exit"
             transition={t}
           >
-            {screen === 'hero' && <Headline scrub={scrub} onNext={() => go(1, 'play')} />}
+            {screen === 'hero' && <Headline scrub={scrub} onRating={() => go(RATING, 'play')} />}
             {screen === 'run' && (
               <RunStage
                 entry={entry}
@@ -240,11 +285,45 @@ export function LandingPage() {
                 onPhase={(p) => go(p + 1, 'play')}
               />
             )}
+            {screen === 'rating' && <RatingScreen />}
             {screen === 'end' && <EndPage />}
           </motion.div>
         </AnimatePresence>
-        <DeckNav keys={STEP_KEYS} current={step} onGo={(to) => go(to, 'play')} />
+        <DeckNav
+          labels={STEP_KEYS.map((k) => tr(`landing.nav.steps.${k}`))}
+          current={step}
+          onGo={(to) => go(to, 'play')}
+        />
+        {step > 0 && (
+          <DeckCue
+            key={`up-${screen}`}
+            direction="up"
+            label={tr(`landing.cue.${CUE[prevScreenStep(step)]}`)}
+            onGo={() => go(prevScreenStep(step), 'play')}
+          />
+        )}
+        {step < LAST && (
+          <DeckCue
+            key={`down-${screen}`}
+            direction="down"
+            label={tr(`landing.cue.${CUE[nextScreenStep(step)]}`)}
+            onGo={() => go(nextScreenStep(step), 'play')}
+          />
+        )}
       </div>
     </div>
+  )
+}
+
+// The landing is dark whatever theme the visitor set inside the app; Grafana
+// pieces on it (menus, tooltips) follow.
+const DARK = getAppTheme('dark')
+
+/** The public front page: what Stroppy Cloud does, played as one benchmark run. */
+export function LandingPage() {
+  return (
+    <ThemeContext.Provider value={DARK}>
+      <Deck />
+    </ThemeContext.Provider>
   )
 }

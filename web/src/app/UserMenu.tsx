@@ -1,5 +1,5 @@
-import { ConceptMap } from '@components/onboarding/ConceptMap'
 import { useTour } from '@components/onboarding/tour'
+import { ConceptDiagram } from '@components/public/ConceptDiagram'
 import { UserAvatar } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -15,6 +15,8 @@ import { useTranslation } from 'react-i18next'
 import { useThemeMode } from './theme-context'
 
 const getStyles = (theme: GrafanaTheme2) => ({
+  // Wide enough for the diagram with its side card.
+  concepts: css({ width: 'min(1180px, 94vw)' }),
   header: css({
     display: 'flex',
     flexDirection: 'column',
@@ -127,8 +129,9 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
         title={t('onboarding.welcome.howTitle')}
         isOpen={conceptsOpen}
         onDismiss={() => setConceptsOpen(false)}
+        className={styles.concepts}
       >
-        <ConceptMap />
+        <ConceptDiagram />
       </Modal>
     </>
   )

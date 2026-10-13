@@ -1,5 +1,5 @@
-import { Page } from '@app/Page'
-import { LangSwitch } from '@components/auth/AuthCard'
+import { ConceptDiagram } from '@components/public/ConceptDiagram'
+import { PublicShell } from '@components/public/PublicShell'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Badge, Button, Stack, Text, TextLink, useStyles2 } from '@grafana/ui'
@@ -9,23 +9,39 @@ import { tokenClaims } from '@lib/auth'
 import { getPublicConfig } from '@lib/config'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { ConceptMap } from './ConceptMap'
+import { brand } from '@/styles/brand'
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  card: css({
-    maxWidth: 920,
-    margin: `${theme.spacing(8)} auto ${theme.spacing(4)}`,
-    border: `1px solid ${theme.colors.border.weak}`,
-    borderRadius: theme.shape.radius.default,
-    background: theme.colors.background.primary,
-    padding: theme.spacing(4),
+  title: css({
+    margin: 0,
+    fontSize: 'clamp(30px, 3.2vw, 44px)',
+    lineHeight: 1.1,
+    fontWeight: 700,
+    letterSpacing: '-0.025em',
+    color: brand.text,
   }),
+  subtitle: css({
+    margin: theme.spacing(1.5, 0, 0),
+    color: brand.muted,
+    maxWidth: 640,
+    lineHeight: 1.55,
+  }),
+  // The one thing to do next, set apart from the explanation below it.
   next: css({
-    padding: theme.spacing(2),
-    borderRadius: theme.shape.radius.default,
-    background: theme.colors.background.secondary,
+    marginTop: theme.spacing(4),
+    padding: theme.spacing(3),
+    borderRadius: 10,
+    border: `1px solid ${brand.line}`,
+    background: brand.panel,
   }),
-  scroll: css({ height: '100%', overflow: 'auto' }),
+  how: css({ marginTop: theme.spacing(6) }),
+  howTitle: css({
+    margin: theme.spacing(0, 0, 2),
+    fontSize: theme.typography.h4.fontSize,
+    fontWeight: theme.typography.fontWeightMedium,
+    color: brand.text,
+  }),
+  skip: css({ marginTop: theme.spacing(3) }),
 })
 
 /**
@@ -51,103 +67,84 @@ export function WelcomePage() {
   }
 
   return (
-    <Page>
-      <div className={styles.scroll}>
-        <LangSwitch />
-        <div className={styles.card}>
-          <Stack direction="column" gap={3}>
-            <Stack direction="column" gap={1}>
-              <Text element="h1" variant="h2">
-                {t('onboarding.welcome.title', { name: me.display_name })}
-              </Text>
-              <Text color="secondary">{t('onboarding.welcome.subtitle')}</Text>
-            </Stack>
+    <PublicShell>
+      <h1 className={styles.title}>{t('onboarding.welcome.title', { name: me.display_name })}</h1>
+      <p className={styles.subtitle}>{t('onboarding.welcome.subtitle')}</p>
 
-            <div className={styles.next}>
-              {unverified ? (
-                <Stack direction="column" gap={2}>
-                  <Alert severity="info" title={t('onboarding.welcome.verifyTitle')}>
-                    {t('onboarding.welcome.verifyBody')}
-                  </Alert>
-                  <Stack gap={1} wrap="wrap">
-                    <Button
-                      icon="envelope"
-                      onClick={() => void navigate({ to: '/verify', search: {} })}
-                    >
-                      {t('onboarding.welcome.verify')}
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => void done(() => navigate({ to: '/tenants/new' }))}
-                    >
-                      {t('onboarding.welcome.notInvited')}
-                    </Button>
-                  </Stack>
-                </Stack>
-              ) : tenant ? (
-                <Stack direction="column" gap={2}>
-                  <Text weight="medium">{t('onboarding.welcome.invitedTitle')}</Text>
-                  <Stack direction="column" gap={1}>
-                    {me.tenants.map((m) => (
-                      <Stack key={m.tenant.id} alignItems="center" gap={1}>
-                        <Text>{m.tenant.name}</Text>
-                        <Badge text={t(`common.role.${m.role}`)} color="blue" />
-                      </Stack>
-                    ))}
-                  </Stack>
-                  <div>
-                    <Button
-                      icon="arrow-right"
-                      onClick={() =>
-                        void done(() =>
-                          navigate({ to: '/t/$slug', params: { slug: tenant.tenant.slug } })
-                        )
-                      }
-                    >
-                      {t('onboarding.welcome.goTenant', { tenant: tenant.tenant.name })}
-                    </Button>
-                  </div>
-                </Stack>
-              ) : (
-                <Stack direction="column" gap={2}>
-                  <Text weight="medium">{t('onboarding.welcome.createTitle')}</Text>
-                  <Text color="secondary">{t('onboarding.welcome.createBody')}</Text>
-                  <Stack gap={1} wrap="wrap" alignItems="center">
-                    <Button
-                      icon="plus"
-                      onClick={() => void done(() => navigate({ to: '/tenants/new' }))}
-                    >
-                      {t('onboarding.welcome.create')}
-                    </Button>
-                    {demo && (
-                      <TextLink href={demo} external>
-                        {t('onboarding.welcome.demo')}
-                      </TextLink>
-                    )}
-                  </Stack>
-                </Stack>
-              )}
-            </div>
-
-            <Stack direction="column" gap={1}>
-              <Text element="h2" variant="h4">
-                {t('onboarding.welcome.howTitle')}
-              </Text>
-              <ConceptMap />
-            </Stack>
-
-            <div>
+      <div className={styles.next}>
+        {unverified ? (
+          <Stack direction="column" gap={2}>
+            <Alert severity="info" title={t('onboarding.welcome.verifyTitle')}>
+              {t('onboarding.welcome.verifyBody')}
+            </Alert>
+            <Stack gap={1} wrap="wrap">
+              <Button icon="envelope" onClick={() => void navigate({ to: '/verify', search: {} })}>
+                {t('onboarding.welcome.verify')}
+              </Button>
               <Button
                 variant="secondary"
-                fill="text"
-                onClick={() => void done(() => navigate({ to: '/' }))}
+                onClick={() => void done(() => navigate({ to: '/tenants/new' }))}
               >
-                {t('onboarding.welcome.skip')}
+                {t('onboarding.welcome.notInvited')}
+              </Button>
+            </Stack>
+          </Stack>
+        ) : tenant ? (
+          <Stack direction="column" gap={2}>
+            <Text weight="medium">{t('onboarding.welcome.invitedTitle')}</Text>
+            <Stack direction="column" gap={1}>
+              {me.tenants.map((m) => (
+                <Stack key={m.tenant.id} alignItems="center" gap={1}>
+                  <Text>{m.tenant.name}</Text>
+                  <Badge text={t(`common.role.${m.role}`)} color="blue" />
+                </Stack>
+              ))}
+            </Stack>
+            <div>
+              <Button
+                icon="arrow-right"
+                onClick={() =>
+                  void done(() =>
+                    navigate({ to: '/t/$slug', params: { slug: tenant.tenant.slug } })
+                  )
+                }
+              >
+                {t('onboarding.welcome.goTenant', { tenant: tenant.tenant.name })}
               </Button>
             </div>
           </Stack>
-        </div>
+        ) : (
+          <Stack direction="column" gap={2}>
+            <Text weight="medium">{t('onboarding.welcome.createTitle')}</Text>
+            <Text color="secondary">{t('onboarding.welcome.createBody')}</Text>
+            <Stack gap={1} wrap="wrap" alignItems="center">
+              <Button icon="plus" onClick={() => void done(() => navigate({ to: '/tenants/new' }))}>
+                {t('onboarding.welcome.create')}
+              </Button>
+              {demo && (
+                <TextLink href={demo} external>
+                  {t('onboarding.welcome.demo')}
+                </TextLink>
+              )}
+            </Stack>
+          </Stack>
+        )}
       </div>
-    </Page>
+
+      <section className={styles.how}>
+        <h2 className={styles.howTitle}>{t('onboarding.welcome.howTitle')}</h2>
+        <ConceptDiagram />
+      </section>
+
+      <div className={styles.skip}>
+        <Button
+          variant="secondary"
+          fill="text"
+          onClick={() => void done(() => navigate({ to: '/' }))}
+        >
+          {t('onboarding.welcome.skip')}
+        </Button>
+      </div>
+    </PublicShell>
   )
 }

@@ -1,5 +1,5 @@
 import { BAND, BODY, RAYS } from '@components/Logo'
-import { css, keyframes } from '@emotion/css'
+import { css, cx, keyframes } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { useStyles2, useTheme2 } from '@grafana/ui'
 import { type MotionValue, motion, useTransform } from 'motion/react'
@@ -129,7 +129,8 @@ function Ray({
   )
 }
 
-export function HeroMark({ open }: { open: MotionValue<number> }) {
+/** `className` places and sizes the mark (default: the landing's right half). */
+export function HeroMark({ open, className }: { open: MotionValue<number>; className?: string }) {
   const styles = useStyles2(getStyles)
   const theme = useTheme2()
   const accent = theme.colors.primary.main
@@ -142,7 +143,7 @@ export function HeroMark({ open }: { open: MotionValue<number> }) {
   const scale = useTransform(open, [0, 1], [1, 1.05])
   const rotate = useTransform(open, [0, 1], [0, -3])
   return (
-    <motion.div className={styles.wrap} style={{ scale, rotate }} aria-hidden>
+    <motion.div className={cx(styles.wrap, className)} style={{ scale, rotate }} aria-hidden>
       <motion.div className={styles.layer} style={{ opacity: body }}>
         <Layer style={{ y: top }}>
           <path d={BODY[0]} fill={brand.text} />

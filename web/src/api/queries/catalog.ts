@@ -6,6 +6,13 @@ import { keys } from './keys'
 const forever = { staleTime: Number.POSITIVE_INFINITY, gcTime: 24 * 3600_000 }
 
 export const catalogQueries = {
+  /** What a guest may read: databases and providers, for public filters. */
+  public: () =>
+    queryOptions({
+      queryKey: [...keys.public(), 'catalog'],
+      queryFn: () => unwrap(api.GET('/api/v1/public/catalog')),
+      ...forever,
+    }),
   databases: () =>
     queryOptions({
       queryKey: [...keys.catalog(), 'databases'],

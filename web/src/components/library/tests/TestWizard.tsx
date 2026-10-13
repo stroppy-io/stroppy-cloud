@@ -46,7 +46,7 @@ import { Panel } from '../shared/Panel'
 import { RequirementsTable } from '../shared/RequirementsTable'
 import { SizesEditor } from '../shared/SizesEditor'
 import { TopologyPreview } from '../shared/TopologyPreview'
-import { ValidationIssues } from '../shared/ValidationIssues'
+import { suggestedSizes, ValidationIssues } from '../shared/ValidationIssues'
 import { WorkloadForm } from '../workloads/WorkloadForm'
 import { KEEP_RE } from './LaunchDrawer'
 import { stepForPath } from './TestDetailPage'
@@ -105,7 +105,8 @@ const getStyles = (theme: GrafanaTheme2) => ({
     alignItems: 'start',
     [theme.breakpoints.down('lg')]: { gridTemplateColumns: 'minmax(0, 1fr)' },
   }),
-  side: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(2) }),
+  side: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(2), minWidth: 0 }),
+  autoList: css({ margin: theme.spacing(0.5, 0, 0), paddingLeft: theme.spacing(2) }),
   footer: css({
     display: 'flex',
     justifyContent: 'space-between',
@@ -517,21 +518,47 @@ function SizesStep({
       rating: test.rating,
     })
   }, [serialized, run])
-  // pre-fill sizes with the suggested ones when nothing was chosen yet
+  // Roles still without a size get the smallest preset that fits them, in the
+  // open: they are marked «auto» and listed above the editor until changed.
+  const [autoPicked, setAutoPicked] = useState<RoleSizes>({})
+  const pickSuggested = (only?: string) => {
+    const picked: RoleSizes = {}
+    for (const [role, sug] of Object.entries(suggestedSizes(validation?.validation.issues))) {
+      if ((only && role !== only) || sizes[role]) continue
+      picked[role] = { size: sug.size, ...(sug.disk?.gb ? { disk: { gb: sug.disk.gb } } : {}) }
+    }
+    if (!Object.keys(picked).length) return
+    setSizes((cur) => ({ ...picked, ...cur }))
+    setAutoPicked((cur) => ({ ...cur, ...picked }))
+  }
+  // First visit with nothing chosen: pick for every role straight away.
+  const [prefilled, setPrefilled] = useState(Object.keys(test.sizes ?? {}).length > 0)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: once, on the first answer
   useEffect(() => {
-    if (Object.keys(sizes).length || !validation) return
-    const next: RoleSizes = {}
-    for (const i of validation.validation.issues ?? [])
-      if (i.code === 'REQUIRED' && i.path.startsWith('sizes.') && i.suggested)
-        next[i.path.split('.')[1]] = { size: String(i.suggested) as Schemas['Size'] }
-    if (Object.keys(next).length) setSizes(next)
-  }, [validation, sizes])
+    if (prefilled || !validation) return
+    setPrefilled(true)
+    pickSuggested()
+  }, [validation, prefilled])
+  const changeSizes = (next: RoleSizes) => {
+    setSizes(next)
+    // A role the user touched is theirs now.
+    setAutoPicked((cur) =>
+      Object.fromEntries(
+        Object.entries(cur).filter(
+          ([role, rs]) => next[role]?.size === rs.size && next[role]?.disk?.gb === rs.disk?.gb
+        )
+      )
+    )
+  }
+  const autoRoles = Object.keys(autoPicked)
   const profile = providers.data?.data.find((p) => p.id === providerId)
   const catProvider =
     catalogProviders.data?.data.find((c) => c.kind === profile?.kind) ??
     catalogProviders.data?.data[0]
   const issues = validation?.validation.issues ?? []
   const keepOk = KEEP_RE.test(keep)
+  const specOf = (role: string, size: string) =>
+    (catProvider?.sizes?.[role] ?? catProvider?.sizes?.db ?? []).find((x) => x.size === size)
   return (
     <div>
       <div className={styles.two}>
@@ -560,13 +587,30 @@ function SizesStep({
               validate.isPending ? t('schema.validating') : t('library.wizard.sizesHint')
             }
           >
+            {autoRoles.length > 0 && (
+              <Alert severity="info" title={t('library.launch.autoSizes.title')}>
+                {t('library.launch.autoSizes.body')}
+                <ul className={styles.autoList}>
+                  {autoRoles.map((role) => {
+                    const spec = specOf(role, autoPicked[role].size)
+                    return (
+                      <li key={role}>
+                        <b>{role}</b> — {autoPicked[role].size}
+                        {spec ? ` (${spec.cpu} vCPU · ${spec.memory_gb} GB)` : ''}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </Alert>
+            )}
             <SizesEditor
               value={sizes}
-              onChange={setSizes}
+              onChange={changeSizes}
               requirements={validation?.requirements ?? test.requirements}
               sizeTables={catProvider?.sizes}
               diskTypes={catProvider?.disk_types}
               issues={issues}
+              autoRoles={autoRoles}
             />
           </Panel>
           <Panel title={t('library.launch.keep')} description={t('library.launch.keepHint')}>
@@ -588,7 +632,15 @@ function SizesStep({
             />
           </Panel>
           <Panel title={t('library.validation.title')} dense>
-            <ValidationIssues issues={issues} compact />
+            <ValidationIssues
+              issues={issues}
+              compact
+              onApplyAll={() => pickSuggested()}
+              onApplySuggested={(i) => {
+                const role = i.path.match(/^sizes\.([^.]+)$/)?.[1]
+                if (role) pickSuggested(role)
+              }}
+            />
           </Panel>
         </div>
       </div>

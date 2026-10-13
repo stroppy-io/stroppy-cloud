@@ -63,7 +63,7 @@ import { RequirementsTable } from '../shared/RequirementsTable'
 import { TopologyPreview } from '../shared/TopologyPreview'
 import { TpsTrend } from '../shared/TpsTrend'
 import { UsagesList } from '../shared/UsagesList'
-import { ValidationIssues } from '../shared/ValidationIssues'
+import { ValidationIssues, visibleIssues } from '../shared/ValidationIssues'
 import { LaunchDrawer } from './LaunchDrawer'
 
 type Test = Schemas['Test']
@@ -184,7 +184,8 @@ export function TestDetailPage({
     onError: (e) => toast.error(e),
   })
 
-  const issues = test.validation?.issues ?? []
+  // The server's preflight echo of another issue is not shown, nor counted.
+  const issues = visibleIssues(test.validation?.issues)
   const errors = issues.filter((i) => i.severity === 'ERROR').length
   const stale = test.validation?.stale
   const db = test.resolved?.database

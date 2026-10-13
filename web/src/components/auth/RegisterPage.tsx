@@ -65,7 +65,7 @@ export function RegisterPage({ next }: { next?: string }) {
   })
 
   return (
-    <AuthCard title={t('auth.register.title')}>
+    <AuthCard title={t('auth.register.title')} subtitle={t('auth.register.subtitle')}>
       {closed ? (
         <Alert severity="warning" title={t('auth.register.closedTitle')}>
           {t('auth.register.closedBody')}
@@ -140,9 +140,12 @@ export function RegisterPage({ next }: { next?: string }) {
               {([isSubmitting, serverError]) => (
                 <Stack direction="column" gap={1}>
                   <ServerErrorAlert error={serverError} />
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button size="lg" type="submit" disabled={isSubmitting}>
                     {t('auth.register.submit')}
                   </Button>
+                  <Text variant="bodySmall" color="secondary">
+                    {t('auth.register.nextStep')}
+                  </Text>
                 </Stack>
               )}
             </form.Subscribe>

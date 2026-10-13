@@ -194,7 +194,11 @@ Grafana-плагин-ориентированные компоненты.
 - Карта маршрутов (следует §16.12; в файлах — `$slug`, `$id`):
 
 ```
-/                                  → redirect
+/                                  → гостю redirect на /land (с якорем); вошедшему — welcome / тенант
+/land                              → лендинг для всех (шаги-якоря #stand…#get-started); вошедшему в шапке «Открыть консоль»; логотип приложения ведёт сюда
+/leaderboard[?filters]             → публичный рейтинг (фильтры в URL, тёмный)
+/how[#internals]                   → «Как это работает»: два экрана-листания — продукт (модель понятий) и внутренности (архитектура: браузер → Stroppy Cloud → Graphene → ваше облако, шаги прогона чипами; hover — карточка блока)
+/embed/leaderboard[?theme&league&limit] → виджет рейтинга для iframe (без шапки)
 /t/:slug                           → Dashboard (GET /t/{slug}/dashboard)
 /t/:slug/runs[?filters]            → RunList (+facets)
 /t/:slug/runs/:id[/overview|events|logs|metrics|grafana|artifacts|spec]

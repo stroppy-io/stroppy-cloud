@@ -42,7 +42,7 @@ export function ShareGone({ error }: { error: unknown }) {
               ? error.message
               : t('common.errors.generic')}
       </Text>
-      <Button variant="secondary" onClick={() => window.location.assign('/')}>
+      <Button variant="secondary" onClick={() => window.location.assign('/land')}>
         {t('public.gone.home')}
       </Button>
     </div>

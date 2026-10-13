@@ -18,40 +18,65 @@
   "concepts": {
     "database": {
       "title": "Database",
-      "body": "Which DBMS, version and topology: single node, replicas, cluster."
+      "body": "Which DBMS, version and topology: single node, replicas, cluster.",
+      "more": "The database: DBMS (PostgreSQL, MySQL, YDB, CockroachDB…), version, topology (single node, replicas, a Patroni or Galera cluster) and its parameters. One database serves many tests.",
+      "where": "Console → Library → Databases"
     },
     "workload": {
       "title": "Workload",
-      "body": "What to run: Stroppy scenarios (TPC-C, TPC-H…) in segments."
+      "body": "What to run: Stroppy scenarios (TPC-C, TPC-H…) in segments.",
+      "more": "What to load and for how long: stroppy scenarios in segments — say, data load, then TPC-C at 64 VU for 10 minutes. A workload does not depend on the database and is reused.",
+      "where": "Console → Library → Workloads"
     },
     "test": {
       "title": "Test",
-      "body": "Database + workload + machine sizes. This is what you launch."
+      "body": "Database + workload + machine sizes. This is what you launch.",
+      "more": "A database and a workload, plus machine sizes per role and a default provider. A test is checked up front: does the hardware meet each role's requirements.",
+      "where": "Console → Tests"
     },
     "run": {
       "title": "Run",
-      "body": "A stand comes up in the cloud, the load runs, everything is live."
+      "body": "A stand comes up in the cloud, the load runs, everything is live.",
+      "more": "One launch of a test: the stand comes up in the cloud, the database is laid out and checked, the load runs. Logs, metrics and QPS are live.",
+      "where": "Console → Runs"
     },
     "results": {
       "title": "Results",
-      "body": "QPS, latency, errors, charts; compare and rate."
+      "body": "QPS, latency, errors, charts; compare and rate.",
+      "more": "What a run leaves: a report with metrics, comparison with other runs, a place in the tenant or public rating, a public link to the overview.",
+      "where": "Console → Runs, Compare, Rating",
+      "parts": {
+        "report": "Report",
+        "compare": "Compare",
+        "rating": "Rating",
+        "share": "Link"
+      }
     },
     "suite": {
       "title": "Suite",
-      "body": "A matrix of tests and sizes — compare variants in one go."
+      "body": "A matrix of tests and sizes — compare variants in one go.",
+      "more": "A matrix: several tests × size or version variants. Launched with one button, its results line up in one comparison table.",
+      "where": "Console → Suites"
     },
     "schedule": {
       "title": "Schedule",
-      "body": "Runs a test or a suite on a cron."
+      "body": "Runs a test or a suite on a cron.",
+      "more": "Launches a test or a suite on cron — for regular measurements and regressions. Each launch is an ordinary run with its own report.",
+      "where": "Console → Schedules"
     },
     "provider": {
       "title": "Provider",
-      "body": "Your cloud (Yandex Cloud, AWS): stands come up in it."
+      "body": "Your cloud (Yandex Cloud, AWS): stands come up in it.",
+      "more": "Your Yandex Cloud or AWS account. A run's machines are created there and removed afterwards; you pay the cloud directly.",
+      "where": "Console → Settings → Providers"
     },
     "tenant": {
       "title": "Tenant",
-      "body": "Your team's space: everything above lives in it."
-    }
+      "body": "Your team's space: everything above lives in it.",
+      "more": "The team's space: members and roles, providers, the library, runs and limits — all of it lives in a tenant.",
+      "where": "Console → Tenant settings"
+    },
+    "hint": "Hover a block to see what it is and how it works."
   },
   "tour": {
     "progress": "{{current}} of {{total}}",

@@ -1,5 +1,5 @@
 import { AuthCard } from '@components/auth/AuthCard'
-import { Alert, Button, LoadingPlaceholder, Text } from '@grafana/ui'
+import { Button, LoadingPlaceholder, Text } from '@grafana/ui'
 import { flowErrorDetails } from '@lib/auth'
 import { useNavigate } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -34,19 +34,23 @@ export function AuthErrorPage({ id }: { id?: string }) {
       .catch(() => setShown({ title: t('auth.kratosError.network') }))
   }, [id, t])
   return (
-    <AuthCard title={t('auth.error.title')}>
-      {shown === undefined ? (
-        <LoadingPlaceholder text={t('common.misc.loading')} />
-      ) : (
-        <Alert severity="error" title={shown.title}>
-          {shown.detail && (
+    <AuthCard title={t('auth.error.title')} subtitle={shown?.title}>
+      {shown === undefined && <LoadingPlaceholder text={t('common.misc.loading')} />}
+      {shown?.detail && (
+        <details>
+          <summary>
             <Text variant="bodySmall" color="secondary">
-              {shown.detail}
+              {t('auth.error.details')}
             </Text>
-          )}
-        </Alert>
+          </summary>
+          <Text variant="bodySmall" color="secondary">
+            {shown.detail}
+          </Text>
+        </details>
       )}
-      <Button onClick={() => void navigate({ to: '/login' })}>{t('auth.error.toLogin')}</Button>
+      <Button size="lg" icon="arrow-right" onClick={() => void navigate({ to: '/login' })}>
+        {t('auth.error.retry')}
+      </Button>
     </AuthCard>
   )
 }
