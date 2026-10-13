@@ -1,0 +1,86 @@
+{
+  "nav": {
+    "label": "Sections",
+    "rating": "Rating",
+    "docs": "Docs",
+    "signIn": "Sign in",
+    "start": "Get started",
+    "steps": {
+      "label": "Page sections",
+      "start": "Start",
+      "provision": "Stand",
+      "deploy": "Database",
+      "load": "Load",
+      "result": "Rating",
+      "end": "Get started"
+    }
+  },
+  "hero": {
+    "title": "Database benchmarking as a service",
+    "lead": "Describe what to test — Stroppy Cloud builds the stand, runs the load and keeps a result you can compare and share.",
+    "start": "Create an account",
+    "rating": "See the rating",
+    "how": "How it works"
+  },
+  "story": {
+    "label": "How a run goes",
+    "roles": {
+      "db": "database",
+      "db-replica": "replica",
+      "runner": "load"
+    },
+    "provision": {
+      "title": "A stand in your cloud",
+      "body": "Machines for the database and the load are created in your Yandex Cloud or AWS account — you pay the cloud directly."
+    },
+    "deploy": {
+      "title": "The database sets itself up",
+      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB — a single node, replicas or a cluster with Patroni, HAProxy, ProxySQL."
+    },
+    "load": {
+      "title": "The load is live",
+      "body": "While stroppy runs the scenario you see QPS, latency and errors, logs and metrics of every machine."
+    },
+    "result": {
+      "title": "A place in the rating, a comparison",
+      "body": "The run joins the public rating next to other configurations and is compared with your past runs. The stand is removed afterwards."
+    },
+    "vm": "VM",
+    "errors": "errors"
+  },
+  "footer": {
+    "about": "Database load testing on stroppy — in your own cloud.",
+    "product": "Product",
+    "blog": "Blog",
+    "releases": "stroppy releases",
+    "community": "Community",
+    "legal": "© {{year}} Stroppy Authors"
+  },
+  "board": {
+    "title": "Rating · TPC-C, 64 VU",
+    "compare": "vs previous run: {{qps}} qps, p99 {{p99}}",
+    "yours": "your run",
+    "nodes_one": "{{count}} node",
+    "nodes_other": "{{count}} nodes"
+  },
+  "log": {
+    "network": "network, subnet, security group",
+    "created": "machine created",
+    "install": "installed postgresql-17, patroni, etcd",
+    "leader": "patroni: cluster bootstrapped, leader",
+    "replica": "patroni: replica, streaming from {{primary}}",
+    "proxy": "haproxy :5000 → leader {{primary}}",
+    "runner": "stroppy 6.1 ready"
+  },
+  "events": {
+    "warmup": "warmup · 64 VU",
+    "steady": "steady state",
+    "checkpoint": "checkpoint",
+    "vacuum": "autovacuum"
+  },
+  "end": {
+    "title": "Your first run in a few minutes",
+    "lead": "Connect a cloud, pick a database and a scenario — Stroppy Cloud does the rest.",
+    "docs": "stroppy docs"
+  }
+}

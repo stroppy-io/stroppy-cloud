@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
 import { Route as InvitesRouteImport } from './routes/invites'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MeRouteRouteImport } from './routes/me/route'
 import { Route as RecoveryRouteImport } from './routes/recovery'
@@ -99,6 +100,11 @@ const ExamplesRouteRoute = ExamplesRouteRouteImport.update({
 const InvitesRoute = InvitesRouteImport.update({
   id: '/invites',
   path: '/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -449,6 +455,7 @@ export interface FileRoutesByFullPath {
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
   '/invites': typeof InvitesRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
@@ -520,6 +527,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/me': typeof MeRouteRouteWithChildren
   '/invites': typeof InvitesRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
@@ -584,6 +592,7 @@ export interface FileRoutesById {
   '/examples': typeof ExamplesRouteRouteWithChildren
   '/me': typeof MeRouteRouteWithChildren
   '/invites': typeof InvitesRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
   '/recovery': typeof RecoveryRoute
   '/register': typeof RegisterRoute
@@ -659,6 +668,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/me'
     | '/invites'
+    | '/leaderboard'
     | '/login'
     | '/recovery'
     | '/register'
@@ -730,6 +740,7 @@ export interface FileRouteTypes {
     | '/'
     | '/me'
     | '/invites'
+    | '/leaderboard'
     | '/login'
     | '/recovery'
     | '/register'
@@ -793,6 +804,7 @@ export interface FileRouteTypes {
     | '/examples'
     | '/me'
     | '/invites'
+    | '/leaderboard'
     | '/login'
     | '/recovery'
     | '/register'
@@ -867,6 +879,7 @@ export interface RootRouteChildren {
   ExamplesRouteRoute: typeof ExamplesRouteRouteWithChildren
   MeRouteRoute: typeof MeRouteRouteWithChildren
   InvitesRoute: typeof InvitesRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
   RecoveryRoute: typeof RecoveryRoute
   RegisterRoute: typeof RegisterRoute
@@ -906,6 +919,13 @@ declare module '@tanstack/react-router' {
       path: '/invites'
       fullPath: '/invites'
       preLoaderRoute: typeof InvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1641,6 +1661,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExamplesRouteRoute: ExamplesRouteRouteWithChildren,
   MeRouteRoute: MeRouteRouteWithChildren,
   InvitesRoute: InvitesRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,
   RecoveryRoute: RecoveryRoute,
   RegisterRoute: RegisterRoute,

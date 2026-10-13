@@ -1,4 +1,5 @@
 import { apiMode } from '@api/mode'
+import { Logo } from '@components/Logo'
 import { TourAutoStart } from '@components/onboarding/tour'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -55,13 +56,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     whiteSpace: 'nowrap',
     '&:hover': { textDecoration: 'none', color: theme.colors.text.primary },
   }),
-  logo: css({
-    width: 26,
-    height: 26,
-    borderRadius: theme.shape.radius.default,
-    display: 'block',
-    objectFit: 'cover',
-  }),
+  logo: css({ display: 'block', flexShrink: 0 }),
   center: css({
     flex: 1,
     display: 'flex',
@@ -134,7 +129,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       <header className={styles.top}>
         <div className={styles.topInner}>
           <AppLink to="/" className={styles.brand}>
-            <img src="/org-logo.png" alt="" className={styles.logo} width={26} height={26} />
+            <Logo size={30} className={styles.logo} />
             {t('common.appName')}
             {apiMode === 'mock' && (
               <Tooltip content={t('nav.mockModeHint')}>

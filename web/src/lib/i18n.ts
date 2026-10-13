@@ -88,4 +88,6 @@ if (!i18next.isInitialized) {
 // Point @grafana/i18n's `t`/`Trans` at this instance: without it Grafana's lazy init sees our
 // resources, skips itself and leaves its `t` unbound (throws in dev). `getFixedT(null, ns)` reads
 // the language on every call, so `changeLanguage` reaches Grafana strings on the next render.
-void initPluginTranslations('translation')
+// Grafana's own `t()` throws (dev) until this resolves; main.tsx awaits it before
+// importing anything that uses @grafana/ui.
+export const i18nReady = initPluginTranslations('translation')
