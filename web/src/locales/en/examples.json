@@ -1,7 +1,7 @@
 {
   "title": "Examples",
-  "subtitle": "Ready-made databases, workloads, tests and suites. Clone into your library or run right away.",
-  "disabled": "Examples are disabled on this installation. The gallery is shown read-only.",
+  "subtitle": "Ready databases, workloads, tests and suites that already work. Copy one into your library or run it as is.",
+  "disabled": "Examples are turned off on this installation, so the gallery is read-only.",
   "filters": {
     "kind": "Kind",
     "db": "Database",
@@ -34,19 +34,19 @@
     "title": "Clone «{{name}}»",
     "tenant": "Target tenant",
     "name": "Name in the library",
-    "nameHint": "Leave as is or rename — the example itself stays untouched.",
+    "nameHint": "Keep the name or rename it; the example itself won't change.",
     "submit": "Clone",
     "done": "Cloned into {{tenant}}",
     "open": "Open",
-    "noTenant": "You have no tenant with write access. Create one first."
+    "noTenant": "There's no tenant you can write to. Create one first."
   },
   "quickRun": {
     "title": "Quick run «{{name}}»",
-    "hint": "Launches the example as a run in the selected tenant without saving it to the library.",
+    "hint": "Runs the example in the chosen tenant without saving it to the library.",
     "tenant": "Tenant",
     "provider": "Provider profile",
-    "providerHint": "Only verified (ready) profiles can host a stand.",
-    "noProviders": "This tenant has no ready provider profile — add one in Settings → Providers.",
+    "providerHint": "Only a provider that passed its check can bring up a stand.",
+    "noProviders": "This tenant has no checked provider. Add one in Settings → Providers.",
     "runName": "Run name",
     "submit": "Launch",
     "launched": "Run launched",

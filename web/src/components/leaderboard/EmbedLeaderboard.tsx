@@ -10,12 +10,12 @@ import { z } from 'zod'
 import { getAppTheme } from '@/styles/theme'
 
 // The rating for an <iframe> elsewhere (stroppy.io): no chrome, the host
-// picks the theme, the league and how many rows; every row and the footer
+// picks the theme, the scenario and how many rows; every row and the footer
 // open Stroppy Cloud in a new tab.
 
 export const embedSearchSchema = z.object({
   theme: z.enum(['dark', 'light']).default('dark').catch('dark'),
-  league: z.string().optional().catch(undefined),
+  scenario: z.string().optional().catch(undefined),
   metric: z.string().default('tps').catch('tps'),
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
   limit: z.coerce.number().int().min(1).max(50).default(10).catch(10),
@@ -67,7 +67,7 @@ function Board({ search }: { search: EmbedSearch }) {
   const list = useInfiniteQuery(
     ratingQueries.global({
       metric: search.metric,
-      league: search.league,
+      scenario: search.scenario ? [search.scenario] : undefined,
       period: search.period,
       limit: search.limit,
     })
@@ -75,7 +75,7 @@ function Board({ search }: { search: EmbedSearch }) {
   const page = list.data?.pages[0]
   const origin = window.location.origin
   const full = new URL('/leaderboard', origin)
-  if (search.league) full.searchParams.set('league', search.league)
+  if (search.scenario) full.searchParams.set('scenario', JSON.stringify([search.scenario]))
   return (
     <div className={styles.root}>
       <div className={styles.head}>

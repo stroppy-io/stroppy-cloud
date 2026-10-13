@@ -20,7 +20,7 @@
   },
   "empty": {
     "title": "No suites yet",
-    "hint": "A suite runs a matrix of tests across providers, sizes, versions and workload variants.",
+    "hint": "A suite answers “which variant is better”: you give it tests and variants (cloud, machine sizes, DBMS versions, load parameters), and it runs them all and puts the results in one table.",
     "cta": "Create a suite",
     "import": "Import from file"
   },
@@ -69,24 +69,24 @@
     "launchFailed": "Could not launch the suite"
   },
   "confirm": {
-    "deleteBody": "Runs already produced stay in history. Schedules targeting this suite are paused."
+    "deleteBody": "Past runs stay in the history, and schedules for this suite are paused."
   },
   "form": {
     "title": "New suite",
-    "subtitle": "Name the suite and pick tests. Axes and cells are configured next.",
+    "subtitle": "Name the suite and pick tests. You set up variants and cells on the next step.",
     "name": "Name",
     "namePlaceholder": "e.g. MySQL sizes matrix",
     "description": "Description",
-    "descriptionPlaceholder": "What this matrix answers and when it should be run",
+    "descriptionPlaceholder": "What question this suite answers and when to run it",
     "tags": "Tags",
     "tagsPlaceholder": "team=core, purpose=regression",
     "tests": "Tests",
-    "testsHint": "Every enabled cell is one of these tests with axis values applied.",
+    "testsHint": "Each enabled cell runs one of these tests with its variants applied.",
     "testsPlaceholder": "Pick tests from the library…",
     "concurrency": "Concurrency",
-    "concurrencyHint": "How many cells run at the same time (1–16).",
+    "concurrencyHint": "How many cells run at the same time, 1 to 16.",
     "keep": "Keep stands",
-    "keepHint": "Go duration (2h, 30m). Leave empty to tear down right after the run.",
+    "keepHint": "How long to keep the stand after the run, in Go format: 2h, 30m. Empty removes it right away.",
     "rating": "Rating",
     "ratingTenant": "Tenant rating",
     "ratingGlobal": "Global rating",
@@ -102,7 +102,7 @@
     "description": "Description",
     "noDescription": "No description yet.",
     "tests": "Tests",
-    "noTests": "No tests yet — add them on the Axes tab.",
+    "noTests": "No tests yet. Add them on the Axes tab.",
     "axes": "Axes",
     "defaults": "Defaults",
     "about": "About",
@@ -124,20 +124,20 @@
     "testRuns": "{{count}} runs"
   },
   "axes": {
-    "intro": "Cells are the product of tests × every axis below. Leave an axis empty to keep the test's own value.",
+    "intro": "Cells are the tests multiplied by each axis below. An empty axis keeps the test's own value.",
     "tests": "Tests",
     "providers": "Provider profiles",
     "providersPlaceholder": "Use the test's provider",
-    "providersHint": "One cell per selected provider. Only ready profiles can launch.",
+    "providersHint": "One cell per selected provider. Only providers that passed their check can run.",
     "sizes": "Sizes sets",
-    "sizesHint": "Each row is a full set of role sizes; one cell per row.",
-    "noSizes": "No sizes sets — cells use the sizes from each test.",
+    "sizesHint": "Each row sets sizes for every role and makes one cell.",
+    "noSizes": "No size variants; cells use the sizes from the tests.",
     "versions": "Database versions",
     "versionsPlaceholder": "Use the version from the test's database",
-    "versionsHint": "From the catalog for the database kinds of the selected tests.",
+    "versionsHint": "Versions from the catalog for the DBMS the selected tests use.",
     "variants": "Workload variants",
-    "variantsHint": "Overrides applied to every segment of the workload.",
-    "noVariants": "No variants — cells use the workload as defined.",
+    "variantsHint": "Changes applied to every load segment.",
+    "noVariants": "No variants; cells use the workload as is.",
     "variant": {
       "name": "Name",
       "namePlaceholder": "e.g. 64vu",
@@ -153,14 +153,14 @@
     "previewInvalid_one": "{{count}} cell fails validation",
     "previewInvalid_other": "{{count}} cells fail validation",
     "dirty": "Unsaved changes",
-    "saved": "Axes saved — cells regenerated",
+    "saved": "Axes saved. Cells regenerated",
     "errors": {
       "variantName": "Give the variant a name",
       "duration": "Use a duration like 10m or 1h"
     }
   },
   "cells": {
-    "intro": "Toggle cells, adjust per-cell overrides and check the totals before launching.",
+    "intro": "Turn on the cells you need, adjust them and check the totals before launching.",
     "columns": {
       "enabled": "On",
       "name": "Cell",
@@ -188,19 +188,19 @@
     "errors_one": "{{count}} error",
     "errors_other": "{{count}} errors",
     "empty": "No cells yet",
-    "emptyHint": "Add tests and axes first, then regenerate the matrix.",
+    "emptyHint": "Add tests and axes first, then rebuild the matrix.",
     "totals": "Totals for enabled cells",
     "totalsLine": "{{machines}} machines · {{cpu}} vCPU · {{ram}} GB RAM · {{disk}} GB disk",
     "waves": "{{waves}} waves at concurrency {{concurrency}} · ~{{duration}}",
     "quota": "Quota check",
     "quotaOk": "{{provider}}: fits within quotas",
     "quotaFail": "{{provider}}: {{issues}}",
-    "quotaNone": "No provider selected — quotas not checked.",
-    "regenerated": "Matrix regenerated from axes ({{count}} cells). Save to apply.",
+    "quotaNone": "No provider picked, so quotas weren't checked.",
+    "regenerated": "The matrix was rebuilt from the axes ({{count}} cells). Save to apply.",
     "saved": "Cells saved",
     "drawer": {
       "title": "Cell overrides",
-      "subtitle": "Applied over axis values and the test's own settings.",
+      "subtitle": "Applied on top of the axis variants and the test settings.",
       "name": "Cell name",
       "provider": "Provider profile",
       "providerPlaceholder": "Inherit",
@@ -214,7 +214,7 @@
     "readOnly": "You cannot edit this suite",
     "off": "off",
     "status": {
-      "off": "Disabled — will not run",
+      "off": "Disabled. Will not run",
       "checking": "Validating…",
       "ready": "Ready to run"
     },
@@ -230,12 +230,12 @@
     "concurrency": "Concurrency",
     "rating": "Rating",
     "keep": "Keep stands",
-    "keepPlaceholder": "e.g. 2h — empty tears down",
+    "keepPlaceholder": "e.g. 2h. Empty tears down",
     "cellsTitle_one": "{{count}} enabled cell will run",
     "cellsTitle_other": "{{count}} enabled cells will run",
     "invalidCells_one": "{{count}} cell fails validation and will block the launch",
     "invalidCells_other": "{{count}} cells fail validation and will block the launch",
-    "noCells": "No enabled cells. Enable at least one on the Cells tab.",
+    "noCells": "No cells are enabled. Turn on at least one on the Cells tab.",
     "totals": "{{machines}} machines · {{cpu}} vCPU · {{ram}} GB RAM",
     "submit": "Launch"
   },
@@ -259,7 +259,7 @@
       "author": "Author"
     },
     "empty": "No suite runs yet",
-    "emptyHint": "Launch the suite to fill this table.",
+    "emptyHint": "Launch the suite and a results table shows up here.",
     "tabs": {
       "summary": "Summary",
       "cells": "Cells"
@@ -293,7 +293,7 @@
     },
     "confirm": {
       "cancelTitle": "Cancel {{name}}?",
-      "cancelBody": "Running cells are cancelled; pending cells will not start.",
+      "cancelBody": "Cells already running are cancelled, and waiting ones won't start.",
       "yesCancel": "Yes, cancel",
       "deleteBody": "Child runs are kept in history."
     },
@@ -312,7 +312,7 @@
         "errors": "Errors"
       },
       "comparedTo": "Compared to",
-      "noPrevious": "No earlier run of this suite to compare with.",
+      "noPrevious": "This suite hasn't run before, so there's nothing to compare with yet.",
       "noRun": "not started",
       "verdict": {
         "better": "better than previous",
@@ -320,7 +320,7 @@
         "same": "within ±5% of previous",
         "missing": "no previous value"
       },
-      "legend": "Diff vs previous run; red = regression beyond the ±5% deadband.",
+      "legend": "The difference from the previous run. Red marks a drop of more than 5%.",
       "empty": "No summary yet"
     },
     "cells": {
@@ -352,7 +352,7 @@
       },
       "linkTitle": "Title",
       "submit": "Create link",
-      "ready": "Link ready — copy it below."
+      "ready": "Link ready. Copy it below."
     },
     "list": {
       "live": "{{running}} running · {{pending}} queued",

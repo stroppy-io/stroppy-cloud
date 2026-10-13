@@ -52,7 +52,7 @@
     "noDescription": "No description yet.",
     "noTags": "No tags",
     "descriptionPlaceholder": "What is this for? Who should use it?",
-    "tagsHint": "key=value pairs, e.g. env=baseline. Used for filtering."
+    "tagsHint": "key=value pairs such as env=baseline. Lists filter by them later."
   },
   "actions": {
     "cloned": "Cloned as \"{{name}}\"",
@@ -61,10 +61,10 @@
     "exportYaml": "Export YAML",
     "inUse_one": "This {{kind}} is referenced by {{count}} record:",
     "inUse_other": "This {{kind}} is referenced by {{count}} records:",
-    "inlineHint": "Deleting will copy the definition into each dependent test so they keep working.",
+    "inlineHint": "Before deletion the definition is copied into every test that points at it, so those tests keep working.",
     "deleteAndInline": "Delete and inline into dependents",
-    "inUseShort_one": "Used by {{count}} record — cannot delete",
-    "inUseShort_other": "Used by {{count}} records — cannot delete",
+    "inUseShort_one": "Used by {{count}} record, so it can't be deleted",
+    "inUseShort_other": "Used by {{count}} records, so it can't be deleted",
     "newTestFrom": "New test from this",
     "copyId": "Copy ID",
     "copyLink": "Copy link",
@@ -73,8 +73,8 @@
   },
   "topology": {
     "title": "Topology",
-    "derived": "Derived by the server from the params — machines per role and data flows.",
-    "empty": "No topology yet — pick a kind and params.",
+    "derived": "The server worked this out from the parameters: which machines each role needs and how data flows between them.",
+    "empty": "Pick a DBMS and its parameters and the topology shows up here.",
     "nodes_one": "{{count}} node",
     "nodes_other": "{{count}} nodes",
     "machines_one": "{{count}} machine for role {{role}}",
@@ -83,8 +83,8 @@
   },
   "requirements": {
     "title": "Hardware requirements",
-    "derived": "Minimal CPU / memory / disk per role, computed from params and workload.",
-    "empty": "No hardware requirements — external or no-op target.",
+    "derived": "How much CPU, memory and disk each role needs with these parameters and this workload.",
+    "empty": "No hardware requirements: the target is external or a no-op.",
     "role": "Role",
     "cpu": "CPU",
     "memory": "Memory",
@@ -95,11 +95,11 @@
   },
   "usages": {
     "title": "Where it is used",
-    "hint": "Tests and suites that reference this {{kind}}. Delete is blocked while it is in use.",
+    "hint": "Tests and suites that point at this {{kind}}. You can’t delete it while they do.",
     "empty": "Not referenced anywhere.",
-    "emptyDatabase": "No test uses this database yet. Create a test to run it.",
+    "emptyDatabase": "No test uses this database yet. Create one to run it.",
     "emptyWorkload": "No test uses this workload yet.",
-    "emptyTest": "This test is not part of any suite or schedule.",
+    "emptyTest": "This test isn't in any suite or schedule.",
     "count_one": "{{count}} usage",
     "count_other": "{{count}} usages",
     "kind": {
@@ -113,7 +113,7 @@
   },
   "validation": {
     "title": "Validation",
-    "allGood": "Everything fits — no issues.",
+    "allGood": "Everything fits. No issues.",
     "severity": {
       "ERROR": "Errors",
       "WARNING": "Warnings"
@@ -122,10 +122,10 @@
     "suggested": "suggested: {{value}}",
     "apply": "Apply",
     "goTo": "Fix",
-    "fits": "Fits — ready to launch.",
+    "fits": "Fits. Ready to launch.",
     "fitsWithWarnings": "Fits, with warnings.",
-    "doesNotFit_one": "Does not fit — {{count}} error to fix.",
-    "doesNotFit_other": "Does not fit — {{count}} errors to fix.",
+    "doesNotFit_one": "Does not fit. {{count}} error to fix.",
+    "doesNotFit_other": "Does not fit. {{count}} errors to fix.",
     "doesNotFitShort": "Does not fit yet",
     "issue": {
       "sizeRequired": "No size chosen for {{role}}"
@@ -136,7 +136,7 @@
   },
   "import": {
     "title": "Import {{kind}}",
-    "hint": "Paste a YAML or JSON document with kind: {{kind}}, or drop a file. The record is created as-is and validated by the server.",
+    "hint": "Paste YAML or JSON with kind: {{kind}} or drop a file. The record is created as is, and the server checks it.",
     "drop": "Drop a .yaml / .json file here",
     "dropHint": "or click to pick one",
     "paste": "Document",
@@ -149,7 +149,7 @@
     "title": "Compare with another record",
     "compareWith": "Compare with",
     "pick": "Pick a record…",
-    "hint": "Pick another record of the same kind to see field-by-field changes.",
+    "hint": "Pick another record of the same type to compare them field by field.",
     "identical": "The two records are identical.",
     "path": "Field"
   },
@@ -168,13 +168,13 @@
     "tooSmall": "smaller than required",
     "use": "Use {{value}}",
     "diskType": "Disk type",
-    "noDiskHint": "This role uses the default boot disk.",
+    "noDiskHint": "This role gets the default boot disk.",
     "auto": "auto",
-    "autoHint": "Picked automatically: the smallest preset that meets the role's requirements. Choose another if needed."
+    "autoHint": "Picked automatically: the smallest preset that fits the role. You can choose another."
   },
   "segments": {
     "title": "Segments",
-    "hint": "Segments run one after another on the same stand — e.g. load, then OLTP, then OLAP.",
+    "hint": "Segments run one after another on the same stand, for example the data load, then OLTP, then OLAP.",
     "add": "Add segment",
     "empty": "No segments yet.",
     "editing": "Segment #{{n}} — {{name}}",
@@ -188,7 +188,7 @@
   },
   "options": {
     "title": "Driver, connection, baseline",
-    "hint": "stroppy runtime options; defaults apply for everything you leave untouched.",
+    "hint": "stroppy runtime options. Anything you leave alone keeps its default.",
     "driver": "Driver",
     "connection": "Connection",
     "baseline": "Baseline",
@@ -200,8 +200,8 @@
   },
   "configs": {
     "title": "Software configs per role",
-    "hint": "Only deviations from the schema defaults are stored; the form shows the full effective config.",
-    "overviewHint": "Config schemas per role and how many keys deviate from the defaults.",
+    "hint": "Only your changes from the schema defaults are stored; the form shows the whole config.",
+    "overviewHint": "Config schemas by role, and how many keys you changed in each.",
     "none": "No config schemas for this kind.",
     "role": "Role",
     "schema": "Config schema",
@@ -215,7 +215,7 @@
   },
   "databases": {
     "title": "Databases",
-    "subtitle": "Database definitions: engine, version, topology and tuning. Hardware is chosen in the test.",
+    "subtitle": "The databases you test: engine, version, topology and tuning. Machines for them are picked in the test.",
     "new": "New database",
     "create": "Create database",
     "created": "Database \"{{name}}\" created",
@@ -229,12 +229,12 @@
     "schemaMissing": "Schema {{id}} is not in the catalog.",
     "empty": {
       "title": "No databases yet",
-      "hint": "Describe a database once, then reuse it in tests and suites."
+      "hint": "Describe a database once and use it in tests and suites."
     }
   },
   "workloads": {
     "title": "Workloads",
-    "subtitle": "stroppy workloads: version, protocol and the segments to run.",
+    "subtitle": "stroppy scenarios: version, protocol and the segments that run in turn.",
     "new": "New workload",
     "create": "Create workload",
     "created": "Workload \"{{name}}\" created",
@@ -242,26 +242,26 @@
     "newTest": "New test",
     "empty": {
       "title": "No workloads yet",
-      "hint": "Describe a workload once, then pair it with databases in tests."
+      "hint": "Describe a workload once and run it against different databases."
     },
     "form": {
       "general": "General",
-      "versionHint": "★ — default version of the platform.",
+      "versionHint": "★. Default version of the platform.",
       "versionRequired": "Pick a stroppy version",
-      "protocolHint": "Protocols the chosen version can speak; must match the database kind.",
+      "protocolHint": "Protocols the selected stroppy version speaks. It has to match the database type.",
       "firstSegment": "First segment",
-      "firstSegmentHint": "More segments can be added on the workload page.",
-      "runnerHint": "Runner machine size follows the largest VU count."
+      "firstSegmentHint": "You'll add the other segments on the workload page.",
+      "runnerHint": "The runner machine is sized by the largest VU count across segments."
     }
   },
   "tests": {
     "title": "Tests",
-    "subtitle": "Database × workload × sizes, ready to launch as runs.",
+    "subtitle": "What to launch: a database, a workload and the machines for them.",
     "new": "New test",
     "search": "Search tests…",
     "attention_one": "{{count}} needs attention",
     "attention_other": "{{count}} need attention",
-    "draftHint": "Draft — continue in the wizard",
+    "draftHint": "Draft. Continue in the wizard",
     "pickAtLaunch": "pick at launch",
     "neverRun": "never run",
     "runCount_one": "{{count}} run",
@@ -272,52 +272,52 @@
     "trendHint_one": "{{count}} completed run with a headline metric.",
     "trendHint_other": "{{count}} completed runs with a headline metric.",
     "noRuns": "No runs yet",
-    "noRunsHint": "Launch the test to see its history here.",
+    "noRunsHint": "Launch the test and its history shows up here.",
     "staleDatabase": "database changed",
     "staleWorkload": "workload changed",
     "revalidate": "Re-validate",
-    "revalidated": "Validated — the test fits.",
-    "revalidatedIssues": "Validated — there are issues to fix.",
+    "revalidated": "Validated. The test fits.",
+    "revalidatedIssues": "Validated. There are issues to fix.",
     "editInWizard": "Edit",
-    "draftCannotLaunch": "Finish the wizard first — a draft cannot be launched.",
-    "inlineSpec": "Inline definition (not a library record)",
+    "draftCannotLaunch": "A draft can't be launched: finish the wizard first.",
+    "inlineSpec": "Defined right in the test, not taken from the library",
     "noDatabase": "No database picked yet.",
     "noWorkload": "No workload picked yet.",
     "pickDatabase": "Pick a database",
     "pickWorkload": "Pick a workload",
-    "sizesHint": "Requirement per role vs the chosen size. Override at launch if needed.",
+    "sizesHint": "What each role needs and the size picked for it. You can change sizes at launch.",
     "rating": "Rating",
     "ratingTenant": "tenant",
     "ratingGlobal": "global",
     "empty": {
       "title": "No tests yet",
-      "hint": "A test pairs a database with a workload and sizes. Create one to launch runs."
+      "hint": "A test ties a database, a workload and machine sizes together, and it is what you launch."
     },
     "finalize": "Finish draft",
-    "finalizeHint": "Open the last wizard step and validate the test"
+    "finalizeHint": "Open the last wizard step and check the test"
   },
   "launch": {
     "title": "Launch {{name}}",
-    "subtitle": "Overrides apply to this run only; the test stays unchanged.",
+    "subtitle": "Changes here apply to this run only; the test itself stays as it is.",
     "runName": "Run name",
     "providerRequired": "Pick a provider profile",
-    "providerHint": "Only verified (ready) profiles can be used.",
+    "providerHint": "Only providers that passed their check can be used.",
     "pickProvider": "Pick a provider…",
-    "sizesHint": "Sizes for this run. Requirements are re-checked live.",
+    "sizesHint": "Machine sizes for this run. Whether they are big enough is checked as you go.",
     "estimate": "{{machines}} machines · {{cpu}} vCPU · {{mem}} GB in total",
     "keep": "Keep the stand",
-    "keepHint": "Go duration (30m, 2h) to keep machines after the run; 0s tears down.",
-    "labelsHint": "Free key=value labels for filtering runs.",
+    "keepHint": "How long to keep the machines after the run, in Go format: 30m, 2h. 0s removes them right away.",
+    "labelsHint": "Your own key=value labels for finding runs later.",
     "started": "Run \"{{name}}\" started",
     "launchAnyway": "Launch anyway",
     "autoSizes": {
       "title": "Sizes picked automatically",
-      "body": "The test leaves these roles without a size, so each got the smallest preset that meets its requirements. These are machines in your cloud — check or change them before launching."
+      "body": "These roles had no size in the test, so each got the smallest preset that fits it. They're machines in your cloud that you pay for, so check them before launching."
     }
   },
   "wizard": {
-    "intro": "Four steps: database → workload → sizes → review. A draft is saved after the first step.",
-    "draftHint": "Draft is saved on the server after every step — you can come back later.",
+    "intro": "Four steps: database, workload, sizes and review. The draft is saved after the first one.",
+    "draftHint": "The draft is saved on the server after every step, so you can come back to it.",
     "untitled": "Untitled test",
     "openDetail": "Open test page",
     "steps": {
@@ -327,9 +327,9 @@
       "review": "Review"
     },
     "pickDatabase": "Database",
-    "pickDatabaseHint": "Use a library record (changes propagate) or describe one inline just for this test.",
+    "pickDatabaseHint": "Take a database from the library and the test picks up its changes. Or describe one right here, just for this test.",
     "pickWorkload": "Workload",
-    "pickWorkloadHint": "The protocol must match the database kind — the server checks it.",
+    "pickWorkloadHint": "The workload's protocol has to match the database type; the server checks it.",
     "fromLibrary": "From the library",
     "inline": "Describe inline",
     "inlineReady": "Inline definition ready",
@@ -337,8 +337,8 @@
     "segmentsSummary_other": "{{count}} segments: {{scripts}}",
     "protocolsHint": "Pick a workload whose protocol {{kind}} accepts.",
     "providerTitle": "Default provider",
-    "providerHint": "Optional — can be chosen at launch instead. Suites pick their own.",
-    "sizesHint": "Suggested sizes are the smallest that fit. Bigger is fine.",
+    "providerHint": "Optional: you can pick the cloud at launch too. Suites pick their own.",
+    "sizesHint": "The smallest sizes that fit are suggested. Bigger is fine.",
     "nameTitle": "Name the test",
     "saveDraft": "Save as draft",
     "savedDraft": "Draft saved",
@@ -353,9 +353,9 @@
       "review": "Review",
       "kindDesc": "Versions {{versions}} · {{topologies}} topology templates",
       "notDeployable": "external",
-      "versionHint": "★ — default version in the catalog.",
+      "versionHint": "★. Default version in the catalog.",
       "template": "Topology template",
-      "templateHint": "Presets the params; everything can be tuned on the next step.",
+      "templateHint": "Fills in the parameters for you; you can adjust them on the next step.",
       "paramsTitle": "{{kind}} params",
       "previewUpdating": "Updating preview…",
       "nameTitle": "Name the database",

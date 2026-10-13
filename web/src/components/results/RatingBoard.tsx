@@ -14,14 +14,17 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
+import { hardwareLabel, hardwareTotal, scenarioLabel } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { RatingTable } from './RatingTable'
 
-// The rating itself — filters over the top, one table per size league — shared
-// by the tenant rating (both tabs) and the public /leaderboard.
+// The rating itself, shared by the tenant rating (both tabs) and the public
+// /leaderboard: filters over the top, then one table per workload scenario.
+// A tps figure means something only next to runs of the same scenario, so
+// scenarios never share a table, and each row says what hardware it ran on.
 
 export const ratingFiltersSchema = z.object({
   metric: z.string().default('tps').catch('tps'),
@@ -29,7 +32,8 @@ export const ratingFiltersSchema = z.object({
   version: z.array(z.string()).optional().catch(undefined),
   provider: z.array(z.string()).optional().catch(undefined),
   stroppy: z.array(z.string()).optional().catch(undefined),
-  league: z.string().optional().catch(undefined),
+  scenario: z.array(z.string()).optional().catch(undefined),
+  hardware: z.array(z.string()).optional().catch(undefined),
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
 })
 export type RatingFilters = z.infer<typeof ratingFiltersSchema>
@@ -42,15 +46,16 @@ export function toRatingQuery(s: RatingFilters): RatingQuery {
     version: s.version,
     provider: s.provider as RatingQuery['provider'],
     stroppy_version: s.stroppy,
-    league: s.league,
+    scenario: s.scenario,
+    hardware: s.hardware,
     period: s.period,
     limit: 50,
   }
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
-  leagues: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(3) }),
-  leagueHead: css({
+  sections: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(3) }),
+  sectionHead: css({
     display: 'flex',
     alignItems: 'baseline',
     gap: theme.spacing(1),
@@ -93,7 +98,8 @@ export function RatingBoard({
 
   const entries = useMemo(() => list.data?.pages.flatMap((p) => p.data) ?? [], [list.data])
   const metricDef = list.data?.pages[0]?.metric
-  const leagues = list.data?.pages[0]?.leagues ?? []
+  const scenarios = list.data?.pages[0]?.scenarios ?? []
+  const hardware = list.data?.pages[0]?.hardware ?? []
   const distinct = (pick: (e: RatingEntry) => string | undefined) =>
     [...new Set(entries.map(pick).filter((v): v is string => !!v))].sort()
   const kindOptions = signedIn
@@ -106,15 +112,21 @@ export function RatingBoard({
   const providerOptions = distinct((e) => e.provider_kind).map((v) => ({ label: v, value: v }))
   const stroppyOptions = distinct((e) => e.stroppy_version).map((v) => ({ label: v, value: v }))
 
-  const byLeague = useMemo(() => {
+  // Places count within a scenario: the server ranks the whole page.
+  const byScenario = useMemo(() => {
     const m = new Map<string, RatingEntry[]>()
     for (const e of entries) {
-      const arr = m.get(e.league) ?? []
-      arr.push(e)
-      m.set(e.league, arr)
+      const arr = m.get(e.scenario) ?? []
+      arr.push({ ...e, rank: arr.length + 1 })
+      m.set(e.scenario, arr)
     }
     return [...m.entries()].sort(([a], [b]) => a.localeCompare(b))
   }, [entries])
+  const hardwareName = (key: string) =>
+    hardwareLabel(
+      t,
+      hardware.find((h) => h.key === key)
+    )
 
   const pills = [
     ...(search.kind ?? []).map((v) => ({
@@ -137,15 +149,16 @@ export function RatingBoard({
       label: `${t('results.rating.filters.stroppy')}: ${v}`,
       onRemove: () => onSearchChange({ stroppy: search.stroppy?.filter((x) => x !== v) }),
     })),
-    ...(search.league
-      ? [
-          {
-            key: 'league',
-            label: t('results.rating.league', { league: search.league }),
-            onRemove: () => onSearchChange({ league: undefined }),
-          },
-        ]
-      : []),
+    ...(search.scenario ?? []).map((v) => ({
+      key: `sc:${v}`,
+      label: `${t('results.rating.filters.scenario')}: ${scenarioLabel(v)}`,
+      onRemove: () => onSearchChange({ scenario: search.scenario?.filter((x) => x !== v) }),
+    })),
+    ...(search.hardware ?? []).map((v) => ({
+      key: `hw:${v}`,
+      label: `${t('results.rating.filters.hardware')}: ${hardwareName(v)}`,
+      onRemove: () => onSearchChange({ hardware: search.hardware?.filter((x) => x !== v) }),
+    })),
   ]
   const clearAll = () =>
     onSearchChange({
@@ -153,7 +166,8 @@ export function RatingBoard({
       version: undefined,
       provider: undefined,
       stroppy: undefined,
-      league: undefined,
+      scenario: undefined,
+      hardware: undefined,
     })
 
   return (
@@ -174,6 +188,15 @@ export function RatingBoard({
                 onChange={(o) => onSearchChange({ metric: o.value })}
               />
             )}
+            <MultiCombobox
+              placeholder={t('results.rating.filters.scenario')}
+              width={18}
+              options={scenarios.map((s) => ({ label: scenarioLabel(s), value: s }))}
+              value={search.scenario ?? []}
+              onChange={(o) =>
+                onSearchChange({ scenario: o.length ? o.map((x) => x.value) : undefined })
+              }
+            />
             <MultiCombobox
               placeholder={t('results.rating.filters.kind')}
               width={18}
@@ -210,13 +233,18 @@ export function RatingBoard({
                 onSearchChange({ stroppy: o.length ? o.map((x) => x.value) : undefined })
               }
             />
-            <Combobox
-              placeholder={t('results.rating.filters.league')}
-              width={16}
-              isClearable
-              options={leagues.map((l) => ({ label: l, value: l }))}
-              value={search.league ?? null}
-              onChange={(o) => onSearchChange({ league: o?.value })}
+            <MultiCombobox
+              placeholder={t('results.rating.filters.hardware')}
+              width={26}
+              options={hardware.map((h) => ({
+                label: hardwareLabel(t, h),
+                value: h.key,
+                description: hardwareTotal(t, h),
+              }))}
+              value={search.hardware ?? []}
+              onChange={(o) =>
+                onSearchChange({ hardware: o.length ? o.map((x) => x.value) : undefined })
+              }
             />
           </Stack>
         }
@@ -243,16 +271,16 @@ export function RatingBoard({
             empty={{ message: t('results.rating.empty.title') }}
           />
         ) : (
-          <div className={styles.leagues}>
-            {byLeague.map(([league, rows]) => (
-              <section key={league}>
-                <div className={styles.leagueHead}>
+          <div className={styles.sections}>
+            {byScenario.map(([scenario, rows]) => (
+              <section key={scenario}>
+                <div className={styles.sectionHead}>
                   <Text element="h2" variant="h4">
-                    {t('results.rating.league', { league })}
+                    {scenarioLabel(scenario)}
                   </Text>
                   <Text color="secondary" variant="bodySmall">
                     {t('results.rating.entries', { count: rows.length })} ·{' '}
-                    {t('results.rating.leagueHint')}
+                    {t('results.rating.scenarioHint')}
                   </Text>
                 </div>
                 <RatingTable

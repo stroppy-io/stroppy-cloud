@@ -125,7 +125,8 @@ paths:
         - $ref: '#/components/parameters/ratingVersion'
         - $ref: '#/components/parameters/ratingProvider'
         - $ref: '#/components/parameters/ratingStroppy'
-        - $ref: '#/components/parameters/ratingLeague'
+        - $ref: '#/components/parameters/ratingScenario'
+        - $ref: '#/components/parameters/ratingHardware'
         - $ref: '#/components/parameters/ratingPeriod'
         - $ref: '#/components/parameters/cursor'
         - $ref: '#/components/parameters/limit'
@@ -185,11 +186,20 @@ components:
       style: form
       explode: false
       schema: { type: array, items: { type: string } }
-    ratingLeague:
-      name: league
+    ratingScenario:
+      name: scenario
       in: query
-      description: Size league (`db:M`); all leagues when omitted.
-      schema: { type: string }
+      style: form
+      explode: false
+      description: Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted.
+      schema: { type: array, items: { type: string } }
+    ratingHardware:
+      name: hardware
+      in: query
+      style: form
+      explode: false
+      description: Hardware keys (`HardwareClass.key`) to keep; all when omitted.
+      schema: { type: array, items: { type: string } }
     ratingPeriod:
       name: period
       in: query
@@ -197,7 +207,7 @@ components:
   schemas:
     RatingEntry:
       type: object
-      required: [rank, value, unit, db_kind, league, run_at]
+      required: [rank, value, unit, db_kind, scenario, hardware, run_at]
       properties:
         rank: { type: integer }
         value: { type: number }
@@ -207,9 +217,9 @@ components:
         topology_label: { type: string }
         node_count: { type: integer }
         sizes: { $ref: '#/components/schemas/RoleSizes' }
-        league: { type: string }
         workload_name: { type: string }
-        script: { type: string }
+        scenario: { type: string, description: 'Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`.' }
+        hardware: { $ref: '#/components/schemas/HardwareClass' }
         stroppy_version: { type: string }
         provider_kind: { $ref: '#/components/schemas/ProviderKind' }
         run_at: { type: string, format: date-time }
@@ -219,16 +229,36 @@ components:
         share_token: { type: string, description: Global rating; public snapshot link. }
     RatingPage:
       type: object
-      required: [metric, data, meta]
+      required: [metric, scenarios, hardware, data, meta]
       properties:
         metric: { $ref: '#/components/schemas/MetricDef' }
-        leagues:
+        scenarios:
           type: array
+          description: Scenarios that have rated runs, to filter by.
           items: { type: string }
+        hardware:
+          type: array
+          description: Hardware classes that have rated runs, to filter by.
+          items: { $ref: '#/components/schemas/HardwareClass' }
         data:
           type: array
           items: { $ref: '#/components/schemas/RatingEntry' }
         meta: { $ref: '#/components/schemas/PageMeta' }
+    HardwareClass:
+      type: object
+      description: The stand a run measured, without its runner — machines grouped by shape, biggest first.
+      required: [key, machines]
+      properties:
+        key: { type: string, description: 'Stable key to filter by, e.g. `2x4c16g+1x2c4g`.' }
+        machines:
+          type: array
+          items:
+            type: object
+            required: [count, cpu, memory_gb]
+            properties:
+              count: { type: integer, minimum: 1 }
+              cpu: { type: integer, minimum: 1 }
+              memory_gb: { type: integer, minimum: 1 }
     ShareTargetKind:
       type: string
       enum: [run, suite_run, comparison]

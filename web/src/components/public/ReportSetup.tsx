@@ -174,7 +174,6 @@ export function ReportSetup({ run, index }: { run: SharedRun; index: number }) {
                 ? [{ label: t('public.setup.image'), value: <code>{db.image}</code> }]
                 : []),
               { label: t('public.setup.provider'), value: run.summary.provider_kind ?? '—' },
-              { label: t('public.setup.league'), value: run.summary.league ?? '—' },
               {
                 label: t('public.setup.sizes'),
                 value: Object.keys(sizes).length

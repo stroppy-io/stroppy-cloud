@@ -2,8 +2,8 @@
 openapi: 3.1.0
 info:
   title: Stroppy Cloud API
-  version: 3.1.0
-  x-pipeline-contract-version: 3.1.0
+  version: 0.0.0
+  x-pipeline-contract-version: 0.0.0
   summary: Database benchmarking as a service — product server over Graphene CI.
   description: "The Stroppy Cloud HTTP API. The server owns tenants, the benchmark\nlibrary (databases,\
     \ workloads, tests), runs and their results; provisioning,\nagents and observability are Graphene's;\
@@ -135,7 +135,8 @@ paths:
       - $ref: '#/components/parameters/ratingVersion'
       - $ref: '#/components/parameters/ratingProvider'
       - $ref: '#/components/parameters/ratingStroppy'
-      - $ref: '#/components/parameters/ratingLeague'
+      - $ref: '#/components/parameters/ratingScenario'
+      - $ref: '#/components/parameters/ratingHardware'
       - $ref: '#/components/parameters/ratingPeriod'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
@@ -4003,7 +4004,8 @@ paths:
       - $ref: '#/components/parameters/ratingVersion'
       - $ref: '#/components/parameters/ratingProvider'
       - $ref: '#/components/parameters/ratingStroppy'
-      - $ref: '#/components/parameters/ratingLeague'
+      - $ref: '#/components/parameters/ratingScenario'
+      - $ref: '#/components/parameters/ratingHardware'
       - $ref: '#/components/parameters/ratingPeriod'
       - $ref: '#/components/parameters/cursor'
       - $ref: '#/components/parameters/limit'
@@ -4689,12 +4691,27 @@ components:
         type: array
         items:
           type: string
-    ratingLeague:
-      name: league
+    ratingScenario:
+      name: scenario
       in: query
-      description: Size league (`db:M`); all leagues when omitted.
+      style: form
+      explode: false
+      description: Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within
+        one scenario; all when omitted.
       schema:
-        type: string
+        type: array
+        items:
+          type: string
+    ratingHardware:
+      name: hardware
+      in: query
+      style: form
+      explode: false
+      description: Hardware keys (`HardwareClass.key`) to keep; all when omitted.
+      schema:
+        type: array
+        items:
+          type: string
     ratingPeriod:
       name: period
       in: query
@@ -6982,10 +6999,6 @@ components:
           $ref: '#/components/schemas/Ref'
         sizes:
           $ref: '#/components/schemas/RoleSizes'
-        league:
-          type: string
-          description: Size league key for rating
-          e.g. `db:M`.: null
         progress_pct:
           type: number
           minimum: 0
@@ -8502,7 +8515,8 @@ components:
       - value
       - unit
       - db_kind
-      - league
+      - scenario
+      - hardware
       - run_at
       properties:
         rank:
@@ -8521,12 +8535,14 @@ components:
           type: integer
         sizes:
           $ref: '#/components/schemas/RoleSizes'
-        league:
-          type: string
         workload_name:
           type: string
-        script:
+        scenario:
           type: string
+          description: 'Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by
+            `+`.'
+        hardware:
+          $ref: '#/components/schemas/HardwareClass'
         stroppy_version:
           type: string
         provider_kind:
@@ -8551,21 +8567,57 @@ components:
       type: object
       required:
       - metric
+      - scenarios
+      - hardware
       - data
       - meta
       properties:
         metric:
           $ref: '#/components/schemas/MetricDef'
-        leagues:
+        scenarios:
           type: array
+          description: Scenarios that have rated runs, to filter by.
           items:
             type: string
+        hardware:
+          type: array
+          description: Hardware classes that have rated runs, to filter by.
+          items:
+            $ref: '#/components/schemas/HardwareClass'
         data:
           type: array
           items:
             $ref: '#/components/schemas/RatingEntry'
         meta:
           $ref: '#/components/schemas/PageMeta'
+    HardwareClass:
+      type: object
+      description: The stand a run measured, without its runner — machines grouped by shape, biggest first.
+      required:
+      - key
+      - machines
+      properties:
+        key:
+          type: string
+          description: Stable key to filter by, e.g. `2x4c16g+1x2c4g`.
+        machines:
+          type: array
+          items:
+            type: object
+            required:
+            - count
+            - cpu
+            - memory_gb
+            properties:
+              count:
+                type: integer
+                minimum: 1
+              cpu:
+                type: integer
+                minimum: 1
+              memory_gb:
+                type: integer
+                minimum: 1
     ShareTargetKind:
       type: string
       enum:

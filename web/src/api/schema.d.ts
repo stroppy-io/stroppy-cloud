@@ -3322,8 +3322,6 @@ export interface components {
             provider_kind?: components["schemas"]["ProviderKind"];
             provider_profile?: components["schemas"]["Ref"];
             sizes?: components["schemas"]["RoleSizes"];
-            /** @description Size league key for rating */
-            league?: string;
             progress_pct?: number;
             /** @description How far the current phase is (read-time): the workload by elapsed planned time, other phases by finished steps. */
             phase_progress_pct?: number;
@@ -4021,9 +4019,10 @@ export interface components {
             topology_label?: string;
             node_count?: number;
             sizes?: components["schemas"]["RoleSizes"];
-            league: string;
             workload_name?: string;
-            script?: string;
+            /** @description Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`. */
+            scenario: string;
+            hardware: components["schemas"]["HardwareClass"];
             stroppy_version?: string;
             provider_kind?: components["schemas"]["ProviderKind"];
             /** Format: date-time */
@@ -4042,9 +4041,22 @@ export interface components {
         };
         RatingPage: {
             metric: components["schemas"]["MetricDef"];
-            leagues?: string[];
+            /** @description Scenarios that have rated runs, to filter by. */
+            scenarios: string[];
+            /** @description Hardware classes that have rated runs, to filter by. */
+            hardware: components["schemas"]["HardwareClass"][];
             data: components["schemas"]["RatingEntry"][];
             meta: components["schemas"]["PageMeta"];
+        };
+        /** @description The stand a run measured, without its runner — machines grouped by shape, biggest first. */
+        HardwareClass: {
+            /** @description Stable key to filter by, e.g. `2x4c16g+1x2c4g`. */
+            key: string;
+            machines: {
+                count: number;
+                cpu: number;
+                memory_gb: number;
+            }[];
         };
         /** @enum {string} */
         ShareTargetKind: "run" | "suite_run" | "comparison";
@@ -4314,8 +4326,10 @@ export interface components {
         ratingVersion: string[];
         ratingProvider: components["schemas"]["ProviderKind"][];
         ratingStroppy: string[];
-        /** @description Size league (`db:M`); all leagues when omitted. */
-        ratingLeague: string;
+        /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+        ratingScenario: string[];
+        /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
+        ratingHardware: string[];
         ratingPeriod: "7d" | "30d" | "90d" | "1y" | "all";
     };
     requestBodies: never;
@@ -4374,8 +4388,10 @@ export interface operations {
                 version?: components["parameters"]["ratingVersion"];
                 provider?: components["parameters"]["ratingProvider"];
                 stroppy_version?: components["parameters"]["ratingStroppy"];
-                /** @description Size league (`db:M`); all leagues when omitted. */
-                league?: components["parameters"]["ratingLeague"];
+                /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+                scenario?: components["parameters"]["ratingScenario"];
+                /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
+                hardware?: components["parameters"]["ratingHardware"];
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];
@@ -8464,8 +8480,10 @@ export interface operations {
                 version?: components["parameters"]["ratingVersion"];
                 provider?: components["parameters"]["ratingProvider"];
                 stroppy_version?: components["parameters"]["ratingStroppy"];
-                /** @description Size league (`db:M`); all leagues when omitted. */
-                league?: components["parameters"]["ratingLeague"];
+                /** @description Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario; all when omitted. */
+                scenario?: components["parameters"]["ratingScenario"];
+                /** @description Hardware keys (`HardwareClass.key`) to keep; all when omitted. */
+                hardware?: components["parameters"]["ratingHardware"];
                 period?: components["parameters"]["ratingPeriod"];
                 cursor?: components["parameters"]["cursor"];
                 limit?: components["parameters"]["limit"];

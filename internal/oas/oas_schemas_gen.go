@@ -5630,6 +5630,70 @@ func (s *GrafanaSessionDashboardsItem) SetPerMachine(val OptBool) {
 	s.PerMachine = val
 }
 
+// The stand a run measured, without its runner — machines grouped by shape, biggest first.
+// Ref: #/components/schemas/HardwareClass
+type HardwareClass struct {
+	// Stable key to filter by, e.g. `2x4c16g+1x2c4g`.
+	Key      string                      `json:"key"`
+	Machines []HardwareClassMachinesItem `json:"machines"`
+}
+
+// GetKey returns the value of Key.
+func (s *HardwareClass) GetKey() string {
+	return s.Key
+}
+
+// GetMachines returns the value of Machines.
+func (s *HardwareClass) GetMachines() []HardwareClassMachinesItem {
+	return s.Machines
+}
+
+// SetKey sets the value of Key.
+func (s *HardwareClass) SetKey(val string) {
+	s.Key = val
+}
+
+// SetMachines sets the value of Machines.
+func (s *HardwareClass) SetMachines(val []HardwareClassMachinesItem) {
+	s.Machines = val
+}
+
+type HardwareClassMachinesItem struct {
+	Count    int `json:"count"`
+	CPU      int `json:"cpu"`
+	MemoryGB int `json:"memory_gb"`
+}
+
+// GetCount returns the value of Count.
+func (s *HardwareClassMachinesItem) GetCount() int {
+	return s.Count
+}
+
+// GetCPU returns the value of CPU.
+func (s *HardwareClassMachinesItem) GetCPU() int {
+	return s.CPU
+}
+
+// GetMemoryGB returns the value of MemoryGB.
+func (s *HardwareClassMachinesItem) GetMemoryGB() int {
+	return s.MemoryGB
+}
+
+// SetCount sets the value of Count.
+func (s *HardwareClassMachinesItem) SetCount(val int) {
+	s.Count = val
+}
+
+// SetCPU sets the value of CPU.
+func (s *HardwareClassMachinesItem) SetCPU(val int) {
+	s.CPU = val
+}
+
+// SetMemoryGB sets the value of MemoryGB.
+func (s *HardwareClassMachinesItem) SetMemoryGB(val int) {
+	s.MemoryGB = val
+}
+
 // Ref: #/components/schemas/Health
 type Health struct {
 	Status     HealthStatus     `json:"status"`
@@ -17873,17 +17937,18 @@ func (s *QuotaReportQuotasItem) SetZone(val OptString) {
 
 // Ref: #/components/schemas/RatingEntry
 type RatingEntry struct {
-	Rank           int             `json:"rank"`
-	Value          float64         `json:"value"`
-	Unit           string          `json:"unit"`
-	DbKind         DatabaseKind    `json:"db_kind"`
-	DbVersion      OptString       `json:"db_version"`
-	TopologyLabel  OptString       `json:"topology_label"`
-	NodeCount      OptInt          `json:"node_count"`
-	Sizes          OptRoleSizes    `json:"sizes"`
-	League         string          `json:"league"`
-	WorkloadName   OptString       `json:"workload_name"`
-	Script         OptString       `json:"script"`
+	Rank          int          `json:"rank"`
+	Value         float64      `json:"value"`
+	Unit          string       `json:"unit"`
+	DbKind        DatabaseKind `json:"db_kind"`
+	DbVersion     OptString    `json:"db_version"`
+	TopologyLabel OptString    `json:"topology_label"`
+	NodeCount     OptInt       `json:"node_count"`
+	Sizes         OptRoleSizes `json:"sizes"`
+	WorkloadName  OptString    `json:"workload_name"`
+	// Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`.
+	Scenario       string          `json:"scenario"`
+	Hardware       HardwareClass   `json:"hardware"`
 	StroppyVersion OptString       `json:"stroppy_version"`
 	ProviderKind   OptProviderKind `json:"provider_kind"`
 	RunAt          time.Time       `json:"run_at"`
@@ -17937,19 +18002,19 @@ func (s *RatingEntry) GetSizes() OptRoleSizes {
 	return s.Sizes
 }
 
-// GetLeague returns the value of League.
-func (s *RatingEntry) GetLeague() string {
-	return s.League
-}
-
 // GetWorkloadName returns the value of WorkloadName.
 func (s *RatingEntry) GetWorkloadName() OptString {
 	return s.WorkloadName
 }
 
-// GetScript returns the value of Script.
-func (s *RatingEntry) GetScript() OptString {
-	return s.Script
+// GetScenario returns the value of Scenario.
+func (s *RatingEntry) GetScenario() string {
+	return s.Scenario
+}
+
+// GetHardware returns the value of Hardware.
+func (s *RatingEntry) GetHardware() HardwareClass {
+	return s.Hardware
 }
 
 // GetStroppyVersion returns the value of StroppyVersion.
@@ -18027,19 +18092,19 @@ func (s *RatingEntry) SetSizes(val OptRoleSizes) {
 	s.Sizes = val
 }
 
-// SetLeague sets the value of League.
-func (s *RatingEntry) SetLeague(val string) {
-	s.League = val
-}
-
 // SetWorkloadName sets the value of WorkloadName.
 func (s *RatingEntry) SetWorkloadName(val OptString) {
 	s.WorkloadName = val
 }
 
-// SetScript sets the value of Script.
-func (s *RatingEntry) SetScript(val OptString) {
-	s.Script = val
+// SetScenario sets the value of Scenario.
+func (s *RatingEntry) SetScenario(val string) {
+	s.Scenario = val
+}
+
+// SetHardware sets the value of Hardware.
+func (s *RatingEntry) SetHardware(val HardwareClass) {
+	s.Hardware = val
 }
 
 // SetStroppyVersion sets the value of StroppyVersion.
@@ -18105,10 +18170,13 @@ func (s *RatingFlags) SetGlobal(val OptBool) {
 
 // Ref: #/components/schemas/RatingPage
 type RatingPage struct {
-	Metric  MetricDef     `json:"metric"`
-	Leagues []string      `json:"leagues"`
-	Data    []RatingEntry `json:"data"`
-	Meta    PageMeta      `json:"meta"`
+	Metric MetricDef `json:"metric"`
+	// Scenarios that have rated runs, to filter by.
+	Scenarios []string `json:"scenarios"`
+	// Hardware classes that have rated runs, to filter by.
+	Hardware []HardwareClass `json:"hardware"`
+	Data     []RatingEntry   `json:"data"`
+	Meta     PageMeta        `json:"meta"`
 }
 
 // GetMetric returns the value of Metric.
@@ -18116,9 +18184,14 @@ func (s *RatingPage) GetMetric() MetricDef {
 	return s.Metric
 }
 
-// GetLeagues returns the value of Leagues.
-func (s *RatingPage) GetLeagues() []string {
-	return s.Leagues
+// GetScenarios returns the value of Scenarios.
+func (s *RatingPage) GetScenarios() []string {
+	return s.Scenarios
+}
+
+// GetHardware returns the value of Hardware.
+func (s *RatingPage) GetHardware() []HardwareClass {
+	return s.Hardware
 }
 
 // GetData returns the value of Data.
@@ -18136,9 +18209,14 @@ func (s *RatingPage) SetMetric(val MetricDef) {
 	s.Metric = val
 }
 
-// SetLeagues sets the value of Leagues.
-func (s *RatingPage) SetLeagues(val []string) {
-	s.Leagues = val
+// SetScenarios sets the value of Scenarios.
+func (s *RatingPage) SetScenarios(val []string) {
+	s.Scenarios = val
+}
+
+// SetHardware sets the value of Hardware.
+func (s *RatingPage) SetHardware(val []HardwareClass) {
+	s.Hardware = val
 }
 
 // SetData sets the value of Data.
@@ -21383,9 +21461,7 @@ type RunSummary struct {
 	ProviderKind    OptProviderKind `json:"provider_kind"`
 	ProviderProfile OptRef          `json:"provider_profile"`
 	Sizes           OptRoleSizes    `json:"sizes"`
-	// Size league key for rating.
-	League      OptString  `json:"league"`
-	ProgressPct OptFloat64 `json:"progress_pct"`
+	ProgressPct     OptFloat64      `json:"progress_pct"`
 	// How far the current phase is (read-time): the workload by elapsed planned time, other phases by
 	// finished steps.
 	PhaseProgressPct OptFloat64 `json:"phase_progress_pct"`
@@ -21455,11 +21531,6 @@ func (s *RunSummary) GetProviderProfile() OptRef {
 // GetSizes returns the value of Sizes.
 func (s *RunSummary) GetSizes() OptRoleSizes {
 	return s.Sizes
-}
-
-// GetLeague returns the value of League.
-func (s *RunSummary) GetLeague() OptString {
-	return s.League
 }
 
 // GetProgressPct returns the value of ProgressPct.
@@ -21540,11 +21611,6 @@ func (s *RunSummary) SetProviderProfile(val OptRef) {
 // SetSizes sets the value of Sizes.
 func (s *RunSummary) SetSizes(val OptRoleSizes) {
 	s.Sizes = val
-}
-
-// SetLeague sets the value of League.
-func (s *RunSummary) SetLeague(val OptString) {
-	s.League = val
 }
 
 // SetProgressPct sets the value of ProgressPct.

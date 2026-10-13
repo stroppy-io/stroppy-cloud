@@ -109,12 +109,6 @@ export function ReportSummary({ run, title }: { run: SharedRun; title?: string }
               {t('public.setup.workload')}
               <span className={styles.factV}>{s.workload_name ?? '—'}</span>
             </span>
-            {s.league && (
-              <span className={styles.fact}>
-                {t('public.setup.league')}
-                <span className={styles.factV}>{s.league}</span>
-              </span>
-            )}
           </div>
         </div>
         <StatusBadge status={run.status} />

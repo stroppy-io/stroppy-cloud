@@ -25,7 +25,7 @@
   },
   "empty": {
     "title": "No schedules yet",
-    "hint": "A schedule launches a test or a suite on a cron; the server runs the clock.",
+    "hint": "A schedule launches a test or a suite on cron by itself, every night for example. The server keeps time, so you don't need the console open.",
     "cta": "Create a schedule"
   },
   "paused": "Paused",
@@ -66,7 +66,7 @@
   },
   "form": {
     "title": "New schedule",
-    "subtitle": "Pick what to launch, when, and with which overrides.",
+    "subtitle": "What to launch, when, and with which changes.",
     "name": "Name",
     "namePlaceholder": "e.g. nightly 02:00",
     "targetKind": "Launch",
@@ -87,21 +87,21 @@
     "timezone": "Timezone",
     "timezoneLocal": "Your timezone",
     "enabled": "Enabled",
-    "enabledHint": "Paused schedules keep their settings and can be resumed any time.",
+    "enabledHint": "Pausing keeps the settings, and you can turn the schedule back on at any time.",
     "overrides": "Launch overrides",
-    "overridesHint": "Applied on top of the target's own settings. Leave empty to inherit.",
+    "overridesHint": "Applied on top of the test or suite settings. An empty field keeps the target value.",
     "provider": "Provider profile",
     "providerPlaceholder": "Inherit from target",
     "sizesToggle": "Override sizes per role",
     "keep": "Keep stands",
-    "keepPlaceholder": "e.g. 2h — empty inherits",
+    "keepPlaceholder": "e.g. 2h. Empty inherits",
     "rating": "Rating",
     "ratingTenant": "Tenant rating",
     "ratingGlobal": "Global rating",
     "errors": {
       "name": "Name is required (up to 120 characters)",
       "target": "Pick a test or a suite",
-      "cron": "5 fields: minute hour day month weekday — e.g. 0 2 * * *",
+      "cron": "5 fields: minute hour day month weekday. E.g. 0 2 * * *",
       "timezone": "Pick a timezone from the list",
       "keep": "Use a duration like 30m or 2h"
     }
@@ -109,7 +109,7 @@
   "preview": {
     "title": "Next fire times",
     "inZone": "in {{tz}}",
-    "none": "No fire times — check the expression.",
+    "none": "No fire times. Check the expression.",
     "local": "your time"
   },
   "cron": {
@@ -140,7 +140,7 @@
       "suite_run": "Suite run"
     },
     "empty": "No firings yet",
-    "emptyHint": "Runs triggered by this schedule appear here."
+    "emptyHint": "Runs this schedule started show up here."
   },
   "about": {
     "title": "About",

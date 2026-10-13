@@ -80,10 +80,7 @@ export function SuiteReport({ suite, title }: { suite: SuiteSnapshot; title?: st
                   <td>
                     {cell?.summary.db_kind} {cell?.summary.db_version}
                   </td>
-                  <td>
-                    {cell?.summary.topology_label ?? '—'}
-                    {cell?.summary.league ? ` · ${cell.summary.league}` : ''}
-                  </td>
+                  <td>{cell?.summary.topology_label ?? '—'}</td>
                   <td className="num">{formatMetric(r.metrics?.tps?.value, 'tps')}</td>
                   <td className="num">{formatMetric(r.metrics?.latency_p99_ms?.value, 'ms')}</td>
                   <td className="num">{formatMetric(r.metrics?.errors?.value, 'count')}</td>

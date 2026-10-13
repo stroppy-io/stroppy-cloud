@@ -1,8 +1,11 @@
 import type { RatingEntry } from '@api/types'
+import { ProductIcon } from '@components/ProductIcon'
+import { RankBadge } from '@components/RankBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
 import { formatMetric } from '@helpers/format'
+import { hardwareLabel } from '@helpers/rating'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
 
@@ -34,7 +37,7 @@ const getStyles = (theme: GrafanaTheme2, p: RatingPalette) => ({
   rows: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(0.75) }),
   row: css({
     display: 'grid',
-    gridTemplateColumns: '36px minmax(0, 1fr) auto',
+    gridTemplateColumns: '48px minmax(0, 1fr) auto',
     alignItems: 'center',
     gap: theme.spacing(2),
     padding: theme.spacing(1.25, 1.5),
@@ -49,8 +52,13 @@ const getStyles = (theme: GrafanaTheme2, p: RatingPalette) => ({
     '&:hover': { borderColor: theme.colors.primary.border, textDecoration: 'none', color: p.text },
     '&:focus-visible': { outline: `2px solid ${theme.colors.primary.main}`, outlineOffset: 2 },
   }),
-  rank: css({ fontFamily: theme.typography.fontFamilyMonospace, color: p.muted }),
-  podium: css({ color: theme.colors.primary.text }),
+  rank: css({ fontSize: theme.typography.body.fontSize }),
+  slot: css({
+    borderStyle: 'dashed',
+    background: 'none',
+    color: p.muted,
+  }),
+  slotRank: css({ opacity: 0.45 }),
   name: css({ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }),
   meta: css({ color: p.muted, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }),
   value: css({ fontFamily: theme.typography.fontFamilyMonospace, textAlign: 'right' }),
@@ -77,16 +85,19 @@ export function RatingRows({
   error,
   animateKey,
   shareHref,
+  slots = 0,
 }: {
   rows: RatingEntry[]
   unit?: string
   palette: RatingPalette
   loading?: boolean
   error?: boolean
-  /** Rows re-enter when this changes (another league, another filter). */
+  /** Rows re-enter when this changes (another scenario, another filter). */
   animateKey?: string
   /** Where a row with a public report links to; rows without one are plain. */
   shareHref?: (token: string) => string
+  /** Show this many places: the free ones as empty rows, so a short list still reads as a board. */
+  slots?: number
 }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles, palette)
@@ -112,7 +123,7 @@ export function RatingRows({
   if (rows.length === 0) {
     return (
       <div className={styles.state}>
-        <Icon name="star" size="xxl" />
+        <ProductIcon name="trophy" size="xxl" />
         <div className={styles.stateTitle}>{t('landing.rating.emptyTitle')}</div>
         <div>{t('landing.rating.emptyBody')}</div>
       </div>
@@ -122,16 +133,13 @@ export function RatingRows({
     <div className={styles.rows}>
       <AnimatePresence initial={false} mode="popLayout">
         {rows.map((e, i) => {
-          const meta = [
-            e.topology_label,
-            e.node_count ? t('landing.board.nodes', { count: e.node_count }) : undefined,
-            e.workload_name,
-            e.provider_kind,
-          ].filter(Boolean)
+          const meta = [e.topology_label, hardwareLabel(t, e.hardware), e.provider_kind].filter(
+            Boolean
+          )
           const href = e.share_token && shareHref ? shareHref(e.share_token) : undefined
           const body = (
             <>
-              <span className={cx(styles.rank, e.rank <= 3 && styles.podium)}>#{e.rank}</span>
+              <RankBadge rank={e.rank} size="lg" className={styles.rank} />
               <div style={{ minWidth: 0 }}>
                 <div className={styles.name}>
                   {KIND_TITLE[e.db_kind] ?? e.db_kind} {e.db_version}
@@ -165,6 +173,15 @@ export function RatingRows({
           )
         })}
       </AnimatePresence>
+      {Array.from({ length: Math.max(0, slots - rows.length) }, (_, i) => rows.length + i + 1).map(
+        (place) => (
+          <div key={`slot-${place}`} className={cx(styles.row, styles.slot)}>
+            <RankBadge rank={place} size="lg" className={cx(styles.rank, styles.slotRank)} />
+            <span>{t('landing.rating.openSpot')}</span>
+            <span />
+          </div>
+        )
+      )}
     </div>
   )
 }

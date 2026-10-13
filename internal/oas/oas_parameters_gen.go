@@ -8615,11 +8615,14 @@ type GetPublicRatingParams struct {
 	Version        []string       `json:",omitempty"`
 	Provider       []ProviderKind `json:",omitempty"`
 	StroppyVersion []string       `json:",omitempty"`
-	// Size league (`db:M`); all leagues when omitted.
-	League OptString       `json:",omitempty,omitzero"`
-	Period OptRatingPeriod `json:",omitempty,omitzero"`
-	Cursor OptString       `json:",omitempty,omitzero"`
-	Limit  OptInt          `json:",omitempty,omitzero"`
+	// Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario;
+	// all when omitted.
+	Scenario []string `json:",omitempty"`
+	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
+	Hardware []string        `json:",omitempty"`
+	Period   OptRatingPeriod `json:",omitempty,omitzero"`
+	Cursor   OptString       `json:",omitempty,omitzero"`
+	Limit    OptInt          `json:",omitempty,omitzero"`
 }
 
 func unpackGetPublicRatingParams(packed middleware.Parameters) (params GetPublicRatingParams) {
@@ -8670,11 +8673,20 @@ func unpackGetPublicRatingParams(packed middleware.Parameters) (params GetPublic
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "league",
+			Name: "scenario",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.League = v.(OptString)
+			params.Scenario = v.([]string)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "hardware",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Hardware = v.([]string)
 		}
 	}
 	{
@@ -8971,35 +8983,37 @@ func decodeGetPublicRatingParams(args [0]string, argsEscaped bool, r *http.Reque
 			Err:  err,
 		}
 	}
-	// Decode query: league.
+	// Decode query: scenario.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "league",
+			Name:    "scenario",
 			Style:   uri.QueryStyleForm,
-			Explode: true,
+			Explode: false,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLeagueVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotScenarioVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotScenarioVal = c
+						return nil
+					}(); err != nil {
 						return err
 					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotLeagueVal = c
+					params.Scenario = append(params.Scenario, paramsDotScenarioVal)
 					return nil
-				}(); err != nil {
-					return err
-				}
-				params.League.SetTo(paramsDotLeagueVal)
-				return nil
+				})
 			}); err != nil {
 				return err
 			}
@@ -9007,7 +9021,50 @@ func decodeGetPublicRatingParams(args [0]string, argsEscaped bool, r *http.Reque
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "league",
+			Name: "scenario",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: hardware.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "hardware",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotHardwareVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotHardwareVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Hardware = append(params.Hardware, paramsDotHardwareVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "hardware",
 			In:   "query",
 			Err:  err,
 		}
@@ -11611,11 +11668,14 @@ type GetTenantRatingParams struct {
 	Version        []string       `json:",omitempty"`
 	Provider       []ProviderKind `json:",omitempty"`
 	StroppyVersion []string       `json:",omitempty"`
-	// Size league (`db:M`); all leagues when omitted.
-	League OptString       `json:",omitempty,omitzero"`
-	Period OptRatingPeriod `json:",omitempty,omitzero"`
-	Cursor OptString       `json:",omitempty,omitzero"`
-	Limit  OptInt          `json:",omitempty,omitzero"`
+	// Workload scenario (the script family, `tpcc`, `ycsb`). A number compares only within one scenario;
+	// all when omitted.
+	Scenario []string `json:",omitempty"`
+	// Hardware keys (`HardwareClass.key`) to keep; all when omitted.
+	Hardware []string        `json:",omitempty"`
+	Period   OptRatingPeriod `json:",omitempty,omitzero"`
+	Cursor   OptString       `json:",omitempty,omitzero"`
+	Limit    OptInt          `json:",omitempty,omitzero"`
 }
 
 func unpackGetTenantRatingParams(packed middleware.Parameters) (params GetTenantRatingParams) {
@@ -11673,11 +11733,20 @@ func unpackGetTenantRatingParams(packed middleware.Parameters) (params GetTenant
 	}
 	{
 		key := middleware.ParameterKey{
-			Name: "league",
+			Name: "scenario",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.League = v.(OptString)
+			params.Scenario = v.([]string)
+		}
+	}
+	{
+		key := middleware.ParameterKey{
+			Name: "hardware",
+			In:   "query",
+		}
+		if v, ok := packed[key]; ok {
+			params.Hardware = v.([]string)
 		}
 	}
 	{
@@ -12039,35 +12108,37 @@ func decodeGetTenantRatingParams(args [1]string, argsEscaped bool, r *http.Reque
 			Err:  err,
 		}
 	}
-	// Decode query: league.
+	// Decode query: scenario.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "league",
+			Name:    "scenario",
 			Style:   uri.QueryStyleForm,
-			Explode: true,
+			Explode: false,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotLeagueVal string
-				if err := func() error {
-					val, err := d.DecodeValue()
-					if err != nil {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotScenarioVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotScenarioVal = c
+						return nil
+					}(); err != nil {
 						return err
 					}
-
-					c, err := conv.ToString(val)
-					if err != nil {
-						return err
-					}
-
-					paramsDotLeagueVal = c
+					params.Scenario = append(params.Scenario, paramsDotScenarioVal)
 					return nil
-				}(); err != nil {
-					return err
-				}
-				params.League.SetTo(paramsDotLeagueVal)
-				return nil
+				})
 			}); err != nil {
 				return err
 			}
@@ -12075,7 +12146,50 @@ func decodeGetTenantRatingParams(args [1]string, argsEscaped bool, r *http.Reque
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "league",
+			Name: "scenario",
+			In:   "query",
+			Err:  err,
+		}
+	}
+	// Decode query: hardware.
+	if err := func() error {
+		cfg := uri.QueryParameterDecodingConfig{
+			Name:    "hardware",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.HasParam(cfg); err == nil {
+			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
+				return d.DecodeArray(func(d uri.Decoder) error {
+					var paramsDotHardwareVal string
+					if err := func() error {
+						val, err := d.DecodeValue()
+						if err != nil {
+							return err
+						}
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotHardwareVal = c
+						return nil
+					}(); err != nil {
+						return err
+					}
+					params.Hardware = append(params.Hardware, paramsDotHardwareVal)
+					return nil
+				})
+			}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "hardware",
 			In:   "query",
 			Err:  err,
 		}

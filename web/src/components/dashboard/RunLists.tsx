@@ -6,6 +6,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Text, useStyles2 } from '@grafana/ui'
 import { formatDuration, formatMetric } from '@helpers/format'
+import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { relativeTime } from '@helpers/time'
 import { useTranslation } from 'react-i18next'
 import { Panel, PanelEmpty } from './Panel'
@@ -269,7 +270,7 @@ export function TopResults({ items, slug }: { items: RatingEntry[]; slug: string
         items.map((e, i) =>
           e.run_id ? (
             <AppLink
-              key={`${e.league}-${e.rank}-${i}`}
+              key={`${e.scenario}-${e.rank}-${i}`}
               to="/t/$slug/runs/$id"
               params={{ slug, id: e.run_id }}
               plain
@@ -281,8 +282,7 @@ export function TopResults({ items, slug }: { items: RatingEntry[]; slug: string
                   {e.db_kind} {e.db_version} · {e.topology_label}
                 </div>
                 <div className={styles.sub}>
-                  {e.workload_name} · {t('dashboard.top.league', { league: e.league })} ·{' '}
-                  {e.provider_kind}
+                  {scenarioLabel(e.scenario)} · {hardwareLabel(t, e.hardware)} · {e.provider_kind}
                 </div>
               </div>
               <div className={styles.right}>

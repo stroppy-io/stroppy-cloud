@@ -113,7 +113,6 @@ export function RunSidebar({ run }: { run: Run }) {
               </span>
             ),
           },
-          { label: t('runs.overview.provider.league'), value: s?.league ?? '—' },
           {
             label: t('common.fields.sizes'),
             value: sizes.length ? (

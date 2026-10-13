@@ -72,8 +72,7 @@ export function ComparisonTable({
                   )}
                 </div>
                 <div className={styles.colSub}>
-                  {c.summary?.db_kind} {c.summary?.db_version} · {c.summary?.topology_label} ·{' '}
-                  {c.summary?.league}
+                  {c.summary?.db_kind} {c.summary?.db_version} · {c.summary?.topology_label}
                   <br />
                   {formatDate(c.started_at)} · {formatDuration(c.duration)}{' '}
                   <StatusBadge status={c.status} iconOnly />

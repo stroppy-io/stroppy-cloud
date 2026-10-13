@@ -191,32 +191,42 @@ func TestE2EShareCompareRating(t *testing.T) {
 		}
 	})
 
-	t.Run("rating: tenant and public leagues", func(t *testing.T) {
+	t.Run("rating: tenant and public, by scenario and hardware", func(t *testing.T) {
 		var page struct {
 			Metric struct {
 				Key string `json:"key"`
 			} `json:"metric"`
-			Leagues []string `json:"leagues"`
-			Data    []struct {
-				Rank       int     `json:"rank"`
-				Value      float64 `json:"value"`
-				RunID      string  `json:"run_id"`
-				League     string  `json:"league"`
-				TenantName string  `json:"tenant_name"`
-				ShareToken string  `json:"share_token"`
+			Scenarios []string `json:"scenarios"`
+			Hardware  []struct {
+				Key string `json:"key"`
+			} `json:"hardware"`
+			Data []struct {
+				Rank     int     `json:"rank"`
+				Value    float64 `json:"value"`
+				RunID    string  `json:"run_id"`
+				Scenario string  `json:"scenario"`
+				Hardware struct {
+					Key string `json:"key"`
+				} `json:"hardware"`
+				TenantName string `json:"tenant_name"`
+				ShareToken string `json:"share_token"`
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=tps", nil, tok), http.StatusOK, &page)
-		if len(page.Data) != 2 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || page.Data[1].Value != 1000 || len(page.Leagues) != 1 {
+		if len(page.Data) != 2 || page.Data[0].RunID != b.ID || page.Data[0].Rank != 1 || page.Data[1].Value != 1000 || len(page.Scenarios) != 1 || len(page.Hardware) != 1 {
 			t.Fatalf("tenant rating %+v", page)
 		}
 		e.want(e.req(http.MethodGet, base+"/rating?metric=latency_p95_ms", nil, tok), http.StatusOK, &page)
 		if page.Data[0].RunID != b.ID {
 			t.Fatalf("lower-is-better rating %+v", page)
 		}
-		e.want(e.req(http.MethodGet, base+"/rating?metric=tps&league="+page.Data[0].League, nil, tok), http.StatusOK, &page)
+		e.want(e.req(http.MethodGet, base+"/rating?metric=tps&scenario="+page.Data[0].Scenario+"&hardware="+page.Data[0].Hardware.Key, nil, tok), http.StatusOK, &page)
 		if len(page.Data) != 2 {
-			t.Fatalf("league filter %+v", page)
+			t.Fatalf("scenario and hardware filter %+v", page)
+		}
+		e.want(e.req(http.MethodGet, base+"/rating?metric=tps&scenario=nope", nil, tok), http.StatusOK, &page)
+		if len(page.Data) != 0 {
+			t.Fatalf("unknown scenario keeps rows %+v", page)
 		}
 		e.problem(e.req(http.MethodGet, base+"/rating?metric=node_cpu_usage", nil, tok), http.StatusUnprocessableEntity, "invalid")
 		// Public: only the opted-in run, named by the tenant's public name, linked to its share.

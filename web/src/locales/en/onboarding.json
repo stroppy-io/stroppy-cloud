@@ -1,15 +1,15 @@
 {
   "welcome": {
     "title": "Welcome, {{name}}",
-    "subtitle": "Stroppy Cloud brings up databases in your cloud, drives load against them and compares the results.",
+    "subtitle": "This is where you find out how your database holds up under load: Stroppy Cloud brings it up in your cloud, runs a scenario like TPC-C and shows how many queries per second it handled and at what latency.",
     "verifyTitle": "Confirm your e-mail",
     "verifyBody": "We mailed you a code. If someone invited you to a tenant, the invite applies right after you confirm.",
     "verify": "Confirm e-mail",
-    "notInvited": "Nobody invited me — create my tenant",
+    "notInvited": "Nobody invited me. Create my tenant",
     "invitedTitle": "You are already on a team:",
     "goTenant": "Go to {{tenant}}",
     "createTitle": "Start with your tenant",
-    "createBody": "A tenant is your team's space: tests, runs, cloud providers and members. Invite colleagues later.",
+    "createBody": "A tenant holds everything your team does: tests, runs, cloud keys and the member list. Create one and connect a cloud; you can invite colleagues later.",
     "create": "Create a tenant",
     "demo": "See what a result looks like",
     "howTitle": "How Stroppy Cloud works",
@@ -18,65 +18,189 @@
   "concepts": {
     "database": {
       "title": "Database",
-      "body": "Which DBMS, version and topology: single node, replicas, cluster.",
-      "more": "The database: DBMS (PostgreSQL, MySQL, YDB, CockroachDB…), version, topology (single node, replicas, a Patroni or Galera cluster) and its parameters. One database serves many tests.",
-      "where": "Console → Library → Databases"
+      "body": "What you're testing: the DBMS, its version and how the nodes connect.",
+      "more": "The database you want to test: PostgreSQL, MySQL, YDB, CockroachDB and more, its version, topology (one node, replicas, a Patroni or Galera cluster) and settings. Describe it once and drop it into any test after that.",
+      "where": "Console → Library → Databases",
+      "sample": "PostgreSQL 17 · Patroni, 3 nodes",
+      "facts": [
+        {
+          "label": "Engines",
+          "items": [
+            "PostgreSQL 15–18",
+            "MySQL 8.0 / 8.4",
+            "MariaDB 10.11–11.8",
+            "YDB",
+            "CockroachDB",
+            "OrioleDB",
+            "Picodata",
+            "your own database by address"
+          ]
+        },
+        {
+          "label": "Topologies",
+          "items": [
+            "single node",
+            "replicas",
+            "Patroni + etcd",
+            "semi-sync",
+            "Group Replication",
+            "Galera"
+          ]
+        },
+        {
+          "label": "Not yet",
+          "items": ["MaxScale"]
+        }
+      ]
     },
     "workload": {
       "title": "Workload",
-      "body": "What to run: Stroppy scenarios (TPC-C, TPC-H…) in segments.",
-      "more": "What to load and for how long: stroppy scenarios in segments — say, data load, then TPC-C at 64 VU for 10 minutes. A workload does not depend on the database and is reused.",
-      "where": "Console → Library → Workloads"
+      "body": "How you load it: the scenario, the number of users and how long.",
+      "more": "A load scenario, for example “load the TPC-C data, then run 64 virtual users for 10 minutes”. A workload isn't tied to a database, so you can run the same one on PostgreSQL and on MySQL and compare them fairly.",
+      "where": "Console → Library → Workloads",
+      "sample": "TPC-C · 64 VU · 10 min",
+      "facts": [
+        {
+          "label": "Scenarios",
+          "items": ["TPC-C", "TPC-B", "TPC-H", "TPC-DS", "YCSB", "simple"]
+        },
+        {
+          "label": "Segments",
+          "items": ["data load", "warmup", "load"]
+        },
+        {
+          "label": "Parameters",
+          "items": ["VUs", "duration", "warmup", "stroppy script"]
+        }
+      ]
     },
     "test": {
       "title": "Test",
-      "body": "Database + workload + machine sizes. This is what you launch.",
-      "more": "A database and a workload, plus machine sizes per role and a default provider. A test is checked up front: does the hardware meet each role's requirements.",
-      "where": "Console → Tests"
+      "body": "What you launch: a database, a workload and machine sizes.",
+      "more": "A test ties a database to a workload and says which machines to run them on: how much CPU and memory the database nodes and the runner get. Before you launch, Stroppy Cloud checks the machines are big enough and suggests sizes if they aren't.",
+      "where": "Console → Tests",
+      "sample": "db S ×3 · runner S",
+      "facts": [
+        {
+          "label": "Roles",
+          "items": ["db", "replica", "proxy", "runner"]
+        },
+        {
+          "label": "Sizes",
+          "items": ["XS", "S", "M", "L", "XL"]
+        },
+        {
+          "label": "Before launch",
+          "items": ["hardware checked against roles", "suggested sizes"]
+        }
+      ]
     },
     "run": {
       "title": "Run",
-      "body": "A stand comes up in the cloud, the load runs, everything is live.",
-      "more": "One launch of a test: the stand comes up in the cloud, the database is laid out and checked, the load runs. Logs, metrics and QPS are live.",
-      "where": "Console → Runs"
+      "body": "One run of a test: the stand, the load, the result.",
+      "more": "Every press of Launch creates a run. Stroppy Cloud brings up the stand in your cloud, installs and checks the database and drives the load, while you watch logs, metrics and QPS in the console.",
+      "where": "Console → Runs",
+      "sample": "load running · 7:12 of 10:00",
+      "facts": [
+        {
+          "label": "Phases",
+          "items": ["stand", "deploy", "load", "collect", "teardown"]
+        },
+        {
+          "label": "Live",
+          "items": ["logs", "metrics", "QPS", "events"]
+        },
+        {
+          "label": "Stand",
+          "items": ["removed by itself", "can be kept for a while"]
+        }
+      ]
     },
     "results": {
       "title": "Results",
-      "body": "QPS, latency, errors, charts; compare and rate.",
-      "more": "What a run leaves: a report with metrics, comparison with other runs, a place in the tenant or public rating, a public link to the overview.",
+      "body": "How many queries per second the database handled, and at what latency.",
+      "more": "A run leaves a report: QPS, latency, errors and charts for each segment. You can compare it with other runs, send it to the rating or open it for colleagues by a public link.",
       "where": "Console → Runs, Compare, Rating",
       "parts": {
         "report": "Report",
         "compare": "Compare",
         "rating": "Rating",
         "share": "Link"
-      }
+      },
+      "sample": "212 tps · 0 errors",
+      "facts": [
+        {
+          "label": "Report",
+          "items": ["QPS / TPS", "latency p50–p99", "errors", "charts"]
+        },
+        {
+          "label": "Next",
+          "items": ["compare runs", "tenant rating", "public rating", "overview link"]
+        }
+      ]
     },
     "suite": {
       "title": "Suite",
-      "body": "A matrix of tests and sizes — compare variants in one go.",
-      "more": "A matrix: several tests × size or version variants. Launched with one button, its results line up in one comparison table.",
-      "where": "Console → Suites"
+      "body": "Several variants of a test at once, to compare them.",
+      "more": "A suite is for questions like “which is faster”: PostgreSQL 16 or 17, S machines or M. You list the variants, the suite runs them all and puts the results in one table.",
+      "where": "Console → Suites",
+      "sample": "3 versions × 2 sizes = 6 runs",
+      "facts": [
+        {
+          "label": "Matrix axes",
+          "items": ["tests", "sizes", "versions", "parameters"]
+        },
+        {
+          "label": "Outcome",
+          "items": ["one comparison table"]
+        }
+      ]
     },
     "schedule": {
       "title": "Schedule",
-      "body": "Runs a test or a suite on a cron.",
-      "more": "Launches a test or a suite on cron — for regular measurements and regressions. Each launch is an ordinary run with its own report.",
-      "where": "Console → Schedules"
+      "body": "Launches a test on its own, on cron.",
+      "more": "Every night at 03:00, say. That way you notice a new version or new database settings got slower before production does; each of those runs leaves an ordinary report.",
+      "where": "Console → Schedules",
+      "sample": "nightly at 03:00",
+      "facts": [
+        {
+          "label": "Launches",
+          "items": ["a test", "a suite"]
+        },
+        {
+          "label": "For",
+          "items": ["regressions", "history on a chart"]
+        }
+      ]
     },
     "provider": {
       "title": "Provider",
-      "body": "Your cloud (Yandex Cloud, AWS): stands come up in it.",
-      "more": "Your Yandex Cloud or AWS account. A run's machines are created there and removed afterwards; you pay the cloud directly.",
-      "where": "Console → Settings → Providers"
+      "body": "Your cloud account, where the machines come up.",
+      "more": "A key to your Yandex Cloud account (AWS soon). Stroppy Cloud creates machines there for the length of a run and removes them afterwards; the cloud bills you for them directly.",
+      "where": "Console → Settings → Providers",
+      "sample": "Yandex Cloud · ru-central1",
+      "facts": [
+        {
+          "label": "Clouds",
+          "items": ["Yandex Cloud", "AWS. Soon"]
+        },
+        {
+          "label": "Access",
+          "items": ["service account key", "checked before saving"]
+        },
+        {
+          "label": "Billing",
+          "items": ["straight to your cloud"]
+        }
+      ]
     },
     "tenant": {
       "title": "Tenant",
-      "body": "Your team's space: everything above lives in it.",
-      "more": "The team's space: members and roles, providers, the library, runs and limits — all of it lives in a tenant.",
+      "body": "Your team's space; everything else lives in it.",
+      "more": "A tenant groups people and their work: members with roles, cloud keys, the library of databases and workloads, runs and limits. Different teams work in different tenants and can't see each other.",
       "where": "Console → Tenant settings"
     },
-    "hint": "Hover a block to see what it is and how it works."
+    "hint": "Hover a block to read what it is for."
   },
   "tour": {
     "progress": "{{current}} of {{total}}",
@@ -85,43 +209,43 @@
     "done": "Done",
     "tests": {
       "title": "Tests",
-      "body": "The core: test = database + workload + sizes. Benchmarks start here."
+      "body": "This is where benchmarks start: each test already knows which database, which workload and which machines to use."
     },
     "runs": {
       "title": "Runs",
-      "body": "Every run: live view, logs, metrics and results."
+      "body": "Every run of every test. While a run is going you see its logs and metrics here, and once it's done the report is here too."
     },
     "databases": {
       "title": "Databases",
-      "body": "DBMS definitions the tests use."
+      "body": "The DBMS setups you're testing. Tests take their database from here."
     },
     "workloads": {
       "title": "Workloads",
-      "body": "Stroppy scenarios that run against databases."
+      "body": "Load scenarios: what to do to the database and for how long."
     },
     "suites": {
       "title": "Suites",
-      "body": "Test matrices — compare several variants in one run."
+      "body": "Sets of variants of one test, compared with one button."
     },
     "examples": {
       "title": "Examples",
-      "body": "Ready databases, workloads and tests: clone and run."
+      "body": "Ready tests that already work. Clone an example and launch it to see what a result looks like straight away."
     },
     "settings": {
       "title": "Settings",
-      "body": "Cloud providers, members, limits and webhooks of the tenant."
+      "body": "Cloud keys, team members, limits and webhooks."
     },
     "search": {
       "title": "Search",
-      "body": "Runs, tests, databases by name. Shortcut — /."
+      "body": "Finds runs, tests and databases by name; press / to open it."
     },
     "tenant": {
       "title": "Tenant",
-      "body": "Switch between tenants or create a new one."
+      "body": "Switch between teams here, or create a new one."
     },
     "userMenu": {
       "title": "Your menu",
-      "body": "Profile, theme, language. You can take this tour again from here."
+      "body": "Profile, theme and language. You can replay this tour from here too."
     }
   },
   "menu": {
@@ -129,11 +253,11 @@
     "concepts": "How Stroppy works"
   },
   "empty": {
-    "runs": "A run is one execution of a test: a cloud stand, the load, metrics and a result. Runs appear when you launch a test or a suite.",
-    "tests": "A test is a database, a workload and machine sizes together. Start from an example — it is set up — or build one from your databases and workloads.",
-    "databases": "A database is a DBMS definition: engine, version, topology and configs. Tests reference it; a test can also define its database inline.",
-    "workloads": "A workload is Stroppy scenarios (TPC-C, TPC-H…) in segments: what to run, how hard and for how long.",
-    "suites": "A suite is a matrix of tests and sizes: several variants in one run, easy to compare.",
-    "schedules": "A schedule runs a test or a suite on a cron — e.g. nightly, to catch regressions."
+    "runs": "Runs show up here once you launch a test or a suite. Each one brings up a stand in your cloud, drives the load and leaves a report.",
+    "tests": "A test says which database to check, under which load and on which machines. The easiest start is an example: it's already set up and launches right away.",
+    "databases": "This is where you keep the databases you test: engine, version, topology and configs. You can also define a database right inside a test, but keeping it here lets several tests share it.",
+    "workloads": "A workload says what to do to the database, for example load the TPC-C data and run queries for 10 minutes. The same workload runs on different databases.",
+    "suites": "A suite runs several variants of a test at once, say three PostgreSQL versions on two machine sizes, and puts the results in one table.",
+    "schedules": "A schedule launches a test or a suite on cron by itself, every night for example, so you catch a slowdown before your users do."
   }
 }

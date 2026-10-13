@@ -299,7 +299,7 @@ type Repository interface {
 	ByIDs(ctx context.Context, ids []uuid.UUID) ([]Run, error)
 	Counts(ctx context.Context, tenantID uuid.UUID) (Counts, error)
 	Rating(ctx context.Context, q RatingQuery) ([]RatingRow, error)
-	Leagues(ctx context.Context, tenantID string) ([]string, error)
+	RatingFacets(ctx context.Context, tenantID string) ([]RatingFacet, error)
 	SetFavorite(ctx context.Context, userID, tenantID uuid.UUID, kind string, targetID uuid.UUID, on bool) error
 	FavoritesOf(ctx context.Context, userID, tenantID uuid.UUID, kind string) (map[uuid.UUID]bool, error)
 }
@@ -444,17 +444,27 @@ type RatingQuery struct {
 	Versions        []string
 	Providers       []string
 	StroppyVersions []string
-	League          string
+	Scenarios       []string
+	Hardware        []string
 	Since           time.Time
 	Limit           int
 	Offset          int
 }
 
-// RatingRow is one ranked run.
+// RatingRow is one ranked run with what makes its number comparable: the
+// scenario (the workload's script family, "tpcc") and the hardware key of
+// the stand without its runner (see Hardware).
 type RatingRow struct {
 	Run              Run
 	TenantName       string
 	TenantPublicName string
-	League           string
+	Scenario         string
+	Hardware         string
 	Value            float64
+}
+
+// RatingFacet is one scenario × hardware pair that has rated runs.
+type RatingFacet struct {
+	Scenario string
+	Hardware string
 }

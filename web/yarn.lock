@@ -900,6 +900,13 @@
     react-redux "^9.2.0"
     redux "^5.0.1"
 
+"@iconscout/react-unicons@2.2.5":
+  version "2.2.5"
+  resolved "https://registry.yarnpkg.com/@iconscout/react-unicons/-/react-unicons-2.2.5.tgz#d7a27fb0e30e87d77d45ac02e4e765d85f242026"
+  integrity sha512-Qn1YqlQPKUjgeGvtbsOWFlnmYBJL5iYpK+B+/nsUDz0tm8BmHQeGn9MsfSBB0WVYtLWiChhz5AQHbvXKqtWDmw==
+  dependencies:
+    prop-types "^15.8.1"
+
 "@internationalized/date@^3.12.4":
   version "3.12.4"
   resolved "https://registry.yarnpkg.com/@internationalized/date/-/date-3.12.4.tgz#a391e01d54ca80b3cb4c3d5040d46a0b26c3f20f"

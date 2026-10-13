@@ -4,14 +4,16 @@ import { type RatingPalette, RatingRows } from '@components/public/RatingRows'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
+import { scenarioLabel } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { brand } from '@/styles/brand'
 
-// The landing's rating screen: the real public rating, a short top per size
-// league, right after the story ends with «your run takes its place». The full
-// list with every filter is /leaderboard.
+// The landing's rating screen: the real public rating, a short top per workload
+// scenario (tps of different scenarios never share a list), right after the
+// story ends with «your run takes its place». The full list with every filter
+// is /leaderboard.
 
 const TOP = 8
 const PALETTE: RatingPalette = {
@@ -45,7 +47,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     color: brand.text,
   }),
   sub: css({ marginTop: theme.spacing(1.5), color: brand.muted, maxWidth: 460, lineHeight: 1.55 }),
-  leagues: css({
+  chips: css({
     display: 'flex',
     flexWrap: 'wrap',
     gap: theme.spacing(1),
@@ -53,7 +55,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     padding: 0,
     border: 'none',
   }),
-  league: css({
+  chip: css({
     height: 30,
     padding: theme.spacing(0, 1.5),
     borderRadius: theme.shape.radius.pill,
@@ -65,15 +67,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
     '&:hover': { color: brand.text, borderColor: brand.muted },
     '&:focus-visible': { outline: `2px solid ${brand.text}`, outlineOffset: 2 },
   }),
-  leagueActive: css({
+  chipActive: css({
     color: brand.text,
     background: brand.raised,
     borderColor: theme.colors.primary.border,
-  }),
-  hint: css({
-    marginTop: theme.spacing(1),
-    color: brand.muted,
-    fontSize: theme.typography.bodySmall.fontSize,
   }),
   actions: css({
     display: 'flex',
@@ -129,52 +126,41 @@ const getStyles = (theme: GrafanaTheme2) => ({
   unit: css({ color: brand.muted, fontWeight: theme.typography.fontWeightRegular }),
 })
 
-// A league is the run's sizes signature, `db=S,db-replica=S,proxy=XS,runner=S`;
-// shown as «db S · replica S · proxy XS · runner S».
-function leagueLabel(league: string) {
-  return league
-    .split(',')
-    .map((part) => {
-      const [role, size] = part.split('=')
-      return size ? `${role.replace(/^db-/, '')} ${size}` : part
-    })
-    .join(' · ')
-}
-
 export function RatingScreen() {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
-  const [league, setLeague] = useState<string | undefined>(undefined)
+  const [picked, setPicked] = useState<string | undefined>(undefined)
+  const facets = useInfiniteQuery({ ...ratingQueries.global({ limit: 1 }) })
+  const scenarios = facets.data?.pages[0]?.scenarios ?? []
+  // The first scenario until the reader picks one: a top never mixes them.
+  const scenario = picked ?? scenarios[0]
   const list = useInfiniteQuery({
-    ...ratingQueries.global({ league, limit: TOP }),
+    ...ratingQueries.global({ scenario: scenario ? [scenario] : undefined, limit: TOP }),
+    enabled: facets.isSuccess,
     placeholderData: keepPreviousData,
   })
   const page = list.data?.pages[0]
-  const rows = page?.data.slice(0, TOP) ?? []
-  const leagues = page?.leagues ?? []
+  const rows = (page?.data ?? []).filter((r) => r.scenario === scenario).slice(0, TOP)
 
   return (
     <section className={styles.slide} aria-label={t('landing.rating.title')}>
       <div>
         <h2 className={styles.heading}>{t('landing.rating.title')}</h2>
         <p className={styles.sub}>{t('landing.rating.sub')}</p>
-        {leagues.length > 0 && (
-          <>
-            <fieldset className={styles.leagues} aria-label={t('results.rating.filters.league')}>
-              {[undefined, ...leagues].map((l) => (
-                <button
-                  key={l ?? 'all'}
-                  type="button"
-                  className={cx(styles.league, league === l && styles.leagueActive)}
-                  aria-pressed={league === l}
-                  onClick={() => setLeague(l)}
-                >
-                  {l ? leagueLabel(l) : t('results.rating.filters.allLeagues')}
-                </button>
-              ))}
-            </fieldset>
-            <div className={styles.hint}>{t('results.rating.leagueHint')}</div>
-          </>
+        {scenarios.length > 0 && (
+          <fieldset className={styles.chips} aria-label={t('results.rating.filters.scenario')}>
+            {scenarios.map((s) => (
+              <button
+                key={s}
+                type="button"
+                className={cx(styles.chip, scenario === s && styles.chipActive)}
+                aria-pressed={scenario === s}
+                onClick={() => setPicked(s)}
+              >
+                {scenarioLabel(s)}
+              </button>
+            ))}
+          </fieldset>
         )}
         <div className={styles.actions}>
           <AppLink to="/leaderboard" plain className={styles.secondary}>
@@ -196,10 +182,11 @@ export function RatingScreen() {
           rows={rows}
           unit={page?.metric.unit}
           palette={PALETTE}
-          loading={list.isPending}
-          error={list.isError}
-          animateKey={league ?? 'all'}
+          loading={facets.isPending || (!!scenario && list.isPending)}
+          error={facets.isError || list.isError}
+          animateKey={scenario ?? 'none'}
           shareHref={(token) => `/s/${token}`}
+          slots={TOP}
         />
       </div>
     </section>

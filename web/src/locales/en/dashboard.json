@@ -40,9 +40,8 @@
   },
   "top": {
     "title": "Top results · TPS",
-    "empty": "Complete a run with rating enabled to see it here.",
-    "viewAll": "Rating",
-    "league": "league {{league}}"
+    "empty": "Your best runs show up here once one finishes with the rating turned on.",
+    "viewAll": "Rating"
   },
   "providers": {
     "title": "Providers",
@@ -63,7 +62,7 @@
   },
   "onboarding": {
     "title": "First run: {{tenant}}",
-    "subtitle": "Five steps to the first result. Steps tick themselves off.",
+    "subtitle": "Five steps to your first result. Done steps tick themselves off.",
     "hide": "Hide",
     "progress": "{{done}} of {{total}}",
     "tenant": {
@@ -72,7 +71,7 @@
     },
     "provider": {
       "title": "Connect a cloud",
-      "hint": "Stands come up in your cloud: add a Yandex Cloud or AWS profile and verify it.",
+      "hint": "Stands come up in your cloud, so first add a Yandex Cloud key and check it. AWS comes later.",
       "cta": "Add a provider",
       "guideYc": "Where to get a Yandex Cloud key",
       "yc1": "In the Yandex Cloud console create a service account in the folder for the stands.",
@@ -86,18 +85,18 @@
     },
     "test": {
       "title": "Get a test",
-      "hint": "Easiest is cloning an example: database, workload and sizes are set up.",
+      "hint": "The easiest way is to clone an example: its database, workload and sizes are already set.",
       "cta": "New test",
       "example": "Pick an example"
     },
     "launch": {
       "title": "Launch it",
-      "hint": "Open the test and press Launch — the stand comes up in a few minutes.",
+      "hint": "Open the test and press Launch. You can watch the stand come up right in the console.",
       "cta": "To tests"
     },
     "results": {
       "title": "See the results",
-      "hint": "When the run finishes: QPS, latency, errors and charts over the load.",
+      "hint": "When the run ends you'll see QPS, latency, errors and charts for the whole load.",
       "cta": "To results"
     },
     "demoLead": "Want to see what you will get?",

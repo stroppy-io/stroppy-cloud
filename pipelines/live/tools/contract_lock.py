@@ -48,7 +48,10 @@ def main():
     current = snapshot()
     old = json.loads(LOCK.read_text()) if LOCK.exists() else None
     if args.write:
-        if old and old != current and old["version"] == current["version"]:
+        # Before the first deploy (0.x) the contract moves with the code and the
+        # lock just records the reviewed snapshot; after it, a change needs a bump.
+        frozen = not current["version"].startswith("0.")
+        if frozen and old and old != current and old["version"] == current["version"]:
             raise ValueError("contract changed under the same version; review compatibility and bump ContractVersion + OpenAPI extension")
         LOCK.write_text(json.dumps(current, indent=2) + "\n")
     elif current != old:

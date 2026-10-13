@@ -177,31 +177,56 @@ DELETE FROM favorites WHERE user_id = @user_id AND kind = @kind AND target_id = 
 SELECT target_id FROM favorites WHERE user_id = @user_id AND tenant_id = @tenant_id AND kind = @kind;
 
 -- name: RatingRuns :many
--- Completed, opted-in runs ranked by a headline metric; league = the
--- sizes signature, so only equal hardware competes.
-SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,
-       t.name AS tenant_name, t.public_name AS tenant_public_name,
-       (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) AS league,
-       (r.summary->'headline'->>@metric::text)::float8 AS value
-FROM runs r JOIN tenants t ON t.id = r.tenant_id
-WHERE r.deleted_at IS NULL AND r.status = 'completed'
-  AND r.summary->'headline' ? @metric::text
-  AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
-  AND ((@tenant_id::text <> '' AND r.tenant_id::text = @tenant_id::text AND r.rating_tenant) OR (@tenant_id::text = '' AND r.rating_global))
-  AND (COALESCE(cardinality(@kinds::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY(@kinds::text[]))
-  AND (COALESCE(cardinality(@versions::text[]), 0) = 0 OR r.summary->>'db_version' = ANY(@versions::text[]))
-  AND (COALESCE(cardinality(@providers::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY(@providers::text[]))
-  AND (COALESCE(cardinality(@stroppy_versions::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY(@stroppy_versions::text[]))
-  AND (@league::text = '' OR (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) = @league::text)
-  AND (@since::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= @since::timestamptz)
-ORDER BY CASE WHEN @higher_is_better::boolean THEN -(r.summary->'headline'->>@metric::text)::float8 ELSE (r.summary->'headline'->>@metric::text)::float8 END, r.finished_at DESC
+-- Completed, opted-in runs ranked by a headline metric. A number means
+-- something only next to runs of the same scenario on the same hardware, so
+-- each row carries both: the scenario is the workload's script family
+-- (tpcc/tx -> tpcc), the hardware is the stand without its runner, machines
+-- grouped by vCPU and memory ("2x4c16g+1x2c4g").
+SELECT x.id, x.tenant_id, x.name, x.author_id, x.summary, x.finished_at, x.tps,
+       x.tenant_name, x.tenant_public_name, x.scenario, x.hardware, x.value
+FROM (
+  SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,
+         t.name AS tenant_name, t.public_name AS tenant_public_name,
+         coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))
+                   FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
+                   WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
+         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
+                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
+                         FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
+                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware,
+         (r.summary->'headline'->>@metric::text)::float8 AS value
+  FROM runs r JOIN tenants t ON t.id = r.tenant_id
+  WHERE r.deleted_at IS NULL AND r.status = 'completed'
+    AND r.summary->'headline' ? @metric::text
+    AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
+    AND ((@tenant_id::text <> '' AND r.tenant_id::text = @tenant_id::text AND r.rating_tenant) OR (@tenant_id::text = '' AND r.rating_global))
+    AND (COALESCE(cardinality(@kinds::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY(@kinds::text[]))
+    AND (COALESCE(cardinality(@versions::text[]), 0) = 0 OR r.summary->>'db_version' = ANY(@versions::text[]))
+    AND (COALESCE(cardinality(@providers::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY(@providers::text[]))
+    AND (COALESCE(cardinality(@stroppy_versions::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY(@stroppy_versions::text[]))
+    AND (@since::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= @since::timestamptz)
+) x
+WHERE (COALESCE(cardinality(@scenarios::text[]), 0) = 0 OR x.scenario = ANY(@scenarios::text[]))
+  AND (COALESCE(cardinality(@hardware::text[]), 0) = 0 OR x.hardware = ANY(@hardware::text[]))
+ORDER BY CASE WHEN @higher_is_better::boolean THEN -x.value ELSE x.value END, x.finished_at DESC
 LIMIT @lim OFFSET @off;
 
--- name: RatingLeagues :many
-SELECT DISTINCT (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(summary->'sizes')) AS league
-FROM runs WHERE deleted_at IS NULL AND status = 'completed'
-  AND ((@tenant_id::text <> '' AND tenant_id::text = @tenant_id::text AND rating_tenant) OR (@tenant_id::text = '' AND rating_global))
-ORDER BY 1;
+-- name: RatingFacets :many
+-- The scenarios and hardware the rating can be narrowed to: every pair that
+-- has at least one rated run.
+SELECT DISTINCT
+       coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))
+                 FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
+                 WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
+       coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
+                 FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
+                       FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
+                       WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware
+FROM runs r
+WHERE r.deleted_at IS NULL AND r.status = 'completed'
+  AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
+  AND ((@tenant_id::text <> '' AND r.tenant_id::text = @tenant_id::text AND r.rating_tenant) OR (@tenant_id::text = '' AND r.rating_global))
+ORDER BY 1, 2;
 
 -- name: RunCountsOfTenant :one
 SELECT count(*)::int AS total,

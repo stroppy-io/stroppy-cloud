@@ -198,7 +198,7 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 	}
 	rows, err := r.q.RatingRuns(ctx, db.RatingRunsParams{
 		Metric: q.Metric, TenantID: q.TenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers, StroppyVersions: q.StroppyVersions,
-		League: q.League, Since: &q.Since, HigherIsBetter: q.HigherIsBetter, Lim: int64(limit), Off: int64(q.Offset),
+		Scenarios: q.Scenarios, Hardware: q.Hardware, Since: &q.Since, HigherIsBetter: q.HigherIsBetter, Lim: int64(limit), Off: int64(q.Offset),
 	})
 	if err != nil {
 		return nil, infraf("run: rating: %v", err)
@@ -207,12 +207,9 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 	for _, row := range rows {
 		x := run.Run{ID: row.ID, TenantID: row.TenantID, Name: row.Name, AuthorID: row.AuthorID, FinishedAt: row.FinishedAt, TPS: row.Tps}
 		_ = json.Unmarshal(row.Summary, &x.Summary) //nolint:errcheck // stored by us
-		item := run.RatingRow{Run: x, TenantName: row.TenantName}
+		item := run.RatingRow{Run: x, TenantName: row.TenantName, Scenario: row.Scenario, Hardware: row.Hardware}
 		if row.TenantPublicName != nil {
 			item.TenantPublicName = *row.TenantPublicName
-		}
-		if row.League != nil {
-			item.League = *row.League
 		}
 		if row.Value != nil {
 			item.Value = *row.Value
@@ -222,16 +219,14 @@ func (r *RunRepo) Rating(ctx context.Context, q run.RatingQuery) ([]run.RatingRo
 	return out, nil
 }
 
-func (r *RunRepo) Leagues(ctx context.Context, tenantID string) ([]string, error) {
-	rows, err := r.q.RatingLeagues(ctx, tenantID)
+func (r *RunRepo) RatingFacets(ctx context.Context, tenantID string) ([]run.RatingFacet, error) {
+	rows, err := r.q.RatingFacets(ctx, tenantID)
 	if err != nil {
-		return nil, infraf("run: leagues: %v", err)
+		return nil, infraf("run: rating facets: %v", err)
 	}
-	out := make([]string, 0, len(rows))
+	out := make([]run.RatingFacet, 0, len(rows))
 	for _, row := range rows {
-		if row.League != nil && *row.League != "" {
-			out = append(out, *row.League)
-		}
+		out = append(out, run.RatingFacet{Scenario: row.Scenario, Hardware: row.Hardware})
 	}
 	return out, nil
 }

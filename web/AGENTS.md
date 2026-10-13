@@ -36,6 +36,7 @@ Test), прогоны (Run) с живым наблюдением, Suite-матр
 | Runtime | react 19, react-dom 19 | peer `@grafana/ui` = `react >=19` |
 | Сборка | vite 7, @vitejs/plugin-react, typescript 5.8+ strict | node 22 |
 | Дизайн-система | `@grafana/ui` 13.2.x, `@grafana/data` 13.2.x | **единственный** UI-кит; версии ui/data совпадают |
+| Иконки | `Icon` из `@grafana/ui`; чего в его наборе нет — `@iconscout/react-unicons` 2.2.5 через `components/ProductIcon` | то же семейство Unicons, что у Grafana, поэтому стиль один; иконка добавляется в `ProductIcon` по имени, только если у `Icon` замены нет |
 | Стили | emotion через `useStyles2(theme => css({...}))` | tailwind, radix, shadcn, cva — **нет** |
 | Роутинг | `@tanstack/react-router` 1.170+ + `@tanstack/router-plugin` (vite, file-based) | типизированные params, `validateSearch` zod-схемой (Standard Schema, без адаптера); grafana `Link`/`LinkButton`/`PageToolbar` тянут `react-router-dom-v5-compat` — не использовать |
 | Данные | `openapi-typescript` (типы) + `openapi-fetch` (клиент) + `@tanstack/react-query` 5 | кэш, инвалидация, WS → `setQueryData`; loaders роутера → `ensureQueryData` |
@@ -51,7 +52,7 @@ Test), прогоны (Run) с живым наблюдением, Suite-матр
 
 Не тащим: `react-router`, `react-hook-form` (транзитивно внутри
 `@grafana/ui` — не импортировать), `recharts` (есть uPlot-панели),
-`lucide-react` (есть `Icon`), `nanostores`/`@tanstack/store` (серверное
+`lucide-react` и другие наборы иконок (есть `Icon` + `ProductIcon`), `nanostores`/`@tanstack/store` (серверное
 состояние — Query, фильтры — URL роутера, локальное — React; Store допустим
 только для cross-component UI-state, если появится), `@tanstack/db`,
 `@tanstack/start`, `@tanstack/config` (не для приложения), `next-themes`.
@@ -198,7 +199,7 @@ Grafana-плагин-ориентированные компоненты.
 /land                              → лендинг для всех (шаги-якоря #stand…#get-started); вошедшему в шапке «Открыть консоль»; логотип приложения ведёт сюда
 /leaderboard[?filters]             → публичный рейтинг (фильтры в URL, тёмный)
 /how[#internals]                   → «Как это работает»: два экрана-листания — продукт (модель понятий) и внутренности (архитектура: браузер → Stroppy Cloud → Graphene → ваше облако, шаги прогона чипами; hover — карточка блока)
-/embed/leaderboard[?theme&league&limit] → виджет рейтинга для iframe (без шапки)
+/embed/leaderboard[?theme&scenario&limit] → виджет рейтинга для iframe (без шапки)
 /t/:slug                           → Dashboard (GET /t/{slug}/dashboard)
 /t/:slug/runs[?filters]            → RunList (+facets)
 /t/:slug/runs/:id[/overview|events|logs|metrics|grafana|artifacts|spec]

@@ -22,6 +22,7 @@
     "@grafana/data": "13.2.2",
     "@grafana/i18n": "13.2.2",
     "@grafana/ui": "13.2.2",
+    "@iconscout/react-unicons": "2.2.5",
     "@tanstack/react-devtools": "^0.10.13",
     "@tanstack/react-form": "^1.33.5",
     "@tanstack/react-hotkeys": "^0.12.1",

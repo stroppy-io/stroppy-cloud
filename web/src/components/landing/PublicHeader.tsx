@@ -185,20 +185,20 @@ export function PublicHeader({ onHome }: { onHome?: () => void }) {
       )}
       <nav className={styles.nav} aria-label={t('landing.nav.label')}>
         <AppLink
-          to="/how"
-          plain
-          className={styles.link}
-          activeProps={{ className: cx(styles.link, styles.linkActive), 'aria-current': 'page' }}
-        >
-          {t('landing.nav.how')}
-        </AppLink>
-        <AppLink
           to="/leaderboard"
           plain
           className={styles.link}
           activeProps={{ className: cx(styles.link, styles.linkActive), 'aria-current': 'page' }}
         >
           {t('landing.nav.rating')}
+        </AppLink>
+        <AppLink
+          to="/how"
+          plain
+          className={styles.link}
+          activeProps={{ className: cx(styles.link, styles.linkActive), 'aria-current': 'page' }}
+        >
+          {t('landing.nav.how')}
         </AppLink>
       </nav>
       <div className={styles.right}>

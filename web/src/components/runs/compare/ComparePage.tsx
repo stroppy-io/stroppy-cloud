@@ -332,8 +332,7 @@ export function ComparePage({
                             {c.summary?.workload_name}
                           </Text>
                           <Text color="secondary" variant="bodySmall">
-                            {c.summary?.provider_profile?.name}
-                            {c.summary?.league ? ` · ${c.summary.league}` : ''}
+                            {c.summary?.provider_profile?.name ?? '—'}
                           </Text>
                           <Text color="secondary" variant="bodySmall">
                             <RelativeTime value={c.started_at} /> · {formatDuration(c.duration)}

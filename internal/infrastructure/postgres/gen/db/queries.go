@@ -2211,25 +2211,37 @@ func (q *Queries) FavoritesOf(ctx context.Context, arg FavoritesOfParams) ([]Fav
 	return items, nil
 }
 
-const ratingLeaguesSQL = `SELECT DISTINCT (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(summary->'sizes')) AS league
-FROM runs WHERE deleted_at IS NULL AND status = 'completed'
-  AND (($1::text <> '' AND tenant_id::text = $1::text AND rating_tenant) OR ($1::text = '' AND rating_global))
-ORDER BY 1;`
+const ratingFacetsSQL = `-- The scenarios and hardware the rating can be narrowed to: every pair that
+-- has at least one rated run.
+SELECT DISTINCT
+       coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))
+                 FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg
+                 WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,
+       coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)
+                 FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n
+                       FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m
+                       WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware
+FROM runs r
+WHERE r.deleted_at IS NULL AND r.status = 'completed'
+  AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')
+  AND (($1::text <> '' AND r.tenant_id::text = $1::text AND r.rating_tenant) OR ($1::text = '' AND r.rating_global))
+ORDER BY 1, 2;`
 
-type RatingLeaguesRow struct {
-	League *string
+type RatingFacetsRow struct {
+	Scenario string
+	Hardware string
 }
 
-func (q *Queries) RatingLeagues(ctx context.Context, tenantID string) ([]RatingLeaguesRow, error) {
-	rows, err := q.db.Query(ctx, ratingLeaguesSQL, tenantID)
+func (q *Queries) RatingFacets(ctx context.Context, tenantID string) ([]RatingFacetsRow, error) {
+	rows, err := q.db.Query(ctx, ratingFacetsSQL, tenantID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []RatingLeaguesRow
+	var items []RatingFacetsRow
 	for rows.Next() {
-		var i RatingLeaguesRow
-		if err := rows.Scan(&i.League); err != nil {
+		var i RatingFacetsRow
+		if err := rows.Scan(&i.Scenario, &i.Hardware); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -4687,8 +4699,9 @@ type RatingRunsParams struct {
 	Versions        []string
 	Providers       []string
 	StroppyVersions []string
-	League          string
 	Since           *time.Time
+	Scenarios       []string
+	Hardware        []string
 	HigherIsBetter  bool
 	Lim             int64
 	Off             int64
@@ -4704,7 +4717,8 @@ type RatingRunsRow struct {
 	Tps              *float64
 	TenantName       string
 	TenantPublicName *string
-	League           *string
+	Scenario         string
+	Hardware         string
 	Value            *float64
 }
 
@@ -4737,26 +4751,30 @@ func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]Ratin
 		positions[6] = len(args)
 	}
 	if positions[7] == 0 {
-		args = append(args, arg.League)
+		args = append(args, arg.Since)
 		positions[7] = len(args)
 	}
 	if positions[8] == 0 {
-		args = append(args, arg.Since)
+		args = append(args, arg.Scenarios)
 		positions[8] = len(args)
 	}
 	if positions[9] == 0 {
-		args = append(args, arg.HigherIsBetter)
+		args = append(args, arg.Hardware)
 		positions[9] = len(args)
 	}
 	if positions[10] == 0 {
-		args = append(args, arg.Lim)
+		args = append(args, arg.HigherIsBetter)
 		positions[10] = len(args)
 	}
 	if positions[11] == 0 {
-		args = append(args, arg.Off)
+		args = append(args, arg.Lim)
 		positions[11] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric; league = the\n-- sizes signature, so only equal hardware competes.\nSELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n       t.name AS tenant_name, t.public_name AS tenant_public_name,\n       (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) AS league,\n       (r.summary->'headline'->>$%d::text)::float8 AS value\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL AND r.status = 'completed'\n  AND r.summary->'headline' ? $%d::text\n  AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')\n  AND (($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))\n  AND ($%d::text = '' OR (SELECT string_agg(key || '=' || value, ',' ORDER BY key) FROM jsonb_each_text(r.summary->'sizes')) = $%d::text)\n  AND ($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)\nORDER BY CASE WHEN $%d::boolean THEN -(r.summary->'headline'->>$%d::text)::float8 ELSE (r.summary->'headline'->>$%d::text)::float8 END, r.finished_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[1], positions[1], positions[10], positions[11]))
+	if positions[12] == 0 {
+		args = append(args, arg.Off)
+		positions[12] = len(args)
+	}
+	b.WriteString(fmt.Sprintf("-- Completed, opted-in runs ranked by a headline metric. A number means\n-- something only next to runs of the same scenario on the same hardware, so\n-- each row carries both: the scenario is the workload's script family\n-- (tpcc/tx -> tpcc), the hardware is the stand without its runner, machines\n-- grouped by vCPU and memory (\"2x4c16g+1x2c4g\").\nSELECT x.id, x.tenant_id, x.name, x.author_id, x.summary, x.finished_at, x.tps,\n       x.tenant_name, x.tenant_public_name, x.scenario, x.hardware, x.value\nFROM (\n  SELECT r.id, r.tenant_id, r.name, r.author_id, r.summary, r.finished_at, r.tps,\n         t.name AS tenant_name, t.public_name AS tenant_public_name,\n         coalesce((SELECT string_agg(DISTINCT split_part(sg->'workload'->>'script', '/', 1), '+' ORDER BY split_part(sg->'workload'->>'script', '/', 1))\n                   FROM jsonb_array_elements(coalesce(r.snapshot->'workload'->'segments', '[]'::jsonb)) sg\n                   WHERE coalesce(sg->'workload'->>'script', '') <> ''), '') AS scenario,\n         coalesce((SELECT string_agg(h.n || 'x' || h.cpu || 'c' || h.mem || 'g', '+' ORDER BY h.cpu DESC, h.mem DESC, h.n DESC)\n                   FROM (SELECT (m->>'cpu')::int AS cpu, (m->>'memory_gb')::int AS mem, count(*) AS n\n                         FROM jsonb_array_elements(coalesce(r.snapshot->'machines', '[]'::jsonb)) m\n                         WHERE m->>'role' <> 'runner' GROUP BY 1, 2) h), '') AS hardware,\n         (r.summary->'headline'->>$%d::text)::float8 AS value\n  FROM runs r JOIN tenants t ON t.id = r.tenant_id\n  WHERE r.deleted_at IS NULL AND r.status = 'completed'\n    AND r.summary->'headline' ? $%d::text\n    AND coalesce(r.summary->>'db_kind', '') NOT IN ('', 'external', 'noop')\n    AND (($%d::text <> '' AND r.tenant_id::text = $%d::text AND r.rating_tenant) OR ($%d::text = '' AND r.rating_global))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'db_version' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'provider_kind' = ANY($%d::text[]))\n    AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.summary->>'stroppy_version' = ANY($%d::text[]))\n    AND ($%d::timestamptz < '1970-01-02'::timestamptz OR r.finished_at >= $%d::timestamptz)\n) x\nWHERE (COALESCE(cardinality($%d::text[]), 0) = 0 OR x.scenario = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR x.hardware = ANY($%d::text[]))\nORDER BY CASE WHEN $%d::boolean THEN -x.value ELSE x.value END, x.finished_at DESC\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[12]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4765,7 +4783,7 @@ func (q *Queries) RatingRuns(ctx context.Context, arg RatingRunsParams) ([]Ratin
 	var items []RatingRunsRow
 	for rows.Next() {
 		var i RatingRunsRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.AuthorID, &i.Summary, &i.FinishedAt, &i.Tps, &i.TenantName, &i.TenantPublicName, &i.League, &i.Value); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.AuthorID, &i.Summary, &i.FinishedAt, &i.Tps, &i.TenantName, &i.TenantPublicName, &i.Scenario, &i.Hardware, &i.Value); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

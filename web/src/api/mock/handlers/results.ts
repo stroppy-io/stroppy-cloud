@@ -27,6 +27,32 @@ const SECRET_RE = /pass|secret|token|key|credential|dsn/i
 
 const PERIOD_DAYS: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90, '1y': 365 }
 
+// Same keys as the server's rating query: the workload's script families,
+// and the stand without its runner grouped by vCPU and memory.
+function scenarioOf(r: Run): string {
+  const families = new Set<string>()
+  for (const seg of r.snapshot.workload.segments) {
+    const script = (seg as { workload?: { script?: string } }).workload?.script
+    if (script) families.add(script.split('/')[0])
+  }
+  return [...families].sort().join('+')
+}
+
+function hardwareOf(r: Run): Schemas['HardwareClass'] {
+  const groups = new Map<string, { count: number; cpu: number; memory_gb: number }>()
+  for (const m of r.snapshot.machines ?? []) {
+    if (m.role === 'runner' || !m.cpu || !m.memory_gb) continue
+    const k = `${m.cpu}c${m.memory_gb}g`
+    const g = groups.get(k) ?? { count: 0, cpu: m.cpu, memory_gb: m.memory_gb }
+    g.count++
+    groups.set(k, g)
+  }
+  const machines = [...groups.values()].sort(
+    (a, b) => b.cpu - a.cpu || b.memory_gb - a.memory_gb || b.count - a.count
+  )
+  return { key: machines.map((m) => `${m.count}x${m.cpu}c${m.memory_gb}g`).join('+'), machines }
+}
+
 function tenantsOf(store: MockStore): TenantData[] {
   return Object.values(store.tenants)
 }
@@ -36,7 +62,14 @@ function ratingEntries(
   query: URLSearchParams,
   scope: 'tenant' | 'global',
   slug?: string
-): { metric: Schemas['MetricDef']; leagues: string[]; entries: RatingEntry[] } | undefined {
+):
+  | {
+      metric: Schemas['MetricDef']
+      scenarios: string[]
+      hardware: Schemas['HardwareClass'][]
+      entries: RatingEntry[]
+    }
+  | undefined {
   const metricKey = query.get('metric') ?? 'tps'
   const metric = store.catalog.metrics.find((m) => m.key === metricKey)
   if (!metric) return undefined
@@ -44,12 +77,14 @@ function ratingEntries(
   const versions = multi(query, 'version')
   const providers = multi(query, 'provider')
   const stroppy = multi(query, 'stroppy_version')
-  const league = query.get('league')
+  const scenarios = multi(query, 'scenario')
+  const hardwareKeys = multi(query, 'hardware')
   const period = query.get('period') ?? 'all'
   const since = PERIOD_DAYS[period] ? Date.now() - PERIOD_DAYS[period] * DAY : 0
 
   const tenants = scope === 'tenant' ? [store.tenant(slug ?? '')].filter(Boolean) : tenantsOf(store)
   const raw: RatingEntry[] = []
+  const facets: { scenario: string; hardware: Schemas['HardwareClass'] }[] = []
   for (const t of tenants as TenantData[]) {
     for (const r of t.runs) {
       if (r.status !== 'completed') continue
@@ -64,8 +99,11 @@ function ratingEntries(
       if (versions.length && !versions.includes(s.db_version ?? '')) continue
       if (providers.length && !providers.includes(s.provider_kind ?? '')) continue
       if (stroppy.length && !stroppy.includes(s.stroppy_version ?? '')) continue
-      const lg = s.league ?? 'M/M'
-      if (league && lg !== league) continue
+      const scenario = scenarioOf(r)
+      const hardware = hardwareOf(r)
+      facets.push({ scenario, hardware })
+      if (scenarios.length && !scenarios.includes(scenario)) continue
+      if (hardwareKeys.length && !hardwareKeys.includes(hardware.key)) continue
       const share = t.shares.find(
         (sh) => sh.active && sh.target.kind === 'run' && sh.target.id === r.id
       )
@@ -78,12 +116,9 @@ function ratingEntries(
         topology_label: s.topology_label,
         node_count: s.node_count,
         sizes: s.sizes,
-        league: lg,
+        scenario,
+        hardware,
         workload_name: s.workload_name,
-        script: r.snapshot.workload.segments
-          .map((seg) => (seg as { workload?: { script?: string } }).workload?.script)
-          .filter(Boolean)
-          .join(', '),
         stroppy_version: s.stroppy_version,
         provider_kind: s.provider_kind,
         run_at: at,
@@ -96,15 +131,16 @@ function ratingEntries(
   }
   const dir = metric.higher_is_better ? -1 : 1
   raw.sort((a, b) => (a.value - b.value) * dir)
-  const leagues = [...new Set(raw.map((e) => e.league))].sort()
-  const perLeague = new Map<string, number>()
-  for (const e of raw) {
-    const n = (perLeague.get(e.league) ?? 0) + 1
-    perLeague.set(e.league, n)
-    e.rank = n
-  }
-  const entries = leagues.flatMap((lg) => raw.filter((e) => e.league === lg))
-  return { metric, leagues, entries }
+  raw.forEach((e, i) => {
+    e.rank = i + 1
+  })
+  const scenarioList = [...new Set(facets.map((f) => f.scenario).filter(Boolean))].sort()
+  const hardwareList = [
+    ...new Map(
+      facets.filter((f) => f.hardware.key).map((f) => [f.hardware.key, f.hardware])
+    ).values(),
+  ].sort((a, b) => a.key.localeCompare(b.key))
+  return { metric, scenarios: scenarioList, hardware: hardwareList, entries: raw }
 }
 
 function ratingResponse(
@@ -117,7 +153,15 @@ function ratingResponse(
   if (!r)
     return problem(400, 'unknown_metric', `metric ${query.get('metric')} is not in the catalog`)
   const page = paginate(r.entries, parseListQuery(query))
-  return { json: { metric: r.metric, leagues: r.leagues, data: page.data, meta: page.meta } }
+  return {
+    json: {
+      metric: r.metric,
+      scenarios: r.scenarios,
+      hardware: r.hardware,
+      data: page.data,
+      meta: page.meta,
+    },
+  }
 }
 
 route('GET', '/api/v1/t/:slug/rating', ({ store, params, query }) => {
@@ -602,7 +646,7 @@ function runMarkdown(r: SharedRun, title: string, captured: string, tenant?: str
     `- Database: ${r.database?.kind} ${r.database?.version ?? ''}`,
     `- Topology: ${r.topology?.label ?? r.summary.topology_label ?? '—'} (${r.topology?.node_count ?? r.summary.node_count ?? '?'} nodes)`,
     `- Workload: ${r.summary.workload_name ?? '—'} · stroppy ${r.workload?.stroppy_version ?? ''} · ${r.workload?.protocol ?? ''}`,
-    `- Provider: ${r.summary.provider_kind ?? '—'} · league ${r.summary.league ?? '—'}`,
+    `- Provider: ${r.summary.provider_kind ?? '—'}`,
     '',
     '### Database parameters',
     '',

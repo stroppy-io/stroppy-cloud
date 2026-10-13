@@ -1,5 +1,7 @@
 // Package rating ranks opted-in completed runs by a headline metric
-// (§16.8): per tenant and public (global), in leagues of equal sizes.
+// (§16.8): per tenant and public (global). A number is comparable only
+// within one scenario on the same hardware, so every row carries both and
+// the page lists the ones that have runs, to filter by.
 package rating
 
 import (
@@ -21,7 +23,8 @@ type Query struct {
 	Versions        []string
 	Providers       []string
 	StroppyVersions []string
-	League          string
+	Scenarios       []string
+	Hardware        []string
 	Period          string // 7d|30d|90d|1y|all
 	Limit           int
 	Offset          int
@@ -32,16 +35,18 @@ type Entry struct {
 	Rank       int
 	Value      float64
 	Run        run.Run
-	League     string
+	Scenario   string
+	Hardware   string
 	TenantName string
 	ShareToken string
 }
 
 // Page is a rating page.
 type Page struct {
-	Metric  catalog.Metric
-	Leagues []string
-	Entries []Entry
+	Metric    catalog.Metric
+	Scenarios []string
+	Hardware  []string
+	Entries   []Entry
 }
 
 // Shares resolves the public share a global-rating row links to (created
@@ -99,19 +104,22 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 	}
 	rq := run.RatingQuery{
 		Metric: metric, HigherIsBetter: def.HigherIsBetter, TenantID: tenantID, Kinds: q.Kinds, Versions: q.Versions, Providers: q.Providers,
-		StroppyVersions: q.StroppyVersions, League: q.League, Since: since(q.Period), Limit: q.Limit, Offset: q.Offset,
+		StroppyVersions: q.StroppyVersions, Scenarios: q.Scenarios, Hardware: q.Hardware, Since: since(q.Period), Limit: q.Limit, Offset: q.Offset,
 	}
 	rows, err := s.runs.Rating(ctx, rq)
 	if err != nil {
 		return Page{}, err
 	}
-	leagues, err := s.runs.Leagues(ctx, tenantID)
+	facets, err := s.runs.RatingFacets(ctx, tenantID)
 	if err != nil {
 		return Page{}, err
 	}
-	out := Page{Metric: def, Leagues: leagues, Entries: make([]Entry, 0, len(rows))}
+	out := Page{
+		Metric: def, Scenarios: distinct(facets, func(f run.RatingFacet) string { return f.Scenario }),
+		Hardware: distinct(facets, func(f run.RatingFacet) string { return f.Hardware }), Entries: make([]Entry, 0, len(rows)),
+	}
 	for i, r := range rows {
-		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Run: r.Run, League: r.League, TenantName: r.TenantName}
+		e := Entry{Rank: q.Offset + i + 1, Value: r.Value, Run: r.Run, Scenario: r.Scenario, Hardware: r.Hardware, TenantName: r.TenantName}
 		if tenantID == "" {
 			e.TenantName = r.TenantPublicName
 			if s.shares != nil {
@@ -123,6 +131,20 @@ func (s *Service) page(ctx context.Context, tenantID string, q Query) (Page, err
 		out.Entries = append(out.Entries, e)
 	}
 	return out, nil
+}
+
+// distinct is the non-empty values of one facet column, in first-seen order
+// (the query sorts them).
+func distinct(facets []run.RatingFacet, of func(run.RatingFacet) string) []string {
+	seen := map[string]bool{}
+	out := []string{}
+	for _, f := range facets {
+		if v := of(f); v != "" && !seen[v] {
+			seen[v] = true
+			out = append(out, v)
+		}
+	}
+	return out
 }
 
 func since(period string) time.Time {

@@ -14152,9 +14152,13 @@ func (s *Server) handleGetPublicRatingRequest(args [0]string, argsEscaped bool, 
 					In:   "query",
 				}: params.StroppyVersion,
 				{
-					Name: "league",
+					Name: "scenario",
 					In:   "query",
-				}: params.League,
+				}: params.Scenario,
+				{
+					Name: "hardware",
+					In:   "query",
+				}: params.Hardware,
 				{
 					Name: "period",
 					In:   "query",
@@ -17954,9 +17958,13 @@ func (s *Server) handleGetTenantRatingRequest(args [1]string, argsEscaped bool, 
 					In:   "query",
 				}: params.StroppyVersion,
 				{
-					Name: "league",
+					Name: "scenario",
 					In:   "query",
-				}: params.League,
+				}: params.Scenario,
+				{
+					Name: "hardware",
+					In:   "query",
+				}: params.Hardware,
 				{
 					Name: "period",
 					In:   "query",

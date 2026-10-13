@@ -5,10 +5,11 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/rating"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
 
-func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []string, providers []oas.ProviderKind, stroppy []string, league oas.OptString, period oas.OptRatingPeriod, cursor oas.OptString, limit oas.OptInt) (rating.Query, int, error) {
+func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []string, providers []oas.ProviderKind, stroppy, scenarios, hardware []string, period oas.OptRatingPeriod, cursor oas.OptString, limit oas.OptInt) (rating.Query, int, error) {
 	offset, err := cursorOffset(cursor)
 	if err != nil {
 		return rating.Query{}, 0, err
@@ -17,7 +18,7 @@ func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []st
 	if lim <= 0 || lim > 200 {
 		lim = 50
 	}
-	q := rating.Query{Metric: metric.Or("tps"), Versions: versions, StroppyVersions: stroppy, League: league.Or(""), Period: string(period.Or(oas.RatingPeriodAll)), Limit: lim + 1, Offset: offset}
+	q := rating.Query{Metric: metric.Or("tps"), Versions: versions, StroppyVersions: stroppy, Scenarios: scenarios, Hardware: hardware, Period: string(period.Or(oas.RatingPeriodAll)), Limit: lim + 1, Offset: offset}
 	for _, k := range kinds {
 		q.Kinds = append(q.Kinds, string(k))
 	}
@@ -27,15 +28,27 @@ func ratingQueryOf(metric oas.OptString, kinds []oas.DatabaseKind, versions []st
 	return q, lim, nil
 }
 
+// hardwareOf is the API shape of a rating hardware key.
+func hardwareOf(key string) oas.HardwareClass {
+	out := oas.HardwareClass{Key: key, Machines: []oas.HardwareClassMachinesItem{}}
+	for _, g := range run.ParseHardware(key) {
+		out.Machines = append(out.Machines, oas.HardwareClassMachinesItem{Count: g.Count, CPU: g.CPU, MemoryGB: g.MemoryGB})
+	}
+	return out
+}
+
 func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage {
 	entries, meta := page(p.Entries, offset, limit)
-	out := &oas.RatingPage{Metric: metricOf(p.Metric), Leagues: p.Leagues, Data: make([]oas.RatingEntry, 0, len(entries)), Meta: meta}
-	if out.Leagues == nil {
-		out.Leagues = []string{}
+	out := &oas.RatingPage{Metric: metricOf(p.Metric), Scenarios: p.Scenarios, Hardware: make([]oas.HardwareClass, 0, len(p.Hardware)), Data: make([]oas.RatingEntry, 0, len(entries)), Meta: meta}
+	if out.Scenarios == nil {
+		out.Scenarios = []string{}
+	}
+	for _, key := range p.Hardware {
+		out.Hardware = append(out.Hardware, hardwareOf(key))
 	}
 	for _, e := range entries {
 		s := e.Run.Summary
-		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Unit: p.Metric.Unit, DbKind: oas.DatabaseKind(s.DBKind), League: e.League, RunID: oas.NewOptUUID(e.Run.ID)}
+		item := oas.RatingEntry{Rank: e.Rank, Value: e.Value, Unit: p.Metric.Unit, DbKind: oas.DatabaseKind(s.DBKind), Scenario: e.Scenario, Hardware: hardwareOf(e.Hardware), RunID: oas.NewOptUUID(e.Run.ID)}
 		if e.Run.FinishedAt != nil {
 			item.RunAt = *e.Run.FinishedAt
 		}
@@ -85,7 +98,7 @@ func (h *Handler) GetTenantRating(ctx context.Context, params oas.GetTenantRatin
 	if err != nil {
 		return nil, err
 	}
-	q, limit, err := ratingQueryOf(params.Metric, params.Kind, params.Version, params.Provider, params.StroppyVersion, params.League, params.Period, params.Cursor, params.Limit)
+	q, limit, err := ratingQueryOf(params.Metric, params.Kind, params.Version, params.Provider, params.StroppyVersion, params.Scenario, params.Hardware, params.Period, params.Cursor, params.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +114,7 @@ func (h *Handler) GetPublicRating(ctx context.Context, params oas.GetPublicRatin
 	if !h.publicConfig(ctx).PublicRating {
 		return nil, errs.NotFound("public rating")
 	}
-	q, limit, err := ratingQueryOf(params.Metric, params.Kind, params.Version, params.Provider, params.StroppyVersion, params.League, params.Period, params.Cursor, params.Limit)
+	q, limit, err := ratingQueryOf(params.Metric, params.Kind, params.Version, params.Provider, params.StroppyVersion, params.Scenario, params.Hardware, params.Period, params.Cursor, params.Limit)
 	if err != nil {
 		return nil, err
 	}

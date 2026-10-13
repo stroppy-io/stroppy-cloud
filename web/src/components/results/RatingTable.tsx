@@ -6,25 +6,14 @@ import {
   type DataTableColumn,
   type DataTableEmpty,
 } from '@components/DataTable/DataTable'
-import { css } from '@emotion/css'
-import type { GrafanaTheme2 } from '@grafana/data'
-import { Icon, Tooltip, useStyles2 } from '@grafana/ui'
+import { RankBadge } from '@components/RankBadge'
 import { formatMetric, shortId } from '@helpers/format'
-import { formatRoleSizes } from '@helpers/sizes'
+import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  rank: css({
-    fontFamily: theme.typography.fontFamilyMonospace,
-    fontVariantNumeric: 'tabular-nums',
-    color: theme.colors.text.secondary,
-  }),
-  medal: css({ color: theme.colors.warning.text }),
-})
-
-// One league of the rating. Bounded in-memory list (one page per league), so it sorts on the
-// client (`clientSort`) — the only table that does. No row menu: the row opens the run (tenant)
+// One scenario of the rating. Bounded in-memory list, so it sorts on the client (`clientSort`),
+// the only table that does. No row menu: the row opens the run (tenant)
 // or its public report (global).
 export function RatingTable({
   rows,
@@ -52,7 +41,6 @@ export function RatingTable({
   onClearFilters?: () => void
 }) {
   const { t } = useTranslation()
-  const styles = useStyles2(getStyles)
   const columns = useMemo<DataTableColumn<RatingEntry>[]>(
     () => [
       col.custom<RatingEntry>({
@@ -61,14 +49,7 @@ export function RatingTable({
         width: 72,
         align: 'right',
         value: (r) => r.rank,
-        cell: (r) =>
-          r.rank === 1 ? (
-            <Tooltip content={t('results.rating.first')}>
-              <Icon name="star" className={styles.medal} aria-label="1" />
-            </Tooltip>
-          ) : (
-            <span className={styles.rank}>{r.rank}</span>
-          ),
+        cell: (r) => <RankBadge rank={r.rank} />,
       }),
       col.identity<RatingEntry>({
         id: 'run',
@@ -111,11 +92,12 @@ export function RatingTable({
         id: 'workload',
         header: t('results.rating.columns.workload'),
         minWidth: 200,
-        value: (r) => r.workload_name ?? r.script,
+        value: (r) => r.workload_name ?? scenarioLabel(r.scenario),
         render: (r) => {
-          const primary = r.workload_name ?? r.script
+          const scenario = scenarioLabel(r.scenario)
+          const primary = r.workload_name ?? scenario
           const secondary = [
-            r.script && r.script !== primary ? r.script : undefined,
+            scenario !== primary ? scenario : undefined,
             r.stroppy_version ? `stroppy ${r.stroppy_version}` : undefined,
           ]
             .filter(Boolean)
@@ -136,19 +118,19 @@ export function RatingTable({
         format: (v) => formatMetric(v, unit ?? rows[0]?.unit),
       }),
       col.stack<RatingEntry>({
-        id: 'provider',
-        header: t('results.rating.columns.provider'),
-        width: 190,
-        value: (r) => r.provider_kind,
+        id: 'hardware',
+        header: t('results.rating.columns.hardware'),
+        minWidth: 220,
+        value: (r) => r.hardware.key,
         render: (r) => {
-          const sizes = formatRoleSizes(r.sizes)
-          const secondary = [t('results.rating.league', { league: r.league }), sizes]
-            .filter(Boolean)
-            .join(' · ')
+          const primary = hardwareLabel(t, r.hardware)
+          const secondary = r.provider_kind
           return {
-            primary: r.provider_kind,
+            primary,
             secondary,
-            title: [r.provider_kind, secondary].filter(Boolean).join('\n'),
+            title: [primary, secondary, t('results.rating.hardwareHint')]
+              .filter(Boolean)
+              .join('\n'),
           }
         },
       }),
@@ -158,13 +140,13 @@ export function RatingTable({
         value: (r) => r.run_at,
       }),
     ],
-    [t, styles, unit, metricTitle, scope, slug, rows]
+    [t, unit, metricTitle, scope, slug, rows]
   )
   return (
     <DataTable<RatingEntry>
       columns={columns}
       data={rows}
-      getRowId={(r) => `${r.league}-${r.rank}-${r.run_id ?? r.share_token ?? r.run_at}`}
+      getRowId={(r) => `${r.scenario}-${r.rank}-${r.run_id ?? r.share_token ?? r.run_at}`}
       clientSort
       loading={loading}
       error={error}

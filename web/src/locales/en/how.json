@@ -1,102 +1,195 @@
 {
   "title": "How Stroppy Cloud works",
-  "lead": "What a benchmark is made of, what happens at launch and where each part runs — your data and machines stay in your cloud.",
+  "lead": "What a benchmark is built from, what happens on launch and where each part runs. Your data and machines stay in your cloud.",
   "model": {
-    "title": "What you work with",
-    "sub": "A database and a workload make a test; a test, a suite or a schedule launches a run; a run leaves a result."
+    "title": "What you do and what you get",
+    "steps": {
+      "all": {
+        "title": "Overview",
+        "body": "On the left is what you describe once and reuse across tests: databases and workloads. In the middle sit the test and the three ways to launch it, and on the right the report a run leaves behind. Hover a block for an example and details."
+      },
+      "first": {
+        "title": "First run",
+        "body": "Describe a database (say, PostgreSQL 17 on three nodes with Patroni) and a workload (TPC-C for 10 minutes), make a test from them, add your cloud key and press Launch. The stand comes up on its own, and the report appears once the load ends."
+      },
+      "compare": {
+        "title": "Compare variants",
+        "body": "A suite is for questions like “which is faster”: PostgreSQL 16 or 17, S machines or M. You list the variants, the suite runs them all and puts the results in one table."
+      },
+      "regress": {
+        "title": "Watch for regressions",
+        "body": "A schedule launches a test or a suite on cron, every night for example. If a new DBMS version or new settings turn out slower, you see it on the history chart before your users do."
+      },
+      "share": {
+        "title": "Show the result",
+        "body": "The report opens by a public link, no sign-in needed. You can send a run to the public rating, where it's ranked against setups of the same sizes, and embed that rating on your own site."
+      }
+    },
+    "lead": "You describe a database and a workload, pick machine sizes and launch the test. Stroppy Cloud then brings up machines in your cloud, installs the DBMS, drives the load and tears the stand down, and you keep a report you can compare with earlier runs or send to colleagues as a link."
   },
   "arch": {
-    "title": "Architecture",
-    "sub": "What it is made of and what goes between the parts. Hover a block to see how it works.",
-    "browser": {
-      "label": "Browser"
-    },
+    "title": "Stroppy Cloud architecture",
     "cloud": {
       "label": "Stroppy Cloud"
     },
     "graphene": {
-      "label": "Graphene — the execution core"
+      "label": "Graphene: runs the pipelines"
     },
     "yours": {
-      "label": "Your cloud — the stand"
+      "label": "Your cloud: the stand"
     },
     "console": {
       "title": "Console",
       "body": "The web app.",
-      "more": "A single-page app. Everything comes from the Stroppy Cloud server: REST for data, one WebSocket for a live run — logs, metrics and progress without reloading.",
-      "tech": "React · Grafana UI"
+      "more": "A single-page app. It reads data from the Stroppy Cloud server over REST and gets the live run (logs, metrics, progress) over one WebSocket, with no page reloads.",
+      "tech": "in the browser · React · Grafana UI"
     },
     "api": {
       "title": "Server",
       "body": "API, tenants, runs.",
-      "more": "The product server and the only door out: tenants and roles, the library, compiling a test into a fully resolved RunSpec, quotas, launching in Graphene, projecting a live run, rating, compare, public reports.",
-      "tech": "Go · REST (OpenAPI/ogen) · WebSocket"
+      "more": "The product server; everything a user does goes through it: tenants and roles, the library, building a test into a full RunSpec, quotas, launching in Graphene, the live run, rating, compare and public reports.",
+      "tech": "Go · REST (OpenAPI/ogen) · WebSocket",
+      "facts": [
+        {
+          "label": "Does",
+          "items": [
+            "tenants and roles",
+            "building the RunSpec",
+            "quotas",
+            "the live run",
+            "rating and links"
+          ]
+        }
+      ]
     },
     "identity": {
       "title": "Accounts",
       "body": "Sign-in and sessions.",
       "more": "Sign up, sign in, e-mail confirmation and recovery by code. A session becomes a short-lived JWT; the server checks its signature itself, with no call per request.",
-      "tech": "Ory Kratos · JWT ES256"
+      "tech": "JWT ES256 · checked on the server"
     },
     "state": {
       "title": "Server database",
       "body": "Tenants, tests, results.",
-      "more": "Everything created in the console, the index and results of runs. Cloud keys never land here: they go as secrets into the tenant's namespace in Graphene.",
+      "more": "Everything created in the console, plus the list and results of runs. Cloud keys aren't here: they're stored as secrets in the tenant's namespace in Graphene.",
       "tech": "PostgreSQL"
     },
     "pipes": {
       "title": "Pipelines",
       "body": "stroppy-run, stroppy-suite.",
-      "more": "The run is plain Go: create the network and machines, lay out containers, drive the load segments, collect the result. Built into one image with the server; on start the server publishes the binaries and manifests into every tenant's namespace.",
-      "tech": "Go · Graphene SDK"
+      "more": "The run's code, in plain Go: create the network and machines, deploy containers, drive the load segments, collect the result. It ships in one image with the server, which publishes the binaries and manifests into every tenant's namespace on start.",
+      "tech": "Go · Graphene SDK",
+      "facts": [
+        {
+          "label": "Version",
+          "items": ["matches the server's version", "published into every tenant"]
+        }
+      ]
     },
     "door": {
       "title": "Graphene server",
-      "body": "The core's single door.",
-      "more": "One port for all: management (Connect), workers and agents (gRPC), the image registry (/v2), telemetry intake (OTLP). Checks namespace access and drives runs.",
-      "tech": "Go · gRPC · Connect"
+      "body": "The entry point to Graphene.",
+      "more": "Everyone reaches Graphene through one port: management (Connect), workers and agents (gRPC), the image registry (/v2), telemetry intake (OTLP). The server checks namespace access and drives the runs.",
+      "tech": "Go · gRPC · Connect",
+      "facts": [
+        {
+          "label": "Through one port",
+          "items": [
+            "Connect: management",
+            "gRPC: agents and workers",
+            "/v2: registry",
+            "OTLP: telemetry"
+          ]
+        }
+      ]
     },
     "temporal": {
       "title": "Temporal",
-      "body": "The durable core.",
-      "more": "A run is a workflow and every resource (machine, container, artifact, stand) a long-lived record with an owner. Hence guaranteed teardown: children die before parents, and a worker crash does not lose the run.",
-      "tech": "Temporal · PostgreSQL"
-    },
-    "registry": {
-      "title": "Registry",
-      "body": "Pipeline images.",
-      "more": "Holds pipeline worker images; blobs are deduplicated by digest, so publishing to a new tenant is only a manifest.",
-      "tech": "OCI registry · S3"
+      "body": "Keeps the state of runs.",
+      "more": "In Temporal a run is a workflow, and each of its resources (a machine, a container, an artifact, the stand) is a separate record with an owner. That's why resources always get removed, children before their parent, and a crashed worker doesn't lose the run.",
+      "tech": "Temporal · PostgreSQL",
+      "facts": [
+        {
+          "label": "A run's records",
+          "items": ["network", "machine", "container", "artifact", "stand"]
+        },
+        {
+          "label": "Guarantees",
+          "items": ["child resources go first", "a run survives a worker crash"]
+        }
+      ]
     },
     "worker": {
       "title": "Run worker",
       "body": "Runs stroppy-run.",
-      "more": "At run start Graphene brings up a container with the pipeline image; it drives the workflow through its phases and stops once the run is over and its records are gone.",
-      "tech": "managed worker · k8s"
+      "more": "When a run starts, Graphene starts a container with the pipeline image. It drives the workflow through its phases and stops once the run is over and all its resources are gone.",
+      "tech": "managed worker",
+      "facts": [
+        {
+          "label": "Runs",
+          "items": ["while the run goes", "until its resources are removed"]
+        },
+        {
+          "label": "Where",
+          "items": ["a k8s Deployment per run"]
+        }
+      ]
     },
     "crossplane": {
-      "title": "Provisioning",
-      "body": "Networks and machines.",
-      "more": "Machines and networks are declared as Kubernetes resources; Crossplane creates them in your account through the tenant's ProviderConfig built from its secret, and removes them with the run.",
-      "tech": "Crossplane · provider-yc / aws"
+      "title": "Run resources",
+      "body": "The run's network and machines.",
+      "more": "The part of the pipeline that declares the network, subnet, security group and VMs as resources of the run. Graphene owns them and removes them in order: machines first, then the network.",
+      "tech": "network · VM · SG",
+      "facts": [
+        {
+          "label": "Clouds",
+          "items": ["Yandex Cloud: provider-yc", "AWS: provider-aws, soon"]
+        },
+        {
+          "label": "Access",
+          "items": ["ProviderConfig t-<tenant>", "key from the tenant's secret"]
+        }
+      ]
     },
     "telemetry": {
       "title": "Telemetry",
       "body": "Metrics, logs, traces.",
-      "more": "Everything a run writes about itself, over standard protocols. The Stroppy server reads it through the Graphene door with the tenant's rights — store addresses never leave.",
-      "tech": "VictoriaMetrics · VictoriaLogs · Grafana"
+      "more": "Everything a run writes about itself, over standard protocols. The Stroppy server reads it through Graphene with the tenant's rights, so the storage addresses stay inside.",
+      "tech": "VictoriaMetrics · VictoriaLogs · Grafana",
+      "facts": [
+        {
+          "label": "Dimensions",
+          "items": ["metrics", "logs", "traces", "events"]
+        }
+      ]
     },
     "agent": {
       "title": "Agent",
       "body": "On every machine.",
       "more": "Installed by cloud-init, it keeps its own outgoing gRPC session to Graphene (opens no ports), starts the run's containers and ships their telemetry.",
-      "tech": "graphene-agent"
+      "tech": "graphene-agent",
+      "facts": [
+        {
+          "label": "Does",
+          "items": ["start a container", "put a file", "run a command", "take an artifact"]
+        },
+        {
+          "label": "Network",
+          "items": ["outgoing gRPC", "listens on no ports"]
+        }
+      ]
     },
     "db": {
       "title": "Database",
       "body": "DBMS containers.",
-      "more": "The chosen DBMS and topology — nodes, replicas, proxies — as docker images on the stand's machines. They live only for the run unless the stand is kept.",
-      "tech": "docker · your Yandex Cloud / AWS"
+      "more": "The chosen DBMS and topology (nodes, replicas, proxies) run as docker images on the stand machines for as long as the run goes, unless you keep the stand.",
+      "tech": "DBMS image",
+      "facts": [
+        {
+          "label": "Installed as",
+          "items": ["docker images only", "no packages on the host"]
+        }
+      ]
     },
     "runner": {
       "title": "Runner",
@@ -105,29 +198,32 @@
       "tech": "stroppy"
     },
     "edges": {
-      "consoleApi": "HTTPS · WS",
-      "signIn": "sign in",
+      "consoleApi": "REST · WS",
+      "signIn": "sign-in",
       "startRun": "StartRun · Watch",
-      "push": "publish",
-      "image": "image",
+      "push": "/v2",
       "machines": "resources",
       "yourKey": "VMs with your key",
       "session": "gRPC · OTLP",
       "load": "load",
-      "otlp": "metrics · logs"
+      "otlp": "metrics · logs",
+      "artifacts": "artifacts",
+      "cloudInit": "cloud-init",
+      "scrape": "scrape",
+      "workflow": "workflow"
     },
     "steps": {
       "all": {
-        "title": "The whole",
-        "body": "Four zones: your browser, the Stroppy Cloud product server, the Graphene execution core, and your cloud, where the stand lives."
+        "title": "Overview",
+        "body": "Three zones: the Stroppy Cloud product (the console in your browser and the server), Graphene, which runs the pipelines, and your cloud with the stand. Each zone lists its dependencies underneath; hover a block to see what it depends on."
       },
       "launch": {
         "title": "Launch",
-        "body": "The console asks the server to launch a test. The server checks rights and quotas, compiles the test into a RunSpec and starts a run in Graphene — which records it as a workflow in Temporal."
+        "body": "The console asks the server to launch a test. The server checks rights and quotas, builds the test into a RunSpec and starts the run in Graphene, which records it as a workflow in Temporal."
       },
       "pipeline": {
         "title": "Pipeline",
-        "body": "Graphene brings up a worker with the stroppy-run image from its registry. The Stroppy server put that image there itself at start — the pipeline version always equals the server's."
+        "body": "Graphene starts a worker with the stroppy-run image from its registry. The Stroppy server uploaded that image on start, so the pipeline's version always matches the server's."
       },
       "stand": {
         "title": "Stand",
@@ -135,16 +231,101 @@
       },
       "run": {
         "title": "Run",
-        "body": "Agents start the database and runner containers; stroppy loads the data and drives the load segments."
+        "body": "Agents start the database, proxy and exporter containers; the stroppy runner loads data and drives the load segments through the proxy."
       },
       "observe": {
         "title": "Observe",
-        "body": "Agents ship metrics and logs over OTLP. The server reads them through Graphene and streams them to the console over WebSocket — that is how a run is live."
+        "body": "The agent scrapes the exporters and sends metrics and logs over OTLP to Graphene; artifacts go to S3. The server reads all of it through Graphene and pushes it to the console over WebSocket."
       }
-    }
+    },
+    "lead": "What runs in Stroppy Cloud, what runs in Graphene and what runs in your cloud, and how the parts talk while a benchmark is on.",
+    "network": {
+      "title": "Network",
+      "body": "VPC, subnet, security group.",
+      "more": "The first resource of a run in your cloud. Machines are created inside this network and removed with it.",
+      "tech": "VPC · subnet · SG"
+    },
+    "proxy": {
+      "title": "Proxy and consensus",
+      "body": "For fault-tolerant topologies.",
+      "more": "The cluster's entry point and its state store: etcd remembers Patroni's leader, HAProxy checks /primary and routes to the current leader. A single-node topology has neither.",
+      "tech": "HAProxy · etcd"
+    },
+    "exporters": {
+      "title": "Exporters",
+      "body": "Machine and DBMS metrics.",
+      "more": "Machine and DBMS exporters run next to the database. The agent scrapes them and sends their metrics, together with stroppy's, to Graphene over OTLP.",
+      "tech": "node_exporter · postgres_exporter…"
+    },
+    "blobs": {
+      "title": "Artifacts",
+      "body": "Reports and raw data.",
+      "more": "Files the run takes from the machines: stroppy's raw output and the report. Kept in S3, they outlive the stand.",
+      "tech": "S3"
+    },
+    "kratos": {
+      "title": "Ory Kratos",
+      "body": "Sign-in, email, codes.",
+      "more": "A separate self-hosted install: sign-up, sign-in, email verification, recovery by code and TOTP, with its own database in Postgres. The server doesn't call it per request; it only checks the JWT signature.",
+      "tech": "self-hosted · PostgreSQL"
+    },
+    "k8s": {
+      "title": "Kubernetes",
+      "body": "Where workers live.",
+      "more": "The platform Graphene runs on. For each run it creates a worker Deployment with the pipeline image and deletes it when the run is over. Crossplane runs here too.",
+      "tech": "managed backend"
+    },
+    "xp": {
+      "title": "Crossplane",
+      "body": "Cloud resources.",
+      "more": "Creates networks and machines in your account through the tenant's ProviderConfig, built from its secret, and removes them in a cascade with the run.",
+      "tech": "provider-yc · provider-aws soon"
+    },
+    "oci": {
+      "title": "Docker registry",
+      "body": "Pipeline images.",
+      "more": "Tenants' pipelines: a manifest and an image. Identical layers are stored once and served through Graphene (/v2); the registry itself isn't reachable from outside.",
+      "tech": "OCI"
+    },
+    "vm": {
+      "title": "Cloud",
+      "body": "Network and virtual machines.",
+      "more": "Your account: the network and VMs are created in it with the tenant's key and removed after the run. You pay the cloud directly.",
+      "tech": "Yandex Cloud · AWS soon"
+    },
+    "docker": {
+      "title": "Docker",
+      "body": "Runtime on the machines.",
+      "more": "DBMS, proxies and exporters ship as docker images only; nothing gets installed on the host. The agent starts the run's containers and removes them when the run ends.",
+      "tech": "the run's containers"
+    },
+    "depsLabel": "Dependencies"
   },
   "deck": {
     "model": "Product",
-    "arch": "Internals"
+    "arch": "Architecture"
+  },
+  "lifecycle": {
+    "title": "What happens during a run",
+    "provisioning": {
+      "title": "Stand",
+      "body": "Stroppy Cloud creates the network and machines in your cloud with your key, and an agent starts on each machine."
+    },
+    "deploying": {
+      "title": "Deploy",
+      "body": "The agents start the DBMS in containers, the cluster forms, and the stand passes its checks before any load."
+    },
+    "workload": {
+      "title": "Load",
+      "body": "stroppy drives the load segment by segment while you watch QPS, latency and logs in the console."
+    },
+    "collecting": {
+      "title": "Collect",
+      "body": "Metrics from the load window go into the report."
+    },
+    "teardown": {
+      "title": "Teardown",
+      "body": "The machines are removed unless you asked to keep the stand. The report stays."
+    }
   }
 }

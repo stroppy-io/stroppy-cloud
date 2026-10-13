@@ -5,16 +5,16 @@
       "tenant": "Tenant",
       "global": "Global"
     },
-    "globalDisabled": "The public rating is disabled on this installation.",
+    "globalDisabled": "The public rating is turned off on this installation.",
     "filters": {
       "metric": "Metric",
       "kind": "Database",
       "version": "Version",
       "provider": "Provider",
       "stroppy": "Stroppy",
-      "league": "League",
       "period": "Period",
-      "allLeagues": "All leagues"
+      "scenario": "Scenario",
+      "hardware": "Hardware"
     },
     "period": {
       "7d": "7d",
@@ -23,8 +23,6 @@
       "1y": "1y",
       "all": "All time"
     },
-    "league": "League {{league}}",
-    "leagueHint": "db size / runner size — same hardware class",
     "entries_one": "{{count}} result",
     "entries_other": "{{count}} results",
     "columns": {
@@ -39,20 +37,22 @@
       "author": "Author",
       "tenant": "Tenant",
       "link": "Link",
-      "run": "Run"
+      "run": "Run",
+      "hardware": "Hardware"
     },
     "openRun": "Open run",
     "openShare": "Public report",
     "empty": {
       "title": "No rated runs",
-      "hint": "Runs enter the rating when they complete with the rating flag enabled."
+      "hint": "A run lands in the rating when it finishes with the rating turned on."
     },
-    "first": "1st place",
-    "anonymous": "Tenant hidden"
+    "anonymous": "Tenant hidden",
+    "scenarioHint": "Numbers compare only within one scenario; each row shows its hardware",
+    "hardwareHint": "The stand without its runner: how many machines and the vCPU and memory of each"
   },
   "shares": {
     "title": "Shares",
-    "subtitle": "Public read-only snapshots of runs, suite runs and comparisons.",
+    "subtitle": "Public links to runs, matrices and comparisons. They open read-only.",
     "filters": {
       "kind": "Target",
       "active": "State",
@@ -72,7 +72,7 @@
     "scopeHint": {
       "overview": "Summary, timeline, setup and results",
       "metrics": "Overview plus time-series charts",
-      "configs": "Metrics plus rendered software configs (secrets masked)"
+      "configs": "Metrics and software configs, secrets hidden"
     },
     "state": {
       "active": "Active",
@@ -103,14 +103,14 @@
       "saved": "Share updated",
       "alreadyRevoked": "Share is already revoked",
       "notActive": "Share is not active",
-      "deleteHint": "Revokes the share — the link stops working"
+      "deleteHint": "Revoke the share so the link stops working"
     },
     "edit": {
       "title": "Edit share",
       "titleField": "Title",
       "titlePlaceholder": "Shown as the report heading",
       "ttl": "Expires in",
-      "ttlHint": "Counted from now. The link stops working after that.",
+      "ttlHint": "Counted from now; after that the link stops working.",
       "scope": "Scope",
       "ttlOptions": {
         "never": "Never",
@@ -122,11 +122,11 @@
     },
     "revokeConfirm": {
       "title": "Revoke share?",
-      "body": "The public link {{url}} stops working immediately. This cannot be undone."
+      "body": "{{url}} stops working immediately, and this can’t be undone."
     },
     "empty": {
       "title": "No shares yet",
-      "hint": "Share a run from its page — the public link appears here."
+      "hint": "Share a run from its page and the link shows up here."
     },
     "search": "Search shares…",
     "runsCount_one": "{{count}} run",

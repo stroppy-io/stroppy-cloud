@@ -42,11 +42,11 @@
     "started": "Started",
     "finished": "Finished",
     "status": "Status",
-    "noHeadline": "No headline metrics — the run did not reach the workload phase."
+    "noHeadline": "No result metrics: the run never reached the load."
   },
   "timeline": {
     "title": "Timeline",
-    "hint": "What happened and when — phases, machines, workload segments.",
+    "hint": "What happened and when: phases, machines, load segments.",
     "phases": "Phases",
     "segments": "Workload segments",
     "empty": "No events were captured.",
@@ -56,7 +56,7 @@
   },
   "setup": {
     "title": "Setup",
-    "hint": "How the system under test was configured.",
+    "hint": "How the system under test was set up.",
     "database": "Database",
     "kind": "Kind",
     "version": "Version",
@@ -88,7 +88,6 @@
       "location": "Location"
     },
     "provider": "Provider",
-    "league": "League",
     "sizes": "Sizes"
   },
   "results": {
@@ -129,7 +128,7 @@
   },
   "comparison": {
     "title": "Comparison",
-    "hint": "Metric by metric against the baseline (first column).",
+    "hint": "Each metric against the baseline run in the first column.",
     "baseline": "baseline",
     "metric": "Metric",
     "better": "better",
@@ -145,7 +144,7 @@
   },
   "gone": {
     "title": "This report is no longer available",
-    "hint": "The share was revoked or has expired. Ask the author for a new link.",
+    "hint": "The author revoked this report or it expired. Ask them for a new link.",
     "notFound": "There is no shared report with this link.",
     "home": "Go to Stroppy Cloud"
   }

@@ -12287,16 +12287,51 @@ func (c *Client) sendGetPublicRating(ctx context.Context, params GetPublicRating
 		}
 	}
 	{
-		// Encode "league" parameter.
+		// Encode "scenario" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "league",
+			Name:    "scenario",
 			Style:   uri.QueryStyleForm,
-			Explode: true,
+			Explode: false,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.League.Get(); ok {
-				return e.EncodeValue(conv.StringToString(val))
+			if params.Scenario != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Scenario {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "hardware" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "hardware",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Hardware != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Hardware {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
 			}
 			return nil
 		}); err != nil {
@@ -15438,16 +15473,51 @@ func (c *Client) sendGetTenantRating(ctx context.Context, params GetTenantRating
 		}
 	}
 	{
-		// Encode "league" parameter.
+		// Encode "scenario" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "league",
+			Name:    "scenario",
 			Style:   uri.QueryStyleForm,
-			Explode: true,
+			Explode: false,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.League.Get(); ok {
-				return e.EncodeValue(conv.StringToString(val))
+			if params.Scenario != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Scenario {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "hardware" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "hardware",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Hardware != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Hardware {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
 			}
 			return nil
 		}); err != nil {

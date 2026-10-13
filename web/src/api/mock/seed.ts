@@ -1260,7 +1260,6 @@ export function buildRun(s: RunSeed): Run {
       provider_kind: s.provider.kind,
       provider_profile: { id: s.provider.id, name: s.provider.name },
       sizes,
-      league: `${sizes.db?.size ?? 'M'}/${sizes.runner?.size ?? 'M'}`,
       progress_pct: terminal ? 100 : s.status === 'pending' ? 0 : 40,
       segment: s.status === 'running' && s.phase === 'workload' ? segNames[0] : undefined,
       headline:

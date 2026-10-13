@@ -1,7 +1,7 @@
 {
   "nav": {
     "label": "Sections",
-    "rating": "Rating",
+    "rating": "Leaderboard",
     "docs": "Docs",
     "signIn": "Sign in",
     "start": "Get started",
@@ -17,11 +17,11 @@
     },
     "console": "Open console",
     "account": "Account",
-    "how": "How it works"
+    "how": "Architecture"
   },
   "hero": {
-    "title": "Database benchmarking as a service",
-    "lead": "Describe what to test — Stroppy Cloud builds the stand, runs the load and keeps a result you can compare and share.",
+    "title": "Find out how much load your database can take",
+    "lead": "Describe a database and a workload, and Stroppy Cloud brings up a stand in your cloud, runs the test and hands you a report: queries per second, latency and where the errors started. Compare it with earlier runs or share it as a link.",
     "start": "Create an account",
     "rating": "See the rating"
   },
@@ -34,31 +34,31 @@
     },
     "provision": {
       "title": "A stand in your cloud",
-      "body": "Machines for the database and the load are created in your Yandex Cloud or AWS account — you pay the cloud directly.",
+      "body": "Machines for the database and the load are created in your Yandex Cloud account (AWS soon). The database and its data stay with you, and the cloud bills you for the machines directly.",
       "time": "~1 min"
     },
     "deploy": {
       "title": "The database sets itself up",
-      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata, OrioleDB — from one node to a cluster. The stand is checked before the load; transient failures are retried, and a real problem stops the run with a clear reason.",
+      "body": "PostgreSQL, MySQL, MariaDB, YDB, CockroachDB, Picodata or OrioleDB, from one node to a cluster. Stroppy Cloud checks the stand before the load: a passing glitch gets retried on its own, and if something is really broken it stops the run and tells you what.",
       "time": "~3 min"
     },
     "load": {
       "title": "The load is live",
-      "body": "While stroppy runs the scenario you see QPS, latency and errors, logs and metrics of every machine.",
+      "body": "While stroppy runs the scenario you see QPS, latency and errors, plus the logs and metrics of every machine, without waiting for the end.",
       "time": "10 min"
     },
     "result": {
       "title": "A place in the rating, a comparison",
-      "body": "The run joins the public rating next to other configurations and is compared with your past runs. The stand is removed afterwards.",
+      "body": "You can send the run to the public rating, where it sits next to setups of the same sizes, and compare it with your earlier runs. By then the stand is already gone.",
       "time": "instant"
     },
     "vm": "VM",
     "errors": "errors",
     "heading": "How a run goes",
-    "sub": "From the Launch button to a place in the rating — PostgreSQL 17 with Patroni on three nodes."
+    "sub": "Here's what it looks like for PostgreSQL 17 with Patroni on three nodes: the path from the Launch button to a line in the rating."
   },
   "footer": {
-    "about": "Database load testing on stroppy — in your own cloud.",
+    "about": "Database load testing with stroppy, in your own cloud.",
     "product": "Product",
     "blog": "Blog",
     "releases": "stroppy releases",
@@ -76,7 +76,7 @@
     "network": "network, subnet, security group",
     "created": "machine created",
     "install": "installed postgresql-17, patroni, etcd",
-    "mirrorTimeout": "package mirror did not answer — retry 1/3",
+    "mirrorTimeout": "package mirror timed out, retry 1/3",
     "retryOk": "retry 1/3: packages installed",
     "leader": "patroni: cluster bootstrapped, leader",
     "runner": "stroppy 6.1 ready"
@@ -88,8 +88,8 @@
     "vacuum": "autovacuum"
   },
   "end": {
-    "title": "Your first run in a few minutes",
-    "lead": "Connect a cloud, pick a database and a scenario — Stroppy Cloud does the rest.",
+    "title": "Try it on your database",
+    "lead": "Connect your cloud, pick a database and a scenario, and Stroppy Cloud does the rest. Not sure where to start? Take a ready example.",
     "docs": "stroppy docs"
   },
   "status": {
@@ -117,14 +117,15 @@
   },
   "rating": {
     "title": "Public rating",
-    "sub": "Runs their authors opened to everyone. One league holds stands of one size, so its rows compare fairly.",
+    "sub": "Runs their authors made public. Numbers are compared only within one load scenario, and each row says what hardware produced it.",
     "all": "Full rating",
     "join": "Get into the rating",
     "metric": "Throughput",
     "error": "Could not load the rating",
     "emptyTitle": "Nothing here yet",
-    "emptyBody": "Publish the first run and it opens the rating.",
-    "embedFooter": "Full rating on Stroppy Cloud"
+    "emptyBody": "Nothing here yet. Publish a run and it'll be the first.",
+    "embedFooter": "Full rating on Stroppy Cloud",
+    "openSpot": "Open spot"
   },
   "cue": {
     "how": "How it works",
