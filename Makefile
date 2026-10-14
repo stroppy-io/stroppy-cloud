@@ -1,7 +1,7 @@
 # stroppy-cloud Makefile
 .PHONY: help configure build build-pipelines test lint fmt openapi generate-go generate-ts schemas-export schemas-test \
         tools db-gen migrate-generate migrate-clear \
-        web-install web-dev web-build docs-install docs-dev docs-build \
+        web-install web-dev web-build kit-bundle docs-install docs-dev docs-build \
         docker-build clean
 
 # ============================================================
@@ -139,6 +139,9 @@ web-dev: ## Start web dev server (proxies API to localhost:18347)
 
 web-build: ## Build web for production
 	cd web && yarn build
+
+kit-bundle: ## Build the UI kit bundle for HTML reports (web/dist-kit)
+	cd web && yarn build:kit
 
 # ============================================================
 # Docs

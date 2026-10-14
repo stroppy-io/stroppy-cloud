@@ -1,9 +1,10 @@
-import { BAND, BODY, MARK_ORANGE, RAYS } from '@components/Logo'
+import { MARK_ORANGE } from '@components/Logo'
 import { css, cx, keyframes } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { useStyles2 } from '@grafana/ui'
 import { type MotionValue, motion, useTransform } from 'motion/react'
 import type { ReactNode } from 'react'
+import { BAND, BODY, RAYS } from '@/kit/logo'
 import { brand } from '@/styles/brand'
 
 // The logo, large and muted, behind the headline.

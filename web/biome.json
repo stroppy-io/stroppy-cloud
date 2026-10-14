@@ -6,7 +6,8 @@
       "vite.config.ts",
       "!src/routeTree.gen.ts",
       "!src/api/schema.d.ts",
-      "!src/schemas"
+      "!src/schemas",
+      "!src/kit/tokens.css"
     ]
   },
   "formatter": {
@@ -38,5 +39,27 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/kit/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": ["@*/**", "*", "!node:*", "!vitest", "!uplot"],
+                    "message": "The kit stands alone: import kit files, uplot (the chart), and node: built-ins or vitest in tests."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

@@ -14,7 +14,8 @@
     "test": "vitest run --dir src",
     "generate": "openapi-typescript ../openapi/openapi.yaml -o src/api/schema.d.ts",
     "test:contract": "node --experimental-strip-types --test tests/contract.test.mjs",
-    "postinstall": "node scripts/copy-grafana-assets.mjs"
+    "postinstall": "node scripts/copy-grafana-assets.mjs",
+    "build:kit": "node scripts/kit-bundle.mjs"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
@@ -42,6 +43,7 @@
     "react-dom": "^19.1.0",
     "react-i18next": "^17.0.9",
     "sonner": "^2.0.7",
+    "uplot": "1.6.32",
     "zod": "^4.4.3"
   },
   "devDependencies": {

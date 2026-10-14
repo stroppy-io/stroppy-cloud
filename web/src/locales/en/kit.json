@@ -1,0 +1,115 @@
+{
+  "title": "Stroppy UI kit",
+  "mode": {
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "source": {
+    "stroppy": "Our theme",
+    "grafana": "As today"
+  },
+  "palette": {
+    "title": "Palette",
+    "hint": "Values from kit/tokens.json. Dark is graphite; light follows the same rules."
+  },
+  "grafana": {
+    "title": "Grafana in our theme",
+    "hint": "The app's components on the theme made from the tokens. \"As today\" shows the stock Grafana theme the app runs on now."
+  },
+  "doc": {
+    "title": "HTML without React",
+    "hint": "Bare markup inside .st-doc on tokens.css and base.css: how a report or a simple page looks.",
+    "h1": "TPC-C on PostgreSQL 17",
+    "p1": "Three machines in Yandex Cloud, 64 virtual users, ten minutes under load. Details on the",
+    "link": "run page",
+    "h2": "Results by segment",
+    "segment": "Segment",
+    "quote": "The numbers compare only with runs of the same scenario on the same hardware.",
+    "h3": "What to check next",
+    "li1": "Run again with a replica and compare latencies.",
+    "li2": "Stop a local run:",
+    "footer": "Report built by stroppy; colours and fonts from the Stroppy UI kit.",
+    "nav": {
+      "summary": "Summary",
+      "results": "Results",
+      "setup": "Stand",
+      "logs": "Logs"
+    },
+    "status": {
+      "completed": "Completed",
+      "running": "Running",
+      "failed": "Failed",
+      "degraded": "Partial",
+      "rating": "3rd place"
+    },
+    "p2": "The main thing:",
+    "mark": "latency grew under the peak load",
+    "stat": {
+      "tps": "Throughput",
+      "vsLast": "vs last",
+      "errors": "Errors",
+      "errorsNote": "timeouts on spike",
+      "duration": "Duration"
+    },
+    "callout": {
+      "info": {
+        "title": "How to read this",
+        "body": "Numbers come from the main segment; warmup is not counted."
+      },
+      "success": "Every stand check passed.",
+      "warning": {
+        "title": "Worth a look",
+        "body": "On spike p99 tripled, which looks like running out of connections."
+      },
+      "error": "The spike segment was cut by a timeout at minute 9."
+    },
+    "panel": {
+      "title": "Segments",
+      "note": "vs run #41"
+    },
+    "delta": "Δ",
+    "share": "Share of the best",
+    "setup": "Stand",
+    "kv": {
+      "engine": "Database",
+      "machines": "Machines",
+      "cloud": "Cloud"
+    },
+    "series": "Series colours",
+    "seriesItem": "Series {{n}}",
+    "open": "Open in Stroppy Cloud",
+    "download": "Download JSON",
+    "compare": "Compare with the last",
+    "chart": "Throughput over time"
+  },
+  "sample": {
+    "heading": "Run tpcc-nightly",
+    "lead": "Ordinary console elements in this theme.",
+    "launch": "Launch",
+    "clone": "Clone",
+    "compare": "Compare",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "warn": "No size",
+    "image": "Custom image",
+    "tabs": {
+      "runs": "Runs",
+      "logs": "Logs",
+      "metrics": "Metrics"
+    },
+    "name": "Name",
+    "engine": "Database",
+    "keep": "Keep the stand",
+    "favorite": "Favorite",
+    "alerts": {
+      "info": "The stand is coming up; it takes a couple of minutes",
+      "success": "Run finished",
+      "warning": "Cloud quotas are almost used up",
+      "error": "Could not create the machines"
+    },
+    "panel": "Panel",
+    "panelHint": "A titled block, as on entity pages",
+    "card": "Card",
+    "cardHint": "A Grafana card on our background"
+  }
+}

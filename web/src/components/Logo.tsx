@@ -1,28 +1,14 @@
 import { useTheme2 } from '@grafana/ui'
+import { BAND, BODY, RAYS } from '@/kit/logo'
+import { tokens } from '@/kit/tokens'
 
-// The Stroppy mark, drawn inline so it takes the theme: the body follows the
-// surrounding text colour, the rays and the middle band are orange: a
-// database under stress. An <img> of public/org-logo.svg could not take the
-// text colour; that file stays the source and the favicon.
+// The Stroppy mark (geometry and orange from the kit), drawn inline so it
+// takes the theme: the body follows the surrounding text colour, the rays and
+// the middle band are orange: a database under stress. An <img> could not take
+// the text colour; public/org-logo.svg is the favicon.
 
-/** The orange of the mark, as in public/logo_no_background.svg. Same in both themes. */
-export const MARK_ORANGE = '#F16A39'
-
-// Full mark — the geometry of public/org-logo.svg.
-export const RAYS = [
-  'M32 24.5 42 29.5 36 29 30.5 26.5Z',
-  'M44 18 48.5 18.5 50 27 46.8 23Z',
-  'M62 18 65.5 18 65 27 62.5 24Z',
-  'M80.5 18 84 18.5 78 28 77 24Z',
-  'M95.5 24 96 27 86 30 91 26Z',
-]
-export const BAND =
-  'M31 81 C37 76.5 49 74 64 74 C79 74 91 77.2 97 81.5 L97 85.2 C90 89.6 78 92 64 92 C49 92 37 88.7 31 84.5Z'
-export const BODY = [
-  'M31 42 C34 37.5 47 34 63.5 34 C80 34 92 37.5 97 42.5 C93 47 80 50.5 64 50.5 C48 50.5 36 47.3 31 42Z',
-  'M30.5 49 C40 54.3 51 57.2 64 57.2 C78 57.2 89 54.3 97.5 49 L97.5 66.7 C93 72 80 75.1 64 75.1 C48 75.1 35 72 30.5 66.7Z',
-  'M31 86.5 C39 91 50 93.1 64 93.1 C78 93.1 90 90.8 97 86.5 L97 100.8 C97 106.3 82.5 110.8 64 110.8 C45.5 110.8 31 106.3 31 100.8Z',
-]
+/** The orange of the mark. Same in both themes. */
+export const MARK_ORANGE = tokens.mark
 
 // Compact mark for small sizes (headers, ≤ COMPACT_MAX px): the same rays,
 // thickened by a stroke of their own colour (hairlines vanish there). The cylinder is unchanged.

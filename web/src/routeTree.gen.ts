@@ -14,6 +14,7 @@ import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as ExamplesRouteRouteImport } from './routes/examples/route'
 import { Route as HowRouteImport } from './routes/how'
 import { Route as InvitesRouteImport } from './routes/invites'
+import { Route as KitRouteImport } from './routes/kit'
 import { Route as LandRouteImport } from './routes/land'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as LoginRouteImport } from './routes/login'
@@ -108,6 +109,11 @@ const HowRoute = HowRouteImport.update({
 const InvitesRoute = InvitesRouteImport.update({
   id: '/invites',
   path: '/invites',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitRoute = KitRouteImport.update({
+  id: '/kit',
+  path: '/kit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LandRoute = LandRouteImport.update({
@@ -474,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/me': typeof MeRouteRouteWithChildren
   '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/kit': typeof KitRoute
   '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -549,6 +556,7 @@ export interface FileRoutesByTo {
   '/me': typeof MeRouteRouteWithChildren
   '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/kit': typeof KitRoute
   '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -617,6 +625,7 @@ export interface FileRoutesById {
   '/me': typeof MeRouteRouteWithChildren
   '/how': typeof HowRoute
   '/invites': typeof InvitesRoute
+  '/kit': typeof KitRoute
   '/land': typeof LandRoute
   '/leaderboard': typeof LeaderboardRoute
   '/login': typeof LoginRoute
@@ -696,6 +705,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/how'
     | '/invites'
+    | '/kit'
     | '/land'
     | '/leaderboard'
     | '/login'
@@ -771,6 +781,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/how'
     | '/invites'
+    | '/kit'
     | '/land'
     | '/leaderboard'
     | '/login'
@@ -838,6 +849,7 @@ export interface FileRouteTypes {
     | '/me'
     | '/how'
     | '/invites'
+    | '/kit'
     | '/land'
     | '/leaderboard'
     | '/login'
@@ -916,6 +928,7 @@ export interface RootRouteChildren {
   MeRouteRoute: typeof MeRouteRouteWithChildren
   HowRoute: typeof HowRoute
   InvitesRoute: typeof InvitesRoute
+  KitRoute: typeof KitRoute
   LandRoute: typeof LandRoute
   LeaderboardRoute: typeof LeaderboardRoute
   LoginRoute: typeof LoginRoute
@@ -965,6 +978,13 @@ declare module '@tanstack/react-router' {
       path: '/invites'
       fullPath: '/invites'
       preLoaderRoute: typeof InvitesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kit': {
+      id: '/kit'
+      path: '/kit'
+      fullPath: '/kit'
+      preLoaderRoute: typeof KitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/land': {
@@ -1722,6 +1742,7 @@ const rootRouteChildren: RootRouteChildren = {
   MeRouteRoute: MeRouteRouteWithChildren,
   HowRoute: HowRoute,
   InvitesRoute: InvitesRoute,
+  KitRoute: KitRoute,
   LandRoute: LandRoute,
   LeaderboardRoute: LeaderboardRoute,
   LoginRoute: LoginRoute,

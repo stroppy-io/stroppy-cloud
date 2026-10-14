@@ -92,6 +92,7 @@ function ChunkReload({ error, reset }: { error: unknown; reset: () => void }) {
 const PUBLIC_PREFIXES = [
   '/land',
   '/how',
+  '/kit',
   '/login',
   '/register',
   '/verify',

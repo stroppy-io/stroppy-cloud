@@ -1,0 +1,613 @@
+<!doctype html>
+<!-- The Stroppy UI kit bundle, everything it can do, on one page. Open it from
+     the unpacked bundle. Every example shows the markup that drew it under
+     "HTML"; copy that. A single-file report inlines the same files (CSS in
+     <style>, fonts as data: URLs, chart.js in <script>) instead of linking. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Stroppy UI kit — example</title>
+    <!-- 1. The kit: variables, fonts, plain HTML, the chart. In this order. -->
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="fonts.css" />
+    <link rel="stylesheet" href="base.css" />
+    <link rel="stylesheet" href="chart.css" />
+    <!-- Only this page's layout; not part of the kit. -->
+    <style>
+      .page {
+        display: grid;
+        grid-template-columns: 200px minmax(0, 1fr);
+        gap: 32px;
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+      }
+      .toc {
+        position: sticky;
+        top: 72px;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: var(--st-font-size-sm);
+      }
+      .toc a {
+        padding: 4px 8px;
+        border-radius: var(--st-radius-md);
+        color: var(--st-muted);
+      }
+      .toc a:hover {
+        background: var(--st-panel);
+        color: var(--st-text);
+        text-decoration: none;
+      }
+      .bar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 24px;
+        background: var(--st-panel);
+        border-bottom: 1px solid var(--st-line);
+        margin-bottom: 32px;
+      }
+      .bar .grow {
+        flex: 1;
+      }
+      section.demo {
+        margin-bottom: 48px;
+        scroll-margin-top: 72px;
+      }
+      section.demo > h2 {
+        margin-top: 0;
+      }
+      .ex {
+        padding: 20px;
+        border: 1px dashed var(--st-line);
+        border-radius: var(--st-radius-md);
+        margin-bottom: 8px;
+      }
+      .ex > :last-child {
+        margin-bottom: 0;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 8px;
+      }
+      .swatch {
+        border: 1px solid var(--st-line);
+        border-radius: var(--st-radius-md);
+        overflow: hidden;
+        background: var(--st-panel);
+        font-size: var(--st-font-size-sm);
+      }
+      .swatch > div {
+        height: 40px;
+      }
+      .st-doc .swatch > code {
+        display: block;
+        padding: 6px 8px;
+        background: none;
+      }
+      @media (max-width: 860px) {
+        .page {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .toc {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+
+  <!-- 2. The page: class st-doc turns on the kit's HTML styles; data-theme picks dark or light. -->
+  <body class="st-doc" data-theme="dark">
+    <div class="bar">
+      <svg width="26" height="26" viewBox="0 0 128 128" aria-hidden="true">
+        <g fill="var(--st-mark)">
+          <path d="M32 24.5 42 29.5 36 29 30.5 26.5Z" /><path d="M44 18 48.5 18.5 50 27 46.8 23Z" />
+          <path d="M62 18 65.5 18 65 27 62.5 24Z" /><path d="M80.5 18 84 18.5 78 28 77 24Z" />
+          <path d="M95.5 24 96 27 86 30 91 26Z" />
+          <path d="M31 81 C37 76.5 49 74 64 74 C79 74 91 77.2 97 81.5 L97 85.2 C90 89.6 78 92 64 92 C49 92 37 88.7 31 84.5Z" />
+        </g>
+        <g fill="var(--st-muted)">
+          <path d="M31 42 C34 37.5 47 34 63.5 34 C80 34 92 37.5 97 42.5 C93 47 80 50.5 64 50.5 C48 50.5 36 47.3 31 42Z" />
+          <path d="M30.5 49 C40 54.3 51 57.2 64 57.2 C78 57.2 89 54.3 97.5 49 L97.5 66.7 C93 72 80 75.1 64 75.1 C48 75.1 35 72 30.5 66.7Z" />
+          <path d="M31 86.5 C39 91 50 93.1 64 93.1 C78 93.1 90 90.8 97 86.5 L97 100.8 C97 106.3 82.5 110.8 64 110.8 C45.5 110.8 31 106.3 31 100.8Z" />
+        </g>
+      </svg>
+      <strong>Stroppy UI kit</strong>
+      <small id="version"></small>
+      <span class="grow"></span>
+      <button class="st-button" data-variant="text" id="theme">Switch to light</button>
+    </div>
+
+    <div class="page">
+      <div class="toc" role="navigation" aria-label="Contents">
+        <a href="#setup">Setup</a>
+        <a href="#palette">Palette</a>
+        <a href="#type">Text</a>
+        <a href="#tones">Tones</a>
+        <a href="#tags">Tags and status</a>
+        <a href="#callouts">Callouts</a>
+        <a href="#stats">Stats</a>
+        <a href="#panels">Panels and tables</a>
+        <a href="#kv">Key–value</a>
+        <a href="#layout">Grid and row</a>
+        <a href="#progress">Progress</a>
+        <a href="#buttons">Buttons</a>
+        <a href="#nav">Navigation</a>
+        <a href="#details">Disclosure</a>
+        <a href="#lists">Lists, quotes, code</a>
+        <a href="#legend">Series and legend</a>
+        <a href="#charts">Charts</a>
+        <a href="#logo">Logo</a>
+      </div>
+
+      <main>
+        <h1>Everything in the kit</h1>
+        <p>
+          Plain HTML on the kit's CSS, and one script for charts. No framework, no build step,
+          nothing loaded from the network. Each example has its markup under <strong>HTML</strong>.
+        </p>
+
+        <section class="demo" id="setup">
+          <h2>Setup</h2>
+          <p>
+            Link the four stylesheets in this order, put <code>class="st-doc"</code> and
+            <code>data-theme="dark"</code> (or <code>light</code>) on <code>&lt;body&gt;</code>, and
+            load <code>chart.js</code> if the page has charts. The theme can change at runtime:
+            set the attribute, charts redraw by themselves.
+          </p>
+          <pre>&lt;link rel="stylesheet" href="tokens.css"&gt;
+&lt;link rel="stylesheet" href="fonts.css"&gt;
+&lt;link rel="stylesheet" href="base.css"&gt;
+&lt;link rel="stylesheet" href="chart.css"&gt;
+…
+&lt;body class="st-doc" data-theme="dark"&gt;
+…
+&lt;script src="chart.js"&gt;&lt;/script&gt;</pre>
+          <p>
+            The styles apply only inside <code>.st-doc</code>; the variables (<code>--st-*</code>)
+            are on <code>:root</code> and on every <code>[data-theme]</code>, so a part of a page
+            can have its own theme.
+          </p>
+        </section>
+
+        <section class="demo" id="palette">
+          <h2>Palette</h2>
+          <p>
+            The variables of the current theme. Use them in your own CSS:
+            <code>color: var(--st-muted)</code>. <code>tokens.json</code> has the same values for
+            code that is not CSS.
+          </p>
+          <div class="swatches" id="swatches"></div>
+        </section>
+
+        <section class="demo" id="type">
+          <h2>Text</h2>
+          <div class="ex">
+            <h1>Heading 1 — the page title</h1>
+            <h2>Heading 2 — a section</h2>
+            <h3>Heading 3 — a block</h3>
+            <h4>Heading 4 — a caption</h4>
+            <p>
+              Body text with a <a href="#type">link</a>, <strong>strong</strong>, <em>emphasis</em>,
+              <mark>a highlighted phrase</mark>, an <abbr title="transactions per second">abbr</abbr>
+              with a hint, inline <code>code</code> and keys <kbd>Ctrl</kbd>+<kbd>C</kbd>.
+            </p>
+            <p><small>Small text: captions, footnotes, units.</small></p>
+          </div>
+        </section>
+
+        <section class="demo" id="tones">
+          <h2>Tones</h2>
+          <p>
+            <code>data-tone</code> says what something means. Text-level elements and table cells
+            take the colour; tags, dots, callouts, bars and stats use it for their shape.
+          </p>
+          <div class="ex">
+            <p>
+              <span data-tone="success">success</span> ·
+              <span data-tone="warning">warning</span> ·
+              <span data-tone="error">error</span> ·
+              <span data-tone="info">info</span> ·
+              <span data-tone="primary">primary</span> ·
+              <span data-tone="muted">muted</span> ·
+              <span data-tone="mark">mark</span>
+            </p>
+            <p><strong data-tone="success">▲ 12.4%</strong> faster than the last run, <strong data-tone="error">▲ 3.1 ms</strong> slower at p99.</p>
+          </div>
+        </section>
+
+        <section class="demo" id="tags">
+          <h2>Tags and status</h2>
+          <div class="ex">
+            <div class="st-tags">
+              <span class="st-tag" data-tone="success"><span class="st-dot"></span>Completed</span>
+              <span class="st-tag" data-tone="info"><span class="st-dot" data-pulse></span>Running</span>
+              <span class="st-tag" data-tone="error"><span class="st-dot"></span>Failed</span>
+              <span class="st-tag" data-tone="warning">Partial</span>
+              <span class="st-tag" data-tone="muted">Cancelled</span>
+              <span class="st-tag" data-tone="primary">PostgreSQL 17</span>
+              <span class="st-tag">TPC-C</span>
+              <span class="st-tag" data-tone="mark">3rd place</span>
+            </div>
+            <p>A dot on its own: <span class="st-dot" data-tone="success"></span> up, <span class="st-dot" data-tone="error"></span> down, <span class="st-dot" data-tone="info" data-pulse></span> working.</p>
+          </div>
+        </section>
+
+        <section class="demo" id="callouts">
+          <h2>Callouts</h2>
+          <p><code>&lt;aside&gt;</code> is info unless <code>data-tone</code> says otherwise; a first <code>&lt;strong&gt;</code> is its title.</p>
+          <div class="ex">
+            <aside><strong>How to read this</strong>Numbers come from the main segment; warmup is not counted.</aside>
+            <aside data-tone="success">Every stand check passed.</aside>
+            <aside data-tone="warning"><strong>Worth a look</strong>On spike p99 tripled, which looks like running out of connections.</aside>
+            <aside data-tone="error">The spike segment was cut by a timeout at minute 9.</aside>
+            <aside data-tone="muted">A side note that matters less.</aside>
+          </div>
+        </section>
+
+        <section class="demo" id="stats">
+          <h2>Stats</h2>
+          <p>Headline numbers: a label, the value with its unit in <code>&lt;small&gt;</code>, a note. A tone on the stat colours the value.</p>
+          <div class="ex">
+            <div class="st-grid">
+              <div class="st-stat">
+                <span>Throughput</span>
+                <strong>212.5<small>tps</small></strong>
+                <small data-tone="success">▲ 12.4% vs last</small>
+              </div>
+              <div class="st-stat">
+                <span>p99</span>
+                <strong>18.0<small>ms</small></strong>
+                <small data-tone="error">▲ 3.1 ms vs last</small>
+              </div>
+              <div class="st-stat" data-tone="warning">
+                <span>Errors</span>
+                <strong>0.4<small>%</small></strong>
+                <small>timeouts on spike</small>
+              </div>
+              <div class="st-stat">
+                <span>Duration</span>
+                <strong>10:00<small>min</small></strong>
+                <small>64 VU</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo" id="panels">
+          <h2>Panels and tables</h2>
+          <p>
+            A panel's <code>&lt;header&gt;</code> is its title row; a table inside runs edge to edge.
+            Numbers go right-aligned in mono with <code>class="num"</code>; a tone on a row tints it;
+            <code>.st-bar</code> with <code>--value</code> draws a share.
+          </p>
+          <div class="ex">
+            <div class="st-panel">
+              <header>Segments<small>vs run #41</small></header>
+              <table>
+                <thead>
+                  <tr><th>Segment</th><th class="num">tps</th><th class="num">Δ</th><th class="num">p99, ms</th><th>Share of the best</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>warmup</td><td class="num">184.0</td><td class="num" data-tone="muted">—</td><td class="num">21.4</td><td><span class="st-bar" style="--value: 87%"></span></td></tr>
+                  <tr data-tone="success"><td>main</td><td class="num">212.5</td><td class="num" data-tone="success">+12.4%</td><td class="num">18.0</td><td><span class="st-bar" data-tone="success" style="--value: 100%"></span></td></tr>
+                  <tr><td>spike</td><td class="num">151.2</td><td class="num" data-tone="error">−8.9%</td><td class="num" data-tone="warning">44.7</td><td><span class="st-bar" data-tone="warning" style="--value: 71%"></span></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <table class="st-compact">
+              <thead><tr><th>Machine</th><th class="num">CPU</th><th class="num">Memory</th></tr></thead>
+              <tbody>
+                <tr><td>db-1</td><td class="num">4</td><td class="num">16 GB</td></tr>
+                <tr><td>runner-1</td><td class="num">2</td><td class="num">4 GB</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="demo" id="kv">
+          <h2>Key–value</h2>
+          <div class="ex">
+            <dl>
+              <dt>Database</dt><dd>PostgreSQL 17 · Patroni</dd>
+              <dt>Machines</dt><dd>2 × 4 vCPU · 16 GB + 1 × 2 vCPU · 4 GB</dd>
+              <dt>Cloud</dt><dd>Yandex Cloud · ru-central1-a</dd>
+              <dt>Workload</dt><dd><code>tpcc/tx</code>, 64 VU, 10 min</dd>
+            </dl>
+          </div>
+        </section>
+
+        <section class="demo" id="layout">
+          <h2>Grid and row</h2>
+          <p><code>.st-grid</code>: equal columns that wrap on narrow screens. <code>.st-row</code>: things in a line with a gap.</p>
+          <div class="ex">
+            <div class="st-grid">
+              <div class="st-panel"><header>Left</header><p>Any content.</p></div>
+              <div class="st-panel"><header>Middle</header><p>Any content.</p></div>
+              <div class="st-panel"><header>Right</header><p>Any content.</p></div>
+            </div>
+            <div class="st-row"><span class="st-tag">one</span><span class="st-tag">two</span><small>and some text</small></div>
+          </div>
+        </section>
+
+        <section class="demo" id="progress">
+          <h2>Progress</h2>
+          <div class="ex">
+            <p><small>Done 62 of 100</small></p>
+            <progress value="62" max="100"></progress>
+            <p><small>Disk used 82% (meter colours by low / high / optimum)</small></p>
+            <meter value="0.82" min="0" max="1" low="0.5" high="0.9" optimum="0.3"></meter>
+          </div>
+        </section>
+
+        <section class="demo" id="buttons">
+          <h2>Buttons</h2>
+          <p><code>.st-button</code> on a link or a button; <code>data-variant="primary"</code> for the main action, <code>text</code> for a quiet one.</p>
+          <div class="ex">
+            <div class="st-row">
+              <a class="st-button" data-variant="primary" href="#buttons">Open in Stroppy Cloud</a>
+              <a class="st-button" href="#buttons">Download JSON</a>
+              <a class="st-button" data-variant="text" href="#buttons">Compare with the last</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="demo" id="nav">
+          <h2>Navigation</h2>
+          <p>Links in a <code>&lt;nav&gt;</code> become pills; <code>aria-current</code> marks where the reader is.</p>
+          <div class="ex">
+            <nav>
+              <a href="#nav" aria-current="true">Summary</a>
+              <a href="#nav">Results</a>
+              <a href="#nav">Stand</a>
+              <a href="#nav">Logs</a>
+            </nav>
+          </div>
+        </section>
+
+        <section class="demo" id="details">
+          <h2>Disclosure</h2>
+          <p>For what most readers skip: configs, raw logs, the full spec.</p>
+          <div class="ex">
+            <details>
+              <summary>postgresql.conf</summary>
+              <pre>shared_buffers = 4GB
+max_connections = 200
+jit = off</pre>
+            </details>
+            <details open>
+              <summary>Open by default</summary>
+              <p>Content of an open disclosure.</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="demo" id="lists">
+          <h2>Lists, quotes, code</h2>
+          <div class="ex">
+            <ul>
+              <li>Run again with a replica and compare latencies.</li>
+              <li>Stop a local run: <kbd>Ctrl</kbd>+<kbd>C</kbd></li>
+            </ul>
+            <ol>
+              <li>Provision the stand.</li>
+              <li>Load the data.</li>
+              <li>Run the workload.</li>
+            </ol>
+            <blockquote>The numbers compare only with runs of the same scenario on the same hardware.</blockquote>
+            <pre>stroppy run tpcc/tx --duration 10m --vus 64</pre>
+            <figure>
+              <pre>SELECT 1;</pre>
+              <figcaption>A figure with a caption.</figcaption>
+            </figure>
+            <hr />
+            <p><small>Text after a rule.</small></p>
+          </div>
+        </section>
+
+        <section class="demo" id="legend">
+          <h2>Series and legend</h2>
+          <p><code>data-series="1"…"8"</code> gives an element the colour of that chart series; <code>.st-legend</code> lists them.</p>
+          <div class="ex">
+            <ul class="st-legend">
+              <li data-series="1">main</li>
+              <li data-series="2">replica</li>
+              <li data-series="3">series 3</li>
+              <li data-series="4">series 4</li>
+              <li data-series="5">series 5</li>
+              <li data-series="6">series 6</li>
+              <li data-series="7">series 7</li>
+              <li data-series="8">series 8</li>
+            </ul>
+            <p><span class="st-dot" data-series="2"></span> a dot in series 2, <span class="st-bar" data-series="3" style="--value: 40%; width: 120px"></span> a bar in series 3.</p>
+          </div>
+        </section>
+
+        <section class="demo" id="charts">
+          <h2>Charts</h2>
+          <p>
+            <code>StroppyChart.mount(target, series, options)</code> draws a chart into an element
+            (or a CSS selector), keeps it fitted to the element's width and redraws it when the
+            nearest <code>data-theme</code> changes. It returns <code>{ destroy() }</code>.
+          </p>
+          <table class="st-compact">
+            <thead><tr><th>Argument</th><th>Shape</th></tr></thead>
+            <tbody>
+              <tr><td><code>series</code></td><td><code>[{ title, unit?, points: [[time, value], …] }]</code> — the shape of a run's metric series. <code>time</code> in seconds or milliseconds since the epoch; <code>value</code> may be <code>null</code> (a gap). Colours go by position: series 1, 2, …</td></tr>
+              <tr><td><code>options.unit</code></td><td>Unit on the axis and in the tooltip when the series don't say one.</td></tr>
+              <tr><td><code>options.height</code></td><td>Height of the plot in pixels; 200 by default. The legend adds to it.</td></tr>
+            </tbody>
+          </table>
+
+          <h3>Two series, data from the page</h3>
+          <p>Keep the data in a JSON <code>&lt;script&gt;</code> so the page stays readable; one legend entry per series appears when there is more than one.</p>
+          <div class="ex">
+            <div class="st-panel">
+              <header>Throughput over time<small>tps</small></header>
+              <div id="chart-tps"></div>
+            </div>
+            <script type="application/json" id="tps-data">
+              [
+                { "title": "main", "unit": "tps", "points": [[1760400000, 205], [1760400060, 214], [1760400120, 209], [1760400180, 221], [1760400240, 212], [1760400300, 218]] },
+                { "title": "replica", "unit": "tps", "points": [[1760400000, 161], [1760400060, 170], [1760400120, 166], [1760400180, 175], [1760400240, 168], [1760400300, 172]] }
+              ]
+            </script>
+          </div>
+          <pre>const series = JSON.parse(document.getElementById('tps-data').textContent)
+StroppyChart.mount('#chart-tps', series, { unit: 'tps' })</pre>
+
+          <h3>One series, milliseconds, a gap, taller</h3>
+          <p>A single series has no legend. <code>null</code> values leave a gap the line bridges.</p>
+          <div class="ex">
+            <div class="st-panel">
+              <header>p99 latency<small>ms</small></header>
+              <div id="chart-p99"></div>
+            </div>
+          </div>
+          <pre>StroppyChart.mount(document.getElementById('chart-p99'), [
+  { title: 'p99', unit: 'ms', points: p99Points }   // [[ms, value | null], …]
+], { height: 260 })</pre>
+
+          <h3>Many series</h3>
+          <p>Up to eight distinct colours; the ninth starts over.</p>
+          <div class="ex">
+            <div class="st-panel">
+              <header>CPU by machine<small>%</small></header>
+              <div id="chart-cpu"></div>
+            </div>
+          </div>
+          <pre>StroppyChart.mount('#chart-cpu', machines.map((m) =&gt; ({ title: m.name, unit: '%', points: m.cpu })))</pre>
+
+          <h3>Remove a chart</h3>
+          <pre>const chart = StroppyChart.mount('#chart', series)
+chart.destroy()   // stops following the size and theme, empties the element</pre>
+        </section>
+
+        <section class="demo" id="logo">
+          <h2>Logo</h2>
+          <p>
+            <code>logo/mark.svg</code>: rays and band take <code>--st-mark</code>, the cylinder
+            <code>--st-muted</code>. Inline it (an <code>&lt;img&gt;</code> can't read page
+            variables) to follow the theme; the header of this page does exactly that.
+          </p>
+          <div class="ex">
+            <div class="st-row">
+              <svg width="64" height="64" viewBox="0 0 128 128" aria-hidden="true">
+                <g fill="var(--st-mark)">
+                  <path d="M32 24.5 42 29.5 36 29 30.5 26.5Z" /><path d="M44 18 48.5 18.5 50 27 46.8 23Z" />
+                  <path d="M62 18 65.5 18 65 27 62.5 24Z" /><path d="M80.5 18 84 18.5 78 28 77 24Z" />
+                  <path d="M95.5 24 96 27 86 30 91 26Z" />
+                  <path d="M31 81 C37 76.5 49 74 64 74 C79 74 91 77.2 97 81.5 L97 85.2 C90 89.6 78 92 64 92 C49 92 37 88.7 31 84.5Z" />
+                </g>
+                <g fill="var(--st-muted)">
+                  <path d="M31 42 C34 37.5 47 34 63.5 34 C80 34 92 37.5 97 42.5 C93 47 80 50.5 64 50.5 C48 50.5 36 47.3 31 42Z" />
+                  <path d="M30.5 49 C40 54.3 51 57.2 64 57.2 C78 57.2 89 54.3 97.5 49 L97.5 66.7 C93 72 80 75.1 64 75.1 C48 75.1 35 72 30.5 66.7Z" />
+                  <path d="M31 86.5 C39 91 50 93.1 64 93.1 C78 93.1 90 90.8 97 86.5 L97 100.8 C97 106.3 82.5 110.8 64 110.8 C45.5 110.8 31 106.3 31 100.8Z" />
+                </g>
+              </svg>
+              <strong>Stroppy</strong>
+            </div>
+          </div>
+        </section>
+
+        <hr />
+        <small>Stroppy UI kit · <span id="version-foot"></span></small>
+      </main>
+    </div>
+
+    <script src="chart.js"></script>
+    <script>
+      // This page only: theme switch, palette, the markup under each example,
+      // sample data. A report needs none of it but the StroppyChart.mount calls.
+      const body = document.body
+      const themeButton = document.getElementById('theme')
+      themeButton.addEventListener('click', () => {
+        const next = body.dataset.theme === 'dark' ? 'light' : 'dark'
+        body.dataset.theme = next
+        themeButton.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark'
+        drawSwatches()
+      })
+
+      fetch('VERSION')
+        .then((r) => (r.ok ? r.text() : ''))
+        .then((v) => {
+          document.getElementById('version').textContent = v.trim()
+          document.getElementById('version-foot').textContent = v.trim()
+        })
+        .catch(() => {})
+
+      const VARS = [
+        'canvas', 'panel', 'raised', 'line', 'line-strong', 'text', 'muted', 'disabled',
+        'primary', 'primary-text', 'success', 'warning', 'error', 'info', 'mark',
+        'series-1', 'series-2', 'series-3', 'series-4', 'series-5', 'series-6', 'series-7', 'series-8',
+      ]
+      function drawSwatches() {
+        const box = document.getElementById('swatches')
+        const css = getComputedStyle(body)
+        box.replaceChildren(
+          ...VARS.map((name) => {
+            const el = document.createElement('div')
+            el.className = 'swatch'
+            const chip = document.createElement('div')
+            chip.style.background = `var(--st-${name})`
+            const label = document.createElement('code')
+            label.textContent = `--st-${name}  ${css.getPropertyValue(`--st-${name}`).trim()}`
+            el.append(chip, label)
+            return el
+          })
+        )
+      }
+      drawSwatches()
+
+      // The markup of each example, shown under it — taken before charts draw.
+      function dedent(text) {
+        const lines = text.replace(/^\n+|\s+$/g, '').split('\n')
+        const pad = Math.min(...lines.filter((l) => l.trim()).map((l) => l.match(/^ */)[0].length))
+        return lines.map((l) => l.slice(pad)).join('\n')
+      }
+      for (const ex of document.querySelectorAll('.ex')) {
+        const details = document.createElement('details')
+        const summary = document.createElement('summary')
+        summary.textContent = 'HTML'
+        const pre = document.createElement('pre')
+        pre.textContent = dedent(ex.innerHTML)
+        details.append(summary, pre)
+        ex.after(details)
+      }
+
+      // Charts.
+      StroppyChart.mount('#chart-tps', JSON.parse(document.getElementById('tps-data').textContent), {
+        unit: 'tps',
+      })
+
+      const start = Date.UTC(2025, 9, 14, 0, 0, 0)
+      const p99Points = Array.from({ length: 121 }, (_, i) => {
+        const t = start + i * 5000
+        if (i > 40 && i < 46) return [t, null]
+        const spike = i > 80 && i < 92 ? 24 : 0
+        return [t, Math.round((18 + 3 * Math.sin(i / 6) + 1.5 * Math.sin(i * 1.3) + spike) * 10) / 10]
+      })
+      StroppyChart.mount(document.getElementById('chart-p99'), [{ title: 'p99', unit: 'ms', points: p99Points }], {
+        height: 260,
+      })
+
+      const machines = ['db-1', 'db-2', 'db-3', 'proxy-1', 'runner-1', 'etcd-1'].map((name, k) => ({
+        title: name,
+        unit: '%',
+        points: Array.from({ length: 61 }, (_, i) => [
+          1760400000 + i * 10,
+          Math.round(Math.max(2, 30 + 12 * k + 10 * Math.sin(i / 5 + k)) * 10) / 10,
+        ]),
+      }))
+      StroppyChart.mount('#chart-cpu', machines)
+    </script>
+  </body>
+</html>

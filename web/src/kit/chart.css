@@ -1,0 +1,55 @@
+/* The chart of chart.ts on the kit variables. uPlot's own stylesheet
+   (uplot/dist/uPlot.min.css) goes before this one. */
+
+.st-chart {
+  position: relative;
+  margin: 0 0 calc(var(--st-space) * 2);
+  font-family: var(--st-font-sans);
+  color: var(--st-text);
+}
+.st-chart .uplot {
+  font-family: inherit;
+}
+.st-chart .u-cursor-x {
+  border-right: 1px dashed var(--st-muted);
+}
+.st-chart .u-select {
+  background: color-mix(in srgb, var(--st-primary) 15%, transparent);
+}
+.st-chart-legend {
+  margin: var(--st-space) 0 0 calc(var(--st-space) * 7);
+}
+
+/* Tooltip: a raised card next to the cursor, like Grafana's. */
+.st-chart-tooltip {
+  position: absolute;
+  z-index: 10;
+  min-width: 160px;
+  padding: var(--st-space) calc(var(--st-space) * 1.25);
+  border: 1px solid var(--st-line);
+  border-radius: var(--st-radius-md);
+  background: var(--st-raised);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  font-size: var(--st-font-size-sm);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.st-chart-tooltip-time {
+  margin-bottom: calc(var(--st-space) / 2);
+  color: var(--st-muted);
+}
+.st-chart-tooltip-row {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: var(--st-space);
+}
+.st-chart-tooltip-row i {
+  width: 10px;
+  height: 3px;
+  border-radius: 1px;
+}
+.st-chart-tooltip-row b {
+  font-family: var(--st-font-mono);
+  font-weight: var(--st-font-weight-medium);
+}

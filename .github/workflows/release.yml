@@ -71,6 +71,21 @@ jobs:
             org.opencontainers.image.title=Stroppy Cloud
           cache-from: type=gha,scope=stroppy-cloud-release
           cache-to: type=gha,mode=max,scope=stroppy-cloud-release
+      # The UI kit bundle for HTML reports (web/src/kit, see its README).
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - run: corepack enable
+      - run: yarn --cwd web install --frozen-lockfile
+      - name: Build the UI kit bundle
+        env:
+          KIT_VERSION: ${{ steps.identity.outputs.version }}
+        run: yarn --cwd web build:kit
+      - uses: actions/upload-artifact@v6
+        if: github.event_name == 'workflow_dispatch'
+        with:
+          name: kit-rehearsal
+          path: web/dist-kit/stroppy-kit-*.tar.gz
+          retention-days: 3
       - uses: actions/upload-artifact@v6
         if: github.event_name == 'workflow_dispatch'
         with:
@@ -93,4 +108,4 @@ jobs:
           else
             gh release create "$tag" --verify-tag --title "$tag" --notes-file /tmp/release-notes.md
           fi
-          gh release upload "$tag" --clobber /tmp/image-digest.txt
+          gh release upload "$tag" --clobber /tmp/image-digest.txt web/dist-kit/stroppy-kit-"$RELEASE_VERSION".tar.gz
