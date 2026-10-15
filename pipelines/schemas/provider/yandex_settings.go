@@ -45,7 +45,9 @@ func YandexSettings() *schemapb.Schema {
 
 			// doc: https://yandex.cloud/en/docs/overview/concepts/geo-scope
 			schemapb.List("zones", schemapb.Str("").Pattern(`^ru-central1-[abde]$`)).Title("Distributed topology zones").Group("Placement").
-				Desc("Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.").MinItems(3).MaxItems(3).Unique(),
+				Desc("Three physical zones for multi-zone topologies. When omitted, use zone and two other catalog zones. Single-zone topologies use zone.").MaxItems(3).Unique().
+				// An empty list is the omitted one: a form sends [] for an untouched list.
+				Rules(schemapb.Rule(`size(this) == 0 || size(this) == 3`, "give three zones or none").ID("zones-none-or-three")),
 
 			// doc: https://yandex.cloud/en/docs/compute/concepts/vm-platforms
 			schemapb.Choice("platform_id").Title("Platform").Group("Placement").

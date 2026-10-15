@@ -102,25 +102,33 @@ export function errorText(e: ApiError): string {
 
 type FieldIssue = NonNullable<ValidationResult['errors']>[number]
 
+/** Checks whose bound is a number; the rest (const, prefix, suffix) carry a string. */
+const numericChecks =
+  /^(gte|gt|lte|lt|min_len|max_len|len|min_items|max_items|min_entries|max_entries|min_properties|max_properties|multiple_of)_/
+
+/**
+ * The bound of a check. schemapb puts the rule name in `constraint` ("min_len") and the
+ * bound in its English message ("length must be at least 1", "must have at least 3
+ * items"): a numeric check takes the last number there, the others the last word.
+ */
+function constraintValue(code: string, v: FieldIssue): string {
+  const c = v.constraint ?? ''
+  if (c && !/^[a-z_]+$/.test(c)) return c
+  const message = v.message?.trim() ?? ''
+  const numbers = numericChecks.test(code) ? message.match(/-?\d+(?:\.\d+)?/g) : null
+  if (numbers) return numbers[numbers.length - 1]
+  const last = message.split(/\s+/).pop() ?? ''
+  return last.replace(/^["'`]|["'`]$/g, '') || c
+}
+
 /**
  * One validation issue as UI text: schemapb checks (`ERROR_CODE_GTE_VIOLATED`) by their
  * code with the constraint; domain checks (fit, resources) carry numbers in their own
  * message, which is shown as is.
  */
-/**
- * The bound of a check. schemapb puts the rule name in `constraint` ("min_len") and the
- * bound at the end of its English message ("length must be at least 1").
- */
-function constraintValue(v: FieldIssue): string {
-  const c = v.constraint ?? ''
-  if (c && !/^[a-z_]+$/.test(c)) return c
-  const last = v.message?.trim().split(/\s+/).pop() ?? ''
-  return last.replace(/^["'`]|["'`]$/g, '') || c
-}
-
 export function issueText(v: FieldIssue): string {
   const code = v.code.replace(/^ERROR_CODE_/, '').toLowerCase()
-  const bound = constraintValue(v)
+  const bound = constraintValue(code, v)
   // "at least 1 character" is an empty required field and reads as one.
   const key = `common.errors.checks.${code === 'min_len_violated' && bound === '1' ? 'required_missing' : code}`
   if (v.code.startsWith('ERROR_CODE_') && i18n.exists(key)) {

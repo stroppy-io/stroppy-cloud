@@ -2910,10 +2910,16 @@
               }
             ],
             "maxItems": "3",
-            "minItems": "3",
             "unique": true
           },
           "name": "zones",
+          "rules": [
+            {
+              "expr": "size(this) == 0 || size(this) == 3",
+              "id": "zones-none-or-three",
+              "message": "give three zones or none"
+            }
+          ],
           "title": "Distributed topology zones"
         },
         {

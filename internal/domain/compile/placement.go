@@ -17,7 +17,8 @@ func (c *compilation) placementZones(settings map[string]any) ([]string, error) 
 
 func (c *compilation) threeYandexZones(settings map[string]any) ([]string, error) {
 	var zones []string
-	if raw, ok := settings["zones"].([]any); ok {
+	// An empty list is an omitted one.
+	if raw, ok := settings["zones"].([]any); ok && len(raw) > 0 {
 		for _, z := range raw {
 			value, ok := z.(string)
 			if !ok {

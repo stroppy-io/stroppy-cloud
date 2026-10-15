@@ -29,8 +29,18 @@ func TestYandexSettings(t *testing.T) {
 		"preemptible":  true,
 	}
 
+	withZones := func(zones ...any) map[string]any {
+		m := map[string]any{}
+		for k, v := range minimal {
+			m[k] = v
+		}
+		m["zones"] = zones
+		return m
+	}
+
 	schematest.Run(t, YandexSettings(), schematest.Cases{
-		Valid: []map[string]any{minimal},
+		// A form sends [] for an untouched list: that is the omitted one.
+		Valid: []map[string]any{minimal, withZones(), withZones("ru-central1-a", "ru-central1-b", "ru-central1-d")},
 		Invalid: []schematest.Invalid{
 			{Value: full, Code: "RULE_VIOLATED", Path: "network-create-only"},
 			{Value: map[string]any{
@@ -51,6 +61,7 @@ func TestYandexSettings(t *testing.T) {
 				"zone":      "ru-central1-d",
 				"network":   map[string]any{"kind": "existing"},
 			}, Code: "REQUIRED_MISSING", Path: "network.network_id"},
+			{Value: withZones("ru-central1-a", "ru-central1-b"), Code: "RULE_VIOLATED", Path: "zones"},
 			{Value: map[string]any{
 				"zone":    "ru-central1-d",
 				"network": map[string]any{"kind": "create"},
