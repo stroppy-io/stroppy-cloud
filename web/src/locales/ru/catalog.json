@@ -1,0 +1,108 @@
+{
+  "metrics": {
+    "tps": {
+      "title": "Пропускная способность",
+      "description": "Подтверждённые транзакции в секунду; нагрузки без транзакций (наборы запросов) её не дают."
+    },
+    "qps": {
+      "title": "Запросы в секунду",
+      "description": "Запросы в секунду по всей нагрузке: сегменты взвешены по их измеренному времени."
+    },
+    "latency_p50_ms": {
+      "title": "Задержка p50"
+    },
+    "latency_p95_ms": {
+      "title": "Задержка p95"
+    },
+    "latency_p99_ms": {
+      "title": "Задержка p99"
+    },
+    "errors": {
+      "title": "Ошибки",
+      "description": "Упавшие итерации и запросы."
+    },
+    "iterations_total": {
+      "title": "Итерации"
+    },
+    "iterations_per_second": {
+      "title": "Итерации в секунду",
+      "description": "Сколько итераций нагрузки завершается за секунду, что бы ни делала итерация."
+    },
+    "queries_per_second": {
+      "title": "Запросы в секунду",
+      "description": "Сколько запросов нагрузка отправила в базу за секунду."
+    },
+    "failed_iterations_total": {
+      "title": "Упавшие итерации"
+    },
+    "failed_queries_total": {
+      "title": "Упавшие запросы"
+    },
+    "iteration_duration_avg": {
+      "title": "Длительность итерации, среднее"
+    },
+    "iteration_duration_p90": {
+      "title": "Длительность итерации, p90"
+    },
+    "iteration_duration_p99": {
+      "title": "Длительность итерации, p99"
+    },
+    "load_duration_seconds": {
+      "title": "Время загрузки данных"
+    },
+    "node_cpu_usage": {
+      "title": "Загрузка CPU"
+    },
+    "node_memory_used_bytes": {
+      "title": "Занятая память"
+    },
+    "node_disk_io_bytes": {
+      "title": "Диск, ввод-вывод"
+    },
+    "node_network_bytes": {
+      "title": "Сеть"
+    },
+    "pg_stat_database_xact_commit": {
+      "title": "Коммиты"
+    },
+    "pg_stat_database_xact_rollback": {
+      "title": "Откаты"
+    },
+    "pg_stat_database_blks_hit_ratio": {
+      "title": "Попадания в буферный кэш"
+    },
+    "pg_stat_activity_count": {
+      "title": "Подключения"
+    },
+    "pg_locks_count": {
+      "title": "Блокировки"
+    },
+    "pg_replication_lag_seconds": {
+      "title": "Отставание реплики"
+    },
+    "mysql_global_status_queries": {
+      "title": "Запросы"
+    },
+    "mysql_global_status_threads_connected": {
+      "title": "Подключённые потоки"
+    },
+    "mysql_global_status_innodb_buffer_pool_hit_ratio": {
+      "title": "Попадания в буферный пул InnoDB"
+    },
+    "mysql_slave_status_seconds_behind_master": {
+      "title": "Отставание реплики"
+    },
+    "cockroach_sql_txn_commit_count": {
+      "title": "Подтверждённые транзакции"
+    },
+    "cockroach_sql_service_latency_p99": {
+      "title": "Задержка SQL p99"
+    },
+    "cockroach_live_nodes": {
+      "title": "Живые узлы"
+    },
+    "picodata_instances_online": {
+      "title": "Инстансы в сети"
+    }
+  }
+}

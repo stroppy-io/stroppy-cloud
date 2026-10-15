@@ -2,6 +2,7 @@ import type { Schemas } from '@api/types'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, Combobox, Icon, Input, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui'
+import { roleLabel } from '@helpers/roles'
 import { useTranslation } from 'react-i18next'
 import { suggestedRoleSize, suggestedText } from './suggested'
 
@@ -118,8 +119,8 @@ export function SizesEditor({
         const showDisk = role === 'db' || (req?.disk_gb ?? 0) > 0 || chosen?.disk !== undefined
         return (
           <div key={role} style={{ display: 'contents' }}>
-            <div className={styles.role}>
-              {role}
+            <div className={styles.role} title={role}>
+              {roleLabel(t, role)}
               {autoRoles?.includes(role) && (
                 <Tooltip content={t('library.sizes.autoHint')}>
                   <span className={styles.auto}>{t('library.sizes.auto')}</span>

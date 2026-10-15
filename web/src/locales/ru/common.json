@@ -71,7 +71,7 @@
     "success": "Успешно",
     "unknown": "Неизвестно",
     "queued": "В очереди",
-    "live": "Live",
+    "live": "Идёт",
     "persisted": "Сохранено",
     "synthetic": "Синтетика"
   },
@@ -84,11 +84,11 @@
     "teardown": "Снос",
     "done": "Готово",
     "manual": "Вручную",
-    "suite": "Suite"
+    "suite": "Сьют"
   },
   "trigger": {
     "manual": "Вручную",
-    "suite": "Suite",
+    "suite": "Сьют",
     "api": "API",
     "schedule": "Расписание"
   },
@@ -547,5 +547,51 @@
     "gold": "Первое место",
     "silver": "Второе место",
     "bronze": "Третье место"
+  },
+  "topologyRole": {
+    "db": "База данных",
+    "db-replica": "Реплика",
+    "db-compute": "Вычислительный узел",
+    "etcd": "etcd",
+    "coordinator": "Координатор",
+    "proxy": "Прокси",
+    "runner": "Раннер"
+  },
+  "quota": {
+    "compute_instances_count": "Машины",
+    "compute_instanceCores_count": "Ядра CPU",
+    "compute_instanceMemory_size": "Память машин",
+    "compute_ssdDisks_size": "SSD-диски",
+    "compute_hddDisks_size": "HDD-диски",
+    "compute_ssdNonReplicatedDisks_size": "Нереплицируемые SSD",
+    "compute_disks_count": "Диски",
+    "vpc_networks_count": "Сети",
+    "vpc_subnets_count": "Подсети",
+    "vpc_securityGroups_count": "Группы безопасности",
+    "vpc_externalStaticAddresses_count": "Публичные адреса",
+    "ec2_standard_vcpus": "vCPU по требованию",
+    "ec2_spot_standard_vcpus": "vCPU spot",
+    "ebs_gp3_storage": "Диски gp3",
+    "ebs_gp2_storage": "Диски gp2",
+    "ebs_io2_storage": "Диски io2",
+    "vpc_vpcs": "VPC",
+    "vpc_security_groups": "Группы безопасности",
+    "vpc_internet_gateways": "Интернет-шлюзы",
+    "ec2_elastic_ips": "Elastic IP"
+  },
+  "quotaUnit": {
+    "instances": "шт.",
+    "cores": "ядер",
+    "disks": "шт.",
+    "networks": "шт.",
+    "subnets": "шт.",
+    "security_groups": "шт.",
+    "addresses": "шт.",
+    "vcpus": "vCPU",
+    "tib": "ТиБ",
+    "vpcs": "шт.",
+    "groups": "шт.",
+    "gateways": "шт.",
+    "bytes": "байт"
   }
 }

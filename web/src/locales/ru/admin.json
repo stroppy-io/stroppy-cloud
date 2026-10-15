@@ -161,7 +161,7 @@
   },
   "sort": {
     "name": "Имя",
-    "slug": "Slug",
+    "slug": "Короткое имя",
     "email": "E-mail",
     "lastActivity": "Последняя активность",
     "created": "Создан"

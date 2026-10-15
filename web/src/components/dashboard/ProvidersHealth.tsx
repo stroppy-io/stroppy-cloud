@@ -6,7 +6,8 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Text, Tooltip, useStyles2 } from '@grafana/ui'
-import { formatCompact, formatDuration } from '@helpers/format'
+import { formatDuration } from '@helpers/format'
+import { quotaAmount, quotaTitle, quotaValue } from '@helpers/quotas'
 import { relativeTime } from '@helpers/time'
 import { useQueries } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -84,14 +85,13 @@ function QuotaBars({ report }: { report: QuotaReport | undefined }) {
             <Tooltip
               key={`${q.name}-${q.zone ?? ''}`}
               content={t('dashboard.providers.quotaOf', {
-                used: formatCompact(q.used),
-                limit: formatCompact(q.limit),
-                unit: q.unit ?? '',
+                used: quotaValue(q, q.used),
+                limit: quotaAmount(q, q.limit),
               })}
             >
               <div className={styles.quota}>
                 <div className={styles.quotaHead}>
-                  <span>{q.title ?? q.name}</span>
+                  <span>{quotaTitle(q)}</span>
                   <span>{Math.round(pct)}%</span>
                 </div>
                 <div className={styles.bar}>

@@ -2,6 +2,7 @@ import type { Schemas } from '@api/types'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Combobox, IconButton, useStyles2 } from '@grafana/ui'
+import { roleLabel } from '@helpers/roles'
 import { SIZE_ORDER, sortRoles } from '@helpers/sizes'
 import { useTranslation } from 'react-i18next'
 
@@ -49,7 +50,9 @@ export function RoleSizesEditor({
     <div className={styles.row}>
       {allRoles.map((role) => (
         <span key={role} className={styles.role}>
-          <span className={styles.label}>{role}</span>
+          <span className={styles.label} title={role}>
+            {roleLabel(t, role)}
+          </span>
           <Combobox<Schemas['Size']>
             width={9}
             options={options}

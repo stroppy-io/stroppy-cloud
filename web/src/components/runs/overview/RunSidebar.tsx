@@ -10,7 +10,8 @@ import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Divider, Stack, Switch, Text, Tooltip, useStyles2 } from '@grafana/ui'
-import { formatDuration } from '@helpers/format'
+import { dbLabel, formatDuration } from '@helpers/format'
+import { roleLabel } from '@helpers/roles'
 import { formatDateTime } from '@helpers/time'
 import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -65,10 +66,16 @@ export function RunSidebar({ run }: { run: Run }) {
             label: t('runs.overview.snapshot.database'),
             value: (
               <span>
-                {snap.database_name ?? `${snap.database.kind}`}{' '}
-                <Text color="secondary">
-                  {snap.database.kind} {snap.database.version}
-                </Text>
+                {snap.database_name ? (
+                  <>
+                    {snap.database_name}{' '}
+                    <Text color="secondary">
+                      {dbLabel(snap.database.kind, snap.database.version)}
+                    </Text>
+                  </>
+                ) : (
+                  dbLabel(snap.database.kind, snap.database.version)
+                )}
               </span>
             ),
           },
@@ -127,7 +134,9 @@ export function RunSidebar({ run }: { run: Run }) {
                     }
                   >
                     <span style={{ display: 'contents' }}>
-                      <span className={styles.role}>{role}</span>
+                      <span className={styles.role} title={role}>
+                        {roleLabel(t, role)}
+                      </span>
                       <span>
                         <Badge text={v.size} color="darkgrey" />
                         {v.disk?.gb ? (

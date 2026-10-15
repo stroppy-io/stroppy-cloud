@@ -1,6 +1,7 @@
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
+import { roleLabel } from '@helpers/roles'
 import { Handle, type NodeProps, Position } from '@xyflow/react'
 import { memo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -183,7 +184,7 @@ export const CardNode = memo(function CardNode({ data, selected }: NodeProps<Top
       />
       <div className={styles.cardText}>
         <div className={styles.cardTitle} style={{ color: d.accent }}>
-          {d.role}
+          {roleLabel(t, d.role)}
         </div>
         <div className={styles.cardSub} title={sub}>
           {sub || d.id}

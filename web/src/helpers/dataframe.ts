@@ -9,6 +9,7 @@ import {
   FieldType,
   type GrafanaTheme2,
 } from '@grafana/data'
+import { metricTitle } from '@helpers/metrics'
 import { tokens } from '@/kit/tokens'
 
 // Points are `[unix_ms, value]`; tolerate seconds from older servers.
@@ -60,19 +61,21 @@ export function metricsToFrames(
     .filter((s) => !keys || keys.includes(s.key))
     .map((s, i) =>
       createDataFrame({
-        name: s.title ?? s.key,
+        name: metricTitle(s.key, s.title),
         refId: s.key,
         fields: [
           { name: 'time', type: FieldType.time, values: s.points.map((p) => toMs(p[0])) },
           {
-            name: s.title ?? s.key,
+            name: metricTitle(s.key, s.title),
             type: FieldType.number,
             values: s.points.map((p) => p[1]),
             config: {
               ...SERIES_CONFIG,
               color: seriesColor(theme, i),
               unit: UNIT_MAP[s.unit ?? ''] ?? s.unit,
-              displayName: s.machine ? `${s.title ?? s.key} · ${s.machine}` : (s.title ?? s.key),
+              displayName: s.machine
+                ? `${metricTitle(s.key, s.title)} · ${s.machine}`
+                : metricTitle(s.key, s.title),
             },
           },
         ],

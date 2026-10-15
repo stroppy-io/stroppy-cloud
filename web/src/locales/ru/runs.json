@@ -173,7 +173,7 @@
     },
     "result": {
       "errors": "Ошибки",
-      "baseline": "Baseline"
+      "baseline": "Самопроверка машины"
     },
     "components": {
       "title": "Компоненты",
@@ -192,7 +192,7 @@
       "presence": "Агент",
       "address": "Адрес",
       "public": "публичный",
-      "heartbeat": "Heartbeat",
+      "heartbeat": "Последний отклик",
       "resource": "Ресурс провайдера",
       "empty": "Машины ещё не созданы"
     },
@@ -210,7 +210,7 @@
       "segmentsCount": "{{count}}",
       "stroppy": "Stroppy",
       "protocol": "Протокол",
-      "keep": "Keep"
+      "keep": "Держать стенд"
     },
     "provider": {
       "title": "Провайдер и размеры",
@@ -259,7 +259,7 @@
     "kind": "Тип",
     "search": "Искать события…",
     "count": "{{count}} из {{total}} событий",
-    "live": "live",
+    "live": "в реальном времени",
     "empty": "Событий пока нет",
     "attempt": "попытка {{n}}",
     "viewLogs": "логи в этот момент",
@@ -280,7 +280,13 @@
       "container_ready": "Контейнер {{subject}} готов",
       "segment_started": "Сегмент {{subject}} начался",
       "segment_finished": "Сегмент {{subject}} завершён",
-      "segment_failed": "Сегмент {{subject}} упал"
+      "segment_failed": "Сегмент {{subject}} упал",
+      "baseline_started": "Самопроверка машины началась",
+      "baseline_finished": "Самопроверка машины закончилась",
+      "stand_kept": "Стенд оставлен",
+      "result_published": "Результат опубликован",
+      "run_timed_out": "Запуск не уложился во время",
+      "run_terminated": "Запуск остановлен принудительно"
     },
     "kinds": {
       "run": "запуск",
@@ -297,7 +303,14 @@
       "cancelled": "отменено",
       "cancelling": "отмена",
       "skipped": "пропущено",
-      "ready": "готово"
+      "ready": "готово",
+      "baseline": "самопроверка",
+      "stand": "стенд",
+      "result": "результат",
+      "kept": "оставлен",
+      "published": "опубликован",
+      "timed_out": "время вышло",
+      "terminated": "остановлен"
     },
     "error": "Ошибка",
     "status": "Статус"
@@ -389,7 +402,7 @@
       "role": "Роль",
       "status": "Статус",
       "presence": "Агент",
-      "heartbeat": "Heartbeat",
+      "heartbeat": "Последний отклик",
       "size": "Размер",
       "cpu": "CPU",
       "memory": "Память",
@@ -403,7 +416,7 @@
       "engine": "Движок",
       "image": "Образ",
       "endpoints": "Эндпоинты",
-      "scrape": "Scrape"
+      "scrape": "Сбор метрик"
     },
     "actions": {
       "logsMachine": "Логи этой машины",
@@ -457,7 +470,7 @@
     "summary": "{{count}} артефактов · {{size}}",
     "digest": "Хеш",
     "kinds": {
-      "stroppy_raw": "stroppy raw",
+      "stroppy_raw": "Сырой вывод stroppy",
       "report": "отчёт",
       "config": "конфиги",
       "log_bundle": "архив логов",
@@ -506,7 +519,7 @@
     "subtitle": "Каждая метрика против базового запуска и разница в настройках.",
     "addRun": "Добавить запуск…",
     "count": "{{count}} / 16",
-    "baseline": "baseline",
+    "baseline": "эталон",
     "setBaseline": "Сделать baseline",
     "deadband": "Мёртвая зона",
     "deadbandHint": "Разница в пределах ±N% считается «одинаково»",

@@ -19,6 +19,7 @@ import {
   useStyles2,
 } from '@grafana/ui'
 import { formatMetric } from '@helpers/format'
+import { metricDescription, metricTitle } from '@helpers/metrics'
 import { selectedValues } from '@helpers/time-range'
 import { useTelemetryRange } from '@hooks/useTelemetryRange'
 import { useTenant } from '@hooks/useTenant'
@@ -381,8 +382,8 @@ export function RunMetricsTab({
                     {list.map((d) => (
                       <MetricPanel
                         key={d.key}
-                        title={d.title}
-                        description={d.description}
+                        title={metricTitle(d.key, d.title)}
+                        description={metricDescription(d.key, d.description)}
                         metrics={metrics.data}
                         keys={[d.key]}
                         range={range.range}

@@ -5,6 +5,7 @@ import { KeyValueList, type KV } from '@components/KeyValueList'
 import { RelativeTime } from '@components/RelativeTime'
 import { StatusBadge } from '@components/StatusBadge'
 import { Badge, Button, Drawer, Icon, Stack, Text } from '@grafana/ui'
+import { roleLabel } from '@helpers/roles'
 import { useTenant } from '@hooks/useTenant'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -33,7 +34,7 @@ function MachineDetails({
   const f = (k: string) => t(`runs.topology.fields.${k}`)
   const items: KV[] = [
     { label: f('name'), value: <CopyText value={machine.name} /> },
-    { label: f('role'), value: machine.role },
+    { label: f('role'), value: roleLabel(t, machine.role) },
     { label: f('status'), value: <StatusBadge status={machine.status} /> },
     { label: f('presence'), value: <StatusBadge status={machine.presence} /> },
     {
@@ -114,7 +115,7 @@ function ComponentDetails({
   const eps = component.endpoints ?? []
   const items: KV[] = [
     { label: f('id'), value: <CopyText value={component.id} /> },
-    { label: f('role'), value: component.role },
+    { label: f('role'), value: roleLabel(t, component.role) },
     { label: f('status'), value: <StatusBadge status={component.status} /> },
     { label: f('machine'), value: component.machine },
     { label: f('engine'), value: component.engine ?? '—' },
@@ -200,7 +201,7 @@ export function TopologyDrawer({
   const c = overview.components.find((x) => x.id === selection.id)
   return (
     <Drawer
-      title={c?.role ?? selection.id}
+      title={c?.role ? roleLabel(t, c.role) : selection.id}
       subtitle={t('runs.topology.drawer.component')}
       size="sm"
       onClose={onClose}

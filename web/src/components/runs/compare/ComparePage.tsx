@@ -25,6 +25,7 @@ import {
   useStyles2,
 } from '@grafana/ui'
 import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
+import { metricTitle } from '@helpers/metrics'
 import { useTenant } from '@hooks/useTenant'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Fragment, useMemo, useState } from 'react'
@@ -368,7 +369,7 @@ export function ComparePage({
                     {rows.map((row) => (
                       <tr key={row.key}>
                         <td>
-                          <span className={styles.metric}>{row.title ?? row.key}</span>{' '}
+                          <span className={styles.metric}>{metricTitle(row.key, row.title)}</span>{' '}
                           <span className={styles.unit}>
                             {row.unit}
                             {row.higher_is_better !== undefined && (

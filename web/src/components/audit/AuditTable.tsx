@@ -12,6 +12,7 @@ import { Button, Modal, Stack, useStyles2 } from '@grafana/ui'
 import { formatDateTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
 import { useNavigate } from '@tanstack/react-router'
+import type { TFunction } from 'i18next'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
@@ -52,8 +53,17 @@ function hasDetails(e: AuditEntry): boolean {
   return !!e.details && Object.keys(e.details).length > 0
 }
 
-function targetLabel(e: AuditEntry): string {
-  return [e.target.kind, e.target.name ?? e.target.id].filter(Boolean).join(' · ')
+// internal/domain/audit/uitext_test.go keeps every action and target kind
+// the server records covered in `settings.audit.actions` / `.targetKinds`.
+function actionLabel(t: TFunction, action: string): string {
+  return t(`settings.audit.actions.${action.replace(/\./g, '_')}`, { defaultValue: action })
+}
+
+function targetLabel(t: TFunction, e: AuditEntry): string {
+  const kind = e.target.kind
+    ? t(`settings.audit.targetKinds.${e.target.kind}`, { defaultValue: e.target.kind })
+    : ''
+  return [kind, e.target.name ?? e.target.id].filter(Boolean).join(' · ')
 }
 
 function targetLink(
@@ -139,7 +149,7 @@ export function AuditTable({
       {
         key: 'target',
         label: t('settings.audit.openTarget'),
-        description: targetLabel(e) || undefined,
+        description: targetLabel(t, e) || undefined,
         icon: 'external-link-alt',
         disabled: !link,
         disabledReason: t('settings.audit.noTargetLink'),
@@ -194,8 +204,8 @@ export function AuditTable({
           onChange: (v) => onSearchChange({ action: v }),
         },
         render: (e) => ({
-          title: e.action,
-          subtitle: targetLabel(e),
+          title: actionLabel(t, e.action),
+          subtitle: targetLabel(t, e),
         }),
       }),
       col.stack<AuditEntry>({
@@ -264,7 +274,7 @@ export function AuditTable({
         },
         value: (e) => e.at,
       }),
-      col.actions<AuditEntry>({ title: (e) => e.action, actions: rowActions })
+      col.actions<AuditEntry>({ title: (e) => actionLabel(t, e.action), actions: rowActions })
     )
     return cols
   }, [
@@ -356,7 +366,7 @@ export function AuditTable({
       />
       <Modal
         isOpen={!!details}
-        title={details ? `${details.action} · ${formatDateTime(details.at)}` : ''}
+        title={details ? `${actionLabel(t, details.action)} · ${formatDateTime(details.at)}` : ''}
         onDismiss={() => setDetails(undefined)}
       >
         <pre className={styles.details}>{JSON.stringify(details?.details ?? {}, null, 2)}</pre>

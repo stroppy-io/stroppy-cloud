@@ -4,6 +4,7 @@ import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, IconButton, Text, Tooltip, useStyles2 } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
+import { roleLabel } from '@helpers/roles'
 import { phaseIcon, runStatusMeta } from '@helpers/run-status'
 import { formatDateTime, formatTime } from '@helpers/time'
 import { useEffect, useState } from 'react'
@@ -187,7 +188,9 @@ export function PhaseTimeline({ phases }: { phases: Phase[] }) {
                       <StatusBadge status={s.status} iconOnly />
                       <span>{s.title}</span>
                       {(s.machine || s.role) && (
-                        <span className={styles.stepMeta}>{s.machine ?? s.role}</span>
+                        <span className={styles.stepMeta}>
+                          {s.machine ?? (s.role ? roleLabel(t, s.role) : '')}
+                        </span>
                       )}
                       {s.attempt && s.attempt > 1 && (
                         <span className={styles.stepMeta}>

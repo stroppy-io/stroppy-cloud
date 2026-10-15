@@ -1,0 +1,108 @@
+{
+  "metrics": {
+    "tps": {
+      "title": "Throughput",
+      "description": "Committed transactions per second; workloads that run no transactions (query sets) report none."
+    },
+    "qps": {
+      "title": "Queries per second",
+      "description": "Statements per second over the whole workload: segments weighted by their measured time."
+    },
+    "latency_p50_ms": {
+      "title": "Latency p50"
+    },
+    "latency_p95_ms": {
+      "title": "Latency p95"
+    },
+    "latency_p99_ms": {
+      "title": "Latency p99"
+    },
+    "errors": {
+      "title": "Errors",
+      "description": "Failed iterations and queries."
+    },
+    "iterations_total": {
+      "title": "Iterations"
+    },
+    "iterations_per_second": {
+      "title": "Iterations per second",
+      "description": "Workload iterations completed per second, whatever an iteration does."
+    },
+    "queries_per_second": {
+      "title": "Queries per second",
+      "description": "Statements the workload sent to the database per second."
+    },
+    "failed_iterations_total": {
+      "title": "Failed iterations"
+    },
+    "failed_queries_total": {
+      "title": "Failed queries"
+    },
+    "iteration_duration_avg": {
+      "title": "Iteration duration, avg"
+    },
+    "iteration_duration_p90": {
+      "title": "Iteration duration, p90"
+    },
+    "iteration_duration_p99": {
+      "title": "Iteration duration, p99"
+    },
+    "load_duration_seconds": {
+      "title": "Data load duration"
+    },
+    "node_cpu_usage": {
+      "title": "CPU usage"
+    },
+    "node_memory_used_bytes": {
+      "title": "Memory used"
+    },
+    "node_disk_io_bytes": {
+      "title": "Disk I/O"
+    },
+    "node_network_bytes": {
+      "title": "Network"
+    },
+    "pg_stat_database_xact_commit": {
+      "title": "Commits"
+    },
+    "pg_stat_database_xact_rollback": {
+      "title": "Rollbacks"
+    },
+    "pg_stat_database_blks_hit_ratio": {
+      "title": "Buffer cache hit ratio"
+    },
+    "pg_stat_activity_count": {
+      "title": "Backends"
+    },
+    "pg_locks_count": {
+      "title": "Locks"
+    },
+    "pg_replication_lag_seconds": {
+      "title": "Replication lag"
+    },
+    "mysql_global_status_queries": {
+      "title": "Queries"
+    },
+    "mysql_global_status_threads_connected": {
+      "title": "Threads connected"
+    },
+    "mysql_global_status_innodb_buffer_pool_hit_ratio": {
+      "title": "InnoDB buffer pool hit ratio"
+    },
+    "mysql_slave_status_seconds_behind_master": {
+      "title": "Replica lag"
+    },
+    "cockroach_sql_txn_commit_count": {
+      "title": "Transactions committed"
+    },
+    "cockroach_sql_service_latency_p99": {
+      "title": "SQL latency p99"
+    },
+    "cockroach_live_nodes": {
+      "title": "Live nodes"
+    },
+    "picodata_instances_online": {
+      "title": "Instances online"
+    }
+  }
+}

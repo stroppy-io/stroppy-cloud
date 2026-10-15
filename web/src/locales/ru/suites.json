@@ -148,7 +148,7 @@
       "name": "Название",
       "namePlaceholder": "например, 64vu",
       "vus": "VU",
-      "scale": "Scale factor",
+      "scale": "Масштаб данных",
       "duration": "Длительность",
       "durationPlaceholder": "10m"
     },

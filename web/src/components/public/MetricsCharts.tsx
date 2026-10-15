@@ -4,6 +4,7 @@ import { dateTime, type GrafanaTheme2, type TimeRange } from '@grafana/data'
 import { LegendDisplayMode, Text, TimeSeries, useStyles2, useTheme2 } from '@grafana/ui'
 import { metricsToFrames } from '@helpers/dataframe'
 import { formatMetric } from '@helpers/format'
+import { metricTitle } from '@helpers/metrics'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -68,7 +69,7 @@ export function MetricsCharts({ metrics }: { metrics: RunMetrics }) {
         return (
           <Chart
             key={key}
-            title={first?.title ?? key}
+            title={metricTitle(key, first?.title)}
             agg={first?.aggregates}
             unit={first?.unit}
             frames={metricsToFrames(metrics, theme, [key])}

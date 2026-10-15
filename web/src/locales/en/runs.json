@@ -280,7 +280,13 @@
       "container_ready": "Container {{subject}} ready",
       "segment_started": "Segment {{subject}} started",
       "segment_finished": "Segment {{subject}} finished",
-      "segment_failed": "Segment {{subject}} failed"
+      "segment_failed": "Segment {{subject}} failed",
+      "baseline_started": "Machine self-check started",
+      "baseline_finished": "Machine self-check finished",
+      "stand_kept": "Stand kept",
+      "result_published": "Result published",
+      "run_timed_out": "Run timed out",
+      "run_terminated": "Run terminated"
     },
     "kinds": {
       "run": "run",
@@ -297,7 +303,14 @@
       "cancelled": "cancelled",
       "cancelling": "cancelling",
       "skipped": "skipped",
-      "ready": "ready"
+      "ready": "ready",
+      "baseline": "self-check",
+      "stand": "stand",
+      "result": "result",
+      "kept": "kept",
+      "published": "published",
+      "timed_out": "timed out",
+      "terminated": "terminated"
     },
     "error": "Error",
     "status": "Status"

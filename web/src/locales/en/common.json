@@ -541,5 +541,51 @@
     "gold": "First place",
     "silver": "Second place",
     "bronze": "Third place"
+  },
+  "topologyRole": {
+    "db": "Database",
+    "db-replica": "Replica",
+    "db-compute": "Compute node",
+    "etcd": "etcd",
+    "coordinator": "Coordinator",
+    "proxy": "Proxy",
+    "runner": "Runner"
+  },
+  "quota": {
+    "compute_instances_count": "Machines",
+    "compute_instanceCores_count": "CPU cores",
+    "compute_instanceMemory_size": "Machine memory",
+    "compute_ssdDisks_size": "SSD disks",
+    "compute_hddDisks_size": "HDD disks",
+    "compute_ssdNonReplicatedDisks_size": "Non-replicated SSD",
+    "compute_disks_count": "Disks",
+    "vpc_networks_count": "Networks",
+    "vpc_subnets_count": "Subnets",
+    "vpc_securityGroups_count": "Security groups",
+    "vpc_externalStaticAddresses_count": "Public addresses",
+    "ec2_standard_vcpus": "On-demand vCPUs",
+    "ec2_spot_standard_vcpus": "Spot vCPUs",
+    "ebs_gp3_storage": "gp3 storage",
+    "ebs_gp2_storage": "gp2 storage",
+    "ebs_io2_storage": "io2 storage",
+    "vpc_vpcs": "VPCs",
+    "vpc_security_groups": "Security groups",
+    "vpc_internet_gateways": "Internet gateways",
+    "ec2_elastic_ips": "Elastic IPs"
+  },
+  "quotaUnit": {
+    "instances": "instances",
+    "cores": "cores",
+    "disks": "disks",
+    "networks": "networks",
+    "subnets": "subnets",
+    "security_groups": "groups",
+    "addresses": "addresses",
+    "vcpus": "vCPUs",
+    "tib": "TiB",
+    "vpcs": "VPCs",
+    "groups": "groups",
+    "gateways": "gateways",
+    "bytes": "bytes"
   }
 }

@@ -8,7 +8,8 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Badge, Button, LoadingPlaceholder, Stack, Text, useStyles2 } from '@grafana/ui'
-import { formatNumber, formatPercent } from '@helpers/format'
+import { formatPercent } from '@helpers/format'
+import { quotaAmount, quotaTitle, quotaValue } from '@helpers/quotas'
 import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -168,7 +169,7 @@ function ProviderQuotas({
               <div key={`${q.name}:${q.zone ?? ''}`} className={styles.quota}>
                 <div className={styles.row}>
                   <span title={q.name}>
-                    <Text weight="medium">{q.title ?? q.name}</Text>
+                    <Text weight="medium">{quotaTitle(q)}</Text>
                     {q.zone && (
                       <Text color="secondary" variant="bodySmall">
                         {' '}
@@ -188,16 +189,15 @@ function ProviderQuotas({
                   aria-valuenow={Math.round(pct)}
                   aria-valuemin={0}
                   aria-valuemax={100}
-                  aria-label={q.title ?? q.name}
+                  aria-label={quotaTitle(q)}
                 >
                   <div style={{ width: `${Math.min(100, pct)}%` }} />
                 </div>
                 <div className={styles.row}>
                   <Text color="secondary" variant="bodySmall">
                     {t('settings.quotas.used', {
-                      used: formatNumber(q.used, 1),
-                      limit: formatNumber(q.limit, 1),
-                      unit: q.unit ?? '',
+                      used: quotaValue(q, q.used),
+                      limit: quotaAmount(q, q.limit),
                     })}
                   </Text>
                 </div>

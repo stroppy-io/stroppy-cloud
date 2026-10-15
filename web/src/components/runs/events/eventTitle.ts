@@ -1,26 +1,15 @@
 import type { RunEvent } from '@api/types'
+import { i18n } from '@lib/i18n'
 import type { TFunction } from 'i18next'
 
-// Known event kinds get a localized title (`runs.events.titles.<kind>`); anything else falls
-// back to the server-rendered title. Phase subjects are phase ids and are localized too.
-const KNOWN = new Set([
-  'run.started',
-  'run.completed',
-  'run.failed',
-  'run.cancelled',
-  'run.cancelling',
-  'phase.started',
-  'phase.finished',
-  'phase.completed',
-  'phase.failed',
-  'phase.skipped',
-  'phase.cancelled',
-  'machine.ready',
-  'container.ready',
-  'segment.started',
-  'segment.finished',
-  'segment.failed',
-])
+// An event kind as the locale names it: the pipeline's milestones are
+// `phase.started`, Graphene's run lifecycle is `run-started` /
+// `run-canceled`; both become `phase_started` / `run_cancelled`.
+// internal/domain/run/uitext_test.go keeps every kind the server sends
+// covered in `runs.events.titles`.
+export function eventKey(kind: string): string {
+  return kind.replace(/[.-]/g, '_').replace('canceled', 'cancelled')
+}
 
 export function eventSubject(ev: Pick<RunEvent, 'kind' | 'subject'>, t: TFunction): string {
   if (!ev.subject) return ''
@@ -29,17 +18,17 @@ export function eventSubject(ev: Pick<RunEvent, 'kind' | 'subject'>, t: TFunctio
   return ev.subject
 }
 
+/** The event's title in the UI language; an unknown kind keeps the server's title. */
 export function eventTitle(ev: Pick<RunEvent, 'kind' | 'subject' | 'title'>, t: TFunction): string {
-  if (!KNOWN.has(ev.kind)) return ev.title
-  return t(`runs.events.titles.${ev.kind.replace(/\./g, '_')}`, {
-    subject: eventSubject(ev, t),
-    defaultValue: ev.title,
-  })
+  const key = `runs.events.titles.${eventKey(ev.kind)}`
+  if (!i18n.exists(key)) return ev.title
+  return t(key, { subject: eventSubject(ev, t) })
 }
 
-// `run.failed` → `runs.events.kinds.run` + `runs.events.kinds.failed` for the kind chip.
+// `run.failed`, `run-failed` → `runs.events.kinds.run` + `runs.events.kinds.failed` for the chip.
 export function eventKindLabel(kind: string, t: TFunction): string {
-  const [group, action] = kind.split('.')
+  const [group, ...rest] = eventKey(kind).split('_')
+  const action = rest.join('_')
   if (!group || !action) return kind
   const g = t(`runs.events.kinds.${group}`, { defaultValue: group })
   const a = t(`runs.events.kinds.${action}`, { defaultValue: action })

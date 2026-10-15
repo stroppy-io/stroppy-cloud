@@ -14,6 +14,7 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
+import { metricTitle } from '@helpers/metrics'
 import { hardwareLabel, hardwareTotal, scenarioLabel } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -183,7 +184,11 @@ export function RatingBoard({
                 width={22}
                 options={(metrics.data?.data ?? [])
                   .filter((m) => m.rating_eligible !== false)
-                  .map((m) => ({ label: m.title, value: m.key, description: m.unit }))}
+                  .map((m) => ({
+                    label: metricTitle(m.key, m.title),
+                    value: m.key,
+                    description: m.unit,
+                  }))}
                 value={search.metric}
                 onChange={(o) => onSearchChange({ metric: o.value })}
               />
@@ -286,7 +291,7 @@ export function RatingBoard({
                 <RatingTable
                   rows={rows}
                   unit={metricDef?.unit}
-                  metricTitle={metricDef?.title}
+                  metricTitle={metricDef ? metricTitle(metricDef.key, metricDef.title) : undefined}
                   scope={scope}
                   slug={slug}
                 />

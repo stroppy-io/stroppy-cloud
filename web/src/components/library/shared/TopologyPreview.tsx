@@ -1,28 +1,11 @@
 import type { Schemas } from '@api/types'
 import { css } from '@emotion/css'
-import type { GrafanaTheme2, IconName } from '@grafana/data'
+import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui'
+import { isPrimaryRole, roleIcon, roleLabel } from '@helpers/roles'
 import { useTranslation } from 'react-i18next'
 
 type Topology = Schemas['TopologyPreview']
-
-const ROLE_ICON: Record<string, IconName> = {
-  master: 'database',
-  replica: 'database',
-  storage: 'database',
-  database: 'database',
-  node: 'database',
-  instance: 'database',
-  managed: 'cloud',
-  etcd: 'layer-group',
-  haproxy: 'exchange-alt',
-  proxysql: 'exchange-alt',
-  maxscale: 'exchange-alt',
-  pgbouncer: 'plug',
-  runner: 'rocket',
-  external: 'external-link-alt',
-  noop: 'circle',
-}
 
 const getStyles = (theme: GrafanaTheme2) => ({
   grid: css({
@@ -53,7 +36,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: theme.spacing(0.5),
     color: theme.colors.text.secondary,
     fontSize: theme.typography.bodySmall.fontSize,
-    textTransform: 'capitalize',
   }),
   engine: css({
     fontFamily: theme.typography.fontFamilyMonospace,
@@ -70,8 +52,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
   }),
   empty: css({ color: theme.colors.text.secondary, padding: theme.spacing(2) }),
 })
-
-const PRIMARY_ROLES = new Set(['master', 'storage', 'node', 'instance', 'managed'])
 
 // Nodes-by-role cards + data flows. Read-only view of what the server derived from params.
 export function TopologyPreview({
@@ -101,16 +81,19 @@ export function TopologyPreview({
             key={n.role}
             content={
               n.colocated_with
-                ? t('library.topology.colocated', { role: n.role, host: n.colocated_with })
-                : t('library.topology.machines', { count: n.count, role: n.role })
+                ? t('library.topology.colocated', {
+                    role: roleLabel(t, n.role),
+                    host: n.colocated_with,
+                  })
+                : t('library.topology.machines', { count: n.count, role: roleLabel(t, n.role) })
             }
           >
             <div
-              className={`${styles.node} ${PRIMARY_ROLES.has(n.role) ? styles.primary : ''} ${n.colocated_with ? styles.colocated : ''}`}
+              className={`${styles.node} ${isPrimaryRole(n.role) ? styles.primary : ''} ${n.colocated_with ? styles.colocated : ''}`}
             >
               <div className={styles.role}>
-                <Icon name={ROLE_ICON[n.role] ?? 'cube'} size="sm" />
-                {n.role}
+                <Icon name={roleIcon(n.role)} size="sm" />
+                {roleLabel(t, n.role)}
               </div>
               <div className={styles.count}>×{n.count}</div>
               <div className={styles.engine}>
@@ -125,7 +108,8 @@ export function TopologyPreview({
         <div className={styles.flows}>
           {topology.flows.map((f) => (
             <span key={`${f.from}-${f.to}-${f.port}`}>
-              {f.from} <Icon name="arrow-right" size="xs" /> {f.to} · {f.protocol}
+              {roleLabel(t, f.from)} <Icon name="arrow-right" size="xs" /> {roleLabel(t, f.to)} ·{' '}
+              {f.protocol}
               {f.port ? `:${f.port}` : ''}
             </span>
           ))}

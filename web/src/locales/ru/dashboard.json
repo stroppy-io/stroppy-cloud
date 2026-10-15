@@ -47,7 +47,7 @@
     "title": "Провайдеры",
     "empty": "Профилей провайдеров пока нет.",
     "manage": "Настроить провайдеров",
-    "quotaOf": "{{used}} / {{limit}} {{unit}}",
+    "quotaOf": "{{used}} / {{limit}}",
     "stale": "квоты устарели",
     "unavailable": "квоты недоступны",
     "observed": "снято {{when}}"
