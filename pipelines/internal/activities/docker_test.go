@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.temporal.io/sdk/activity"
 	"go.temporal.io/sdk/converter"
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/testsuite"
 	"go.temporal.io/sdk/worker"
 )
@@ -85,6 +86,9 @@ func TestPullImageCacheAndRegistryRetry(t *testing.T) {
 			_, err := PullImage(t.Context(), PullImageRequest{Image: tc.image})
 			if tc.wantError {
 				require.Error(t, err)
+				var app *temporal.ApplicationError
+				require.ErrorAs(t, err, &app)
+				require.True(t, app.NonRetryable(), "a rejected pull must fail the run, not retry forever")
 			} else {
 				require.NoError(t, err)
 			}

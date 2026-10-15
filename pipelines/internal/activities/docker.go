@@ -1,6 +1,7 @@
 package activities
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -15,7 +16,9 @@ import (
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 	dockerclient "github.com/docker/docker/client"
+	"github.com/docker/docker/pkg/stdcopy"
 	"go.temporal.io/sdk/activity"
+	"go.temporal.io/sdk/temporal"
 
 	"github.com/graphene-ci/pipeline/pkg/obs"
 	"github.com/graphene-ci/pipeline/pkg/workerapi"
@@ -82,8 +85,13 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 			obs.Info(ctx, "image pulled", obs.Str("image", req.Image))
 			return PullImageResult{Image: req.Image}, nil
 		}
-		if attempt == 3 || ctx.Err() != nil || !transientRegistryError(pullErr) {
+		if ctx.Err() != nil {
 			return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, pullErr)
+		}
+		if attempt == 3 || !transientRegistryError(pullErr) {
+			// A missing image or a registry that keeps failing does not heal
+			// by retrying the activity forever: the run fails with the reason.
+			return PullImageResult{}, permanent(fmt.Errorf("pull %s: %w", req.Image, pullErr))
 		}
 		obs.Warn(ctx, "transient registry error; retrying image pull", obs.Str("image", req.Image))
 		timer := time.NewTimer(time.Duration(attempt) * 2 * time.Second)
@@ -230,12 +238,14 @@ func WaitHealthy(ctx context.Context, req WaitHealthyRequest) (WaitHealthyResult
 		if err != nil {
 			return WaitHealthyResult{}, fmt.Errorf("inspect %s: %w", req.Container, err)
 		}
-		if insp.State == nil || !insp.State.Running {
+		if insp.State == nil || !insp.State.Running || insp.State.Restarting {
 			reason := ""
 			if insp.State != nil {
-				reason = fmt.Sprintf("status=%s exit=%d error=%q", insp.State.Status, insp.State.ExitCode, insp.State.Error)
+				reason = fmt.Sprintf("status=%s exit=%d restarts=%d error=%q", insp.State.Status, insp.State.ExitCode, insp.RestartCount, insp.State.Error)
 			}
-			return WaitHealthyResult{}, fmt.Errorf("container %s is not running (%s)", req.Container, reason)
+			// A dead or crash-looping process is not cured by waiting: fail
+			// the run with what the container last said.
+			return WaitHealthyResult{}, permanent(fmt.Errorf("container %s is not running (%s): %s", req.Container, reason, containerLogTail(ctx, cli, insp.ID)))
 		}
 		var shell []string
 		if insp.Config != nil {
@@ -263,7 +273,39 @@ func WaitHealthy(ctx context.Context, req WaitHealthyRequest) (WaitHealthyResult
 		case <-time.After(interval):
 		}
 	}
-	return WaitHealthyResult{}, fmt.Errorf("container %s not healthy after %d attempts: %s", req.Container, retries, tail(lastOut, errTailBytes))
+	return WaitHealthyResult{}, permanent(fmt.Errorf("container %s not healthy after %d attempts: %s; container log: %s",
+		req.Container, retries, tail(lastOut, errTailBytes), containerLogTail(ctx, cli, req.Container)))
+}
+
+// containerLogLines is how much of a failing container's own output travels
+// back in the error.
+const containerLogLines = "20"
+
+// containerLogTail returns the last lines the container wrote, or a note why
+// they could not be read.
+func containerLogTail(ctx context.Context, cli *dockerclient.Client, id string) string {
+	rc, err := cli.ContainerLogs(ctx, id, container.LogsOptions{ShowStdout: true, ShowStderr: true, Tail: containerLogLines})
+	if err != nil {
+		return "unavailable: " + err.Error()
+	}
+	defer func() { _ = rc.Close() }()
+	raw, err := io.ReadAll(io.LimitReader(rc, errTailBytes*4))
+	if err != nil {
+		return "unavailable: " + err.Error()
+	}
+	// Non-TTY containers multiplex stdout and stderr; a TTY one is raw.
+	var out bytes.Buffer
+	if _, err := stdcopy.StdCopy(&out, &out, bytes.NewReader(raw)); err != nil {
+		out.Reset()
+		out.Write(raw)
+	}
+	return tail(strings.TrimSpace(out.String()), errTailBytes)
+}
+
+// permanent marks an error the activity must not be retried for: the
+// default policy retries forever, which hides the reason from the run.
+func permanent(err error) error {
+	return temporal.NewNonRetryableApplicationError(err.Error(), "permanent", err)
 }
 
 // execInContainer runs cmd inside the container and returns its exit code
