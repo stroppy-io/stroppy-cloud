@@ -272,7 +272,7 @@
       "provider_quota_check_unavailable": "Cloud quotas could not be checked. Retry later",
       "provider_quota_exceeded": "Not enough cloud quota “{{quota}}”: {{used}} used, {{need}} more needed, limit {{limit}} {{unit}}",
       "provider_secret_unavailable": "The provider credentials could not be saved. Retry later",
-      "pty_streams_are_not_connected_yet": "The terminal is not available yet",
+      "pty_streams_are_not_connected_yet": "The terminal is not available on this installation",
       "public_rating_not_found": "The public rating is turned off",
       "query_is_required": "The query is empty",
       "quick_run_needs_profile": "Pick a provider for a quick run",
@@ -382,7 +382,14 @@
       "ydb_needs_three_zones": "Distributed YDB needs exactly three provider zones",
       "ydb_storage_nodes_required": "At least one YDB storage node is needed",
       "ydb_zone_invalid": "Zone “{{zone}}” does not fit. Three distinct supported zones are needed",
-      "ydb_zones_not_strings": "YDB zones are given as strings"
+      "ydb_zones_not_strings": "YDB zones are given as strings",
+      "shell_stand_gone": "The run's machines are already removed",
+      "shell_machine_unknown": "The run has no machine {{machine}}",
+      "shell_open_failed": "The machine's agent did not open a terminal",
+      "shell_input_failed": "Input did not reach the machine",
+      "shell_size_invalid": "Invalid terminal size",
+      "shell_not_found": "The terminal is already closed",
+      "shell_input_invalid": "Invalid terminal input"
     },
     "checks": {
       "choice_not_allowed": "This option is not available here",

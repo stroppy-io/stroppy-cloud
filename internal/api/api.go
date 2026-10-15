@@ -23,6 +23,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/schedule"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/share"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/shell"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/suite"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/token"
@@ -51,6 +52,7 @@ type Deps struct {
 	Admin     *admin.Service
 	Examples  *examples.Service
 	Observe   *observe.Service
+	Shell     *shell.Service
 	Live      LiveProjection
 	Grafana   GrafanaConfig
 	Schemas   *schemas.Registry

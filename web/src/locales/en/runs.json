@@ -406,7 +406,8 @@
     "actions": {
       "logsMachine": "Logs of this machine",
       "logsContainer": "Logs of this container",
-      "metrics": "Metrics"
+      "metrics": "Metrics",
+      "shell": "Open terminal"
     },
     "title": "Topology"
   },
@@ -561,5 +562,14 @@
     "vus": "{{count}} VU",
     "errors_one": "{{count}} error",
     "errors_other": "{{count}} errors"
+  },
+  "shell": {
+    "subtitle": "Machine terminal",
+    "connecting": "Connecting to the machine…",
+    "open": "Terminal open. Closing the panel ends the session.",
+    "closed": "The session ended with code {{code}}. {{message}}",
+    "closedError": "The terminal did not open.",
+    "failed": "Could not open the terminal",
+    "reconnect": "Connect again"
   }
 }

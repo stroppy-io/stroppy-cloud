@@ -118,6 +118,7 @@ func e2eServerWith(t *testing.T, opts e2eOptions) *e2e {
 	mux.Handle(managementv1connect.NewRunsAPIHandler(fake))
 	mux.Handle(managementv1connect.NewRbacAPIHandler(fake))
 	mux.Handle(managementv1connect.NewObserveAPIHandler(fake))
+	mux.Handle(managementv1connect.NewAgentsAPIHandler(newFakeAgents()))
 	faults := &rpcFaults{}
 	door := httptest.NewServer(faults.wrap(mux))
 	t.Cleanup(door.Close)

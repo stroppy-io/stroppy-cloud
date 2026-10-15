@@ -272,7 +272,7 @@
       "provider_quota_check_unavailable": "Не удалось проверить квоты облака. Повторите позже",
       "provider_quota_exceeded": "Не хватает квоты облака «{{quota}}»: занято {{used}}, нужно ещё {{need}}, лимит {{limit}} {{unit}}",
       "provider_secret_unavailable": "Не удалось сохранить ключ провайдера. Повторите позже",
-      "pty_streams_are_not_connected_yet": "Терминал пока недоступен",
+      "pty_streams_are_not_connected_yet": "Терминал на этой установке недоступен",
       "public_rating_not_found": "Публичный рейтинг отключён",
       "query_is_required": "Пустой запрос",
       "quick_run_needs_profile": "Для быстрого запуска выберите провайдера",
@@ -382,7 +382,14 @@
       "ydb_needs_three_zones": "Распределённой YDB нужны ровно три зоны провайдера",
       "ydb_storage_nodes_required": "Нужен хотя бы один storage-узел YDB",
       "ydb_zone_invalid": "Зона «{{zone}}» не подходит — нужны три разные поддерживаемые зоны",
-      "ydb_zones_not_strings": "Зоны YDB указываются строками"
+      "ydb_zones_not_strings": "Зоны YDB указываются строками",
+      "shell_stand_gone": "Машины прогона уже удалены",
+      "shell_machine_unknown": "В прогоне нет машины {{machine}}",
+      "shell_open_failed": "Агент машины не открыл терминал",
+      "shell_input_failed": "Ввод не дошёл до машины",
+      "shell_size_invalid": "Неверный размер терминала",
+      "shell_not_found": "Терминал уже закрыт",
+      "shell_input_invalid": "Неверный ввод для терминала"
     },
     "checks": {
       "choice_not_allowed": "Этот вариант здесь недоступен",

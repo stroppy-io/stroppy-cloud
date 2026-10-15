@@ -14,12 +14,15 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/observe"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/shell"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
 
 // Streams is the WebSocket source over the same mappers the REST
 // endpoints use: run.overview/{id}, run.events/{id}, suite_run/{id},
-// tenant.runs/{slug}, run.logs/{id}, run.metrics/{id}. PTY is not connected.
+// tenant.runs/{slug}, run.logs/{id}, run.metrics/{id}, and the terminal
+// agent.pty/{run}/{machine}.
 type Streams struct{ h *Handler }
 
 // NewStreams builds the source.
@@ -39,6 +42,37 @@ func splitTopic(topic string) (kind, arg string, err error) {
 		arg = arg[:i]
 	}
 	return kind, arg, nil
+}
+
+// IsShell reports the terminal topic.
+func (s *Streams) IsShell(topic string) bool { return strings.HasPrefix(topic, "agent.pty/") }
+
+// OpenShell opens a terminal on agent.pty/{run}/{machine}: a member or
+// above of the run's tenant (viewers read, they do not operate machines).
+func (s *Streams) OpenShell(ctx context.Context, actor auth.Actor, topic string, cols, rows uint32) (shell.Session, error) {
+	_, arg, err := splitTopic(topic)
+	if err != nil {
+		return shell.Session{}, err
+	}
+	runID, machine, ok := strings.Cut(arg, "/")
+	if !ok || machine == "" {
+		return shell.Session{}, errs.Invalid("topic must be agent.pty/<run>/<machine>").Because("topic_must_be_kind_id")
+	}
+	r, err := s.runOf(ctx, actor, runID)
+	if err != nil {
+		return shell.Session{}, err
+	}
+	_, role, err := s.h.deps.Tenants.RoleIn(ctx, actor, r.TenantID)
+	if err != nil {
+		return shell.Session{}, errs.NotFound("run")
+	}
+	if !tenant.Role(role).AtLeast(tenant.RoleMember) {
+		return shell.Session{}, errs.Forbidden("requires role member").Because("requires_role", "role", string(tenant.RoleMember))
+	}
+	if s.h.deps.Shell == nil {
+		return shell.Session{}, errs.New(errs.CodeUnavailable, "machine shells are not connected").Because("pty_streams_are_not_connected_yet")
+	}
+	return s.h.deps.Shell.Open(ctx, r, machine, cols, rows)
 }
 
 // runOf resolves a run the actor may read (its tenant membership).
@@ -131,8 +165,6 @@ func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) 
 			out.Errors = append(out.Errors, oas.RunMetricsErrorsItem{Error: oas.NewOptString(f.Error())})
 		}
 		return out, w.End.Format(time.RFC3339), nil
-	case "agent.pty":
-		return nil, "", errs.New(errs.CodeUnavailable, "pty streams are not connected yet").Because("pty_streams_are_not_connected_yet")
 	default:
 		return nil, "", errs.Invalid("unknown topic " + kind)
 	}

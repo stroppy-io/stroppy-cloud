@@ -174,6 +174,7 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 		Admin:     a.services.Admin,
 		Examples:  a.services.Examples,
 		Observe:   a.services.Observe,
+		Shell:     a.services.Shell,
 		Live:      a.services.Projector,
 		Schemas:   a.services.Schemas,
 		Public: api.PublicConfig{

@@ -4,8 +4,11 @@ import { CopyText } from '@components/CopyText'
 import { KeyValueList, type KV } from '@components/KeyValueList'
 import { RelativeTime } from '@components/RelativeTime'
 import { StatusBadge } from '@components/StatusBadge'
-import { Badge, Drawer, Icon, Stack, Text } from '@grafana/ui'
+import { Badge, Button, Drawer, Icon, Stack, Text } from '@grafana/ui'
+import { useTenant } from '@hooks/useTenant'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ShellDrawer } from '../shell/ShellDrawer'
 import { snapshotMachine } from './build-graph'
 
 export type TopologySelection =
@@ -22,6 +25,9 @@ function MachineDetails({
   slug: string
 }) {
   const { t } = useTranslation()
+  const { can } = useTenant()
+  const [shell, setShell] = useState(false)
+  const standUp = !['completed', 'failed', 'cancelled'].includes(run.status) || run.stand_kept
   const plan = snapshotMachine(run.snapshot, machine.name)
   const f = (k: string) => t(`runs.topology.fields.${k}`)
   const items: KV[] = [
@@ -70,6 +76,16 @@ function MachineDetails({
   return (
     <Stack direction="column" gap={3}>
       <KeyValueList items={items} />
+      {can('run') && standUp && (
+        <div>
+          <Button icon="brackets-curly" variant="secondary" onClick={() => setShell(true)}>
+            {t('runs.topology.actions.shell')}
+          </Button>
+        </div>
+      )}
+      {shell && (
+        <ShellDrawer runId={run.id} machine={machine.name} onClose={() => setShell(false)} />
+      )}
       <Stack direction="column" gap={1}>
         <AppLink
           to="/t/$slug/runs/$id/logs"

@@ -2,19 +2,36 @@ import { getAccessToken } from '@lib/auth'
 import { apiMode } from './mode'
 
 // One WebSocket per tab. Frames (server code is the truth, see internal/transport/ws):
-//   client → { type: 'subscribe'|'unsubscribe'|'ping', topic, sub_id, cursor? }
+//   client → { type: 'subscribe'|'unsubscribe'|'input'|'ping', topic, sub_id, cursor?, payload? }
 //   server → { type: 'ack'|'event'|'error'|'pong', sub_id, topic, cursor?, payload }
 export interface Subscription<T> {
   topic: string
   cursor?: string | null
+  /** Sent with the subscribe frame (a terminal's size). */
+  payload?: unknown
   onEvent: (payload: T, cursor?: string) => void
   onError?: (problem: unknown) => void
+}
+
+// A terminal on agent.pty/{run}/{machine}: output arrives as events, input goes back as
+// input frames. A reconnect opens a new shell.
+export interface ShellEvent {
+  session_id?: string
+  /** base64 */
+  data?: string
+  closed?: { exit_code: number; message?: string }
+}
+export type ShellInput = { data: string } | { cols: number; rows: number } | { close: true }
+export interface ShellHandle {
+  send(input: ShellInput): void
+  close(): void
 }
 
 export type WsStatus = 'connecting' | 'open' | 'closed' | 'mock'
 
 export interface WsClient {
   subscribe<T>(sub: Subscription<T>): () => void
+  shell(sub: Subscription<ShellEvent>): ShellHandle
   status(): WsStatus
   onStatus(cb: (s: WsStatus) => void): () => void
 }
@@ -60,7 +77,13 @@ function createRealWs(path: string): WsClient {
         attempt = 0
         setStatus('open')
         for (const [id, s] of subs)
-          send({ type: 'subscribe', sub_id: id, topic: s.topic, cursor: s.cursor ?? undefined })
+          send({
+            type: 'subscribe',
+            sub_id: id,
+            topic: s.topic,
+            cursor: s.cursor ?? undefined,
+            payload: s.payload,
+          })
       }
       socket.onmessage = (ev) => {
         let frame: Frame
@@ -91,20 +114,35 @@ function createRealWs(path: string): WsClient {
   const ping = window.setInterval(() => send({ type: 'ping' }), 25_000)
   window.addEventListener('beforeunload', () => window.clearInterval(ping))
 
+  const open = (sub: Subscription<unknown>) => {
+    const id = crypto.randomUUID()
+    subs.set(id, sub)
+    connect()
+    send({
+      type: 'subscribe',
+      sub_id: id,
+      topic: sub.topic,
+      cursor: sub.cursor ?? undefined,
+      payload: sub.payload,
+    })
+    const close = () => {
+      subs.delete(id)
+      send({ type: 'unsubscribe', sub_id: id })
+      if (subs.size === 0) {
+        socket?.close()
+        socket = undefined
+      }
+    }
+    return { id, close }
+  }
+
   return {
     subscribe(sub) {
-      const id = crypto.randomUUID()
-      subs.set(id, sub as Subscription<unknown>)
-      connect()
-      send({ type: 'subscribe', sub_id: id, topic: sub.topic, cursor: sub.cursor ?? undefined })
-      return () => {
-        subs.delete(id)
-        send({ type: 'unsubscribe', sub_id: id })
-        if (subs.size === 0) {
-          socket?.close()
-          socket = undefined
-        }
-      }
+      return open(sub as Subscription<unknown>).close
+    },
+    shell(sub) {
+      const { id, close } = open(sub as Subscription<unknown>)
+      return { send: (input) => send({ type: 'input', sub_id: id, payload: input }), close }
     },
     status: () => status,
     onStatus(cb) {
@@ -123,6 +161,10 @@ async function createMockWs(): Promise<WsClient> {
   return {
     subscribe(sub) {
       return sim.subscribe(sub.topic, (payload, cursor) => sub.onEvent(payload as never, cursor))
+    },
+    shell(sub) {
+      sub.onError?.({ code: 'unavailable', detail: 'no terminal in the mock' })
+      return { send: () => undefined, close: () => undefined }
     },
     status: () => 'mock',
     onStatus: () => () => undefined,

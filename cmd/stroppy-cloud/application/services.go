@@ -28,6 +28,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/schedule"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/share"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/shell"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/suite"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/token"
@@ -70,6 +71,7 @@ type Services struct {
 	Pipelines *pipelines.Pusher
 	Examples  *examples.Service
 	Observe   *observe.Service
+	Shell     *shell.Service
 	// Dispatcher delivers webhooks; started by the worker loop.
 	Dispatcher *webhook.Dispatcher
 }
@@ -146,6 +148,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 		Pipelines:  pusher,
 		Examples:   examples.NewService(lib, suites),
 		Observe:    observeSvc,
+		Shell:      shell.NewService(graphene.NewPty(infra.Graphene)),
 		Schemas:    registry,
 		Catalog:    cat,
 		Dispatcher: webhook.NewDispatcher(webhookRepo),

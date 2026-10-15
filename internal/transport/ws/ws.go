@@ -3,9 +3,13 @@
 // server's own projection (no Graphene fan-out to browsers), so what the
 // REST endpoints show and what the socket pushes never disagree.
 //
-// Wire: JSON frames {type: subscribe|unsubscribe|event|error|ack, topic,
-// sub_id, cursor?, payload}. Topics: run.overview/{id}, run.events/{id}
-// (cursor = last event id), suite_run/{id}, tenant.runs/{slug}.
+// Wire: JSON frames {type: subscribe|unsubscribe|input|event|error|ack,
+// topic, sub_id, cursor?, payload}. Topics: run.overview/{id},
+// run.events/{id} (cursor = last event id), suite_run/{id},
+// tenant.runs/{slug}, and the one two-way topic agent.pty/{run}/{machine}:
+// subscribe carries {cols, rows}, events carry {session_id} | {data}
+// (base64) | {closed: {exit_code, message}}, input frames carry
+// {data} (text) | {cols, rows} | {close: true}.
 //
 // doc: github.com/coder/websocket — Accept, wsjson.
 package ws
@@ -25,6 +29,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/shell"
 )
 
 // Verifier resolves a bearer token (header or ?token= for browsers).
@@ -40,6 +45,13 @@ type Source interface {
 	Events(ctx context.Context, actor auth.Actor, topic string, cursor string) (events []any, next string, err error)
 	// IsEvents reports whether a topic is an events stream (cursor-based).
 	IsEvents(topic string) bool
+}
+
+// Shells is the optional two-way side of a Source: a terminal on a
+// machine, opened by subscribing and fed by input frames.
+type Shells interface {
+	IsShell(topic string) bool
+	OpenShell(ctx context.Context, actor auth.Actor, topic string, cols, rows uint32) (shell.Session, error)
 }
 
 // Frame is one message either way.
@@ -122,6 +134,35 @@ type subscription struct {
 	topic  string
 	cursor string
 	cancel context.CancelFunc
+	// shell is set on a terminal subscription.
+	shell     *shell.Session
+	sessionID string
+}
+
+// shellSize is the subscribe payload of a terminal.
+type shellSize struct {
+	Cols uint32 `json:"cols"`
+	Rows uint32 `json:"rows"`
+}
+
+// shellInput is an input frame's payload.
+type shellInput struct {
+	Data  string `json:"data,omitempty"`
+	Cols  uint32 `json:"cols,omitempty"`
+	Rows  uint32 `json:"rows,omitempty"`
+	Close bool   `json:"close,omitempty"`
+}
+
+// shellEvent is what a terminal says.
+type shellEvent struct {
+	SessionID string       `json:"session_id,omitempty"`
+	Data      []byte       `json:"data,omitempty"`
+	Closed    *shellClosed `json:"closed,omitempty"`
+}
+
+type shellClosed struct {
+	ExitCode int32  `json:"exit_code"`
+	Message  string `json:"message,omitempty"`
 }
 
 func (s *session) run(ctx context.Context) {
@@ -141,6 +182,8 @@ func (s *session) run(ctx context.Context) {
 			s.subscribe(ctx, f)
 		case "unsubscribe":
 			s.unsubscribe(f.SubID)
+		case "input":
+			s.input(ctx, f)
 		case "ping":
 			s.send(ctx, Frame{Type: "pong", SubID: f.SubID})
 		default:
@@ -165,6 +208,10 @@ func (s *session) subscribe(ctx context.Context, f Frame) {
 	sub := &subscription{id: f.SubID, topic: f.Topic, cursor: f.Cursor, cancel: cancel}
 	s.subs[f.SubID] = sub
 	s.mu.Unlock()
+	if shells, ok := s.h.source.(Shells); ok && shells.IsShell(f.Topic) {
+		s.openShell(ctx, sctx, shells, sub, f.Payload)
+		return
+	}
 	// First answer synchronously: access errors reach the client at once.
 	if err := s.tick(sctx, sub, true); err != nil {
 		cancel()
@@ -177,6 +224,85 @@ func (s *session) subscribe(ctx context.Context, f Frame) {
 		defer cancel()
 		s.poll(sctx, sub)
 	}()
+}
+
+// openShell starts the terminal: the opening chunk is read before the
+// ack, so a refused shell answers as an error frame at once.
+func (s *session) openShell(ctx, sctx context.Context, shells Shells, sub *subscription, payload json.RawMessage) {
+	var size shellSize
+	if len(payload) > 0 {
+		if err := json.Unmarshal(payload, &size); err != nil {
+			s.drop(ctx, sub, errs.Invalid("shell size is not {cols, rows}").Because("shell_size_invalid"))
+			return
+		}
+	}
+	sess, err := shells.OpenShell(sctx, s.actor, sub.topic, size.Cols, size.Rows)
+	if err != nil {
+		s.drop(ctx, sub, err)
+		return
+	}
+	first, err := sess.Recv()
+	if err != nil {
+		_ = sess.Close()
+		s.drop(ctx, sub, errs.Wrap(errs.CodeUnavailable, "open shell", err).Because("shell_open_failed", "machine", sub.topic))
+		return
+	}
+	s.mu.Lock()
+	sub.shell, sub.sessionID = &sess, first.SessionID
+	s.mu.Unlock()
+	s.send(ctx, Frame{Type: "ack", SubID: sub.id, Topic: sub.topic})
+	_ = s.sendPayload(ctx, sub, "", shellEvent{SessionID: first.SessionID}) //nolint:errcheck // a payload of plain fields
+	go func() {
+		defer s.unsubscribe(sub.id)
+		defer sess.Close()
+		for {
+			c, err := sess.Recv()
+			if err != nil {
+				if sctx.Err() == nil {
+					_ = s.sendPayload(ctx, sub, "", shellEvent{Closed: &shellClosed{ExitCode: -1, Message: err.Error()}}) //nolint:errcheck // plain fields
+				}
+				return
+			}
+			ev := shellEvent{Data: c.Data}
+			if c.Closed != nil {
+				ev = shellEvent{Closed: &shellClosed{ExitCode: c.Closed.ExitCode, Message: c.Closed.Message}}
+			}
+			_ = s.sendPayload(ctx, sub, "", ev) //nolint:errcheck // plain fields
+			if c.Closed != nil {
+				return
+			}
+		}
+	}()
+}
+
+// drop ends a subscription that failed to start.
+func (s *session) drop(ctx context.Context, sub *subscription, err error) {
+	s.unsubscribe(sub.id)
+	s.fail(ctx, sub.id, err)
+}
+
+// input lands keystrokes, a resize or the close on a terminal.
+func (s *session) input(ctx context.Context, f Frame) {
+	s.mu.Lock()
+	sub, ok := s.subs[f.SubID]
+	var sess *shell.Session
+	var id string
+	if ok {
+		sess, id = sub.shell, sub.sessionID
+	}
+	s.mu.Unlock()
+	if sess == nil {
+		s.fail(ctx, f.SubID, errs.NotFound("shell"))
+		return
+	}
+	var in shellInput
+	if err := json.Unmarshal(f.Payload, &in); err != nil {
+		s.fail(ctx, f.SubID, errs.Invalid("input is not {data} | {cols, rows} | {close}").Because("shell_input_invalid"))
+		return
+	}
+	if err := sess.Input(ctx, id, shell.Input{Data: []byte(in.Data), Cols: in.Cols, Rows: in.Rows, Close: in.Close}); err != nil {
+		s.fail(ctx, f.SubID, errs.Wrap(errs.CodeUnavailable, "shell input", err).Because("shell_input_failed"))
+	}
 }
 
 func (s *session) unsubscribe(id string) {
@@ -256,7 +382,8 @@ func (s *session) fail(ctx context.Context, subID string, err error) {
 	if errors.As(err, &domain) {
 		detail = domain.Detail
 	}
-	raw, _ := json.Marshal(map[string]string{"code": string(code), "detail": detail}) //nolint:errcheck // map
+	reason, params := errs.ReasonOf(err)
+	raw, _ := json.Marshal(map[string]any{"code": string(code), "detail": detail, "reason": reason, "params": params}) //nolint:errcheck // plain values
 	s.send(ctx, Frame{Type: "error", SubID: subID, Payload: raw})
 }
 

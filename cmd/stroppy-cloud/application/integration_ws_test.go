@@ -140,6 +140,51 @@ func TestE2EWebSocket(t *testing.T) {
 		}
 	})
 
+	t.Run("agent.pty is a two-way terminal", func(t *testing.T) {
+		c := dialWS(t, e, tok)
+		size, _ := json.Marshal(map[string]int{"cols": 100, "rows": 30})
+		c.send(ws.Frame{Type: "subscribe", SubID: "sh", Topic: "agent.pty/" + launched.ID + "/db-1", Payload: size})
+		c.next(5*time.Second, "ack", "sh")
+		var ev struct {
+			SessionID string `json:"session_id"`
+			Data      []byte `json:"data"`
+			Closed    *struct {
+				ExitCode int    `json:"exit_code"`
+				Message  string `json:"message"`
+			} `json:"closed"`
+		}
+		_ = json.Unmarshal(c.next(5*time.Second, "event", "sh").Payload, &ev)
+		if ev.SessionID == "" {
+			t.Fatalf("no session id")
+		}
+		input := func(v map[string]any) {
+			raw, _ := json.Marshal(v)
+			c.send(ws.Frame{Type: "input", SubID: "sh", Payload: raw})
+		}
+		input(map[string]any{"data": "ls -la\r"})
+		ev.Data = nil
+		_ = json.Unmarshal(c.next(5*time.Second, "event", "sh").Payload, &ev)
+		if string(ev.Data) != "ls -la\r" {
+			t.Fatalf("echo %q", ev.Data)
+		}
+		input(map[string]any{"cols": 80, "rows": 24})
+		ev.Data = nil
+		_ = json.Unmarshal(c.next(5*time.Second, "event", "sh").Payload, &ev)
+		if string(ev.Data) != "[80x24]" {
+			t.Fatalf("resize %q", ev.Data)
+		}
+		input(map[string]any{"close": true})
+		_ = json.Unmarshal(c.next(5*time.Second, "event", "sh").Payload, &ev)
+		if ev.Closed == nil || ev.Closed.Message != "bye" {
+			t.Fatalf("closed %+v", ev.Closed)
+		}
+		// The subscription is gone with the shell.
+		input(map[string]any{"data": "x"})
+		if f := c.next(5*time.Second, "error", "sh"); !strings.Contains(string(f.Payload), "not_found") {
+			t.Fatalf("input after close %s", f.Payload)
+		}
+	})
+
 	t.Run("tenant.runs, suite_run, access and unknown topics", func(t *testing.T) {
 		c := dialWS(t, e, tok)
 		c.send(ws.Frame{Type: "subscribe", SubID: "tr", Topic: "tenant.runs/" + tn.Slug})
@@ -151,9 +196,9 @@ func TestE2EWebSocket(t *testing.T) {
 		if len(list.Data) != 0 {
 			t.Fatalf("live list %+v", list)
 		}
-		c.send(ws.Frame{Type: "subscribe", SubID: "bad", Topic: "agent.pty/" + launched.ID + "/db-1"})
+		c.send(ws.Frame{Type: "subscribe", SubID: "bad", Topic: "agent.pty/" + launched.ID + "/no-such-machine"})
 		errFrame := c.next(5*time.Second, "error", "bad")
-		if !strings.Contains(string(errFrame.Payload), "unavailable") {
+		if !strings.Contains(string(errFrame.Payload), "not_found") {
 			t.Fatalf("pty error %s", errFrame.Payload)
 		}
 		c.send(ws.Frame{Type: "subscribe", SubID: "nope", Topic: "run.overview/00000000-0000-0000-0000-000000000000"})
