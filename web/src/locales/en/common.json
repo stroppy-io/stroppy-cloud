@@ -391,7 +391,8 @@
       "resume_stand_unknown": "The kept stand has no run description",
       "resume_machine_missing": "The kept stand has no machine {{machine}}",
       "shell_not_found": "The terminal is already closed",
-      "shell_input_invalid": "Invalid terminal input"
+      "shell_input_invalid": "Invalid terminal input",
+      "shell_session_ended": "The sign-in session ended; the terminal is closed"
     },
     "checks": {
       "choice_not_allowed": "This option is not available here",

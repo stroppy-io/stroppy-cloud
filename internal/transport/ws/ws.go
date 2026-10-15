@@ -48,11 +48,17 @@ type Source interface {
 }
 
 // Shells is the optional two-way side of a Source: a terminal on a
-// machine, opened by subscribing and fed by input frames.
+// machine, opened by subscribing and fed by input frames. MayShell is
+// asked again every shellRecheck while it is open: a revoked session, a
+// lowered role or a gone stand closes it.
 type Shells interface {
 	IsShell(topic string) bool
 	OpenShell(ctx context.Context, actor auth.Actor, topic string, cols, rows uint32) (shell.Session, error)
+	MayShell(ctx context.Context, actor auth.Actor, topic string) error
 }
+
+// shellRecheck is how often an open terminal's access is checked again.
+var shellRecheck = 15 * time.Second
 
 // Frame is one message either way.
 type Frame struct {
@@ -112,7 +118,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		base = context.Background()
 	}
 	ctx := auth.WithActor(base, actor)
-	s := &session{h: h, conn: conn, actor: actor, subs: map[string]*subscription{}}
+	s := &session{h: h, conn: conn, actor: actor, token: token, subs: map[string]*subscription{}}
 	s.run(ctx)
 }
 
@@ -121,6 +127,8 @@ type session struct {
 	h     *Handler
 	conn  *websocket.Conn
 	actor auth.Actor
+	// token is re-verified while a terminal is open.
+	token string
 	// ctx is the session context (frames after a subscription ended still
 	// go through it).
 	ctx  context.Context
@@ -252,6 +260,7 @@ func (s *session) openShell(ctx, sctx context.Context, shells Shells, sub *subsc
 	s.mu.Unlock()
 	s.send(ctx, Frame{Type: "ack", SubID: sub.id, Topic: sub.topic})
 	_ = s.sendPayload(ctx, sub, "", shellEvent{SessionID: first.SessionID}) //nolint:errcheck // a payload of plain fields
+	go s.watchShell(sctx, shells, sub)
 	go func() {
 		defer s.unsubscribe(sub.id)
 		defer sess.Close()
@@ -273,6 +282,32 @@ func (s *session) openShell(ctx, sctx context.Context, shells Shells, sub *subsc
 			}
 		}
 	}()
+}
+
+// watchShell closes the terminal once the actor may no longer hold it.
+func (s *session) watchShell(ctx context.Context, shells Shells, sub *subscription) {
+	t := time.NewTicker(shellRecheck)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			err := shells.MayShell(ctx, s.actor, sub.topic)
+			if err == nil {
+				if _, verr := s.h.verifier.Verify(ctx, s.token); verr != nil {
+					err = errs.New(errs.CodeUnauthenticated, "session ended").Because("shell_session_ended")
+				}
+			}
+			if err != nil {
+				if ctx.Err() != nil {
+					return
+				}
+				s.drop(s.ctx, sub, err)
+				return
+			}
+		}
+	}
 }
 
 // drop ends a subscription that failed to start.

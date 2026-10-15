@@ -50,29 +50,51 @@ func (s *Streams) IsShell(topic string) bool { return strings.HasPrefix(topic, "
 // OpenShell opens a terminal on agent.pty/{run}/{machine}: a member or
 // above of the run's tenant (viewers read, they do not operate machines).
 func (s *Streams) OpenShell(ctx context.Context, actor auth.Actor, topic string, cols, rows uint32) (shell.Session, error) {
-	_, arg, err := splitTopic(topic)
+	r, machine, err := s.shellTarget(ctx, actor, topic)
 	if err != nil {
 		return shell.Session{}, err
-	}
-	runID, machine, ok := strings.Cut(arg, "/")
-	if !ok || machine == "" {
-		return shell.Session{}, errs.Invalid("topic must be agent.pty/<run>/<machine>").Because("topic_must_be_kind_id")
-	}
-	r, err := s.runOf(ctx, actor, runID)
-	if err != nil {
-		return shell.Session{}, err
-	}
-	_, role, err := s.h.deps.Tenants.RoleIn(ctx, actor, r.TenantID)
-	if err != nil {
-		return shell.Session{}, errs.NotFound("run")
-	}
-	if !tenant.Role(role).AtLeast(tenant.RoleMember) {
-		return shell.Session{}, errs.Forbidden("requires role member").Because("requires_role", "role", string(tenant.RoleMember))
 	}
 	if s.h.deps.Shell == nil {
 		return shell.Session{}, errs.New(errs.CodeUnavailable, "machine shells are not connected").Because("pty_streams_are_not_connected_yet")
 	}
 	return s.h.deps.Shell.Open(ctx, r, machine, cols, rows)
+}
+
+// MayShell answers whether the actor may still hold the terminal: the
+// role and the stand, checked again while it is open.
+func (s *Streams) MayShell(ctx context.Context, actor auth.Actor, topic string) error {
+	r, _, err := s.shellTarget(ctx, actor, topic)
+	if err != nil {
+		return err
+	}
+	if r.Status.Terminal() && !r.StandKept {
+		return errs.Conflict("the run's machines are gone").Because("shell_stand_gone")
+	}
+	return nil
+}
+
+// shellTarget resolves agent.pty/{run}/{machine} for a member or above.
+func (s *Streams) shellTarget(ctx context.Context, actor auth.Actor, topic string) (run.Run, string, error) {
+	_, arg, err := splitTopic(topic)
+	if err != nil {
+		return run.Run{}, "", err
+	}
+	runID, machine, ok := strings.Cut(arg, "/")
+	if !ok || machine == "" {
+		return run.Run{}, "", errs.Invalid("topic must be agent.pty/<run>/<machine>").Because("topic_must_be_kind_id")
+	}
+	r, err := s.runOf(ctx, actor, runID)
+	if err != nil {
+		return run.Run{}, "", err
+	}
+	_, role, err := s.h.deps.Tenants.RoleIn(ctx, actor, r.TenantID)
+	if err != nil {
+		return run.Run{}, "", errs.NotFound("run")
+	}
+	if !tenant.Role(role).AtLeast(tenant.RoleMember) {
+		return run.Run{}, "", errs.Forbidden("requires role member").Because("requires_role", "role", string(tenant.RoleMember))
+	}
+	return r, machine, nil
 }
 
 // runOf resolves a run the actor may read (its tenant membership).

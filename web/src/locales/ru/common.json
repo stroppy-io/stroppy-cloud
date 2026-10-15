@@ -391,7 +391,8 @@
       "resume_stand_unknown": "У оставленного стенда нет описания запуска",
       "resume_machine_missing": "На оставленном стенде нет машины {{machine}}",
       "shell_not_found": "Терминал уже закрыт",
-      "shell_input_invalid": "Неверный ввод для терминала"
+      "shell_input_invalid": "Неверный ввод для терминала",
+      "shell_session_ended": "Сессия входа закончилась, терминал закрыт"
     },
     "checks": {
       "choice_not_allowed": "Этот вариант здесь недоступен",
