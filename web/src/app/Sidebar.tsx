@@ -238,7 +238,7 @@ export function Sidebar() {
       <aside
         className={cx(styles.aside, overlay && styles.overlay)}
         style={{ width: expanded ? SIDEBAR_EXPANDED : SIDEBAR_RAIL }}
-        aria-label="primary"
+        aria-label={t('nav.aria.primary')}
         data-expanded={expanded}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}

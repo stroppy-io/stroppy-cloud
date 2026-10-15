@@ -2,6 +2,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
 import { Link } from '@tanstack/react-router'
+import { useTranslation } from 'react-i18next'
 import { useBreadcrumbs } from './crumbs'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -40,9 +41,10 @@ const getStyles = (theme: GrafanaTheme2) => ({
 export function Breadcrumbs() {
   const styles = useStyles2(getStyles)
   const crumbs = useBreadcrumbs()
+  const { t } = useTranslation()
   if (crumbs.length < 2) return null
   return (
-    <nav className={styles.nav} aria-label="breadcrumb">
+    <nav className={styles.nav} aria-label={t('nav.aria.breadcrumb')}>
       {crumbs.map((c, i) => (
         <span key={c.key} style={{ display: 'contents' }}>
           {i > 0 && (

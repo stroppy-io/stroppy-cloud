@@ -55,5 +55,9 @@
   "noTenant": "No tenant",
   "pin": "Pin sidebar",
   "unpin": "Unpin sidebar",
-  "tenants": "Tenants"
+  "tenants": "Tenants",
+  "aria": {
+    "primary": "Main navigation",
+    "breadcrumb": "Breadcrumb"
+  }
 }
