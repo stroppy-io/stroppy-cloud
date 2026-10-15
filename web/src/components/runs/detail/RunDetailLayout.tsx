@@ -9,7 +9,7 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Icon, LoadingPlaceholder, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui'
-import { formatDuration } from '@helpers/format'
+import { dbLabel, formatDuration } from '@helpers/format'
 import { isTerminal } from '@helpers/run-status'
 import { formatDateTime } from '@helpers/time'
 import { useRun } from '@hooks/useRun'
@@ -170,7 +170,7 @@ export function RunDetailLayout({ id, children }: { id: string; children: ReactN
             <div className={styles.meta}>
               <span className={styles.metaItem}>
                 <Icon name="database" size="sm" />
-                {run.summary?.db_kind} {run.summary?.db_version}
+                {dbLabel(run.summary?.db_kind, run.summary?.db_version)}
                 {run.summary?.topology_label ? ` · ${run.summary.topology_label}` : ''}
                 {run.summary?.node_count ? ` · ${run.summary.node_count}n` : ''}
               </span>

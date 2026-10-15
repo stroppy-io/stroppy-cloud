@@ -7,7 +7,7 @@ import {
   type DataTableEmpty,
 } from '@components/DataTable/DataTable'
 import { RankBadge } from '@components/RankBadge'
-import { formatMetric, shortId } from '@helpers/format'
+import { dbLabel, formatMetric, shortId } from '@helpers/format'
 import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -76,9 +76,9 @@ export function RatingTable({
         id: 'database',
         header: t('results.rating.columns.database'),
         minWidth: 180,
-        value: (r) => `${r.db_kind} ${r.db_version ?? ''}`,
+        value: (r) => dbLabel(r.db_kind, r.db_version),
         render: (r) => {
-          const primary = `${r.db_kind}${r.db_version ? ` ${r.db_version}` : ''}`
+          const primary = dbLabel(r.db_kind, r.db_version)
           const secondary = [
             r.topology_label,
             r.node_count ? t('runs.list.nodes', { count: r.node_count }) : undefined,

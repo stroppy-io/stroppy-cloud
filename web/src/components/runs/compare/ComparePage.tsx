@@ -24,7 +24,7 @@ import {
   Tooltip,
   useStyles2,
 } from '@grafana/ui'
-import { formatDuration, formatMetric } from '@helpers/format'
+import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { useTenant } from '@hooks/useTenant'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { Fragment, useMemo, useState } from 'react'
@@ -158,7 +158,7 @@ function RunPicker({
     .map((r: Run) => ({
       label: r.name,
       value: r.id,
-      description: `${r.summary?.db_kind ?? ''} ${r.summary?.db_version ?? ''} · ${r.summary?.workload_name ?? ''} · ${formatMetric(r.summary?.headline?.tps, 'tps')}`,
+      description: `${dbLabel(r.summary?.db_kind, r.summary?.db_version)} · ${r.summary?.workload_name ?? ''} · ${formatMetric(r.summary?.headline?.tps, 'tps')}`,
     }))
   return (
     <Combobox
@@ -328,7 +328,7 @@ export function ComparePage({
                             {isBase && <Badge text={t('runs.compare.baseline')} color="blue" />}
                           </Stack>
                           <Text color="secondary" variant="bodySmall">
-                            {c.summary?.db_kind} {c.summary?.db_version} ·{' '}
+                            {dbLabel(c.summary?.db_kind, c.summary?.db_version)} ·{' '}
                             {c.summary?.workload_name}
                           </Text>
                           <Text color="secondary" variant="bodySmall">

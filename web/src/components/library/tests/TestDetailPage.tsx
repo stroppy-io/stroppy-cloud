@@ -40,7 +40,7 @@ import {
   Tooltip,
   useStyles2,
 } from '@grafana/ui'
-import { formatDuration } from '@helpers/format'
+import { dbLabel, formatDuration } from '@helpers/format'
 import { runStageProgress } from '@helpers/run-status'
 import { useTenant } from '@hooks/useTenant'
 import {
@@ -224,10 +224,7 @@ export function TestDetailPage({
               <Badge color="orange" icon="bolt" text={t('library.tests.staleWorkload')} />
             )}
             {test.summary?.db_kind && (
-              <Badge
-                color="blue"
-                text={`${test.summary.db_kind} ${test.summary.db_version ?? ''}`}
-              />
+              <Badge color="blue" text={dbLabel(test.summary.db_kind, test.summary.db_version)} />
             )}
           </Stack>
         }

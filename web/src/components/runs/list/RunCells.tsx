@@ -6,7 +6,7 @@ import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2, IconName } from '@grafana/data'
 import { Icon, Sparkline, Tooltip, useStyles2, useTheme2 } from '@grafana/ui'
 import { seriesToFrame } from '@helpers/dataframe'
-import { durationSeconds, formatDuration, formatMetric } from '@helpers/format'
+import { dbLabel, durationSeconds, formatDuration, formatMetric } from '@helpers/format'
 import { formatTime } from '@helpers/time'
 import type { TFunction } from 'i18next'
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
@@ -70,7 +70,7 @@ export function workloadView(r: Run, t: TFunction) {
 export function databaseView(r: Run, t: TFunction) {
   const s = r.summary
   if (!s?.db_kind) return { primary: undefined }
-  const primary = `${s.db_kind}${s.db_version ? ` ${s.db_version}` : ''}`
+  const primary = dbLabel(s.db_kind, s.db_version)
   const secondary = [
     s.topology_label,
     s.node_count ? t('runs.list.nodes', { count: s.node_count }) : undefined,

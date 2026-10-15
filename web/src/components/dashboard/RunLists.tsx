@@ -5,7 +5,7 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Text, useStyles2 } from '@grafana/ui'
-import { formatDuration, formatMetric } from '@helpers/format'
+import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { relativeTime } from '@helpers/time'
 import { useTranslation } from 'react-i18next'
@@ -108,7 +108,7 @@ export function LiveNow({ runs, slug }: { runs: Run[]; slug: string }) {
                 {t(`common.phase.${r.phase}`)}
                 {r.summary?.segment ? ` · ${t('runs.segment', { name: r.summary.segment })}` : ''}
                 {' · '}
-                {r.summary?.db_kind} {r.summary?.db_version} · {r.summary?.workload_name}
+                {dbLabel(r.summary?.db_kind, r.summary?.db_version)} · {r.summary?.workload_name}
               </div>
               {r.status !== 'pending' && (
                 <div className={styles.progress}>
@@ -152,7 +152,7 @@ export function RecentRuns({ runs, slug }: { runs: Run[]; slug: string }) {
             <div className={styles.main}>
               <div className={styles.name}>{r.name}</div>
               <div className={styles.sub}>
-                {r.summary?.db_kind} {r.summary?.db_version} · {r.summary?.topology_label} ·{' '}
+                {dbLabel(r.summary?.db_kind, r.summary?.db_version)} · {r.summary?.topology_label} ·{' '}
                 {r.summary?.workload_name}
                 {r.status_reason ? ` · ${r.status_reason}` : ''}
               </div>
@@ -279,7 +279,7 @@ export function TopResults({ items, slug }: { items: RatingEntry[]; slug: string
               <span className={styles.rank}>{e.rank}</span>
               <div className={styles.main}>
                 <div className={styles.name}>
-                  {e.db_kind} {e.db_version} · {e.topology_label}
+                  {dbLabel(e.db_kind, e.db_version)} · {e.topology_label}
                 </div>
                 <div className={styles.sub}>
                   {scenarioLabel(e.scenario)} · {hardwareLabel(t, e.hardware)} · {e.provider_kind}

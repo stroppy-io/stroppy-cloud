@@ -3,7 +3,7 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Text, useStyles2 } from '@grafana/ui'
-import { formatDuration, formatMetric } from '@helpers/format'
+import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { formatDate } from '@helpers/time'
 import { useTranslation } from 'react-i18next'
 import {
@@ -72,7 +72,7 @@ export function ComparisonTable({
                   )}
                 </div>
                 <div className={styles.colSub}>
-                  {c.summary?.db_kind} {c.summary?.db_version} · {c.summary?.topology_label}
+                  {dbLabel(c.summary?.db_kind, c.summary?.db_version)} · {c.summary?.topology_label}
                   <br />
                   {formatDate(c.started_at)} · {formatDuration(c.duration)}{' '}
                   <StatusBadge status={c.status} iconOnly />

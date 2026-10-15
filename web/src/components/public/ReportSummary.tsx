@@ -3,7 +3,7 @@ import { StatusBadge } from '@components/StatusBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Text, useStyles2 } from '@grafana/ui'
-import { formatDuration, formatMetric, formatNumber } from '@helpers/format'
+import { dbLabel, formatDuration, formatMetric, formatNumber } from '@helpers/format'
 import { formatDateTime } from '@helpers/time'
 import { useTranslation } from 'react-i18next'
 
@@ -94,9 +94,7 @@ export function ReportSummary({ run, title }: { run: SharedRun; title?: string }
             </span>
             <span className={styles.fact}>
               {t('public.setup.database')}
-              <span className={styles.factV}>
-                {s.db_kind} {s.db_version}
-              </span>
+              <span className={styles.factV}>{dbLabel(s.db_kind, s.db_version)}</span>
             </span>
             <span className={styles.fact}>
               {t('public.setup.topology')}

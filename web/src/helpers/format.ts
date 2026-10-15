@@ -91,3 +91,13 @@ export function truncateMiddle(s: string, max = 24): string {
 export function shortId(id: string): string {
   return id.length > 12 ? id.slice(0, 8) : id
 }
+
+/**
+ * A database as lists show it: kind and version, without the placeholder
+ * versions of kinds that have none (custom, external, the builtin noop).
+ */
+export function dbLabel(kind: string | undefined, version: string | undefined | null): string {
+  const k = kind ?? ''
+  if (!version || version === k || version === 'builtin') return k
+  return `${k} ${version}`
+}
