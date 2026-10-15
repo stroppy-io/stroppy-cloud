@@ -96,7 +96,7 @@ func (s *Service) normalizeTestSpec(ctx context.Context, spec *TestSpec) error {
 		}
 		spec.Sizes[role] = rs
 		if sizeRank[rs.Size] == 0 {
-			return errs.Invalid(fmt.Sprintf("sizes.%s: unknown size %q", role, rs.Size)).Because("size_unknown", "role", role, "size", string(rs.Size))
+			return errs.Invalid(fmt.Sprintf("sizes.%s: unknown size %q", role, rs.Size)).Because("size_unknown", "role", role, "size", rs.Size)
 		}
 		if rs.DiskGB < 0 || rs.DiskGB > 262144 {
 			return errs.Invalid(fmt.Sprintf("sizes.%s.disk.gb out of range", role)).Because("disk_size_out_of_range", "role", role)

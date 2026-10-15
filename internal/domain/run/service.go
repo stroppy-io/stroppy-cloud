@@ -474,7 +474,7 @@ func (s *Service) checkLimits(ctx context.Context, tenantID uuid.UUID, spec libr
 	if lim.MaxSize != "" {
 		for role, rs := range spec.Sizes {
 			if sizeIndex(rs.Size) > sizeIndex(lim.MaxSize) {
-				return errs.Newf(errs.CodeLimit, "max_size: sizes.%s is %s, limit %s", role, rs.Size, lim.MaxSize).Because("limit_size", "role", role, "size", string(rs.Size), "limit", string(lim.MaxSize))
+				return errs.Newf(errs.CodeLimit, "max_size: sizes.%s is %s, limit %s", role, rs.Size, lim.MaxSize).Because("limit_size", "role", role, "size", rs.Size, "limit", lim.MaxSize)
 			}
 		}
 	}

@@ -64,7 +64,7 @@ func (e *Error) Because(reason string, kv ...string) *Error {
 }
 
 // ReasonOf extracts the reason and its parameters of err ("" for none).
-func ReasonOf(err error) (string, map[string]string) {
+func ReasonOf(err error) (reason string, params map[string]string) {
 	var e *Error
 	if errors.As(err, &e) {
 		return e.Reason, e.Params

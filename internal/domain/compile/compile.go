@@ -157,7 +157,7 @@ func (c *compilation) machines() error {
 		}
 		cell, ok := c.in.Provider.SizeTable(topology.Family(node.Role))[rs.Size]
 		if !ok {
-			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role)).Because("size_unavailable", "role", node.Role, "provider", string(c.in.Provider.Kind), "size", string(rs.Size))
+			return errs.Newf(errs.CodeInvalid, "sizes.%s: %s has no %s size for %s", node.Role, c.in.Provider.Kind, rs.Size, topology.Family(node.Role)).Because("size_unavailable", "role", node.Role, "provider", string(c.in.Provider.Kind), "size", rs.Size)
 		}
 		disk := cell.DefaultDiskGB
 		if rs.DiskGB == 0 && c.in.Workload.Protocol != catalog.ProtoNoop && (node.Role == "db" || strings.HasPrefix(node.Role, "db-")) {

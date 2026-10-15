@@ -26,7 +26,7 @@ func TestE2ECatalog(t *testing.T) {
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, "/api/v1/catalog/databases", nil, tok), http.StatusOK, &got)
-		if len(got.Data) != 11 || got.Data[0].Kind != "postgres" || got.Data[0].ParamsSchema != "db.postgres.params@1" {
+		if len(got.Data) != 12 || got.Data[0].Kind != "postgres" || got.Data[0].ParamsSchema != "db.postgres.params@1" {
 			t.Fatalf("got %+v", got.Data[:1])
 		}
 		// A template's params validate against the kind's schema.
