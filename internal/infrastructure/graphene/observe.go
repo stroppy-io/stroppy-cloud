@@ -174,12 +174,21 @@ func (c *Client) KeepExtend(ctx context.Context, held string, keep time.Duration
 	return nil
 }
 
+// releaseAnswer bounds the wait for the release command's answer. The
+// stand answers once the subtree is deleted — minutes for cloud machines —
+// but takes the command at once and finishes the teardown on its own, so
+// a release still running at this deadline is a release under way.
+var releaseAnswer = 15 * time.Second
+
 // KeepRelease tears a holding (and its subtree) down now.
 func (c *Client) KeepRelease(ctx context.Context, held string) error {
-	if err := c.standCommand(ctx, "release", map[string]any{"ref": held}); err != nil && !IsNotFound(err) {
-		return fmt.Errorf("graphene: release keep of %s: %w", held, err)
+	ctx, cancel := context.WithTimeout(ctx, releaseAnswer)
+	defer cancel()
+	err := c.standCommand(ctx, "release", map[string]any{"ref": held})
+	if err == nil || IsNotFound(err) || connect.CodeOf(err) == connect.CodeDeadlineExceeded {
+		return nil
 	}
-	return nil
+	return fmt.Errorf("graphene: release keep of %s: %w", held, err)
 }
 
 // artifactBatch is GetMany's ceiling.
