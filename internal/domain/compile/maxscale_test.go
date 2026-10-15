@@ -71,7 +71,7 @@ func TestCompileMariaDBMaxScale(t *testing.T) {
 					}
 				}
 			}
-			for _, want := range []string{tc.module, "router=readwritesplit", "backend_connect_timeout=", "port=4006", "password=stroppy_maxscale", "type=server"} {
+			for _, want := range []string{tc.module, "router=readwritesplit", "backend_connect_timeout=", "port=4006", "password=stroppy_maxscale", "type=server", "enable_root_user=true"} {
 				if !strings.Contains(proxy, want) {
 					t.Errorf("maxscale.cnf lacks %q:\n%s", want, proxy)
 				}

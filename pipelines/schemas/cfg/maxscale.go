@@ -136,6 +136,9 @@ func maxscaleCnf(major uint64) *schemapb.Schema {
 			schemapb.Str("service_password").Title("Service password").Group("Service").
 				Desc("Password of that account; filled by the server.").
 				Secret().MaxLen(255).Nullable(),
+			// doc: maxscale-configuration-guide#enable_root_user
+			trueFalse("enable_root_user", "false").Title("Allow root").Group("Service").
+				Desc("Let clients log in as root through MaxScale; off by default, the benchmark logs in as root."),
 			// doc: maxscale-readwritesplit#master_accept_reads
 			trueFalse("master_accept_reads", "false").Title("Primary accepts reads").Group("Service").
 				Desc("Send read traffic to the primary as well as the replicas."),
@@ -290,6 +293,7 @@ router=readwritesplit
 servers={{{values.server_names}}}
 user={{{values.service_user}}}
 password={{{values.service_password}}}
+enable_root_user={{{values.enable_root_user}}}
 master_accept_reads={{{values.master_accept_reads}}}
 causal_reads={{{values.causal_reads}}}
 causal_reads_timeout={{{values.causal_reads_timeout}}}ms

@@ -72,6 +72,8 @@ func (c *compilation) maxscale(galera bool) error {
 		"servers": servers, "monitor_module": module,
 		"monitor_password": maxscalePassword, "service_password": maxscalePassword, "replication_password": maxscalePassword,
 		"admin_host": "127.0.0.1", "admin_secure_gui": "false",
+		// The workload logs in as root, which MaxScale refuses by default.
+		"enable_root_user": "true",
 	}
 	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {

@@ -57,6 +57,8 @@ export interface CfgMaxscaleCnf24 {
   service_user?: string;
   /** Service password. Password of that account; filled by the server. */
   service_password?: string | null;
+  /** Allow root. Let clients log in as root through MaxScale; off by default, the benchmark logs in as root. */
+  enable_root_user?: "true" | "false";
   /** Primary accepts reads. Send read traffic to the primary as well as the replicas. */
   master_accept_reads?: "true" | "false";
   /** Causal reads. Read-your-own-writes guarantee level; anything but none costs a synchronization wait. */
