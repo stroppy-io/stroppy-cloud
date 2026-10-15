@@ -63,6 +63,10 @@ type Overrides struct {
 	// changes the machines) degrades to a full rerun and says so in the
 	// notes.
 	Resume bool
+	// DatabaseName and WorkloadName name inline definitions in the
+	// snapshot (a rerun keeps the names its source run showed).
+	DatabaseName string
+	WorkloadName string
 	// Suite / schedule provenance.
 	SuiteRunID  *uuid.UUID
 	CellID      string
@@ -155,6 +159,12 @@ func (s *Service) Rerun(ctx context.Context, actor auth.Actor, tenantID, runID u
 	}
 	if o.Name == "" {
 		o.Name = prev.Name
+	}
+	if o.DatabaseName == "" {
+		o.DatabaseName = prev.Snapshot.DatabaseName
+	}
+	if o.WorkloadName == "" {
+		o.WorkloadName = prev.Snapshot.WorkloadName
 	}
 	var testRef *Ref
 	if prev.TestID != nil {
@@ -306,6 +316,13 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	if dbSpec == nil || wlSpec == nil {
 		return Prepared{}, errs.Invalid("test is not fully resolved").Because("test_is_not_fully_resolved")
+	}
+	// A rerun's inline copies keep the names its source run showed.
+	if o.DatabaseName != "" {
+		dbName = o.DatabaseName
+	}
+	if o.WorkloadName != "" {
+		wlName = o.WorkloadName
 	}
 	if res.Profile.Status != provider.StatusReady {
 		return Prepared{}, errs.Invalid(fmt.Sprintf("provider profile %q is %s", res.Profile.Name, res.Profile.Status)).Because("profile_not_ready", "name", res.Profile.Name, "status", string(res.Profile.Status))

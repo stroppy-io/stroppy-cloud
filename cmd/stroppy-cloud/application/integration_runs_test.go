@@ -372,6 +372,10 @@ func TestE2ERuns(t *testing.T) {
 		if rs.Resume == nil || rs.Resume.FromRunID != prs.RunID || rs.Keep != 0 || strings.Contains(r.Notes, "degraded") {
 			t.Fatalf("resume spec %+v keep=%v notes=%q", rs.Resume, rs.Keep, r.Notes)
 		}
+		// The inline copy keeps the names the source run showed.
+		if r.Snapshot.DatabaseName == "" || r.Snapshot.DatabaseName != prev.Snapshot.DatabaseName || r.Snapshot.WorkloadName != prev.Snapshot.WorkloadName {
+			t.Fatalf("snapshot names %q/%q vs %q/%q", r.Snapshot.DatabaseName, r.Snapshot.WorkloadName, prev.Snapshot.DatabaseName, prev.Snapshot.WorkloadName)
+		}
 		for _, m := range rs.Machines {
 			if rs.Resume.Machines[m.Name].PrivateIP != prev.State.Machines[m.Name].PrivateIP {
 				t.Fatalf("machine %s: %+v vs %+v", m.Name, rs.Resume.Machines[m.Name], prev.State.Machines[m.Name])
