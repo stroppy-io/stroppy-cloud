@@ -285,7 +285,7 @@ func (l *Logs) read(ctx context.Context, scope observe.Scope, req *managementv1.
 		chunk := stream.Msg()
 		if rec := chunk.GetRecord(); rec != nil {
 			fields := rec.GetAttributes()
-			page.Lines = append(page.Lines, observe.LogLine{Time: time.Unix(0, rec.GetTimeUnixNano()).UTC(), Message: rec.GetBody(), Level: strings.ToLower(rec.GetSeverity()), Stream: fields["stream"], Fields: fields})
+			page.Lines = append(page.Lines, observe.LogLine{Time: time.Unix(0, rec.GetTimeUnixNano()).UTC(), Message: rec.GetBody(), Level: logLevel(rec.GetSeverity()), Stream: fields["stream"], Fields: fields})
 		}
 		if p := chunk.GetPage(); p != nil {
 			page.Truncated, next = p.GetTruncated(), p.GetNextPageToken()
@@ -328,7 +328,9 @@ func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.
 		for _, v := range f.GetValues() {
 			value := v.GetValue()
 			if field == "level" {
-				value = strings.ToLower(value)
+				if value = logLevel(value); value == "" {
+					continue
+				}
 			}
 			index := slices.IndexFunc(facet.Values, func(x run.FacetValue) bool { return x.Value == value })
 			if index >= 0 {
@@ -340,6 +342,16 @@ func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.
 		out = append(out, facet)
 	}
 	return out, nil
+}
+
+// logLevel is a record's level as the API names it: lower case, and none
+// for OTLP's UNSPECIFIED (a line its source wrote without one).
+func logLevel(severity string) string {
+	l := strings.ToLower(severity)
+	if l == "unspecified" {
+		return ""
+	}
+	return l
 }
 
 func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.Series, []error, error) {
