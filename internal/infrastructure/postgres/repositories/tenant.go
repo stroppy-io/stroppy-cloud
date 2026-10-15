@@ -122,6 +122,9 @@ func (r *TenantRepo) SetOwner(ctx context.Context, id, ownerID uuid.UUID) error 
 	return nil
 }
 
+// SoftDelete marks the tenant deleted and takes its runs and public links
+// with it, so nothing of a deleted tenant stays in the rating or behind a
+// share link. Callers run it inside their transaction.
 func (r *TenantRepo) SoftDelete(ctx context.Context, id uuid.UUID) error {
 	n, err := r.q.SoftDeleteTenant(ctx, id)
 	if err != nil {
@@ -129,6 +132,12 @@ func (r *TenantRepo) SoftDelete(ctx context.Context, id uuid.UUID) error {
 	}
 	if n == 0 {
 		return errs.NotFound("tenant")
+	}
+	if _, err := r.q.SoftDeleteRunsOfTenant(ctx, id); err != nil {
+		return infraf("tenant: delete runs: %v", err)
+	}
+	if _, err := r.q.RevokeSharesOfTenant(ctx, id); err != nil {
+		return infraf("tenant: revoke shares: %v", err)
 	}
 	return nil
 }

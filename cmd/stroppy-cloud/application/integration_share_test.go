@@ -272,4 +272,33 @@ func TestE2EShareCompareRating(t *testing.T) {
 			t.Fatalf("dashboard %+v", d)
 		}
 	})
+
+	t.Run("a deleted tenant leaves the public rating and its links stop", func(t *testing.T) {
+		var sh struct {
+			Token string `json:"token"`
+		}
+		e.want(e.req(http.MethodPost, base+"/runs/"+a.ID+":share", map[string]any{}, tok), http.StatusCreated, &sh)
+		e.want(e.req(http.MethodGet, "/api/v1/public/share/"+sh.Token, nil, ""), http.StatusOK, nil)
+		// The fixture keeps its stands; a tenant with kept stands is not deleted.
+		for _, id := range []string{a.ID, b.ID} {
+			_ = e.req(http.MethodPost, base+"/runs/"+id+":keep-release", nil, tok)
+		}
+		if r := e.req(http.MethodDelete, "/api/v1/tenants/"+tn.Slug, nil, tok); r.Status != http.StatusNoContent {
+			t.Fatalf("delete tenant %d %s", r.Status, r.Body)
+		}
+		var page struct {
+			Data []struct {
+				RunID string `json:"run_id"`
+			} `json:"data"`
+		}
+		e.want(e.req(http.MethodGet, "/api/v1/public/rating?metric=tps&period=7d", nil, ""), http.StatusOK, &page)
+		for _, d := range page.Data {
+			if d.RunID == a.ID {
+				t.Fatalf("deleted tenant's run still in the public rating")
+			}
+		}
+		if r := e.req(http.MethodGet, "/api/v1/public/share/"+sh.Token, nil, ""); r.Status == http.StatusOK {
+			t.Fatalf("deleted tenant's share still opens: %d", r.Status)
+		}
+	})
 }

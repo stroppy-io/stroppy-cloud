@@ -50,3 +50,7 @@ UPDATE shares SET revoked_at = now(), updated_at = now() WHERE id = @id AND revo
 
 -- name: BumpShareViews :exec
 UPDATE shares SET view_count = view_count + 1 WHERE id = @id;
+
+-- name: RevokeSharesOfTenant :execrows
+-- A deleted tenant's public links stop working with it.
+UPDATE shares SET revoked_at = now(), updated_at = now() WHERE tenant_id = @tenant_id AND revoked_at IS NULL;

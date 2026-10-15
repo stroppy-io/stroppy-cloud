@@ -248,3 +248,8 @@ FROM runs WHERE id = ANY(@ids::uuid[]) AND deleted_at IS NULL;
 SELECT DISTINCT ON (test_id) test_id, id, name, status, started_at, count(*) OVER (PARTITION BY test_id) AS run_count
 FROM runs WHERE test_id = ANY(@test_ids::uuid[]) AND deleted_at IS NULL
 ORDER BY test_id, created_at DESC;
+
+-- name: SoftDeleteRunsOfTenant :execrows
+-- A deleted tenant takes its runs with it: they leave the rating and every
+-- list with the tenant.
+UPDATE runs SET deleted_at = now(), updated_at = now() WHERE tenant_id = @tenant_id AND deleted_at IS NULL;

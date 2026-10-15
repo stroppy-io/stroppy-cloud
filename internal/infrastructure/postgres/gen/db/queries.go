@@ -2281,6 +2281,15 @@ func (q *Queries) RunCountsOfTenant(ctx context.Context, tenantID uuid.UUID) (Ru
 	return i, err
 }
 
+const softDeleteRunsOfTenantSQL = `-- A deleted tenant takes its runs with it: they leave the rating and every
+-- list with the tenant.
+UPDATE runs SET deleted_at = now(), updated_at = now() WHERE tenant_id = $1 AND deleted_at IS NULL;`
+
+func (q *Queries) SoftDeleteRunsOfTenant(ctx context.Context, tenantID uuid.UUID) (int64, error) {
+	tag, err := q.db.Exec(ctx, softDeleteRunsOfTenantSQL, tenantID)
+	return tag.RowsAffected(), err
+}
+
 const ensureSettingsSQL = `INSERT INTO tenant_settings (tenant_id) VALUES ($1)
 ON CONFLICT (tenant_id) DO UPDATE SET tenant_id = EXCLUDED.tenant_id
 RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;`
@@ -2586,6 +2595,14 @@ const bumpShareViewsSQL = `UPDATE shares SET view_count = view_count + 1 WHERE i
 func (q *Queries) BumpShareViews(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.Exec(ctx, bumpShareViewsSQL, id)
 	return err
+}
+
+const revokeSharesOfTenantSQL = `-- A deleted tenant's public links stop working with it.
+UPDATE shares SET revoked_at = now(), updated_at = now() WHERE tenant_id = $1 AND revoked_at IS NULL;`
+
+func (q *Queries) RevokeSharesOfTenant(ctx context.Context, tenantID uuid.UUID) (int64, error) {
+	tag, err := q.db.Exec(ctx, revokeSharesOfTenantSQL, tenantID)
+	return tag.RowsAffected(), err
 }
 
 const insertSuiteSQL = `INSERT INTO suites (id, tenant_id, name, description, tags, author_id, tests, axes, cells, concurrency, defaults)
