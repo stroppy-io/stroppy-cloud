@@ -281,6 +281,8 @@ func ExitStatus(code int) (canceled bool, text string) {
 		return true, "canceled by SIGTERM"
 	case 2:
 		return true, "forced exit after a second signal"
+	case 137:
+		return false, "killed by SIGKILL (exit status 137), usually out of memory"
 	default:
 		return false, fmt.Sprintf("exit status %d", code)
 	}

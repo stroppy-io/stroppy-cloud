@@ -77,6 +77,15 @@ func managedReportArgs(args []string, destination string) []string {
 
 func reportOutcome(seg *spec.Segment, out *stroppyOutput, result *spec.SegmentResult) (status spec.SegmentStatus, reason string) {
 	f, err := os.Open(out.ReportPath)
+	if errors.Is(err, os.ErrNotExist) {
+		// Stroppy died before writing the report: the exit status and its
+		// last output lines are the only trace of why.
+		_, text := stroppycfg.ExitStatus(out.ExitCode)
+		if out.ExitCode == 0 {
+			text = "exit status 0"
+		}
+		return reportFailure(out, fmt.Sprintf("stroppy wrote no report (%s): %s", text, tail(lastLines(out.LogPath), errTailBytes)))
+	}
 	if err != nil {
 		return reportFailure(out, fmt.Sprintf("read Stroppy report: %v", err))
 	}

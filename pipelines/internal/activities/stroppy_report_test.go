@@ -23,13 +23,13 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 		reason              string
 	}{
 		{name: "success", status: spec.SegmentCompleted},
-		{name: "missing", missing: true, status: spec.SegmentFailed, reason: "read Stroppy report"},
+		{name: "missing", missing: true, status: spec.SegmentFailed, reason: "stroppy wrote no report (exit status 0): loading\nlast words"},
 		{name: "truncated", replace: string(base), with: `{"schema":`, status: spec.SegmentFailed, reason: "decode Stroppy report"},
 		{name: "future-schema", replace: `"schema": 1`, with: `"schema": 2`, status: spec.SegmentFailed, reason: "unsupported Stroppy report"},
 		{name: "failed-zero-exit", replace: `"status": "completed"`, with: `"status": "failed"`, status: spec.SegmentFailed, reason: "report status: failed"},
 		{name: "completed-with-errors", replace: `"status": "completed"`, with: `"status": "completed_with_errors"`, status: spec.SegmentCompleted},
 		{name: "canceled", replace: `"status": "completed"`, with: `"status": "canceled"`, code: 143, status: spec.SegmentCancelled, reason: "canceled"},
-		{name: "hard-kill", missing: true, code: 137, status: spec.SegmentFailed, reason: "read Stroppy report"},
+		{name: "hard-kill", missing: true, code: 137, status: spec.SegmentFailed, reason: "stroppy wrote no report (killed by SIGKILL (exit status 137), usually out of memory): loading\nlast words"},
 		{name: "bad-exit", code: 1, status: spec.SegmentFailed, reason: "exited 1"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -41,7 +41,9 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 			if !tc.missing {
 				require.NoError(t, os.WriteFile(name, raw, 0600))
 			}
-			out := stroppyOutput{ReportPath: name, ExitCode: tc.code, Log: []byte("=== bench summary ===\n  iterations_total  999\n")}
+			logPath := filepath.Join(t.TempDir(), "stroppy.log")
+			require.NoError(t, os.WriteFile(logPath, []byte("loading\nlast words\n"), 0600))
+			out := stroppyOutput{ReportPath: name, ExitCode: tc.code, LogPath: logPath, Log: []byte("=== bench summary ===\n  iterations_total  999\n")}
 			var result spec.SegmentResult
 			status, reason := segmentOutcome(context.Background(), &spec.Segment{}, &out, &result)
 			require.Equal(t, tc.status, status, reason)
