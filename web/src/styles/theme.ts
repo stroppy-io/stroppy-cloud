@@ -5,13 +5,19 @@ export type ThemeMode = Mode
 
 const cache = new Map<ThemeMode, GrafanaTheme2>()
 
+/** The app's theme: Grafana in the Stroppy look, one instance per mode. */
 export function getAppTheme(mode: ThemeMode): GrafanaTheme2 {
   let theme = cache.get(mode)
   if (!theme) {
-    theme = createTheme({ colors: { mode } })
+    theme = createStroppyTheme(mode)
     cache.set(mode, theme)
   }
   return theme
+}
+
+/** Grafana's stock theme, for side-by-side comparison on /kit. */
+export function getGrafanaTheme(mode: ThemeMode): GrafanaTheme2 {
+  return createTheme({ colors: { mode } })
 }
 
 const px = (v: string) => Number.parseInt(v, 10)

@@ -6,7 +6,7 @@
   },
   "source": {
     "stroppy": "Our theme",
-    "grafana": "As today"
+    "grafana": "Stock Grafana"
   },
   "palette": {
     "title": "Palette",
@@ -14,7 +14,7 @@
   },
   "grafana": {
     "title": "Grafana in our theme",
-    "hint": "The app's components on the theme made from the tokens. \"As today\" shows the stock Grafana theme the app runs on now."
+    "hint": "The app's components on the theme made from the tokens. \"Stock Grafana\" is the original theme, for comparison."
   },
   "doc": {
     "title": "HTML without React",

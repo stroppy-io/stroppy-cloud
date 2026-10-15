@@ -24,14 +24,14 @@ import {
   useStyles2,
   useTheme2,
 } from '@grafana/ui'
-import { seriesToFrame } from '@helpers/dataframe'
+import { seriesToFrames } from '@helpers/dataframe'
 import { useMeasure } from '@hooks/useMeasure'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { type ChartSeries, mount } from '@/kit/chart'
 import { BAND, BODY, MARK_VIEWBOX, RAYS } from '@/kit/logo'
 import { type Mode, type Palette, tokens } from '@/kit/tokens'
-import { createStroppyTheme, getAppTheme } from '@/styles/theme'
+import { getAppTheme, getGrafanaTheme } from '@/styles/theme'
 import '@/kit/tokens.css'
 import '@/kit/fonts.css'
 import '@/kit/base.css'
@@ -128,7 +128,7 @@ export function KitPage() {
   const { t } = useTranslation()
   const [mode, setMode] = useState<Mode>('dark')
   const [source, setSource] = useState<Source>('stroppy')
-  const theme = source === 'stroppy' ? createStroppyTheme(mode) : getAppTheme(mode)
+  const theme = source === 'stroppy' ? getAppTheme(mode) : getGrafanaTheme(mode)
   return (
     <ThemeContext.Provider value={theme}>
       <Showcase mode={mode} source={source} onMode={setMode} onSource={setSource} t={t} />
@@ -335,8 +335,9 @@ function GrafanaChart() {
   const [ref, { width }] = useMeasure<HTMLDivElement>()
   const frames = useMemo(
     () =>
-      SAMPLE.map((s) => seriesToFrame(s.title, s.points as number[][], s.unit, theme)).filter(
-        (f) => f !== undefined
+      seriesToFrames(
+        SAMPLE.map((s) => ({ name: s.title, points: s.points as number[][], unit: s.unit })),
+        theme
       ),
     [theme]
   )
