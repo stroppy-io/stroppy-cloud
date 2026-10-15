@@ -23,6 +23,8 @@ PostgreSQL, Graphene and identity configuration are supplied by the deployment.
 Immutable image: `{reference}`.
 
 The `latest` tag follows stable container releases. `image-digest.txt` records
-the immutable reference for this build. No frontend packages or documentation
-are published by this release workflow.
+the immutable reference for this build.
+
+`stroppy-kit-{version}.tar.gz` is the UI kit for HTML reports: design tokens,
+plain-HTML styles, fonts, the logo and a chart script (see its README.md).
 """)
