@@ -660,6 +660,22 @@ export interface SpecRun1Observability {
   labels?: Record<string, string>;
 }
 
+/** object value */
+export interface SpecRun1ResumeValue {
+  /** Private address. */
+  private_ip: string;
+  /** Public address. */
+  public_ip?: string;
+}
+
+/** object resume */
+export interface SpecRun1Resume {
+  /** Stand of run. Run id of the run that kept the stand; its agents are reused. */
+  from_run_id: string;
+  /** Machine addresses. Addresses of the kept machines, by name. */
+  machines: Record<string, SpecRun1ResumeValue>;
+}
+
 /** root */
 export interface SpecRun1 {
   /** Run id. Run id minted by the server; also the Graphene run id. */
@@ -690,4 +706,6 @@ export interface SpecRun1 {
   keep?: string;
   /** Expected metrics. Metric keys the run must report; a missing key degrades the result. */
   result_expectations?: Array<string>;
+  /** Resume. Run the workload again on a kept stand: no machines are created and nothing is deployed. */
+  resume?: SpecRun1Resume;
 }

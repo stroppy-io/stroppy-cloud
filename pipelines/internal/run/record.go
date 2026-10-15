@@ -33,4 +33,6 @@ func recordingWalk(ctx pipeline.Context) {
 	dockerlib.Container(ctx, agent, dockerlib.Spec{Name: "record-container", Config: &container.Config{Image: "record"}})
 	pipeline.NewArtifact(ctx, "record-artifact", artifact.FromAgentFile(agent, "/record"))
 	pipeline.ToStand(ctx, agent)
+	// A resumed run attaches the agents of a kept stand.
+	pipeline.AttachAgent(ctx, "record-kept-agent")
 }

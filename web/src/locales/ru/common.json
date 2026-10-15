@@ -388,6 +388,8 @@
       "shell_open_failed": "Агент машины не открыл терминал",
       "shell_input_failed": "Ввод не дошёл до машины",
       "shell_size_invalid": "Неверный размер терминала",
+      "resume_stand_unknown": "У оставленного стенда нет описания запуска",
+      "resume_machine_missing": "На оставленном стенде нет машины {{machine}}",
       "shell_not_found": "Терминал уже закрыт",
       "shell_input_invalid": "Неверный ввод для терминала"
     },

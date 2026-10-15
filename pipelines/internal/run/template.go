@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/provision"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 // Placeholders the server may leave in a RunSpec where a machine address is
@@ -35,10 +36,18 @@ type Addresses struct {
 
 // NewAddresses indexes the converged infra.
 func NewAddresses(infra provision.Infra, infos map[string]provision.MachineInfo) Addresses {
-	a := Addresses{byName: infos, byRole: map[string][]string{}}
+	machines := make([]spec.Machine, 0, len(infra.Order))
 	for _, name := range infra.Order {
-		m := infra.Machines[name]
-		a.byRole[m.Spec.Role] = append(a.byRole[m.Spec.Role], name)
+		machines = append(machines, infra.Machines[name].Spec)
+	}
+	return AddressesOf(machines, infos)
+}
+
+// AddressesOf indexes known addresses of machines, in spec order.
+func AddressesOf(machines []spec.Machine, infos map[string]provision.MachineInfo) Addresses {
+	a := Addresses{byName: infos, byRole: map[string][]string{}}
+	for _, m := range machines {
+		a.byRole[m.Role] = append(a.byRole[m.Role], m.Name)
 	}
 	return a
 }

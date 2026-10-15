@@ -431,6 +431,22 @@ export interface SpecSuite1RunObservability {
   labels?: Record<string, string>;
 }
 
+/** object value */
+export interface SpecSuite1RunResumeValue {
+  /** Private address. */
+  private_ip: string;
+  /** Public address. */
+  public_ip?: string;
+}
+
+/** object resume */
+export interface SpecSuite1RunResume {
+  /** Stand of run. Run id of the run that kept the stand; its agents are reused. */
+  from_run_id: string;
+  /** Machine addresses. Addresses of the kept machines, by name. */
+  machines: Record<string, SpecSuite1RunResumeValue>;
+}
+
 /** def run */
 export interface SpecSuite1Run {
   /** Run id. Run id minted by the server; also the Graphene run id. */
@@ -461,6 +477,8 @@ export interface SpecSuite1Run {
   keep?: string;
   /** Expected metrics. Metric keys the run must report; a missing key degrades the result. */
   result_expectations?: Array<string>;
+  /** Resume. Run the workload again on a kept stand: no machines are created and nothing is deployed. */
+  resume?: SpecSuite1RunResume;
 }
 
 /** variant baseline of workload */

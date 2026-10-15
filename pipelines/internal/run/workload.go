@@ -13,7 +13,6 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/activities"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/events"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/provision"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/stroppycfg"
 )
@@ -56,12 +55,7 @@ type artifactFile struct {
 // (AtMostOnce): an undeterminable outcome fails the run rather than loading
 // data twice. The first failed segment stops the sequence — later segments
 // depend on the earlier ones (schema, data).
-func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addrs Addresses) (workloadOutcome, error) {
-	runners := infra.ByRole(run.Workload.RunnerRole)
-	if len(runners) == 0 {
-		return workloadOutcome{}, fmt.Errorf("workload: no machine of runner role %q", run.Workload.RunnerRole)
-	}
-	runner := runners[0]
+func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addrs Addresses) (workloadOutcome, error) {
 	segments, err := spec.DecodeSegments(run.Workload.Segments)
 	if err != nil {
 		return workloadOutcome{}, fmt.Errorf("workload: %w", err)
@@ -70,10 +64,10 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 	if err != nil {
 		return workloadOutcome{}, fmt.Errorf("workload url: %w", err)
 	}
-	out := workloadOutcome{Runner: runner.Agent}
+	out := workloadOutcome{Runner: runner}
 
 	if run.ManagedYDB != nil {
-		ready, err := activity.Activity(ctx, runner.Agent,
+		ready, err := activity.Activity(ctx, runner,
 			activity.Fn(activities.NameWaitDatabase, activities.WaitDatabase, activities.WaitDatabaseRequest{
 				Endpoint: url, RunID: run.RunID, Workload: run.Workload, RegistrySecret: run.Provider.RegistrySecret,
 			}),
@@ -119,7 +113,7 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 				return out, err
 			}
 		}
-		res, err := activity.Activity(ctx, runner.Agent,
+		res, err := activity.Activity(ctx, runner,
 			activity.Fn(activities.NameRunSegment, activities.RunSegment, req),
 			activity.WithGuarantee(activity.AtMostOnce),
 			activity.WithTimeout(segmentBound(seg)),
@@ -164,9 +158,9 @@ func runWorkload(ctx pipeline.Context, run spec.Run, infra provision.Infra, addr
 // runBaseline measures the runner with `stroppy baseline`. Its failure is
 // recorded in the result, never fatal: the run is about the database, the
 // baseline is the context to read it in.
-func runBaseline(ctx pipeline.Context, run spec.Run, runner *provision.Machine, out *workloadOutcome) *spec.BaselineResult {
+func runBaseline(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, out *workloadOutcome) *spec.BaselineResult {
 	events.Emit(ctx, events.BaselineStarted, events.Payload{"tiers": run.Workload.Baseline.Tiers})
-	res, err := activity.Activity(ctx, runner.Agent,
+	res, err := activity.Activity(ctx, runner,
 		activity.Fn(activities.NameRunBaseline, activities.RunBaseline, activities.RunBaselineRequest{
 			RunID: run.RunID, Image: run.Workload.StroppyImage, Baseline: *run.Workload.Baseline,
 			RegistrySecret: run.Provider.RegistrySecret,

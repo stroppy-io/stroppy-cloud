@@ -388,6 +388,8 @@
       "shell_open_failed": "The machine's agent did not open a terminal",
       "shell_input_failed": "Input did not reach the machine",
       "shell_size_invalid": "Invalid terminal size",
+      "resume_stand_unknown": "The kept stand has no run description",
+      "resume_machine_missing": "The kept stand has no machine {{machine}}",
       "shell_not_found": "The terminal is already closed",
       "shell_input_invalid": "Invalid terminal input"
     },

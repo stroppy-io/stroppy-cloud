@@ -58,9 +58,10 @@ type Overrides struct {
 	Labels            map[string]string
 	Notes             string
 	Trigger           Trigger
-	// Resume asks to continue on the previous run's kept stand. Stand reuse is
-	// not wired into the pipeline yet, so it always degrades to a rerun and
-	// says so in the notes.
+	// Resume asks to continue on the previous run's kept stand: the same
+	// machines, the workload again. A stand that is gone (or a rerun that
+	// changes the machines) degrades to a full rerun and says so in the
+	// notes.
 	Resume bool
 	// Suite / schedule provenance.
 	SuiteRunID  *uuid.UUID
@@ -155,20 +156,26 @@ func (s *Service) Rerun(ctx context.Context, actor auth.Actor, tenantID, runID u
 	if o.Name == "" {
 		o.Name = prev.Name
 	}
+	var testRef *Ref
+	if prev.TestID != nil {
+		testRef = &Ref{ID: *prev.TestID, Name: prev.TestName}
+	}
 	if o.Resume {
-		why := "the stand of " + prev.Name + " is gone"
-		if prev.StandKept {
-			why = "stand reuse is not supported by the pipeline yet"
+		why := ""
+		switch {
+		case !prev.StandKept || prev.KeepUntil == nil || !prev.KeepUntil.After(time.Now()):
+			why = "the stand of " + prev.Name + " is gone"
+		case o.ProviderProfileID != nil || len(o.Sizes) > 0:
+			why = "a different provider or sizes need new machines"
+		}
+		if why == "" {
+			return s.launchOn(ctx, actor, tenantID, spec, testRef, o, idempotencyKey, &prev)
 		}
 		note := "Resume requested but " + why + " — degraded to a full rerun."
 		if o.Notes != "" {
 			note = o.Notes + "\n\n" + note
 		}
 		o.Notes = note
-	}
-	var testRef *Ref
-	if prev.TestID != nil {
-		testRef = &Ref{ID: *prev.TestID, Name: prev.TestName}
 	}
 	return s.launch(ctx, actor, tenantID, spec, testRef, o, idempotencyKey)
 }
@@ -205,6 +212,9 @@ type PrepareOptions struct {
 	// ExtraLive counts sibling runs prepared in the same batch against
 	// max_concurrent_runs.
 	ExtraLive int
+	// Stand is the run whose kept stand this run continues on (resume): no
+	// machines are created, so quotas are not checked and keep is off.
+	Stand *Run
 }
 
 // Prepared is a run ready to be stored and started.
@@ -215,6 +225,11 @@ type Prepared struct {
 
 // launch is the common path: prepare, store, start.
 func (s *Service) launch(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, spec library.TestSpec, testRef *Ref, o Overrides, idempotencyKey string) (Run, error) {
+	return s.launchOn(ctx, actor, tenantID, spec, testRef, o, idempotencyKey, nil)
+}
+
+// launchOn launches on a kept stand when stand is set (resume).
+func (s *Service) launchOn(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, spec library.TestSpec, testRef *Ref, o Overrides, idempotencyKey string, stand *Run) (Run, error) {
 	var admitted Run
 	replayed := false
 	err := s.repo.Admit(ctx, tenantID, func(ctx context.Context) error {
@@ -222,7 +237,7 @@ func (s *Service) launch(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 			admitted, replayed = r, ok
 			return err
 		}
-		p, err := s.Prepare(ctx, actor, tenantID, spec, testRef, o, PrepareOptions{})
+		p, err := s.Prepare(ctx, actor, tenantID, spec, testRef, o, PrepareOptions{Stand: stand})
 		if err != nil {
 			return err
 		}
@@ -258,6 +273,9 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	if o.Keep != nil {
 		spec.Keep = *o.Keep
+	}
+	if opts.Stand != nil {
+		spec.Keep = 0
 	}
 	if o.RatingTenant != nil {
 		spec.RatingTenant = *o.RatingTenant
@@ -315,7 +333,14 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	if err := json.Unmarshal(compiled.Spec, &finalSpec); err != nil {
 		return Prepared{}, err
 	}
-	if err := s.checkQuotas(ctx, *res.Profile, finalSpec); err != nil {
+	if opts.Stand != nil {
+		if finalSpec.Resume, err = resumeOf(*opts.Stand, finalSpec); err != nil {
+			return Prepared{}, err
+		}
+		if compiled.Spec, err = json.Marshal(finalSpec); err != nil {
+			return Prepared{}, err
+		}
+	} else if err := s.checkQuotas(ctx, *res.Profile, finalSpec); err != nil {
 		return Prepared{}, err
 	}
 	name := o.Name
@@ -362,6 +387,26 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	r.State = NewState(compiled.Machines, segmentNames(*wlSpec))
 	return Prepared{Run: r, Compiled: compiled}, nil
+}
+
+// resumeOf points a compiled run at the stand another run kept: the same
+// machines by name and role, with the addresses that run recorded.
+func resumeOf(stand Run, next pipelinespec.Run) (*pipelinespec.Resume, error) {
+	var prev pipelinespec.Run
+	if err := json.Unmarshal(stand.RunSpec, &prev); err != nil || prev.RunID == "" {
+		return nil, errs.Conflict("the kept stand has no run spec").Because("resume_stand_unknown")
+	}
+	kept := prev.MachineByName()
+	out := &pipelinespec.Resume{FromRunID: prev.RunID, Machines: map[string]pipelinespec.ResumeMachine{}}
+	for _, m := range next.Machines {
+		was, ok := kept[m.Name]
+		st := stand.State.Machines[m.Name]
+		if !ok || was.Role != m.Role || st.PrivateIP == "" {
+			return nil, errs.Conflict("the kept stand has no machine "+m.Name).Because("resume_machine_missing", "machine", m.Name)
+		}
+		out.Machines[m.Name] = pipelinespec.ResumeMachine{PrivateIP: st.PrivateIP, PublicIP: st.PublicIP}
+	}
+	return out, nil
 }
 
 // Insert stores a prepared run without starting it (suite cells: the

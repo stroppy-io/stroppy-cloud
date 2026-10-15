@@ -4010,6 +4010,65 @@
       },
       "name": "result_expectations",
       "title": "Expected metrics"
+    },
+    {
+      "description": "Run the workload again on a kept stand: no machines are created and nothing is deployed.",
+      "group": "Lifecycle",
+      "name": "resume",
+      "object": {
+        "schema": {
+          "fields": [
+            {
+              "description": "Run id of the run that kept the stand; its agents are reused.",
+              "name": "from_run_id",
+              "required": true,
+              "string": {
+                "maxLen": "64",
+                "minLen": "1"
+              },
+              "title": "Stand of run"
+            },
+            {
+              "description": "Addresses of the kept machines, by name.",
+              "map": {
+                "maxEntries": "64",
+                "minEntries": "1",
+                "valueField": {
+                  "name": "value",
+                  "object": {
+                    "schema": {
+                      "fields": [
+                        {
+                          "name": "private_ip",
+                          "required": true,
+                          "string": {
+                            "maxLen": "64",
+                            "minLen": "1"
+                          },
+                          "title": "Private address"
+                        },
+                        {
+                          "name": "public_ip",
+                          "string": {
+                            "maxLen": "64"
+                          },
+                          "title": "Public address"
+                        }
+                      ],
+                      "strict": true
+                    }
+                  }
+                }
+              },
+              "name": "machines",
+              "required": true,
+              "title": "Machine addresses"
+            }
+          ],
+          "strict": true
+        }
+      },
+      "title": "Resume"
     }
   ],
   "id": {
@@ -4082,6 +4141,16 @@
       "expr": "[this == null ? root : this].all(r, !(\"ydb_iam_credentials_secret\" in r.workload) || r.workload.driver_type == \"ydb\")",
       "id": "ydb-iam-driver",
       "message": "IAM credentials only apply to YDB"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"resume\" in r) || r.machines.all(m, m.name in r.resume.machines))",
+      "id": "resume-machines",
+      "message": "a resumed run needs the address of every machine"
+    },
+    {
+      "expr": "[this == null ? root : this].all(r, !(\"resume\" in r) || !(\"managed_ydb\" in r))",
+      "id": "resume-managed",
+      "message": "a managed database cannot be resumed"
     },
     {
       "expr": "[this == null ? root : this].all(r, !(\"machines\" in r) || r.machines.all(m, r.machines.filter(x, x.name == m.name).size() == 1))",

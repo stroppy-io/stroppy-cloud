@@ -50,6 +50,26 @@ type Run struct {
 	Keep Duration `json:"keep,omitempty"`
 	// ResultExpectations are metric keys the run must report.
 	ResultExpectations []string `json:"result_expectations,omitempty"`
+	// Resume runs the workload again on the stand an earlier run kept:
+	// nothing is created or deployed, that run's agents are attached and
+	// its addresses reused. The stand stays where it is (its keep timer
+	// keeps running); Keep does not apply.
+	Resume *Resume `json:"resume,omitempty"`
+}
+
+// Resume names the kept stand a run continues on.
+type Resume struct {
+	// FromRunID is the RunID of the run that kept the stand: its agents
+	// are spec.AgentName(FromRunID, machine).
+	FromRunID string `json:"from_run_id"`
+	// Machines are the addresses the stand's machines had, by name.
+	Machines map[string]ResumeMachine `json:"machines"`
+}
+
+// ResumeMachine is a kept machine's addresses.
+type ResumeMachine struct {
+	PrivateIP string `json:"private_ip"`
+	PublicIP  string `json:"public_ip,omitempty"`
 }
 
 // Provider is where the run is created and with which credentials.

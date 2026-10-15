@@ -10,6 +10,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -353,6 +355,54 @@ func TestE2ERuns(t *testing.T) {
 		}
 	})
 
+	t.Run("resume continues on the kept stand", func(t *testing.T) {
+		var resumed runView
+		e.want(e.req(http.MethodPost, base+"/runs/"+launched.ID+":rerun", map[string]any{"resume": true}, tok), http.StatusCreated, &resumed)
+		r, err := e.app.services.Runs.Peek(ctx, uuid.MustParse(resumed.ID))
+		if err != nil {
+			t.Fatal(err)
+		}
+		var rs spec.Run
+		if err := json.Unmarshal(r.RunSpec, &rs); err != nil {
+			t.Fatal(err)
+		}
+		prev, _ := e.app.services.Runs.Peek(ctx, uuid.MustParse(launched.ID))
+		var prs spec.Run
+		_ = json.Unmarshal(prev.RunSpec, &prs)
+		if rs.Resume == nil || rs.Resume.FromRunID != prs.RunID || rs.Keep != 0 || strings.Contains(r.Notes, "degraded") {
+			t.Fatalf("resume spec %+v keep=%v notes=%q", rs.Resume, rs.Keep, r.Notes)
+		}
+		for _, m := range rs.Machines {
+			if rs.Resume.Machines[m.Name].PrivateIP != prev.State.Machines[m.Name].PrivateIP {
+				t.Fatalf("machine %s: %+v vs %+v", m.Name, rs.Resume.Machines[m.Name], prev.State.Machines[m.Name])
+			}
+		}
+		// A new provider or sizes need new machines: a full rerun, said so.
+		var full runView
+		e.want(e.req(http.MethodPost, base+"/runs/"+launched.ID+":rerun", map[string]any{"resume": true, "sizes": map[string]any{"db": map[string]any{"size": "M"}}}, tok), http.StatusCreated, &full)
+		fr, _ := e.app.services.Runs.Peek(ctx, uuid.MustParse(full.ID))
+		var frs spec.Run
+		_ = json.Unmarshal(fr.RunSpec, &frs)
+		if frs.Resume != nil || !strings.Contains(fr.Notes, "degraded to a full rerun") {
+			t.Fatalf("full rerun %+v notes=%q", frs.Resume, fr.Notes)
+		}
+		// Both run to the end; the resumed one completes on the stand and
+		// keeps nothing of its own.
+		e.app.services.Projector.Tick(ctx)
+		for _, id := range []string{resumed.ID, full.ID} {
+			e.graphene.release(id)
+			var done runView
+			eventually(t, 10*time.Second, func() bool {
+				e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &done)
+				return done.Status == "completed" || done.Status == "failed"
+			})
+			if id == resumed.ID && (done.Status != "completed" || done.StandKept) {
+				fin, _ := e.app.services.Runs.Peek(ctx, uuid.MustParse(id))
+				t.Fatalf("resumed run %s kept=%v: %s", done.Status, done.StandKept, fin.StatusReason)
+			}
+		}
+	})
+
 	t.Run("keep extend and release go to the stand", func(t *testing.T) {
 		id := launched.ID
 		var got runView
@@ -445,7 +495,8 @@ func TestE2ERuns(t *testing.T) {
 			} `json:"trend"`
 		}
 		e.want(e.req(http.MethodGet, base+"/tests/"+testID+"/runs", nil, tok), http.StatusOK, &history)
-		if len(history.Data) < 2 || len(history.Trend.Points) != 1 || history.Trend.Points[0].Value != firstTPS {
+		// Completed runs of the test: the first, its resume and the full rerun.
+		if len(history.Data) < 2 || len(history.Trend.Points) != 3 || history.Trend.Points[0].Value != firstTPS {
 			t.Fatalf("history %+v", history)
 		}
 	})

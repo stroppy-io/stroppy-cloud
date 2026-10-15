@@ -184,6 +184,13 @@ func simulate(runID, pipelineID string, params json.RawMessage, start time.Time,
 		}
 		simCloud(w, sc)
 		simAgents(w, rr, sc)
+		// A resumed run attaches the agents of the stand it continues on:
+		// they exist (and are connected) before it starts.
+		if rs.Resume != nil {
+			for _, m := range rs.Machines {
+				w.SeedAgent(id.AgentId(spec.AgentName(rs.Resume.FromRunID, m.Name)), map[string]string{"machine": m.Name, "role": m.Role}, pipeline.AgentState{AgentConnected: true})
+			}
+		}
 		wf, input = pipelinetest.Workflow(w, workflows.RunPipelineID, workflows.Run), rs
 	case workflows.SuitePipelineID:
 		var s spec.Suite

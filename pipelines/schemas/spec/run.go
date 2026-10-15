@@ -340,6 +340,19 @@ func Run() *schemapb.Schema {
 				Title("Expected metrics").Group("Lifecycle").
 				Desc("Metric keys the run must report; a missing key degrades the result.").
 				MaxItems(64).Unique(),
+
+			schemapb.Object("resume",
+				schemapb.Str("from_run_id").Title("Stand of run").
+					Desc("Run id of the run that kept the stand; its agents are reused.").
+					MinLen(1).MaxLen(64).Required(),
+				schemapb.MapOf("machines", schemapb.Object("value",
+					schemapb.Str("private_ip").Title("Private address").MinLen(1).MaxLen(64).Required(),
+					schemapb.Str("public_ip").Title("Public address").MaxLen(64),
+				).Strict()).
+					Title("Machine addresses").Desc("Addresses of the kept machines, by name.").
+					MinEntries(1).MaxEntries(64).Required(),
+			).Title("Resume").Group("Lifecycle").
+				Desc("Run the workload again on a kept stand: no machines are created and nothing is deployed.").Strict(),
 		).
 		Rules(
 			runRule(`root.workload.driver_type in ["postgres", "mysql", "noop"] || root.workload.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, MySQL or noop driver").ID("stored-procedure-driver"),
@@ -355,6 +368,8 @@ func Run() *schemapb.Schema {
 			runRule(`!("managed_ydb" in root) || root.managed_ydb.type != "serverless" || "storage_size_limit_gb" in root.managed_ydb`, "serverless YDB requires a storage limit").ID("managed-ydb-serverless"),
 			runRule(`!("managed_ydb" in root) || (root.provider.kind == "yandex" && root.workload.driver_type == "ydb")`, "managed YDB requires YC and the YDB driver").ID("managed-ydb-provider"),
 			runRule(`!("ydb_iam_credentials_secret" in root.workload) || root.workload.driver_type == "ydb"`, "IAM credentials only apply to YDB").ID("ydb-iam-driver"),
+			runRule(`!("resume" in root) || root.machines.all(m, m.name in root.resume.machines)`, "a resumed run needs the address of every machine").ID("resume-machines"),
+			runRule(`!("resume" in root) || !("managed_ydb" in root)`, "a managed database cannot be resumed").ID("resume-managed"),
 			runRule(
 				`!("machines" in root) || root.machines.all(m, root.machines.filter(x, x.name == m.name).size() == 1)`,
 				"machine names must be unique",

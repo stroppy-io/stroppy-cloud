@@ -52,6 +52,9 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	if err := validate(run); err != nil {
 		return spec.Result{}, err
 	}
+	if run.Resume != nil {
+		return resume(ctx, run)
+	}
 	providers := provision.Default()
 	provider, err := providers.For(run.Provider.Kind)
 	if err != nil {
@@ -115,11 +118,37 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 
 	// --- workload ----------------------------------------------------------
 	wl, wlErr := phase(ctx, PhaseWorkload, func() (workloadOutcome, error) {
-		return runWorkload(ctx, run, infra, addrs)
+		runners := infra.ByRole(run.Workload.RunnerRole)
+		if len(runners) == 0 {
+			return workloadOutcome{}, fmt.Errorf("workload: no machine of runner role %q", run.Workload.RunnerRole)
+		}
+		return runWorkload(ctx, run, runners[0].Agent, addrs)
 	})
+	result, err := collect(ctx, run, wl, wlErr)
+	if err != nil {
+		return result, err
+	}
 
-	// --- collecting: always, even after a failed workload — partial results
-	// and logs are the evidence the operator needs.
+	// --- keep / teardown ---------------------------------------------------
+	if keep := run.Keep.Std(); keep > 0 {
+		_, err := phase(ctx, PhaseTeardown, func() (struct{}, error) {
+			pipeline.ToStand(ctx, infra.Root, pipeline.KeepFor(keep))
+			events.Emit(ctx, events.StandKept, events.Payload{"keep": keep.String(), "root": string(infra.Root.ResourceRef())})
+			return struct{}{}, nil
+		})
+		if err != nil {
+			return result, err
+		}
+		kept = true
+	}
+	// keep == 0: the run returns and Graphene's cleanup cascades the tree.
+	return result, nil
+}
+
+// collect publishes the result: always, even after a failed workload —
+// partial results and logs are the evidence the operator needs. The
+// workload's error is the run's.
+func collect(ctx pipeline.Context, run spec.Run, wl workloadOutcome, wlErr error) (spec.Result, error) {
 	result, collectErr := phase(ctx, PhaseCollecting, func() (spec.Result, error) {
 		res := spec.Result{
 			Metrics:  stroppycfg.MergeMetrics(wl.Segments),
@@ -141,24 +170,7 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	if collectErr != nil {
 		ctx.Logger().Warn("collecting failed", "error", collectErr)
 	}
-	if wlErr != nil {
-		return result, wlErr
-	}
-
-	// --- keep / teardown ---------------------------------------------------
-	if keep := run.Keep.Std(); keep > 0 {
-		_, err := phase(ctx, PhaseTeardown, func() (struct{}, error) {
-			pipeline.ToStand(ctx, infra.Root, pipeline.KeepFor(keep))
-			events.Emit(ctx, events.StandKept, events.Payload{"keep": keep.String(), "root": string(infra.Root.ResourceRef())})
-			return struct{}{}, nil
-		})
-		if err != nil {
-			return result, err
-		}
-		kept = true
-	}
-	// keep == 0: the run returns and Graphene's cleanup cascades the tree.
-	return result, nil
+	return result, wlErr
 }
 
 // validate rejects what the schema cannot express and the phases would
@@ -259,7 +271,7 @@ func waitMachines(ctx pipeline.Context, infra provision.Infra) (map[string]provi
 			if err != nil {
 				return fmt.Errorf("vm: %w", err)
 			}
-			if _, err := waitAgent(gctx, m.Agent); err != nil {
+			if err := waitAgent(gctx, m.Agent); err != nil {
 				return fmt.Errorf("agent: %w", err)
 			}
 			infos[m.Spec.Name] = info
@@ -276,28 +288,34 @@ func waitMachines(ctx pipeline.Context, infra provision.Infra) (map[string]provi
 	return infos, nil
 }
 
+// readyAgent is an agent whose connect can be awaited: one the run
+// declared or one it attached.
+type readyAgent interface {
+	pipeline.Agent
+	TryReady(ctx pipeline.Context) (pipeline.AgentState, error)
+}
+
 // waitAgent bounds the wait for the agent's connect: a VM that runs but
 // never connects (broken user-data, no route out) fails here with a clear
 // reason instead of hanging on the machine's first activity.
-func waitAgent(ctx pipeline.Context, agent pipeline.AgentHandle) (pipeline.AgentState, error) {
+func waitAgent(ctx pipeline.Context, agent readyAgent) error {
 	// Temporal derives contexts by concrete type: the embedded
 	// workflow.Context is handed over, never the pipeline wrapper.
 	tctx, cancel := workflow.WithCancel(ctx.Context)
 	defer cancel()
-	var state pipeline.AgentState
 	var err error
 	done := false
 	workflow.Go(tctx, func(gctx workflow.Context) {
-		state, err = agent.TryReady(pipeline.Context{Context: gctx})
+		_, err = agent.TryReady(pipeline.Context{Context: gctx})
 		done = true
 	})
 	if _, err := workflow.AwaitWithTimeout(ctx.Context, agentConnectTimeout, func() bool { return done }); err != nil {
-		return state, err
+		return err
 	}
 	if !done {
-		return state, fmt.Errorf("agent %s did not connect within %s", agent.AgentId(), agentConnectTimeout)
+		return fmt.Errorf("agent %s did not connect within %s", agent.AgentId(), agentConnectTimeout)
 	}
-	return state, err
+	return err
 }
 
 // missingExpectations lists result_expectations absent from the metrics.
