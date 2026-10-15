@@ -19,14 +19,15 @@ function MachineDetails({
   machine,
   run,
   slug,
+  onShell,
 }: {
   machine: RunOverview['machines'][number]
   run: Run
   slug: string
+  onShell: () => void
 }) {
   const { t } = useTranslation()
   const { can } = useTenant()
-  const [shell, setShell] = useState(false)
   const standUp = !['completed', 'failed', 'cancelled'].includes(run.status) || run.stand_kept
   const plan = snapshotMachine(run.snapshot, machine.name)
   const f = (k: string) => t(`runs.topology.fields.${k}`)
@@ -78,13 +79,10 @@ function MachineDetails({
       <KeyValueList items={items} />
       {can('run') && standUp && (
         <div>
-          <Button icon="brackets-curly" variant="secondary" onClick={() => setShell(true)}>
+          <Button icon="brackets-curly" variant="secondary" onClick={onShell}>
             {t('runs.topology.actions.shell')}
           </Button>
         </div>
-      )}
-      {shell && (
-        <ShellDrawer runId={run.id} machine={machine.name} onClose={() => setShell(false)} />
       )}
       <Stack direction="column" gap={1}>
         <AppLink
@@ -177,6 +175,11 @@ export function TopologyDrawer({
   onClose: () => void
 }) {
   const { t } = useTranslation()
+  // The terminal takes the drawer's place: a drawer over a drawer dims the top one.
+  const [shell, setShell] = useState<string | null>(null)
+  if (shell) {
+    return <ShellDrawer runId={run.id} machine={shell} onClose={() => setShell(null)} />
+  }
   if (selection.kind === 'machine') {
     const m = overview.machines.find((x) => x.name === selection.name)
     return (
@@ -187,7 +190,7 @@ export function TopologyDrawer({
         onClose={onClose}
       >
         {m ? (
-          <MachineDetails machine={m} run={run} slug={slug} />
+          <MachineDetails machine={m} run={run} slug={slug} onShell={() => setShell(m.name)} />
         ) : (
           <Text color="secondary">{t('runs.topology.drawer.gone')}</Text>
         )}

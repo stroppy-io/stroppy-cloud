@@ -6,7 +6,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Button, Drawer, Stack, Text, useStyles2, useTheme2 } from '@grafana/ui'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -62,13 +62,13 @@ export function ShellDrawer({
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const theme = useTheme2()
-  const ref = useRef<HTMLDivElement>(null)
+  // The drawer mounts its body after opening: a callback ref reruns the effect then.
+  const [el, setEl] = useState<HTMLDivElement | null>(null)
   const [state, setState] = useState<State>({ kind: 'connecting' })
   const [attempt, setAttempt] = useState(0)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: `attempt` is the reconnect trigger, not a value used inside
   useEffect(() => {
-    const el = ref.current
     if (!el) return
     const c = theme.colors
     const term = new Terminal({
@@ -139,7 +139,7 @@ export function ShellDrawer({
       handle?.close()
       term.dispose()
     }
-  }, [runId, machine, theme, attempt])
+  }, [el, runId, machine, theme, attempt])
 
   return (
     <Drawer title={machine} subtitle={t('runs.shell.subtitle')} size="lg" onClose={onClose}>
@@ -168,7 +168,7 @@ export function ShellDrawer({
             </Button>
           )}
         </Stack>
-        <div ref={ref} className={styles.term} />
+        <div ref={setEl} className={styles.term} />
       </Stack>
     </Drawer>
   )
