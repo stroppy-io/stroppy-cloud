@@ -67,6 +67,8 @@ var yandexQuotaIDs = []struct{ id, unit string }{
 	{"compute.ssdDisks.size", "bytes"},
 	{"compute.hddDisks.size", "bytes"},
 	{"compute.ssdNonReplicatedDisks.size", "bytes"},
+	{"compute.ssdIOM3Disks.size", "bytes"},
+	{"compute.instanceHighFreqCores.count", "cores"},
 	{"compute.disks.count", "disks"},
 	{"vpc.networks.count", "networks"},
 	{"vpc.subnets.count", "subnets"},
@@ -192,15 +194,16 @@ func readYandexQuotas(ctx context.Context, client yandexQuotaClient, cloudID str
 				return spec.QuotasResult{}, fmt.Errorf("quota limits of %s: %w", svc, err)
 			}
 			for _, q := range page.GetQuotaLimits() {
-				unit, wanted := yandexUnit(q.GetQuotaId())
+				name, zone, unit, wanted := yandexQuota(q.GetQuotaId())
 				if !wanted {
 					continue
 				}
 				out.Quotas = append(out.Quotas, spec.Quota{
-					Name:  q.GetQuotaId(),
+					Name:  name,
 					Limit: q.GetLimit().GetValue(),
 					Used:  q.GetUsage().GetValue(),
 					Unit:  unit,
+					Zone:  zone,
 				})
 			}
 			if page.GetNextPageToken() == "" {
@@ -212,11 +215,17 @@ func readYandexQuotas(ctx context.Context, client yandexQuotaClient, cloudID str
 	return out, nil
 }
 
-func yandexUnit(id string) (string, bool) {
+// yandexQuota splits a Quota Manager id into the quota name and its zone.
+// Zonal limits carry the zone after the base id
+// ("compute.ssdDisks.size.ru-central1-d"); cloud-wide ones do not.
+func yandexQuota(id string) (name, zone, unit string, ok bool) {
 	for _, q := range yandexQuotaIDs {
-		if q.id == id {
-			return q.unit, true
+		if id == q.id {
+			return q.id, "", q.unit, true
+		}
+		if z, found := strings.CutPrefix(id, q.id+"."); found && z != "" && !strings.Contains(z, ".") {
+			return q.id, z, q.unit, true
 		}
 	}
-	return "", false
+	return "", "", "", false
 }

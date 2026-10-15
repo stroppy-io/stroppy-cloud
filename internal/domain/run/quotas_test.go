@@ -57,3 +57,33 @@ func TestQuotasUseFinalMachineResources(t *testing.T) {
 		t.Fatalf("ordinary platform must not consume high-frequency quota: %v", err)
 	}
 }
+
+func TestZonalQuotasCountOnlyTheirZone(t *testing.T) {
+	input := pipelinespec.Run{
+		Provider: pipelinespec.Provider{Kind: pipelinespec.ProviderYandex, Settings: []byte(`{"zone":"ru-central1-d"}`)},
+		Network:  pipelinespec.Network{AllowPublicIPs: true},
+		Machines: []pipelinespec.Machine{
+			{CPU: 16, MemoryGB: 64, Disks: []pipelinespec.Disk{{GB: 400, Type: "network-ssd"}}},
+			{CPU: 16, MemoryGB: 64, Location: "ru-central1-a", Disks: []pipelinespec.Disk{{GB: 400, Type: "network-ssd"}}},
+		},
+	}
+	for _, tc := range []struct {
+		name      string
+		quota     provider.Quota
+		wantError bool
+	}{
+		{"default zone takes the unplaced machine", provider.Quota{Name: "compute.ssdDisks.size", Zone: "ru-central1-d", Limit: 1000, Used: 600, Unit: "GiB"}, true},
+		{"default zone fits", provider.Quota{Name: "compute.ssdDisks.size", Zone: "ru-central1-d", Limit: 1000, Used: 560, Unit: "GiB"}, false},
+		{"other zone counts its machine", provider.Quota{Name: "compute.instanceCores.count", Zone: "ru-central1-a", Limit: 20, Used: 5}, true},
+		{"zone without machines", provider.Quota{Name: "compute.instanceCores.count", Zone: "ru-central1-b", Limit: 0}, false},
+		{"cloud-wide counts both", provider.Quota{Name: "compute.instanceCores.count", Limit: 31}, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			svc := &Service{profiles: quotaProfiles{quota: tc.quota}}
+			err := svc.checkQuotas(t.Context(), provider.Profile{}, input)
+			if (err != nil) != tc.wantError {
+				t.Fatalf("checkQuotas error = %v, want error %v", err, tc.wantError)
+			}
+		})
+	}
+}

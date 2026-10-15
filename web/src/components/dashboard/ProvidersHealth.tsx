@@ -79,31 +79,37 @@ function QuotaBars({ report }: { report: QuotaReport | undefined }) {
   return (
     <>
       <div className={styles.quotas}>
-        {report.quotas.slice(0, 6).map((q) => {
-          const pct = q.limit > 0 ? Math.min(100, (q.used / q.limit) * 100) : 0
-          return (
-            <Tooltip
-              key={`${q.name}-${q.zone ?? ''}`}
-              content={t('dashboard.providers.quotaOf', {
-                used: quotaValue(q, q.used),
-                limit: quotaAmount(q, q.limit),
-              })}
-            >
-              <div className={styles.quota}>
-                <div className={styles.quotaHead}>
-                  <span>{quotaTitle(q)}</span>
-                  <span>{Math.round(pct)}%</span>
+        {[...report.quotas]
+          .sort((a, b) => quotaShare(b) - quotaShare(a))
+          .slice(0, 6)
+          .map((q) => {
+            const pct = Math.min(100, quotaShare(q) * 100)
+            return (
+              <Tooltip
+                key={`${q.name}-${q.zone ?? ''}`}
+                content={t('dashboard.providers.quotaOf', {
+                  used: quotaValue(q, q.used),
+                  limit: quotaAmount(q, q.limit),
+                })}
+              >
+                <div className={styles.quota}>
+                  <div className={styles.quotaHead}>
+                    <span>
+                      {quotaTitle(q)}
+                      {q.zone ? ` · ${q.zone}` : ''}
+                    </span>
+                    <span>{Math.round(pct)}%</span>
+                  </div>
+                  <div className={styles.bar}>
+                    <div
+                      className={pct >= 90 ? styles.bad : pct >= 70 ? styles.warn : styles.ok}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
-                <div className={styles.bar}>
-                  <div
-                    className={pct >= 90 ? styles.bad : pct >= 70 ? styles.warn : styles.ok}
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-              </div>
-            </Tooltip>
-          )
-        })}
+              </Tooltip>
+            )
+          })}
       </div>
       <div className={styles.note}>
         {report.stale && <Icon name="history" size="sm" />}
@@ -183,4 +189,9 @@ export function ProvidersHealth({
       )}
     </Panel>
   )
+}
+
+// quotaShare is the used part of a quota: the dashboard shows the tightest ones.
+function quotaShare(q: { used: number; limit: number }): number {
+  return q.limit > 0 ? q.used / q.limit : 0
 }

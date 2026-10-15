@@ -558,6 +558,8 @@
     "compute_ssdDisks_size": "SSD disks",
     "compute_hddDisks_size": "HDD disks",
     "compute_ssdNonReplicatedDisks_size": "Non-replicated SSD",
+    "compute_ssdIOM3Disks_size": "SSD io-m3",
+    "compute_instanceHighFreqCores_count": "High-frequency CPU cores",
     "compute_disks_count": "Disks",
     "vpc_networks_count": "Networks",
     "vpc_subnets_count": "Subnets",

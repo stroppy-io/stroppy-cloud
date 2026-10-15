@@ -564,6 +564,8 @@
     "compute_ssdDisks_size": "SSD-диски",
     "compute_hddDisks_size": "HDD-диски",
     "compute_ssdNonReplicatedDisks_size": "Нереплицируемые SSD",
+    "compute_ssdIOM3Disks_size": "Сверхбыстрые SSD-диски",
+    "compute_instanceHighFreqCores_count": "Ядра CPU высокой частоты",
     "compute_disks_count": "Диски",
     "vpc_networks_count": "Сети",
     "vpc_subnets_count": "Подсети",

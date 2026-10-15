@@ -556,74 +556,121 @@ func sizeIndex(size string) int {
 }
 
 // checkQuotas compares the final run's compute, storage and egress against fresh
-// quotas; unknown quota names are ignored.
+// quotas; unknown quota names are ignored. A zonal quota is compared with the
+// machines placed in its zone only.
 func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipelinespec.Run) error {
 	quotas, err := s.profiles.FreshQuotas(ctx, p)
 	if err != nil {
 		return errs.Wrap(errs.CodeUnavailable, "provider quotas", err).Because("provider_quota_check_unavailable")
 	}
-	cpu, mem, highFreqCPU := 0, 0, 0
-	for _, m := range res.Machines {
-		cpu += m.CPU
-		mem += m.MemoryGB
-		if strings.HasPrefix(m.InstanceType, "highfreq-") {
-			highFreqCPU += m.CPU
-		}
-	}
-	storage := map[string]float64{}
-	diskCount := 0
-	for _, m := range res.Machines {
-		boot := pipelinespec.BootDisk{GB: 40, Type: "network-ssd"}
-		if res.Provider.Kind == pipelinespec.ProviderAWS {
-			boot.Type = "gp3"
-		}
-		if m.BootDisk != nil {
-			boot = *m.BootDisk
-		}
-		storage[boot.Type] += float64(boot.GB)
-		diskCount++
-		for _, d := range m.Disks {
-			storage[d.Type] += float64(d.GB)
-			diskCount++
-		}
-	}
+	total, byZone := runDemand(res)
 	for _, q := range quotas {
-		name := strings.ToLower(q.Name)
-		var need float64
-		switch {
-		case name == "vpc.gateways.count" || name == "vpc.routetables.count":
-			if pipelinespec.NeedsPrivateEgress(res) {
-				need = 1
-			}
-		case name == "compute.disks.count":
-			need = float64(diskCount)
-		case name == "compute.instances.count":
-			need = float64(len(res.Machines))
-		case name == "compute.hdddisks.size":
-			need = quotaStorageUnit(storage["network-hdd"], q.Unit)
-		case name == "compute.ssddisks.size":
-			need = quotaStorageUnit(storage["network-ssd"], q.Unit)
-		case name == "compute.ssdnonreplicateddisks.size":
-			need = quotaStorageUnit(storage["network-ssd-nonreplicated"], q.Unit)
-		case name == "compute.ssdiom3disks.size":
-			need = quotaStorageUnit(storage["network-ssd-io-m3"], q.Unit)
-		case name == "compute.instancehighfreqcores.count":
-			need = float64(highFreqCPU)
-		case strings.Contains(name, "cpu") || strings.Contains(name, "cores"):
-			need = float64(cpu)
-		case strings.Contains(name, "memory") || strings.Contains(name, "ram"):
-			need = float64(mem)
-			if strings.Contains(strings.ToLower(q.Unit), "b") && !strings.Contains(strings.ToLower(q.Unit), "gb") && !strings.Contains(strings.ToLower(q.Unit), "gib") {
-				need = float64(mem) * 1024 * 1024 * 1024
-			}
-		default:
+		d := total
+		if q.Zone != "" {
+			d = byZone[q.Zone]
+		}
+		need, ok := d.need(q, res)
+		if !ok {
 			continue
 		}
 		if q.Limit >= 0 && need > 0 && q.Used+need > q.Limit {
-			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", q.Name, q.Used, need, q.Limit, q.Unit).Because("provider_quota_exceeded", "quota", q.Name, "used", strconv.FormatFloat(q.Used, 'f', 0, 64), "need", strconv.FormatFloat(need, 'f', 0, 64), "limit", strconv.FormatFloat(q.Limit, 'f', 0, 64), "unit", q.Unit)
+			name := q.Name
+			if q.Zone != "" {
+				name += " (" + q.Zone + ")"
+			}
+			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", name, q.Used, need, q.Limit, q.Unit).Because("provider_quota_exceeded", "quota", q.Name, "zone", q.Zone, "used", strconv.FormatFloat(q.Used, 'f', 0, 64), "need", strconv.FormatFloat(need, 'f', 0, 64), "limit", strconv.FormatFloat(q.Limit, 'f', 0, 64), "unit", q.Unit)
 		}
 	}
 	return nil
+}
+
+// demand is what a set of machines takes from the provider.
+type demand struct {
+	machines, cpu, mem, highFreqCPU, disks int
+	storage                                map[string]float64
+}
+
+// runDemand sums the run's machines, in total and per zone (a machine
+// without a location lands in the provider's default zone).
+func runDemand(res pipelinespec.Run) (total demand, byZone map[string]demand) {
+	var settings struct {
+		Zone string `json:"zone"`
+	}
+	_ = json.Unmarshal(res.Provider.Settings, &settings) //nolint:errcheck // no zone: only cloud-wide quotas apply
+	total = demand{storage: map[string]float64{}}
+	byZone = map[string]demand{}
+	for _, m := range res.Machines {
+		zone := m.Location
+		if zone == "" {
+			zone = settings.Zone
+		}
+		z, ok := byZone[zone]
+		if !ok {
+			z = demand{storage: map[string]float64{}}
+		}
+		total.add(m, res.Provider.Kind)
+		z.add(m, res.Provider.Kind)
+		byZone[zone] = z
+	}
+	return total, byZone
+}
+
+func (d *demand) add(m pipelinespec.Machine, kind pipelinespec.ProviderKind) {
+	d.machines++
+	d.cpu += m.CPU
+	d.mem += m.MemoryGB
+	if strings.HasPrefix(m.InstanceType, "highfreq-") {
+		d.highFreqCPU += m.CPU
+	}
+	boot := pipelinespec.BootDisk{GB: 40, Type: "network-ssd"}
+	if kind == pipelinespec.ProviderAWS {
+		boot.Type = "gp3"
+	}
+	if m.BootDisk != nil {
+		boot = *m.BootDisk
+	}
+	d.storage[boot.Type] += float64(boot.GB)
+	d.disks++
+	for _, disk := range m.Disks {
+		d.storage[disk.Type] += float64(disk.GB)
+		d.disks++
+	}
+}
+
+// need is how much of the quota the machines take; false for a quota the
+// check does not know.
+func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
+	name := strings.ToLower(q.Name)
+	switch {
+	case name == "vpc.gateways.count" || name == "vpc.routetables.count":
+		if pipelinespec.NeedsPrivateEgress(res) {
+			return 1, true
+		}
+		return 0, true
+	case name == "compute.disks.count":
+		return float64(d.disks), true
+	case name == "compute.instances.count":
+		return float64(d.machines), true
+	case name == "compute.hdddisks.size":
+		return quotaStorageUnit(d.storage["network-hdd"], q.Unit), true
+	case name == "compute.ssddisks.size":
+		return quotaStorageUnit(d.storage["network-ssd"], q.Unit), true
+	case name == "compute.ssdnonreplicateddisks.size":
+		return quotaStorageUnit(d.storage["network-ssd-nonreplicated"], q.Unit), true
+	case name == "compute.ssdiom3disks.size":
+		return quotaStorageUnit(d.storage["network-ssd-io-m3"], q.Unit), true
+	case name == "compute.instancehighfreqcores.count":
+		return float64(d.highFreqCPU), true
+	case strings.Contains(name, "cpu") || strings.Contains(name, "cores"):
+		return float64(d.cpu), true
+	case strings.Contains(name, "memory") || strings.Contains(name, "ram"):
+		unit := strings.ToLower(q.Unit)
+		if strings.Contains(unit, "b") && !strings.Contains(unit, "gb") && !strings.Contains(unit, "gib") {
+			return float64(d.mem) * 1024 * 1024 * 1024, true
+		}
+		return float64(d.mem), true
+	}
+	return 0, false
 }
 
 func (s *Service) publish(ctx context.Context, tenantID uuid.UUID, event string, r Run) {

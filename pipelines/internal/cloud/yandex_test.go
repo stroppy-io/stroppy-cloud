@@ -84,3 +84,29 @@ func TestYandexQuotasOperationalErrorsRemainErrors(t *testing.T) {
 		})
 	}
 }
+
+func TestYandexZonalQuotas(t *testing.T) {
+	client := quotaListFunc(func(req *quotamanager.ListQuotaLimitsRequest) (*quotamanager.ListQuotaLimitsResponse, error) {
+		if req.Service != "compute" {
+			return &quotamanager.ListQuotaLimitsResponse{}, nil
+		}
+		return &quotamanager.ListQuotaLimitsResponse{QuotaLimits: []*quotamanager.QuotaLimit{
+			{QuotaId: "compute.ssdDisks.size.ru-central1-d", Limit: wrapperspb.Double(7e12), Usage: wrapperspb.Double(5e12)},
+			{QuotaId: "compute.instanceCores.count.ru-central1-d", Limit: wrapperspb.Double(170), Usage: wrapperspb.Double(44)},
+			{QuotaId: "compute.instanceCores.count", Limit: wrapperspb.Double(500), Usage: wrapperspb.Double(60)},
+			{QuotaId: "compute.ssdDisks.size.ru-central1-d.extra", Limit: wrapperspb.Double(1)},
+			{QuotaId: "compute.instanceT4Gpus.count.ru-central1-d", Limit: wrapperspb.Double(1)},
+		}}, nil
+	})
+	res, err := readYandexQuotas(context.Background(), client, "cloud-id")
+	require.NoError(t, err)
+	got := map[string]float64{}
+	for _, q := range res.Quotas {
+		got[q.Name+"@"+q.Zone] = q.Limit
+	}
+	require.Equal(t, map[string]float64{
+		"compute.ssdDisks.size@ru-central1-d":       7e12,
+		"compute.instanceCores.count@ru-central1-d": 170,
+		"compute.instanceCores.count@":              500,
+	}, got)
+}
