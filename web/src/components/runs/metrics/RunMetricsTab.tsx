@@ -37,15 +37,17 @@ export const runMetricsSearchSchema = telemetrySearchSchema.extend({
 })
 export type RunMetricsSearch = z.infer<typeof runMetricsSearchSchema>
 
-const GROUP_ORDER = ['Throughput', 'Latency', 'Errors', 'Database', 'Runner', 'Host']
+// Catalog groups (internal/domain/catalog metrics): the run's numbers first,
+// then the database's own group (named after the product), the machines last.
 const GROUP_KEYS: Record<string, string> = {
-  Throughput: 'throughput',
-  Latency: 'latency',
-  Errors: 'errors',
-  Database: 'database',
-  Runner: 'runner',
+  Headline: 'headline',
+  Workload: 'workload',
+  Bootstrap: 'bootstrap',
   Host: 'host',
+  Other: 'other',
 }
+const groupRank = (g: string) =>
+  ({ Headline: 0, Workload: 1, Bootstrap: 2, Host: 4, Other: 5 })[g] ?? 3
 const PANEL_HEIGHT = { grid: 240, list: 320 } as const
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -232,14 +234,12 @@ export function RunMetricsTab({
         })
         byGroup.set('Other', list)
       }
-    return [...byGroup.entries()].sort(
-      ([a], [b]) =>
-        (GROUP_ORDER.indexOf(a) === -1 ? 99 : GROUP_ORDER.indexOf(a)) -
-        (GROUP_ORDER.indexOf(b) === -1 ? 99 : GROUP_ORDER.indexOf(b))
-    )
+    return [...byGroup.entries()].sort(([a], [b]) => groupRank(a) - groupRank(b))
   }, [defs, metrics.data, run])
-  const groupLabel = (g: string) =>
-    t(`runs.metrics.groups.${GROUP_KEYS[g] ?? 'other'}`, { defaultValue: g })
+  // A database group is the product's name (PostgreSQL, MySQL) in any language.
+  const groupLabel = (g: string) => (GROUP_KEYS[g] ? t(`runs.metrics.groups.${GROUP_KEYS[g]}`) : g)
+  const withData = (list: MetricDef[]) =>
+    list.some((d) => metrics.data?.series.some((s) => s.key === d.key && s.points.length))
   const selectedGroups = search.group ?? []
   const visibleGroups = selectedGroups.length
     ? groups.filter(([g]) => selectedGroups.includes(g))
@@ -325,7 +325,9 @@ export function RunMetricsTab({
         placeholder={t('runs.metrics.allGroups')}
         width={28}
         closeMenuOnSelect={false}
-        options={groups.map(([g]) => ({ label: groupLabel(g), value: g }))}
+        options={groups
+          .filter(([g, list]) => withData(list) || selectedGroups.includes(g))
+          .map(([g]) => ({ label: groupLabel(g), value: g }))}
         value={selectedGroups}
         onChange={(o) => {
           const v = selectedValues(o)
@@ -360,13 +362,7 @@ export function RunMetricsTab({
             </Stack>
           ) : (
             visibleGroups.map(([group, list]) => {
-              const keysHere = list.map((d) => d.key)
-              const has = keysHere.some((k) =>
-                metrics.data?.series.some((s) => s.key === k && s.points.length)
-              )
-              if (!has && !selectedGroups.includes(group)) return null
-              const single = list.length > 1 && (group === 'Latency' || group === 'Throughput')
-              const panelCount = single ? 1 : list.length
+              if (!withData(list) && !selectedGroups.includes(group)) return null
               return (
                 <section key={group} className={styles.group}>
                   <div className={styles.groupTitle}>
@@ -374,7 +370,7 @@ export function RunMetricsTab({
                       {groupLabel(group)}
                     </Text>
                     <span className={styles.groupCount}>
-                      {t('runs.metrics.panels', { count: panelCount })}
+                      {t('runs.metrics.panels', { count: list.length })}
                     </span>
                   </div>
                   <div
@@ -382,31 +378,19 @@ export function RunMetricsTab({
                       search.layout === 'list' ? `${styles.grid} ${styles.list}` : styles.grid
                     }
                   >
-                    {single ? (
+                    {list.map((d) => (
                       <MetricPanel
-                        title={groupLabel(group)}
+                        key={d.key}
+                        title={d.title}
+                        description={d.description}
                         metrics={metrics.data}
-                        keys={keysHere}
+                        keys={[d.key]}
                         range={range.range}
                         height={panelHeight}
                         streaming={!terminal}
                         loading={metrics.isFetching && !metrics.data}
                       />
-                    ) : (
-                      list.map((d) => (
-                        <MetricPanel
-                          key={d.key}
-                          title={d.title}
-                          description={d.description}
-                          metrics={metrics.data}
-                          keys={[d.key]}
-                          range={range.range}
-                          height={panelHeight}
-                          streaming={!terminal}
-                          loading={metrics.isFetching && !metrics.data}
-                        />
-                      ))
-                    )}
+                    ))}
                   </div>
                 </section>
               )

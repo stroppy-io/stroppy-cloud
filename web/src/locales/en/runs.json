@@ -414,12 +414,10 @@
   "metrics": {
     "allGroups": "All groups",
     "groups": {
-      "throughput": "Throughput",
-      "latency": "Latency",
-      "errors": "Errors",
-      "database": "Database",
-      "runner": "Runner",
-      "host": "Host",
+      "headline": "Key numbers",
+      "workload": "Workload",
+      "bootstrap": "Data load",
+      "host": "Machines",
       "other": "Other"
     },
     "points": "{{count}} points",

@@ -416,12 +416,10 @@
   "metrics": {
     "allGroups": "Все группы",
     "groups": {
-      "throughput": "Пропускная способность",
-      "latency": "Задержка",
-      "errors": "Ошибки",
-      "database": "База данных",
-      "runner": "Раннер",
-      "host": "Хост",
+      "headline": "Главное",
+      "workload": "Нагрузка",
+      "bootstrap": "Загрузка данных",
+      "host": "Машины",
       "other": "Прочее"
     },
     "points": "{{count}} точек",
