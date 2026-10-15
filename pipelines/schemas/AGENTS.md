@@ -133,7 +133,9 @@ Version-gating внутри одного билдера (что именно р�
   `instance.http.listen`, `instance.pg` → `instance.pgproto` (и `pg.ssl` →
   `pgproto.tls.enabled`); добавились `memtx.system_memory`, `wal_dir`, `backup_dir`.
   `cluster.tier.<t>.replication_mode` / `wal_mode` появились только в 26.2;
-  схема @26.1 запрещает их.
+  схема @26.1 запрещает их. `wal_dir` есть в справочнике 26.1, но бинарник
+  26.1.3 его не принимает (`unknown parameters: instance.wal_dir`), поэтому
+  ключ пишется только когда задан.
 * `ydb.config.yaml`: 25 и 26 рендерят один и тот же документ configuration
   V1. V2 (обёртка `metadata:`/`config:`) появилась в 25.1, но остаётся
   экспериментальной, а 26.x её не требует и V1 не убирает. Мажор 26 заведён

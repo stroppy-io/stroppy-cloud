@@ -210,10 +210,13 @@ func picodataYaml(major, minor uint64) *schemapb.Schema {
 			schemapb.Str("memtx_system_memory").Title("memtx system memory").Group("Storage").
 				Desc("instance.memtx.system_memory — 26.x only: the arena picodata reserves for its own system spaces (upstream default 256M).").
 				Pattern(`^[0-9]+[KMGT]?$`).Default("256M"),
-			// doc: 26.2 reference/config — instance.wal_dir, defaults to instance_dir
+			// doc: 26.2 reference/config — instance.wal_dir, defaults to instance_dir.
+			// The 26.1.3 binary rejects the key ("unknown parameters:
+			// instance.wal_dir") although the 26.1 reference lists it, so it is
+			// written only when set.
 			schemapb.Str("wal_dir").Title("WAL directory").Group("Instance").
-				Desc("instance.wal_dir — 26.x only: where xlogs are written; separate it from instance_dir to put the WAL on its own disk.").
-				Pattern(`^/[A-Za-z0-9._/-]*$`).Default("/var/lib/picodata"),
+				Desc("instance.wal_dir — where xlogs are written; separate it from instance_dir to put the WAL on its own disk. Empty keeps them in instance_dir; Picodata 26.1.3 does not accept the key.").
+				Pattern(`^$|^/[A-Za-z0-9._/-]*$`).Default(""),
 			// doc: 26.2 reference/config — instance.backup_dir, defaults to <instance_dir>/backup
 			schemapb.Str("backup_dir").Title("Backup directory").Group("Instance").
 				Desc("instance.backup_dir — 26.x only: destination of `picodata backup`.").
@@ -353,8 +356,8 @@ instance:
 ` + picodataVinylLog()
 	}
 
-	return head + `  wal_dir: {{{values.wal_dir}}}
-  backup_dir: {{{values.backup_dir}}}
+	return head + `{{#values.wal_dir}}  wal_dir: {{{values.wal_dir}}}
+{{/values.wal_dir}}  backup_dir: {{{values.backup_dir}}}
   iproto:
     listen: {{{values.iproto_listen}}}
 {{#values.iproto_advertise_line}}{{{values.iproto_advertise_line}}}

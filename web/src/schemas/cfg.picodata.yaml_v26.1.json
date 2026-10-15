@@ -458,12 +458,12 @@
       "title": "memtx system memory"
     },
     {
-      "description": "instance.wal_dir — 26.x only: where xlogs are written; separate it from instance_dir to put the WAL on its own disk.",
+      "description": "instance.wal_dir — where xlogs are written; separate it from instance_dir to put the WAL on its own disk. Empty keeps them in instance_dir; Picodata 26.1.3 does not accept the key.",
       "group": "Instance",
       "name": "wal_dir",
       "string": {
-        "default": "/var/lib/picodata",
-        "pattern": "^/[A-Za-z0-9._/-]*$"
+        "default": "",
+        "pattern": "^$|^/[A-Za-z0-9._/-]*$"
       },
       "title": "WAL directory"
     },
@@ -560,6 +560,6 @@
   ],
   "strict": true,
   "templates": {
-    "conf": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: {{{values.cluster_name}}}\n  default_replication_factor: {{{values.default_replication_factor}}}\n  default_bucket_count: {{{values.default_bucket_count}}}\n  shredding: {{{values.shredding}}}\n  tier:\n{{{values.tier_block}}}\ninstance:\n{{{values.identity_lines}}}  instance_dir: {{{values.instance_dir}}}\n  wal_dir: {{{values.wal_dir}}}\n  backup_dir: {{{values.backup_dir}}}\n  iproto:\n    listen: {{{values.iproto_listen}}}\n{{#values.iproto_advertise_line}}{{{values.iproto_advertise_line}}}\n{{/values.iproto_advertise_line}}{{#values.peer_line}}{{{values.peer_line}}}\n{{/values.peer_line}}  http:\n    listen: {{{values.http_listen}}}\n  pgproto:\n    listen: {{{values.pg_listen}}}\n{{#values.pg_advertise_line}}{{{values.pg_advertise_line}}}\n{{/values.pg_advertise_line}}    tls:\n      enabled: {{{values.pg_ssl}}}\n  admin_socket: {{{values.admin_socket}}}\n  boot_timeout: {{{values.boot_timeout}}}\n{{#values.failure_domain_line}}{{{values.failure_domain_line}}}\n{{/values.failure_domain_line}}  memtx:\n    memory: {{{values.memtx_memory}}}\n    system_memory: {{{values.memtx_system_memory}}}\n    max_tuple_size: {{{values.memtx_max_tuple_size}}}\n  vinyl:\n    memory: {{{values.vinyl_memory}}}\n    cache: {{{values.vinyl_cache}}}\n    read_threads: {{{values.vinyl_read_threads}}}\n    write_threads: {{{values.vinyl_write_threads}}}\n  log:\n    level: {{{values.log_level}}}\n    format: {{{values.log_format}}}\n{{#values.log_destination}}    destination: {{{values.log_destination}}}\n{{/values.log_destination}}{{#values.audit}}  audit: {{{values.audit}}}\n{{/values.audit}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+    "conf": "# managed by stroppy-cloud — cfg.picodata.yaml\ncluster:\n  name: {{{values.cluster_name}}}\n  default_replication_factor: {{{values.default_replication_factor}}}\n  default_bucket_count: {{{values.default_bucket_count}}}\n  shredding: {{{values.shredding}}}\n  tier:\n{{{values.tier_block}}}\ninstance:\n{{{values.identity_lines}}}  instance_dir: {{{values.instance_dir}}}\n{{#values.wal_dir}}  wal_dir: {{{values.wal_dir}}}\n{{/values.wal_dir}}  backup_dir: {{{values.backup_dir}}}\n  iproto:\n    listen: {{{values.iproto_listen}}}\n{{#values.iproto_advertise_line}}{{{values.iproto_advertise_line}}}\n{{/values.iproto_advertise_line}}{{#values.peer_line}}{{{values.peer_line}}}\n{{/values.peer_line}}  http:\n    listen: {{{values.http_listen}}}\n  pgproto:\n    listen: {{{values.pg_listen}}}\n{{#values.pg_advertise_line}}{{{values.pg_advertise_line}}}\n{{/values.pg_advertise_line}}    tls:\n      enabled: {{{values.pg_ssl}}}\n  admin_socket: {{{values.admin_socket}}}\n  boot_timeout: {{{values.boot_timeout}}}\n{{#values.failure_domain_line}}{{{values.failure_domain_line}}}\n{{/values.failure_domain_line}}  memtx:\n    memory: {{{values.memtx_memory}}}\n    system_memory: {{{values.memtx_system_memory}}}\n    max_tuple_size: {{{values.memtx_max_tuple_size}}}\n  vinyl:\n    memory: {{{values.vinyl_memory}}}\n    cache: {{{values.vinyl_cache}}}\n    read_threads: {{{values.vinyl_read_threads}}}\n    write_threads: {{{values.vinyl_write_threads}}}\n  log:\n    level: {{{values.log_level}}}\n    format: {{{values.log_format}}}\n{{#values.log_destination}}    destination: {{{values.log_destination}}}\n{{/values.log_destination}}{{#values.audit}}  audit: {{{values.audit}}}\n{{/values.audit}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

@@ -117,11 +117,20 @@ func TestPicodata26(t *testing.T) {
 
 	out := renderDefaults(t, Picodata26())
 	wantLines(t, out,
-		"  wal_dir: /var/lib/picodata",
 		"  backup_dir: /var/lib/picodata/backup",
 		"    system_memory: 256M",
 		"      replication_mode: async",
 		"      wal_mode: write",
 	)
-	dontWantLines(t, out, "iproto_listen:", "  pg:\n", "    ssl:")
+	// 26.1.3 rejects instance.wal_dir, so an unset one is not written.
+	dontWantLines(t, out, "iproto_listen:", "  pg:\n", "    ssl:", "wal_dir:")
+	vals, res, err := Picodata26().Resolve(map[string]any{"wal_dir": "/data/wal"})
+	if err != nil || res.Blocking() {
+		t.Fatalf("resolve: %v %v", err, res.GetErrors())
+	}
+	withWAL, err := Picodata26().Render("conf", vals)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantLines(t, withWAL, "  wal_dir: /data/wal")
 }

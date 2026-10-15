@@ -16,8 +16,8 @@ func picodata() Kind {
 		Database: catalog.Database{
 			Kind: catalog.Picodata, Title: "Picodata", Description: "Distributed in-memory SQL; tiers of instances with replication factors, pgproto for stroppy.",
 			Versions: []catalog.Version{
-				{Version: "26.2", Image: "docker.binary.picodata.io/picodata:26.2"},
-				{Version: "26.1", Image: "docker.binary.picodata.io/picodata:26.1", Default: true},
+				{Version: "26.2", Image: "docker.binary.picodata.io/picodata:26.2.1"},
+				{Version: "26.1", Image: "docker.binary.picodata.io/picodata:26.1.3", Default: true},
 				{Version: "25.3", Image: "docker.binary.picodata.io/picodata:25.3.8", Deprecated: true},
 			},
 			Roles: []catalog.Role{

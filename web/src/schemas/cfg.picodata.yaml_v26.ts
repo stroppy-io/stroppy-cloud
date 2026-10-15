@@ -81,7 +81,7 @@ export interface CfgPicodataYaml26 {
   custom?: Record<string, string>;
   /** memtx system memory. instance.memtx.system_memory — 26.x only: the arena picodata reserves for its own system spaces (upstream default 256M). */
   memtx_system_memory?: string;
-  /** WAL directory. instance.wal_dir — 26.x only: where xlogs are written; separate it from instance_dir to put the WAL on its own disk. */
+  /** WAL directory. instance.wal_dir — where xlogs are written; separate it from instance_dir to put the WAL on its own disk. Empty keeps them in instance_dir; Picodata 26.1.3 does not accept the key. */
   wal_dir?: string;
   /** Backup directory. instance.backup_dir — 26.x only: destination of `picodata backup`. */
   backup_dir?: string;
