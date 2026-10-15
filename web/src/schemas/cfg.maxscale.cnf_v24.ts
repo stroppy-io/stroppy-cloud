@@ -1,8 +1,8 @@
-// GENERATED from schemapb schema cfg.maxscale.cnf@25 — do not edit.
-// MariaDB MaxScale 25.10 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.
+// GENERATED from schemapb schema cfg.maxscale.cnf@24 — do not edit.
+// MariaDB MaxScale 24.02 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.
 
 /** object  */
-export interface CfgMaxscaleCnf25Item {
+export interface CfgMaxscaleCnf24Item {
   /** Section name. Name of the [server] section, e.g. db-1. */
   name: string;
   /** Address. Backend host or IP. */
@@ -14,7 +14,7 @@ export interface CfgMaxscaleCnf25Item {
 }
 
 /** root */
-export interface CfgMaxscaleCnf25 {
+export interface CfgMaxscaleCnf24 {
   /** Worker threads. Routing worker threads; `auto` means one per CPU core. */
   threads?: string;
   /** Admin host. Address the REST API / GUI binds to; the default 127.0.0.1 keeps it local. */
@@ -37,7 +37,7 @@ export interface CfgMaxscaleCnf25 {
   monitor_password?: string | null;
   /** Monitor interval. How often the monitor polls every backend. Rendered with an explicit ms suffix — unitless durations are deprecated. [ms] */
   monitor_interval?: number | string;
-  /** Backend timeout. Connect, read and write timeout of one monitor check. Replaces the three backend_*_timeout parameters, which 25.10 deprecated. [ms] */
+  /** Backend timeout. Connect, read and write timeout of one monitor check; rendered as backend_connect_timeout, backend_read_timeout and backend_write_timeout. [ms] */
   backend_timeout?: number | string;
   /** Auto failover. Promote a replica when the primary is lost (mariadbmon only). */
   auto_failover?: "true" | "false";
@@ -84,7 +84,7 @@ export interface CfgMaxscaleCnf25 {
   /** Listener protocol. Client protocol module. This is the only place `protocol` is valid — a [server] section has none. */
   listener_protocol?: "mariadb";
   /** Backends. The [server] sections plus the servers= lists of the monitor and the service; filled by the server from topology. */
-  servers?: Array<CfgMaxscaleCnf25Item> | null;
+  servers?: Array<CfgMaxscaleCnf24Item> | null;
   /** Extra settings. Raw `key = value` settings appended verbatim at the end of the file; keys must match ^[a-z_][a-z0-9_.]*$. Entry order is not preserved. */
   custom?: Record<string, string>;
   /** Server sections. One [server] section per backend — with no protocol parameter, which MaxScale does not accept there. */

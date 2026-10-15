@@ -235,7 +235,6 @@
       "managed_ydb_requires_yandex_cloud": "Managed YDB работает только в Yandex Cloud",
       "managed_ydb_type_unknown": "Неизвестный тип Managed YDB «{{type}}»",
       "max_keep_is_not_a_duration": "Максимальный срок хранения — длительность, например 24h",
-      "maxscale_not_launchable": "MaxScale пока нельзя запускать. Выберите ProxySQL или HAProxy",
       "member_not_found": "Участник не найден",
       "metadata_name_is_required": "В документе нет имени (metadata.name)",
       "metric_not_rating_eligible": "Метрика «{{metric}}» не участвует в рейтинге",
@@ -392,7 +391,8 @@
       "resume_machine_missing": "На оставленном стенде нет машины {{machine}}",
       "shell_not_found": "Терминал уже закрыт",
       "shell_input_invalid": "Неверный ввод для терминала",
-      "shell_session_ended": "Сессия входа закончилась, терминал закрыт"
+      "shell_session_ended": "Сессия входа закончилась, терминал закрыт",
+      "maxscale_mariadb_only": "MaxScale работает только перед MariaDB"
     },
     "checks": {
       "choice_not_allowed": "Этот вариант здесь недоступен",

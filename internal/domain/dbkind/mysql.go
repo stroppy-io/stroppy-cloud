@@ -50,7 +50,7 @@ func mariadb() Kind {
 			Roles: []catalog.Role{
 				{Role: "db", Title: "Primary", Engine: "mariadb", ConfigSchemas: []string{"cfg.mariadb.cnf@11.4", "cfg.exporter.mysqld@1"}},
 				{Role: "db-replica", Title: "Replica / Galera node", Engine: "mariadb", ConfigSchemas: []string{"cfg.mariadb.cnf@11.4"}},
-				{Role: "proxy", Title: "ProxySQL / MaxScale", Engine: "proxysql", ConfigSchemas: []string{"cfg.proxysql.cnf@2", "cfg.maxscale.cnf@25"}},
+				{Role: "proxy", Title: "ProxySQL / MaxScale", Engine: "proxysql", ConfigSchemas: []string{"cfg.proxysql.cnf@2", "cfg.maxscale.cnf@24"}},
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},
 			},
 			Topologies: []catalog.Topology{

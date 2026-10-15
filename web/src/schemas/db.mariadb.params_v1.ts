@@ -13,7 +13,7 @@ export interface DbMariadbParams1 {
   galera_nodes?: 3 | 5 | 7;
   /** ProxySQL nodes. ProxySQL instances in front of the cluster; mutually exclusive with MaxScale. */
   proxysql?: number | string;
-  /** MaxScale. Run MariaDB MaxScale (25.10 line) as the router instead of ProxySQL: read/write split and Galera monitoring out of the box. */
+  /** MaxScale. Run MariaDB MaxScale 24.02 as the router instead of ProxySQL: read/write split and Galera monitoring out of the box. License: MaxScale is under the Business Source License — free in production only with fewer than three database servers; a replicated or Galera cluster behind it needs a MariaDB subscription outside benchmarking. */
   maxscale?: boolean;
   /** Init SQL. SQL executed on the primary (or the first Galera node) once the server is up, before the workload. */
   init_sql?: string;

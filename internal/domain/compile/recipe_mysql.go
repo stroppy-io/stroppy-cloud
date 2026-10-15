@@ -33,13 +33,11 @@ func mysqlRecipe(c *compilation) error {
 	p := c.params()
 	maria := c.in.Database.Kind == catalog.MariaDB
 	mode := strParam(p, "replication", "async")
-	switch {
-	case mode == "group":
+	switch mode {
+	case "group":
 		return mysqlClusterRecipe(c, false)
-	case mode == "galera":
+	case "galera":
 		return mysqlClusterRecipe(c, true)
-	case boolParam(p, "maxscale"):
-		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet").Because("maxscale_not_launchable")
 	}
 	image, err := c.imageOf()
 	if err != nil {
@@ -99,7 +97,11 @@ func mysqlRecipe(c *compilation) error {
 			}
 			if role == topology.RoleDB {
 				ct.Env["MYSQL_DATABASE"], ct.Env["MARIADB_DATABASE"] = mysqlDatabase, mysqlDatabase
-				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlInitSQL(maria, strParam(p, "init_sql", ""))})
+				init := mysqlInitSQL(maria, strParam(p, "init_sql", ""))
+				if boolParam(p, "maxscale") {
+					init += maxscaleUsersSQL()
+				}
+				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: init})
 			} else {
 				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlReplicaSQL(maria, ip(primary))})
 				ct.DependsOn = []string{primary + "-" + c.engineOf(topology.RoleDB)}
@@ -127,6 +129,9 @@ func mysqlRecipe(c *compilation) error {
 		}
 	}
 	if len(c.machinesOf(topology.RoleProxy)) > 0 {
+		if boolParam(p, "maxscale") {
+			return c.maxscale(false)
+		}
 		return c.proxysql()
 	}
 	return nil

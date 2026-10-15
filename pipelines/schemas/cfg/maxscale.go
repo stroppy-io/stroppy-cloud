@@ -6,9 +6,15 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/ids"
 )
 
-// cfg.maxscale.cnf@25 — MariaDB MaxScale 25.10, the current line (23.08 ->
-// 24.02 -> 25.01 -> 25.10; 25.10.0 went GA 2025-09-22). @23 was dropped: the
-// mariadb params schema offers only the 25.10 line.
+// cfg.maxscale.cnf@24 — MariaDB MaxScale 24.02, the newest line with a
+// free image on Docker Hub (mariadb/maxscale:24.02.x; 25.x ships only as
+// "-trial" images).
+//
+// LICENSE: MaxScale is under the Business Source License. Its additional
+// use grant allows production use with fewer than three database servers;
+// a replicated or Galera topology behind it (three servers and more) needs
+// a MariaDB subscription for production use. Stroppy deploys it on the
+// user's own stand for benchmarking; the parameter's description says so.
 //
 // doc: https://mariadb.com/docs/maxscale/maxscale-management/deployment/installation-and-configuration/maxscale-configuration-guide
 // doc: https://mariadb.com/docs/maxscale/reference/maxscale-monitors/common-monitor-parameters
@@ -16,13 +22,13 @@ import (
 // doc: https://mariadb.com/docs/maxscale/reference/maxscale-routers/maxscale-readwritesplit
 // doc: https://mariadb.com/docs/maxscale/reference/maxscale-servers
 // doc: https://mariadb.com/docs/maxscale/reference/maxscale-listeners
-// doc: https://mariadb.com/docs/release-notes/maxscale/25.10
+// doc: https://mariadb.com/bsl11/ (MaxScale license)
 //
-// What changed since 23.08 and is encoded here:
+// What 24.02 has and is encoded here:
 //
-//   - backend_connect_timeout was deprecated in 25.10.0 in favor of the one
-//     unified backend_timeout (backend_read_timeout went the same way in
-//     25.08.0), so this schema emits backend_timeout;
+//   - the monitor's backend_connect_timeout / backend_read_timeout /
+//     backend_write_timeout (25.10 later folded them into backend_timeout);
+//     the schema keeps one backend_timeout field and renders all three;
 //   - master_failure_mode's default became fail_on_write in 24.02, which is
 //     also what transaction_replay requires;
 //   - transaction_replay_timeout became a real default (30s) in 24.02 and is
@@ -32,19 +38,18 @@ import (
 //
 //   - a [server] section has NO `protocol` parameter — that belongs to the
 //     listener (MaxScale 2.x leftovers still show it on servers);
-//   - durations must carry a unit suffix (unitless is deprecated since 2.4 and
-//     rejected outright by the 25.10 duration parameters), so every duration
-//     field is an integer plus a rendered suffix;
+//   - durations carry a unit suffix (unitless is deprecated since 2.4), so
+//     every duration field is an integer plus a rendered suffix;
 //   - slave_selection_criteria values are lowercase from 23.08.1 on; the
 //     uppercase spellings still work but are deprecated.
 
-// Maxscale25 is cfg.maxscale.cnf@25.
-func Maxscale25() *schemapb.Schema { return maxscaleCnf(25) }
+// Maxscale24 is cfg.maxscale.cnf@24.
+func Maxscale24() *schemapb.Schema { return maxscaleCnf(24) }
 
 //nolint:funlen // one flat schema definition
 func maxscaleCnf(major uint64) *schemapb.Schema {
 	return schemapb.NewSchema(ids.Cfg("maxscale.cnf", major)).
-		Descr("MariaDB MaxScale 25.10 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.").
+		Descr("MariaDB MaxScale 24.02 configuration rendered to /etc/maxscale.cnf: one monitor, one readwritesplit service, one listener.").
 		Strict().Coerce().
 		Fields(
 			// ---- [maxscale] ---------------------------------------------
@@ -90,11 +95,10 @@ func maxscaleCnf(major uint64) *schemapb.Schema {
 			schemapb.Int64("monitor_interval").Title("Monitor interval").Group("Monitor").
 				Desc("How often the monitor polls every backend. Rendered with an explicit ms suffix — unitless durations are deprecated.").
 				Unit("ms").Gte(100).Lte(3600000).Default(2000),
-			// doc: common-monitor-parameters#backend_timeout — 25.10.0 folded
-			// backend_connect_timeout / backend_read_timeout / backend_write_timeout
-			// into one parameter; default 3s, minimum 1s.
+			// doc: common-monitor-parameters#backend_connect_timeout,
+			// #backend_read_timeout, #backend_write_timeout — default 3s each.
 			schemapb.Int64("backend_timeout").Title("Backend timeout").Group("Monitor").
-				Desc("Connect, read and write timeout of one monitor check. Replaces the three backend_*_timeout parameters, which 25.10 deprecated.").
+				Desc("Connect, read and write timeout of one monitor check; rendered as backend_connect_timeout, backend_read_timeout and backend_write_timeout.").
 				Unit("ms").Gte(1000).Lte(600000).Default(3000),
 			// doc: mariadb-monitor#auto_failover
 			trueFalse("auto_failover", "false").Title("Auto failover").Group("Monitor").
@@ -258,7 +262,7 @@ func maxscaleCnf(major uint64) *schemapb.Schema {
 				"causal_reads_timeout below monitor_interval makes causal reads fail before the monitor notices anything").ID("causal-timeout"),
 			customKeyRule(),
 		).
-		Template("conf", `# MaxScale 25.10 — generated by stroppy, do not edit by hand
+		Template("conf", `# MaxScale 24.02 — generated by stroppy, do not edit by hand
 [maxscale]
 threads={{{values.threads}}}
 admin_host={{{values.admin_host}}}
@@ -276,7 +280,9 @@ servers={{{values.server_names}}}
 user={{{values.monitor_user}}}
 password={{{values.monitor_password}}}
 monitor_interval={{{values.monitor_interval}}}ms
-backend_timeout={{{values.backend_timeout}}}ms
+backend_connect_timeout={{{values.backend_timeout}}}ms
+backend_read_timeout={{{values.backend_timeout}}}ms
+backend_write_timeout={{{values.backend_timeout}}}ms
 {{{values.monitor_extra}}}
 [rwsplit-service]
 type=service

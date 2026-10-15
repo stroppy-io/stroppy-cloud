@@ -6,8 +6,8 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/internal/schematest"
 )
 
-func TestMaxscale25(t *testing.T) {
-	schematest.Run(t, Maxscale25(), schematest.Cases{
+func TestMaxscale24(t *testing.T) {
+	schematest.Run(t, Maxscale24(), schematest.Cases{
 		Valid: []map[string]any{
 			{},
 			{
@@ -40,7 +40,7 @@ func TestMaxscale25(t *testing.T) {
 			{Value: map[string]any{"transaction_replay": "true", "master_failure_mode": "fail_instantly"}, Code: "RULE_VIOLATED", Path: "replay-failure-mode"},
 			{Value: map[string]any{"monitor_module": "galeramon", "auto_failover": "true"}, Code: "RULE_VIOLATED", Path: "galera-no-failover"},
 			{Value: map[string]any{"threads": "many"}, Code: "PATTERN_MISMATCH", Path: "threads"},
-			// 25.10 folded the three backend_*_timeout parameters into backend_timeout.
+			// One backend_timeout field sets all three monitor timeouts.
 			{Value: map[string]any{"backend_connect_timeout": int64(3000)}, Code: "UNKNOWN_FIELD", Path: "backend_connect_timeout"},
 			{Value: map[string]any{"backend_timeout": int64(100)}, Code: "GTE_VIOLATED", Path: "backend_timeout"},
 			{Value: map[string]any{"servers": []any{map[string]any{"address": "10.0.0.1", "protocol": "MariaDBBackend"}}}, Code: "UNKNOWN_FIELD", Path: "servers[0].protocol"},
@@ -50,18 +50,20 @@ func TestMaxscale25(t *testing.T) {
 			"[maxscale]",
 			"router=readwritesplit",
 			"monitor_interval=",
-			"backend_timeout=",
+			"backend_connect_timeout=",
 			"transaction_replay_timeout=",
 			"type=listener",
 		},
 	})
 
-	out := renderDefaults(t, Maxscale25())
+	out := renderDefaults(t, Maxscale24())
 	wantLines(t, out,
-		"backend_timeout=3000ms",
+		"backend_connect_timeout=3000ms",
+		"backend_read_timeout=3000ms",
+		"backend_write_timeout=3000ms",
 		"transaction_replay_timeout=30000ms",
 		// 24.02 moved the default here.
 		"master_failure_mode=fail_on_write",
 	)
-	dontWantLines(t, out, "backend_connect_timeout")
+	dontWantLines(t, out, "backend_timeout=")
 }

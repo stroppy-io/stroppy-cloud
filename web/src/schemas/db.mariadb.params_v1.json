@@ -124,7 +124,7 @@
       "bool": {
         "default": false
       },
-      "description": "Run MariaDB MaxScale (25.10 line) as the router instead of ProxySQL: read/write split and Galera monitoring out of the box.",
+      "description": "Run MariaDB MaxScale 24.02 as the router instead of ProxySQL: read/write split and Galera monitoring out of the box. License: MaxScale is under the Business Source License — free in production only with fewer than three database servers; a replicated or Galera cluster behind it needs a MariaDB subscription outside benchmarking.",
       "group": "Routing",
       "name": "maxscale",
       "title": "MaxScale"

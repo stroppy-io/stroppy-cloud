@@ -26,8 +26,9 @@ const (
 // before accepting workload traffic. A persisted marker forbids auto-bootstrap
 // on restart. Full-cluster disaster recovery is deliberately not automatic.
 func mysqlClusterRecipe(c *compilation, maria bool) error {
-	if boolParam(c.params(), "maxscale") {
-		return errs.Newf(errs.CodeInvalid, "params.maxscale: maxscale is not launchable yet").Because("maxscale_not_launchable")
+	maxscale := boolParam(c.params(), "maxscale")
+	if maxscale && !maria {
+		return errs.Newf(errs.CodeInvalid, "params.maxscale: MaxScale fronts MariaDB only").Because("maxscale_mariadb_only")
 	}
 	image, err := c.imageOf()
 	if err != nil {
@@ -111,6 +112,9 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 			ct.Env["STROPPY_CLUSTER_SEED"] = "1"
 			ct.Env["MYSQL_DATABASE"], ct.Env["MARIADB_DATABASE"] = mysqlDatabase, mysqlDatabase
 			init += mysqlInitSQL(maria, strParam(c.params(), "init_sql", ""))
+			if maxscale {
+				init += maxscaleUsersSQL()
+			}
 		}
 		if init != "" {
 			ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: init})
@@ -133,6 +137,9 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 		})
 	}
 	if len(c.machinesOf(topology.RoleProxy)) > 0 {
+		if maxscale {
+			return c.maxscale(true)
+		}
 		return c.proxysql()
 	}
 	return nil

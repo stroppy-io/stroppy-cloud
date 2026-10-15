@@ -30,7 +30,7 @@ func All() []*schemapb.Schema {
 		MariadbCnf1011(),
 		MariadbCnf1104(),
 		MariadbCnf1108(),
-		Maxscale25(),
+		Maxscale24(),
 		MyCnf80(),
 		MyCnf84(),
 		Picodata25(),

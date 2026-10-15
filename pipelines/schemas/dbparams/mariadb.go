@@ -58,8 +58,10 @@ func MariaDB() *schemapb.Schema {
 				Gte(0).Lte(2).Default(0),
 
 			// doc: https://mariadb.com/docs/maxscale
+			// License: MaxScale is BSL — free in production only below three
+			// database servers (see cfg/maxscale.go).
 			schemapb.Bool("maxscale").Title("MaxScale").Group("Routing").
-				Desc("Run MariaDB MaxScale (25.10 line) as the router instead of ProxySQL: read/write split and Galera monitoring out of the box.").
+				Desc("Run MariaDB MaxScale 24.02 as the router instead of ProxySQL: read/write split and Galera monitoring out of the box. License: MaxScale is under the Business Source License — free in production only with fewer than three database servers; a replicated or Galera cluster behind it needs a MariaDB subscription outside benchmarking.").
 				Default(false),
 
 			// doc: https://mariadb.com/docs/server/clients-and-utilities/basic-sql-client/mariadb-command-line-client

@@ -9,7 +9,10 @@ const (
 	imagePgBouncer       = "edoburu/pgbouncer:v1.24.1-p1"
 	imagePgBouncerExport = "quay.io/prometheuscommunity/pgbouncer-exporter:v0.12.1"
 	imageProxySQL        = "proxysql/proxysql:2.7.3"
-	imageNodeExporter    = "quay.io/prometheus/node-exporter:v1.12.1"
-	imagePostgresExport  = "quay.io/prometheuscommunity/postgres-exporter:v0.18.1"
-	imageMySQLDExporter  = "prom/mysqld-exporter:v0.19.0"
+	// The newest MaxScale line with a free image (25.x is "-trial" only);
+	// MaxScale is BSL licensed, see recipe_maxscale.go.
+	imageMaxScale       = "mariadb/maxscale:24.02.9"
+	imageNodeExporter   = "quay.io/prometheus/node-exporter:v1.12.1"
+	imagePostgresExport = "quay.io/prometheuscommunity/postgres-exporter:v0.18.1"
+	imageMySQLDExporter = "prom/mysqld-exporter:v0.19.0"
 )

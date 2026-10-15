@@ -29,8 +29,8 @@ import cfgMariadbCnf11_4Schema from './cfg.mariadb.cnf_v11.4.json';
 import type { CfgMariadbCnf11_4 } from './cfg.mariadb.cnf_v11.4';
 import cfgMariadbCnf11_8Schema from './cfg.mariadb.cnf_v11.8.json';
 import type { CfgMariadbCnf11_8 } from './cfg.mariadb.cnf_v11.8';
-import cfgMaxscaleCnf25Schema from './cfg.maxscale.cnf_v25.json';
-import type { CfgMaxscaleCnf25 } from './cfg.maxscale.cnf_v25';
+import cfgMaxscaleCnf24Schema from './cfg.maxscale.cnf_v24.json';
+import type { CfgMaxscaleCnf24 } from './cfg.maxscale.cnf_v24';
 import cfgMyCnf8Schema from './cfg.my.cnf_v8.json';
 import type { CfgMyCnf8 } from './cfg.my.cnf_v8';
 import cfgMyCnf8_4Schema from './cfg.my.cnf_v8.4.json';
@@ -153,7 +153,7 @@ export const schemaIds = [
   "cfg.mariadb.cnf@10.11",
   "cfg.mariadb.cnf@11.4",
   "cfg.mariadb.cnf@11.8",
-  "cfg.maxscale.cnf@25",
+  "cfg.maxscale.cnf@24",
   "cfg.my.cnf@8",
   "cfg.my.cnf@8.4",
   "cfg.orioledb.postgresql.conf@16",
@@ -226,7 +226,7 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "cfg.mariadb.cnf@10.11" ? CfgMariadbCnf10_11 :
   Id extends "cfg.mariadb.cnf@11.4" ? CfgMariadbCnf11_4 :
   Id extends "cfg.mariadb.cnf@11.8" ? CfgMariadbCnf11_8 :
-  Id extends "cfg.maxscale.cnf@25" ? CfgMaxscaleCnf25 :
+  Id extends "cfg.maxscale.cnf@24" ? CfgMaxscaleCnf24 :
   Id extends "cfg.my.cnf@8" ? CfgMyCnf8 :
   Id extends "cfg.my.cnf@8.4" ? CfgMyCnf8_4 :
   Id extends "cfg.orioledb.postgresql.conf@16" ? CfgOrioledbPostgresqlConf16 :
@@ -297,7 +297,7 @@ export const schemas: Record<SchemaId, unknown> = {
   "cfg.mariadb.cnf@10.11": cfgMariadbCnf10_11Schema,
   "cfg.mariadb.cnf@11.4": cfgMariadbCnf11_4Schema,
   "cfg.mariadb.cnf@11.8": cfgMariadbCnf11_8Schema,
-  "cfg.maxscale.cnf@25": cfgMaxscaleCnf25Schema,
+  "cfg.maxscale.cnf@24": cfgMaxscaleCnf24Schema,
   "cfg.my.cnf@8": cfgMyCnf8Schema,
   "cfg.my.cnf@8.4": cfgMyCnf8_4Schema,
   "cfg.orioledb.postgresql.conf@16": cfgOrioledbPostgresqlConf16Schema,
@@ -368,7 +368,7 @@ export type {
   CfgMariadbCnf10_11,
   CfgMariadbCnf11_4,
   CfgMariadbCnf11_8,
-  CfgMaxscaleCnf25,
+  CfgMaxscaleCnf24,
   CfgMyCnf8,
   CfgMyCnf8_4,
   CfgOrioledbPostgresqlConf16,

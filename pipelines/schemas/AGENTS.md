@@ -107,7 +107,7 @@ func TestPostgresParams(t *testing.T) {
 | Picodata | 25.3 (legacy) / 26.1 / 26.2 | `cfg.picodata.yaml@25/@26.1/@26` |
 | YDB | 25.4 / 26.1 / 26.2 / 26.3 | `cfg.ydb.config.yaml@25/@26` |
 | CockroachDB | 24.1 / 24.3 / 25.2 / 25.4 / 26.2 / 26.3 | `cfg.cockroach.flags@24/@25/@26` |
-| MaxScale (параметр mariadb) | линия 25.10 | `cfg.maxscale.cnf@25` |
+| MaxScale (параметр mariadb) | линия 24.02 | `cfg.maxscale.cnf@24` |
 
 Обвязка, версия которой продуктом не выбирается: `pg_hba 1`, `patroni 3` (legacy 3.3), `patroni 4` (4.1.5), `etcd 3` (3.5), `haproxy 2` (2.9), `pgbouncer 1` (1.23), `proxysql 2`
 (2.6), экспортёры: postgres_exporter 0.15, mysqld_exporter 0.19,
@@ -143,10 +143,17 @@ Version-gating внутри одного билдера (что именно р�
   26; с @25 добавлены `--wal-failover`, `--locality-advertise-addr`,
   `--max-disk-temp-storage`. Дефолт `--cache` у upstream 128MiB (24.x) →
   256MiB (25.4+), схема во всех мажорах держит 25%.
-* `maxscale.cnf`: только @25 (линия 25.10). 25.10.0 свернул
-  `backend_connect_timeout`/`backend_read_timeout`/`backend_write_timeout` в
-  один `backend_timeout`; в 24.02 дефолт `master_failure_mode` стал
-  `fail_on_write`, а `transaction_replay_timeout` — 30s.
+* `maxscale.cnf`: только @24 (линия 24.02) — последняя линия со свободным
+  образом на Docker Hub (`mariadb/maxscale:24.02.x`; 25.x есть только как
+  `-trial`). В 24.02 у монитора три таймаута
+  `backend_connect_timeout`/`backend_read_timeout`/`backend_write_timeout`
+  (25.10 потом свернул их в `backend_timeout`): схема держит одно поле
+  `backend_timeout` и рендерит все три. В 24.02 дефолт `master_failure_mode`
+  стал `fail_on_write`, а `transaction_replay_timeout` — 30s.
+  **Лицензия:** MaxScale — BSL; бесплатное продакшн-использование только при
+  менее чем трёх серверах БД. Репликация/Galera за ним (3+ сервера) в
+  продакшне требует подписки MariaDB. Описание параметра `maxscale` в
+  `dbparams/mariadb.go` говорит об этом пользователю.
 
 Patroni 4 uses cfg.patroni.yml@4; the @3 schema is retained unchanged.
 An external HBA path renders as postgresql.parameters.hba_file in @4,
