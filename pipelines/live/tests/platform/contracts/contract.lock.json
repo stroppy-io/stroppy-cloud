@@ -1,8 +1,8 @@
 {
-  "version": "0.0.0",
+  "version": "0.1.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "0fc4e16f3224243e1eb11a0ce883c6303a8d7d8fe51437eda3b35e05ebcbc686",
+    "openapi/openapi.yaml": "3a574be9141c04f595116a688e4c617f0a85a2c6af1be18afdcaba38c2318364",
     "pipelines/go.mod": "bd4d22870924186c3a5bcc681a785bbde5a1d745267c7fad6f654f4130027452",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
@@ -75,7 +75,7 @@
     "pipelines/schemas/testdata/test.sizes@1.json": "581c6705c369321666b3d85b4b36b6effa113e50be1bff5513f47f13ff323a02",
     "pipelines/schemas/testdata/workload.segment@1.json": "25a098ec1e242e65a0fe5be3744e1d3aa199d2877f7721d7735e66d920a14594",
     "pipelines/schemas/testdata/workload.stroppy@1.json": "56cd34b441114369fdf706b7806a6d5ff920217189d2f97d371fca887b320bc2",
-    "pipelines/spec/contract_version.go": "0746b6736a137b1fd18fa74b13416b4da9baf1ada192f88ab2a04a6ba6008ba6",
+    "pipelines/spec/contract_version.go": "60671a07f8651dd9d3ab03397ed70947e5390dd8b428a0343e2605deb2534efb",
     "pipelines/spec/provider_config.go": "83b2c0b23696c1ea2e87c919450b14ea28b78e35bfb01c390e7e60c66f205258",
     "pipelines/spec/result.go": "c9e6a3e4024f107018046cb90d8ccdea6bc2bcebc909a7805781ebb0a93b0030",
     "pipelines/spec/segment.go": "82df89e57423385e131be861190341f6ee4968ff7599362902c4849679101ff0",
