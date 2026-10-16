@@ -159,12 +159,6 @@ type Invoker interface {
 	//
 	// POST /api/v1/admin/tenants/{slug}:resume
 	AdminResumeTenant(ctx context.Context, params AdminResumeTenantParams, options ...RequestOption) (*AdminTenant, error)
-	// AdminSetTenantLimits invokes adminSetTenantLimits operation.
-	//
-	// Set tenant limit ceilings (null = platform default).
-	//
-	// PUT /api/v1/admin/tenants/{slug}/limits
-	AdminSetTenantLimits(ctx context.Context, request *TenantLimitsWrite, params AdminSetTenantLimitsParams, options ...RequestOption) (*TenantLimits, error)
 	// AdminSuspendTenant invokes adminSuspendTenant operation.
 	//
 	// Suspend — no new launches, schedules paused.
@@ -427,7 +421,7 @@ type Invoker interface {
 	ExportWorkload(ctx context.Context, params ExportWorkloadParams, options ...RequestOption) (ExportWorkloadRes, error)
 	// ExtendRunKeep invokes extendRunKeep operation.
 	//
-	// Extend the stand lifetime (bounded by `max_keep`).
+	// Extend the stand lifetime.
 	//
 	// POST /api/v1/t/{slug}/runs/{id}:keep-extend
 	ExtendRunKeep(ctx context.Context, request *ExtendRunKeepReq, params ExtendRunKeepParams, options ...RequestOption) (*Run, error)
@@ -515,6 +509,12 @@ type Invoker interface {
 	//
 	// GET /api/v1/public/share/{token}
 	GetPublicShare(ctx context.Context, params GetPublicShareParams, options ...RequestOption) (*ShareSnapshotHeaders, error)
+	// GetPublicShareMetricSeries invokes getPublicShareMetricSeries operation.
+	//
+	// The series of one metric of a shared run (scope +metrics).
+	//
+	// GET /api/v1/public/share/{token}/metrics:series
+	GetPublicShareMetricSeries(ctx context.Context, params GetPublicShareMetricSeriesParams, options ...RequestOption) (*RunMetricSeries, error)
 	// GetPublicShareMetrics invokes getPublicShareMetrics operation.
 	//
 	// Metrics for a shared run over a window (scope +metrics).
@@ -539,6 +539,12 @@ type Invoker interface {
 	//
 	// GET /api/v1/t/{slug}/runs/{id}/logs:facets
 	GetRunLogFacets(ctx context.Context, params GetRunLogFacetsParams, options ...RequestOption) (*GetRunLogFacetsOK, error)
+	// GetRunMetricSeries invokes getRunMetricSeries operation.
+	//
+	// The series of one stored metric, by its labels.
+	//
+	// GET /api/v1/t/{slug}/runs/{id}/metrics:series
+	GetRunMetricSeries(ctx context.Context, params GetRunMetricSeriesParams, options ...RequestOption) (*RunMetricSeries, error)
 	// GetRunMetrics invokes getRunMetrics operation.
 	//
 	// Typed metrics (catalog keys) over a window — series + aggregates.
@@ -612,12 +618,6 @@ type Invoker interface {
 	//
 	// GET /api/v1/t/{slug}/dashboard
 	GetTenantDashboard(ctx context.Context, params GetTenantDashboardParams, options ...RequestOption) (*TenantDashboard, error)
-	// GetTenantLimits invokes getTenantLimits operation.
-	//
-	// Effective limits (platform ceilings applied).
-	//
-	// GET /api/v1/t/{slug}/limits
-	GetTenantLimits(ctx context.Context, params GetTenantLimitsParams, options ...RequestOption) (*TenantLimits, error)
 	// GetTenantRating invokes getTenantRating operation.
 	//
 	// Tenant rating (runs opted into `rating.tenant`).
@@ -674,7 +674,7 @@ type Invoker interface {
 	LaunchSuite(ctx context.Context, request OptSuiteLaunch, params LaunchSuiteParams, options ...RequestOption) (*SuiteRun, error)
 	// LaunchTest invokes launchTest operation.
 	//
-	// Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene).
+	// Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
 	//
 	// POST /api/v1/t/{slug}/tests/{id}:launch
 	LaunchTest(ctx context.Context, request OptLaunchOverrides, params LaunchTestParams, options ...RequestOption) (*Run, error)
@@ -726,6 +726,12 @@ type Invoker interface {
 	//
 	// GET /api/v1/t/{slug}/providers
 	ListProviderProfiles(ctx context.Context, params ListProviderProfilesParams, options ...RequestOption) (*ListProviderProfilesOK, error)
+	// ListPublicShareMetricNames invokes listPublicShareMetricNames operation.
+	//
+	// Every metric of a shared run (scope +metrics).
+	//
+	// GET /api/v1/public/share/{token}/metrics:names
+	ListPublicShareMetricNames(ctx context.Context, params ListPublicShareMetricNamesParams, options ...RequestOption) (*RunMetricNames, error)
 	// ListRunArtifacts invokes listRunArtifacts operation.
 	//
 	// Artifacts (stroppy raw, report, rendered configs).
@@ -738,6 +744,13 @@ type Invoker interface {
 	//
 	// GET /api/v1/t/{slug}/runs/{id}/events
 	ListRunEvents(ctx context.Context, params ListRunEventsParams, options ...RequestOption) (*ListRunEventsOK, error)
+	// ListRunMetricNames invokes listRunMetricNames operation.
+	//
+	// Every metric the run has stored over the window — the exporters', the workload's, the
+	// containers' and the pipeline's.
+	//
+	// GET /api/v1/t/{slug}/runs/{id}/metrics:names
+	ListRunMetricNames(ctx context.Context, params ListRunMetricNamesParams, options ...RequestOption) (*RunMetricNames, error)
 	// ListRuns invokes listRuns operation.
 	//
 	// List runs.
@@ -3262,162 +3275,6 @@ func (c *Client) sendAdminResumeTenant(ctx context.Context, params AdminResumeTe
 
 	stage = "DecodeResponse"
 	result, err := decodeAdminResumeTenantResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
-// AdminSetTenantLimits invokes adminSetTenantLimits operation.
-//
-// Set tenant limit ceilings (null = platform default).
-//
-// PUT /api/v1/admin/tenants/{slug}/limits
-func (c *Client) AdminSetTenantLimits(ctx context.Context, request *TenantLimitsWrite, params AdminSetTenantLimitsParams, options ...RequestOption) (*TenantLimits, error) {
-	res, err := c.sendAdminSetTenantLimits(ctx, request, params, options...)
-	return res, err
-}
-
-func (c *Client) sendAdminSetTenantLimits(ctx context.Context, request *TenantLimitsWrite, params AdminSetTenantLimitsParams, requestOptions ...RequestOption) (res *TenantLimits, err error) {
-	// Validate request before sending.
-	if err := func() error {
-		if err := request.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return res, errors.Wrap(err, "validate")
-	}
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("adminSetTenantLimits"),
-		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.URLTemplateKey.String("/api/v1/admin/tenants/{slug}/limits"),
-	}
-	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, AdminSetTenantLimitsOperation,
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	var reqCfg requestConfig
-	reqCfg.setDefaults(c.baseClient)
-	for _, o := range requestOptions {
-		o(&reqCfg)
-	}
-
-	stage = "BuildURL"
-	u := c.serverURL
-	if override := reqCfg.ServerURL; override != nil {
-		u = override
-	}
-	u = uri.Clone(u)
-	var pathParts [3]string
-	pathParts[0] = "/api/v1/admin/tenants/"
-	{
-		// Encode "slug" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "slug",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Slug))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/limits"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "PUT", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeAdminSetTenantLimitsRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, AdminSetTenantLimitsOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	if err := reqCfg.onRequest(r); err != nil {
-		return res, errors.Wrap(err, "edit request")
-	}
-
-	stage = "SendRequest"
-	resp, err := reqCfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	body := resp.Body
-	defer body.Close()
-
-	if err := reqCfg.onResponse(resp); err != nil {
-		return res, errors.Wrap(err, "edit response")
-	}
-
-	stage = "DecodeResponse"
-	result, err := decodeAdminSetTenantLimitsResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -10383,7 +10240,7 @@ func (c *Client) sendExportWorkload(ctx context.Context, params ExportWorkloadPa
 
 // ExtendRunKeep invokes extendRunKeep operation.
 //
-// Extend the stand lifetime (bounded by `max_keep`).
+// Extend the stand lifetime.
 //
 // POST /api/v1/t/{slug}/runs/{id}:keep-extend
 func (c *Client) ExtendRunKeep(ctx context.Context, request *ExtendRunKeepReq, params ExtendRunKeepParams, options ...RequestOption) (*Run, error) {
@@ -12532,6 +12389,307 @@ func (c *Client) sendGetPublicShare(ctx context.Context, params GetPublicSharePa
 	return result, nil
 }
 
+// GetPublicShareMetricSeries invokes getPublicShareMetricSeries operation.
+//
+// The series of one metric of a shared run (scope +metrics).
+//
+// GET /api/v1/public/share/{token}/metrics:series
+func (c *Client) GetPublicShareMetricSeries(ctx context.Context, params GetPublicShareMetricSeriesParams, options ...RequestOption) (*RunMetricSeries, error) {
+	res, err := c.sendGetPublicShareMetricSeries(ctx, params, options...)
+	return res, err
+}
+
+func (c *Client) sendGetPublicShareMetricSeries(ctx context.Context, params GetPublicShareMetricSeriesParams, requestOptions ...RequestOption) (res *RunMetricSeries, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getPublicShareMetricSeries"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/public/share/{token}/metrics:series"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetPublicShareMetricSeriesOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	var reqCfg requestConfig
+	reqCfg.setDefaults(c.baseClient)
+	for _, o := range requestOptions {
+		o(&reqCfg)
+	}
+
+	stage = "BuildURL"
+	u := c.serverURL
+	if override := reqCfg.ServerURL; override != nil {
+		u = override
+	}
+	u = uri.Clone(u)
+	var pathParts [3]string
+	pathParts[0] = "/api/v1/public/share/"
+	{
+		// Encode "token" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "token",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Token))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/metrics:series"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "name" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Name))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "fn" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "fn",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Fn.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "by" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "by",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.By != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.By {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "agg" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "agg",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Agg.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "role" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "role",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Role != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Role {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "machine" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "machine",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Machine != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Machine {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "container" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "container",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Container != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Container {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "start" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "start",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Start.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "end" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "end",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.End.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	if err := reqCfg.onRequest(r); err != nil {
+		return res, errors.Wrap(err, "edit request")
+	}
+
+	stage = "SendRequest"
+	resp, err := reqCfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	if err := reqCfg.onResponse(resp); err != nil {
+		return res, errors.Wrap(err, "edit response")
+	}
+
+	stage = "DecodeResponse"
+	result, err := decodeGetPublicShareMetricSeriesResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // GetPublicShareMetrics invokes getPublicShareMetrics operation.
 //
 // Metrics for a shared run over a window (scope +metrics).
@@ -13143,6 +13301,393 @@ func (c *Client) sendGetRunLogFacets(ctx context.Context, params GetRunLogFacets
 
 	stage = "DecodeResponse"
 	result, err := decodeGetRunLogFacetsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetRunMetricSeries invokes getRunMetricSeries operation.
+//
+// The series of one stored metric, by its labels.
+//
+// GET /api/v1/t/{slug}/runs/{id}/metrics:series
+func (c *Client) GetRunMetricSeries(ctx context.Context, params GetRunMetricSeriesParams, options ...RequestOption) (*RunMetricSeries, error) {
+	res, err := c.sendGetRunMetricSeries(ctx, params, options...)
+	return res, err
+}
+
+func (c *Client) sendGetRunMetricSeries(ctx context.Context, params GetRunMetricSeriesParams, requestOptions ...RequestOption) (res *RunMetricSeries, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getRunMetricSeries"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/t/{slug}/runs/{id}/metrics:series"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetRunMetricSeriesOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	var reqCfg requestConfig
+	reqCfg.setDefaults(c.baseClient)
+	for _, o := range requestOptions {
+		o(&reqCfg)
+	}
+
+	stage = "BuildURL"
+	u := c.serverURL
+	if override := reqCfg.ServerURL; override != nil {
+		u = override
+	}
+	u = uri.Clone(u)
+	var pathParts [5]string
+	pathParts[0] = "/api/v1/t/"
+	{
+		// Encode "slug" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "slug",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Slug))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/runs/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UUIDToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[3] = encoded
+	}
+	pathParts[4] = "/metrics:series"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "name" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "name",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			return e.EncodeValue(conv.StringToString(params.Name))
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "fn" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "fn",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Fn.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "by" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "by",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.By != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.By {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "agg" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "agg",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Agg.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "role" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "role",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Role != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Role {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "machine" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "machine",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Machine != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Machine {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "container" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "container",
+			Style:   uri.QueryStyleForm,
+			Explode: false,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if params.Container != nil {
+				return e.EncodeArray(func(e uri.Encoder) error {
+					for i, item := range params.Container {
+						if err := func() error {
+							return e.EncodeValue(conv.StringToString(item))
+						}(); err != nil {
+							return errors.Wrapf(err, "[%d]", i)
+						}
+					}
+					return nil
+				})
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "segment" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "segment",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Segment.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "start" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "start",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Start.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "end" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "end",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.End.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "step" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "step",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Step.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, GetRunMetricSeriesOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	if err := reqCfg.onRequest(r); err != nil {
+		return res, errors.Wrap(err, "edit request")
+	}
+
+	stage = "SendRequest"
+	resp, err := reqCfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	if err := reqCfg.onResponse(resp); err != nil {
+		return res, errors.Wrap(err, "edit response")
+	}
+
+	stage = "DecodeResponse"
+	result, err := decodeGetRunMetricSeriesResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -15125,150 +15670,6 @@ func (c *Client) sendGetTenantDashboard(ctx context.Context, params GetTenantDas
 	return result, nil
 }
 
-// GetTenantLimits invokes getTenantLimits operation.
-//
-// Effective limits (platform ceilings applied).
-//
-// GET /api/v1/t/{slug}/limits
-func (c *Client) GetTenantLimits(ctx context.Context, params GetTenantLimitsParams, options ...RequestOption) (*TenantLimits, error) {
-	res, err := c.sendGetTenantLimits(ctx, params, options...)
-	return res, err
-}
-
-func (c *Client) sendGetTenantLimits(ctx context.Context, params GetTenantLimitsParams, requestOptions ...RequestOption) (res *TenantLimits, err error) {
-	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getTenantLimits"),
-		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.URLTemplateKey.String("/api/v1/t/{slug}/limits"),
-	}
-	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
-
-	// Run stopwatch.
-	startTime := time.Now()
-	defer func() {
-		// Use floating point division here for higher precision (instead of Millisecond method).
-		elapsedDuration := time.Since(startTime)
-		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
-	}()
-
-	// Increment request counter.
-	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-
-	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, GetTenantLimitsOperation,
-		trace.WithAttributes(otelAttrs...),
-		clientSpanKind,
-	)
-	// Track stage for error reporting.
-	var stage string
-	defer func() {
-		if err != nil {
-			span.RecordError(err)
-			span.SetStatus(codes.Error, stage)
-			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
-		}
-		span.End()
-	}()
-
-	var reqCfg requestConfig
-	reqCfg.setDefaults(c.baseClient)
-	for _, o := range requestOptions {
-		o(&reqCfg)
-	}
-
-	stage = "BuildURL"
-	u := c.serverURL
-	if override := reqCfg.ServerURL; override != nil {
-		u = override
-	}
-	u = uri.Clone(u)
-	var pathParts [3]string
-	pathParts[0] = "/api/v1/t/"
-	{
-		// Encode "slug" parameter.
-		e := uri.NewPathEncoder(uri.PathEncoderConfig{
-			Param:   "slug",
-			Style:   uri.PathStyleSimple,
-			Explode: false,
-		})
-		if err := func() error {
-			return e.EncodeValue(conv.StringToString(params.Slug))
-		}(); err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		encoded, err := e.Result()
-		if err != nil {
-			return res, errors.Wrap(err, "encode path")
-		}
-		pathParts[1] = encoded
-	}
-	pathParts[2] = "/limits"
-	uri.AddPathParts(u, pathParts[:]...)
-
-	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "GET", u)
-	if err != nil {
-		return res, errors.Wrap(err, "create request")
-	}
-
-	{
-		type bitset = [1]uint8
-		var satisfied bitset
-		{
-			stage = "Security:BearerAuth"
-			switch err := c.securityBearerAuth(ctx, GetTenantLimitsOperation, r); {
-			case err == nil: // if NO error
-				satisfied[0] |= 1 << 0
-			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
-				// Skip this security.
-			default:
-				return res, errors.Wrap(err, "security \"BearerAuth\"")
-			}
-		}
-
-		if ok := func() bool {
-		nextRequirement:
-			for _, requirement := range []bitset{
-				{0b00000001},
-			} {
-				for i, mask := range requirement {
-					if satisfied[i]&mask != mask {
-						continue nextRequirement
-					}
-				}
-				return true
-			}
-			return false
-		}(); !ok {
-			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
-		}
-	}
-
-	if err := reqCfg.onRequest(r); err != nil {
-		return res, errors.Wrap(err, "edit request")
-	}
-
-	stage = "SendRequest"
-	resp, err := reqCfg.Client.Do(r)
-	if err != nil {
-		return res, errors.Wrap(err, "do request")
-	}
-	body := resp.Body
-	defer body.Close()
-
-	if err := reqCfg.onResponse(resp); err != nil {
-		return res, errors.Wrap(err, "edit response")
-	}
-
-	stage = "DecodeResponse"
-	result, err := decodeGetTenantLimitsResponse(resp)
-	if err != nil {
-		return res, errors.Wrap(err, "decode response")
-	}
-
-	return result, nil
-}
-
 // GetTenantRating invokes getTenantRating operation.
 //
 // Tenant rating (runs opted into `rating.tenant`).
@@ -16962,7 +17363,7 @@ func (c *Client) sendLaunchSuite(ctx context.Context, request OptSuiteLaunch, pa
 
 // LaunchTest invokes launchTest operation.
 //
-// Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene).
+// Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
 //
 // POST /api/v1/t/{slug}/tests/{id}:launch
 func (c *Client) LaunchTest(ctx context.Context, request OptLaunchOverrides, params LaunchTestParams, options ...RequestOption) (*Run, error) {
@@ -18439,6 +18840,155 @@ func (c *Client) sendListProviderProfiles(ctx context.Context, params ListProvid
 	return result, nil
 }
 
+// ListPublicShareMetricNames invokes listPublicShareMetricNames operation.
+//
+// Every metric of a shared run (scope +metrics).
+//
+// GET /api/v1/public/share/{token}/metrics:names
+func (c *Client) ListPublicShareMetricNames(ctx context.Context, params ListPublicShareMetricNamesParams, options ...RequestOption) (*RunMetricNames, error) {
+	res, err := c.sendListPublicShareMetricNames(ctx, params, options...)
+	return res, err
+}
+
+func (c *Client) sendListPublicShareMetricNames(ctx context.Context, params ListPublicShareMetricNamesParams, requestOptions ...RequestOption) (res *RunMetricNames, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listPublicShareMetricNames"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/public/share/{token}/metrics:names"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ListPublicShareMetricNamesOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	var reqCfg requestConfig
+	reqCfg.setDefaults(c.baseClient)
+	for _, o := range requestOptions {
+		o(&reqCfg)
+	}
+
+	stage = "BuildURL"
+	u := c.serverURL
+	if override := reqCfg.ServerURL; override != nil {
+		u = override
+	}
+	u = uri.Clone(u)
+	var pathParts [3]string
+	pathParts[0] = "/api/v1/public/share/"
+	{
+		// Encode "token" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "token",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Token))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/metrics:names"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "start" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "start",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Start.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "end" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "end",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.End.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	if err := reqCfg.onRequest(r); err != nil {
+		return res, errors.Wrap(err, "edit request")
+	}
+
+	stage = "SendRequest"
+	resp, err := reqCfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	if err := reqCfg.onResponse(resp); err != nil {
+		return res, errors.Wrap(err, "edit response")
+	}
+
+	stage = "DecodeResponse"
+	result, err := decodeListPublicShareMetricNamesResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
 // ListRunArtifacts invokes listRunArtifacts operation.
 //
 // Artifacts (stroppy raw, report, rendered configs).
@@ -18796,6 +19346,225 @@ func (c *Client) sendListRunEvents(ctx context.Context, params ListRunEventsPara
 
 	stage = "DecodeResponse"
 	result, err := decodeListRunEventsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListRunMetricNames invokes listRunMetricNames operation.
+//
+// Every metric the run has stored over the window — the exporters', the workload's, the
+// containers' and the pipeline's.
+//
+// GET /api/v1/t/{slug}/runs/{id}/metrics:names
+func (c *Client) ListRunMetricNames(ctx context.Context, params ListRunMetricNamesParams, options ...RequestOption) (*RunMetricNames, error) {
+	res, err := c.sendListRunMetricNames(ctx, params, options...)
+	return res, err
+}
+
+func (c *Client) sendListRunMetricNames(ctx context.Context, params ListRunMetricNamesParams, requestOptions ...RequestOption) (res *RunMetricNames, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listRunMetricNames"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.URLTemplateKey.String("/api/v1/t/{slug}/runs/{id}/metrics:names"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ListRunMetricNamesOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	var reqCfg requestConfig
+	reqCfg.setDefaults(c.baseClient)
+	for _, o := range requestOptions {
+		o(&reqCfg)
+	}
+
+	stage = "BuildURL"
+	u := c.serverURL
+	if override := reqCfg.ServerURL; override != nil {
+		u = override
+	}
+	u = uri.Clone(u)
+	var pathParts [5]string
+	pathParts[0] = "/api/v1/t/"
+	{
+		// Encode "slug" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "slug",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Slug))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/runs/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.UUIDToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[3] = encoded
+	}
+	pathParts[4] = "/metrics:names"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "segment" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "segment",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Segment.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "start" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "start",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Start.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "end" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "end",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.End.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:BearerAuth"
+			switch err := c.securityBearerAuth(ctx, ListRunMetricNamesOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"BearerAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	if err := reqCfg.onRequest(r); err != nil {
+		return res, errors.Wrap(err, "edit request")
+	}
+
+	stage = "SendRequest"
+	resp, err := reqCfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	body := resp.Body
+	defer body.Close()
+
+	if err := reqCfg.onResponse(resp); err != nil {
+		return res, errors.Wrap(err, "edit response")
+	}
+
+	stage = "DecodeResponse"
+	result, err := decodeListRunMetricNamesResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

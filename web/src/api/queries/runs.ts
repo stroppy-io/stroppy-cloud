@@ -11,6 +11,11 @@ export type LogQuery = NonNullable<
 export type MetricsQuery = NonNullable<
   Paths['/api/v1/t/{slug}/runs/{id}/metrics']['get']['parameters']['query']
 >
+export type MetricNamesQuery = NonNullable<
+  Paths['/api/v1/t/{slug}/runs/{id}/metrics:names']['get']['parameters']['query']
+>
+export type MetricSeriesQuery =
+  Paths['/api/v1/t/{slug}/runs/{id}/metrics:series']['get']['parameters']['query']
 
 export const runQueries = {
   list: (slug: string, q: RunListQuery = {}) =>
@@ -121,6 +126,26 @@ export const runQueries = {
       queryFn: () =>
         unwrap(
           api.GET('/api/v1/t/{slug}/runs/{id}/metrics', {
+            params: { path: { slug, id }, query: q },
+          })
+        ),
+    }),
+  metricNames: (slug: string, id: string, q: MetricNamesQuery = {}) =>
+    queryOptions({
+      queryKey: [...keys.t(slug), 'runs', 'metricNames', id, q],
+      queryFn: () =>
+        unwrap(
+          api.GET('/api/v1/t/{slug}/runs/{id}/metrics:names', {
+            params: { path: { slug, id }, query: q },
+          })
+        ),
+    }),
+  metricSeries: (slug: string, id: string, q: MetricSeriesQuery) =>
+    queryOptions({
+      queryKey: [...keys.t(slug), 'runs', 'metricSeries', id, q],
+      queryFn: () =>
+        unwrap(
+          api.GET('/api/v1/t/{slug}/runs/{id}/metrics:series', {
             params: { path: { slug, id }, query: q },
           })
         ),

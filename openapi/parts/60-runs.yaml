@@ -263,6 +263,50 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/RunMetrics' }
         default: { $ref: '#/components/responses/Problem' }
+  /api/v1/t/{slug}/runs/{id}/metrics:names:
+    get:
+      operationId: listRunMetricNames
+      tags: [Runs]
+      parameters:
+        - $ref: '#/components/parameters/slug'
+        - $ref: '#/components/parameters/id'
+        - { name: segment, in: query, schema: { type: string }, description: Window = this workload segment. }
+        - $ref: '#/components/parameters/windowStart'
+        - $ref: '#/components/parameters/windowEnd'
+      summary: Every metric the run has stored over the window — the exporters', the workload's, the containers' and the pipeline's.
+      responses:
+        '200':
+          description: Metric names.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunMetricNames' }
+        default: { $ref: '#/components/responses/Problem' }
+  /api/v1/t/{slug}/runs/{id}/metrics:series:
+    get:
+      operationId: getRunMetricSeries
+      tags: [Runs]
+      parameters:
+        - $ref: '#/components/parameters/slug'
+        - $ref: '#/components/parameters/id'
+        - $ref: '#/components/parameters/metricName'
+        - $ref: '#/components/parameters/metricFn'
+        - $ref: '#/components/parameters/metricBy'
+        - $ref: '#/components/parameters/metricAgg'
+        - $ref: '#/components/parameters/metricRole'
+        - $ref: '#/components/parameters/metricMachine'
+        - $ref: '#/components/parameters/metricContainer'
+        - { name: segment, in: query, schema: { type: string }, description: Window = this workload segment. }
+        - $ref: '#/components/parameters/windowStart'
+        - $ref: '#/components/parameters/windowEnd'
+        - { name: step, in: query, schema: { type: string }, description: Series step, Go duration. }
+      summary: The series of one stored metric, by its labels.
+      responses:
+        '200':
+          description: Series.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunMetricSeries' }
+        default: { $ref: '#/components/responses/Problem' }
   /api/v1/t/{slug}/runs/{id}/metrics:raw:
     post:
       operationId: queryRunMetricsRaw
@@ -381,7 +425,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
-      summary: Extend the stand lifetime (bounded by `max_keep`).
+      summary: Extend the stand lifetime.
       requestBody:
         required: true
         content:

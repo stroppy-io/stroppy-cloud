@@ -267,8 +267,17 @@ func containerSpec(c spec.Container, run spec.Run, files map[string]string, addr
 			host.Ulimits = append(host.Ulimits, &units.Ulimit{Name: k, Soft: c.Ulimits[k], Hard: c.Ulimits[k]})
 		}
 	}
-	return dockerlib.Spec{Name: containerName(run.RunID, c.Name), Config: cfg, Host: host, Scrape: scrapeURL(c, run)}, nil
+	ds := dockerlib.Spec{Name: containerName(run.RunID, c.Name), Config: cfg, Host: host, Scrape: scrapeURL(c, run)}
+	if ds.Scrape != "" {
+		ds.ScrapeEvery = scrapeEvery
+	}
+	return ds, nil
 }
+
+// scrapeEvery is the step of every container's own metrics (exporters and
+// the engines' endpoints): a 10-minute run gets 60 points per series, and a
+// checkpoint or a GC pause shows up as more than one sample.
+const scrapeEvery = 10 * time.Second
 
 // scrapeURL is the container's own metrics endpoint: its scrape path on
 // its explicit metrics port (legacy: first port), or the

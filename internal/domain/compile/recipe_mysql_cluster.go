@@ -75,6 +75,7 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 				overlay["group_replication_single_primary_mode"], overlay["group_replication_enforce_update_everywhere_checks"] = "OFF", "ON"
 			}
 		}
+		c.innodbMemory(role, c.schemaFor(role, prefix), m, maria, overlay)
 		conf, err := c.render(role, c.schemaFor(role, prefix), "conf", overlay)
 		if err != nil {
 			return err
@@ -125,10 +126,7 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 		ct.Healthcheck = healthcheck("CMD-SHELL", clusterSQLCheck(maria, "127.0.0.1", i+1, false))
 		c.add(ct)
 		previous = ct.Name
-		cmd := []string{fmt.Sprintf("--mysqld.address=127.0.0.1:%d", mysqlPort), "--mysqld.username=" + exporterUser, fmt.Sprintf("--web.listen-address=:%d", mysqldExporterPort)}
-		if !maria {
-			cmd = append(cmd, "--collect.perf_schema.replication_group_members", "--collect.perf_schema.replication_group_member_stats")
-		}
+		cmd := mysqldExporterCmd(fmt.Sprintf("127.0.0.1:%d", mysqlPort), exporterUser, !maria)
 		c.add(spec.Container{
 			Name: m + "-mysqld-exporter", Role: role, Machine: m, Image: imageMySQLDExporter,
 			Kind: spec.ContainerKindExporter,

@@ -94,6 +94,50 @@
       "when": "root.replication == \"semi_sync\""
     },
     {
+      "choice": {
+        "default": {
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "70% of RAM",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Fixed size",
+            "value": {
+              "stringValue": "fixed"
+            }
+          },
+          {
+            "label": "Server default",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode.",
+      "group": "Memory",
+      "name": "buffer_pool",
+      "title": "Buffer pool"
+    },
+    {
+      "description": "innodb_buffer_pool_size of every database server; the run refuses a size over the machine's RAM.",
+      "group": "Memory",
+      "int64": {
+        "default": "4096",
+        "gte": "128",
+        "lte": "4194304"
+      },
+      "name": "buffer_pool_mb",
+      "title": "Buffer pool size",
+      "unit": "MB",
+      "when": "root.buffer_pool == \"fixed\""
+    },
+    {
       "description": "ProxySQL instances routing reads and writes to the right member; 0 = clients talk to the primary directly.",
       "group": "Routing",
       "int64": {

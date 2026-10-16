@@ -8,18 +8,15 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	pipelinespec "github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 type queueRepo struct {
 	Repository
-	live     int
 	cells    map[uuid.UUID]int
 	starting []Starting
 }
 
-func (r queueRepo) LiveCount(context.Context, uuid.UUID) (int, error) { return r.live, nil }
 func (r queueRepo) LiveCells(context.Context, uuid.UUID) (map[uuid.UUID]int, error) {
 	out := map[uuid.UUID]int{}
 	for k, v := range r.cells {
@@ -29,12 +26,6 @@ func (r queueRepo) LiveCells(context.Context, uuid.UUID) (map[uuid.UUID]int, err
 }
 
 func (r queueRepo) Starting(context.Context, uuid.UUID) ([]Starting, error) { return r.starting, nil }
-
-type queueLimits struct{ max int }
-
-func (l queueLimits) EffectiveLimits(context.Context, uuid.UUID) (settings.Limits, error) {
-	return settings.Limits{MaxConcurrentRuns: l.max}, nil
-}
 
 type queuePipelines struct {
 	ready  bool
@@ -88,23 +79,42 @@ func TestQueueDecides(t *testing.T) {
 	}{
 		{
 			name:      "a big run waits for SSD, the small one behind it goes first",
-			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, limits: queueLimits{3}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}},
 			runs:      []Run{queued(spec(400, 400, 400), nil), queued(spec(400), nil)},
 			quotas:    ssd(500),
 			admit:     []bool{false, true},
 			waitingOn: []WaitReason{WaitQuota, ""},
 		},
 		{
-			name:      "slots run out",
-			svc:       &Service{access: queueAccess{}, repo: queueRepo{live: 2}, limits: queueLimits{3}},
+			name: "each run takes a network: the second waits when one is left",
+			svc:  &Service{access: queueAccess{}, repo: queueRepo{}},
+			runs: []Run{queued(spec(40), nil), queued(spec(40), nil)},
+			quotas: map[uuid.UUID]quotaRead{profile: {profile: provider.Profile{Status: provider.StatusReady}, quotas: []provider.Quota{
+				{Name: "vpc.networks.count", Limit: 6, Used: 5, Unit: "count"},
+				{Name: "vpc.subnets.count", Limit: 32, Used: 5, Unit: "count"},
+			}}},
+			admit:     []bool{true, false},
+			waitingOn: []WaitReason{"", WaitQuota},
+		},
+		{
+			name:      "an empty queue under the lock decides nothing",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, pipelines: queuePipelines{ready: true}},
+			runs:      []Run{},
+			quotas:    ssd(0),
+			admit:     []bool{},
+			waitingOn: []WaitReason{},
+		},
+		{
+			name:      "no cap on live runs: room in the quota is the only gate",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}},
 			runs:      []Run{queued(spec(40), nil), queued(spec(40), nil)},
 			quotas:    ssd(0),
-			admit:     []bool{true, false},
-			waitingOn: []WaitReason{"", WaitSlot},
+			admit:     []bool{true, true},
+			waitingOn: []WaitReason{"", ""},
 		},
 		{
 			name:      "a started run not in the cloud's usage yet holds its SSD",
-			svc:       &Service{access: queueAccess{}, repo: queueRepo{starting: []Starting{{ProfileID: profile, Spec: spec(400, 400, 400)}}}, limits: queueLimits{5}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{starting: []Starting{{ProfileID: profile, Spec: spec(400, 400, 400)}}}},
 			runs:      []Run{queued(spec(400), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{false},
@@ -112,7 +122,7 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "suite concurrency",
-			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, limits: queueLimits{5}, suites: queueSuites{sr: 2}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, suites: queueSuites{sr: 2}},
 			runs:      []Run{queued(spec(40), &sr), queued(spec(40), &sr), queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{true, false, true},
@@ -120,7 +130,7 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "a suspended tenant starts nothing",
-			svc:       &Service{access: queueAccess{suspended: true}, repo: queueRepo{}, limits: queueLimits{5}},
+			svc:       &Service{access: queueAccess{suspended: true}, repo: queueRepo{}},
 			runs:      []Run{queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{false},
@@ -128,7 +138,7 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "pipelines not pushed hold everything",
-			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, limits: queueLimits{5}, pipelines: queuePipelines{status: "pending"}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, pipelines: queuePipelines{status: "pending"}},
 			runs:      []Run{queued(spec(40), nil), queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{false, false},

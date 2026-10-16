@@ -80,12 +80,6 @@ type Handler interface {
 	//
 	// POST /api/v1/admin/tenants/{slug}:resume
 	AdminResumeTenant(ctx context.Context, params AdminResumeTenantParams) (*AdminTenant, error)
-	// AdminSetTenantLimits implements adminSetTenantLimits operation.
-	//
-	// Set tenant limit ceilings (null = platform default).
-	//
-	// PUT /api/v1/admin/tenants/{slug}/limits
-	AdminSetTenantLimits(ctx context.Context, req *TenantLimitsWrite, params AdminSetTenantLimitsParams) (*TenantLimits, error)
 	// AdminSuspendTenant implements adminSuspendTenant operation.
 	//
 	// Suspend — no new launches, schedules paused.
@@ -348,7 +342,7 @@ type Handler interface {
 	ExportWorkload(ctx context.Context, params ExportWorkloadParams) (ExportWorkloadRes, error)
 	// ExtendRunKeep implements extendRunKeep operation.
 	//
-	// Extend the stand lifetime (bounded by `max_keep`).
+	// Extend the stand lifetime.
 	//
 	// POST /api/v1/t/{slug}/runs/{id}:keep-extend
 	ExtendRunKeep(ctx context.Context, req *ExtendRunKeepReq, params ExtendRunKeepParams) (*Run, error)
@@ -436,6 +430,12 @@ type Handler interface {
 	//
 	// GET /api/v1/public/share/{token}
 	GetPublicShare(ctx context.Context, params GetPublicShareParams) (*ShareSnapshotHeaders, error)
+	// GetPublicShareMetricSeries implements getPublicShareMetricSeries operation.
+	//
+	// The series of one metric of a shared run (scope +metrics).
+	//
+	// GET /api/v1/public/share/{token}/metrics:series
+	GetPublicShareMetricSeries(ctx context.Context, params GetPublicShareMetricSeriesParams) (*RunMetricSeries, error)
 	// GetPublicShareMetrics implements getPublicShareMetrics operation.
 	//
 	// Metrics for a shared run over a window (scope +metrics).
@@ -460,6 +460,12 @@ type Handler interface {
 	//
 	// GET /api/v1/t/{slug}/runs/{id}/logs:facets
 	GetRunLogFacets(ctx context.Context, params GetRunLogFacetsParams) (*GetRunLogFacetsOK, error)
+	// GetRunMetricSeries implements getRunMetricSeries operation.
+	//
+	// The series of one stored metric, by its labels.
+	//
+	// GET /api/v1/t/{slug}/runs/{id}/metrics:series
+	GetRunMetricSeries(ctx context.Context, params GetRunMetricSeriesParams) (*RunMetricSeries, error)
 	// GetRunMetrics implements getRunMetrics operation.
 	//
 	// Typed metrics (catalog keys) over a window — series + aggregates.
@@ -533,12 +539,6 @@ type Handler interface {
 	//
 	// GET /api/v1/t/{slug}/dashboard
 	GetTenantDashboard(ctx context.Context, params GetTenantDashboardParams) (*TenantDashboard, error)
-	// GetTenantLimits implements getTenantLimits operation.
-	//
-	// Effective limits (platform ceilings applied).
-	//
-	// GET /api/v1/t/{slug}/limits
-	GetTenantLimits(ctx context.Context, params GetTenantLimitsParams) (*TenantLimits, error)
 	// GetTenantRating implements getTenantRating operation.
 	//
 	// Tenant rating (runs opted into `rating.tenant`).
@@ -595,7 +595,7 @@ type Handler interface {
 	LaunchSuite(ctx context.Context, req OptSuiteLaunch, params LaunchSuiteParams) (*SuiteRun, error)
 	// LaunchTest implements launchTest operation.
 	//
-	// Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene).
+	// Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
 	//
 	// POST /api/v1/t/{slug}/tests/{id}:launch
 	LaunchTest(ctx context.Context, req OptLaunchOverrides, params LaunchTestParams) (*Run, error)
@@ -647,6 +647,12 @@ type Handler interface {
 	//
 	// GET /api/v1/t/{slug}/providers
 	ListProviderProfiles(ctx context.Context, params ListProviderProfilesParams) (*ListProviderProfilesOK, error)
+	// ListPublicShareMetricNames implements listPublicShareMetricNames operation.
+	//
+	// Every metric of a shared run (scope +metrics).
+	//
+	// GET /api/v1/public/share/{token}/metrics:names
+	ListPublicShareMetricNames(ctx context.Context, params ListPublicShareMetricNamesParams) (*RunMetricNames, error)
 	// ListRunArtifacts implements listRunArtifacts operation.
 	//
 	// Artifacts (stroppy raw, report, rendered configs).
@@ -659,6 +665,13 @@ type Handler interface {
 	//
 	// GET /api/v1/t/{slug}/runs/{id}/events
 	ListRunEvents(ctx context.Context, params ListRunEventsParams) (*ListRunEventsOK, error)
+	// ListRunMetricNames implements listRunMetricNames operation.
+	//
+	// Every metric the run has stored over the window — the exporters', the workload's, the
+	// containers' and the pipeline's.
+	//
+	// GET /api/v1/t/{slug}/runs/{id}/metrics:names
+	ListRunMetricNames(ctx context.Context, params ListRunMetricNamesParams) (*RunMetricNames, error)
 	// ListRuns implements listRuns operation.
 	//
 	// List runs.

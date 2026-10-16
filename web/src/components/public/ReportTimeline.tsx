@@ -48,25 +48,27 @@ const getStyles = (theme: GrafanaTheme2) => ({
     color: theme.colors.text.secondary,
   }),
   legendItem: css({ display: 'inline-flex', gap: theme.spacing(0.5), alignItems: 'center' }),
+  // One grid for all rows (rows are subgrids), so the time column takes the widest time and
+  // the rail runs down the dot column whatever the locale's time looks like.
   events: css({
     listStyle: 'none',
     margin: 0,
     padding: 0,
-    position: 'relative',
-    '&::before': {
-      content: '""',
-      position: 'absolute',
-      left: 79,
-      top: 4,
-      bottom: 4,
-      width: 1,
-      background: theme.colors.border.medium,
-    },
+    display: 'grid',
+    gridTemplateColumns: 'max-content 24px minmax(0, 1fr)',
+    columnGap: theme.spacing(1),
+  }),
+  rail: css({
+    gridColumn: 2,
+    justifySelf: 'center',
+    width: 1,
+    margin: theme.spacing(0.5, 0),
+    background: theme.colors.border.medium,
   }),
   event: css({
+    gridColumn: '1 / -1',
     display: 'grid',
-    gridTemplateColumns: '68px 24px minmax(0, 1fr)',
-    gap: theme.spacing(1),
+    gridTemplateColumns: 'subgrid',
     alignItems: 'start',
     padding: theme.spacing(0.5, 0),
     breakInside: 'avoid',
@@ -76,6 +78,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     fontSize: theme.typography.bodySmall.fontSize,
     color: theme.colors.text.secondary,
     textAlign: 'right',
+    whiteSpace: 'nowrap',
     paddingTop: 2,
   }),
   dot: css({
@@ -87,6 +90,7 @@ const getStyles = (theme: GrafanaTheme2) => ({
     justifyContent: 'center',
     background: theme.colors.background.primary,
     border: `1px solid ${theme.colors.border.medium}`,
+    position: 'relative',
     zIndex: 1,
   }),
   dotTone: (tone: 'success' | 'error' | 'warning' | 'info' | 'secondary') =>
@@ -159,7 +163,15 @@ function eventTone(e: RunEvent): 'success' | 'error' | 'warning' | 'info' | 'sec
 
 const PREVIEW = 12
 
-export function ReportTimeline({ run, index }: { run: SharedRun; index: number }) {
+export function ReportTimeline({
+  run,
+  index,
+  tabbed,
+}: {
+  run: SharedRun
+  index: number
+  tabbed?: boolean
+}) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const rs = useReportStyles()
@@ -206,6 +218,7 @@ export function ReportTimeline({ run, index }: { run: SharedRun; index: number }
     <ReportSection
       id="timeline"
       index={index}
+      tabbed={tabbed}
       title={t('public.timeline.title')}
       hint={t('public.timeline.hint')}
     >
@@ -245,11 +258,16 @@ export function ReportTimeline({ run, index }: { run: SharedRun; index: number }
       ) : (
         <>
           <ol className={styles.events}>
-            {shown.map((e) => {
+            <li
+              aria-hidden
+              className={styles.rail}
+              style={{ gridRow: `1 / span ${shown.length}` }}
+            />
+            {shown.map((e, i) => {
               const tone = eventTone(e)
               const meta = runStatusMeta(e.status)
               return (
-                <li key={e.id} className={styles.event}>
+                <li key={e.id} className={styles.event} style={{ gridRow: i + 1 }}>
                   <span className={styles.time}>{formatTime(e.at)}</span>
                   <span className={cx(styles.dot, styles.dotTone(tone))}>
                     <Icon

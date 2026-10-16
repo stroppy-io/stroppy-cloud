@@ -69,6 +69,7 @@ func mysqlRecipe(c *compilation) error {
 					}
 				}
 			}
+			c.innodbMemory(role, c.schemaFor(role, confPrefix), m, maria, overlay)
 			conf, err := c.render(role, c.schemaFor(role, confPrefix), "conf", overlay)
 			if err != nil {
 				return err
@@ -116,11 +117,9 @@ func mysqlRecipe(c *compilation) error {
 		for _, m := range c.machinesOf(role) {
 			c.add(spec.Container{
 				Name: m + "-mysqld-exporter", Role: role, Machine: m, Image: imageMySQLDExporter,
-				Kind: spec.ContainerKindExporter,
-				Env:  map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword},
-				Cmd: []string{
-					fmt.Sprintf("--mysqld.address=127.0.0.1:%d", mysqlPort), "--mysqld.username=" + exporterUser, fmt.Sprintf("--web.listen-address=:%d", mysqldExporterPort),
-				},
+				Kind:      spec.ContainerKindExporter,
+				Env:       map[string]string{"MYSQLD_EXPORTER_PASSWORD": exporterPassword},
+				Cmd:       mysqldExporterCmd(fmt.Sprintf("127.0.0.1:%d", mysqlPort), exporterUser, false),
 				Ports:     []spec.Port{{Container: mysqldExporterPort, Host: mysqldExporterPort}},
 				Scrape:    "/metrics",
 				Restart:   "always",
@@ -162,9 +161,13 @@ func mysqlReplicaHealth(semisync bool) string {
 func mysqlInitSQL(maria bool, extra string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "CREATE USER IF NOT EXISTS '%s'@'%%' IDENTIFIED BY '%s';\n", exporterUser, exporterPassword)
+	// slave_hosts reads SHOW REPLICAS: REPLICATION SLAVE on MySQL,
+	// REPLICATION MASTER ADMIN on MariaDB 10.5+.
 	fmt.Fprintf(&b, "GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO '%s'@'%%';\n", exporterUser)
 	if maria {
-		fmt.Fprintf(&b, "GRANT SLAVE MONITOR ON *.* TO '%s'@'%%';\n", exporterUser)
+		fmt.Fprintf(&b, "GRANT SLAVE MONITOR, REPLICATION MASTER ADMIN ON *.* TO '%s'@'%%';\n", exporterUser)
+	} else {
+		fmt.Fprintf(&b, "GRANT REPLICATION SLAVE ON *.* TO '%s'@'%%';\n", exporterUser)
 	}
 	b.WriteString("FLUSH PRIVILEGES;\n")
 	if extra != "" {

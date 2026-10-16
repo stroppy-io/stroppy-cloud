@@ -199,6 +199,9 @@ func Stroppy() *schemapb.Schema {
 		).
 		Rules(
 			schemapb.Rule(`root.protocol in ["pg", "mysql", "cockroach", "noop"] || root.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, MySQL, CockroachDB or noop").ID("stored-procedure-protocol"),
+			// doc: stroppy pkg/driver/insert_methods.go — mysql and picodata
+			// drivers have no columnar path.
+			schemapb.Rule(`!("driver" in root) || !("default_insert_method" in root.driver) || root.driver.default_insert_method != "columnar" || root.protocol in ["pg", "cockroach", "ydb_grpc", "ydb_grpcs", "noop"]`, "columnar insert requires the PostgreSQL, CockroachDB, YDB or noop driver").ID("columnar-driver"),
 			schemapb.Rule(`!(root.protocol in ["ydb_grpc", "ydb_grpcs"]) || root.segments.all(s, s.workload.script != "tpcds" || ((! ("query_stream" in s.workload) || s.workload.query_stream == null) && (!("streams" in s.workload) || s.workload.streams == 1)))`, "YDB TPC-DS supports the baked query set only").ID("tpcds-ydb-baked"),
 			schemapb.Rule(`root.protocol != "picodata" || root.segments.all(s, s.workload.script != "tpcds" || ("no_steps" in s && "workload" in s.no_steps) || ("steps" in s && size(s.steps) > 0 && !("workload" in s.steps)))`, "Picodata TPC-DS supports loading only; exclude the workload step").ID("tpcds-picodata-load-only"),
 			schemapb.Rule(

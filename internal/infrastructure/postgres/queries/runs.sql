@@ -108,10 +108,6 @@ FROM runs WHERE suite_run_id = @suite_run_id AND deleted_at IS NULL ORDER BY cel
 -- name: RunsOfSchedule :many
 SELECT id, name, status, created_at FROM runs WHERE schedule_id = @schedule_id AND deleted_at IS NULL ORDER BY created_at DESC LIMIT @lim;
 
--- name: TenantLiveRunCount :one
--- The runs that hold a slot: admitted by the queue and not finished.
-SELECT count(*)::int AS n FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') AND admitted_at IS NOT NULL;
-
 -- name: TenantHasLiveRuns :one
 SELECT EXISTS (SELECT 1 FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling'))::boolean AS live;
 

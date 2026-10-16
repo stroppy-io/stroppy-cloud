@@ -19,11 +19,6 @@ export const settingsQueries = {
       queryKey: [...keys.t(slug), 'settings'],
       queryFn: () => unwrap(api.GET('/api/v1/t/{slug}/settings', { params: { path: { slug } } })),
     }),
-  limits: (slug: string) =>
-    queryOptions({
-      queryKey: [...keys.t(slug), 'limits'],
-      queryFn: () => unwrap(api.GET('/api/v1/t/{slug}/limits', { params: { path: { slug } } })),
-    }),
   providers: (slug: string) =>
     queryOptions({
       queryKey: [...keys.t(slug), 'providers', 'list'],

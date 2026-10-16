@@ -10,7 +10,7 @@ import (
 )
 
 // GetTenantDashboard — the landing page: counts, recent activity, what is
-// coming, best results, providers, limits.
+// coming, best results, providers.
 func (h *Handler) GetTenantDashboard(ctx context.Context, params oas.GetTenantDashboardParams) (*oas.TenantDashboard, error) {
 	a, t, err := h.tenantOf(ctx, params.Slug)
 	if err != nil {
@@ -42,6 +42,7 @@ func (h *Handler) GetTenantDashboard(ctx context.Context, params oas.GetTenantDa
 	if err != nil {
 		return nil, err
 	}
+	h.staged(ctx, recent)
 	favs := h.favoritesOf(ctx, a, t.ID)
 	for _, r := range recent {
 		f := favs[r.ID]
@@ -70,13 +71,6 @@ func (h *Handler) GetTenantDashboard(ctx context.Context, params oas.GetTenantDa
 	}
 	for _, p := range profiles {
 		out.Providers = append(out.Providers, profileOf(p))
-	}
-	if l, err := h.deps.Settings.Limits(ctx, a, t.ID); err == nil {
-		src := oas.TenantLimitsSourcePlatformDefault
-		if l.Overridden {
-			src = oas.TenantLimitsSourceTenantOverride
-		}
-		out.Limits = oas.NewOptTenantLimits(oas.TenantLimits{MaxConcurrentRuns: l.MaxConcurrentRuns, MaxMachinesPerRun: l.MaxMachinesPerRun, MaxSize: oas.Size(l.MaxSize), MaxKeep: l.MaxKeep.String(), RunRetentionMaxDays: l.RunRetentionMaxDays, Source: oas.NewOptTenantLimitsSource(src)})
 	}
 	return out, nil
 }

@@ -462,7 +462,71 @@
       "grid": "Grid",
       "list": "List"
     },
-    "window": "Window"
+    "window": "Window",
+    "view": {
+      "catalog": "Key metrics",
+      "all": "All metrics"
+    },
+    "origin": {
+      "exporter": "Exporter",
+      "workload": "Workload",
+      "container": "Container",
+      "pipeline": "Pipeline"
+    },
+    "kind": {
+      "counter": "counter",
+      "gauge": "gauge"
+    },
+    "explorer": {
+      "list": "Metrics of the run",
+      "search": "Search a name or container",
+      "origin": "Source",
+      "role": "Role",
+      "machine": "Machine",
+      "container": "Container",
+      "kind": "Type",
+      "sort": "Sort",
+      "sorts": {
+        "name": "Name A–Z",
+        "desc_name": "Name Z–A",
+        "series": "Most series first",
+        "desc_series": "Fewest series first",
+        "origin": "By source"
+      },
+      "shown": "{{shown}} of {{total}}",
+      "reset": "Reset filters",
+      "nothing": "No metric matches the filters",
+      "pickTitle": "Pick metrics on the left",
+      "pickHint": "The run stored {{count}} metrics: machines, the database and its exporters, proxies, stroppy, containers. Click a name to draw it; picked charts stay in the link.",
+      "remove": "Remove the chart",
+      "groupBy": "Split by",
+      "byMachine": "machine",
+      "byContainer": "container",
+      "agg": "Combine",
+      "aggs": {
+        "sum": "sum",
+        "avg": "average",
+        "max": "maximum",
+        "min": "minimum"
+      },
+      "fn": {
+        "value": "Value",
+        "rate": "Per second"
+      },
+      "seriesCount_one": "{{count}} series",
+      "seriesCount_other": "{{count}} series",
+      "truncated": "Showing {{shown}} of {{total}} series with the highest average; split or filter to see the rest.",
+      "columns": {
+        "series": "Series",
+        "avg": "avg",
+        "min": "min",
+        "max": "max",
+        "last": "last",
+        "p95": "p95"
+      },
+      "toggleSeries": "Click to hide or show the series",
+      "title": "All metrics"
+    }
   },
   "artifacts": {
     "summary": "{{count}} artifacts · {{size}}",
@@ -574,7 +638,8 @@
     "segments_other": "{{count}} segments",
     "vus": "{{count}} VU",
     "errors_one": "{{count}} error",
-    "errors_other": "{{count}} errors"
+    "errors_other": "{{count}} errors",
+    "notStarted": "never started"
   },
   "shell": {
     "subtitle": "Machine terminal",
@@ -589,7 +654,6 @@
     "title": "Waiting in the queue",
     "position": "#{{position}} in the queue",
     "pipelines": "The tenant's pipelines are being pushed",
-    "slot": "Waiting for a free slot: {{live}} of {{limit}} runs are going",
     "suite_slot": "Waiting for a suite slot: {{live}} of {{limit}} cells are going",
     "quota": "Waiting for room in “{{quota}}”{{zone}}: needs {{need}}, {{free}} free",
     "quota_zone": " in {{zone}}",
@@ -597,5 +661,10 @@
     "provider": "The provider is not ready ({{detail}})",
     "hint": "The run starts by itself once there is room. Runs behind it that fit may start first.",
     "suspended": "A platform admin suspended the tenant"
+  },
+  "stage": {
+    "preparing": "Preparing data",
+    "load": "Load",
+    "step": "step {{step}}"
   }
 }

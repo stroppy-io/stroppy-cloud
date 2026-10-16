@@ -74,6 +74,16 @@ func Custom() *schemapb.Schema {
 				Desc("Shell command run inside the container that exits 0 once the database accepts connections; the workload waits for it. Empty waits only for the container to start.").
 				MaxLen(256).
 				Examples(schemapb.StrV("pg_isready -U stroppy")),
+
+			// The image's own Prometheus endpoint, scraped like every
+			// exporter of the stand. pg and mysql images get an exporter of
+			// their protocol besides, logged in with the user above.
+			schemapb.Int64("metrics_port").Title("Metrics port").Group("Metrics").
+				Desc("Port of the image's Prometheus endpoint; empty when the image has none.").
+				Gte(1).Lte(65535).Nullable(),
+			schemapb.Str("metrics_path").Title("Metrics path").Group("Metrics").
+				Desc("Path of the Prometheus endpoint on the metrics port.").
+				MaxLen(256).Default("/metrics"),
 		).
 		Rules(
 			schemapb.Rule(`!(root.protocol in ["ydb_grpc", "ydb_grpcs"]) || root.database.startsWith("/")`,

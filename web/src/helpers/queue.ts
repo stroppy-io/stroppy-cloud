@@ -7,7 +7,6 @@ type RunQueue = components['schemas']['RunQueue']
 /** What a queued run waits for, in the UI language (RunWaitReason). */
 export function queueText(q: RunQueue): string {
   switch (q.waiting_for) {
-    case 'slot':
     case 'suite_slot':
       return i18n.t(`runs.queue.${q.waiting_for}`, { live: q.live ?? 0, limit: q.limit ?? 0 })
     case 'quota': {

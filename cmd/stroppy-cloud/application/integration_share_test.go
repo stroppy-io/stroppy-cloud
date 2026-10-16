@@ -264,12 +264,9 @@ func TestE2EShareCompareRating(t *testing.T) {
 			RecentRuns  []map[string]any `json:"recent_runs"`
 			TopResults  []map[string]any `json:"top_results"`
 			Providers   []map[string]any `json:"providers"`
-			Limits      struct {
-				MaxConcurrentRuns int `json:"max_concurrent_runs"`
-			} `json:"limits"`
 		}
 		e.want(e.req(http.MethodGet, base+"/dashboard", nil, tok), http.StatusOK, &d)
-		if d.RunCounts.Total != 2 || d.RunCounts.Completed != 2 || d.SuccessRate != 100 || len(d.RecentRuns) != 2 || len(d.TopResults) != 2 || len(d.Providers) != 1 || d.Limits.MaxConcurrentRuns == 0 {
+		if d.RunCounts.Total != 2 || d.RunCounts.Completed != 2 || d.SuccessRate != 100 || len(d.RecentRuns) != 2 || len(d.TopResults) != 2 || len(d.Providers) != 1 {
 			t.Fatalf("dashboard %+v", d)
 		}
 	})

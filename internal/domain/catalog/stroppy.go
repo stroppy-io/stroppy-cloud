@@ -13,13 +13,16 @@ import (
 func stroppy() StroppyCatalog {
 	all := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoCockroach, ProtoNoop}
 	procs := []Protocol{ProtoPg, ProtoMySQL, ProtoCockroach, ProtoNoop}
+	// doc: stroppy workloads/tpch and workloads/tpcds ship pg, mysql, pico and
+	// ydb dialects only; CockroachDB has its own SQL for tpcc and tpcb alone.
+	noCockroach := []Protocol{ProtoPg, ProtoMySQL, ProtoPicodata, ProtoYDBGrpc, ProtoYDBGrpcs, ProtoNoop}
 	scripts := []StroppyScript{
 		{ID: "tpcc/tx", Title: "TPC-C, raw transactions", Protocols: all},
 		{ID: "tpcc/procs", Title: "TPC-C, stored procedures", Protocols: procs},
 		{ID: "tpcb/tx", Title: "TPC-B, raw transactions", Protocols: all},
 		{ID: "tpcb/procs", Title: "TPC-B, stored procedures", Protocols: procs},
-		{ID: "tpch/tx", Title: "TPC-H", Protocols: all},
-		{ID: "tpcds", Title: "TPC-DS", Protocols: all, Description: "Picodata: load only. YDB: baked queries only. MySQL generated streams omit queries 51, 88 and 97."},
+		{ID: "tpch/tx", Title: "TPC-H", Protocols: noCockroach},
+		{ID: "tpcds", Title: "TPC-DS", Protocols: noCockroach, Description: "Picodata: load only. YDB: baked queries only. MySQL generated streams omit queries 51, 88 and 97."},
 		{ID: "simple", Title: "Simple key-value", Protocols: all},
 		{ID: "execute_sql", Title: "Execute SQL", Protocols: all},
 		{ID: "baseline", Title: "Baseline workload", Protocols: all, Description: "A baseline workload segment; the machine self-check remains separately configurable."},

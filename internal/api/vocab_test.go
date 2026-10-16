@@ -50,6 +50,7 @@ func TestVocabulariesMatchTheContract(t *testing.T) {
 		{"RequirementReason", topology.RequirementReasons, values(oas.RequirementReason("").AllValues())},
 		{"RunEventKind", run.EventKinds, values(oas.RunEventKind("").AllValues())},
 		{"RunWaitReason", waits, values(oas.RunWaitReason("").AllValues())},
+		{"RunStageKind", run.StageKinds, values(oas.RunStageKind("").AllValues())},
 		{"AuditAction", audit.Actions, values(oas.AuditAction("").AllValues())},
 		{"AuditTargetKind", audit.TargetKinds, values(oas.AuditTargetKind("").AllValues())},
 		{"MetricKey", metricKeys, values(oas.MetricKey("").AllValues())},
@@ -57,6 +58,8 @@ func TestVocabulariesMatchTheContract(t *testing.T) {
 		{"QuotaName", quotaNames, values(oas.QuotaName("").AllValues())},
 		{"QuotaUnit", quotaUnits, values(oas.QuotaUnit("").AllValues())},
 		{"LogLevel", observe.LogLevels, values(oas.LogLevel("").AllValues())},
+		{"MetricOrigin", strs(observe.MetricOrigins), values(oas.MetricOrigin("").AllValues())},
+		{"MetricKind", strs(observe.MetricKinds), values(oas.MetricKind("").AllValues())},
 		{"ErrorReason", errorReasons(t), values(oas.ErrorReason("").AllValues())},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -130,4 +133,12 @@ func errorReasons(t *testing.T) []string {
 	}
 	slices.Sort(reasons)
 	return slices.Compact(reasons)
+}
+
+func strs[T ~string](list []T) []string {
+	out := make([]string, len(list))
+	for i, v := range list {
+		out[i] = string(v)
+	}
+	return out
 }

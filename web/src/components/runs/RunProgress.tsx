@@ -3,9 +3,9 @@ import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Text, Tooltip, useStyles2 } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
-import { barPct } from '@helpers/run-progress'
+import { barPct, phasePct, stageText } from '@helpers/run-progress'
 import { PHASE_ORDER, phaseIcon } from '@helpers/run-status'
-import { useEffect, useState } from 'react'
+import { useNow } from '@hooks/useNow'
 import { useTranslation } from 'react-i18next'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -50,28 +50,20 @@ const getStyles = (theme: GrafanaTheme2) => ({
   row: css({ display: 'flex', alignItems: 'center', gap: theme.spacing(1), flexWrap: 'wrap' }),
 })
 
-function useNow(ms: number, enabled: boolean): number {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    if (!enabled) return
-    const id = window.setInterval(() => setNow(Date.now()), ms)
-    return () => window.clearInterval(id)
-  }, [ms, enabled])
-  return now
-}
-
 // Phase strip + progress bar shown in the run header: the bar follows the phase labels
-// (`barPct`), cancelling has its own label and colour, a workload past its plan says by how much.
+// (`barPct`), the percent is the current phase's (as the run list says it), cancelling has its
+// own label and colour, a workload past its plan says by how much.
 export function RunProgress({ run, compact }: { run: Run; compact?: boolean }) {
   const styles = useStyles2(getStyles)
   const { t } = useTranslation()
   const phases = PHASE_ORDER.filter((p) => p !== 'queued' && p !== 'done')
   const current = (phases as RunPhase[]).indexOf(run.phase)
-  const pct = Math.round(barPct(run, phases))
   const live = run.status === 'running' || run.status === 'cancelling'
-  const now = useNow(15_000, live && run.phase === 'workload')
+  const now = useNow(1000, live && run.phase === 'workload')
+  const pct = Math.round(barPct(run, phases, now))
   const eta = run.summary?.expected_finish_at
   const late = live && run.phase === 'workload' && eta ? (now - new Date(eta).getTime()) / 1000 : 0
+  const preparing = live ? stageText(run, t, now) : undefined
   const fillClass =
     run.status === 'completed'
       ? styles.fillDone
@@ -90,13 +82,21 @@ export function RunProgress({ run, compact }: { run: Run; compact?: boolean }) {
             {t('common.status.cancelling')}
           </Text>
         )}
-        <Text color="secondary" variant="bodySmall">
-          {t(`common.phase.${run.phase}`)}
-          {run.summary?.segment ? ` · ${t('runs.segment', { name: run.summary.segment })}` : ''}
-        </Text>
-        <Text color="secondary" variant="bodySmall" tabular>
-          {t('runs.progress', { pct })}
-        </Text>
+        {preparing ? (
+          <Text color="secondary" variant="bodySmall">
+            {preparing}
+          </Text>
+        ) : (
+          <>
+            <Text color="secondary" variant="bodySmall">
+              {t(`common.phase.${run.phase}`)}
+              {run.summary?.segment ? ` · ${t('runs.segment', { name: run.summary.segment })}` : ''}
+            </Text>
+            <Text color="secondary" variant="bodySmall" tabular>
+              {t('runs.progress', { pct: Math.round(phasePct(run, now)) })}
+            </Text>
+          </>
+        )}
         {late > 60 && (
           <Text variant="bodySmall" color="warning">
             {t('runs.list.overdue', { time: formatDuration(late) })}

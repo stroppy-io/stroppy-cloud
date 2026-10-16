@@ -162,6 +162,23 @@ func TestExpectedFinishAt(t *testing.T) {
 			}}},
 			want: at(35),
 		},
+		{
+			name: "a segment preparing its data has no planned end",
+			r: run.Run{Status: run.StatusRunning, Snapshot: snap, Stage: run.Stage{Kind: run.StagePreparing, Step: "load_data", Since: *at(17)},
+				State: run.State{Phases: []run.PhaseState{workload}, Segments: []run.SegmentState{
+					{Name: "load", Index: 0, StartedAt: at(2), FinishedAt: at(15)},
+					{Name: "main", Index: 1, StartedAt: at(16)},
+				}}},
+		},
+		{
+			name: "under load the plan counts from the load's start",
+			r: run.Run{Status: run.StatusRunning, Snapshot: snap, Stage: run.Stage{Kind: run.StageLoad, Step: "validate_population", Since: *at(40)},
+				State: run.State{Phases: []run.PhaseState{workload}, Segments: []run.SegmentState{
+					{Name: "load", Index: 0, StartedAt: at(2), FinishedAt: at(15)},
+					{Name: "main", Index: 1, StartedAt: at(16)},
+				}}},
+			want: at(60),
+		},
 		{name: "finished run", r: run.Run{Status: run.StatusCompleted, Snapshot: snap, State: run.State{Phases: []run.PhaseState{workload}}}},
 		{
 			name: "a segment without a duration is unpredictable",
@@ -246,6 +263,8 @@ func TestPhaseProgressPct(t *testing.T) {
 		want float64
 	}{
 		{name: "workload by time", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseWorkload, Snapshot: snap, State: run.State{Phases: []run.PhaseState{workload}}}, want: 30},
+		{name: "preparing data is not load progress", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseWorkload, Snapshot: snap, Stage: run.Stage{Kind: run.StagePreparing, Step: "load_data", Since: *at(0)}, State: run.State{Phases: []run.PhaseState{workload}, Segments: []run.SegmentState{{Name: "main", StartedAt: at(0)}}}}, want: 0},
+		{name: "load progress from the load's start", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseWorkload, Snapshot: snap, Stage: run.Stage{Kind: run.StageLoad, Step: "analyze", Since: *at(1)}, State: run.State{Phases: []run.PhaseState{workload}, Segments: []run.SegmentState{{Name: "main", StartedAt: at(0)}}}}, want: 20},
 		{name: "deploy by steps", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseDeploying, State: run.State{Phases: []run.PhaseState{deploy}}}, want: 50},
 		{name: "no steps yet", r: run.Run{Status: run.StatusRunning, Phase: run.PhaseProvisioning}, want: 0},
 		{name: "completed", r: run.Run{Status: run.StatusCompleted}, want: 100},

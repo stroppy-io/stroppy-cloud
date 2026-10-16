@@ -37,7 +37,9 @@ import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2, IconName } from '@grafana/data'
 import { Badge, Button, ConfirmModal, Icon, Stack, Tooltip, useStyles2 } from '@grafana/ui'
+import { phasePct, stageText } from '@helpers/run-progress'
 import { isTerminal, runStageProgress } from '@helpers/run-status'
+import { useNow } from '@hooks/useNow'
 import { useTenant } from '@hooks/useTenant'
 import { useTopic } from '@hooks/useTopic'
 import {
@@ -469,7 +471,12 @@ export function RunListPage({
     ]
   }
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: facet/rowActions are per-render closures; facets.data + search drive the recompute
+  // Running rows count their workload progress from the server's anchors: one tick for the page.
+  const now = useNow(
+    1000,
+    rows.some((r) => r.status === 'running' || r.status === 'cancelling')
+  )
+  // biome-ignore lint/correctness/useExhaustiveDependencies: facet/rowActions are per-render closures; facets.data + search + now drive the recompute
   const columns = useMemo<DataTableColumn<Run>[]>(
     () => [
       col.status<Run>({
@@ -516,19 +523,20 @@ export function RunListPage({
                   </span>
                 )}
                 {running
-                  ? [
+                  ? (stageText(r, t, now) ??
+                    [
                       t(`common.phase.${r.phase}`),
                       r.summary?.segment
                         ? t('runs.segment', { name: r.summary.segment })
                         : undefined,
-                      t('runs.progress', { pct: r.summary?.phase_progress_pct ?? 0 }),
+                      t('runs.progress', { pct: Math.round(phasePct(r, now)) }),
                     ]
                       .filter(Boolean)
-                      .join(' · ')
+                      .join(' · '))
                   : r.status_reason || r.test_ref.name}
               </>
             ),
-            progress: running ? runStageProgress(r, t) : undefined,
+            progress: running ? runStageProgress(r, t, now) : undefined,
             badges: (
               <>
                 {r.is_favorite && (
@@ -641,7 +649,7 @@ export function RunListPage({
       }),
       col.actions<Run>({ title: (r) => r.name, actions: rowActions }),
     ],
-    [t, slug, styles, search, onSearchChange, facets.data]
+    [t, slug, styles, search, onSearchChange, facets.data, now]
   )
   const prefs = useTablePrefs('runs', columns)
 

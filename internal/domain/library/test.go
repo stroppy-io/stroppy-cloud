@@ -26,7 +26,7 @@ import (
 TEST = database + workload + sizes + provider. Validation is the product's
 heart: does the workload speak the database's protocol, is every role
 sized at least as big as it needs to be, is the provider profile ready,
-does keep fit the limits. It never blocks a save — a test is a draft until
+It never blocks a save — a test is a draft until
 it fits — and it is recomputed on every read, so a changed library entry
 or a re-verified profile is reflected without a stored cache.
 */
@@ -199,7 +199,12 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		var params map[string]any
 		_ = json.Unmarshal(dbSpec.Params, &params) //nolint:errcheck // baked by DeriveDatabase
 		if kind, ok := s.catalog.Database(dbSpec.Kind); ok {
-			if speaks := dbkind.Protocols(dbSpec.Kind, params); len(speaks) > 0 && !hasProtocol(speaks, wlSpec.Protocol) {
+			switch speaks := dbkind.Protocols(dbSpec.Kind, params); {
+			case speaks == nil || hasProtocol(speaks, wlSpec.Protocol):
+			case len(speaks) == 0:
+				issue("workload.protocol", "protocol_mismatch", "ERROR",
+					fmt.Sprintf("%s with these parameters accepts no workload", kind.Title), nil)
+			default:
 				issue("workload.protocol", "protocol_mismatch", "ERROR",
 					fmt.Sprintf("%s speaks %s, the workload uses %s", kind.Title, joinProtocols(speaks), wlSpec.Protocol), string(speaks[0]))
 			}
@@ -316,14 +321,6 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 	} else {
 		for _, finding := range pipelinespec.CheckResources(preview) {
 			issue(finding.Path, finding.Code, finding.Severity, finding.Message, nil)
-		}
-	}
-
-	// keep vs limits
-	if spec.Keep > 0 && s.limits != nil {
-		maxKeep, err := s.limits.MaxKeep(ctx, tenantID)
-		if err == nil && spec.Keep > maxKeep {
-			issue("keep", "over_limit", "ERROR", fmt.Sprintf("keep exceeds the tenant limit %s", maxKeep), maxKeep.String())
 		}
 	}
 

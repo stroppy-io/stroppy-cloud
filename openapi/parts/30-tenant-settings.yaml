@@ -29,19 +29,6 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/TenantSettings' }
         default: { $ref: '#/components/responses/Problem' }
-  /api/v1/t/{slug}/limits:
-    get:
-      operationId: getTenantLimits
-      tags: [Tenant Settings]
-      parameters: [{ $ref: '#/components/parameters/slug' }]
-      summary: Effective limits (platform ceilings applied).
-      responses:
-        '200':
-          description: Limits.
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/TenantLimits' }
-        default: { $ref: '#/components/responses/Problem' }
   /api/v1/t/{slug}/providers:
     get:
       operationId: listProviderProfiles
@@ -316,16 +303,6 @@ components:
       properties:
         tenant: { type: boolean }
         global: { type: boolean }
-    TenantLimits:
-      type: object
-      required: [max_concurrent_runs, max_machines_per_run, max_size, max_keep, run_retention_max_days]
-      properties:
-        max_concurrent_runs: { type: integer }
-        max_machines_per_run: { type: integer }
-        max_size: { $ref: '#/components/schemas/Size' }
-        max_keep: { type: string, description: Go duration. }
-        run_retention_max_days: { type: integer }
-        source: { type: string, enum: [platform_default, tenant_override], readOnly: true }
     ProviderKind:
       type: string
       enum: [yandex, aws]

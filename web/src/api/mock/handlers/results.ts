@@ -222,7 +222,6 @@ route('GET', '/api/v1/t/:slug/dashboard', ({ store, params }) => {
       .slice(0, 5),
     top_results: top?.entries.slice(0, 5) ?? [],
     providers: t.providers,
-    limits: t.limits,
   }
   return { json: dashboard }
 })

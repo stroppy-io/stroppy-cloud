@@ -1,6 +1,7 @@
 import { type ExportFormat, publicMutations, type ShareSnapshot } from '@api/queries/results'
 import { toast } from '@app/Toaster'
 import { useThemeMode } from '@app/theme-context'
+import { Logo } from '@components/Logo'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import {
@@ -8,7 +9,6 @@ import {
   Button,
   ButtonGroup,
   Dropdown,
-  Icon,
   IconButton,
   Menu,
   Text,
@@ -47,16 +47,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     textDecoration: 'none',
     whiteSpace: 'nowrap',
     '&:hover': { color: theme.colors.text.link },
-  }),
-  logo: css({
-    width: 24,
-    height: 24,
-    borderRadius: theme.shape.radius.default,
-    background: theme.colors.primary.main,
-    color: theme.colors.primary.contrastText,
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   }),
   meta: css({
     display: 'flex',
@@ -113,9 +103,7 @@ export function PublicHeader({ token, snapshot }: { token: string; snapshot?: Sh
     <header className={styles.header}>
       <div className={styles.inner}>
         <a href="/" className={styles.brand}>
-          <span className={styles.logo}>
-            <Icon name="database" size="sm" />
-          </span>
+          <Logo size={28} />
           {t('common.appName')}
         </a>
         <div className={styles.meta}>

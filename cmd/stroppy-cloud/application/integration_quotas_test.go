@@ -39,6 +39,28 @@ func TestE2EQuotaVisibility(t *testing.T) {
 	e.want(e.req(http.MethodPost, path+":refresh", nil, tok), http.StatusOK, &report)
 	e.problem(e.req(http.MethodPost, launch, map[string]any{}, tok), http.StatusUnprocessableEntity, "limit_exceeded")
 
+	// Within the whole limit but no room now: the run is accepted and waits.
+	e.graphene.mu.Lock()
+	e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 1000, Used: 999, Unit: "cores"}}
+	e.graphene.mu.Unlock()
+	e.want(e.req(http.MethodPost, path+":refresh", nil, tok), http.StatusOK, &report)
+	var waiting runView
+	e.want(e.req(http.MethodPost, launch, map[string]any{}, tok), http.StatusCreated, &waiting)
+	if waiting.Status != "pending" || waiting.Queue.WaitingFor != "quota" {
+		t.Fatalf("queued run %+v", waiting)
+	}
+	var cancelled runView
+	e.want(e.req(http.MethodPost, base+"/runs/"+waiting.ID+":cancel", nil, tok), http.StatusOK, &cancelled)
+	if cancelled.Status != "cancelled" {
+		t.Fatalf("a queued run is cancelled at once: %+v", cancelled)
+	}
+	if _, ok := e.graphene.runOf(waiting.ID); ok {
+		t.Fatal("a queued run reached Graphene")
+	}
+	e.graphene.mu.Lock()
+	e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 1, Used: 1, Unit: "cores"}}
+	e.graphene.mu.Unlock()
+
 	e.graphene.mu.Lock()
 	e.graphene.quotaUnavailableReason = "permission_denied"
 	e.graphene.mu.Unlock()

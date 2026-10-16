@@ -12,49 +12,10 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/build"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/admin"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 )
 
-func limitsOf(l settings.Limits) oas.TenantLimits {
-	src := oas.TenantLimitsSourcePlatformDefault
-	if l.Overridden {
-		src = oas.TenantLimitsSourceTenantOverride
-	}
-	return oas.TenantLimits{MaxConcurrentRuns: l.MaxConcurrentRuns, MaxMachinesPerRun: l.MaxMachinesPerRun, MaxSize: oas.Size(l.MaxSize), MaxKeep: l.MaxKeep.String(), RunRetentionMaxDays: l.RunRetentionMaxDays, Source: oas.NewOptTenantLimitsSource(src)}
-}
-
-// limitsWriteOf turns a TenantLimitsWrite into limits; nil when every
-// field is null (= back to defaults).
-func limitsWriteOf(w oas.TenantLimitsWrite) (*settings.Limits, error) {
-	l := settings.Limits{}
-	set := false
-	if v, ok := w.MaxConcurrentRuns.Get(); ok {
-		l.MaxConcurrentRuns, set = v, true
-	}
-	if v, ok := w.MaxMachinesPerRun.Get(); ok {
-		l.MaxMachinesPerRun, set = v, true
-	}
-	if v, ok := w.MaxSize.Get(); ok {
-		l.MaxSize, set = string(v), true
-	}
-	if v, ok := w.MaxKeep.Get(); ok {
-		d, err := time.ParseDuration(v)
-		if err != nil {
-			return nil, errs.Invalid("max_keep is not a duration").Because("max_keep_is_not_a_duration")
-		}
-		l.MaxKeep, set = d, true
-	}
-	if v, ok := w.RunRetentionMaxDays.Get(); ok {
-		l.RunRetentionMaxDays, set = v, true
-	}
-	if !set {
-		return nil, nil //nolint:nilnil // all-null = clear the override
-	}
-	return &l, nil
-}
-
-func (h *Handler) adminTenantOf(v admin.TenantView, full bool) *oas.AdminTenant {
+func (h *Handler) adminTenantOf(v admin.TenantView) *oas.AdminTenant {
 	t := v.Tenant
 	out := &oas.AdminTenant{
 		ID: t.ID, Slug: t.Slug, Name: t.Name, Status: oas.AdminTenantStatus(t.Status), Owner: oas.UserRef{ID: t.OwnerID.String()},
@@ -74,9 +35,6 @@ func (h *Handler) adminTenantOf(v admin.TenantView, full bool) *oas.AdminTenant 
 	}
 	if v.SuspendedReason != "" {
 		out.SuspendedReason = oas.NewOptString(v.SuspendedReason)
-	}
-	if full {
-		out.Limits = oas.NewOptTenantLimits(limitsOf(v.Limits))
 	}
 	return out
 }
@@ -125,7 +83,7 @@ func (h *Handler) AdminListTenants(ctx context.Context, params oas.AdminListTena
 	list, meta := page(list, offset, limit)
 	out := &oas.AdminListTenantsOK{Data: make([]oas.AdminTenant, 0, len(list)), Meta: meta}
 	for _, v := range list {
-		out.Data = append(out.Data, *h.adminTenantOf(v, false))
+		out.Data = append(out.Data, *h.adminTenantOf(v))
 	}
 	return out, nil
 }
@@ -140,7 +98,7 @@ func (h *Handler) AdminGetTenant(ctx context.Context, params oas.AdminGetTenantP
 	if err != nil {
 		return nil, err
 	}
-	return h.adminTenantOf(v, true), nil
+	return h.adminTenantOf(v), nil
 }
 
 // AdminSuspendTenant — block.
@@ -157,7 +115,7 @@ func (h *Handler) AdminSuspendTenant(ctx context.Context, req oas.OptAdminSuspen
 	if err != nil {
 		return nil, err
 	}
-	return h.adminTenantOf(v, true), nil
+	return h.adminTenantOf(v), nil
 }
 
 // AdminResumeTenant — unblock.
@@ -170,25 +128,7 @@ func (h *Handler) AdminResumeTenant(ctx context.Context, params oas.AdminResumeT
 	if err != nil {
 		return nil, err
 	}
-	return h.adminTenantOf(v, true), nil
-}
-
-// AdminSetTenantLimits — override (all-null clears).
-func (h *Handler) AdminSetTenantLimits(ctx context.Context, req *oas.TenantLimitsWrite, params oas.AdminSetTenantLimitsParams) (*oas.TenantLimits, error) {
-	a, err := adminActor(ctx)
-	if err != nil {
-		return nil, err
-	}
-	l, err := limitsWriteOf(*req)
-	if err != nil {
-		return nil, err
-	}
-	out, err := h.deps.Admin.SetLimits(ctx, a, params.Slug, l)
-	if err != nil {
-		return nil, err
-	}
-	lim := limitsOf(out)
-	return &lim, nil
+	return h.adminTenantOf(v), nil
 }
 
 // AdminAssignOwner — new owner.
@@ -205,7 +145,7 @@ func (h *Handler) AdminAssignOwner(ctx context.Context, req *oas.AdminAssignOwne
 	if err != nil {
 		return nil, err
 	}
-	return h.adminTenantOf(v, true), nil
+	return h.adminTenantOf(v), nil
 }
 
 // AdminDeleteTenant — remove.
@@ -365,10 +305,10 @@ func (h *Handler) AdminListAudit(ctx context.Context, params oas.AdminListAuditP
 	return pg, nil
 }
 
-func systemOf(s admin.SystemSettings, defaults settings.Limits) *oas.SystemSettings {
+func systemOf(s admin.SystemSettings) *oas.SystemSettings {
 	out := &oas.SystemSettings{
 		TenantCreation: oas.SystemSettingsTenantCreation(s.TenantCreation), PublicRatingEnabled: s.PublicRatingEnabled, ExamplesEnabled: s.ExamplesEnabled,
-		DefaultLimits: limitsOf(defaults), RunRetentionMaxDays: s.RunRetentionMaxDays, UpdatedAt: oas.NewOptDateTime(s.UpdatedAt),
+		UpdatedAt: oas.NewOptDateTime(s.UpdatedAt),
 	}
 	if len(s.StroppyCatalog) > 0 {
 		out.StroppyCatalog = oas.NewOptSchemaValue(schemaValueOf(s.StroppyCatalog))
@@ -392,7 +332,7 @@ func (h *Handler) GetSystemSettings(ctx context.Context) (*oas.SystemSettings, e
 	if err != nil {
 		return nil, err
 	}
-	return systemOf(s, h.deps.Admin.DefaultLimits(ctx)), nil
+	return systemOf(s), nil
 }
 
 // PatchSystemSettings — change the platform row.
@@ -412,34 +352,6 @@ func (h *Handler) PatchSystemSettings(ctx context.Context, req *oas.SystemSettin
 	if v, ok := req.ExamplesEnabled.Get(); ok {
 		p.ExamplesEnabled = &v
 	}
-	if v, ok := req.DefaultLimits.Get(); ok {
-		l, err := limitsWriteOf(v)
-		if err != nil {
-			return nil, err
-		}
-		if l != nil {
-			def := h.deps.Admin.DefaultLimits(ctx)
-			if l.MaxConcurrentRuns <= 0 {
-				l.MaxConcurrentRuns = def.MaxConcurrentRuns
-			}
-			if l.MaxMachinesPerRun <= 0 {
-				l.MaxMachinesPerRun = def.MaxMachinesPerRun
-			}
-			if l.MaxSize == "" {
-				l.MaxSize = def.MaxSize
-			}
-			if l.MaxKeep <= 0 {
-				l.MaxKeep = def.MaxKeep
-			}
-			if l.RunRetentionMaxDays <= 0 {
-				l.RunRetentionMaxDays = def.RunRetentionMaxDays
-			}
-		}
-		p.DefaultLimits, p.SetDefaultLimits = l, true
-	}
-	if v, ok := req.RunRetentionMaxDays.Get(); ok {
-		p.RunRetentionMaxDays = &v
-	}
 	if v, ok := req.StroppyCatalog.Get(); ok {
 		p.StroppyCatalog, p.SetCatalog = rawOf(v), true
 	}
@@ -447,7 +359,7 @@ func (h *Handler) PatchSystemSettings(ctx context.Context, req *oas.SystemSettin
 	if err != nil {
 		return nil, err
 	}
-	return systemOf(s, h.deps.Admin.DefaultLimits(ctx)), nil
+	return systemOf(s), nil
 }
 
 // GetAdminStatus — the status page.

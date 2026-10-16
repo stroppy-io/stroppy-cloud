@@ -28,7 +28,6 @@ type Service struct {
 	catalog   *catalog.Catalog
 	access    Access
 	profiles  Profiles
-	limits    Limits
 	audit     *audit.Service
 	// testUsers reports who references a test beyond the library (suites,
 	// schedules); nil = nobody.
@@ -47,8 +46,8 @@ func (s *Service) WithTestUsers(u TestUsers) *Service {
 }
 
 // NewService builds the service.
-func NewService(repo Repository, validate Validator, cat *catalog.Catalog, access Access, profiles Profiles, limits Limits, auditSvc *audit.Service) *Service {
-	return &Service{repo: repo, validate: validate, catalog: cat, access: access, profiles: profiles, limits: limits, audit: auditSvc}
+func NewService(repo Repository, validate Validator, cat *catalog.Catalog, access Access, profiles Profiles, auditSvc *audit.Service) *Service {
+	return &Service{repo: repo, validate: validate, catalog: cat, access: access, profiles: profiles, audit: auditSvc}
 }
 
 // member / writer are the two access levels: viewers read, members write.

@@ -58,13 +58,6 @@ export function SettingsHeader() {
       to: '/t/$slug/settings/audit',
       params,
     },
-    {
-      id: 'limits',
-      label: t('settings.tabs.limits'),
-      icon: 'sliders-v-alt',
-      to: '/t/$slug/settings/limits',
-      params,
-    },
   ]
   return (
     <PageHeader

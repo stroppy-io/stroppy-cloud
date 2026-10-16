@@ -407,7 +407,6 @@ components:
         providers:
           type: array
           items: { $ref: '#/components/schemas/ProviderProfile' }
-        limits: { $ref: '#/components/schemas/TenantLimits' }
     TenantPipelines:
       type: object
       readOnly: true

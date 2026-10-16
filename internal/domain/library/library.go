@@ -289,8 +289,3 @@ type Access interface {
 type Profiles interface {
 	ByID(ctx context.Context, id uuid.UUID) (provider.Profile, error)
 }
-
-// Limits reads the tenant's effective limits.
-type Limits interface {
-	MaxKeep(ctx context.Context, tenantID uuid.UUID) (time.Duration, error)
-}

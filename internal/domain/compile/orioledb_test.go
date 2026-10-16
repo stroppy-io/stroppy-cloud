@@ -23,7 +23,7 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	db, _ := cat.Database(catalog.OrioleDB)
 	for _, version := range db.Versions {
@@ -64,6 +64,9 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 				}
 				count := 0
 				for _, c := range out.Spec.Containers {
+					if strings.HasSuffix(c.Name, "-postgres-exporter") && !strings.Contains(strings.Join(c.Cmd, " "), "--no-collector.stat_user_tables") {
+						t.Errorf("%s: stat_user_tables collector on (segfaults OrioleDB during CREATE INDEX)", c.Name)
+					}
 					if !strings.HasSuffix(c.Name, "-orioledb") {
 						continue
 					}

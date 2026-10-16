@@ -4,7 +4,6 @@ import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query'
 import { keys } from './keys'
 
 export type AdminTenant = Schemas['AdminTenant']
-export type TenantLimitsWrite = Schemas['TenantLimitsWrite']
 export type SystemSettingsPatch = Schemas['SystemSettingsPatch']
 export type AdminRun = Schemas['Run'] & { tenant?: Schemas['Ref'] }
 
@@ -107,8 +106,6 @@ export const adminMutations = {
     ),
   resumeTenant: (slug: string) =>
     unwrap(api.POST('/api/v1/admin/tenants/{slug}:resume', { params: { path: { slug } } })),
-  setLimits: (slug: string, body: TenantLimitsWrite) =>
-    unwrap(api.PUT('/api/v1/admin/tenants/{slug}/limits', { params: { path: { slug } }, body })),
   assignOwner: (slug: string, userId: string) =>
     unwrap(
       api.POST('/api/v1/admin/tenants/{slug}:assign-owner', {

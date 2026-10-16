@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 const getStyles = (theme: GrafanaTheme2) => ({
   section: css({
     marginTop: theme.spacing(5),
+    '&[data-tabbed]': { marginTop: theme.spacing(2) },
     breakInside: 'avoid-page',
     '&:first-of-type': { marginTop: theme.spacing(3) },
   }),
@@ -24,6 +25,13 @@ const getStyles = (theme: GrafanaTheme2) => ({
     fontSize: theme.typography.h4.fontSize,
   }),
   hint: css({ color: theme.colors.text.secondary, marginLeft: 'auto' }),
+  // Inside a tab the tab names the section: the header only comes back on paper.
+  printOnly: css({ display: 'none', '@media print': { display: 'flex' } }),
+  intro: css({
+    color: theme.colors.text.secondary,
+    margin: theme.spacing(0, 0, 2),
+    '@media print': { display: 'none' },
+  }),
   sub: css({
     margin: theme.spacing(3, 0, 1),
     fontSize: theme.typography.h5.fontSize,
@@ -94,18 +102,21 @@ export function ReportSection({
   index,
   title,
   hint,
+  tabbed,
   children,
 }: {
   id: string
   index: number
   title: ReactNode
   hint?: ReactNode
+  tabbed?: boolean
   children: ReactNode
 }) {
   const styles = useReportStyles()
   return (
-    <section id={id} className={styles.section}>
-      <div className={styles.head}>
+    <section id={id} className={styles.section} data-tabbed={tabbed || undefined}>
+      {tabbed && hint && <p className={styles.intro}>{hint}</p>}
+      <div className={cx(styles.head, tabbed && styles.printOnly)}>
         <span className={styles.num}>{String(index).padStart(2, '0')}</span>
         <Text element="h2" variant="h3">
           {title ?? ''}

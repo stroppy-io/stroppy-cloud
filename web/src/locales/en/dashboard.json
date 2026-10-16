@@ -52,14 +52,6 @@
     "unavailable": "quotas unavailable",
     "observed": "observed {{when}}"
   },
-  "limits": {
-    "title": "Limits",
-    "concurrent": "Concurrent runs",
-    "machines": "Machines per run",
-    "maxSize": "Max size",
-    "maxKeep": "Max keep",
-    "retention": "Retention, days"
-  },
   "onboarding": {
     "title": "First run: {{tenant}}",
     "subtitle": "Five steps to your first result. Done steps tick themselves off.",

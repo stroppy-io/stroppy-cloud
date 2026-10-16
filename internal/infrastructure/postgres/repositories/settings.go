@@ -23,20 +23,12 @@ var _ settings.Repository = (*SettingsRepo)(nil)
 // NewSettingsRepo builds the repo.
 func NewSettingsRepo(database tx.DB) *SettingsRepo { return &SettingsRepo{q: db.New(database)} }
 
-func (r *SettingsRepo) Ensure(ctx context.Context, tenantID uuid.UUID) (settings.Settings, *settings.Limits, error) {
+func (r *SettingsRepo) Ensure(ctx context.Context, tenantID uuid.UUID) (settings.Settings, error) {
 	row, err := r.q.EnsureSettings(ctx, tenantID)
 	if err != nil {
-		return settings.Settings{}, nil, infraf("settings: ensure: %v", err)
+		return settings.Settings{}, infraf("settings: ensure: %v", err)
 	}
-	st := settingsRow(db.UpdateSettingsRow(row))
-	var override *settings.Limits
-	if len(row.LimitsOverride) > 0 && string(row.LimitsOverride) != "null" {
-		var l settings.Limits
-		if err := json.Unmarshal(row.LimitsOverride, &l); err == nil {
-			override = &l
-		}
-	}
-	return st, override, nil
+	return settingsRow(db.UpdateSettingsRow(row)), nil
 }
 
 func (r *SettingsRepo) Update(ctx context.Context, tenantID uuid.UUID, p settings.Patch) (settings.Settings, error) {
@@ -57,26 +49,6 @@ func (r *SettingsRepo) Update(ctx context.Context, tenantID uuid.UUID, p setting
 		return settings.Settings{}, infraf("settings: update: %v", err)
 	}
 	return settingsRow(row), nil
-}
-
-func (r *SettingsRepo) SetLimitsOverride(ctx context.Context, tenantID uuid.UUID, l *settings.Limits) error {
-	var raw json.RawMessage
-	if l != nil {
-		raw, _ = json.Marshal(l) //nolint:errcheck // struct always marshals
-	}
-	// A tenant nobody has opened the settings of has no row yet: the
-	// override must not vanish into an update of nothing.
-	if _, err := r.q.EnsureSettings(ctx, tenantID); err != nil {
-		return infraf("settings: ensure: %v", err)
-	}
-	n, err := r.q.SetLimitsOverride(ctx, db.SetLimitsOverrideParams{TenantID: tenantID, LimitsOverride: raw})
-	if err != nil {
-		return infraf("settings: limits: %v", err)
-	}
-	if n != 1 {
-		return infraf("settings: limits: %d rows updated", n)
-	}
-	return nil
 }
 
 func settingsRow(row db.UpdateSettingsRow) settings.Settings {

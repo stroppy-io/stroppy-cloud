@@ -249,28 +249,6 @@ func encodeAdminResumeTenantResponse(response *AdminTenant, w http.ResponseWrite
 	return nil
 }
 
-func encodeAdminSetTenantLimitsResponse(response *TenantLimits, w http.ResponseWriter, span trace.Span) error {
-	if err := func() error {
-		if err := response.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "validate")
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(200)
-	span.SetStatus(codes.Ok, http.StatusText(200))
-
-	e := new(jx.Encoder)
-	response.Encode(e)
-	if _, err := e.WriteTo(w); err != nil {
-		return errors.Wrap(err, "write")
-	}
-
-	return nil
-}
-
 func encodeAdminSuspendTenantResponse(response *AdminTenant, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
@@ -1566,6 +1544,28 @@ func encodeGetPublicShareResponse(response *ShareSnapshotHeaders, w http.Respons
 	return nil
 }
 
+func encodeGetPublicShareMetricSeriesResponse(response *RunMetricSeries, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if err := response.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
 func encodeGetPublicShareMetricsResponse(response *RunMetrics, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
@@ -1633,6 +1633,28 @@ func encodeGetRunFacetsResponse(response *GetRunFacetsOK, w http.ResponseWriter,
 }
 
 func encodeGetRunLogFacetsResponse(response *GetRunLogFacetsOK, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if err := response.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
+func encodeGetRunMetricSeriesResponse(response *RunMetricSeries, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
 			return err
@@ -1881,28 +1903,6 @@ func encodeGetTenantResponse(response *Tenant, w http.ResponseWriter, span trace
 }
 
 func encodeGetTenantDashboardResponse(response *TenantDashboard, w http.ResponseWriter, span trace.Span) error {
-	if err := func() error {
-		if err := response.Validate(); err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "validate")
-	}
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(200)
-	span.SetStatus(codes.Ok, http.StatusText(200))
-
-	e := new(jx.Encoder)
-	response.Encode(e)
-	if _, err := e.WriteTo(w); err != nil {
-		return errors.Wrap(err, "write")
-	}
-
-	return nil
-}
-
-func encodeGetTenantLimitsResponse(response *TenantLimits, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
 			return err
@@ -2320,6 +2320,28 @@ func encodeListProviderProfilesResponse(response *ListProviderProfilesOK, w http
 	return nil
 }
 
+func encodeListPublicShareMetricNamesResponse(response *RunMetricNames, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if err := response.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
 func encodeListRunArtifactsResponse(response *ListRunArtifactsOK, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
@@ -2343,6 +2365,28 @@ func encodeListRunArtifactsResponse(response *ListRunArtifactsOK, w http.Respons
 }
 
 func encodeListRunEventsResponse(response *ListRunEventsOK, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if err := response.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
+func encodeListRunMetricNamesResponse(response *RunMetricNames, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {
 			return err

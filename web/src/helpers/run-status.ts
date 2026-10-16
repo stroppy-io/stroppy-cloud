@@ -1,5 +1,6 @@
-import type { RunPhase, RunStatus } from '@api/types'
+import type { Run, RunPhase, RunStatus } from '@api/types'
 import type { IconName } from '@grafana/data'
+import { phasePct } from '@helpers/run-progress'
 import type { TFunction } from 'i18next'
 
 export type StatusTone = 'success' | 'error' | 'warning' | 'info' | 'secondary'
@@ -98,16 +99,17 @@ export function phaseIcon(phase: RunPhase | string): IconName {
 
 // Staged progress line of a running run for table rows: one segment per
 // phase between queued and done, the current one filled to the phase's own
-// progress (summary.phase_progress_pct).
+// progress at `now` (phasePct).
 export function runStageProgress(
-  run: { phase: RunPhase; summary?: { phase_progress_pct?: number } | null },
-  t: TFunction
+  run: Run,
+  t: TFunction,
+  now: number = Date.now()
 ): { stages: number; current: number; pct: number; labels: string[] } {
   const stages: RunPhase[] = PHASE_ORDER.filter((p) => p !== 'queued' && p !== 'done')
   return {
     stages: stages.length,
     current: Math.max(0, stages.indexOf(run.phase)),
-    pct: run.summary?.phase_progress_pct ?? 0,
+    pct: phasePct(run, now),
     labels: stages.map((p) => t(`common.phase.${p}`)),
   }
 }

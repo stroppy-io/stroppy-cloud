@@ -108,7 +108,6 @@ CREATE TABLE audit_log (
 CREATE INDEX audit_log_tenant_idx ON audit_log (tenant_id, id DESC);
 
 -- tenant_settings: defaults of a tenant (one row, created lazily).
--- limits_override is the platform admin's per-tenant ceiling (NULL = platform default).
 CREATE TABLE tenant_settings (
     tenant_id           uuid        PRIMARY KEY REFERENCES tenants (id) ON DELETE CASCADE,
     run_retention_days  int         NOT NULL DEFAULT 90,
@@ -116,7 +115,6 @@ CREATE TABLE tenant_settings (
     rating_global       boolean     NOT NULL DEFAULT false,
     default_keep        text        NOT NULL DEFAULT '0s',
     notification_emails jsonb       NOT NULL DEFAULT '[]'::jsonb,
-    limits_override     jsonb,
     updated_at          timestamptz NOT NULL DEFAULT now()
 );
 
@@ -453,15 +451,12 @@ CREATE INDEX shares_tenant_idx ON shares (tenant_id, created_at DESC);
 CREATE INDEX shares_target_idx ON shares (target_kind, target_id);
 
 -- system_settings: the platform's single row (§16.9): tenant creation
--- policy, public rating, examples, default limits of new tenants, the
--- stroppy catalog override.
+-- policy, public rating, examples, the stroppy catalog override.
 CREATE TABLE system_settings (
     id                     int         PRIMARY KEY DEFAULT 1 CHECK (id = 1),
     tenant_creation        text        NOT NULL DEFAULT 'anyone',
     public_rating_enabled  boolean     NOT NULL DEFAULT true,
     examples_enabled       boolean     NOT NULL DEFAULT true,
-    default_limits         jsonb,
-    run_retention_max_days int         NOT NULL DEFAULT 365,
     stroppy_catalog        jsonb,
     updated_at             timestamptz NOT NULL DEFAULT now(),
     updated_by             uuid        REFERENCES profiles (id) ON DELETE SET NULL

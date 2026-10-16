@@ -24,29 +24,36 @@
     "done": "Report downloaded",
     "failed": "Export failed"
   },
-  "nav": {
-    "summary": "Summary",
-    "timeline": "Timeline",
-    "setup": "Setup",
-    "results": "Results",
-    "configs": "Configs"
-  },
   "summary": {
     "title": "Summary",
-    "tps": "Throughput",
+    "tps": "Transactions per second",
+    "tpsHint": "average over the load",
     "p99": "Latency p99",
     "p95": "Latency p95",
     "p50": "Latency p50",
     "errors": "Errors",
+    "errorsHint": "errors over the run",
+    "errorRate": "{{rate}} of queries",
+    "loadDuration": "Load ran for",
+    "tookTotal": "whole run {{duration}}",
+    "segments_one": "{{count}} segment",
+    "segments_other": "{{count}} segments",
+    "machines_one": "{{count}} machine",
+    "machines_other": "{{count}} machines",
+    "vus_one": "{{count}} virtual user",
+    "vus_other": "{{count}} virtual users",
+    "scale": "scale {{value}}",
+    "noHeadline": "No headline metrics: the run never reached the load.",
     "duration": "Duration",
     "started": "Started",
     "finished": "Finished",
     "status": "Status",
-    "noHeadline": "No result metrics: the run never reached the load."
+    "database": "Database",
+    "load": "Load"
   },
   "timeline": {
     "title": "Timeline",
-    "hint": "What happened and when: phases, machines, load segments.",
+    "hint": "How the run went: phases, machines and load segments over time.",
     "phases": "Phases",
     "segments": "Workload segments",
     "empty": "No events were captured.",
@@ -56,7 +63,7 @@
   },
   "setup": {
     "title": "Setup",
-    "hint": "How the system under test was set up.",
+    "hint": "What was tested: the database, its parameters, machines and workload.",
     "database": "Database",
     "kind": "Kind",
     "version": "Version",
@@ -92,7 +99,7 @@
   },
   "results": {
     "title": "Results",
-    "hint": "What came out of the workload.",
+    "hint": "What the load showed: segments, checks and the key charts.",
     "segments": "Segments",
     "segment": {
       "name": "Segment",
@@ -147,5 +154,16 @@
     "hint": "The author revoked this report or it expired. Ask them for a new link.",
     "notFound": "There is no shared report with this link.",
     "home": "Go to Stroppy Cloud"
+  },
+  "tabs": {
+    "results": "Results",
+    "explorer": "All metrics",
+    "setup": "Setup",
+    "timeline": "Run log",
+    "configs": "Configs"
+  },
+  "explorer": {
+    "title": "All metrics",
+    "hint": "Every series collected during the run: database, machines, workload. Find a metric and open its chart."
   }
 }

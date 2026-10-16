@@ -4,10 +4,13 @@ import {
   errorReasonValues,
   metricGroupValues,
   metricKeyValues,
+  metricKindValues,
+  metricOriginValues,
   quotaNameValues,
   quotaUnitValues,
   requirementReasonValues,
   runEventKindValues,
+  runStageKindValues,
   runWaitReasonValues,
   topologyModeValues,
   topologyRoleValues,
@@ -29,6 +32,7 @@ const vocabularies: Record<string, string[]> = {
   RequirementReason: requirementReasonValues.map((r) => `library.requirements.reasons.${r}`),
   RunEventKind: runEventKindValues.map((k) => `runs.events.titles.${eventKey(k)}`),
   RunWaitReason: runWaitReasonValues.map((r) => `runs.queue.${r}`),
+  RunStageKind: runStageKindValues.map((k) => `runs.stage.${k}`),
   AuditAction: auditActionValues.map((a) => `settings.audit.actions.${a.replaceAll('.', '_')}`),
   AuditTargetKind: auditTargetKindValues.map((k) => `settings.audit.targetKinds.${k}`),
   MetricKey: metricKeyValues.map((m) => `catalog.metrics.${m}.title`),
@@ -38,6 +42,8 @@ const vocabularies: Record<string, string[]> = {
   QuotaName: quotaNameValues.map((q) => `common.quota.${key(q)}`),
   QuotaUnit: quotaUnitValues.map((u) => `common.quotaUnit.${key(u)}`),
   ErrorReason: errorReasonValues.map((r) => `common.errors.reasons.${r}`),
+  MetricOrigin: metricOriginValues.map((o) => `runs.metrics.origin.${o}`),
+  MetricKind: metricKindValues.map((k) => `runs.metrics.kind.${k}`),
 }
 
 describe('vocabularies', () => {

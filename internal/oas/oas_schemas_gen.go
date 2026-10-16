@@ -1306,7 +1306,6 @@ type AdminTenant struct {
 	MemberCount       OptInt                 `json:"member_count"`
 	CreatedAt         time.Time              `json:"created_at"`
 	GrapheneNamespace OptString              `json:"graphene_namespace"`
-	Limits            OptTenantLimits        `json:"limits"`
 	SuspendedReason   OptString              `json:"suspended_reason"`
 	Counters          OptAdminTenantCounters `json:"counters"`
 	LastActivityAt    OptNilDateTime         `json:"last_activity_at"`
@@ -1360,11 +1359,6 @@ func (s *AdminTenant) GetCreatedAt() time.Time {
 // GetGrapheneNamespace returns the value of GrapheneNamespace.
 func (s *AdminTenant) GetGrapheneNamespace() OptString {
 	return s.GrapheneNamespace
-}
-
-// GetLimits returns the value of Limits.
-func (s *AdminTenant) GetLimits() OptTenantLimits {
-	return s.Limits
 }
 
 // GetSuspendedReason returns the value of SuspendedReason.
@@ -1430,11 +1424,6 @@ func (s *AdminTenant) SetCreatedAt(val time.Time) {
 // SetGrapheneNamespace sets the value of GrapheneNamespace.
 func (s *AdminTenant) SetGrapheneNamespace(val OptString) {
 	s.GrapheneNamespace = val
-}
-
-// SetLimits sets the value of Limits.
-func (s *AdminTenant) SetLimits(val OptTenantLimits) {
-	s.Limits = val
 }
 
 // SetSuspendedReason sets the value of SuspendedReason.
@@ -2229,7 +2218,6 @@ const (
 	AuditActionAdminSettingsUpdate    AuditAction = "admin.settings.update"
 	AuditActionAdminTenantAssignOwner AuditAction = "admin.tenant.assign_owner"
 	AuditActionAdminTenantDelete      AuditAction = "admin.tenant.delete"
-	AuditActionAdminTenantLimits      AuditAction = "admin.tenant.limits"
 	AuditActionAdminTenantResume      AuditAction = "admin.tenant.resume"
 	AuditActionAdminTenantSuspend     AuditAction = "admin.tenant.suspend"
 	AuditActionAdminUserPlatformAdmin AuditAction = "admin.user.platform_admin"
@@ -2289,7 +2277,6 @@ func (AuditAction) AllValues() []AuditAction {
 		AuditActionAdminSettingsUpdate,
 		AuditActionAdminTenantAssignOwner,
 		AuditActionAdminTenantDelete,
-		AuditActionAdminTenantLimits,
 		AuditActionAdminTenantResume,
 		AuditActionAdminTenantSuspend,
 		AuditActionAdminUserPlatformAdmin,
@@ -2354,8 +2341,6 @@ func (s AuditAction) MarshalText() ([]byte, error) {
 	case AuditActionAdminTenantAssignOwner:
 		return []byte(s), nil
 	case AuditActionAdminTenantDelete:
-		return []byte(s), nil
-	case AuditActionAdminTenantLimits:
 		return []byte(s), nil
 	case AuditActionAdminTenantResume:
 		return []byte(s), nil
@@ -2477,9 +2462,6 @@ func (s *AuditAction) UnmarshalText(data []byte) error {
 		return nil
 	case AuditActionAdminTenantDelete:
 		*s = AuditActionAdminTenantDelete
-		return nil
-	case AuditActionAdminTenantLimits:
-		*s = AuditActionAdminTenantLimits
 		return nil
 	case AuditActionAdminTenantResume:
 		*s = AuditActionAdminTenantResume
@@ -5234,9 +5216,6 @@ const (
 	ErrorReasonKeepIsNotADuration                  ErrorReason = "keep_is_not_a_duration"
 	ErrorReasonKeepMustNotBeNegative               ErrorReason = "keep_must_not_be_negative"
 	ErrorReasonKindMustBeYandexOrAWS               ErrorReason = "kind_must_be_yandex_or_aws"
-	ErrorReasonLimitKeep                           ErrorReason = "limit_keep"
-	ErrorReasonLimitMachinesPerRun                 ErrorReason = "limit_machines_per_run"
-	ErrorReasonLimitSize                           ErrorReason = "limit_size"
 	ErrorReasonLogCursorAmbiguous                  ErrorReason = "log_cursor_ambiguous"
 	ErrorReasonLogsStoreIsNotConnected             ErrorReason = "logs_store_is_not_connected"
 	ErrorReasonManagedYdbAutoscalingUnsupported    ErrorReason = "managed_ydb_autoscaling_unsupported"
@@ -5244,10 +5223,13 @@ const (
 	ErrorReasonManagedYdbRequiresNamedCredentials  ErrorReason = "managed_ydb_requires_named_credentials"
 	ErrorReasonManagedYdbRequiresYandexCloud       ErrorReason = "managed_ydb_requires_yandex_cloud"
 	ErrorReasonManagedYdbTypeUnknown               ErrorReason = "managed_ydb_type_unknown"
-	ErrorReasonMaxKeepIsNotADuration               ErrorReason = "max_keep_is_not_a_duration"
 	ErrorReasonMaxscaleMariadbOnly                 ErrorReason = "maxscale_mariadb_only"
 	ErrorReasonMemberNotFound                      ErrorReason = "member_not_found"
 	ErrorReasonMetadataNameIsRequired              ErrorReason = "metadata_name_is_required"
+	ErrorReasonMetricAggUnknown                    ErrorReason = "metric_agg_unknown"
+	ErrorReasonMetricFnUnknown                     ErrorReason = "metric_fn_unknown"
+	ErrorReasonMetricLabelUnknown                  ErrorReason = "metric_label_unknown"
+	ErrorReasonMetricNameRequired                  ErrorReason = "metric_name_required"
 	ErrorReasonMetricNotRatingEligible             ErrorReason = "metric_not_rating_eligible"
 	ErrorReasonMetricsSnapshotInvalid              ErrorReason = "metrics_snapshot_invalid"
 	ErrorReasonMetricsStoreIsNotConnected          ErrorReason = "metrics_store_is_not_connected"
@@ -5304,7 +5286,6 @@ const (
 	ErrorReasonRunIdempotencyConflict              ErrorReason = "run_idempotency_conflict"
 	ErrorReasonRunIds2To16Runs                     ErrorReason = "run_ids_2_to_16_runs"
 	ErrorReasonRunNotFound                         ErrorReason = "run_not_found"
-	ErrorReasonRunRetentionMaxDaysMustBePositive   ErrorReason = "run_retention_max_days_must_be_positive"
 	ErrorReasonRunSubmitUnavailable                ErrorReason = "run_submit_unavailable"
 	ErrorReasonScheduleFireFailed                  ErrorReason = "schedule_fire_failed"
 	ErrorReasonScheduleNotFound                    ErrorReason = "schedule_not_found"
@@ -5473,9 +5454,6 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonKeepIsNotADuration,
 		ErrorReasonKeepMustNotBeNegative,
 		ErrorReasonKindMustBeYandexOrAWS,
-		ErrorReasonLimitKeep,
-		ErrorReasonLimitMachinesPerRun,
-		ErrorReasonLimitSize,
 		ErrorReasonLogCursorAmbiguous,
 		ErrorReasonLogsStoreIsNotConnected,
 		ErrorReasonManagedYdbAutoscalingUnsupported,
@@ -5483,10 +5461,13 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonManagedYdbRequiresNamedCredentials,
 		ErrorReasonManagedYdbRequiresYandexCloud,
 		ErrorReasonManagedYdbTypeUnknown,
-		ErrorReasonMaxKeepIsNotADuration,
 		ErrorReasonMaxscaleMariadbOnly,
 		ErrorReasonMemberNotFound,
 		ErrorReasonMetadataNameIsRequired,
+		ErrorReasonMetricAggUnknown,
+		ErrorReasonMetricFnUnknown,
+		ErrorReasonMetricLabelUnknown,
+		ErrorReasonMetricNameRequired,
 		ErrorReasonMetricNotRatingEligible,
 		ErrorReasonMetricsSnapshotInvalid,
 		ErrorReasonMetricsStoreIsNotConnected,
@@ -5543,7 +5524,6 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonRunIdempotencyConflict,
 		ErrorReasonRunIds2To16Runs,
 		ErrorReasonRunNotFound,
-		ErrorReasonRunRetentionMaxDaysMustBePositive,
 		ErrorReasonRunSubmitUnavailable,
 		ErrorReasonScheduleFireFailed,
 		ErrorReasonScheduleNotFound,
@@ -5778,12 +5758,6 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case ErrorReasonKindMustBeYandexOrAWS:
 		return []byte(s), nil
-	case ErrorReasonLimitKeep:
-		return []byte(s), nil
-	case ErrorReasonLimitMachinesPerRun:
-		return []byte(s), nil
-	case ErrorReasonLimitSize:
-		return []byte(s), nil
 	case ErrorReasonLogCursorAmbiguous:
 		return []byte(s), nil
 	case ErrorReasonLogsStoreIsNotConnected:
@@ -5798,13 +5772,19 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 		return []byte(s), nil
 	case ErrorReasonManagedYdbTypeUnknown:
 		return []byte(s), nil
-	case ErrorReasonMaxKeepIsNotADuration:
-		return []byte(s), nil
 	case ErrorReasonMaxscaleMariadbOnly:
 		return []byte(s), nil
 	case ErrorReasonMemberNotFound:
 		return []byte(s), nil
 	case ErrorReasonMetadataNameIsRequired:
+		return []byte(s), nil
+	case ErrorReasonMetricAggUnknown:
+		return []byte(s), nil
+	case ErrorReasonMetricFnUnknown:
+		return []byte(s), nil
+	case ErrorReasonMetricLabelUnknown:
+		return []byte(s), nil
+	case ErrorReasonMetricNameRequired:
 		return []byte(s), nil
 	case ErrorReasonMetricNotRatingEligible:
 		return []byte(s), nil
@@ -5917,8 +5897,6 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 	case ErrorReasonRunIds2To16Runs:
 		return []byte(s), nil
 	case ErrorReasonRunNotFound:
-		return []byte(s), nil
-	case ErrorReasonRunRetentionMaxDaysMustBePositive:
 		return []byte(s), nil
 	case ErrorReasonRunSubmitUnavailable:
 		return []byte(s), nil
@@ -6319,15 +6297,6 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 	case ErrorReasonKindMustBeYandexOrAWS:
 		*s = ErrorReasonKindMustBeYandexOrAWS
 		return nil
-	case ErrorReasonLimitKeep:
-		*s = ErrorReasonLimitKeep
-		return nil
-	case ErrorReasonLimitMachinesPerRun:
-		*s = ErrorReasonLimitMachinesPerRun
-		return nil
-	case ErrorReasonLimitSize:
-		*s = ErrorReasonLimitSize
-		return nil
 	case ErrorReasonLogCursorAmbiguous:
 		*s = ErrorReasonLogCursorAmbiguous
 		return nil
@@ -6349,9 +6318,6 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 	case ErrorReasonManagedYdbTypeUnknown:
 		*s = ErrorReasonManagedYdbTypeUnknown
 		return nil
-	case ErrorReasonMaxKeepIsNotADuration:
-		*s = ErrorReasonMaxKeepIsNotADuration
-		return nil
 	case ErrorReasonMaxscaleMariadbOnly:
 		*s = ErrorReasonMaxscaleMariadbOnly
 		return nil
@@ -6360,6 +6326,18 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 		return nil
 	case ErrorReasonMetadataNameIsRequired:
 		*s = ErrorReasonMetadataNameIsRequired
+		return nil
+	case ErrorReasonMetricAggUnknown:
+		*s = ErrorReasonMetricAggUnknown
+		return nil
+	case ErrorReasonMetricFnUnknown:
+		*s = ErrorReasonMetricFnUnknown
+		return nil
+	case ErrorReasonMetricLabelUnknown:
+		*s = ErrorReasonMetricLabelUnknown
+		return nil
+	case ErrorReasonMetricNameRequired:
+		*s = ErrorReasonMetricNameRequired
 		return nil
 	case ErrorReasonMetricNotRatingEligible:
 		*s = ErrorReasonMetricNotRatingEligible
@@ -6528,9 +6506,6 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 		return nil
 	case ErrorReasonRunNotFound:
 		*s = ErrorReasonRunNotFound
-		return nil
-	case ErrorReasonRunRetentionMaxDaysMustBePositive:
-		*s = ErrorReasonRunRetentionMaxDaysMustBePositive
 		return nil
 	case ErrorReasonRunSubmitUnavailable:
 		*s = ErrorReasonRunSubmitUnavailable
@@ -10911,6 +10886,207 @@ func (s *MetricKey) UnmarshalText(data []byte) error {
 	}
 }
 
+// Counter — grows over the run (its rate is what to look at); gauge — a level.
+// Ref: #/components/schemas/MetricKind
+type MetricKind string
+
+const (
+	MetricKindCounter MetricKind = "counter"
+	MetricKindGauge   MetricKind = "gauge"
+)
+
+// AllValues returns all MetricKind values.
+func (MetricKind) AllValues() []MetricKind {
+	return []MetricKind{
+		MetricKindCounter,
+		MetricKindGauge,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricKind) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricKindCounter:
+		return []byte(s), nil
+	case MetricKindGauge:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricKind) UnmarshalText(data []byte) error {
+	switch MetricKind(data) {
+	case MetricKindCounter:
+		*s = MetricKindCounter
+		return nil
+	case MetricKindGauge:
+		*s = MetricKindGauge
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Where a metric comes from: exporter — a container's own Prometheus endpoint (node_exporter, the
+// database's exporter, a proxy, the engine itself); workload — stroppy; container — the
+// container statistics the agent samples; pipeline — the pipeline's own telemetry.
+// Ref: #/components/schemas/MetricOrigin
+type MetricOrigin string
+
+const (
+	MetricOriginExporter  MetricOrigin = "exporter"
+	MetricOriginWorkload  MetricOrigin = "workload"
+	MetricOriginContainer MetricOrigin = "container"
+	MetricOriginPipeline  MetricOrigin = "pipeline"
+)
+
+// AllValues returns all MetricOrigin values.
+func (MetricOrigin) AllValues() []MetricOrigin {
+	return []MetricOrigin{
+		MetricOriginExporter,
+		MetricOriginWorkload,
+		MetricOriginContainer,
+		MetricOriginPipeline,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricOrigin) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricOriginExporter:
+		return []byte(s), nil
+	case MetricOriginWorkload:
+		return []byte(s), nil
+	case MetricOriginContainer:
+		return []byte(s), nil
+	case MetricOriginPipeline:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricOrigin) UnmarshalText(data []byte) error {
+	switch MetricOrigin(data) {
+	case MetricOriginExporter:
+		*s = MetricOriginExporter
+		return nil
+	case MetricOriginWorkload:
+		*s = MetricOriginWorkload
+		return nil
+	case MetricOriginContainer:
+		*s = MetricOriginContainer
+		return nil
+	case MetricOriginPipeline:
+		*s = MetricOriginPipeline
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/MetricSeriesAgg
+type MetricSeriesAgg string
+
+const (
+	MetricSeriesAggSum MetricSeriesAgg = "sum"
+	MetricSeriesAggAvg MetricSeriesAgg = "avg"
+	MetricSeriesAggMax MetricSeriesAgg = "max"
+	MetricSeriesAggMin MetricSeriesAgg = "min"
+)
+
+// AllValues returns all MetricSeriesAgg values.
+func (MetricSeriesAgg) AllValues() []MetricSeriesAgg {
+	return []MetricSeriesAgg{
+		MetricSeriesAggSum,
+		MetricSeriesAggAvg,
+		MetricSeriesAggMax,
+		MetricSeriesAggMin,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricSeriesAgg) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricSeriesAggSum:
+		return []byte(s), nil
+	case MetricSeriesAggAvg:
+		return []byte(s), nil
+	case MetricSeriesAggMax:
+		return []byte(s), nil
+	case MetricSeriesAggMin:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricSeriesAgg) UnmarshalText(data []byte) error {
+	switch MetricSeriesAgg(data) {
+	case MetricSeriesAggSum:
+		*s = MetricSeriesAggSum
+		return nil
+	case MetricSeriesAggAvg:
+		*s = MetricSeriesAggAvg
+		return nil
+	case MetricSeriesAggMax:
+		*s = MetricSeriesAggMax
+		return nil
+	case MetricSeriesAggMin:
+		*s = MetricSeriesAggMin
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Value — the stored samples; rate — the per-second increase (counters).
+// Ref: #/components/schemas/MetricSeriesFn
+type MetricSeriesFn string
+
+const (
+	MetricSeriesFnValue MetricSeriesFn = "value"
+	MetricSeriesFnRate  MetricSeriesFn = "rate"
+)
+
+// AllValues returns all MetricSeriesFn values.
+func (MetricSeriesFn) AllValues() []MetricSeriesFn {
+	return []MetricSeriesFn{
+		MetricSeriesFnValue,
+		MetricSeriesFnRate,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricSeriesFn) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricSeriesFnValue:
+		return []byte(s), nil
+	case MetricSeriesFnRate:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricSeriesFn) UnmarshalText(data []byte) error {
+	switch MetricSeriesFn(data) {
+	case MetricSeriesFnValue:
+		*s = MetricSeriesFnValue
+		return nil
+	case MetricSeriesFnRate:
+		*s = MetricSeriesFnRate
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/MetricValue
 type MetricValue struct {
 	Value float64    `json:"value"`
@@ -13857,6 +14033,98 @@ func (o OptLogLineFields) Or(d LogLineFields) LogLineFields {
 	return d
 }
 
+// NewOptMetricSeriesAgg returns new OptMetricSeriesAgg with value set to v.
+func NewOptMetricSeriesAgg(v MetricSeriesAgg) OptMetricSeriesAgg {
+	return OptMetricSeriesAgg{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMetricSeriesAgg is optional MetricSeriesAgg.
+type OptMetricSeriesAgg struct {
+	Value MetricSeriesAgg
+	Set   bool
+}
+
+// IsSet returns true if OptMetricSeriesAgg was set.
+func (o OptMetricSeriesAgg) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMetricSeriesAgg) Reset() {
+	var v MetricSeriesAgg
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMetricSeriesAgg) SetTo(v MetricSeriesAgg) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMetricSeriesAgg) Get() (v MetricSeriesAgg, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMetricSeriesAgg) Or(d MetricSeriesAgg) MetricSeriesAgg {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptMetricSeriesFn returns new OptMetricSeriesFn with value set to v.
+func NewOptMetricSeriesFn(v MetricSeriesFn) OptMetricSeriesFn {
+	return OptMetricSeriesFn{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptMetricSeriesFn is optional MetricSeriesFn.
+type OptMetricSeriesFn struct {
+	Value MetricSeriesFn
+	Set   bool
+}
+
+// IsSet returns true if OptMetricSeriesFn was set.
+func (o OptMetricSeriesFn) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptMetricSeriesFn) Reset() {
+	var v MetricSeriesFn
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptMetricSeriesFn) SetTo(v MetricSeriesFn) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptMetricSeriesFn) Get() (v MetricSeriesFn, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptMetricSeriesFn) Or(d MetricSeriesFn) MetricSeriesFn {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptNilDateTime returns new OptNilDateTime with value set to v.
 func NewOptNilDateTime(v time.Time) OptNilDateTime {
 	return OptNilDateTime{
@@ -13977,69 +14245,6 @@ func (o OptNilInt) Get() (v int, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptNilInt) Or(d int) int {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptNilSize returns new OptNilSize with value set to v.
-func NewOptNilSize(v Size) OptNilSize {
-	return OptNilSize{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptNilSize is optional nullable Size.
-type OptNilSize struct {
-	Value Size
-	Set   bool
-	Null  bool
-}
-
-// IsSet returns true if OptNilSize was set.
-func (o OptNilSize) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptNilSize) Reset() {
-	var v Size
-	o.Value = v
-	o.Set = false
-	o.Null = false
-}
-
-// SetTo sets value to v.
-func (o *OptNilSize) SetTo(v Size) {
-	o.Set = true
-	o.Null = false
-	o.Value = v
-}
-
-// IsNull returns true if value is Null.
-func (o OptNilSize) IsNull() bool { return o.Null }
-
-// SetToNull sets value to null.
-func (o *OptNilSize) SetToNull() {
-	o.Set = true
-	o.Null = true
-	var v Size
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptNilSize) Get() (v Size, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptNilSize) Or(d Size) Size {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -15506,6 +15711,52 @@ func (o OptRunLabels) Or(d RunLabels) RunLabels {
 	return d
 }
 
+// NewOptRunMetricSeriesSeriesItemAggregates returns new OptRunMetricSeriesSeriesItemAggregates with value set to v.
+func NewOptRunMetricSeriesSeriesItemAggregates(v RunMetricSeriesSeriesItemAggregates) OptRunMetricSeriesSeriesItemAggregates {
+	return OptRunMetricSeriesSeriesItemAggregates{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunMetricSeriesSeriesItemAggregates is optional RunMetricSeriesSeriesItemAggregates.
+type OptRunMetricSeriesSeriesItemAggregates struct {
+	Value RunMetricSeriesSeriesItemAggregates
+	Set   bool
+}
+
+// IsSet returns true if OptRunMetricSeriesSeriesItemAggregates was set.
+func (o OptRunMetricSeriesSeriesItemAggregates) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunMetricSeriesSeriesItemAggregates) Reset() {
+	var v RunMetricSeriesSeriesItemAggregates
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunMetricSeriesSeriesItemAggregates) SetTo(v RunMetricSeriesSeriesItemAggregates) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunMetricSeriesSeriesItemAggregates) Get() (v RunMetricSeriesSeriesItemAggregates, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunMetricSeriesSeriesItemAggregates) Or(d RunMetricSeriesSeriesItemAggregates) RunMetricSeriesSeriesItemAggregates {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRunMetrics returns new OptRunMetrics with value set to v.
 func NewOptRunMetrics(v RunMetrics) OptRunMetrics {
 	return OptRunMetrics{
@@ -16144,6 +16395,52 @@ func (o OptRunSummaryHeadline) Get() (v RunSummaryHeadline, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptRunSummaryHeadline) Or(d RunSummaryHeadline) RunSummaryHeadline {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRunSummaryStage returns new OptRunSummaryStage with value set to v.
+func NewOptRunSummaryStage(v RunSummaryStage) OptRunSummaryStage {
+	return OptRunSummaryStage{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunSummaryStage is optional RunSummaryStage.
+type OptRunSummaryStage struct {
+	Value RunSummaryStage
+	Set   bool
+}
+
+// IsSet returns true if OptRunSummaryStage was set.
+func (o OptRunSummaryStage) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunSummaryStage) Reset() {
+	var v RunSummaryStage
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunSummaryStage) SetTo(v RunSummaryStage) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunSummaryStage) Get() (v RunSummaryStage, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunSummaryStage) Or(d RunSummaryStage) RunSummaryStage {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -17846,144 +18143,6 @@ func (o OptSystemSettingsPatchTenantCreation) Get() (v SystemSettingsPatchTenant
 
 // Or returns value if set, or given parameter if does not.
 func (o OptSystemSettingsPatchTenantCreation) Or(d SystemSettingsPatchTenantCreation) SystemSettingsPatchTenantCreation {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptTenantLimits returns new OptTenantLimits with value set to v.
-func NewOptTenantLimits(v TenantLimits) OptTenantLimits {
-	return OptTenantLimits{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptTenantLimits is optional TenantLimits.
-type OptTenantLimits struct {
-	Value TenantLimits
-	Set   bool
-}
-
-// IsSet returns true if OptTenantLimits was set.
-func (o OptTenantLimits) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptTenantLimits) Reset() {
-	var v TenantLimits
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptTenantLimits) SetTo(v TenantLimits) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptTenantLimits) Get() (v TenantLimits, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptTenantLimits) Or(d TenantLimits) TenantLimits {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptTenantLimitsSource returns new OptTenantLimitsSource with value set to v.
-func NewOptTenantLimitsSource(v TenantLimitsSource) OptTenantLimitsSource {
-	return OptTenantLimitsSource{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptTenantLimitsSource is optional TenantLimitsSource.
-type OptTenantLimitsSource struct {
-	Value TenantLimitsSource
-	Set   bool
-}
-
-// IsSet returns true if OptTenantLimitsSource was set.
-func (o OptTenantLimitsSource) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptTenantLimitsSource) Reset() {
-	var v TenantLimitsSource
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptTenantLimitsSource) SetTo(v TenantLimitsSource) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptTenantLimitsSource) Get() (v TenantLimitsSource, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptTenantLimitsSource) Or(d TenantLimitsSource) TenantLimitsSource {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
-// NewOptTenantLimitsWrite returns new OptTenantLimitsWrite with value set to v.
-func NewOptTenantLimitsWrite(v TenantLimitsWrite) OptTenantLimitsWrite {
-	return OptTenantLimitsWrite{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptTenantLimitsWrite is optional TenantLimitsWrite.
-type OptTenantLimitsWrite struct {
-	Value TenantLimitsWrite
-	Set   bool
-}
-
-// IsSet returns true if OptTenantLimitsWrite was set.
-func (o OptTenantLimitsWrite) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptTenantLimitsWrite) Reset() {
-	var v TenantLimitsWrite
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptTenantLimitsWrite) SetTo(v TenantLimitsWrite) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptTenantLimitsWrite) Get() (v TenantLimitsWrite, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptTenantLimitsWrite) Or(d TenantLimitsWrite) TenantLimitsWrite {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -23041,6 +23200,408 @@ func (s *RunLabels) init() RunLabels {
 	return m
 }
 
+// Ref: #/components/schemas/RunMetricNames
+type RunMetricNames struct {
+	Window RunMetricNamesWindow     `json:"window"`
+	Data   []RunMetricNamesDataItem `json:"data"`
+}
+
+// GetWindow returns the value of Window.
+func (s *RunMetricNames) GetWindow() RunMetricNamesWindow {
+	return s.Window
+}
+
+// GetData returns the value of Data.
+func (s *RunMetricNames) GetData() []RunMetricNamesDataItem {
+	return s.Data
+}
+
+// SetWindow sets the value of Window.
+func (s *RunMetricNames) SetWindow(val RunMetricNamesWindow) {
+	s.Window = val
+}
+
+// SetData sets the value of Data.
+func (s *RunMetricNames) SetData(val []RunMetricNamesDataItem) {
+	s.Data = val
+}
+
+type RunMetricNamesDataItem struct {
+	Name   string       `json:"name"`
+	Origin MetricOrigin `json:"origin"`
+	Kind   MetricKind   `json:"kind"`
+	// How many series the name has.
+	Series   int      `json:"series"`
+	Machines []string `json:"machines"`
+	Roles    []string `json:"roles"`
+	// Containers the series come from (none for the workload).
+	Containers []string `json:"containers"`
+}
+
+// GetName returns the value of Name.
+func (s *RunMetricNamesDataItem) GetName() string {
+	return s.Name
+}
+
+// GetOrigin returns the value of Origin.
+func (s *RunMetricNamesDataItem) GetOrigin() MetricOrigin {
+	return s.Origin
+}
+
+// GetKind returns the value of Kind.
+func (s *RunMetricNamesDataItem) GetKind() MetricKind {
+	return s.Kind
+}
+
+// GetSeries returns the value of Series.
+func (s *RunMetricNamesDataItem) GetSeries() int {
+	return s.Series
+}
+
+// GetMachines returns the value of Machines.
+func (s *RunMetricNamesDataItem) GetMachines() []string {
+	return s.Machines
+}
+
+// GetRoles returns the value of Roles.
+func (s *RunMetricNamesDataItem) GetRoles() []string {
+	return s.Roles
+}
+
+// GetContainers returns the value of Containers.
+func (s *RunMetricNamesDataItem) GetContainers() []string {
+	return s.Containers
+}
+
+// SetName sets the value of Name.
+func (s *RunMetricNamesDataItem) SetName(val string) {
+	s.Name = val
+}
+
+// SetOrigin sets the value of Origin.
+func (s *RunMetricNamesDataItem) SetOrigin(val MetricOrigin) {
+	s.Origin = val
+}
+
+// SetKind sets the value of Kind.
+func (s *RunMetricNamesDataItem) SetKind(val MetricKind) {
+	s.Kind = val
+}
+
+// SetSeries sets the value of Series.
+func (s *RunMetricNamesDataItem) SetSeries(val int) {
+	s.Series = val
+}
+
+// SetMachines sets the value of Machines.
+func (s *RunMetricNamesDataItem) SetMachines(val []string) {
+	s.Machines = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *RunMetricNamesDataItem) SetRoles(val []string) {
+	s.Roles = val
+}
+
+// SetContainers sets the value of Containers.
+func (s *RunMetricNamesDataItem) SetContainers(val []string) {
+	s.Containers = val
+}
+
+type RunMetricNamesWindow struct {
+	Start   time.Time `json:"start"`
+	End     time.Time `json:"end"`
+	Segment OptString `json:"segment"`
+}
+
+// GetStart returns the value of Start.
+func (s *RunMetricNamesWindow) GetStart() time.Time {
+	return s.Start
+}
+
+// GetEnd returns the value of End.
+func (s *RunMetricNamesWindow) GetEnd() time.Time {
+	return s.End
+}
+
+// GetSegment returns the value of Segment.
+func (s *RunMetricNamesWindow) GetSegment() OptString {
+	return s.Segment
+}
+
+// SetStart sets the value of Start.
+func (s *RunMetricNamesWindow) SetStart(val time.Time) {
+	s.Start = val
+}
+
+// SetEnd sets the value of End.
+func (s *RunMetricNamesWindow) SetEnd(val time.Time) {
+	s.End = val
+}
+
+// SetSegment sets the value of Segment.
+func (s *RunMetricNamesWindow) SetSegment(val OptString) {
+	s.Segment = val
+}
+
+// Ref: #/components/schemas/RunMetricSeries
+type RunMetricSeries struct {
+	Window RunMetricSeriesWindow `json:"window"`
+	Name   string                `json:"name"`
+	Fn     MetricSeriesFn        `json:"fn"`
+	// The metric's own labels — what it can be grouped by besides machine and container.
+	Labels []string `json:"labels"`
+	// Series before the cut.
+	Total int `json:"total"`
+	// Only the series with the highest average are returned.
+	Truncated bool                        `json:"truncated"`
+	Series    []RunMetricSeriesSeriesItem `json:"series"`
+}
+
+// GetWindow returns the value of Window.
+func (s *RunMetricSeries) GetWindow() RunMetricSeriesWindow {
+	return s.Window
+}
+
+// GetName returns the value of Name.
+func (s *RunMetricSeries) GetName() string {
+	return s.Name
+}
+
+// GetFn returns the value of Fn.
+func (s *RunMetricSeries) GetFn() MetricSeriesFn {
+	return s.Fn
+}
+
+// GetLabels returns the value of Labels.
+func (s *RunMetricSeries) GetLabels() []string {
+	return s.Labels
+}
+
+// GetTotal returns the value of Total.
+func (s *RunMetricSeries) GetTotal() int {
+	return s.Total
+}
+
+// GetTruncated returns the value of Truncated.
+func (s *RunMetricSeries) GetTruncated() bool {
+	return s.Truncated
+}
+
+// GetSeries returns the value of Series.
+func (s *RunMetricSeries) GetSeries() []RunMetricSeriesSeriesItem {
+	return s.Series
+}
+
+// SetWindow sets the value of Window.
+func (s *RunMetricSeries) SetWindow(val RunMetricSeriesWindow) {
+	s.Window = val
+}
+
+// SetName sets the value of Name.
+func (s *RunMetricSeries) SetName(val string) {
+	s.Name = val
+}
+
+// SetFn sets the value of Fn.
+func (s *RunMetricSeries) SetFn(val MetricSeriesFn) {
+	s.Fn = val
+}
+
+// SetLabels sets the value of Labels.
+func (s *RunMetricSeries) SetLabels(val []string) {
+	s.Labels = val
+}
+
+// SetTotal sets the value of Total.
+func (s *RunMetricSeries) SetTotal(val int) {
+	s.Total = val
+}
+
+// SetTruncated sets the value of Truncated.
+func (s *RunMetricSeries) SetTruncated(val bool) {
+	s.Truncated = val
+}
+
+// SetSeries sets the value of Series.
+func (s *RunMetricSeries) SetSeries(val []RunMetricSeriesSeriesItem) {
+	s.Series = val
+}
+
+type RunMetricSeriesSeriesItem struct {
+	Labels     RunMetricSeriesSeriesItemLabels        `json:"labels"`
+	Machine    OptString                              `json:"machine"`
+	Role       OptString                              `json:"role"`
+	Container  OptString                              `json:"container"`
+	Points     [][]float64                            `json:"points"`
+	Aggregates OptRunMetricSeriesSeriesItemAggregates `json:"aggregates"`
+}
+
+// GetLabels returns the value of Labels.
+func (s *RunMetricSeriesSeriesItem) GetLabels() RunMetricSeriesSeriesItemLabels {
+	return s.Labels
+}
+
+// GetMachine returns the value of Machine.
+func (s *RunMetricSeriesSeriesItem) GetMachine() OptString {
+	return s.Machine
+}
+
+// GetRole returns the value of Role.
+func (s *RunMetricSeriesSeriesItem) GetRole() OptString {
+	return s.Role
+}
+
+// GetContainer returns the value of Container.
+func (s *RunMetricSeriesSeriesItem) GetContainer() OptString {
+	return s.Container
+}
+
+// GetPoints returns the value of Points.
+func (s *RunMetricSeriesSeriesItem) GetPoints() [][]float64 {
+	return s.Points
+}
+
+// GetAggregates returns the value of Aggregates.
+func (s *RunMetricSeriesSeriesItem) GetAggregates() OptRunMetricSeriesSeriesItemAggregates {
+	return s.Aggregates
+}
+
+// SetLabels sets the value of Labels.
+func (s *RunMetricSeriesSeriesItem) SetLabels(val RunMetricSeriesSeriesItemLabels) {
+	s.Labels = val
+}
+
+// SetMachine sets the value of Machine.
+func (s *RunMetricSeriesSeriesItem) SetMachine(val OptString) {
+	s.Machine = val
+}
+
+// SetRole sets the value of Role.
+func (s *RunMetricSeriesSeriesItem) SetRole(val OptString) {
+	s.Role = val
+}
+
+// SetContainer sets the value of Container.
+func (s *RunMetricSeriesSeriesItem) SetContainer(val OptString) {
+	s.Container = val
+}
+
+// SetPoints sets the value of Points.
+func (s *RunMetricSeriesSeriesItem) SetPoints(val [][]float64) {
+	s.Points = val
+}
+
+// SetAggregates sets the value of Aggregates.
+func (s *RunMetricSeriesSeriesItem) SetAggregates(val OptRunMetricSeriesSeriesItemAggregates) {
+	s.Aggregates = val
+}
+
+type RunMetricSeriesSeriesItemAggregates struct {
+	Avg  OptFloat64 `json:"avg"`
+	Min  OptFloat64 `json:"min"`
+	Max  OptFloat64 `json:"max"`
+	Last OptFloat64 `json:"last"`
+	P95  OptFloat64 `json:"p95"`
+}
+
+// GetAvg returns the value of Avg.
+func (s *RunMetricSeriesSeriesItemAggregates) GetAvg() OptFloat64 {
+	return s.Avg
+}
+
+// GetMin returns the value of Min.
+func (s *RunMetricSeriesSeriesItemAggregates) GetMin() OptFloat64 {
+	return s.Min
+}
+
+// GetMax returns the value of Max.
+func (s *RunMetricSeriesSeriesItemAggregates) GetMax() OptFloat64 {
+	return s.Max
+}
+
+// GetLast returns the value of Last.
+func (s *RunMetricSeriesSeriesItemAggregates) GetLast() OptFloat64 {
+	return s.Last
+}
+
+// GetP95 returns the value of P95.
+func (s *RunMetricSeriesSeriesItemAggregates) GetP95() OptFloat64 {
+	return s.P95
+}
+
+// SetAvg sets the value of Avg.
+func (s *RunMetricSeriesSeriesItemAggregates) SetAvg(val OptFloat64) {
+	s.Avg = val
+}
+
+// SetMin sets the value of Min.
+func (s *RunMetricSeriesSeriesItemAggregates) SetMin(val OptFloat64) {
+	s.Min = val
+}
+
+// SetMax sets the value of Max.
+func (s *RunMetricSeriesSeriesItemAggregates) SetMax(val OptFloat64) {
+	s.Max = val
+}
+
+// SetLast sets the value of Last.
+func (s *RunMetricSeriesSeriesItemAggregates) SetLast(val OptFloat64) {
+	s.Last = val
+}
+
+// SetP95 sets the value of P95.
+func (s *RunMetricSeriesSeriesItemAggregates) SetP95(val OptFloat64) {
+	s.P95 = val
+}
+
+type RunMetricSeriesSeriesItemLabels map[string]string
+
+func (s *RunMetricSeriesSeriesItemLabels) init() RunMetricSeriesSeriesItemLabels {
+	m := *s
+	if m == nil {
+		m = map[string]string{}
+		*s = m
+	}
+	return m
+}
+
+type RunMetricSeriesWindow struct {
+	Start   time.Time `json:"start"`
+	End     time.Time `json:"end"`
+	Segment OptString `json:"segment"`
+}
+
+// GetStart returns the value of Start.
+func (s *RunMetricSeriesWindow) GetStart() time.Time {
+	return s.Start
+}
+
+// GetEnd returns the value of End.
+func (s *RunMetricSeriesWindow) GetEnd() time.Time {
+	return s.End
+}
+
+// GetSegment returns the value of Segment.
+func (s *RunMetricSeriesWindow) GetSegment() OptString {
+	return s.Segment
+}
+
+// SetStart sets the value of Start.
+func (s *RunMetricSeriesWindow) SetStart(val time.Time) {
+	s.Start = val
+}
+
+// SetEnd sets the value of End.
+func (s *RunMetricSeriesWindow) SetEnd(val time.Time) {
+	s.End = val
+}
+
+// SetSegment sets the value of Segment.
+func (s *RunMetricSeriesWindow) SetSegment(val OptString) {
+	s.Segment = val
+}
+
 // Ref: #/components/schemas/RunMetrics
 type RunMetrics struct {
 	Window RunMetricsWindow       `json:"window"`
@@ -24439,9 +25000,9 @@ type RunQueue struct {
 	WaitingFor RunWaitReason `json:"waiting_for"`
 	// 1-based among the tenant's queued runs.
 	Position int `json:"position"`
-	// Occupied slots (slot, suite_slot).
+	// Cells of the suite running (suite_slot).
 	Live OptInt `json:"live"`
-	// Allowed slots (slot, suite_slot).
+	// Concurrency of the suite (suite_slot).
 	Limit OptInt `json:"limit"`
 	// Provider quota without room (quota).
 	Quota OptString `json:"quota"`
@@ -25172,6 +25733,50 @@ func (s *RunSnapshotMachinesItem) SetLocation(val OptString) {
 	s.Location = val
 }
 
+// What a running workload segment does: `preparing` — stroppy prepares the data (schema, load,
+// indexes, checks), which has no planned length; `load` — the planned load runs.
+// Ref: #/components/schemas/RunStageKind
+type RunStageKind string
+
+const (
+	RunStageKindPreparing RunStageKind = "preparing"
+	RunStageKindLoad      RunStageKind = "load"
+)
+
+// AllValues returns all RunStageKind values.
+func (RunStageKind) AllValues() []RunStageKind {
+	return []RunStageKind{
+		RunStageKindPreparing,
+		RunStageKindLoad,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s RunStageKind) MarshalText() ([]byte, error) {
+	switch s {
+	case RunStageKindPreparing:
+		return []byte(s), nil
+	case RunStageKindLoad:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *RunStageKind) UnmarshalText(data []byte) error {
+	switch RunStageKind(data) {
+	case RunStageKindPreparing:
+		*s = RunStageKindPreparing
+		return nil
+	case RunStageKindLoad:
+		*s = RunStageKindLoad
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/RunStatus
 type RunStatus string
 
@@ -25261,6 +25866,14 @@ type RunSummary struct {
 	PhaseProgressPct OptFloat64 `json:"phase_progress_pct"`
 	// Current workload segment while running.
 	Segment OptString `json:"segment"`
+	// Where the workload's planned time starts (read-time): the workload phase's start shifted past the
+	// running segment's data preparation. With `expected_finish_at` it gives the workload's progress at
+	// any instant: (now − workload_from) / (expected_finish_at − workload_from).
+	WorkloadFrom OptDateTime `json:"workload_from"`
+	// Where the running segment's stroppy is (read-time, from its log): the step it prepares, or under
+	// load the last step it finished, and since when. While preparing, `expected_finish_at` is absent;
+	// under load the plan counts from the load's start.
+	Stage OptRunSummaryStage `json:"stage"`
 	// Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`,
 	// `qps` (queries per second of the whole workload — the segments' `queries_per_second` weighted by
 	// their `measurement_seconds`, else their plain mean), `errors` (terminal errors over all segments;
@@ -25340,6 +25953,16 @@ func (s *RunSummary) GetPhaseProgressPct() OptFloat64 {
 // GetSegment returns the value of Segment.
 func (s *RunSummary) GetSegment() OptString {
 	return s.Segment
+}
+
+// GetWorkloadFrom returns the value of WorkloadFrom.
+func (s *RunSummary) GetWorkloadFrom() OptDateTime {
+	return s.WorkloadFrom
+}
+
+// GetStage returns the value of Stage.
+func (s *RunSummary) GetStage() OptRunSummaryStage {
+	return s.Stage
 }
 
 // GetHeadline returns the value of Headline.
@@ -25422,6 +26045,16 @@ func (s *RunSummary) SetSegment(val OptString) {
 	s.Segment = val
 }
 
+// SetWorkloadFrom sets the value of WorkloadFrom.
+func (s *RunSummary) SetWorkloadFrom(val OptDateTime) {
+	s.WorkloadFrom = val
+}
+
+// SetStage sets the value of Stage.
+func (s *RunSummary) SetStage(val OptRunSummaryStage) {
+	s.Stage = val
+}
+
 // SetHeadline sets the value of Headline.
 func (s *RunSummary) SetHeadline(val OptRunSummaryHeadline) {
 	s.Headline = val
@@ -25479,6 +26112,46 @@ func (s *RunSummaryQPSSeriesItem) SetV(val float64) {
 	s.V = val
 }
 
+// Where the running segment's stroppy is (read-time, from its log): the step it prepares, or under
+// load the last step it finished, and since when. While preparing, `expected_finish_at` is absent;
+// under load the plan counts from the load's start.
+type RunSummaryStage struct {
+	Kind RunStageKind `json:"kind"`
+	// Stroppy step id, e.g. `load_data`, `validate_population`.
+	Step  string    `json:"step"`
+	Since time.Time `json:"since"`
+}
+
+// GetKind returns the value of Kind.
+func (s *RunSummaryStage) GetKind() RunStageKind {
+	return s.Kind
+}
+
+// GetStep returns the value of Step.
+func (s *RunSummaryStage) GetStep() string {
+	return s.Step
+}
+
+// GetSince returns the value of Since.
+func (s *RunSummaryStage) GetSince() time.Time {
+	return s.Since
+}
+
+// SetKind sets the value of Kind.
+func (s *RunSummaryStage) SetKind(val RunStageKind) {
+	s.Kind = val
+}
+
+// SetStep sets the value of Step.
+func (s *RunSummaryStage) SetStep(val string) {
+	s.Step = val
+}
+
+// SetSince sets the value of Since.
+func (s *RunSummaryStage) SetSince(val time.Time) {
+	s.Since = val
+}
+
 type RunTriggerRef struct {
 	ScheduleID OptUUID   `json:"schedule_id"`
 	SuiteRunID OptUUID   `json:"suite_run_id"`
@@ -25527,16 +26200,15 @@ func (s *RunTriggerRef) SetParentRunID(val OptUUID) {
 	s.ParentRunID = val
 }
 
-// Pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot —
-// max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota
-// — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the
-// provider profile is not ready; suspended — a platform admin suspended the tenant.
+// Pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot —
+// the suite runs as many cells as its concurrency; quota — a provider quota has no room;
+// quota_unknown — the quotas could not be read; provider — the provider profile is not ready;
+// suspended — a platform admin suspended the tenant.
 // Ref: #/components/schemas/RunWaitReason
 type RunWaitReason string
 
 const (
 	RunWaitReasonPipelines    RunWaitReason = "pipelines"
-	RunWaitReasonSlot         RunWaitReason = "slot"
 	RunWaitReasonSuiteSlot    RunWaitReason = "suite_slot"
 	RunWaitReasonQuota        RunWaitReason = "quota"
 	RunWaitReasonQuotaUnknown RunWaitReason = "quota_unknown"
@@ -25548,7 +26220,6 @@ const (
 func (RunWaitReason) AllValues() []RunWaitReason {
 	return []RunWaitReason{
 		RunWaitReasonPipelines,
-		RunWaitReasonSlot,
 		RunWaitReasonSuiteSlot,
 		RunWaitReasonQuota,
 		RunWaitReasonQuotaUnknown,
@@ -25561,8 +26232,6 @@ func (RunWaitReason) AllValues() []RunWaitReason {
 func (s RunWaitReason) MarshalText() ([]byte, error) {
 	switch s {
 	case RunWaitReasonPipelines:
-		return []byte(s), nil
-	case RunWaitReasonSlot:
 		return []byte(s), nil
 	case RunWaitReasonSuiteSlot:
 		return []byte(s), nil
@@ -25584,9 +26253,6 @@ func (s *RunWaitReason) UnmarshalText(data []byte) error {
 	switch RunWaitReason(data) {
 	case RunWaitReasonPipelines:
 		*s = RunWaitReasonPipelines
-		return nil
-	case RunWaitReasonSlot:
-		*s = RunWaitReasonSlot
 		return nil
 	case RunWaitReasonSuiteSlot:
 		*s = RunWaitReasonSuiteSlot
@@ -25859,7 +26525,7 @@ type ScheduleRunRef struct {
 	Name   OptString          `json:"name"`
 	Status RunStatus          `json:"status"`
 	At     time.Time          `json:"at"`
-	// Set when the firing itself failed (e.g. limits).
+	// Set when the firing itself failed (e.g. the test does not fit).
 	Error OptString `json:"error"`
 }
 
@@ -29883,8 +30549,6 @@ type SystemSettings struct {
 	TenantCreation      SystemSettingsTenantCreation `json:"tenant_creation"`
 	PublicRatingEnabled bool                         `json:"public_rating_enabled"`
 	ExamplesEnabled     bool                         `json:"examples_enabled"`
-	DefaultLimits       TenantLimits                 `json:"default_limits"`
-	RunRetentionMaxDays int                          `json:"run_retention_max_days"`
 	// Static stroppy catalog (v0 source of `/catalog/stroppy`).
 	StroppyCatalog OptSchemaValue `json:"stroppy_catalog"`
 	UpdatedAt      OptDateTime    `json:"updated_at"`
@@ -29904,16 +30568,6 @@ func (s *SystemSettings) GetPublicRatingEnabled() bool {
 // GetExamplesEnabled returns the value of ExamplesEnabled.
 func (s *SystemSettings) GetExamplesEnabled() bool {
 	return s.ExamplesEnabled
-}
-
-// GetDefaultLimits returns the value of DefaultLimits.
-func (s *SystemSettings) GetDefaultLimits() TenantLimits {
-	return s.DefaultLimits
-}
-
-// GetRunRetentionMaxDays returns the value of RunRetentionMaxDays.
-func (s *SystemSettings) GetRunRetentionMaxDays() int {
-	return s.RunRetentionMaxDays
 }
 
 // GetStroppyCatalog returns the value of StroppyCatalog.
@@ -29946,16 +30600,6 @@ func (s *SystemSettings) SetExamplesEnabled(val bool) {
 	s.ExamplesEnabled = val
 }
 
-// SetDefaultLimits sets the value of DefaultLimits.
-func (s *SystemSettings) SetDefaultLimits(val TenantLimits) {
-	s.DefaultLimits = val
-}
-
-// SetRunRetentionMaxDays sets the value of RunRetentionMaxDays.
-func (s *SystemSettings) SetRunRetentionMaxDays(val int) {
-	s.RunRetentionMaxDays = val
-}
-
 // SetStroppyCatalog sets the value of StroppyCatalog.
 func (s *SystemSettings) SetStroppyCatalog(val OptSchemaValue) {
 	s.StroppyCatalog = val
@@ -29976,8 +30620,6 @@ type SystemSettingsPatch struct {
 	TenantCreation      OptSystemSettingsPatchTenantCreation `json:"tenant_creation"`
 	PublicRatingEnabled OptBool                              `json:"public_rating_enabled"`
 	ExamplesEnabled     OptBool                              `json:"examples_enabled"`
-	DefaultLimits       OptTenantLimitsWrite                 `json:"default_limits"`
-	RunRetentionMaxDays OptInt                               `json:"run_retention_max_days"`
 	StroppyCatalog      OptSchemaValue                       `json:"stroppy_catalog"`
 }
 
@@ -29994,16 +30636,6 @@ func (s *SystemSettingsPatch) GetPublicRatingEnabled() OptBool {
 // GetExamplesEnabled returns the value of ExamplesEnabled.
 func (s *SystemSettingsPatch) GetExamplesEnabled() OptBool {
 	return s.ExamplesEnabled
-}
-
-// GetDefaultLimits returns the value of DefaultLimits.
-func (s *SystemSettingsPatch) GetDefaultLimits() OptTenantLimitsWrite {
-	return s.DefaultLimits
-}
-
-// GetRunRetentionMaxDays returns the value of RunRetentionMaxDays.
-func (s *SystemSettingsPatch) GetRunRetentionMaxDays() OptInt {
-	return s.RunRetentionMaxDays
 }
 
 // GetStroppyCatalog returns the value of StroppyCatalog.
@@ -30024,16 +30656,6 @@ func (s *SystemSettingsPatch) SetPublicRatingEnabled(val OptBool) {
 // SetExamplesEnabled sets the value of ExamplesEnabled.
 func (s *SystemSettingsPatch) SetExamplesEnabled(val OptBool) {
 	s.ExamplesEnabled = val
-}
-
-// SetDefaultLimits sets the value of DefaultLimits.
-func (s *SystemSettingsPatch) SetDefaultLimits(val OptTenantLimitsWrite) {
-	s.DefaultLimits = val
-}
-
-// SetRunRetentionMaxDays sets the value of RunRetentionMaxDays.
-func (s *SystemSettingsPatch) SetRunRetentionMaxDays(val OptInt) {
-	s.RunRetentionMaxDays = val
 }
 
 // SetStroppyCatalog sets the value of StroppyCatalog.
@@ -30286,7 +30908,6 @@ type TenantDashboard struct {
 	Upcoming        []Schedule               `json:"upcoming"`
 	TopResults      []RatingEntry            `json:"top_results"`
 	Providers       []ProviderProfile        `json:"providers"`
-	Limits          OptTenantLimits          `json:"limits"`
 }
 
 // GetPipelines returns the value of Pipelines.
@@ -30329,11 +30950,6 @@ func (s *TenantDashboard) GetProviders() []ProviderProfile {
 	return s.Providers
 }
 
-// GetLimits returns the value of Limits.
-func (s *TenantDashboard) GetLimits() OptTenantLimits {
-	return s.Limits
-}
-
 // SetPipelines sets the value of Pipelines.
 func (s *TenantDashboard) SetPipelines(val TenantPipelines) {
 	s.Pipelines = val
@@ -30372,11 +30988,6 @@ func (s *TenantDashboard) SetTopResults(val []RatingEntry) {
 // SetProviders sets the value of Providers.
 func (s *TenantDashboard) SetProviders(val []ProviderProfile) {
 	s.Providers = val
-}
-
-// SetLimits sets the value of Limits.
-func (s *TenantDashboard) SetLimits(val OptTenantLimits) {
-	s.Limits = val
 }
 
 type TenantDashboardRunCounts struct {
@@ -30457,177 +31068,6 @@ func (s *TenantDashboardRunCounts) SetCancelled(val OptInt) {
 // SetKeptStands sets the value of KeptStands.
 func (s *TenantDashboardRunCounts) SetKeptStands(val OptInt) {
 	s.KeptStands = val
-}
-
-// Ref: #/components/schemas/TenantLimits
-type TenantLimits struct {
-	MaxConcurrentRuns int  `json:"max_concurrent_runs"`
-	MaxMachinesPerRun int  `json:"max_machines_per_run"`
-	MaxSize           Size `json:"max_size"`
-	// Go duration.
-	MaxKeep             string                `json:"max_keep"`
-	RunRetentionMaxDays int                   `json:"run_retention_max_days"`
-	Source              OptTenantLimitsSource `json:"source"`
-}
-
-// GetMaxConcurrentRuns returns the value of MaxConcurrentRuns.
-func (s *TenantLimits) GetMaxConcurrentRuns() int {
-	return s.MaxConcurrentRuns
-}
-
-// GetMaxMachinesPerRun returns the value of MaxMachinesPerRun.
-func (s *TenantLimits) GetMaxMachinesPerRun() int {
-	return s.MaxMachinesPerRun
-}
-
-// GetMaxSize returns the value of MaxSize.
-func (s *TenantLimits) GetMaxSize() Size {
-	return s.MaxSize
-}
-
-// GetMaxKeep returns the value of MaxKeep.
-func (s *TenantLimits) GetMaxKeep() string {
-	return s.MaxKeep
-}
-
-// GetRunRetentionMaxDays returns the value of RunRetentionMaxDays.
-func (s *TenantLimits) GetRunRetentionMaxDays() int {
-	return s.RunRetentionMaxDays
-}
-
-// GetSource returns the value of Source.
-func (s *TenantLimits) GetSource() OptTenantLimitsSource {
-	return s.Source
-}
-
-// SetMaxConcurrentRuns sets the value of MaxConcurrentRuns.
-func (s *TenantLimits) SetMaxConcurrentRuns(val int) {
-	s.MaxConcurrentRuns = val
-}
-
-// SetMaxMachinesPerRun sets the value of MaxMachinesPerRun.
-func (s *TenantLimits) SetMaxMachinesPerRun(val int) {
-	s.MaxMachinesPerRun = val
-}
-
-// SetMaxSize sets the value of MaxSize.
-func (s *TenantLimits) SetMaxSize(val Size) {
-	s.MaxSize = val
-}
-
-// SetMaxKeep sets the value of MaxKeep.
-func (s *TenantLimits) SetMaxKeep(val string) {
-	s.MaxKeep = val
-}
-
-// SetRunRetentionMaxDays sets the value of RunRetentionMaxDays.
-func (s *TenantLimits) SetRunRetentionMaxDays(val int) {
-	s.RunRetentionMaxDays = val
-}
-
-// SetSource sets the value of Source.
-func (s *TenantLimits) SetSource(val OptTenantLimitsSource) {
-	s.Source = val
-}
-
-type TenantLimitsSource string
-
-const (
-	TenantLimitsSourcePlatformDefault TenantLimitsSource = "platform_default"
-	TenantLimitsSourceTenantOverride  TenantLimitsSource = "tenant_override"
-)
-
-// AllValues returns all TenantLimitsSource values.
-func (TenantLimitsSource) AllValues() []TenantLimitsSource {
-	return []TenantLimitsSource{
-		TenantLimitsSourcePlatformDefault,
-		TenantLimitsSourceTenantOverride,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s TenantLimitsSource) MarshalText() ([]byte, error) {
-	switch s {
-	case TenantLimitsSourcePlatformDefault:
-		return []byte(s), nil
-	case TenantLimitsSourceTenantOverride:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *TenantLimitsSource) UnmarshalText(data []byte) error {
-	switch TenantLimitsSource(data) {
-	case TenantLimitsSourcePlatformDefault:
-		*s = TenantLimitsSourcePlatformDefault
-		return nil
-	case TenantLimitsSourceTenantOverride:
-		*s = TenantLimitsSourceTenantOverride
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
-// Ref: #/components/schemas/TenantLimitsWrite
-type TenantLimitsWrite struct {
-	MaxConcurrentRuns   OptNilInt    `json:"max_concurrent_runs"`
-	MaxMachinesPerRun   OptNilInt    `json:"max_machines_per_run"`
-	MaxSize             OptNilSize   `json:"max_size"`
-	MaxKeep             OptNilString `json:"max_keep"`
-	RunRetentionMaxDays OptNilInt    `json:"run_retention_max_days"`
-}
-
-// GetMaxConcurrentRuns returns the value of MaxConcurrentRuns.
-func (s *TenantLimitsWrite) GetMaxConcurrentRuns() OptNilInt {
-	return s.MaxConcurrentRuns
-}
-
-// GetMaxMachinesPerRun returns the value of MaxMachinesPerRun.
-func (s *TenantLimitsWrite) GetMaxMachinesPerRun() OptNilInt {
-	return s.MaxMachinesPerRun
-}
-
-// GetMaxSize returns the value of MaxSize.
-func (s *TenantLimitsWrite) GetMaxSize() OptNilSize {
-	return s.MaxSize
-}
-
-// GetMaxKeep returns the value of MaxKeep.
-func (s *TenantLimitsWrite) GetMaxKeep() OptNilString {
-	return s.MaxKeep
-}
-
-// GetRunRetentionMaxDays returns the value of RunRetentionMaxDays.
-func (s *TenantLimitsWrite) GetRunRetentionMaxDays() OptNilInt {
-	return s.RunRetentionMaxDays
-}
-
-// SetMaxConcurrentRuns sets the value of MaxConcurrentRuns.
-func (s *TenantLimitsWrite) SetMaxConcurrentRuns(val OptNilInt) {
-	s.MaxConcurrentRuns = val
-}
-
-// SetMaxMachinesPerRun sets the value of MaxMachinesPerRun.
-func (s *TenantLimitsWrite) SetMaxMachinesPerRun(val OptNilInt) {
-	s.MaxMachinesPerRun = val
-}
-
-// SetMaxSize sets the value of MaxSize.
-func (s *TenantLimitsWrite) SetMaxSize(val OptNilSize) {
-	s.MaxSize = val
-}
-
-// SetMaxKeep sets the value of MaxKeep.
-func (s *TenantLimitsWrite) SetMaxKeep(val OptNilString) {
-	s.MaxKeep = val
-}
-
-// SetRunRetentionMaxDays sets the value of RunRetentionMaxDays.
-func (s *TenantLimitsWrite) SetRunRetentionMaxDays(val OptNilInt) {
-	s.RunRetentionMaxDays = val
 }
 
 // Ref: #/components/schemas/TenantMembership

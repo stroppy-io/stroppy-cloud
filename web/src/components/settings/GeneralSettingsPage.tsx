@@ -64,7 +64,6 @@ export function GeneralSettingsPage() {
   const navigate = useNavigate()
   const tenant = useSuspenseQuery(tenantQueries.detail(slug)).data
   const settings = useSuspenseQuery(settingsQueries.settings(slug)).data
-  const limits = useSuspenseQuery(settingsQueries.limits(slug)).data
   const members = useSuspenseQuery(tenantQueries.members(slug)).data.data
   const canEdit = can('manage-settings')
   const [transferOpen, setTransferOpen] = useState(false)
@@ -86,21 +85,16 @@ export function GeneralSettingsPage() {
           .string()
           .trim()
           .max(64, t('common.validation.max', { max: 64 })),
-        // TenantSettings.run_retention_days ≤ TenantLimits.run_retention_max_days
         run_retention_days: z
           .number({ error: t('common.validation.positive') })
           .int(t('common.validation.positive'))
-          .min(1, t('common.validation.positive'))
-          .max(
-            limits.run_retention_max_days,
-            t('settings.general.retentionMax', { max: limits.run_retention_max_days })
-          ),
+          .min(1, t('common.validation.positive')),
         rating_tenant: z.boolean(),
         rating_global: z.boolean(),
         default_keep: z.string().trim().refine(isGoDuration, t('common.validation.duration')),
         notification_emails: z.array(z.email(t('common.validation.email'))),
       }),
-    [t, limits.run_retention_max_days]
+    [t]
   )
 
   const form = useForm({
@@ -232,9 +226,7 @@ export function GeneralSettingsPage() {
             {(field) => (
               <Field
                 label={t('settings.general.retention')}
-                description={t('settings.general.retentionHint', {
-                  max: limits.run_retention_max_days,
-                })}
+                description={t('settings.general.retentionHint')}
                 invalid={!!firstError(field.state.meta)}
                 error={firstError(field.state.meta)}
                 htmlFor={field.name}
@@ -243,7 +235,6 @@ export function GeneralSettingsPage() {
                   id={field.name}
                   type="number"
                   min={1}
-                  max={limits.run_retention_max_days}
                   width={16}
                   suffix={t('settings.general.days')}
                   value={field.state.value}
@@ -258,7 +249,7 @@ export function GeneralSettingsPage() {
             {(field) => (
               <Field
                 label={t('settings.general.defaultKeep')}
-                description={t('settings.general.defaultKeepHint', { max: limits.max_keep })}
+                description={t('settings.general.defaultKeepHint')}
                 invalid={!!firstError(field.state.meta)}
                 error={firstError(field.state.meta)}
                 htmlFor={field.name}

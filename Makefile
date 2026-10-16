@@ -7,7 +7,7 @@
 # ============================================================
 # Variables
 # ============================================================
-VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+VERSION ?= $(shell scripts/version.sh)
 COMMIT  ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 MODULE  := github.com/stroppy-io/stroppy-cloud
 BINARY  := stroppy-server

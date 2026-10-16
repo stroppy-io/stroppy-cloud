@@ -192,6 +192,27 @@
         "maxLen": "256"
       },
       "title": "Ready check"
+    },
+    {
+      "description": "Port of the image's Prometheus endpoint; empty when the image has none.",
+      "group": "Metrics",
+      "int64": {
+        "gte": "1",
+        "lte": "65535"
+      },
+      "name": "metrics_port",
+      "nullable": true,
+      "title": "Metrics port"
+    },
+    {
+      "description": "Path of the Prometheus endpoint on the metrics port.",
+      "group": "Metrics",
+      "name": "metrics_path",
+      "string": {
+        "default": "/metrics",
+        "maxLen": "256"
+      },
+      "title": "Metrics path"
     }
   ],
   "id": {

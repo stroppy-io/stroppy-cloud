@@ -149,7 +149,15 @@ interface Segment {
   thresholds?: Record<string, unknown>
 }
 
-export function ReportSetup({ run, index }: { run: SharedRun; index: number }) {
+export function ReportSetup({
+  run,
+  index,
+  tabbed,
+}: {
+  run: SharedRun
+  index: number
+  tabbed?: boolean
+}) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const rs = useReportStyles()
@@ -161,6 +169,7 @@ export function ReportSetup({ run, index }: { run: SharedRun; index: number }) {
     <ReportSection
       id="setup"
       index={index}
+      tabbed={tabbed}
       title={t('public.setup.title')}
       hint={t('public.setup.hint')}
     >

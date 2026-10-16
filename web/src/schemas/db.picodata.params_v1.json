@@ -155,11 +155,11 @@
       "unit": "MB"
     },
     {
-      "description": "Maximum VDBE instructions per local SQL plan. Picodata defaults to 45000; full-scan workload validation can require a higher explicit limit.",
+      "description": "Maximum VDBE instructions per local SQL plan; 0 = no limit. Picodata's own default is 45000, which stops full-scan queries such as workload validation.",
       "group": "SQL runtime",
       "int64": {
-        "default": "45000",
-        "gte": "1",
+        "default": "0",
+        "gte": "0",
         "lte": "1000000000"
       },
       "name": "sql_vdbe_opcode_max",

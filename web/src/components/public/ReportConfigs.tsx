@@ -3,7 +3,15 @@ import { CollapsableSection, Text } from '@grafana/ui'
 import { useTranslation } from 'react-i18next'
 import { Pre, ReportSection, SubTitle, useReportStyles } from './ReportPrimitives'
 
-export function ReportConfigs({ run, index }: { run: SharedRun; index: number }) {
+export function ReportConfigs({
+  run,
+  index,
+  tabbed,
+}: {
+  run: SharedRun
+  index: number
+  tabbed?: boolean
+}) {
   const { t } = useTranslation()
   const rs = useReportStyles()
   const roles = Object.entries(run.configs ?? {})
@@ -11,6 +19,7 @@ export function ReportConfigs({ run, index }: { run: SharedRun; index: number })
     <ReportSection
       id="configs"
       index={index}
+      tabbed={tabbed}
       title={t('public.configs.title')}
       hint={t('public.configs.hint')}
     >

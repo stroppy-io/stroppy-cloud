@@ -29,10 +29,19 @@ func picodata() Kind {
 				{ID: "single", Title: "Single instance", Params: map[string]any{"version": "26.1", "tiers": []any{map[string]any{"name": "default", "instances": 1}}}},
 				{ID: "three-node", Title: "Three instances, RF 3", Params: map[string]any{"version": "26.1", "tiers": []any{map[string]any{"name": "default", "instances": 3, "replication_factor": 3}}, "haproxy": 1}},
 			},
-			ParamsSchema: "db.picodata.params@1", Protocols: []catalog.Protocol{catalog.ProtoPicodata, catalog.ProtoPg}, Deployable: true,
+			ParamsSchema: "db.picodata.params@1", Protocols: []catalog.Protocol{catalog.ProtoPicodata}, Deployable: true,
 		},
 		plan:  planPicodata,
 		login: func(map[string]any) topology.Login { return PicodataLogin },
+		// stroppy's picodata driver speaks pgwire to the pgproto listener;
+		// its postgres driver does not work against Picodata (pgx Ping sends
+		// "-- ping", which sbroad rejects). Without pgproto nothing connects.
+		protocols: func(params map[string]any) []catalog.Protocol {
+			if !topology.BoolOf(params, "pgproto") {
+				return []catalog.Protocol{}
+			}
+			return []catalog.Protocol{catalog.ProtoPicodata}
+		},
 	}
 }
 

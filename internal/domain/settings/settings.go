@@ -1,11 +1,9 @@
-// Package settings is the tenant's defaults and effective limits. Limits
-// are platform ceilings a platform admin may override per tenant; the
-// tenant only reads them.
+// Package settings is the tenant's defaults. The tenant has no ceilings of
+// its own: what a run may take is bounded by the cloud's quotas alone.
 package settings
 
 import (
 	"context"
-	"strconv"
 	"strings"
 	"time"
 
@@ -35,31 +33,10 @@ type Patch struct {
 	NotificationEmails []string
 }
 
-// Limits are the effective ceilings.
-type Limits struct {
-	MaxConcurrentRuns   int           `json:"max_concurrent_runs"`
-	MaxMachinesPerRun   int           `json:"max_machines_per_run"`
-	MaxSize             string        `json:"max_size"`
-	MaxKeep             time.Duration `json:"max_keep"`
-	RunRetentionMaxDays int           `json:"run_retention_max_days"`
-	// Overridden reports a per-tenant override in effect.
-	Overridden bool `json:"-"`
-}
-
-// PlatformLimits is the default ceiling of every tenant.
-var PlatformLimits = Limits{
-	MaxConcurrentRuns:   3,
-	MaxMachinesPerRun:   12,
-	MaxSize:             "XL",
-	MaxKeep:             24 * time.Hour,
-	RunRetentionMaxDays: 365,
-}
-
 // Repository is the storage port.
 type Repository interface {
-	Ensure(ctx context.Context, tenantID uuid.UUID) (Settings, *Limits, error)
+	Ensure(ctx context.Context, tenantID uuid.UUID) (Settings, error)
 	Update(ctx context.Context, tenantID uuid.UUID, p Patch) (Settings, error)
-	SetLimitsOverride(ctx context.Context, tenantID uuid.UUID, l *Limits) error
 }
 
 // Access resolves the caller's role in a tenant.
@@ -67,67 +44,24 @@ type Access interface {
 	RoleIn(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) (slug, role string, err error)
 }
 
-// Defaults supplies the platform default limits (system settings).
-type Defaults interface {
-	DefaultLimits(ctx context.Context) Limits
-}
-
 // Service is the settings use cases.
 type Service struct {
-	repo     Repository
-	access   Access
-	defaults Defaults
+	repo   Repository
+	access Access
 }
 
 // NewService builds the service.
 func NewService(repo Repository, access Access) *Service { return &Service{repo: repo, access: access} }
-
-// WithDefaults registers the system-settings source of default limits.
-func (s *Service) WithDefaults(d Defaults) *Service {
-	s.defaults = d
-	return s
-}
-
-func (s *Service) platform(ctx context.Context) Limits {
-	if s.defaults != nil {
-		return s.defaults.DefaultLimits(ctx)
-	}
-	return PlatformLimits
-}
 
 // Get returns the settings (any member).
 func (s *Service) Get(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) (Settings, error) {
 	if _, _, err := s.access.RoleIn(ctx, actor, tenantID); err != nil {
 		return Settings{}, err
 	}
-	st, _, err := s.repo.Ensure(ctx, tenantID)
-	return st, err
+	return s.repo.Ensure(ctx, tenantID)
 }
 
-// Limits returns the effective limits (any member).
-func (s *Service) Limits(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) (Limits, error) {
-	if _, _, err := s.access.RoleIn(ctx, actor, tenantID); err != nil {
-		return Limits{}, err
-	}
-	return s.EffectiveLimits(ctx, tenantID)
-}
-
-// EffectiveLimits is the override when set, else the platform default —
-// for the launch path, no access check.
-func (s *Service) EffectiveLimits(ctx context.Context, tenantID uuid.UUID) (Limits, error) {
-	_, override, err := s.repo.Ensure(ctx, tenantID)
-	if err != nil {
-		return Limits{}, err
-	}
-	if override != nil {
-		l := *override
-		l.Overridden = true
-		return l, nil
-	}
-	return s.platform(ctx), nil
-}
-
-// Update applies a patch (admin+), bounded by the effective limits.
+// Update applies a patch (admin+).
 func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID uuid.UUID, p Patch) (Settings, error) {
 	_, role, err := s.access.RoleIn(ctx, actor, tenantID)
 	if err != nil {
@@ -136,15 +70,11 @@ func (s *Service) Update(ctx context.Context, actor auth.Actor, tenantID uuid.UU
 	if role != "owner" && role != "admin" {
 		return Settings{}, errs.Forbidden("requires role admin").Because("requires_role_admin")
 	}
-	limits, err := s.EffectiveLimits(ctx, tenantID)
-	if err != nil {
-		return Settings{}, err
+	if p.RunRetentionDays != nil && *p.RunRetentionDays < 1 {
+		return Settings{}, errs.Invalid("run_retention_days must be at least 1").Because("retention_days_range")
 	}
-	if p.RunRetentionDays != nil && (*p.RunRetentionDays < 1 || *p.RunRetentionDays > limits.RunRetentionMaxDays) {
-		return Settings{}, errs.Newf(errs.CodeInvalid, "run_retention_days must be 1..%d", limits.RunRetentionMaxDays).Because("retention_days_range", "max", strconv.Itoa(limits.RunRetentionMaxDays))
-	}
-	if p.DefaultKeep != nil && (*p.DefaultKeep < 0 || *p.DefaultKeep > limits.MaxKeep) {
-		return Settings{}, errs.Newf(errs.CodeInvalid, "default_keep must be 0..%s", limits.MaxKeep).Because("default_keep_range", "max", limits.MaxKeep.String())
+	if p.DefaultKeep != nil && *p.DefaultKeep < 0 {
+		return Settings{}, errs.Invalid("default_keep must not be negative").Because("default_keep_range")
 	}
 	if p.NotificationEmails != nil {
 		clean := make([]string, 0, len(p.NotificationEmails))

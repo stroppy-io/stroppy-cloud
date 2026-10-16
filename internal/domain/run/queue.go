@@ -20,7 +20,7 @@ import (
 // Nothing waits forever by mistake: a run that can never fit (more than a
 // quota's whole limit) is refused at launch.
 
-// WithQueue gives the queue what it checks besides limits and quotas.
+// WithQueue gives the queue what it checks besides quotas.
 func (s *Service) WithQueue(pipelines PipelineReadiness, suites SuiteConcurrency, log *xlog.Logger) {
 	s.pipelines, s.suites, s.log = pipelines, suites, log
 }
@@ -174,12 +174,16 @@ type decision struct {
 	waits []Queue
 }
 
-// decide walks the queue in order: each run either takes its room (slot,
-// suite slot, quota) or records what it waits for and lets the next try.
+// decide walks the queue in order: each run either takes its room (suite
+// slot, quota) or records what it waits for and lets the next try.
 //
 //nolint:funlen,gocognit // one ordered checklist
 func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, quotas map[uuid.UUID]quotaRead) (decision, error) {
 	d := decision{admit: make([]bool, len(queued)), waits: make([]Queue, len(queued))}
+	// Another pass may have admitted everything between the read and the lock.
+	if len(queued) == 0 {
+		return d, nil
+	}
 	// Launch checked the author's rights; a run admitted later still must
 	// not start for a tenant a platform admin suspended meanwhile.
 	if suspended, err := s.access.Suspended(ctx, tenantID); err != nil {
@@ -197,14 +201,6 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 			}
 			return d, nil
 		}
-	}
-	lim, err := s.limits.EffectiveLimits(ctx, tenantID)
-	if err != nil {
-		return d, err
-	}
-	live, err := s.repo.LiveCount(ctx, tenantID)
-	if err != nil {
-		return d, err
 	}
 	cells, err := s.repo.LiveCells(ctx, tenantID)
 	if err != nil {
@@ -224,11 +220,6 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 	concurrency := map[uuid.UUID]int{}
 	for i, r := range queued {
 		wait := Queue{Position: i + 1}
-		if lim.MaxConcurrentRuns > 0 && live >= lim.MaxConcurrentRuns {
-			wait.WaitingFor, wait.Live, wait.Limit = WaitSlot, live, lim.MaxConcurrentRuns
-			d.waits[i] = wait
-			continue
-		}
 		if r.SuiteRunID != nil && s.suites != nil {
 			sr := *r.SuiteRunID
 			c, ok := concurrency[sr]
@@ -270,7 +261,6 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 			held[profileID] = append(held[profileID], spec)
 		}
 		d.admit[i] = true
-		live++
 		if r.SuiteRunID != nil {
 			cells[*r.SuiteRunID]++
 		}

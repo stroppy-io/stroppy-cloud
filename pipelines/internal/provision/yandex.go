@@ -105,6 +105,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 	}, k8slib.WithReady(yandexSGReady), failedOn[vpc.SecurityGroup](), k8slib.WithResourceOption[vpc.SecurityGroup](pipeline.Parent(net)))
 
 	byZone := map[string]pipeline.Handle{}
+	subnetReady := map[string]readyFn{}
 	var subnetWaiters []func(pipeline.Context) error
 	var parent pipeline.Handle = sg
 	var routeID *string
@@ -133,6 +134,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			},
 		}, k8slib.WithReady(yandexSubnetReady), failedOn[vpc.Subnet](), k8slib.WithResourceOption[vpc.Subnet](pipeline.Parent(parent)))
 		subnetWaiters = append(subnetWaiters, func(ctx pipeline.Context) error { _, err := sub.TryReady(ctx); return err })
+		subnetReady[placement.Zone] = readyOf(sub)
 		if run.ManagedYDB != nil {
 			parent = sub
 		}
@@ -247,7 +249,14 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			k8slib.WithResourceOption[compute.Instance](pipeline.Parent(sub), pipeline.Children(children...)),
 		)
 		mach := &Machine{Spec: m, Agent: agent, VM: vm}
+		deps := []readyFn{readyOf(net), readyOf(sg)}
+		if ready, ok := subnetReady[zone]; ok {
+			deps = append(deps, ready)
+		}
 		mach.wait = func(ctx pipeline.Context) (MachineInfo, error) {
+			if err := upstream(ctx, deps...); err != nil {
+				return MachineInfo{}, err
+			}
 			live, err := vm.TryReady(ctx)
 			if err != nil {
 				return MachineInfo{}, err

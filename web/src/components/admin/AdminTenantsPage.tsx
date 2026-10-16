@@ -17,8 +17,7 @@ import { type ActivePill, DataTableToolbar } from '@components/DataTable/Toolbar
 import { KeyValueList } from '@components/KeyValueList'
 import { RelativeTime } from '@components/RelativeTime'
 import { StatusBadge } from '@components/StatusBadge'
-import { Badge, Button, ConfirmModal, Drawer, Stack, Text } from '@grafana/ui'
-import { formatDuration } from '@helpers/format'
+import { Button, ConfirmModal, Drawer, Stack, Text } from '@grafana/ui'
 import { formatDateTime, relativeTime } from '@helpers/time'
 import { useCopy } from '@hooks/useCopy'
 import {
@@ -33,7 +32,6 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { AssignOwnerModal } from './AssignOwnerModal'
 import { SuspendModal } from './SuspendModal'
-import { TenantLimitsDrawer } from './TenantLimitsDrawer'
 
 // Server sort keys of adminListTenants (default created_at).
 const TENANT_SORT_KEYS = [
@@ -57,7 +55,6 @@ export const ADMIN_TENANTS_DEFAULTS = { sort: 'created_at', order: 'desc' } as c
 
 type Dialog =
   | { kind: 'detail'; tenant: AdminTenant }
-  | { kind: 'limits'; tenant: AdminTenant }
   | { kind: 'owner'; tenant: AdminTenant }
   | { kind: 'suspend'; tenant: AdminTenant }
   | { kind: 'delete'; tenant: AdminTenant }
@@ -129,14 +126,8 @@ export function AdminTenantsPage({
         onClick: () => void navigate({ to: '/t/$slug', params: { slug: tn.slug } }),
       },
       {
-        key: 'limits',
-        group: true,
-        label: t('admin.tenants.editLimits'),
-        icon: 'sliders-v-alt',
-        onClick: () => setDialog({ kind: 'limits', tenant: tn }),
-      },
-      {
         key: 'owner',
+        group: true,
         label: t('admin.tenants.assignOwner'),
         icon: 'user',
         onClick: () => setDialog({ kind: 'owner', tenant: tn }),
@@ -212,10 +203,6 @@ export function AdminTenantsPage({
           subtitle: [x.slug, x.status === 'suspended' ? x.suspended_reason : x.description]
             .filter(Boolean)
             .join(' · '),
-          badges:
-            x.limits?.source === 'tenant_override' ? (
-              <Badge text={t('admin.tenants.limitsOverride')} color="purple" icon="sliders-v-alt" />
-            ) : undefined,
         }),
       }),
       col.text<AdminTenant>({
@@ -337,21 +324,10 @@ export function AdminTenantsPage({
         <TenantDetailDrawer
           tenant={rows.find((x) => x.id === dialog.tenant.id) ?? dialog.tenant}
           onClose={() => setDialog(undefined)}
-          onLimits={() => setDialog({ kind: 'limits', tenant: dialog.tenant })}
           onOwner={() => setDialog({ kind: 'owner', tenant: dialog.tenant })}
           onSuspend={() => setDialog({ kind: 'suspend', tenant: dialog.tenant })}
           onResume={() => resume.mutate(dialog.tenant.slug)}
           onDelete={() => remove.mutateAsync(dialog.tenant.slug).then(() => setDialog(undefined))}
-        />
-      )}
-      {dialog?.kind === 'limits' && (
-        <TenantLimitsDrawer
-          tenant={dialog.tenant}
-          onClose={() => setDialog(undefined)}
-          onSaved={async () => {
-            await invalidate()
-            setDialog(undefined)
-          }}
         />
       )}
       {dialog?.kind === 'owner' && (
@@ -400,7 +376,6 @@ export function AdminTenantsPage({
 function TenantDetailDrawer({
   tenant: tn,
   onClose,
-  onLimits,
   onOwner,
   onSuspend,
   onResume,
@@ -408,7 +383,6 @@ function TenantDetailDrawer({
 }: {
   tenant: AdminTenant
   onClose: () => void
-  onLimits: () => void
   onOwner: () => void
   onSuspend: () => void
   onResume: () => void
@@ -463,31 +437,7 @@ function TenantDetailDrawer({
             { label: t('settings.tabs.providers'), value: tn.counters?.providers ?? 0 },
           ]}
         />
-        {tn.limits && (
-          <KeyValueList
-            title={`${t('settings.limits.title')} · ${tn.limits.source === 'tenant_override' ? t('settings.limits.sourceOverride') : t('settings.limits.sourceDefault')}`}
-            items={[
-              {
-                label: t('settings.limits.maxConcurrentRuns'),
-                value: tn.limits.max_concurrent_runs,
-              },
-              {
-                label: t('settings.limits.maxMachinesPerRun'),
-                value: tn.limits.max_machines_per_run,
-              },
-              { label: t('settings.limits.maxSize'), value: tn.limits.max_size },
-              { label: t('settings.limits.maxKeep'), value: formatDuration(tn.limits.max_keep) },
-              {
-                label: t('settings.limits.retentionMax'),
-                value: t('settings.limits.days', { count: tn.limits.run_retention_max_days }),
-              },
-            ]}
-          />
-        )}
         <Stack gap={1} wrap="wrap">
-          <Button variant="secondary" icon="sliders-v-alt" onClick={onLimits}>
-            {t('admin.tenants.editLimits')}
-          </Button>
           <Button variant="secondary" icon="user" onClick={onOwner}>
             {t('admin.tenants.assignOwner')}
           </Button>

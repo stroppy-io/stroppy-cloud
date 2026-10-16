@@ -5,7 +5,7 @@ import { createFileRoute, stripSearchParams } from '@tanstack/react-router'
 export const Route = createFileRoute('/t/$slug/runs/$id/metrics')({
   staticData: { crumb: 'runs.tabs.metrics' },
   validateSearch: runMetricsSearchSchema,
-  search: { middlewares: [stripSearchParams({ layout: 'grid' })] },
+  search: { middlewares: [stripSearchParams({ layout: 'grid', view: 'catalog' })] },
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueries.metrics()),
   component: () => {
     const { id } = Route.useParams()

@@ -145,17 +145,15 @@ ORDER BY a.id DESC LIMIT @lim;
 
 -- name: SystemSettingsRow :one
 INSERT INTO system_settings (id) VALUES (1) ON CONFLICT (id) DO UPDATE SET id = 1
-RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, default_limits, run_retention_max_days, stroppy_catalog, updated_at, updated_by;
+RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, stroppy_catalog, updated_at, updated_by;
 
 -- name: UpdateSystemSettings :one
 UPDATE system_settings
 SET tenant_creation        = COALESCE(@tenant_creation::text, tenant_creation),
     public_rating_enabled  = COALESCE(@public_rating_enabled::boolean, public_rating_enabled),
     examples_enabled       = COALESCE(@examples_enabled::boolean, examples_enabled),
-    default_limits         = CASE WHEN @set_default_limits::boolean THEN @default_limits::jsonb ELSE default_limits END,
-    run_retention_max_days = COALESCE(@run_retention_max_days::int, run_retention_max_days),
     stroppy_catalog        = CASE WHEN @set_catalog::boolean THEN @stroppy_catalog::jsonb ELSE stroppy_catalog END,
     updated_at             = now(),
     updated_by             = @updated_by
 WHERE id = 1
-RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, default_limits, run_retention_max_days, stroppy_catalog, updated_at, updated_by;
+RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, stroppy_catalog, updated_at, updated_by;

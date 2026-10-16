@@ -3,7 +3,6 @@ import type {
   QuotaName,
   QuotaReport,
   QuotaUnit,
-  TenantLimits,
   TenantSettings,
   Webhook,
   WebhookDelivery,
@@ -39,7 +38,7 @@ function required(path: string, message: string) {
   })
 }
 
-// ---------- settings / limits ----------
+// ---------- settings ----------
 
 route('GET', '/api/v1/t/:slug/settings', ({ store, params }) => {
   const t = store.tenant(params.slug)
@@ -51,8 +50,7 @@ route('PATCH', '/api/v1/t/:slug/settings', ({ store, params, body }) => {
   if (!t) return notFound('tenant')
   const b = (body ?? {}) as SettingsPatch
   if (b.run_retention_days !== undefined) {
-    const max = t.limits.run_retention_max_days
-    if (b.run_retention_days < 1 || b.run_retention_days > max)
+    if (b.run_retention_days < 1)
       return problem(400, 'validation_failed', 'retention out of range', {
         validation: {
           errors: [
@@ -60,7 +58,7 @@ route('PATCH', '/api/v1/t/:slug/settings', ({ store, params, body }) => {
               path: 'run_retention_days',
               code: 'RANGE',
               severity: 'ERROR',
-              message: `Between 1 and ${max} days (tenant limit)`,
+              message: 'At least 1 day',
             },
           ],
         },
@@ -93,11 +91,6 @@ route('PATCH', '/api/v1/t/:slug/settings', ({ store, params, body }) => {
     b as Record<string, unknown>
   )
   return { json: t.settings }
-})
-
-route('GET', '/api/v1/t/:slug/limits', ({ store, params }) => {
-  const t = store.tenant(params.slug)
-  return t ? { json: t.limits satisfies TenantLimits } : notFound('tenant')
 })
 
 // ---------- providers ----------

@@ -119,6 +119,31 @@ export const publicQueries = {
       staleTime: 5 * 60_000,
       enabled,
     }),
+  shareMetricNames: (token: string, q: { start?: string; end?: string } = {}) =>
+    queryOptions({
+      queryKey: [...keys.public(), 'share', token, 'metricNames', q],
+      queryFn: () =>
+        unwrap(
+          api.GET('/api/v1/public/share/{token}/metrics:names', {
+            params: { path: { token }, query: q },
+          })
+        ),
+      staleTime: 5 * 60_000,
+    }),
+  shareMetricSeries: (
+    token: string,
+    q: Paths['/api/v1/public/share/{token}/metrics:series']['get']['parameters']['query']
+  ) =>
+    queryOptions({
+      queryKey: [...keys.public(), 'share', token, 'metricSeries', q],
+      queryFn: () =>
+        unwrap(
+          api.GET('/api/v1/public/share/{token}/metrics:series', {
+            params: { path: { token }, query: q },
+          })
+        ),
+      staleTime: 5 * 60_000,
+    }),
   grafanaSession: (token: string, enabled = true) =>
     queryOptions({
       queryKey: [...keys.public(), 'share', token, 'grafana'],

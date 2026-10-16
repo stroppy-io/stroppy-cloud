@@ -245,14 +245,6 @@ func (r *RunRepo) LiveRuns(ctx context.Context) ([]run.Live, error) {
 	return out, nil
 }
 
-func (r *RunRepo) LiveCount(ctx context.Context, tenantID uuid.UUID) (int, error) {
-	row, err := r.q.TenantLiveRunCount(ctx, tenantID)
-	if err != nil {
-		return 0, infraf("run: live count: %v", err)
-	}
-	return int(row.N), nil
-}
-
 func (r *RunRepo) HasLive(ctx context.Context, tenantID uuid.UUID) (bool, error) {
 	row, err := r.q.TenantHasLiveRuns(ctx, tenantID)
 	if err != nil {

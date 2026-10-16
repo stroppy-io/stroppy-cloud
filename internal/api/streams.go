@@ -135,13 +135,21 @@ func (s *Streams) snapshot(ctx context.Context, actor auth.Actor, topic string) 
 			return nil, "", err
 		}
 		live := s.h.live(r.ID)
-		return overviewOf(r, live), fmt.Sprintf("%d/%s/%s/%t", r.LastEventID, r.Status, r.UpdatedAt.Format("20060102150405.000"), live), nil
+		one := []run.Run{r}
+		s.h.staged(ctx, one)
+		st := one[0].Stage
+		return overviewOf(one[0], live), fmt.Sprintf("%d/%s/%s/%t/%s/%s", r.LastEventID, r.Status, r.UpdatedAt.Format("20060102150405.000"), live, st.Kind, st.Step), nil
 	case "run":
 		r, err := s.runOf(ctx, actor, arg)
 		if err != nil {
 			return nil, "", err
 		}
-		return s.h.runOf(r, nil), r.UpdatedAt.Format("20060102150405.000"), nil
+		// The stage is read-time (stroppy's log), not stored: it versions the
+		// payload too, so a step change reaches subscribers.
+		one := []run.Run{r}
+		s.h.staged(ctx, one)
+		st := one[0].Stage
+		return s.h.runOf(one[0], nil), fmt.Sprintf("%s/%s/%s", r.UpdatedAt.Format("20060102150405.000"), st.Kind, st.Step), nil
 	case "suite_run":
 		id, err := uuid.Parse(arg)
 		if err != nil {

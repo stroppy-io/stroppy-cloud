@@ -279,12 +279,6 @@ export function expandCapacityDemo(
     tenant.runLive[run.id] = live
     if (run.is_favorite) tenant.favorites.add(`run:${run.id}`)
   }
-  tenant.limits = {
-    ...tenant.limits,
-    max_concurrent_runs: 16,
-    max_machines_per_run: 64,
-    max_size: 'XL',
-  }
   tenant.tests = tenant.tests.map((test) => {
     const runs = tenant.runs
       .filter((r) => r.test_ref.id === test.id)

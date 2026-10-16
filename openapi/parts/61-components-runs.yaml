@@ -34,6 +34,26 @@ components:
         progress_pct: { type: number, minimum: 0, maximum: 100 }
         phase_progress_pct: { type: number, minimum: 0, maximum: 100, description: 'How far the current phase is (read-time): the workload by elapsed planned time, other phases by finished steps.' }
         segment: { type: string, description: Current workload segment while running. }
+        workload_from:
+          type: string
+          format: date-time
+          description: >-
+            Where the workload's planned time starts (read-time): the workload
+            phase's start shifted past the running segment's data preparation.
+            With `expected_finish_at` it gives the workload's progress at any
+            instant: (now − workload_from) / (expected_finish_at − workload_from).
+        stage:
+          type: object
+          description: >-
+            Where the running segment's stroppy is (read-time, from its log): the
+            step it prepares, or under load the last step it finished, and since
+            when. While preparing, `expected_finish_at` is absent; under load the
+            plan counts from the load's start.
+          required: [kind, step, since]
+          properties:
+            kind: { $ref: '#/components/schemas/RunStageKind' }
+            step: { type: string, description: 'stroppy step id, e.g. `load_data`, `validate_population`.' }
+            since: { type: string, format: date-time }
         headline:
           type: object
           description: >-
@@ -131,8 +151,8 @@ components:
       properties:
         waiting_for: { $ref: '#/components/schemas/RunWaitReason' }
         position: { type: integer, minimum: 1, description: 1-based among the tenant's queued runs. }
-        live: { type: integer, description: 'Occupied slots (slot, suite_slot).' }
-        limit: { type: integer, description: 'Allowed slots (slot, suite_slot).' }
+        live: { type: integer, description: 'Cells of the suite running (suite_slot).' }
+        limit: { type: integer, description: 'Concurrency of the suite (suite_slot).' }
         quota: { type: string, description: 'Provider quota without room (quota).', example: compute.ssdDisks.size }
         zone: { type: string, description: Zone of a zonal quota. }
         need: { type: number, description: What the run needs of the quota, in unit. }
@@ -141,10 +161,10 @@ components:
         detail: { type: string, description: 'State behind pipelines, provider and quota_unknown.' }
     RunWaitReason:
       type: string
-      enum: [pipelines, slot, suite_slot, quota, quota_unknown, provider, suspended]
+      enum: [pipelines, suite_slot, quota, quota_unknown, provider, suspended]
       description: >-
         pipelines — the tenant's pipelines are not pushed at this server's revision yet;
-        slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its
+        suite_slot — the suite runs as many cells as its
         concurrency; quota — a provider quota has no room; quota_unknown — the quotas could
         not be read; provider — the provider profile is not ready; suspended — a platform
         admin suspended the tenant.
@@ -454,6 +474,90 @@ components:
         older: { type: [string, 'null'], description: Cursor towards the past. }
         newer: { type: [string, 'null'], description: Cursor towards the present. }
         truncated: { type: boolean }
+    MetricOrigin:
+      type: string
+      enum: [exporter, workload, container, pipeline]
+      description: >-
+        Where a metric comes from: exporter — a container's own Prometheus endpoint (node_exporter,
+        the database's exporter, a proxy, the engine itself); workload — stroppy; container — the
+        container statistics the agent samples; pipeline — the pipeline's own telemetry.
+    MetricKind:
+      type: string
+      enum: [counter, gauge]
+      description: counter — grows over the run (its rate is what to look at); gauge — a level.
+    MetricSeriesFn:
+      type: string
+      enum: [value, rate]
+      description: value — the stored samples; rate — the per-second increase (counters).
+    MetricSeriesAgg:
+      type: string
+      enum: [sum, avg, max, min]
+    RunMetricNames:
+      type: object
+      required: [window, data]
+      properties:
+        window:
+          type: object
+          required: [start, end]
+          properties:
+            start: { type: string, format: date-time }
+            end: { type: string, format: date-time }
+            segment: { type: string }
+        data:
+          type: array
+          items:
+            type: object
+            required: [name, origin, kind, series, machines, roles, containers]
+            properties:
+              name: { type: string, example: node_cpu_seconds_total }
+              origin: { $ref: '#/components/schemas/MetricOrigin' }
+              kind: { $ref: '#/components/schemas/MetricKind' }
+              series: { type: integer, description: How many series the name has. }
+              machines: { type: array, items: { type: string } }
+              roles: { type: array, items: { type: string } }
+              containers: { type: array, items: { type: string }, description: Containers the series come from (none for the workload). }
+    RunMetricSeries:
+      type: object
+      required: [window, name, fn, labels, total, truncated, series]
+      properties:
+        window:
+          type: object
+          required: [start, end]
+          properties:
+            start: { type: string, format: date-time }
+            end: { type: string, format: date-time }
+            segment: { type: string }
+        name: { type: string }
+        fn: { $ref: '#/components/schemas/MetricSeriesFn' }
+        labels: { type: array, items: { type: string }, description: The metric's own labels — what it can be grouped by besides machine and container. }
+        total: { type: integer, description: Series before the cut. }
+        truncated: { type: boolean, description: Only the series with the highest average are returned. }
+        series:
+          type: array
+          items:
+            type: object
+            required: [labels, points]
+            properties:
+              labels: { type: object, additionalProperties: { type: string } }
+              machine: { type: string }
+              role: { type: string }
+              container: { type: string }
+              points:
+                type: array
+                items:
+                  type: array
+                  description: '[unix_ms, value]'
+                  items: { type: number }
+                  minItems: 2
+                  maxItems: 2
+              aggregates:
+                type: object
+                properties:
+                  avg: { type: number }
+                  min: { type: number }
+                  max: { type: number }
+                  last: { type: number }
+                  p95: { type: number }
     RunMetrics:
       type: object
       required: [window, series]

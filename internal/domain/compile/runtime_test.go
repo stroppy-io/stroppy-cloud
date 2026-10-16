@@ -24,7 +24,7 @@ func runtimeInput(t *testing.T) (*schemas.Registry, compile.Input) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	db, derived, err := lib.DeriveDatabase(ctx, library.DatabaseSpec{Kind: catalog.Postgres, Version: "17", Params: json.RawMessage(`{}`)})
 	if err != nil {
 		t.Fatal(err)

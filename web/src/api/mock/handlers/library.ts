@@ -596,10 +596,6 @@ export function validateTest(
   const keepSec = durationSec(spec.keep)
   if (Number.isNaN(keepSec))
     issues.push(err('keep', 'FORMAT', 'Use a Go duration such as 30m or 2h'))
-  else if (keepSec > durationSec(t.limits.max_keep))
-    issues.push(
-      err('keep', 'KEEP_TOO_LONG', `Tenant limit for keeping a stand is ${t.limits.max_keep}`)
-    )
 
   const fits = !issues.some((i) => i.severity === 'ERROR')
   const status: Schemas['TestStatus'] =
@@ -1519,13 +1515,6 @@ route('POST', '/api/v1/t/:slug/tests/:id:launch', ({ store, params, body }) => {
           })),
         },
       }
-    )
-  const running = t.runs.filter((r) => r.status === 'running' || r.status === 'pending').length
-  if (running >= t.limits.max_concurrent_runs)
-    return problem(
-      429,
-      'quota_exceeded',
-      `Tenant limit of ${t.limits.max_concurrent_runs} concurrent runs reached.`
     )
   const run: Run = launchFromTest(
     store,

@@ -79,8 +79,6 @@ func seedStand(t *testing.T, e *e2e) string {
 	}
 	e.want(e.req(http.MethodPost, "/api/v1/tenants", map[string]any{"name": "demo"}, tok), http.StatusCreated, &tn)
 	base := "/api/v1/t/" + tn.Slug
-	// A stand shows several runs at once: past the default of three.
-	e.want(e.req(http.MethodPut, "/api/v1/admin/tenants/"+tn.Slug+"/limits", map[string]any{"max_concurrent_runs": 20, "max_machines_per_run": 20}, "admin"), http.StatusOK, nil)
 	e.want(e.req(http.MethodPost, "/api/v1/tenants/"+tn.Slug+"/invites", map[string]any{"email": "viewer@stroppy.local", "role": "viewer"}, tok), http.StatusCreated, nil)
 	var prof struct {
 		ID     string `json:"id"`

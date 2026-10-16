@@ -66,6 +66,32 @@ func (m *Machine) TryReady(ctx pipeline.Context) (MachineInfo, error) {
 	return m.wait(ctx)
 }
 
+// readyFn waits for one declared resource; nil error once it is ready.
+type readyFn func(pipeline.Context) error
+
+// tryReady is a declared resource handle.
+type tryReady[T any] interface {
+	TryReady(ctx pipeline.Context) (T, error)
+}
+
+// readyOf adapts a resource handle's TryReady to a readyFn.
+func readyOf[T any](h tryReady[T]) readyFn {
+	return func(ctx pipeline.Context) error { _, err := h.TryReady(ctx); return err }
+}
+
+// upstream waits for the network a machine hangs on, in order. A network,
+// group or subnet the cloud refused fails the machine at once with that
+// refusal; otherwise the VM would wait out its own timeout on an empty
+// reference and report that instead of the cause.
+func upstream(ctx pipeline.Context, deps ...readyFn) error {
+	for _, ready := range deps {
+		if err := ready(ctx); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Infra is the provisioned network and its machines.
 type Infra struct {
 	managedEndpoint func(pipeline.Context) (string, error)

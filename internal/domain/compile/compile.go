@@ -500,11 +500,9 @@ func (c *compilation) exporters() {
 		name := m.Name + "-node-exporter"
 		c.add(spec.Container{
 			Name: name, Role: m.Role, Machine: m.Name, Image: imageNodeExporter,
-			Kind: spec.ContainerKindExporter,
-			Cmd: []string{
-				"--path.rootfs=/host", "--path.procfs=/host/proc", "--path.sysfs=/host/sys",
-				"--path.udev.data=/host/run/udev/data", fmt.Sprintf("--web.listen-address=:%d", nodeExporterPort),
-			},
+			Kind:    spec.ContainerKindExporter,
+			Cmd:     nodeExporterCmd(),
+			Env:     nodeExporterEnv,
 			Mounts:  []spec.Mount{{Source: "/", Target: "/host", RO: true}},
 			Ports:   []spec.Port{{Container: nodeExporterPort, Host: nodeExporterPort}},
 			Scrape:  "/metrics",

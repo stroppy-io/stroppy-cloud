@@ -27,4 +27,8 @@ export interface DbCustomParams1 {
   data_dir?: string;
   /** Ready check. Shell command run inside the container that exits 0 once the database accepts connections; the workload waits for it. Empty waits only for the container to start. */
   healthcheck?: string;
+  /** Metrics port. Port of the image's Prometheus endpoint; empty when the image has none. */
+  metrics_port?: number | string | null;
+  /** Metrics path. Path of the Prometheus endpoint on the metrics port. */
+  metrics_path?: string;
 }

@@ -3,6 +3,7 @@ package activities
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,6 +20,7 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 		name, replace, with string
 		code                int
 		missing             bool
+		streamErr           error
 		status              spec.SegmentStatus
 		reason              string
 	}{
@@ -31,6 +33,7 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 		{name: "canceled", replace: `"status": "completed"`, with: `"status": "canceled"`, code: 143, status: spec.SegmentCancelled, reason: "canceled"},
 		{name: "hard-kill", missing: true, code: 137, status: spec.SegmentFailed, reason: "stroppy wrote no report (killed by SIGKILL (exit status 137), usually out of memory): loading\nlast words"},
 		{name: "bad-exit", code: 1, status: spec.SegmentFailed, reason: "exited 1"},
+		{name: "lost-container", missing: true, code: -1, streamErr: errors.New("read stroppy logs: unexpected EOF"), status: spec.SegmentFailed, reason: "read stroppy logs: unexpected EOF): loading\nlast words"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			name := filepath.Join(t.TempDir(), "report.json")
@@ -43,7 +46,7 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 			}
 			logPath := filepath.Join(t.TempDir(), "stroppy.log")
 			require.NoError(t, os.WriteFile(logPath, []byte("loading\nlast words\n"), 0600))
-			out := stroppyOutput{ReportPath: name, ExitCode: tc.code, LogPath: logPath, Log: []byte("=== bench summary ===\n  iterations_total  999\n")}
+			out := stroppyOutput{ReportPath: name, ExitCode: tc.code, StreamErr: tc.streamErr, LogPath: logPath, Log: []byte("=== bench summary ===\n  iterations_total  999\n")}
 			var result spec.SegmentResult
 			status, reason := segmentOutcome(context.Background(), &spec.Segment{}, &out, &result)
 			require.Equal(t, tc.status, status, reason)

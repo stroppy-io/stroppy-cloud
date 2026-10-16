@@ -11,6 +11,10 @@ export interface DbMariadbParams1 {
   replication: "async" | "semi_sync" | "galera";
   /** Galera nodes. Size of the Galera cluster; odd only, minimum 3 — quorum needs a strict majority of the last known membership. */
   galera_nodes?: 3 | 5 | 7;
+  /** Buffer pool. auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode. */
+  buffer_pool?: "auto" | "fixed" | "stock";
+  /** Buffer pool size. innodb_buffer_pool_size of every database server; the run refuses a size over the machine's RAM. [MB] */
+  buffer_pool_mb?: number | string;
   /** ProxySQL nodes. ProxySQL instances in front of the cluster; mutually exclusive with MaxScale. */
   proxysql?: number | string;
   /** MaxScale. Run MariaDB MaxScale 24.02 as the router instead of ProxySQL: read/write split and Galera monitoring out of the box. License: MaxScale is under the Business Source License — free in production only with fewer than three database servers; a replicated or Galera cluster behind it needs a MariaDB subscription outside benchmarking. */

@@ -1,15 +1,29 @@
 import { publicQueries } from '@api/queries/results'
 import type { SharedRun } from '@api/types'
+import {
+  type ExplorerSearch,
+  explorerSearchOf,
+  explorerStateOf,
+} from '@components/metrics/explorer-search'
+import { type ExplorerSeriesQuery, MetricExplorer } from '@components/metrics/MetricExplorer'
 import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
+import { dateTime, type TimeRange } from '@grafana/data'
 import { Alert, Icon, LoadingPlaceholder, useStyles2 } from '@grafana/ui'
 import { formatMetric, formatNumber } from '@helpers/format'
 import { formatDateTime } from '@helpers/time'
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MetricsCharts } from './MetricsCharts'
 import { ReportSection, SimpleTable, SubTitle, useReportStyles } from './ReportPrimitives'
+
+const windowRange = (w: { start: string; end: string }): TimeRange => {
+  const from = dateTime(w.start)
+  const to = dateTime(w.end)
+  return { from, to, raw: { from, to } }
+}
 
 const getStyles = (theme: GrafanaTheme2) => ({
   verdicts: css({
@@ -29,24 +43,30 @@ const getStyles = (theme: GrafanaTheme2) => ({
   check: css({ fontFamily: theme.typography.fontFamilyMonospace }),
 })
 
+// Snapshot carries metrics already; the endpoint is used when the snapshot came without them.
+function useShareMetrics(run: SharedRun, token: string, enabled: boolean) {
+  const q = useQuery(publicQueries.shareMetrics(token, {}, enabled && !run.metrics))
+  return { metrics: run.metrics ?? q.data, pending: q.isPending }
+}
+
 export function ReportResults({
   run,
   token,
   scope,
   index,
+  tabbed,
 }: {
   run: SharedRun
   token: string
   scope: 'overview' | 'metrics' | 'configs'
   index: number
+  tabbed?: boolean
 }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const rs = useReportStyles()
   const withMetrics = scope !== 'overview'
-  // Snapshot carries metrics already; the endpoint is used when the snapshot came without them.
-  const metricsQ = useQuery(publicQueries.shareMetrics(token, {}, withMetrics && !run.metrics))
-  const metrics = run.metrics ?? metricsQ.data
+  const { metrics, pending } = useShareMetrics(run, token, withMetrics)
   const segments = run.result?.segments ?? []
   const baseline = run.result?.baseline
 
@@ -56,6 +76,7 @@ export function ReportResults({
       index={index}
       title={t('public.results.title')}
       hint={t('public.results.hint')}
+      tabbed={tabbed}
     >
       <SubTitle>{t('public.results.segments')}</SubTitle>
       {segments.length === 0 ? (
@@ -118,7 +139,7 @@ export function ReportResults({
       <SubTitle>{t('public.results.metrics')}</SubTitle>
       {!withMetrics ? (
         <Alert severity="info" title={t('public.results.metricsNotShared')} />
-      ) : metricsQ.isPending && !metrics ? (
+      ) : pending && !metrics ? (
         <LoadingPlaceholder text={t('common.misc.loading')} />
       ) : !metrics || metrics.series.length === 0 ? (
         <span className={rs.muted}>{t('public.results.noMetrics')}</span>
@@ -130,6 +151,58 @@ export function ReportResults({
           </p>
           <MetricsCharts metrics={metrics} />
         </>
+      )}
+    </ReportSection>
+  )
+}
+
+// Every series the run collected, searchable — the run page's explorer over the share token.
+export function ReportExplorer({
+  run,
+  token,
+  index,
+  tabbed,
+  search,
+  onSearchChange,
+}: {
+  run: SharedRun
+  token: string
+  index: number
+  tabbed?: boolean
+  search: ExplorerSearch
+  onSearchChange: (next: Partial<ExplorerSearch>) => void
+}) {
+  const { t } = useTranslation()
+  const rs = useReportStyles()
+  const { metrics, pending } = useShareMetrics(run, token, true)
+  const source = useMemo(
+    () => ({
+      names: publicQueries.shareMetricNames(token),
+      series: (q: ExplorerSeriesQuery) => publicQueries.shareMetricSeries(token, q),
+    }),
+    [token]
+  )
+  return (
+    <ReportSection
+      id="explorer"
+      index={index}
+      title={t('public.explorer.title')}
+      hint={t('public.explorer.hint')}
+      tabbed={tabbed}
+    >
+      {pending && !metrics ? (
+        <LoadingPlaceholder text={t('common.misc.loading')} />
+      ) : !metrics ? (
+        <span className={rs.muted}>{t('public.results.noMetrics')}</span>
+      ) : (
+        <MetricExplorer
+          source={source}
+          state={explorerStateOf(search)}
+          onChange={(next) => onSearchChange(explorerSearchOf(next))}
+          range={windowRange(metrics.window)}
+          chartHeight={220}
+          height={720}
+        />
       )}
     </ReportSection>
   )

@@ -26,7 +26,7 @@ var recipes = map[catalog.DatabaseKind]recipe{
 	catalog.YDB:        ydbRecipe,
 	catalog.PgNoop:     pgNoopRecipe,
 	catalog.Noop:       noopRecipe,
-	catalog.External:   noopRecipe,
+	catalog.External:   externalRecipe,
 	catalog.Custom:     customRecipe,
 }
 

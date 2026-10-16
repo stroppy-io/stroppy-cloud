@@ -7,6 +7,7 @@ import (
 	"math"
 	"sort"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/go-faster/jx"
@@ -171,7 +172,29 @@ func runSummaryOf(r run.Run) oas.RunSummary {
 	if at := r.ExpectedFinishAt(); at != nil {
 		out.ExpectedFinishAt = oas.NewOptNilDateTime(*at)
 	}
+	if from := r.WorkloadFrom(); from != nil {
+		out.WorkloadFrom = oas.NewOptDateTime(*from)
+	}
+	if !r.Stage.IsZero() {
+		out.Stage = oas.NewOptRunSummaryStage(oas.RunSummaryStage{Kind: oas.RunStageKind(r.Stage.Kind), Step: r.Stage.Step, Since: r.Stage.Since})
+	}
 	return out
+}
+
+// staged reads the stage of the runs under their workload (in parallel,
+// each bounded by observe): a list shows what every running row does.
+func (h *Handler) staged(ctx context.Context, list []run.Run) {
+	if h.deps.Observe == nil {
+		return
+	}
+	var wg sync.WaitGroup
+	for i := range list {
+		if list[i].Status != run.StatusRunning || list[i].Phase != run.PhaseWorkload {
+			continue
+		}
+		wg.Go(func() { list[i].Stage = h.deps.Observe.StageOf(ctx, list[i]) })
+	}
+	wg.Wait()
 }
 
 // resultOf uses the generated result decoder so API fields retain presence,
@@ -448,6 +471,7 @@ func (h *Handler) ListRuns(ctx context.Context, params oas.ListRunsParams) (*oas
 		return nil, err
 	}
 	list, meta := page(list, q.Offset, limit)
+	h.staged(ctx, list)
 	favs := h.favoritesOf(ctx, a, t.ID)
 	out := &oas.ListRunsOK{Data: make([]oas.Run, 0, len(list)), Meta: meta}
 	for _, r := range list {
@@ -501,6 +525,7 @@ func (h *Handler) ListTestRuns(ctx context.Context, params oas.ListTestRunsParam
 		return nil, err
 	}
 	list, meta := page(list, offset, limit)
+	h.staged(ctx, list)
 	favs := h.favoritesOf(ctx, a, t.ID)
 	out := &oas.TestRunHistory{Data: make([]oas.Run, 0, len(list)), Meta: meta}
 	trend := oas.TestRunHistoryTrend{Metric: oas.NewOptString("tps"), Points: []oas.TestRunHistoryTrendPointsItem{}}
@@ -527,8 +552,10 @@ func (h *Handler) GetRun(ctx context.Context, params oas.GetRunParams) (*oas.Run
 	if err != nil {
 		return nil, err
 	}
+	one := []run.Run{r}
+	h.staged(ctx, one)
 	f := h.favoritesOf(ctx, a, t.ID)[r.ID]
-	return h.runOf(r, &f), nil
+	return h.runOf(one[0], &f), nil
 }
 
 // PatchRun — name, notes, labels, rating.
@@ -705,7 +732,9 @@ func (h *Handler) GetRunOverview(ctx context.Context, params oas.GetRunOverviewP
 	if err != nil {
 		return nil, err
 	}
-	return overviewOf(r, h.live(r.ID)), nil
+	one := []run.Run{r}
+	h.staged(ctx, one)
+	return overviewOf(one[0], h.live(r.ID)), nil
 }
 
 func overviewOf(r run.Run, live bool) *oas.RunOverview {

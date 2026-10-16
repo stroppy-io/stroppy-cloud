@@ -99,7 +99,6 @@ route('POST', '/api/v1/tenants', ({ store, body }) => {
       default_rating: { tenant: true, global: false },
       default_keep: '0s',
     },
-    limits: { ...store.system.default_limits, source: 'platform_default' },
   }
   store.tenants[slug] = data
   store.me.tenants.push({ tenant, role: 'owner', joined_at: iso() })

@@ -1,4 +1,4 @@
-import type { AdminStatus, Run, Schemas, SystemSettings, TenantLimits } from '@api/types'
+import type { AdminStatus, Run, Schemas, SystemSettings } from '@api/types'
 import { noContent, notFound, problem, route } from '../router'
 import { sortRuns } from '../run-sort'
 import { getSimulation } from '../simulation'
@@ -7,7 +7,6 @@ import { daysAgo, hoursAgo, iso, minutesAgo, multi, paginate, parseListQuery } f
 
 type AdminTenant = Schemas['AdminTenant']
 type Namespace = AdminStatus['pipelines']['namespaces'][number]
-type LimitsWrite = Schemas['TenantLimitsWrite']
 type SettingsPatch = Schemas['SystemSettingsPatch']
 
 const STARTED_AT = hoursAgo(31)
@@ -48,7 +47,6 @@ function adminTenant(t: TenantData): AdminTenant {
   const last = [...runs].sort((a, b) => (a.created_at < b.created_at ? 1 : -1))[0]
   return {
     ...t.tenant,
-    limits: t.limits,
     suspended_reason: suspendedReason[t.tenant.slug],
     counters: {
       members: t.members.length,
@@ -208,57 +206,6 @@ route('POST', '/api/v1/admin/tenants/:slug:resume', ({ store, params }) => {
   return { json: adminTenant(t) }
 })
 
-route('PUT', '/api/v1/admin/tenants/:slug/limits', ({ store, params, body }) => {
-  const t = store.tenant(params.slug)
-  if (!t) return notFound('tenant')
-  const b = (body ?? {}) as LimitsWrite
-  const d = store.system.default_limits
-  const pick = <K extends keyof LimitsWrite>(k: K, fallback: TenantLimits[K]) =>
-    b[k] === undefined || b[k] === null ? fallback : (b[k] as TenantLimits[K])
-  const positive: (keyof LimitsWrite)[] = [
-    'max_concurrent_runs',
-    'max_machines_per_run',
-    'run_retention_max_days',
-  ]
-  for (const k of positive) {
-    const v = b[k]
-    if (typeof v === 'number' && (!Number.isInteger(v) || v < 1))
-      return problem(400, 'validation_failed', `${k} must be a positive integer`, {
-        validation: {
-          errors: [
-            { path: k, code: 'RANGE', severity: 'ERROR', message: 'Must be a positive integer' },
-          ],
-        },
-      })
-  }
-  if (b.max_keep && !/^(\d+h)?(\d+m)?(\d+s)?$/.test(b.max_keep))
-    return problem(400, 'validation_failed', 'bad duration', {
-      validation: {
-        errors: [
-          { path: 'max_keep', code: 'FORMAT', severity: 'ERROR', message: 'Use 0s, 30m or 2h' },
-        ],
-      },
-    })
-  const allNull = Object.values(b).every((v) => v === undefined || v === null)
-  t.limits = {
-    max_concurrent_runs: pick('max_concurrent_runs', d.max_concurrent_runs),
-    max_machines_per_run: pick('max_machines_per_run', d.max_machines_per_run),
-    max_size: pick('max_size', d.max_size),
-    max_keep: pick('max_keep', d.max_keep),
-    run_retention_max_days: pick('run_retention_max_days', d.run_retention_max_days),
-    source: allNull ? 'platform_default' : 'tenant_override',
-  }
-  if (t.settings.run_retention_days > t.limits.run_retention_max_days)
-    t.settings.run_retention_days = t.limits.run_retention_max_days
-  store.audit(
-    params.slug,
-    'admin.tenant.limits',
-    { kind: 'tenant', id: t.tenant.id, name: t.tenant.name },
-    b as Record<string, unknown>
-  )
-  return { json: t.limits }
-})
-
 route('POST', '/api/v1/admin/tenants/:slug:assign-owner', ({ store, params, body }) => {
   const t = store.tenant(params.slug)
   if (!t) return notFound('tenant')
@@ -378,62 +325,14 @@ route('GET', '/api/v1/admin/settings', ({ store }) => ({ json: store.system }))
 
 route('PATCH', '/api/v1/admin/settings', ({ store, body }) => {
   const b = (body ?? {}) as SettingsPatch
-  const s: SystemSettings = { ...store.system, default_limits: { ...store.system.default_limits } }
+  const s: SystemSettings = { ...store.system }
   if (b.tenant_creation !== undefined) s.tenant_creation = b.tenant_creation
   if (b.public_rating_enabled !== undefined) s.public_rating_enabled = b.public_rating_enabled
   if (b.examples_enabled !== undefined) s.examples_enabled = b.examples_enabled
-  if (b.run_retention_max_days !== undefined) {
-    if (b.run_retention_max_days < 1)
-      return problem(400, 'validation_failed', 'retention must be ≥ 1', {
-        validation: {
-          errors: [
-            {
-              path: 'run_retention_max_days',
-              code: 'RANGE',
-              severity: 'ERROR',
-              message: 'At least 1 day',
-            },
-          ],
-        },
-      })
-    s.run_retention_max_days = b.run_retention_max_days
-  }
-  if (b.default_limits) {
-    const d = b.default_limits
-    for (const k of [
-      'max_concurrent_runs',
-      'max_machines_per_run',
-      'run_retention_max_days',
-    ] as const) {
-      const v = d[k]
-      if (v !== undefined && v !== null) {
-        if (!Number.isInteger(v) || v < 1)
-          return problem(400, 'validation_failed', `${k} must be positive`, {
-            validation: {
-              errors: [
-                {
-                  path: `default_limits.${k}`,
-                  code: 'RANGE',
-                  severity: 'ERROR',
-                  message: 'Must be a positive integer',
-                },
-              ],
-            },
-          })
-        s.default_limits[k] = v
-      }
-    }
-    if (d.max_size) s.default_limits.max_size = d.max_size
-    if (d.max_keep) s.default_limits.max_keep = d.max_keep
-  }
   if (b.stroppy_catalog !== undefined) s.stroppy_catalog = b.stroppy_catalog
   s.updated_at = iso()
   s.updated_by = { id: store.me.id, display_name: store.me.display_name }
   store.system = s
-  // Tenants on platform defaults follow the new defaults.
-  for (const t of Object.values(store.tenants))
-    if (t.limits.source !== 'tenant_override')
-      t.limits = { ...s.default_limits, source: 'platform_default' }
   store.audit(
     undefined,
     'admin.settings.update',

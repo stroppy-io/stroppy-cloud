@@ -1,7 +1,7 @@
 -- name: EnsureSettings :one
 INSERT INTO tenant_settings (tenant_id) VALUES (@tenant_id)
 ON CONFLICT (tenant_id) DO UPDATE SET tenant_id = EXCLUDED.tenant_id
-RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;
+RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, updated_at;
 
 -- name: UpdateSettings :one
 UPDATE tenant_settings
@@ -12,7 +12,4 @@ SET run_retention_days  = COALESCE(@run_retention_days::int, run_retention_days)
     notification_emails = COALESCE(@notification_emails::jsonb, notification_emails),
     updated_at          = now()
 WHERE tenant_id = @tenant_id
-RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;
-
--- name: SetLimitsOverride :execrows
-UPDATE tenant_settings SET limits_override = @limits_override, updated_at = now() WHERE tenant_id = @tenant_id;
+RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, updated_at;

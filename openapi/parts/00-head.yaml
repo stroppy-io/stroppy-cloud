@@ -43,7 +43,7 @@ tags:
   - name: Tenants
     description: Tenant lifecycle, members, invites, service tokens.
   - name: Tenant Settings
-    description: Defaults, provider profiles, quotas, limits, webhooks.
+    description: Defaults, provider profiles, quotas, webhooks.
   - name: Catalog
     description: Reference data — databases, providers/sizes, stroppy, examples, schemas, metrics.
   - name: Databases

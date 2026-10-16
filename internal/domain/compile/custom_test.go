@@ -3,6 +3,7 @@ package compile_test
 import (
 	"context"
 	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -25,10 +26,11 @@ func TestCompileCustomImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	kind, _ := dbkind.Lookup(catalog.Custom)
 	params := kind.Topologies[0].Params
 	params["nodes"] = 2
+	params["metrics_port"] = 9187
 	raw, _ := json.Marshal(params)
 	database, derived, err := lib.DeriveDatabase(ctx, library.DatabaseSpec{Kind: catalog.Custom, Version: "custom", Params: raw})
 	if err != nil {
@@ -68,5 +70,20 @@ func TestCompileCustomImage(t *testing.T) {
 	}
 	if len(c.Mounts) != 1 || c.Mounts[0].Target != "/var/lib/postgresql/data" {
 		t.Fatalf("mounts %+v", c.Mounts)
+	}
+	// The image's endpoint is scraped, and a pg image gets postgres_exporter
+	// logged in with the tenant's user.
+	if c.Scrape != "/metrics" || c.ScrapePort != 9187 {
+		t.Fatalf("scrape %q:%d", c.Scrape, c.ScrapePort)
+	}
+	exporters := 0
+	for _, e := range out.Spec.Containers {
+		if e.Kind == spec.ContainerKindExporter && strings.HasSuffix(e.Name, "-postgres-exporter") &&
+			e.Env["DATA_SOURCE_NAME"] == "postgresql://stroppy:stroppy@127.0.0.1:5432/stroppy?sslmode=disable" {
+			exporters++
+		}
+	}
+	if exporters != 2 {
+		t.Fatalf("postgres exporters %d, want one per db machine", exporters)
 	}
 }

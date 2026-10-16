@@ -19,7 +19,6 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
@@ -35,7 +34,6 @@ type Service struct {
 	access    Access
 	library   *library.Service
 	profiles  Profiles
-	limits    Limits
 	compiler  Compiler
 	publisher Publisher
 	audit     *audit.Service
@@ -49,8 +47,8 @@ type Service struct {
 }
 
 // NewService wires the use cases.
-func NewService(repo Repository, g Graphene, access Access, lib *library.Service, profiles Profiles, limits Limits, compiler Compiler, publisher Publisher, auditSvc *audit.Service, scope func(context.Context, string) context.Context) *Service {
-	return &Service{repo: repo, graphene: g, access: access, library: lib, profiles: profiles, limits: limits, compiler: compiler, publisher: publisher, audit: auditSvc, scope: scope, nudge: make(chan struct{}, 1)}
+func NewService(repo Repository, g Graphene, access Access, lib *library.Service, profiles Profiles, compiler Compiler, publisher Publisher, auditSvc *audit.Service, scope func(context.Context, string) context.Context) *Service {
+	return &Service{repo: repo, graphene: g, access: access, library: lib, profiles: profiles, compiler: compiler, publisher: publisher, audit: auditSvc, scope: scope, nudge: make(chan struct{}, 1)}
 }
 
 // Overrides are the launch-time deviations from a test.
@@ -267,7 +265,7 @@ func (s *Service) launchOn(ctx context.Context, actor auth.Actor, tenantID uuid.
 	return s.repo.ByID(ctx, admitted.ID)
 }
 
-// Prepare resolves the test, checks fit/limits/quotas and compiles the
+// Prepare resolves the test, checks fit/quotas and compiles the
 // RunSpec; nothing is stored. Suites prepare every cell before storing any.
 //
 //nolint:funlen // one linear checklist
@@ -330,9 +328,6 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	}
 	if res.Profile.Status != provider.StatusReady {
 		return Prepared{}, errs.Invalid(fmt.Sprintf("provider profile %q is %s", res.Profile.Name, res.Profile.Status)).Because("profile_not_ready", "name", res.Profile.Name, "status", string(res.Profile.Status))
-	}
-	if err := s.checkLimits(ctx, tenantID, spec, res); err != nil {
-		return Prepared{}, err
 	}
 	slug, ns, err := s.tenantScope(ctx, actor, tenantID)
 	if err != nil {
@@ -515,43 +510,6 @@ func segmentNames(w library.WorkloadSpec) []string {
 	return out
 }
 
-// checkLimits enforces the tenant's ceiling (§16.4).
-// checkLimits refuses what the tenant may never run; how many runs are live
-// is the queue's business, not a refusal.
-func (s *Service) checkLimits(ctx context.Context, tenantID uuid.UUID, spec library.TestSpec, res library.Resolved) error {
-	lim, err := s.limits.EffectiveLimits(ctx, tenantID)
-	if err != nil {
-		return err
-	}
-	machines := 0
-	for _, m := range res.Machines {
-		machines += m.Count
-	}
-	if lim.MaxMachinesPerRun > 0 && machines > lim.MaxMachinesPerRun {
-		return errs.Newf(errs.CodeLimit, "max_machines_per_run: %d machines, limit %d", machines, lim.MaxMachinesPerRun).Because("limit_machines_per_run", "machines", strconv.Itoa(machines), "limit", strconv.Itoa(lim.MaxMachinesPerRun))
-	}
-	if lim.MaxSize != "" {
-		for role, rs := range spec.Sizes {
-			if sizeIndex(rs.Size) > sizeIndex(lim.MaxSize) {
-				return errs.Newf(errs.CodeLimit, "max_size: sizes.%s is %s, limit %s", role, rs.Size, lim.MaxSize).Because("limit_size", "role", role, "size", rs.Size, "limit", lim.MaxSize)
-			}
-		}
-	}
-	if lim.MaxKeep > 0 && spec.Keep > lim.MaxKeep {
-		return errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", spec.Keep, lim.MaxKeep).Because("limit_keep", "keep", spec.Keep.String(), "limit", lim.MaxKeep.String())
-	}
-	return nil
-}
-
-func sizeIndex(size string) int {
-	for i, s := range catalog.Sizes {
-		if s == size {
-			return i
-		}
-	}
-	return -1
-}
-
 // checkQuotas refuses a run that can never fit: it needs more than a
 // provider quota's whole limit. A run that only waits for room is queued.
 func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipelinespec.Run) error {
@@ -682,6 +640,15 @@ func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
 			return 1, true
 		}
 		return 0, true
+	// Every run declares its own network and security group: one VPC,
+	// one group and (AWS) one internet gateway per run, one subnet per
+	// zone it places machines in (pipelines/internal/provision).
+	case name == "vpc.networks.count" || name == "vpc.vpcs" ||
+		name == "vpc.securitygroups.count" || name == "vpc.security_groups" ||
+		name == "vpc.internet_gateways":
+		return 1, true
+	case name == "vpc.subnets.count":
+		return float64(subnetCount(res)), true
 	case name == "compute.disks.count":
 		return float64(d.disks), true
 	case name == "compute.instances.count":
@@ -706,6 +673,29 @@ func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
 		return float64(d.mem), true
 	}
 	return 0, false
+}
+
+// subnetCount is the zones the run places machines (and a dedicated
+// managed YDB) in: one subnet each.
+func subnetCount(res pipelinespec.Run) int {
+	var settings struct {
+		Zone string `json:"zone"`
+	}
+	_ = json.Unmarshal(res.Provider.Settings, &settings) //nolint:errcheck // no zone: the default one
+	zones := map[string]bool{}
+	for _, m := range res.Machines {
+		zone := m.Location
+		if zone == "" {
+			zone = settings.Zone
+		}
+		zones[zone] = true
+	}
+	if res.ManagedYDB != nil && res.ManagedYDB.Type == "dedicated" {
+		for _, zone := range res.ManagedYDB.Zones {
+			zones[zone] = true
+		}
+	}
+	return max(len(zones), 1)
 }
 
 func (s *Service) publish(ctx context.Context, tenantID uuid.UUID, event string, r Run) {
@@ -1011,13 +1001,6 @@ func (s *Service) KeepExtend(ctx context.Context, actor auth.Actor, tenantID, id
 	}
 	if !r.StandKept {
 		return Run{}, errs.Conflict("the stand is not kept").Because("the_stand_is_not_kept")
-	}
-	lim, err := s.limits.EffectiveLimits(ctx, tenantID)
-	if err != nil {
-		return Run{}, err
-	}
-	if lim.MaxKeep > 0 && d > lim.MaxKeep {
-		return Run{}, errs.Newf(errs.CodeLimit, "max_keep: %s, limit %s", d, lim.MaxKeep).Because("limit_keep", "keep", d.String(), "limit", lim.MaxKeep.String())
 	}
 	sctx := s.scope(ctx, r.GrapheneNamespace)
 	held, err := s.graphene.Holdings(sctx, r.GrapheneRef())

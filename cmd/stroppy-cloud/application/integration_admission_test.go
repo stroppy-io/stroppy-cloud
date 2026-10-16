@@ -10,16 +10,20 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 )
 
 func TestE2EConcurrentLaunch(t *testing.T) {
 	for _, sameKey := range []bool{true, false} {
-		name := "tenant limit"
+		name := "no cap"
 		if sameKey {
 			name = "same idempotency key"
 		}
 		t.Run(name, func(t *testing.T) {
 			e := e2eServer(t)
+			// Room for every run: the quota is the only gate.
+			e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 4096, Used: 4, Unit: "cores"}}
 			base, tok, testID, _ := runFixtureWith(t, e, nil, "0s")
 			e.graphene.hold("segment.started")
 			const n = 6
@@ -75,19 +79,15 @@ func TestE2EConcurrentLaunch(t *testing.T) {
 				t.Errorf("replay created=%d distinct=%d", created, len(ids))
 			}
 			if !sameKey {
-				// Every launch is accepted; three hold the slots, the rest wait.
-				started, waiting := 0, 0
+				// Every launch is accepted and starts: nothing but quotas holds a run.
+				started := 0
 				for id := range ids {
-					var v runView
-					e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &v)
 					if _, ok := e.graphene.runOf(id); ok {
 						started++
-					} else if v.Queue.WaitingFor == "slot" {
-						waiting++
 					}
 				}
-				if created != n || started != 3 || waiting != n-3 {
-					t.Errorf("limit 3: created=%d started=%d waiting=%d", created, started, waiting)
+				if created != n || started != n {
+					t.Errorf("no cap: created=%d started=%d", created, started)
 				}
 			}
 			var listed struct{ Data []runView }

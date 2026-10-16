@@ -549,7 +549,7 @@
       "description": "0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read.",
       "group": "Hostgroups",
       "int64": {
-        "default": "0",
+        "default": "1",
         "in": [
           "0",
           "1",
@@ -560,10 +560,10 @@
       "title": "Writer is also reader"
     },
     {
-      "description": "Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check.",
+      "description": "Group Replication / Galera: a reader more than this many transactions behind (Galera: receive queue longer than this) is shunned; 0 shuns on any lag.",
       "group": "Hostgroups",
       "int64": {
-        "default": "0",
+        "default": "100",
         "gte": "0",
         "lte": "1000000"
       },

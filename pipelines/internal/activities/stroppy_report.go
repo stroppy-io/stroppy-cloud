@@ -84,6 +84,12 @@ func reportOutcome(seg *spec.Segment, out *stroppyOutput, result *spec.SegmentRe
 		if out.ExitCode == 0 {
 			text = "exit status 0"
 		}
+		// Exit -1 is no status at all: the activity lost the container (its
+		// log stream broke, the wait failed or the activity was cancelled).
+		// That error is the cause; the log tail only shows where it struck.
+		if out.StreamErr != nil {
+			text += ": " + out.StreamErr.Error()
+		}
 		return reportFailure(out, fmt.Sprintf("stroppy wrote no report (%s): %s", text, tail(lastLines(out.LogPath), errTailBytes)))
 	}
 	if err != nil {

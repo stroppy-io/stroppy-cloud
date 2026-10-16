@@ -12,7 +12,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/gen/db"
 )
@@ -180,16 +179,6 @@ func (r *AdminRepo) UpdateSystem(ctx context.Context, p admin.SystemPatch, by *u
 		return admin.SystemSettings{}, infraf("admin: system settings: %v", err)
 	}
 	params := db.UpdateSystemSettingsParams{TenantCreation: p.TenantCreation, PublicRatingEnabled: p.PublicRatingEnabled, ExamplesEnabled: p.ExamplesEnabled, UpdatedBy: by}
-	if p.SetDefaultLimits {
-		params.SetDefaultLimits = true
-		if p.DefaultLimits != nil {
-			params.DefaultLimits, _ = json.Marshal(p.DefaultLimits) //nolint:errcheck // struct
-		}
-	}
-	if p.RunRetentionMaxDays != nil {
-		d := int32(*p.RunRetentionMaxDays) //nolint:gosec // small
-		params.RunRetentionMaxDays = &d
-	}
 	if p.SetCatalog {
 		params.SetCatalog, params.StroppyCatalog = true, p.StroppyCatalog
 	}
@@ -201,13 +190,7 @@ func (r *AdminRepo) UpdateSystem(ctx context.Context, p admin.SystemPatch, by *u
 }
 
 func systemOf(row db.SystemSettingsRowRow) admin.SystemSettings {
-	s := admin.SystemSettings{TenantCreation: row.TenantCreation, PublicRatingEnabled: row.PublicRatingEnabled, ExamplesEnabled: row.ExamplesEnabled, RunRetentionMaxDays: int(row.RunRetentionMaxDays), UpdatedAt: row.UpdatedAt, UpdatedBy: row.UpdatedBy}
-	if len(row.DefaultLimits) > 0 && string(row.DefaultLimits) != "null" {
-		var l settings.Limits
-		if json.Unmarshal(row.DefaultLimits, &l) == nil {
-			s.DefaultLimits = &l
-		}
-	}
+	s := admin.SystemSettings{TenantCreation: row.TenantCreation, PublicRatingEnabled: row.PublicRatingEnabled, ExamplesEnabled: row.ExamplesEnabled, UpdatedAt: row.UpdatedAt, UpdatedBy: row.UpdatedBy}
 	if len(row.StroppyCatalog) > 0 && string(row.StroppyCatalog) != "null" {
 		s.StroppyCatalog = row.StroppyCatalog
 	}

@@ -55,6 +55,7 @@ func TestStroppy(t *testing.T) {
 			{Value: with(map[string]any{"segments": []any{minimalSegment("load"), minimalSegment("load")}}), Code: "RULE_VIOLATED", Path: ""},
 			{Value: with(map[string]any{"driver": map[string]any{"default_insert_method": "copy"}}), Code: "CHOICE_NOT_ALLOWED", Path: "driver.default_insert_method"},
 			{Value: with(map[string]any{"baseline": map[string]any{"enabled": true, "tiers": []any{"gpu"}}}), Code: "CHOICE_NOT_ALLOWED", Path: "baseline.tiers[0]"},
+			{Value: with(map[string]any{"protocol": "mysql", "driver": map[string]any{"default_insert_method": "columnar"}}), Code: "RULE_VIOLATED", Path: ""},
 		},
 	})
 }

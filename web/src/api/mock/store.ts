@@ -21,7 +21,6 @@ import type {
   SuiteRun,
   SystemSettings,
   Tenant,
-  TenantLimits,
   TenantRole,
   TenantSettings,
   Webhook,
@@ -54,7 +53,6 @@ export interface TenantData {
   invites: Invite[]
   tokens: ApiToken[]
   settings: TenantSettings
-  limits: TenantLimits
   providers: ProviderProfile[]
   quotas: Record<string, QuotaReport>
   webhooks: Webhook[]

@@ -30,7 +30,9 @@ func ydb() Kind {
 				{ID: "single", Title: "Single node", Params: map[string]any{"version": "26.2"}},
 				{ID: "mirror-3-dc", Title: "mirror-3-dc", Description: "Nine storage nodes, three pdisks each, three database nodes.", Params: map[string]any{"version": "26.2", "fault_tolerance": "mirror-3-dc", "failure_domain": "disk", "storage_nodes": 9, "database_nodes": 3, "pdisks_per_node": 3}},
 			},
-			ParamsSchema: "db.ydb.params@1", Protocols: []catalog.Protocol{catalog.ProtoYDBGrpc, catalog.ProtoYDBGrpcs}, Deployable: true,
+			// The stand serves plain gRPC only (no TLS certificates are issued):
+			// a grpcs client would hang in its handshake until the segment times out.
+			ParamsSchema: "db.ydb.params@1", Protocols: []catalog.Protocol{catalog.ProtoYDBGrpc}, Deployable: true,
 		},
 		plan: planYDB,
 		login: func(params map[string]any) topology.Login {

@@ -213,12 +213,19 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 
 // postgresExporter scrapes every postgres of a role from its own machine.
 func (c *compilation) postgresExporter(role string) {
+	oriole := c.in.Database.Kind == catalog.OrioleDB
+	cmd := postgresExporterCmd(oriole)
+	var files []spec.File
+	if oriole {
+		files = []spec.File{{Path: orioledbQueriesPath, Content: orioledbQueries}}
+	}
 	for _, m := range c.machinesOf(role) {
 		c.add(spec.Container{
-			Name: m + "-postgres-exporter", Role: role, Machine: m, Image: imagePostgresExport,
+			Files: files,
+			Name:  m + "-postgres-exporter", Role: role, Machine: m, Image: imagePostgresExport,
 			Kind:      spec.ContainerKindExporter,
 			Env:       map[string]string{"DATA_SOURCE_NAME": fmt.Sprintf("postgresql://%s:%s@127.0.0.1:%d/%s?sslmode=disable", pgUser, pgPassword, pgPort, pgDatabase)},
-			Cmd:       []string{"--collector.postmaster", "--collector.stat_statements", fmt.Sprintf("--web.listen-address=:%d", postgresExporterPort)},
+			Cmd:       cmd,
 			Ports:     []spec.Port{{Container: postgresExporterPort, Host: postgresExporterPort}},
 			Scrape:    "/metrics",
 			Restart:   "always",

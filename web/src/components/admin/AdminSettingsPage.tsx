@@ -7,14 +7,11 @@ import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { type Schema, type Values, validateLocal } from '@components/schema/engine'
 import { SchemaForm } from '@components/schema/SchemaForm'
 import { css } from '@emotion/css'
-import type { GrafanaTheme2 } from '@grafana/data'
 import {
   Alert,
   Button,
-  Combobox,
   Field,
   FieldSet,
-  Input,
   LoadingPlaceholder,
   RadioButtonGroup,
   Stack,
@@ -22,19 +19,17 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
-import { applyServerErrors, firstError, isGoDuration, REWARD_EARLY } from '@helpers/form'
+import { applyServerErrors, REWARD_EARLY } from '@helpers/form'
 import { useForm } from '@tanstack/react-form'
 import { useQuery, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
 const CATALOG_SCHEMA = 'system.stroppy_catalog'
 
-const getStyles = (theme: GrafanaTheme2) => ({
+const getStyles = () => ({
   form: css({ maxWidth: 820 }),
-  row: css({ display: 'flex', gap: theme.spacing(2), flexWrap: 'wrap' }),
 })
 
 export function AdminSettingsPage() {
@@ -60,26 +55,14 @@ export function AdminSettingsPage() {
         tenant_creation: z.enum(['anyone', 'admin_only']),
         public_rating_enabled: z.boolean(),
         examples_enabled: z.boolean(),
-        run_retention_max_days: z.number().int().min(1, t('common.validation.positive')),
-        max_concurrent_runs: z.number().int().min(1, t('common.validation.positive')),
-        max_machines_per_run: z.number().int().min(1, t('common.validation.positive')),
-        max_size: z.enum(SIZES),
-        max_keep: z.string().trim().refine(isGoDuration, t('common.validation.duration')),
-        default_retention_max_days: z.number().int().min(1, t('common.validation.positive')),
       }),
-    [t]
+    []
   )
   const form = useForm({
     defaultValues: {
       tenant_creation: settings.tenant_creation,
       public_rating_enabled: settings.public_rating_enabled,
       examples_enabled: settings.examples_enabled,
-      run_retention_max_days: settings.run_retention_max_days,
-      max_concurrent_runs: settings.default_limits.max_concurrent_runs,
-      max_machines_per_run: settings.default_limits.max_machines_per_run,
-      max_size: settings.default_limits.max_size as (typeof SIZES)[number],
-      max_keep: settings.default_limits.max_keep,
-      default_retention_max_days: settings.default_limits.run_retention_max_days,
     },
     ...REWARD_EARLY,
     validators: { onDynamic: schema },
@@ -102,14 +85,6 @@ export function AdminSettingsPage() {
           tenant_creation: value.tenant_creation,
           public_rating_enabled: value.public_rating_enabled,
           examples_enabled: value.examples_enabled,
-          run_retention_max_days: value.run_retention_max_days,
-          default_limits: {
-            max_concurrent_runs: value.max_concurrent_runs,
-            max_machines_per_run: value.max_machines_per_run,
-            max_size: value.max_size,
-            max_keep: value.max_keep.trim(),
-            run_retention_max_days: value.default_retention_max_days,
-          },
           stroppy_catalog: nextCatalog,
         })
         qc.setQueryData(adminQueries.settings().queryKey, next)
@@ -125,38 +100,6 @@ export function AdminSettingsPage() {
       }
     },
   })
-
-  const num = (
-    name:
-      | 'run_retention_max_days'
-      | 'max_concurrent_runs'
-      | 'max_machines_per_run'
-      | 'default_retention_max_days',
-    label: string,
-    description?: string
-  ) => (
-    <form.Field name={name}>
-      {(field) => (
-        <Field
-          label={label}
-          description={description}
-          invalid={!!firstError(field.state.meta)}
-          error={firstError(field.state.meta)}
-          htmlFor={field.name}
-        >
-          <Input
-            id={field.name}
-            type="number"
-            min={1}
-            width={16}
-            value={field.state.value}
-            onBlur={field.handleBlur}
-            onChange={(e) => field.handleChange(e.currentTarget.valueAsNumber)}
-          />
-        </Field>
-      )}
-    </form.Field>
-  )
 
   return (
     <form
@@ -224,55 +167,6 @@ export function AdminSettingsPage() {
               </Field>
             )}
           </form.Field>
-          {num(
-            'run_retention_max_days',
-            t('admin.settings.retentionMax'),
-            t('admin.settings.retentionMaxHint')
-          )}
-        </FieldSet>
-
-        <FieldSet label={t('admin.settings.defaultLimits')}>
-          <Text color="secondary" variant="bodySmall">
-            {t('admin.settings.defaultLimitsHint')}
-          </Text>
-          <div className={styles.row}>
-            {num('max_concurrent_runs', t('settings.limits.maxConcurrentRuns'))}
-            {num('max_machines_per_run', t('settings.limits.maxMachinesPerRun'))}
-            {num('default_retention_max_days', t('settings.limits.retentionMax'))}
-          </div>
-          <div className={styles.row}>
-            <form.Field name="max_size">
-              {(field) => (
-                <Field label={t('settings.limits.maxSize')} htmlFor={field.name}>
-                  <Combobox
-                    id={field.name}
-                    width={16}
-                    options={SIZES.map((s) => ({ label: s, value: s }))}
-                    value={field.state.value}
-                    onChange={(o) => field.handleChange(o.value)}
-                  />
-                </Field>
-              )}
-            </form.Field>
-            <form.Field name="max_keep">
-              {(field) => (
-                <Field
-                  label={t('settings.limits.maxKeep')}
-                  invalid={!!firstError(field.state.meta)}
-                  error={firstError(field.state.meta)}
-                  htmlFor={field.name}
-                >
-                  <Input
-                    id={field.name}
-                    width={16}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  />
-                </Field>
-              )}
-            </form.Field>
-          </div>
         </FieldSet>
 
         <FieldSet label={t('admin.settings.catalog')}>

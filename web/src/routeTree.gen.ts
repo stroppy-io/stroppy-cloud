@@ -59,7 +59,6 @@ import { Route as TSlugSchedulesIdRouteImport } from './routes/t/$slug/schedules
 import { Route as TSlugSchedulesNewRouteImport } from './routes/t/$slug/schedules/new'
 import { Route as TSlugSettingsIndexRouteImport } from './routes/t/$slug/settings/index'
 import { Route as TSlugSettingsAuditRouteImport } from './routes/t/$slug/settings/audit'
-import { Route as TSlugSettingsLimitsRouteImport } from './routes/t/$slug/settings/limits'
 import { Route as TSlugSettingsMembersRouteImport } from './routes/t/$slug/settings/members'
 import { Route as TSlugSettingsProvidersRouteImport } from './routes/t/$slug/settings/providers'
 import { Route as TSlugSettingsQuotasRouteImport } from './routes/t/$slug/settings/quotas'
@@ -338,11 +337,6 @@ const TSlugSettingsAuditRoute = TSlugSettingsAuditRouteImport.update({
   path: '/audit',
   getParentRoute: () => TSlugSettingsRouteRoute,
 } as any)
-const TSlugSettingsLimitsRoute = TSlugSettingsLimitsRouteImport.update({
-  id: '/limits',
-  path: '/limits',
-  getParentRoute: () => TSlugSettingsRouteRoute,
-} as any)
 const TSlugSettingsMembersRoute = TSlugSettingsMembersRouteImport.update({
   id: '/members',
   path: '/members',
@@ -521,7 +515,6 @@ export interface FileRoutesByFullPath {
   '/t/$slug/schedules/$id': typeof TSlugSchedulesIdRoute
   '/t/$slug/schedules/new': typeof TSlugSchedulesNewRoute
   '/t/$slug/settings/audit': typeof TSlugSettingsAuditRoute
-  '/t/$slug/settings/limits': typeof TSlugSettingsLimitsRoute
   '/t/$slug/settings/members': typeof TSlugSettingsMembersRoute
   '/t/$slug/settings/providers': typeof TSlugSettingsProvidersRoute
   '/t/$slug/settings/quotas': typeof TSlugSettingsQuotasRoute
@@ -587,7 +580,6 @@ export interface FileRoutesByTo {
   '/t/$slug/schedules/$id': typeof TSlugSchedulesIdRoute
   '/t/$slug/schedules/new': typeof TSlugSchedulesNewRoute
   '/t/$slug/settings/audit': typeof TSlugSettingsAuditRoute
-  '/t/$slug/settings/limits': typeof TSlugSettingsLimitsRoute
   '/t/$slug/settings/members': typeof TSlugSettingsMembersRoute
   '/t/$slug/settings/providers': typeof TSlugSettingsProvidersRoute
   '/t/$slug/settings/quotas': typeof TSlugSettingsQuotasRoute
@@ -666,7 +658,6 @@ export interface FileRoutesById {
   '/t/$slug/schedules/$id': typeof TSlugSchedulesIdRoute
   '/t/$slug/schedules/new': typeof TSlugSchedulesNewRoute
   '/t/$slug/settings/audit': typeof TSlugSettingsAuditRoute
-  '/t/$slug/settings/limits': typeof TSlugSettingsLimitsRoute
   '/t/$slug/settings/members': typeof TSlugSettingsMembersRoute
   '/t/$slug/settings/providers': typeof TSlugSettingsProvidersRoute
   '/t/$slug/settings/quotas': typeof TSlugSettingsQuotasRoute
@@ -746,7 +737,6 @@ export interface FileRouteTypes {
     | '/t/$slug/schedules/$id'
     | '/t/$slug/schedules/new'
     | '/t/$slug/settings/audit'
-    | '/t/$slug/settings/limits'
     | '/t/$slug/settings/members'
     | '/t/$slug/settings/providers'
     | '/t/$slug/settings/quotas'
@@ -812,7 +802,6 @@ export interface FileRouteTypes {
     | '/t/$slug/schedules/$id'
     | '/t/$slug/schedules/new'
     | '/t/$slug/settings/audit'
-    | '/t/$slug/settings/limits'
     | '/t/$slug/settings/members'
     | '/t/$slug/settings/providers'
     | '/t/$slug/settings/quotas'
@@ -890,7 +879,6 @@ export interface FileRouteTypes {
     | '/t/$slug/schedules/$id'
     | '/t/$slug/schedules/new'
     | '/t/$slug/settings/audit'
-    | '/t/$slug/settings/limits'
     | '/t/$slug/settings/members'
     | '/t/$slug/settings/providers'
     | '/t/$slug/settings/quotas'
@@ -1295,13 +1283,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TSlugSettingsAuditRouteImport
       parentRoute: typeof TSlugSettingsRouteRoute
     }
-    '/t/$slug/settings/limits': {
-      id: '/t/$slug/settings/limits'
-      path: '/limits'
-      fullPath: '/t/$slug/settings/limits'
-      preLoaderRoute: typeof TSlugSettingsLimitsRouteImport
-      parentRoute: typeof TSlugSettingsRouteRoute
-    }
     '/t/$slug/settings/members': {
       id: '/t/$slug/settings/members'
       path: '/members'
@@ -1586,7 +1567,6 @@ const TSlugSchedulesRouteRouteWithChildren =
 
 interface TSlugSettingsRouteRouteChildren {
   TSlugSettingsAuditRoute: typeof TSlugSettingsAuditRoute
-  TSlugSettingsLimitsRoute: typeof TSlugSettingsLimitsRoute
   TSlugSettingsMembersRoute: typeof TSlugSettingsMembersRoute
   TSlugSettingsProvidersRoute: typeof TSlugSettingsProvidersRoute
   TSlugSettingsQuotasRoute: typeof TSlugSettingsQuotasRoute
@@ -1597,7 +1577,6 @@ interface TSlugSettingsRouteRouteChildren {
 
 const TSlugSettingsRouteRouteChildren: TSlugSettingsRouteRouteChildren = {
   TSlugSettingsAuditRoute: TSlugSettingsAuditRoute,
-  TSlugSettingsLimitsRoute: TSlugSettingsLimitsRoute,
   TSlugSettingsMembersRoute: TSlugSettingsMembersRoute,
   TSlugSettingsProvidersRoute: TSlugSettingsProvidersRoute,
   TSlugSettingsQuotasRoute: TSlugSettingsQuotasRoute,

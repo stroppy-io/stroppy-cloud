@@ -21,11 +21,7 @@ func TestE2EDatabaseMatrix(t *testing.T) {
 	e := e2eServer(t)
 	// The biggest template (ydb mirror-3-dc) needs 50 vCPU.
 	e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 256, Used: 4, Unit: "cores"}}
-	base, tok, _, tn := runFixture(t, e)
-	// mirror-3-dc is 13 machines, past the default tenant ceiling of 12.
-	root := e.person("root@example.com", "Root")
-	rtok := e.token(root, e.tenant(root, slug("ops")))
-	e.want(e.req(http.MethodPut, "/api/v1/admin/tenants/"+tn.Slug+"/limits", map[string]any{"max_machines_per_run": 20}, rtok), http.StatusOK, nil)
+	base, tok, _, _ := runFixture(t, e)
 	var profiles struct {
 		Data []struct {
 			ID string `json:"id"`

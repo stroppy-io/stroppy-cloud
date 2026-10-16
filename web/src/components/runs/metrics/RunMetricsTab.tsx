@@ -2,6 +2,16 @@ import { catalogQueries } from '@api/queries/catalog'
 import { type MetricsQuery, runQueries } from '@api/queries/runs'
 import type { MetricDef, RunMetrics } from '@api/types'
 import { ErrorState } from '@app/ErrorState'
+import {
+  explorerSearchOf,
+  explorerSearchSchema,
+  explorerStateOf,
+} from '@components/metrics/explorer-search'
+import {
+  type ExplorerSeriesQuery,
+  type ExplorerState,
+  MetricExplorer,
+} from '@components/metrics/MetricExplorer'
 import { TelemetryLayout } from '@components/runs/detail/TelemetryLayout'
 import { TelemetryToolbar } from '@components/runs/detail/TelemetryToolbar'
 import { telemetrySearchSchema } from '@components/runs/detail/telemetry-search'
@@ -32,9 +42,12 @@ import { MetricPanel } from './MetricPanel'
 import { MetricsRawDrawer } from './MetricsRawDrawer'
 
 // URL: shared telemetry window + the visible metric groups + panel density.
+// The explorer ("all metrics") keeps its search, filters, sort and picked charts here too.
 export const runMetricsSearchSchema = telemetrySearchSchema.extend({
   group: z.array(z.string()).optional().catch(undefined),
   layout: z.enum(['grid', 'list']).default('grid').catch('grid'),
+  view: z.enum(['catalog', 'all']).default('catalog').catch('catalog'),
+  ...explorerSearchSchema.shape,
 })
 export type RunMetricsSearch = z.infer<typeof runMetricsSearchSchema>
 
@@ -207,6 +220,16 @@ export function RunMetricsTab({
     merge: (prev, payload) => mergeLive(prev, payload),
   })
   const [raw, setRaw] = useState(false)
+  const all = search.view === 'all'
+  const explorerState = explorerStateOf(search)
+  const onExplorerChange = (next: Partial<ExplorerState>) => onSearchChange(explorerSearchOf(next))
+  const explorerSource = useMemo(() => {
+    const window = { start: range.start, ...(range.end ? { end: range.end } : {}) }
+    return {
+      names: runQueries.metricNames(slug, id, window),
+      series: (q: ExplorerSeriesQuery) => runQueries.metricSeries(slug, id, { ...q, ...window }),
+    }
+  }, [slug, id, range.start, range.end])
 
   const defs = catalog.data?.data ?? []
   const groups = useMemo(() => {
@@ -278,22 +301,33 @@ export function RunMetricsTab({
       onResetFilters={() => onSearchChange({ group: undefined })}
       actions={
         <>
-          {metrics.data && (
+          <RadioButtonGroup<RunMetricsSearch['view']>
+            size="md"
+            value={search.view}
+            options={[
+              { value: 'catalog', label: t('runs.metrics.view.catalog') },
+              { value: 'all', label: t('runs.metrics.view.all') },
+            ]}
+            onChange={(v) => onSearchChange({ view: v })}
+          />
+          {!all && metrics.data && (
             <Text color="secondary" variant="bodySmall">
               <span className={styles.points}>
                 {t('runs.metrics.points', { count: totalPoints })}
               </span>
             </Text>
           )}
-          <RadioButtonGroup<RunMetricsSearch['layout']>
-            size="md"
-            value={search.layout}
-            options={[
-              { value: 'grid', icon: 'apps', ariaLabel: t('runs.metrics.layout.grid') },
-              { value: 'list', icon: 'list-ul', ariaLabel: t('runs.metrics.layout.list') },
-            ]}
-            onChange={(v) => onSearchChange({ layout: v })}
-          />
+          {!all && (
+            <RadioButtonGroup<RunMetricsSearch['layout']>
+              size="md"
+              value={search.layout}
+              options={[
+                { value: 'grid', icon: 'apps', ariaLabel: t('runs.metrics.layout.grid') },
+                { value: 'list', icon: 'list-ul', ariaLabel: t('runs.metrics.layout.list') },
+              ]}
+              onChange={(v) => onSearchChange({ layout: v })}
+            />
+          )}
           <ToolbarButton
             icon="brackets-curly"
             onClick={() => setRaw(true)}
@@ -304,26 +338,36 @@ export function RunMetricsTab({
         </>
       }
     >
-      <MultiSelect
-        aria-label={t('runs.metrics.group')}
-        placeholder={t('runs.metrics.allGroups')}
-        width={28}
-        closeMenuOnSelect={false}
-        options={groups
-          .filter(([g, list]) => withData(list) || selectedGroups.includes(g))
-          .map(([g]) => ({ label: groupLabel(g), value: g }))}
-        value={selectedGroups}
-        onChange={(o) => {
-          const v = selectedValues(o)
-          onSearchChange({ group: v.length ? v : undefined })
-        }}
-      />
+      {!all && (
+        <MultiSelect
+          aria-label={t('runs.metrics.group')}
+          placeholder={t('runs.metrics.allGroups')}
+          width={28}
+          closeMenuOnSelect={false}
+          options={groups
+            .filter(([g, list]) => withData(list) || selectedGroups.includes(g))
+            .map(([g]) => ({ label: groupLabel(g), value: g }))}
+          value={selectedGroups}
+          onChange={(o) => {
+            const v = selectedValues(o)
+            onSearchChange({ group: v.length ? v : undefined })
+          }}
+        />
+      )}
     </TelemetryToolbar>
   )
 
   return (
     <TelemetryLayout toolbar={toolbar}>
-      {metrics.isError ? (
+      {all ? (
+        <MetricExplorer
+          source={explorerSource}
+          state={explorerState}
+          onChange={onExplorerChange}
+          range={range.range}
+          chartHeight={panelHeight}
+        />
+      ) : metrics.isError ? (
         <ErrorState error={metrics.error} onRetry={() => void metrics.refetch()} compact />
       ) : (
         <div className={styles.scroll}>

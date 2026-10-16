@@ -8,7 +8,6 @@ type Reason = components['schemas']['RunWaitReason']
 // Every wait reason of the contract reads as a sentence in both languages.
 const reasons: Reason[] = [
   'pipelines',
-  'slot',
   'suite_slot',
   'quota',
   'quota_unknown',

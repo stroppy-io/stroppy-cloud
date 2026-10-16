@@ -35,6 +35,13 @@ workload. URL подключения строит `dbkind.URL` из плана. 
 рецепт в `internal/domain/compile/recipe_<kind>.go`, регистрация в
 `compile.recipes`. Параметры — схема `pipelines/schemas/dbparams/<kind>.go`.
 
+Протоколы kind'а и скриптов — только те, что stroppy реально тянет
+(драйвер и SQL-диалект есть в `stroppy/workloads/*`, `pkg/driver/*`):
+протоколы kind'а — в `dbkind/<kind>.go`, скрипт × протокол — в
+`catalog/stroppy.go`, опции драйвера × протокол — правила
+`pipelines/schemas/workload`. Валидация теста отказывает в
+несовместимой связке до запуска.
+
 Новый kind = схема + файл в `dbkind` (и строка в `kinds()`) + рецепт +
 значение в enum `DatabaseKind` контракта. Свитчей по kind вне этих мест нет;
 тест `TestEveryDeployableKindHasRecipe` ловит kind без рецепта.

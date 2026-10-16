@@ -33,7 +33,7 @@ tags:
 - name: Tenants
   description: Tenant lifecycle, members, invites, service tokens.
 - name: Tenant Settings
-  description: Defaults, provider profiles, quotas, limits, webhooks.
+  description: Defaults, provider profiles, quotas, webhooks.
 - name: Catalog
   description: Reference data — databases, providers/sizes, stroppy, examples, schemas, metrics.
 - name: Databases
@@ -190,6 +190,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RunMetrics'
+        default:
+          $ref: '#/components/responses/Problem'
+  /api/v1/public/share/{token}/metrics:names:
+    get:
+      operationId: listPublicShareMetricNames
+      tags:
+      - Public
+      security: []
+      summary: Every metric of a shared run (scope +metrics).
+      parameters:
+      - $ref: '#/components/parameters/shareToken'
+      - $ref: '#/components/parameters/windowStart'
+      - $ref: '#/components/parameters/windowEnd'
+      responses:
+        '200':
+          description: Metric names.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunMetricNames'
+        default:
+          $ref: '#/components/responses/Problem'
+  /api/v1/public/share/{token}/metrics:series:
+    get:
+      operationId: getPublicShareMetricSeries
+      tags:
+      - Public
+      security: []
+      summary: The series of one metric of a shared run (scope +metrics).
+      parameters:
+      - $ref: '#/components/parameters/shareToken'
+      - $ref: '#/components/parameters/metricName'
+      - $ref: '#/components/parameters/metricFn'
+      - $ref: '#/components/parameters/metricBy'
+      - $ref: '#/components/parameters/metricAgg'
+      - $ref: '#/components/parameters/metricRole'
+      - $ref: '#/components/parameters/metricMachine'
+      - $ref: '#/components/parameters/metricContainer'
+      - $ref: '#/components/parameters/windowStart'
+      - $ref: '#/components/parameters/windowEnd'
+      responses:
+        '200':
+          description: Series.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunMetricSeries'
         default:
           $ref: '#/components/responses/Problem'
   /api/v1/public/share/{token}/grafana-session:
@@ -824,23 +871,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TenantSettings'
-        default:
-          $ref: '#/components/responses/Problem'
-  /api/v1/t/{slug}/limits:
-    get:
-      operationId: getTenantLimits
-      tags:
-      - Tenant Settings
-      parameters:
-      - $ref: '#/components/parameters/slug'
-      summary: Effective limits (platform ceilings applied).
-      responses:
-        '200':
-          description: Limits.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TenantLimits'
         default:
           $ref: '#/components/responses/Problem'
   /api/v1/t/{slug}/providers:
@@ -2138,8 +2168,7 @@ paths:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
       - $ref: '#/components/parameters/idempotencyKey'
-      summary: Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in
-        Graphene).
+      summary: Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
       requestBody:
         content:
           application/json:
@@ -2798,6 +2827,70 @@ paths:
                 $ref: '#/components/schemas/RunMetrics'
         default:
           $ref: '#/components/responses/Problem'
+  /api/v1/t/{slug}/runs/{id}/metrics:names:
+    get:
+      operationId: listRunMetricNames
+      tags:
+      - Runs
+      parameters:
+      - $ref: '#/components/parameters/slug'
+      - $ref: '#/components/parameters/id'
+      - name: segment
+        in: query
+        schema:
+          type: string
+        description: Window = this workload segment.
+      - $ref: '#/components/parameters/windowStart'
+      - $ref: '#/components/parameters/windowEnd'
+      summary: Every metric the run has stored over the window — the exporters', the workload's, the containers'
+        and the pipeline's.
+      responses:
+        '200':
+          description: Metric names.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunMetricNames'
+        default:
+          $ref: '#/components/responses/Problem'
+  /api/v1/t/{slug}/runs/{id}/metrics:series:
+    get:
+      operationId: getRunMetricSeries
+      tags:
+      - Runs
+      parameters:
+      - $ref: '#/components/parameters/slug'
+      - $ref: '#/components/parameters/id'
+      - $ref: '#/components/parameters/metricName'
+      - $ref: '#/components/parameters/metricFn'
+      - $ref: '#/components/parameters/metricBy'
+      - $ref: '#/components/parameters/metricAgg'
+      - $ref: '#/components/parameters/metricRole'
+      - $ref: '#/components/parameters/metricMachine'
+      - $ref: '#/components/parameters/metricContainer'
+      - name: segment
+        in: query
+        schema:
+          type: string
+        description: Window = this workload segment.
+      - $ref: '#/components/parameters/windowStart'
+      - $ref: '#/components/parameters/windowEnd'
+      - name: step
+        in: query
+        schema:
+          type: string
+        description: Series step
+        Go duration.: null
+      summary: The series of one stored metric, by its labels.
+      responses:
+        '200':
+          description: Series.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunMetricSeries'
+        default:
+          $ref: '#/components/responses/Problem'
   /api/v1/t/{slug}/runs/{id}/metrics:raw:
     post:
       operationId: queryRunMetricsRaw
@@ -2962,7 +3055,7 @@ paths:
       parameters:
       - $ref: '#/components/parameters/slug'
       - $ref: '#/components/parameters/id'
-      summary: Extend the stand lifetime (bounded by `max_keep`).
+      summary: Extend the stand lifetime.
       requestBody:
         required: true
         content:
@@ -4200,29 +4293,6 @@ paths:
                 $ref: '#/components/schemas/AdminTenant'
         default:
           $ref: '#/components/responses/Problem'
-  /api/v1/admin/tenants/{slug}/limits:
-    put:
-      operationId: adminSetTenantLimits
-      tags:
-      - Admin
-      parameters:
-      - $ref: '#/components/parameters/slug'
-      summary: Set tenant limit ceilings (null = platform default).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TenantLimitsWrite'
-      responses:
-        '200':
-          description: Limits.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TenantLimits'
-        default:
-          $ref: '#/components/responses/Problem'
   /api/v1/admin/tenants/{slug}:assign-owner:
     post:
       operationId: adminAssignOwner
@@ -4494,6 +4564,69 @@ components:
       scheme: bearer
       description: IAM access token (JWT) or Stroppy API token (`stc_...`).
   parameters:
+    metricName:
+      name: name
+      in: query
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 256
+      description: Stored metric name (metrics:names).
+    metricFn:
+      name: fn
+      in: query
+      schema:
+        $ref: '#/components/schemas/MetricSeriesFn'
+      description: 'Default: rate for counters, value otherwise.'
+    metricBy:
+      name: by
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        maxItems: 8
+        items:
+          type: string
+          maxLength: 128
+      description: Group by these labels; machine and container group by where the series come from.
+    metricAgg:
+      name: agg
+      in: query
+      schema:
+        $ref: '#/components/schemas/MetricSeriesAgg'
+      description: How grouped series combine (default sum).
+    metricMachine:
+      name: machine
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+      description: Only series of these machines.
+    metricRole:
+      name: role
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+      description: Only series of the machines holding these roles.
+    metricContainer:
+      name: container
+      in: query
+      style: form
+      explode: false
+      schema:
+        type: array
+        items:
+          type: string
+      description: Only series of these containers.
     slug:
       name: slug
       in: path
@@ -5197,7 +5330,6 @@ components:
       - admin.settings.update
       - admin.tenant.assign_owner
       - admin.tenant.delete
-      - admin.tenant.limits
       - admin.tenant.resume
       - admin.tenant.suspend
       - admin.user.platform_admin
@@ -5370,6 +5502,13 @@ components:
       - warn
       - error
       - fatal
+    RunStageKind:
+      type: string
+      description: 'What a running workload segment does: `preparing` — stroppy prepares the data (schema,
+        load, indexes, checks), which has no planned length; `load` — the planned load runs.'
+      enum:
+      - preparing
+      - load
     ErrorReason:
       type: string
       description: Why exactly a request failed (Problem.reason); its text and the params it reads are
@@ -5440,9 +5579,6 @@ components:
       - keep_is_not_a_duration
       - keep_must_not_be_negative
       - kind_must_be_yandex_or_aws
-      - limit_keep
-      - limit_machines_per_run
-      - limit_size
       - log_cursor_ambiguous
       - logs_store_is_not_connected
       - managed_ydb_autoscaling_unsupported
@@ -5450,10 +5586,13 @@ components:
       - managed_ydb_requires_named_credentials
       - managed_ydb_requires_yandex_cloud
       - managed_ydb_type_unknown
-      - max_keep_is_not_a_duration
       - maxscale_mariadb_only
       - member_not_found
       - metadata_name_is_required
+      - metric_agg_unknown
+      - metric_fn_unknown
+      - metric_label_unknown
+      - metric_name_required
       - metric_not_rating_eligible
       - metrics_snapshot_invalid
       - metrics_store_is_not_connected
@@ -5510,7 +5649,6 @@ components:
       - run_idempotency_conflict
       - run_ids_2_to_16_runs
       - run_not_found
-      - run_retention_max_days_must_be_positive
       - run_submit_unavailable
       - schedule_fire_failed
       - schedule_not_found
@@ -6219,32 +6357,6 @@ components:
           type: boolean
         global:
           type: boolean
-    TenantLimits:
-      type: object
-      required:
-      - max_concurrent_runs
-      - max_machines_per_run
-      - max_size
-      - max_keep
-      - run_retention_max_days
-      properties:
-        max_concurrent_runs:
-          type: integer
-        max_machines_per_run:
-          type: integer
-        max_size:
-          $ref: '#/components/schemas/Size'
-        max_keep:
-          type: string
-          description: Go duration.
-        run_retention_max_days:
-          type: integer
-        source:
-          type: string
-          enum:
-          - platform_default
-          - tenant_override
-          readOnly: true
     ProviderKind:
       type: string
       enum:
@@ -7521,6 +7633,30 @@ components:
         segment:
           type: string
           description: Current workload segment while running.
+        workload_from:
+          type: string
+          format: date-time
+          description: 'Where the workload''s planned time starts (read-time): the workload phase''s start
+            shifted past the running segment''s data preparation. With `expected_finish_at` it gives the
+            workload''s progress at any instant: (now − workload_from) / (expected_finish_at − workload_from).'
+        stage:
+          type: object
+          description: 'Where the running segment''s stroppy is (read-time, from its log): the step it
+            prepares, or under load the last step it finished, and since when. While preparing, `expected_finish_at`
+            is absent; under load the plan counts from the load''s start.'
+          required:
+          - kind
+          - step
+          - since
+          properties:
+            kind:
+              $ref: '#/components/schemas/RunStageKind'
+            step:
+              type: string
+              description: stroppy step id, e.g. `load_data`, `validate_population`.
+            since:
+              type: string
+              format: date-time
         headline:
           type: object
           description: 'Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`,
@@ -7697,10 +7833,10 @@ components:
           description: 1-based among the tenant's queued runs.
         live:
           type: integer
-          description: Occupied slots (slot, suite_slot).
+          description: Cells of the suite running (suite_slot).
         limit:
           type: integer
-          description: Allowed slots (slot, suite_slot).
+          description: Concurrency of the suite (suite_slot).
         quota:
           type: string
           description: Provider quota without room (quota).
@@ -7725,16 +7861,15 @@ components:
       type: string
       enum:
       - pipelines
-      - slot
       - suite_slot
       - quota
       - quota_unknown
       - provider
       - suspended
-      description: pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot
-        — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota
-        — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider
-        profile is not ready; suspended — a platform admin suspended the tenant.
+      description: pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot
+        — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown
+        — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform
+        admin suspended the tenant.
     RunSnapshot:
       type: object
       description: Definition frozen at launch.
@@ -8338,6 +8473,171 @@ components:
           description: Cursor towards the present.
         truncated:
           type: boolean
+    MetricOrigin:
+      type: string
+      enum:
+      - exporter
+      - workload
+      - container
+      - pipeline
+      description: 'Where a metric comes from: exporter — a container''s own Prometheus endpoint (node_exporter,
+        the database''s exporter, a proxy, the engine itself); workload — stroppy; container — the container
+        statistics the agent samples; pipeline — the pipeline''s own telemetry.'
+    MetricKind:
+      type: string
+      enum:
+      - counter
+      - gauge
+      description: counter — grows over the run (its rate is what to look at); gauge — a level.
+    MetricSeriesFn:
+      type: string
+      enum:
+      - value
+      - rate
+      description: value — the stored samples; rate — the per-second increase (counters).
+    MetricSeriesAgg:
+      type: string
+      enum:
+      - sum
+      - avg
+      - max
+      - min
+    RunMetricNames:
+      type: object
+      required:
+      - window
+      - data
+      properties:
+        window:
+          type: object
+          required:
+          - start
+          - end
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+            segment:
+              type: string
+        data:
+          type: array
+          items:
+            type: object
+            required:
+            - name
+            - origin
+            - kind
+            - series
+            - machines
+            - roles
+            - containers
+            properties:
+              name:
+                type: string
+                example: node_cpu_seconds_total
+              origin:
+                $ref: '#/components/schemas/MetricOrigin'
+              kind:
+                $ref: '#/components/schemas/MetricKind'
+              series:
+                type: integer
+                description: How many series the name has.
+              machines:
+                type: array
+                items:
+                  type: string
+              roles:
+                type: array
+                items:
+                  type: string
+              containers:
+                type: array
+                items:
+                  type: string
+                description: Containers the series come from (none for the workload).
+    RunMetricSeries:
+      type: object
+      required:
+      - window
+      - name
+      - fn
+      - labels
+      - total
+      - truncated
+      - series
+      properties:
+        window:
+          type: object
+          required:
+          - start
+          - end
+          properties:
+            start:
+              type: string
+              format: date-time
+            end:
+              type: string
+              format: date-time
+            segment:
+              type: string
+        name:
+          type: string
+        fn:
+          $ref: '#/components/schemas/MetricSeriesFn'
+        labels:
+          type: array
+          items:
+            type: string
+          description: The metric's own labels — what it can be grouped by besides machine and container.
+        total:
+          type: integer
+          description: Series before the cut.
+        truncated:
+          type: boolean
+          description: Only the series with the highest average are returned.
+        series:
+          type: array
+          items:
+            type: object
+            required:
+            - labels
+            - points
+            properties:
+              labels:
+                type: object
+                additionalProperties:
+                  type: string
+              machine:
+                type: string
+              role:
+                type: string
+              container:
+                type: string
+              points:
+                type: array
+                items:
+                  type: array
+                  description: '[unix_ms, value]'
+                  items:
+                    type: number
+                  minItems: 2
+                  maxItems: 2
+              aggregates:
+                type: object
+                properties:
+                  avg:
+                    type: number
+                  min:
+                    type: number
+                  max:
+                    type: number
+                  last:
+                    type: number
+                  p95:
+                    type: number
     RunMetrics:
       type: object
       required:
@@ -9071,7 +9371,7 @@ components:
           format: date-time
         error:
           type: string
-          description: Set when the firing itself failed (e.g. limits).
+          description: Set when the firing itself failed (e.g. the test does not fit).
     RatingEntry:
       type: object
       required:
@@ -9454,8 +9754,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProviderProfile'
-        limits:
-          $ref: '#/components/schemas/TenantLimits'
     TenantPipelines:
       type: object
       readOnly: true
@@ -9574,8 +9872,6 @@ components:
       - $ref: '#/components/schemas/Tenant'
       - type: object
         properties:
-          limits:
-            $ref: '#/components/schemas/TenantLimits'
           suspended_reason:
             type: string
           counters:
@@ -9596,29 +9892,6 @@ components:
             - string
             - 'null'
             format: date-time
-    TenantLimitsWrite:
-      type: object
-      properties:
-        max_concurrent_runs:
-          type:
-          - integer
-          - 'null'
-        max_machines_per_run:
-          type:
-          - integer
-          - 'null'
-        max_size:
-          anyOf:
-          - $ref: '#/components/schemas/Size'
-          - type: 'null'
-        max_keep:
-          type:
-          - string
-          - 'null'
-        run_retention_max_days:
-          type:
-          - integer
-          - 'null'
     AdminUser:
       type: object
       required:
@@ -9660,8 +9933,6 @@ components:
       - tenant_creation
       - public_rating_enabled
       - examples_enabled
-      - default_limits
-      - run_retention_max_days
       properties:
         tenant_creation:
           type: string
@@ -9672,10 +9943,6 @@ components:
           type: boolean
         examples_enabled:
           type: boolean
-        default_limits:
-          $ref: '#/components/schemas/TenantLimits'
-        run_retention_max_days:
-          type: integer
         stroppy_catalog:
           $ref: '#/components/schemas/SchemaValue'
           x-schema: system.stroppy_catalog
@@ -9697,10 +9964,6 @@ components:
           type: boolean
         examples_enabled:
           type: boolean
-        default_limits:
-          $ref: '#/components/schemas/TenantLimitsWrite'
-        run_retention_max_days:
-          type: integer
         stroppy_catalog:
           $ref: '#/components/schemas/SchemaValue'
           x-schema: system.stroppy_catalog

@@ -4,7 +4,7 @@ package audit
 // the same list; a test keeps the code's Action literals inside it).
 var Actions = []string{
 	"admin.pipelines.resync", "admin.run.cancel", "admin.settings.update",
-	"admin.tenant.assign_owner", "admin.tenant.delete", "admin.tenant.limits", "admin.tenant.resume", "admin.tenant.suspend",
+	"admin.tenant.assign_owner", "admin.tenant.delete", "admin.tenant.resume", "admin.tenant.suspend",
 	"admin.user.platform_admin",
 	"database.create", "database.delete", "database.update",
 	"invite.accept", "invite.create", "invite.revoke",

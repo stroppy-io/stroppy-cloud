@@ -2213,6 +2213,11 @@
       "message": "stored-procedure workloads require PostgreSQL, MySQL, CockroachDB or noop"
     },
     {
+      "expr": "!(\"driver\" in root) || !(\"default_insert_method\" in root.driver) || root.driver.default_insert_method != \"columnar\" || root.protocol in [\"pg\", \"cockroach\", \"ydb_grpc\", \"ydb_grpcs\", \"noop\"]",
+      "id": "columnar-driver",
+      "message": "columnar insert requires the PostgreSQL, CockroachDB, YDB or noop driver"
+    },
+    {
       "expr": "!(root.protocol in [\"ydb_grpc\", \"ydb_grpcs\"]) || root.segments.all(s, s.workload.script != \"tpcds\" || ((! (\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"streams\" in s.workload) || s.workload.streams == 1)))",
       "id": "tpcds-ydb-baked",
       "message": "YDB TPC-DS supports the baked query set only"

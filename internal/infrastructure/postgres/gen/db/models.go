@@ -94,7 +94,6 @@ type TenantSettings struct {
 	RatingGlobal       bool
 	DefaultKeep        string
 	NotificationEmails json.RawMessage
-	LimitsOverride     json.RawMessage
 	UpdatedAt          time.Time
 }
 
@@ -369,8 +368,6 @@ type SystemSettings struct {
 	TenantCreation      string
 	PublicRatingEnabled bool
 	ExamplesEnabled     bool
-	DefaultLimits       json.RawMessage
-	RunRetentionMaxDays int32
 	StroppyCatalog      json.RawMessage
 	UpdatedAt           time.Time
 	UpdatedBy           *uuid.UUID

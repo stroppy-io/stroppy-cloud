@@ -121,15 +121,6 @@ func (UnimplementedHandler) AdminResumeTenant(ctx context.Context, params AdminR
 	return r, ht.ErrNotImplemented
 }
 
-// AdminSetTenantLimits implements adminSetTenantLimits operation.
-//
-// Set tenant limit ceilings (null = platform default).
-//
-// PUT /api/v1/admin/tenants/{slug}/limits
-func (UnimplementedHandler) AdminSetTenantLimits(ctx context.Context, req *TenantLimitsWrite, params AdminSetTenantLimitsParams) (r *TenantLimits, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // AdminSuspendTenant implements adminSuspendTenant operation.
 //
 // Suspend — no new launches, schedules paused.
@@ -521,7 +512,7 @@ func (UnimplementedHandler) ExportWorkload(ctx context.Context, params ExportWor
 
 // ExtendRunKeep implements extendRunKeep operation.
 //
-// Extend the stand lifetime (bounded by `max_keep`).
+// Extend the stand lifetime.
 //
 // POST /api/v1/t/{slug}/runs/{id}:keep-extend
 func (UnimplementedHandler) ExtendRunKeep(ctx context.Context, req *ExtendRunKeepReq, params ExtendRunKeepParams) (r *Run, _ error) {
@@ -654,6 +645,15 @@ func (UnimplementedHandler) GetPublicShare(ctx context.Context, params GetPublic
 	return r, ht.ErrNotImplemented
 }
 
+// GetPublicShareMetricSeries implements getPublicShareMetricSeries operation.
+//
+// The series of one metric of a shared run (scope +metrics).
+//
+// GET /api/v1/public/share/{token}/metrics:series
+func (UnimplementedHandler) GetPublicShareMetricSeries(ctx context.Context, params GetPublicShareMetricSeriesParams) (r *RunMetricSeries, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetPublicShareMetrics implements getPublicShareMetrics operation.
 //
 // Metrics for a shared run over a window (scope +metrics).
@@ -687,6 +687,15 @@ func (UnimplementedHandler) GetRunFacets(ctx context.Context, params GetRunFacet
 //
 // GET /api/v1/t/{slug}/runs/{id}/logs:facets
 func (UnimplementedHandler) GetRunLogFacets(ctx context.Context, params GetRunLogFacetsParams) (r *GetRunLogFacetsOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// GetRunMetricSeries implements getRunMetricSeries operation.
+//
+// The series of one stored metric, by its labels.
+//
+// GET /api/v1/t/{slug}/runs/{id}/metrics:series
+func (UnimplementedHandler) GetRunMetricSeries(ctx context.Context, params GetRunMetricSeriesParams) (r *RunMetricSeries, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -799,15 +808,6 @@ func (UnimplementedHandler) GetTenantDashboard(ctx context.Context, params GetTe
 	return r, ht.ErrNotImplemented
 }
 
-// GetTenantLimits implements getTenantLimits operation.
-//
-// Effective limits (platform ceilings applied).
-//
-// GET /api/v1/t/{slug}/limits
-func (UnimplementedHandler) GetTenantLimits(ctx context.Context, params GetTenantLimitsParams) (r *TenantLimits, _ error) {
-	return r, ht.ErrNotImplemented
-}
-
 // GetTenantRating implements getTenantRating operation.
 //
 // Tenant rating (runs opted into `rating.tenant`).
@@ -891,7 +891,7 @@ func (UnimplementedHandler) LaunchSuite(ctx context.Context, req OptSuiteLaunch,
 
 // LaunchTest implements launchTest operation.
 //
-// Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene).
+// Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
 //
 // POST /api/v1/t/{slug}/tests/{id}:launch
 func (UnimplementedHandler) LaunchTest(ctx context.Context, req OptLaunchOverrides, params LaunchTestParams) (r *Run, _ error) {
@@ -970,6 +970,15 @@ func (UnimplementedHandler) ListProviderProfiles(ctx context.Context, params Lis
 	return r, ht.ErrNotImplemented
 }
 
+// ListPublicShareMetricNames implements listPublicShareMetricNames operation.
+//
+// Every metric of a shared run (scope +metrics).
+//
+// GET /api/v1/public/share/{token}/metrics:names
+func (UnimplementedHandler) ListPublicShareMetricNames(ctx context.Context, params ListPublicShareMetricNamesParams) (r *RunMetricNames, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ListRunArtifacts implements listRunArtifacts operation.
 //
 // Artifacts (stroppy raw, report, rendered configs).
@@ -985,6 +994,16 @@ func (UnimplementedHandler) ListRunArtifacts(ctx context.Context, params ListRun
 //
 // GET /api/v1/t/{slug}/runs/{id}/events
 func (UnimplementedHandler) ListRunEvents(ctx context.Context, params ListRunEventsParams) (r *ListRunEventsOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListRunMetricNames implements listRunMetricNames operation.
+//
+// Every metric the run has stored over the window — the exporters', the workload's, the
+// containers' and the pipeline's.
+//
+// GET /api/v1/t/{slug}/runs/{id}/metrics:names
+func (UnimplementedHandler) ListRunMetricNames(ctx context.Context, params ListRunMetricNamesParams) (r *RunMetricNames, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

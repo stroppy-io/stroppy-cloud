@@ -118,24 +118,6 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/AdminTenant' }
         default: { $ref: '#/components/responses/Problem' }
-  /api/v1/admin/tenants/{slug}/limits:
-    put:
-      operationId: adminSetTenantLimits
-      tags: [Admin]
-      parameters: [{ $ref: '#/components/parameters/slug' }]
-      summary: Set tenant limit ceilings (null = platform default).
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/TenantLimitsWrite' }
-      responses:
-        '200':
-          description: Limits.
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/TenantLimits' }
-        default: { $ref: '#/components/responses/Problem' }
   /api/v1/admin/tenants/{slug}:assign-owner:
     post:
       operationId: adminAssignOwner
@@ -360,7 +342,6 @@ components:
         - $ref: '#/components/schemas/Tenant'
         - type: object
           properties:
-            limits: { $ref: '#/components/schemas/TenantLimits' }
             suspended_reason: { type: string }
             counters:
               type: object
@@ -371,14 +352,6 @@ components:
                 kept_stands: { type: integer }
                 providers: { type: integer }
             last_activity_at: { type: [string, 'null'], format: date-time }
-    TenantLimitsWrite:
-      type: object
-      properties:
-        max_concurrent_runs: { type: [integer, 'null'] }
-        max_machines_per_run: { type: [integer, 'null'] }
-        max_size: { anyOf: [{ $ref: '#/components/schemas/Size' }, { type: 'null' }] }
-        max_keep: { type: [string, 'null'] }
-        run_retention_max_days: { type: [integer, 'null'] }
     AdminUser:
       type: object
       required: [id, email, display_name, is_platform_admin, created_at]
@@ -394,13 +367,11 @@ components:
         created_at: { type: string, format: date-time }
     SystemSettings:
       type: object
-      required: [tenant_creation, public_rating_enabled, examples_enabled, default_limits, run_retention_max_days]
+      required: [tenant_creation, public_rating_enabled, examples_enabled]
       properties:
         tenant_creation: { type: string, enum: [anyone, admin_only] }
         public_rating_enabled: { type: boolean }
         examples_enabled: { type: boolean }
-        default_limits: { $ref: '#/components/schemas/TenantLimits' }
-        run_retention_max_days: { type: integer }
         stroppy_catalog:
           $ref: '#/components/schemas/SchemaValue'
           x-schema: system.stroppy_catalog
@@ -413,8 +384,6 @@ components:
         tenant_creation: { type: string, enum: [anyone, admin_only] }
         public_rating_enabled: { type: boolean }
         examples_enabled: { type: boolean }
-        default_limits: { $ref: '#/components/schemas/TenantLimitsWrite' }
-        run_retention_max_days: { type: integer }
         stroppy_catalog:
           $ref: '#/components/schemas/SchemaValue'
           x-schema: system.stroppy_catalog

@@ -84,6 +84,47 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/RunMetrics' }
         default: { $ref: '#/components/responses/Problem' }
+  /api/v1/public/share/{token}/metrics:names:
+    get:
+      operationId: listPublicShareMetricNames
+      tags: [Public]
+      security: []
+      summary: Every metric of a shared run (scope +metrics).
+      parameters:
+        - $ref: '#/components/parameters/shareToken'
+        - $ref: '#/components/parameters/windowStart'
+        - $ref: '#/components/parameters/windowEnd'
+      responses:
+        '200':
+          description: Metric names.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunMetricNames' }
+        default: { $ref: '#/components/responses/Problem' }
+  /api/v1/public/share/{token}/metrics:series:
+    get:
+      operationId: getPublicShareMetricSeries
+      tags: [Public]
+      security: []
+      summary: The series of one metric of a shared run (scope +metrics).
+      parameters:
+        - $ref: '#/components/parameters/shareToken'
+        - $ref: '#/components/parameters/metricName'
+        - $ref: '#/components/parameters/metricFn'
+        - $ref: '#/components/parameters/metricBy'
+        - $ref: '#/components/parameters/metricAgg'
+        - $ref: '#/components/parameters/metricRole'
+        - $ref: '#/components/parameters/metricMachine'
+        - $ref: '#/components/parameters/metricContainer'
+        - $ref: '#/components/parameters/windowStart'
+        - $ref: '#/components/parameters/windowEnd'
+      responses:
+        '200':
+          description: Series.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/RunMetricSeries' }
+        default: { $ref: '#/components/responses/Problem' }
   /api/v1/public/share/{token}/grafana-session:
     post:
       operationId: createPublicShareGrafanaSession

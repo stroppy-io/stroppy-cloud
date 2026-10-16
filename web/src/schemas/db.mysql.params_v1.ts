@@ -13,6 +13,10 @@ export interface DbMysqlParams1 {
   single_primary?: boolean;
   /** Semi-sync acks. rpl_semi_sync_source_wait_for_replica_count: how many replicas must acknowledge before the primary commits. */
   semi_sync_wait_for_slave_count?: number | string;
+  /** Buffer pool. auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode. */
+  buffer_pool?: "auto" | "fixed" | "stock";
+  /** Buffer pool size. innodb_buffer_pool_size of every database server; the run refuses a size over the machine's RAM. [MB] */
+  buffer_pool_mb?: number | string;
   /** ProxySQL nodes. ProxySQL instances routing reads and writes to the right member; 0 = clients talk to the primary directly. */
   proxysql?: number | string;
   /** Init SQL. SQL executed on the primary once the server is up, before the workload. */

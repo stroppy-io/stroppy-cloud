@@ -3,7 +3,6 @@ package application
 import (
 	"context"
 	"encoding/json"
-	"time"
 
 	"connectrpc.com/connect"
 
@@ -101,12 +100,12 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	)
 	tenants.WithProviderCleanup(providers)
 	settingsSvc := settings.NewService(repositories.NewSettingsRepo(db), tenants)
-	lib := library.NewService(repositories.NewLibraryRepo(db), registry, cat, tenants, providerRepo, keepLimit{settingsSvc}, auditSvc)
+	lib := library.NewService(repositories.NewLibraryRepo(db), registry, cat, tenants, providerRepo, auditSvc)
 	webhooks := webhook.NewService(webhookRepo, tenants, auditSvc)
 	compiler := compile.NewService(registry, cat, lib)
 	compiler.RegistryMirror = cfg.Infra.RegistryMirror
 	runRepo := repositories.NewRunRepo(db, tx)
-	runs := run.NewService(runRepo, infra.Graphene, tenants, lib, providers, settingsSvc, compiler, webhooks, auditSvc, graphene.WithNamespace)
+	runs := run.NewService(runRepo, infra.Graphene, tenants, lib, providers, compiler, webhooks, auditSvc, graphene.WithNamespace)
 	projector := run.NewProjector(runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)
 	suiteRepo := repositories.NewSuiteRepo(db)
 	suites := suite.NewService(suiteRepo, runs, runRepo, infra.Graphene, tenants, lib, webhooks, auditSvc, graphene.WithNamespace)
@@ -117,8 +116,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	shares := share.NewService(repositories.NewShareRepo(db), runRepo, suites, cmp, tenants, registry, auditSvc, cfg.HTTP.PublicURL)
 	ratings := rating.NewService(runRepo, tenants, cat, shares)
 	tenantRepo := repositories.NewTenantRepo(db)
-	adminSvc := admin.NewService(repositories.NewAdminRepo(db), tenantRepo, repositories.NewProfileRepo(db), runRepo, runs, repositories.NewSettingsRepo(db), namespaces{infra.Graphene}, probeComponents{infra}, auditSvc, cfg.AdminEmails, infra.Graphene, graphene.WithNamespace)
-	settingsSvc.WithDefaults(adminSvc)
+	adminSvc := admin.NewService(repositories.NewAdminRepo(db), tenantRepo, repositories.NewProfileRepo(db), runRepo, runs, namespaces{infra.Graphene}, probeComponents{infra}, auditSvc, cfg.AdminEmails, infra.Graphene, graphene.WithNamespace)
 	var runner pipelines.Runner = pipelines.ExecRunner{Dir: cfg.Infra.Pipelines.Dir, Cfg: &cfg.Infra.Graphene, Timeout: cfg.Infra.Pipelines.PushTimeout}
 	if cfg.Infra.Pipelines.Runner != nil {
 		runner = cfg.Infra.Pipelines.Runner
@@ -172,17 +170,6 @@ func (p probePipelines) Quotas(ctx context.Context, runID string, params provide
 	var out provider.QuotasResult
 	err := p.c.RunOnce(ctx, runID, graphene.PipelineQuotas, params, &out, map[string]string{"stroppy.io/kind": "quotas"})
 	return out, err
-}
-
-// keepLimit adapts the settings service to the library's Limits port.
-type keepLimit struct{ s *settings.Service }
-
-func (k keepLimit) MaxKeep(ctx context.Context, tenantID uuid.UUID) (time.Duration, error) {
-	l, err := k.s.EffectiveLimits(ctx, tenantID)
-	if err != nil {
-		return 0, err
-	}
-	return l.MaxKeep, nil
 }
 
 // probeComponents adapts the dependency probes to the admin status page.

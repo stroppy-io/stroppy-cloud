@@ -5,6 +5,20 @@ components:
       scheme: bearer
       description: IAM access token (JWT) or Stroppy API token (`stc_...`).
   parameters:
+    metricName:
+      { name: name, in: query, required: true, schema: { type: string, minLength: 1, maxLength: 256 }, description: Stored metric name (metrics:names). }
+    metricFn:
+      { name: fn, in: query, schema: { $ref: '#/components/schemas/MetricSeriesFn' }, description: 'Default: rate for counters, value otherwise.' }
+    metricBy:
+      { name: by, in: query, style: form, explode: false, schema: { type: array, maxItems: 8, items: { type: string, maxLength: 128 } }, description: 'Group by these labels; machine and container group by where the series come from.' }
+    metricAgg:
+      { name: agg, in: query, schema: { $ref: '#/components/schemas/MetricSeriesAgg' }, description: 'How grouped series combine (default sum).' }
+    metricMachine:
+      { name: machine, in: query, style: form, explode: false, schema: { type: array, items: { type: string } }, description: Only series of these machines. }
+    metricRole:
+      { name: role, in: query, style: form, explode: false, schema: { type: array, items: { type: string } }, description: Only series of the machines holding these roles. }
+    metricContainer:
+      { name: container, in: query, style: form, explode: false, schema: { type: array, items: { type: string } }, description: Only series of these containers. }
     slug:
       name: slug
       in: path

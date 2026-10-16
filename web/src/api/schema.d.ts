@@ -89,6 +89,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/share/{token}/metrics:names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every metric of a shared run (scope +metrics). */
+        get: operations["listPublicShareMetricNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/share/{token}/metrics:series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The series of one metric of a shared run (scope +metrics). */
+        get: operations["getPublicShareMetricSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/share/{token}/grafana-session": {
         parameters: {
             query?: never;
@@ -458,23 +492,6 @@ export interface paths {
         head?: never;
         /** Update defaults (admin). */
         patch: operations["patchTenantSettings"];
-        trace?: never;
-    };
-    "/api/v1/t/{slug}/limits": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Effective limits (platform ceilings applied). */
-        get: operations["getTenantLimits"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/api/v1/t/{slug}/providers": {
@@ -1146,7 +1163,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene). */
+        /** Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene). */
         post: operations["launchTest"];
         delete?: never;
         options?: never;
@@ -1411,6 +1428,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/t/{slug}/runs/{id}/metrics:names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Every metric the run has stored over the window — the exporters', the workload's, the containers' and the pipeline's. */
+        get: operations["listRunMetricNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/t/{slug}/runs/{id}/metrics:series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The series of one stored metric, by its labels. */
+        get: operations["getRunMetricSeries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/t/{slug}/runs/{id}/metrics:raw": {
         parameters: {
             query?: never;
@@ -1522,7 +1573,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Extend the stand lifetime (bounded by `max_keep`). */
+        /** Extend the stand lifetime. */
         post: operations["extendRunKeep"];
         delete?: never;
         options?: never;
@@ -2187,23 +2238,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/admin/tenants/{slug}/limits": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        /** Set tenant limit ceilings (null = platform default). */
-        put: operations["adminSetTenantLimits"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/admin/tenants/{slug}:assign-owner": {
         parameters: {
             query?: never;
@@ -2553,7 +2587,7 @@ export interface components {
          * @description What an audit entry records.
          * @enum {string}
          */
-        AuditAction: "admin.pipelines.resync" | "admin.run.cancel" | "admin.settings.update" | "admin.tenant.assign_owner" | "admin.tenant.delete" | "admin.tenant.limits" | "admin.tenant.resume" | "admin.tenant.suspend" | "admin.user.platform_admin" | "database.create" | "database.delete" | "database.update" | "invite.accept" | "invite.create" | "invite.revoke" | "member.leave" | "member.remove" | "member.role" | "provider.create" | "provider.delete" | "provider.update" | "run.cancel" | "run.delete" | "run.keep.extend" | "run.keep.release" | "run.launch" | "run.update" | "schedule.create" | "schedule.delete" | "schedule.update" | "share.create" | "share.rebuild" | "share.revoke" | "suite.create" | "suite.delete" | "suite.launch" | "suite.update" | "suite_run.cancel" | "suite_run.delete" | "tenant.create" | "tenant.delete" | "tenant.transfer" | "tenant.update" | "test.create" | "test.delete" | "test.update" | "token.create" | "token.revoke" | "webhook.create" | "webhook.delete" | "webhook.rotate" | "webhook.update" | "workload.create" | "workload.delete" | "workload.update";
+        AuditAction: "admin.pipelines.resync" | "admin.run.cancel" | "admin.settings.update" | "admin.tenant.assign_owner" | "admin.tenant.delete" | "admin.tenant.resume" | "admin.tenant.suspend" | "admin.user.platform_admin" | "database.create" | "database.delete" | "database.update" | "invite.accept" | "invite.create" | "invite.revoke" | "member.leave" | "member.remove" | "member.role" | "provider.create" | "provider.delete" | "provider.update" | "run.cancel" | "run.delete" | "run.keep.extend" | "run.keep.release" | "run.launch" | "run.update" | "schedule.create" | "schedule.delete" | "schedule.update" | "share.create" | "share.rebuild" | "share.revoke" | "suite.create" | "suite.delete" | "suite.launch" | "suite.update" | "suite_run.cancel" | "suite_run.delete" | "tenant.create" | "tenant.delete" | "tenant.transfer" | "tenant.update" | "test.create" | "test.delete" | "test.update" | "token.create" | "token.revoke" | "webhook.create" | "webhook.delete" | "webhook.rotate" | "webhook.update" | "workload.create" | "workload.delete" | "workload.update";
         /**
          * @description The kind of object an audit entry is about.
          * @enum {string}
@@ -2585,10 +2619,15 @@ export interface components {
          */
         LogLevel: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
         /**
+         * @description What a running workload segment does: `preparing` — stroppy prepares the data (schema, load, indexes, checks), which has no planned length; `load` — the planned load runs.
+         * @enum {string}
+         */
+        RunStageKind: "preparing" | "load";
+        /**
          * @description Why exactly a request failed (Problem.reason); its text and the params it reads are the client's.
          * @enum {string}
          */
-        ErrorReason: "a_database_with_this_name_exists" | "a_pending_invite_for_this_email_exists" | "a_profile_with_this_name_exists" | "a_suite_with_this_name_exists" | "a_test_with_this_name_exists" | "a_workload_with_this_name_exists" | "account_already_owns_a_tenant" | "after_is_not_an_event_id" | "already_the_owner" | "artifact_not_downloadable" | "artifact_not_found" | "artifact_unavailable" | "at_least_one_event" | "at_least_one_segment" | "at_most_20_notification_emails" | "authentication_required" | "cancel_run_before_delete" | "cancel_suite_run_before_delete" | "cancel_unavailable" | "catalog_no_qps_series" | "comparison_request_is_required" | "config_version_mismatch" | "cron_invalid" | "cron_never_fires" | "cursor_invalid" | "cursor_is_not_an_event_id" | "database_not_found" | "database_ref_and_inline_are_exclusive" | "db_kind_not_launchable" | "db_kind_unknown" | "db_version_no_image" | "db_version_unknown" | "default_keep_is_not_a_duration" | "default_keep_range" | "delete_resources_unavailable" | "delivery_id_is_not_a_uuid" | "delivery_not_found" | "disk_size_out_of_range" | "display_name_longer_than_64" | "document_api_version" | "document_kind" | "document_kind_must_be_suite" | "duration_is_not_a_positive_duration" | "duration_max_is_not_a_duration" | "duration_min_is_not_a_duration" | "email_is_not_valid" | "end_must_be_after_start" | "example_not_found" | "examples_not_found" | "expires_at_is_in_the_past" | "export_format_unavailable" | "favorites_belong_to_users_not_tokens" | "grafana_is_not_connected" | "graphene_dropped_log_records" | "graphene_dropped_metric_records" | "graphene_telemetry_run_not_found" | "invalid_log_cursor_for_this_selection" | "invalid_log_direction" | "invalid_metric_step" | "invite_is_not_pending" | "invite_not_found" | "is_platform_admin_is_required" | "keep_is_not_a_duration" | "keep_must_not_be_negative" | "kind_must_be_yandex_or_aws" | "limit_keep" | "limit_machines_per_run" | "limit_size" | "log_cursor_ambiguous" | "logs_store_is_not_connected" | "managed_ydb_autoscaling_unsupported" | "managed_ydb_deletion_protection" | "managed_ydb_requires_named_credentials" | "managed_ydb_requires_yandex_cloud" | "managed_ydb_type_unknown" | "max_keep_is_not_a_duration" | "maxscale_mariadb_only" | "member_not_found" | "metadata_name_is_required" | "metric_not_rating_eligible" | "metrics_snapshot_invalid" | "metrics_store_is_not_connected" | "metrics_unavailable" | "metrics_unknown" | "name_is_required" | "name_must_be_1_128_characters" | "name_must_be_1_64_characters" | "no_cells_to_run" | "no_failed_cells" | "notification_email_invalid" | "only_test_examples_can_be_quick_run" | "options_is_not_a_json_object" | "owner_cannot_be_removed" | "owner_role_by_transfer_only" | "patroni_image_required" | "patroni_requires_haproxy" | "pdf_export_is_not_available_yet" | "platform_admin_required" | "profile_is_not_verified" | "profile_not_found" | "profile_not_ready" | "provider_busy" | "provider_cleanup_failed" | "provider_cleanup_pending" | "provider_is_being_deleted" | "provider_is_not_ready" | "provider_is_unavailable" | "provider_kind_unknown" | "provider_profile_id_is_not_a_uuid" | "provider_profile_not_found" | "provider_quota_check_unavailable" | "provider_quota_exceeded" | "provider_secret_unavailable" | "pty_streams_are_not_connected_yet" | "public_rating_not_found" | "query_is_required" | "quick_run_needs_profile" | "ref_id_not_uuid" | "ref_needs_id_or_name" | "ref_not_found" | "referenced_by_tests" | "requires_role" | "requires_role_admin" | "requires_role_member" | "resume_machine_missing" | "resume_stand_unknown" | "retention_days_range" | "role_must_be_admin_member_or_viewer" | "role_must_be_member_or_viewer" | "run_already_finished" | "run_id_is_not_a_uuid" | "run_id_is_required" | "run_idempotency_conflict" | "run_ids_2_to_16_runs" | "run_not_found" | "run_retention_max_days_must_be_positive" | "run_submit_unavailable" | "schedule_fire_failed" | "schedule_not_found" | "schema_has_no_templates" | "schema_not_found" | "scope_must_be_overview_metrics_or_configs" | "script_protocol_unsupported" | "segment_not_found" | "share_already_revoked" | "share_metrics_single_run_only" | "share_not_found" | "shell_input_failed" | "shell_input_invalid" | "shell_machine_unknown" | "shell_not_found" | "shell_open_failed" | "shell_session_ended" | "shell_size_invalid" | "shell_stand_gone" | "size_not_chosen" | "size_unavailable" | "size_unknown" | "slug_format" | "slug_is_taken" | "spec_is_required" | "stand_lost_run" | "stand_unavailable" | "step_is_not_a_duration" | "stroppy_protocol_unsupported" | "stroppy_script_unknown" | "stroppy_version_not_found" | "stroppy_version_unknown" | "sub_id_and_topic_are_required" | "subscription_exists_or_too_many" | "suite_cell_invalid" | "suite_not_found" | "suite_run_already_finished" | "suite_run_id_is_not_a_uuid" | "suite_run_id_is_required" | "suite_run_idempotency_conflict" | "suite_run_not_found" | "suite_test_invalid" | "suite_test_ref_or_inline" | "suites_are_not_available" | "target_kind_must_be_test_or_suite" | "telemetry_requires_a_run_scope" | "telemetry_unavailable" | "tenant_creation_admin_only" | "tenant_creation_value" | "tenant_has_active_work" | "tenant_has_live_runs" | "tenant_is_being_deleted" | "tenant_is_suspended" | "tenant_namespace_unavailable" | "tenant_not_found" | "tenant_slug_taken" | "test_does_not_fit" | "test_is_not_fully_resolved" | "test_not_found" | "test_used_by" | "the_new_owner_already_owns_a_tenant" | "the_stand_is_not_kept" | "the_suite_of_this_run_is_gone" | "theme_unknown" | "this_share_does_not_include_metrics" | "timezone_unknown" | "token_expired" | "token_not_found" | "token_not_recognized" | "token_rejected" | "token_role_cannot_exceed_your_role" | "tokens_cannot_accept_invites" | "tokens_cannot_create_tenants" | "tokens_cannot_mint_tokens" | "topic_must_be_kind_id" | "ttl_is_not_a_positive_duration" | "unknown_share_kind" | "unsupported_document_body" | "url_not_absolute_http" | "user_already_owns_a_tenant" | "user_id_is_not_a_uuid" | "user_not_found" | "value_is_not_a_json_object" | "viewers_cannot_change_schedules" | "viewers_cannot_change_suites" | "viewers_cannot_launch_or_change_runs" | "viewers_cannot_share" | "webhook_event_unknown" | "webhook_not_found" | "window_does_not_overlap_the_shared_run" | "workload_not_found" | "workload_ref_and_inline_are_exclusive" | "ydb_disk_too_small" | "ydb_mirror3dc_yandex_only" | "ydb_needs_three_zones" | "ydb_storage_nodes_required" | "ydb_zone_invalid" | "ydb_zones_not_strings";
+        ErrorReason: "a_database_with_this_name_exists" | "a_pending_invite_for_this_email_exists" | "a_profile_with_this_name_exists" | "a_suite_with_this_name_exists" | "a_test_with_this_name_exists" | "a_workload_with_this_name_exists" | "account_already_owns_a_tenant" | "after_is_not_an_event_id" | "already_the_owner" | "artifact_not_downloadable" | "artifact_not_found" | "artifact_unavailable" | "at_least_one_event" | "at_least_one_segment" | "at_most_20_notification_emails" | "authentication_required" | "cancel_run_before_delete" | "cancel_suite_run_before_delete" | "cancel_unavailable" | "catalog_no_qps_series" | "comparison_request_is_required" | "config_version_mismatch" | "cron_invalid" | "cron_never_fires" | "cursor_invalid" | "cursor_is_not_an_event_id" | "database_not_found" | "database_ref_and_inline_are_exclusive" | "db_kind_not_launchable" | "db_kind_unknown" | "db_version_no_image" | "db_version_unknown" | "default_keep_is_not_a_duration" | "default_keep_range" | "delete_resources_unavailable" | "delivery_id_is_not_a_uuid" | "delivery_not_found" | "disk_size_out_of_range" | "display_name_longer_than_64" | "document_api_version" | "document_kind" | "document_kind_must_be_suite" | "duration_is_not_a_positive_duration" | "duration_max_is_not_a_duration" | "duration_min_is_not_a_duration" | "email_is_not_valid" | "end_must_be_after_start" | "example_not_found" | "examples_not_found" | "expires_at_is_in_the_past" | "export_format_unavailable" | "favorites_belong_to_users_not_tokens" | "grafana_is_not_connected" | "graphene_dropped_log_records" | "graphene_dropped_metric_records" | "graphene_telemetry_run_not_found" | "invalid_log_cursor_for_this_selection" | "invalid_log_direction" | "invalid_metric_step" | "invite_is_not_pending" | "invite_not_found" | "is_platform_admin_is_required" | "keep_is_not_a_duration" | "keep_must_not_be_negative" | "kind_must_be_yandex_or_aws" | "log_cursor_ambiguous" | "logs_store_is_not_connected" | "managed_ydb_autoscaling_unsupported" | "managed_ydb_deletion_protection" | "managed_ydb_requires_named_credentials" | "managed_ydb_requires_yandex_cloud" | "managed_ydb_type_unknown" | "maxscale_mariadb_only" | "member_not_found" | "metadata_name_is_required" | "metric_agg_unknown" | "metric_fn_unknown" | "metric_label_unknown" | "metric_name_required" | "metric_not_rating_eligible" | "metrics_snapshot_invalid" | "metrics_store_is_not_connected" | "metrics_unavailable" | "metrics_unknown" | "name_is_required" | "name_must_be_1_128_characters" | "name_must_be_1_64_characters" | "no_cells_to_run" | "no_failed_cells" | "notification_email_invalid" | "only_test_examples_can_be_quick_run" | "options_is_not_a_json_object" | "owner_cannot_be_removed" | "owner_role_by_transfer_only" | "patroni_image_required" | "patroni_requires_haproxy" | "pdf_export_is_not_available_yet" | "platform_admin_required" | "profile_is_not_verified" | "profile_not_found" | "profile_not_ready" | "provider_busy" | "provider_cleanup_failed" | "provider_cleanup_pending" | "provider_is_being_deleted" | "provider_is_not_ready" | "provider_is_unavailable" | "provider_kind_unknown" | "provider_profile_id_is_not_a_uuid" | "provider_profile_not_found" | "provider_quota_check_unavailable" | "provider_quota_exceeded" | "provider_secret_unavailable" | "pty_streams_are_not_connected_yet" | "public_rating_not_found" | "query_is_required" | "quick_run_needs_profile" | "ref_id_not_uuid" | "ref_needs_id_or_name" | "ref_not_found" | "referenced_by_tests" | "requires_role" | "requires_role_admin" | "requires_role_member" | "resume_machine_missing" | "resume_stand_unknown" | "retention_days_range" | "role_must_be_admin_member_or_viewer" | "role_must_be_member_or_viewer" | "run_already_finished" | "run_id_is_not_a_uuid" | "run_id_is_required" | "run_idempotency_conflict" | "run_ids_2_to_16_runs" | "run_not_found" | "run_submit_unavailable" | "schedule_fire_failed" | "schedule_not_found" | "schema_has_no_templates" | "schema_not_found" | "scope_must_be_overview_metrics_or_configs" | "script_protocol_unsupported" | "segment_not_found" | "share_already_revoked" | "share_metrics_single_run_only" | "share_not_found" | "shell_input_failed" | "shell_input_invalid" | "shell_machine_unknown" | "shell_not_found" | "shell_open_failed" | "shell_session_ended" | "shell_size_invalid" | "shell_stand_gone" | "size_not_chosen" | "size_unavailable" | "size_unknown" | "slug_format" | "slug_is_taken" | "spec_is_required" | "stand_lost_run" | "stand_unavailable" | "step_is_not_a_duration" | "stroppy_protocol_unsupported" | "stroppy_script_unknown" | "stroppy_version_not_found" | "stroppy_version_unknown" | "sub_id_and_topic_are_required" | "subscription_exists_or_too_many" | "suite_cell_invalid" | "suite_not_found" | "suite_run_already_finished" | "suite_run_id_is_not_a_uuid" | "suite_run_id_is_required" | "suite_run_idempotency_conflict" | "suite_run_not_found" | "suite_test_invalid" | "suite_test_ref_or_inline" | "suites_are_not_available" | "target_kind_must_be_test_or_suite" | "telemetry_requires_a_run_scope" | "telemetry_unavailable" | "tenant_creation_admin_only" | "tenant_creation_value" | "tenant_has_active_work" | "tenant_has_live_runs" | "tenant_is_being_deleted" | "tenant_is_suspended" | "tenant_namespace_unavailable" | "tenant_not_found" | "tenant_slug_taken" | "test_does_not_fit" | "test_is_not_fully_resolved" | "test_not_found" | "test_used_by" | "the_new_owner_already_owns_a_tenant" | "the_stand_is_not_kept" | "the_suite_of_this_run_is_gone" | "theme_unknown" | "this_share_does_not_include_metrics" | "timezone_unknown" | "token_expired" | "token_not_found" | "token_not_recognized" | "token_rejected" | "token_role_cannot_exceed_your_role" | "tokens_cannot_accept_invites" | "tokens_cannot_create_tenants" | "tokens_cannot_mint_tokens" | "topic_must_be_kind_id" | "ttl_is_not_a_positive_duration" | "unknown_share_kind" | "unsupported_document_body" | "url_not_absolute_http" | "user_already_owns_a_tenant" | "user_id_is_not_a_uuid" | "user_not_found" | "value_is_not_a_json_object" | "viewers_cannot_change_schedules" | "viewers_cannot_change_suites" | "viewers_cannot_launch_or_change_runs" | "viewers_cannot_share" | "webhook_event_unknown" | "webhook_not_found" | "window_does_not_overlap_the_shared_run" | "workload_not_found" | "workload_ref_and_inline_are_exclusive" | "ydb_disk_too_small" | "ydb_mirror3dc_yandex_only" | "ydb_needs_three_zones" | "ydb_storage_nodes_required" | "ydb_zone_invalid" | "ydb_zones_not_strings";
         /**
          * @description The flavor of a topology its nodes do not show (the parameter value it comes from); absent for a plain one.
          * @enum {string}
@@ -2845,16 +2884,6 @@ export interface components {
         RatingFlags: {
             tenant?: boolean;
             global?: boolean;
-        };
-        TenantLimits: {
-            max_concurrent_runs: number;
-            max_machines_per_run: number;
-            max_size: components["schemas"]["Size"];
-            /** @description Go duration. */
-            max_keep: string;
-            run_retention_max_days: number;
-            /** @enum {string} */
-            readonly source?: "platform_default" | "tenant_override";
         };
         /** @enum {string} */
         ProviderKind: "yandex" | "aws";
@@ -3400,6 +3429,19 @@ export interface components {
             /** @description Current workload segment while running. */
             segment?: string;
             /**
+             * Format: date-time
+             * @description Where the workload's planned time starts (read-time): the workload phase's start shifted past the running segment's data preparation. With `expected_finish_at` it gives the workload's progress at any instant: (now − workload_from) / (expected_finish_at − workload_from).
+             */
+            workload_from?: string;
+            /** @description Where the running segment's stroppy is (read-time, from its log): the step it prepares, or under load the last step it finished, and since when. While preparing, `expected_finish_at` is absent; under load the plan counts from the load's start. */
+            stage?: {
+                kind: components["schemas"]["RunStageKind"];
+                /** @description stroppy step id, e.g. `load_data`, `validate_population`. */
+                step: string;
+                /** Format: date-time */
+                since: string;
+            };
+            /**
              * @description Key result metrics once available: `tps`, `latency_p50_ms`, `latency_p95_ms`, `latency_p99_ms`, `qps` (queries per second of the whole workload — the segments' `queries_per_second` weighted by their `measurement_seconds`, else their plain mean), `errors` (terminal errors over all segments; absent = none), and every segment metric as `<segment>.<metric>`.
              * @example {
              *       "tps": 12345.6,
@@ -3489,9 +3531,9 @@ export interface components {
             waiting_for: components["schemas"]["RunWaitReason"];
             /** @description 1-based among the tenant's queued runs. */
             position: number;
-            /** @description Occupied slots (slot, suite_slot). */
+            /** @description Cells of the suite running (suite_slot). */
             live?: number;
-            /** @description Allowed slots (slot, suite_slot). */
+            /** @description Concurrency of the suite (suite_slot). */
             limit?: number;
             /**
              * @description Provider quota without room (quota).
@@ -3509,10 +3551,10 @@ export interface components {
             detail?: string;
         };
         /**
-         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform admin suspended the tenant.
+         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform admin suspended the tenant.
          * @enum {string}
          */
-        RunWaitReason: "pipelines" | "slot" | "suite_slot" | "quota" | "quota_unknown" | "provider" | "suspended";
+        RunWaitReason: "pipelines" | "suite_slot" | "quota" | "quota_unknown" | "provider" | "suspended";
         /** @description Definition frozen at launch. */
         RunSnapshot: {
             /** @description Frozen final deployment overrides used for replay. */
@@ -3784,6 +3826,77 @@ export interface components {
             /** @description Cursor towards the present. */
             newer?: string | null;
             truncated?: boolean;
+        };
+        /**
+         * @description Where a metric comes from: exporter — a container's own Prometheus endpoint (node_exporter, the database's exporter, a proxy, the engine itself); workload — stroppy; container — the container statistics the agent samples; pipeline — the pipeline's own telemetry.
+         * @enum {string}
+         */
+        MetricOrigin: "exporter" | "workload" | "container" | "pipeline";
+        /**
+         * @description counter — grows over the run (its rate is what to look at); gauge — a level.
+         * @enum {string}
+         */
+        MetricKind: "counter" | "gauge";
+        /**
+         * @description value — the stored samples; rate — the per-second increase (counters).
+         * @enum {string}
+         */
+        MetricSeriesFn: "value" | "rate";
+        /** @enum {string} */
+        MetricSeriesAgg: "sum" | "avg" | "max" | "min";
+        RunMetricNames: {
+            window: {
+                /** Format: date-time */
+                start: string;
+                /** Format: date-time */
+                end: string;
+                segment?: string;
+            };
+            data: {
+                /** @example node_cpu_seconds_total */
+                name: string;
+                origin: components["schemas"]["MetricOrigin"];
+                kind: components["schemas"]["MetricKind"];
+                /** @description How many series the name has. */
+                series: number;
+                machines: string[];
+                roles: string[];
+                /** @description Containers the series come from (none for the workload). */
+                containers: string[];
+            }[];
+        };
+        RunMetricSeries: {
+            window: {
+                /** Format: date-time */
+                start: string;
+                /** Format: date-time */
+                end: string;
+                segment?: string;
+            };
+            name: string;
+            fn: components["schemas"]["MetricSeriesFn"];
+            /** @description The metric's own labels — what it can be grouped by besides machine and container. */
+            labels: string[];
+            /** @description Series before the cut. */
+            total: number;
+            /** @description Only the series with the highest average are returned. */
+            truncated: boolean;
+            series: {
+                labels: {
+                    [key: string]: string;
+                };
+                machine?: string;
+                role?: string;
+                container?: string;
+                points: number[][];
+                aggregates?: {
+                    avg?: number;
+                    min?: number;
+                    max?: number;
+                    last?: number;
+                    p95?: number;
+                };
+            }[];
         };
         RunMetrics: {
             window: {
@@ -4105,7 +4218,7 @@ export interface components {
             status: components["schemas"]["RunStatus"];
             /** Format: date-time */
             at: string;
-            /** @description Set when the firing itself failed (e.g. limits). */
+            /** @description Set when the firing itself failed (e.g. the test does not fit). */
             error?: string;
         };
         RatingEntry: {
@@ -4280,7 +4393,6 @@ export interface components {
             upcoming: components["schemas"]["Schedule"][];
             top_results?: components["schemas"]["RatingEntry"][];
             providers?: components["schemas"]["ProviderProfile"][];
-            limits?: components["schemas"]["TenantLimits"];
         };
         /** @description Whether the tenant's namespace carries this server's pipelines. A new tenant (and every tenant after a server upgrade) gets them pushed in a few minutes; until then launched runs wait in the queue. */
         TenantPipelines: {
@@ -4330,7 +4442,6 @@ export interface components {
             };
         };
         AdminTenant: components["schemas"]["Tenant"] & {
-            limits?: components["schemas"]["TenantLimits"];
             suspended_reason?: string;
             counters?: {
                 members?: number;
@@ -4341,13 +4452,6 @@ export interface components {
             };
             /** Format: date-time */
             last_activity_at?: string | null;
-        };
-        TenantLimitsWrite: {
-            max_concurrent_runs?: number | null;
-            max_machines_per_run?: number | null;
-            max_size?: components["schemas"]["Size"] | null;
-            max_keep?: string | null;
-            run_retention_max_days?: number | null;
         };
         AdminUser: {
             id: string;
@@ -4369,8 +4473,6 @@ export interface components {
             tenant_creation: "anyone" | "admin_only";
             public_rating_enabled: boolean;
             examples_enabled: boolean;
-            default_limits: components["schemas"]["TenantLimits"];
-            run_retention_max_days: number;
             /** @description Static stroppy catalog (v0 source of `/catalog/stroppy`). */
             stroppy_catalog?: components["schemas"]["SchemaValue"];
             /** Format: date-time */
@@ -4382,8 +4484,6 @@ export interface components {
             tenant_creation?: "anyone" | "admin_only";
             public_rating_enabled?: boolean;
             examples_enabled?: boolean;
-            default_limits?: components["schemas"]["TenantLimitsWrite"];
-            run_retention_max_days?: number;
             stroppy_catalog?: components["schemas"]["SchemaValue"];
         };
     };
@@ -4406,6 +4506,20 @@ export interface components {
         };
     };
     parameters: {
+        /** @description Stored metric name (metrics:names). */
+        metricName: string;
+        /** @description Default: rate for counters, value otherwise. */
+        metricFn: components["schemas"]["MetricSeriesFn"];
+        /** @description Group by these labels; machine and container group by where the series come from. */
+        metricBy: string[];
+        /** @description How grouped series combine (default sum). */
+        metricAgg: components["schemas"]["MetricSeriesAgg"];
+        /** @description Only series of these machines. */
+        metricMachine: string[];
+        /** @description Only series of the machines holding these roles. */
+        metricRole: string[];
+        /** @description Only series of these containers. */
+        metricContainer: string[];
         /** @description Tenant slug. */
         slug: string;
         id: string;
@@ -4569,6 +4683,72 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RunMetrics"];
+                };
+            };
+            default: components["responses"]["Problem"];
+        };
+    };
+    listPublicShareMetricNames: {
+        parameters: {
+            query?: {
+                start?: components["parameters"]["windowStart"];
+                end?: components["parameters"]["windowEnd"];
+            };
+            header?: never;
+            path: {
+                token: components["parameters"]["shareToken"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Metric names. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunMetricNames"];
+                };
+            };
+            default: components["responses"]["Problem"];
+        };
+    };
+    getPublicShareMetricSeries: {
+        parameters: {
+            query: {
+                /** @description Stored metric name (metrics:names). */
+                name: components["parameters"]["metricName"];
+                /** @description Default: rate for counters, value otherwise. */
+                fn?: components["parameters"]["metricFn"];
+                /** @description Group by these labels; machine and container group by where the series come from. */
+                by?: components["parameters"]["metricBy"];
+                /** @description How grouped series combine (default sum). */
+                agg?: components["parameters"]["metricAgg"];
+                /** @description Only series of the machines holding these roles. */
+                role?: components["parameters"]["metricRole"];
+                /** @description Only series of these machines. */
+                machine?: components["parameters"]["metricMachine"];
+                /** @description Only series of these containers. */
+                container?: components["parameters"]["metricContainer"];
+                start?: components["parameters"]["windowStart"];
+                end?: components["parameters"]["windowEnd"];
+            };
+            header?: never;
+            path: {
+                token: components["parameters"]["shareToken"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Series. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunMetricSeries"];
                 };
             };
             default: components["responses"]["Problem"];
@@ -5289,30 +5469,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenantSettings"];
-                };
-            };
-            default: components["responses"]["Problem"];
-        };
-    };
-    getTenantLimits: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Tenant slug. */
-                slug: components["parameters"]["slug"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Limits. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TenantLimits"];
                 };
             };
             default: components["responses"]["Problem"];
@@ -7283,6 +7439,82 @@ export interface operations {
             default: components["responses"]["Problem"];
         };
     };
+    listRunMetricNames: {
+        parameters: {
+            query?: {
+                /** @description Window = this workload segment. */
+                segment?: string;
+                start?: components["parameters"]["windowStart"];
+                end?: components["parameters"]["windowEnd"];
+            };
+            header?: never;
+            path: {
+                /** @description Tenant slug. */
+                slug: components["parameters"]["slug"];
+                id: components["parameters"]["id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Metric names. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunMetricNames"];
+                };
+            };
+            default: components["responses"]["Problem"];
+        };
+    };
+    getRunMetricSeries: {
+        parameters: {
+            query: {
+                /** @description Stored metric name (metrics:names). */
+                name: components["parameters"]["metricName"];
+                /** @description Default: rate for counters, value otherwise. */
+                fn?: components["parameters"]["metricFn"];
+                /** @description Group by these labels; machine and container group by where the series come from. */
+                by?: components["parameters"]["metricBy"];
+                /** @description How grouped series combine (default sum). */
+                agg?: components["parameters"]["metricAgg"];
+                /** @description Only series of the machines holding these roles. */
+                role?: components["parameters"]["metricRole"];
+                /** @description Only series of these machines. */
+                machine?: components["parameters"]["metricMachine"];
+                /** @description Only series of these containers. */
+                container?: components["parameters"]["metricContainer"];
+                /** @description Window = this workload segment. */
+                segment?: string;
+                start?: components["parameters"]["windowStart"];
+                end?: components["parameters"]["windowEnd"];
+                /** @description Series step */
+                step?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Tenant slug. */
+                slug: components["parameters"]["slug"];
+                id: components["parameters"]["id"];
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Series. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunMetricSeries"];
+                };
+            };
+            default: components["responses"]["Problem"];
+        };
+    };
     queryRunMetricsRaw: {
         parameters: {
             query?: never;
@@ -8815,34 +9047,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AdminTenant"];
-                };
-            };
-            default: components["responses"]["Problem"];
-        };
-    };
-    adminSetTenantLimits: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Tenant slug. */
-                slug: components["parameters"]["slug"];
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["TenantLimitsWrite"];
-            };
-        };
-        responses: {
-            /** @description Limits. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TenantLimits"];
                 };
             };
             default: components["responses"]["Problem"];

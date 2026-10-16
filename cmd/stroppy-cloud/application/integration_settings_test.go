@@ -26,7 +26,7 @@ func mustUUID(t *testing.T, s string) uuid.UUID {
 	return id
 }
 
-func TestE2ESettingsAndLimits(t *testing.T) {
+func TestE2ESettings(t *testing.T) {
 	e := e2eServer(t)
 	owner := e.person(slug("owner")+"@example.com", "Owner")
 	tn := e.tenant(owner, "Set")
@@ -49,16 +49,9 @@ func TestE2ESettingsAndLimits(t *testing.T) {
 	if st.RunRetentionDays != 30 || st.DefaultKeep != "2h0m0s" || !st.Rating.Global || len(st.Emails) != 1 || st.Emails[0] != "ops@x.io" {
 		t.Fatalf("patched %+v", st)
 	}
-	e.problem(e.req(http.MethodPatch, base+"/settings", map[string]any{"default_keep": "100h"}, tok), http.StatusUnprocessableEntity, "invalid")
-
-	var limits struct {
-		MaxKeep string `json:"max_keep"`
-		Source  string `json:"source"`
-	}
-	e.want(e.req(http.MethodGet, base+"/limits", nil, tok), http.StatusOK, &limits)
-	if limits.Source != "platform_default" || limits.MaxKeep != "24h0m0s" {
-		t.Fatalf("limits %+v", limits)
-	}
+	// No ceiling on keep or retention; only nonsense is refused.
+	e.want(e.req(http.MethodPatch, base+"/settings", map[string]any{"default_keep": "100h", "run_retention_days": 3650}, tok), http.StatusOK, nil)
+	e.problem(e.req(http.MethodPatch, base+"/settings", map[string]any{"run_retention_days": 0}, tok), http.StatusUnprocessableEntity, "invalid")
 }
 
 func TestE2EProviderProfiles(t *testing.T) {

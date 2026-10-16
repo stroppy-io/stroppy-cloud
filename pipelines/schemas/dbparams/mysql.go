@@ -56,6 +56,20 @@ func MySQL() *schemapb.Schema {
 				Desc("rpl_semi_sync_source_wait_for_replica_count: how many replicas must acknowledge before the primary commits.").
 				Gte(1).Lte(8).Default(1).When(`root.replication == "semi_sync"`),
 
+			// doc: https://dev.mysql.com/doc/refman/8.4/en/innodb-buffer-pool-resize.html
+			// doc: https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-buffer-pool
+			// The upstream default (128 MB) reads every benchmark table from
+			// disk; MySQL recommends up to ~80% of RAM on a dedicated server.
+			schemapb.Choice("buffer_pool").Title("Buffer pool").Group("Memory").
+				Desc("auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode.").
+				Opt(schemapb.StrV("auto"), "70% of RAM").
+				Opt(schemapb.StrV("fixed"), "Fixed size").
+				Opt(schemapb.StrV("stock"), "Server default").
+				Default(schemapb.StrV("auto")),
+			schemapb.Int64("buffer_pool_mb").Title("Buffer pool size").Group("Memory").
+				Desc("innodb_buffer_pool_size of every database server; the run refuses a size over the machine's RAM.").
+				Unit("MB").Gte(128).Lte(4194304).Default(4096).When(`root.buffer_pool == "fixed"`),
+
 			// doc: https://proxysql.com/documentation/
 			schemapb.Int64("proxysql").Title("ProxySQL nodes").Group("Routing").
 				Desc("ProxySQL instances routing reads and writes to the right member; 0 = clients talk to the primary directly.").

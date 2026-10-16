@@ -101,7 +101,7 @@ export interface CfgProxysqlCnf2 {
   max_writers?: number | string;
   /** Writer is also reader. 0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read. */
   writer_is_also_reader?: number | string;
-  /** Max transactions behind. Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check. */
+  /** Max transactions behind. Group Replication / Galera: a reader more than this many transactions behind (Galera: receive queue longer than this) is shunned; 0 shuns on any lag. */
   max_transactions_behind?: number | string;
   /** Read/write split. Render the two default rules: `SELECT ... FOR UPDATE` to the writer, every other `SELECT` to the reader. */
   read_write_split?: "true" | "false";

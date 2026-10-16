@@ -1,6 +1,7 @@
 package dbkind_test
 
 import (
+	"slices"
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -21,10 +22,8 @@ func TestClientURL(t *testing.T) {
 		{catalog.PgNoop, nil, catalog.ProtoPg, "postgresql://postgres@H:5432/postgres?sslmode=disable"},
 		{catalog.MySQL, nil, catalog.ProtoMySQL, "root:stroppy_mysql@tcp(H:3306)/stroppy"},
 		{catalog.Picodata, template(t, catalog.Picodata), catalog.ProtoPicodata, "postgres://admin:T0psecret@H:4327?sslmode=disable"},
-		{catalog.Picodata, template(t, catalog.Picodata), catalog.ProtoPg, "postgresql://admin:T0psecret@H:4327/?sslmode=disable"},
 		{catalog.YDB, nil, catalog.ProtoYDBGrpc, "grpc://H:2136/Root/stroppy"},
 		{catalog.Cockroach, nil, catalog.ProtoCockroach, "postgresql://root@H:26257/defaultdb?sslmode=disable"},
-		{catalog.Cockroach, nil, catalog.ProtoPg, "postgresql://root@H:26257/defaultdb?sslmode=disable"},
 		{catalog.Noop, nil, catalog.ProtoNoop, "noop://localhost"},
 	}
 	for _, tc := range cases {
@@ -48,6 +47,19 @@ func TestExternalSpeaksItsDSNProtocol(t *testing.T) {
 	}
 }
 
+// stroppy reaches Picodata only through its picodata driver over pgproto.
+func TestPicodataSpeaksPicodataOverPgproto(t *testing.T) {
+	got := dbkind.Protocols(catalog.Picodata, bake(t, catalog.Picodata, template(t, catalog.Picodata)))
+	if len(got) != 1 || got[0] != catalog.ProtoPicodata {
+		t.Fatalf("picodata protocols %v", got)
+	}
+	params := bake(t, catalog.Picodata, template(t, catalog.Picodata))
+	params["pgproto"] = false
+	if got := dbkind.Protocols(catalog.Picodata, params); got == nil || len(got) != 0 {
+		t.Fatalf("picodata without pgproto speaks %v, want none", got)
+	}
+}
+
 // template is the first catalog topology of a kind: params that bake.
 func template(t *testing.T, kind catalog.DatabaseKind) map[string]any {
 	t.Helper()
@@ -56,4 +68,16 @@ func template(t *testing.T, kind catalog.DatabaseKind) map[string]any {
 		t.Fatalf("%s has no topology template", kind)
 	}
 	return k.Topologies[0].Params
+}
+
+// A self-hosted YDB stand has no TLS: only plain gRPC reaches it.
+func TestSelfHostedYDBSpeaksPlainGRPC(t *testing.T) {
+	for _, k := range dbkind.Databases() {
+		if k.Kind != catalog.YDB {
+			continue
+		}
+		if !slices.Equal(k.Protocols, []catalog.Protocol{catalog.ProtoYDBGrpc}) {
+			t.Errorf("self-hosted YDB protocols = %v; want only ydb_grpc", k.Protocols)
+		}
+	}
 }

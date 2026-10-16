@@ -25,7 +25,7 @@ func TestCompileMariaDBMaxScale(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	db, _ := cat.Database(catalog.MariaDB)
 	version := db.Versions[len(db.Versions)-1].Version

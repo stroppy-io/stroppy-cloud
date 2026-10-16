@@ -54,26 +54,6 @@ func (h *Handler) PatchTenantSettings(ctx context.Context, req *oas.TenantSettin
 	return settingsOf(st), nil
 }
 
-// GetTenantLimits — effective limits.
-func (h *Handler) GetTenantLimits(ctx context.Context, params oas.GetTenantLimitsParams) (*oas.TenantLimits, error) {
-	a, t, err := h.tenantOf(ctx, params.Slug)
-	if err != nil {
-		return nil, err
-	}
-	l, err := h.deps.Settings.Limits(ctx, a, t.ID)
-	if err != nil {
-		return nil, err
-	}
-	src := oas.TenantLimitsSourcePlatformDefault
-	if l.Overridden {
-		src = oas.TenantLimitsSourceTenantOverride
-	}
-	return &oas.TenantLimits{
-		MaxConcurrentRuns: l.MaxConcurrentRuns, MaxMachinesPerRun: l.MaxMachinesPerRun, MaxSize: oas.Size(l.MaxSize),
-		MaxKeep: l.MaxKeep.String(), RunRetentionMaxDays: l.RunRetentionMaxDays, Source: oas.NewOptTenantLimitsSource(src),
-	}, nil
-}
-
 func settingsOf(st settings.Settings) *oas.TenantSettings {
 	emails := st.NotificationEmails
 	if emails == nil {

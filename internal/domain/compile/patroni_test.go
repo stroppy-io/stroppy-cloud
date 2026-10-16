@@ -23,7 +23,7 @@ func TestPatroniVersions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	for _, version := range []string{"15", "16", "17", "18"} {
 		t.Run(version, func(t *testing.T) {

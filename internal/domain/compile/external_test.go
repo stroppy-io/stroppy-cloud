@@ -3,6 +3,8 @@ package compile_test
 import (
 	"context"
 	"encoding/json"
+	"slices"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -12,6 +14,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
+	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
 func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
@@ -21,7 +24,7 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	cases := []struct {
 		protocol    catalog.Protocol
@@ -55,10 +58,23 @@ func TestExternalDSNPreservedForEveryProtocol(t *testing.T) {
 			if len(out.Spec.Machines) != 1 || out.Spec.Machines[0].Role != "runner" {
 				t.Fatal("external test must only provision its runner")
 			}
+			exporter := ""
 			for _, c := range out.Spec.Containers {
 				if c.Role != "runner" {
 					t.Fatal("external database component declared")
 				}
+				if c.Kind == spec.ContainerKindExporter && strings.HasSuffix(c.Name, "-postgres-exporter") && c.Env["DATA_SOURCE_NAME"] == tc.dsn {
+					exporter = "postgres"
+				}
+				if c.Kind == spec.ContainerKindExporter && strings.HasSuffix(c.Name, "-mysqld-exporter") &&
+					slices.Contains(c.Cmd, "--mysqld.address=db.internal:3306") && slices.Contains(c.Cmd, "--mysqld.username=test") && c.Env["MYSQLD_EXPORTER_PASSWORD"] == "example" {
+					exporter = "mysql"
+				}
+			}
+			// The runner measures the database through the workload's DSN.
+			want := map[catalog.Protocol]string{catalog.ProtoPg: "postgres", catalog.ProtoMySQL: "mysql"}[tc.protocol]
+			if exporter != want {
+				t.Fatalf("exporter %q, want %q", exporter, want)
 			}
 		})
 	}

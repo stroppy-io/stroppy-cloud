@@ -24,7 +24,7 @@ func TestCompileMySQLClusters(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	for _, kind := range []catalog.DatabaseKind{catalog.MySQL, catalog.MariaDB} {
 		db, _ := cat.Database(kind)
@@ -85,7 +85,7 @@ func TestCompileMySQLClusters(t *testing.T) {
 									t.Error("joiner timezone GTIDs diverge")
 								}
 							} else {
-								if members == 1 && !strings.Contains(conf, "GRANT SLAVE MONITOR ON *.* TO 'exporter'@'%';") {
+								if members == 1 && !strings.Contains(conf, "GRANT SLAVE MONITOR, REPLICATION MASTER ADMIN ON *.* TO 'exporter'@'%';") {
 									t.Error("MariaDB exporter cannot collect replica status")
 								}
 								for _, line := range []string{"wsrep_cluster_name = " + strings.ReplaceAll(runID.String(), "-", ""), "wsrep_sst_method = mariabackup", "wsrep_sync_wait = 1", "wsrep_sst_auth = root:", "--wsrep-on=OFF --wsrep-provider=none"} {
@@ -109,6 +109,11 @@ func TestCompileMySQLClusters(t *testing.T) {
 								if !strings.Contains(conf, "writer_is_also_reader=2") {
 									t.Error("Galera reader pool must include backup writers")
 								}
+							} else if !strings.Contains(conf, "writer_is_also_reader=1") {
+								t.Error("Group Replication reader pool must keep the writer: lagging replicas get shunned")
+							}
+							if !strings.Contains(conf, "max_transactions_behind=100") {
+								t.Error("max_transactions_behind=0 shuns a reader on any lag")
 							}
 							if !strings.Contains(conf, block) || !strings.Contains(strings.Join(ct.Healthcheck.Cmd, " "), "/etc/stroppy/proxy-health.sh") {
 								t.Error("missing cluster proxy configuration")
@@ -131,7 +136,7 @@ func TestClusterConsistencyOverrides(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	for _, tc := range []struct {
 		kind                           catalog.DatabaseKind
 		version, schema, params, field string
@@ -167,7 +172,7 @@ func TestGaleraProxyReaderOverride(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	for _, value := range []int{0, 1, 2} {
 		t.Run(fmt.Sprint(value), func(t *testing.T) {
 			raw := json.RawMessage(fmt.Sprintf(`{"writer_is_also_reader":%d,"read_write_split":"true"}`, value))

@@ -231,6 +231,9 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 		)
 		mach := &Machine{Spec: m, Agent: agent, VM: vm}
 		mach.wait = func(ctx pipeline.Context) (MachineInfo, error) {
+			if err := upstream(ctx, readyOf(vpcRes), readyOf(igw), readyOf(rt), readyOf(sub), readyOf(sg)); err != nil {
+				return MachineInfo{}, err
+			}
 			live, err := vm.TryReady(ctx)
 			if err != nil {
 				return MachineInfo{}, err

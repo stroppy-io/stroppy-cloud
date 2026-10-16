@@ -753,4 +753,4 @@ components:
         name: { type: string }
         status: { $ref: '#/components/schemas/RunStatus' }
         at: { type: string, format: date-time }
-        error: { type: string, description: Set when the firing itself failed (e.g. limits). }
+        error: { type: string, description: Set when the firing itself failed (e.g. the test does not fit). }

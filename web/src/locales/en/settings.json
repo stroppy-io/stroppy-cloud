@@ -7,8 +7,7 @@
     "quotas": "Quotas",
     "webhooks": "Webhooks",
     "tokens": "Tokens",
-    "audit": "Audit",
-    "limits": "Limits"
+    "audit": "Audit"
   },
   "readOnly": {
     "title": "Read-only",
@@ -28,11 +27,10 @@
     "slugHint": "It's part of every console and API address (/t/{slug}), so it can't change.",
     "runDefaults": "Run defaults",
     "retention": "Run retention",
-    "retentionHint": "Finished runs are deleted with their logs and metrics after this many days. The tenant limit is {{max}} days.",
-    "retentionMax": "At most {{max}} days. The tenant limit",
+    "retentionHint": "Finished runs are deleted with their logs and metrics after this many days.",
     "days": "days",
     "defaultKeep": "Default stand keep",
-    "defaultKeepHint": "How long a stand lives after the run when the launch doesn't say otherwise. 0s removes it right away; the maximum is {{max}}.",
+    "defaultKeepHint": "How long a stand lives after the run when the launch doesn't say otherwise. 0s removes it right away.",
     "ratingTenant": "Tenant rating by default",
     "ratingTenantHint": "New runs go into the tenant rating unless you turn it off at launch.",
     "ratingGlobal": "Global rating by default",
@@ -329,7 +327,6 @@
       "admin_settings_update": "Platform settings changed",
       "admin_tenant_assign_owner": "Tenant owner assigned",
       "admin_tenant_delete": "Tenant deleted by a platform admin",
-      "admin_tenant_limits": "Tenant limits changed",
       "admin_tenant_resume": "Tenant resumed",
       "admin_tenant_suspend": "Tenant suspended",
       "admin_user_platform_admin": "Platform admin rights changed",
@@ -355,23 +352,6 @@
       "workload": "workload",
       "member": "member"
     }
-  },
-  "limits": {
-    "title": "Limits",
-    "aboutTitle": "Platform ceilings",
-    "aboutBody": "The platform sets these limits (or its admin sets them for your tenant), so you can't change them here. A run that doesn't fit them fails validation.",
-    "source": "Source",
-    "sourceDefault": "platform default",
-    "sourceOverride": "override by admin",
-    "maxConcurrentRuns": "Max concurrent runs",
-    "maxMachinesPerRun": "Max machines per run",
-    "maxSize": "Max machine size",
-    "maxKeep": "Max stand keep",
-    "retentionMax": "Max run retention",
-    "days_one": "{{count}} day",
-    "days_other": "{{count}} days",
-    "overrideNote": "The platform admin set custom limits for your tenant, so platform-wide changes don't apply.",
-    "defaultNote": "The tenant uses the platform-wide limits. To raise one, ask the platform admin."
   },
   "table": {
     "noPermission": "Your role does not allow this action",

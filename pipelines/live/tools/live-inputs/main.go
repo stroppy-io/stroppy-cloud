@@ -94,7 +94,7 @@ func generate() error {
 	if err != nil {
 		return err
 	}
-	lib := library.NewService(nil, reg, cat, nil, nil, nil, nil)
+	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	yc, _ := cat.Provider("yandex")
 	if err := os.Mkdir(*out, 0o700); err != nil {
 		return err

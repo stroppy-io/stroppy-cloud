@@ -67,7 +67,6 @@ components:
         - "admin.settings.update"
         - "admin.tenant.assign_owner"
         - "admin.tenant.delete"
-        - "admin.tenant.limits"
         - "admin.tenant.resume"
         - "admin.tenant.suspend"
         - "admin.user.platform_admin"
@@ -245,6 +244,15 @@ components:
         - "warn"
         - "error"
         - "fatal"
+    RunStageKind:
+      type: string
+      description: >-
+        What a running workload segment does: `preparing` — stroppy prepares the
+        data (schema, load, indexes, checks), which has no planned length;
+        `load` — the planned load runs.
+      enum:
+        - "preparing"
+        - "load"
     ErrorReason:
       type: string
       description: >-
@@ -315,9 +323,6 @@ components:
         - "keep_is_not_a_duration"
         - "keep_must_not_be_negative"
         - "kind_must_be_yandex_or_aws"
-        - "limit_keep"
-        - "limit_machines_per_run"
-        - "limit_size"
         - "log_cursor_ambiguous"
         - "logs_store_is_not_connected"
         - "managed_ydb_autoscaling_unsupported"
@@ -325,10 +330,13 @@ components:
         - "managed_ydb_requires_named_credentials"
         - "managed_ydb_requires_yandex_cloud"
         - "managed_ydb_type_unknown"
-        - "max_keep_is_not_a_duration"
         - "maxscale_mariadb_only"
         - "member_not_found"
         - "metadata_name_is_required"
+        - "metric_agg_unknown"
+        - "metric_fn_unknown"
+        - "metric_label_unknown"
+        - "metric_name_required"
         - "metric_not_rating_eligible"
         - "metrics_snapshot_invalid"
         - "metrics_store_is_not_connected"
@@ -385,7 +393,6 @@ components:
         - "run_idempotency_conflict"
         - "run_ids_2_to_16_runs"
         - "run_not_found"
-        - "run_retention_max_days_must_be_positive"
         - "run_submit_unavailable"
         - "schedule_fire_failed"
         - "schedule_not_found"

@@ -112,6 +112,13 @@ func TestContainerSpec(t *testing.T) {
 	if ex.Scrape != "http://127.0.0.1:9187/metrics" {
 		t.Errorf("exporter scrape = %q", ex.Scrape)
 	}
+	// Every scraped container is read every 10 s; one with no endpoint has no step.
+	if ds.ScrapeEvery != 10*time.Second || ex.ScrapeEvery != 10*time.Second {
+		t.Errorf("scrape every = %s / %s", ds.ScrapeEvery, ex.ScrapeEvery)
+	}
+	if plain, _ := containerSpec(spec.Container{Name: "plain"}, run, nil, a); plain.ScrapeEvery != 0 {
+		t.Errorf("unscraped container has a step %s", plain.ScrapeEvery)
+	}
 	if _, err := containerSpec(spec.Container{Env: map[string]string{"X": "${ip:nope}"}}, run, nil, a); err == nil {
 		t.Error("bad placeholder must fail")
 	}

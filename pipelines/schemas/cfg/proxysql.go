@@ -195,12 +195,18 @@ func Proxysql2() *schemapb.Schema {
 				Desc("Group Replication / Galera: how many members may sit in the writer hostgroup at once.").
 				Gte(1).Lte(64).Default(1),
 			// doc: .../mysql-tables/#mysql_group_replication_hostgroups writer_is_also_reader
+			// The writer reads too by default: when every replica lags past max_transactions_behind
+			// ProxySQL shuns them all and an empty reader hostgroup fails each read after
+			// connect_timeout_server_max ("Hostgroup 20 has no servers available").
 			schemapb.Int64("writer_is_also_reader").Title("Writer is also reader").Group("Hostgroups").
 				Desc("0 = writer stays out of the reader pool, 1 = writer also reads, 2 = only backup writers read.").
-				In(0, 1, 2).Default(0),
+				In(0, 1, 2).Default(1),
+			// doc: .../mysql-tables/#mysql_group_replication_hostgroups max_transactions_behind;
+			// MySQL_Monitor.cpp get_lag_behind_count shuns on transactions_behind > this value
+			// (Galera: wsrep_local_recv_queue > this value), so 0 shuns on any lag.
 			schemapb.Int64("max_transactions_behind").Title("Max transactions behind").Group("Hostgroups").
-				Desc("Group Replication / Galera: lag in transactions before a reader is shunned; 0 disables the check.").
-				Gte(0).Lte(1000000).Default(0),
+				Desc("Group Replication / Galera: a reader more than this many transactions behind (Galera: receive queue longer than this) is shunned; 0 shuns on any lag.").
+				Gte(0).Lte(1000000).Default(100),
 
 			// ---- query rules --------------------------------------------------------
 			trueFalse("read_write_split", "true").Title("Read/write split").Group("Query rules").

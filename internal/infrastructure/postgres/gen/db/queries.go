@@ -318,15 +318,13 @@ func (q *Queries) AuditAll(ctx context.Context, arg AuditAllParams) ([]AuditAllR
 }
 
 const systemSettingsRowSQL = `INSERT INTO system_settings (id) VALUES (1) ON CONFLICT (id) DO UPDATE SET id = 1
-RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, default_limits, run_retention_max_days, stroppy_catalog, updated_at, updated_by;`
+RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, stroppy_catalog, updated_at, updated_by;`
 
 type SystemSettingsRowRow struct {
 	ID                  int32
 	TenantCreation      string
 	PublicRatingEnabled bool
 	ExamplesEnabled     bool
-	DefaultLimits       json.RawMessage
-	RunRetentionMaxDays int32
 	StroppyCatalog      json.RawMessage
 	UpdatedAt           time.Time
 	UpdatedBy           *uuid.UUID
@@ -335,7 +333,7 @@ type SystemSettingsRowRow struct {
 func (q *Queries) SystemSettingsRow(ctx context.Context) (SystemSettingsRowRow, error) {
 	row := q.db.QueryRow(ctx, systemSettingsRowSQL)
 	var i SystemSettingsRowRow
-	err := row.Scan(&i.ID, &i.TenantCreation, &i.PublicRatingEnabled, &i.ExamplesEnabled, &i.DefaultLimits, &i.RunRetentionMaxDays, &i.StroppyCatalog, &i.UpdatedAt, &i.UpdatedBy)
+	err := row.Scan(&i.ID, &i.TenantCreation, &i.PublicRatingEnabled, &i.ExamplesEnabled, &i.StroppyCatalog, &i.UpdatedAt, &i.UpdatedBy)
 	return i, err
 }
 
@@ -343,21 +341,16 @@ const updateSystemSettingsSQL = `UPDATE system_settings
 SET tenant_creation        = COALESCE($1::text, tenant_creation),
     public_rating_enabled  = COALESCE($2::boolean, public_rating_enabled),
     examples_enabled       = COALESCE($3::boolean, examples_enabled),
-    default_limits         = CASE WHEN $4::boolean THEN $5::jsonb ELSE default_limits END,
-    run_retention_max_days = COALESCE($6::int, run_retention_max_days),
-    stroppy_catalog        = CASE WHEN $7::boolean THEN $8::jsonb ELSE stroppy_catalog END,
+    stroppy_catalog        = CASE WHEN $4::boolean THEN $5::jsonb ELSE stroppy_catalog END,
     updated_at             = now(),
-    updated_by             = $9
+    updated_by             = $6
 WHERE id = 1
-RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, default_limits, run_retention_max_days, stroppy_catalog, updated_at, updated_by;`
+RETURNING id, tenant_creation, public_rating_enabled, examples_enabled, stroppy_catalog, updated_at, updated_by;`
 
 type UpdateSystemSettingsParams struct {
 	TenantCreation      *string
 	PublicRatingEnabled *bool
 	ExamplesEnabled     *bool
-	SetDefaultLimits    bool
-	DefaultLimits       json.RawMessage
-	RunRetentionMaxDays *int32
 	SetCatalog          bool
 	StroppyCatalog      json.RawMessage
 	UpdatedBy           *uuid.UUID
@@ -368,17 +361,15 @@ type UpdateSystemSettingsRow struct {
 	TenantCreation      string
 	PublicRatingEnabled bool
 	ExamplesEnabled     bool
-	DefaultLimits       json.RawMessage
-	RunRetentionMaxDays int32
 	StroppyCatalog      json.RawMessage
 	UpdatedAt           time.Time
 	UpdatedBy           *uuid.UUID
 }
 
 func (q *Queries) UpdateSystemSettings(ctx context.Context, arg UpdateSystemSettingsParams) (UpdateSystemSettingsRow, error) {
-	row := q.db.QueryRow(ctx, updateSystemSettingsSQL, arg.TenantCreation, arg.PublicRatingEnabled, arg.ExamplesEnabled, arg.SetDefaultLimits, arg.DefaultLimits, arg.RunRetentionMaxDays, arg.SetCatalog, arg.StroppyCatalog, arg.UpdatedBy)
+	row := q.db.QueryRow(ctx, updateSystemSettingsSQL, arg.TenantCreation, arg.PublicRatingEnabled, arg.ExamplesEnabled, arg.SetCatalog, arg.StroppyCatalog, arg.UpdatedBy)
 	var i UpdateSystemSettingsRow
-	err := row.Scan(&i.ID, &i.TenantCreation, &i.PublicRatingEnabled, &i.ExamplesEnabled, &i.DefaultLimits, &i.RunRetentionMaxDays, &i.StroppyCatalog, &i.UpdatedAt, &i.UpdatedBy)
+	err := row.Scan(&i.ID, &i.TenantCreation, &i.PublicRatingEnabled, &i.ExamplesEnabled, &i.StroppyCatalog, &i.UpdatedAt, &i.UpdatedBy)
 	return i, err
 }
 
@@ -1935,20 +1926,6 @@ func (q *Queries) RunsOfSchedule(ctx context.Context, arg RunsOfScheduleParams) 
 	return items, nil
 }
 
-const tenantLiveRunCountSQL = `-- The runs that hold a slot: admitted by the queue and not finished.
-SELECT count(*)::int AS n FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') AND admitted_at IS NOT NULL;`
-
-type TenantLiveRunCountRow struct {
-	N int32
-}
-
-func (q *Queries) TenantLiveRunCount(ctx context.Context, tenantID uuid.UUID) (TenantLiveRunCountRow, error) {
-	row := q.db.QueryRow(ctx, tenantLiveRunCountSQL, tenantID)
-	var i TenantLiveRunCountRow
-	err := row.Scan(&i.N)
-	return i, err
-}
-
 const tenantHasLiveRunsSQL = `SELECT EXISTS (SELECT 1 FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling'))::boolean AS live;`
 
 type TenantHasLiveRunsRow struct {
@@ -2616,7 +2593,7 @@ func (q *Queries) SetRunTopology(ctx context.Context, arg SetRunTopologyParams) 
 
 const ensureSettingsSQL = `INSERT INTO tenant_settings (tenant_id) VALUES ($1)
 ON CONFLICT (tenant_id) DO UPDATE SET tenant_id = EXCLUDED.tenant_id
-RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;`
+RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, updated_at;`
 
 type EnsureSettingsRow struct {
 	TenantID           uuid.UUID
@@ -2625,14 +2602,13 @@ type EnsureSettingsRow struct {
 	RatingGlobal       bool
 	DefaultKeep        string
 	NotificationEmails json.RawMessage
-	LimitsOverride     json.RawMessage
 	UpdatedAt          time.Time
 }
 
 func (q *Queries) EnsureSettings(ctx context.Context, tenantID uuid.UUID) (EnsureSettingsRow, error) {
 	row := q.db.QueryRow(ctx, ensureSettingsSQL, tenantID)
 	var i EnsureSettingsRow
-	err := row.Scan(&i.TenantID, &i.RunRetentionDays, &i.RatingTenant, &i.RatingGlobal, &i.DefaultKeep, &i.NotificationEmails, &i.LimitsOverride, &i.UpdatedAt)
+	err := row.Scan(&i.TenantID, &i.RunRetentionDays, &i.RatingTenant, &i.RatingGlobal, &i.DefaultKeep, &i.NotificationEmails, &i.UpdatedAt)
 	return i, err
 }
 
@@ -2644,7 +2620,7 @@ SET run_retention_days  = COALESCE($1::int, run_retention_days),
     notification_emails = COALESCE($5::jsonb, notification_emails),
     updated_at          = now()
 WHERE tenant_id = $6
-RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;`
+RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, updated_at;`
 
 type UpdateSettingsParams struct {
 	RunRetentionDays   *int32
@@ -2662,27 +2638,14 @@ type UpdateSettingsRow struct {
 	RatingGlobal       bool
 	DefaultKeep        string
 	NotificationEmails json.RawMessage
-	LimitsOverride     json.RawMessage
 	UpdatedAt          time.Time
 }
 
 func (q *Queries) UpdateSettings(ctx context.Context, arg UpdateSettingsParams) (UpdateSettingsRow, error) {
 	row := q.db.QueryRow(ctx, updateSettingsSQL, arg.RunRetentionDays, arg.RatingTenant, arg.RatingGlobal, arg.DefaultKeep, arg.NotificationEmails, arg.TenantID)
 	var i UpdateSettingsRow
-	err := row.Scan(&i.TenantID, &i.RunRetentionDays, &i.RatingTenant, &i.RatingGlobal, &i.DefaultKeep, &i.NotificationEmails, &i.LimitsOverride, &i.UpdatedAt)
+	err := row.Scan(&i.TenantID, &i.RunRetentionDays, &i.RatingTenant, &i.RatingGlobal, &i.DefaultKeep, &i.NotificationEmails, &i.UpdatedAt)
 	return i, err
-}
-
-const setLimitsOverrideSQL = `UPDATE tenant_settings SET limits_override = $1, updated_at = now() WHERE tenant_id = $2;`
-
-type SetLimitsOverrideParams struct {
-	LimitsOverride json.RawMessage
-	TenantID       uuid.UUID
-}
-
-func (q *Queries) SetLimitsOverride(ctx context.Context, arg SetLimitsOverrideParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, setLimitsOverrideSQL, arg.LimitsOverride, arg.TenantID)
-	return tag.RowsAffected(), err
 }
 
 const insertShareSQL = `INSERT INTO shares (id, tenant_id, token, target_kind, target_id, target_name, run_ids, scope, title, snapshot, captured_at, expires_at, created_by)

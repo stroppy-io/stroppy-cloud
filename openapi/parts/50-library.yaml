@@ -491,7 +491,7 @@ paths:
         - $ref: '#/components/parameters/slug'
         - $ref: '#/components/parameters/id'
         - $ref: '#/components/parameters/idempotencyKey'
-      summary: Launch a run from the test (re-validates, checks limits and quotas, snapshots, starts in Graphene).
+      summary: Launch a run from the test (re-validates, checks quotas, snapshots, starts in Graphene).
       requestBody:
         content:
           application/json:

@@ -229,7 +229,7 @@ func picodataRecipe(c *compilation) error {
 	// Keeping them in params makes workload-specific limits reviewable.
 	first := nodes[0]
 	init := fmt.Sprintf(`printf '%%s\n' '\lua' 'pico.sql([[ALTER SYSTEM SET sql_vdbe_opcode_max = %d]]); return "STROPPY_SQL_CONFIGURED"' | picodata admin %s/admin.sock | grep -qx -- '- STROPPY_SQL_CONFIGURED'
-`, intParam(p, "sql_vdbe_opcode_max", 45000), picoDataDir)
+`, intParam(p, "sql_vdbe_opcode_max", 0), picoDataDir)
 	sidecar := c.initSidecar(role, first, image, init, nil, c.dbContainers())
 	sidecar.Mounts = []spec.Mount{{Source: dataMount + "/picodata", Target: picoDataDir}}
 	c.add(sidecar)

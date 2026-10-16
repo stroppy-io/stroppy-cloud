@@ -121,6 +121,7 @@ type Service struct {
 	logs    Logs
 	metrics Metrics
 	catalog *catalog.Catalog
+	stages  stages
 }
 
 // NewService wires the use cases; nil stores answer unavailable.

@@ -29,7 +29,7 @@ func cockroach() Kind {
 				{ID: "single", Title: "Single node", Params: map[string]any{"version": "25.4", "nodes": 1}},
 				{ID: "three-node", Title: "Three nodes + HAProxy", Params: map[string]any{"version": "25.4", "nodes": 3, "haproxy": 1}},
 			},
-			ParamsSchema: "db.cockroach.params@1", Protocols: []catalog.Protocol{catalog.ProtoCockroach, catalog.ProtoPg}, Deployable: true,
+			ParamsSchema: "db.cockroach.params@1", Protocols: []catalog.Protocol{catalog.ProtoCockroach}, Deployable: true,
 		},
 		plan:  planCockroach,
 		login: func(map[string]any) topology.Login { return CockroachLogin },

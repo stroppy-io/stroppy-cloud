@@ -10,8 +10,9 @@ import { dbLabel, durationSeconds, formatDuration, formatMetric } from '@helpers
 import { queueText } from '@helpers/queue'
 import { formatTime } from '@helpers/time'
 import { topologyText } from '@helpers/topology'
+import { useNow } from '@hooks/useNow'
 import type { TFunction } from 'i18next'
-import { type ReactNode, useEffect, useMemo, useState } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 // Cells of the runs table (web/docs/tables-guide.md §14). Pure views over a `Run`; the column
@@ -217,23 +218,13 @@ export function RunMetricsCell({ run }: { run: Run }) {
   )
 }
 
-function useNow(ms: number, enabled: boolean): number {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    if (!enabled) return
-    const id = window.setInterval(() => setNow(Date.now()), ms)
-    return () => window.clearInterval(id)
-  }, [ms, enabled])
-  return now
-}
-
 // «Время»: start over (running) time left / (finished) finish · duration.
 export function RunTimeCell({ run }: { run: Run }) {
   const styles = useStyles2(getStyles)
   const density = useDensity()
   const { t } = useTranslation()
   const running = run.status === 'running' || run.status === 'cancelling'
-  const now = useNow(30_000, running)
+  const now = useNow(1000, running)
   const start = run.started_at ?? undefined
   if (run.queue)
     return (
@@ -243,8 +234,10 @@ export function RunTimeCell({ run }: { run: Run }) {
         </span>
       </Tooltip>
     )
-  if (run.status === 'pending' || !start)
+  if (run.status === 'pending')
     return <span className={styles.timeSub}>{t('runs.list.queued')}</span>
+  // Cancelled (or failed) while still queued: it never got machines.
+  if (!start) return <span className={styles.timeSub}>{t('runs.list.notStarted')}</span>
 
   let sub: ReactNode
   if (running) {

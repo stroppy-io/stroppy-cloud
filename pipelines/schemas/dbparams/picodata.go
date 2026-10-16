@@ -78,9 +78,12 @@ func Picodata() *schemapb.Schema {
 				Unit("MB").Gte(32).Lte(1048576).Default(2048),
 
 			// doc: https://docs.picodata.io/picodata/26.2/reference/settings/#sql_vdbe_opcode_max
+			// The docs leave 0 unexplained; on 26.2.1 ALTER SYSTEM accepts 0 and
+			// queries then run without the limit. Picodata's own 45000 stops
+			// TPC-C validation at scale 100 (GROUP BY over orders).
 			schemapb.Int64("sql_vdbe_opcode_max").Title("SQL instruction limit").Group("SQL runtime").
-				Desc("Maximum VDBE instructions per local SQL plan. Picodata defaults to 45000; full-scan workload validation can require a higher explicit limit.").
-				Gte(1).Lte(1000000000).Default(45000),
+				Desc("Maximum VDBE instructions per local SQL plan; 0 = no limit. Picodata's own default is 45000, which stops full-scan queries such as workload validation.").
+				Gte(0).Lte(1000000000).Default(0),
 
 			// doc: https://www.haproxy.org/download/2.9/doc/configuration.txt
 			schemapb.Int64("haproxy").Title("HAProxy nodes").Group("Routing").

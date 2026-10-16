@@ -254,6 +254,17 @@ func (r Run) ExpectedFinishAt() *time.Time {
 			anchor, next = *s.StartedAt, i
 		}
 	}
+	// The plan counts from the load: stroppy's data preparation has no
+	// planned length, so a segment still preparing has no end to predict and
+	// one under load counts from the load's start.
+	switch r.Stage.Kind {
+	case StagePreparing:
+		return nil
+	case StageLoad:
+		if r.Stage.Since.After(anchor) {
+			anchor = r.Stage.Since
+		}
+	}
 	at := anchor
 	for _, d := range budgets[next:] {
 		at = at.Add(d)
@@ -288,6 +299,9 @@ func (r Run) PhaseProgressPct(now time.Time) float64 {
 		return 0
 	}
 	if r.Phase == PhaseWorkload {
+		if r.Stage.Kind == StagePreparing {
+			return 0
+		}
 		if f, ok := r.workloadShare(now); ok {
 			return 100 * f
 		}
@@ -321,9 +335,12 @@ func finished(status string) bool {
 	return status == "completed" || status == "failed" || status == "skipped"
 }
 
-// workloadShare is the elapsed share [0, 1] of the workload's planned
-// time at now; ok is false when the plan is unknown.
-func (r Run) workloadShare(now time.Time) (float64, bool) {
+// WorkloadFrom is where the workload's planned time starts: the workload
+// phase's start, shifted past the running segment's data preparation (it
+// has no planned length). Nil while the plan is unknown (no
+// ExpectedFinishAt). Clients count the progress between it and
+// ExpectedFinishAt themselves, so it moves smoothly between requests.
+func (r Run) WorkloadFrom() *time.Time {
 	eta := r.ExpectedFinishAt()
 	var start time.Time
 	for _, p := range r.State.Phases {
@@ -331,9 +348,29 @@ func (r Run) workloadShare(now time.Time) (float64, bool) {
 			start = *p.StartedAt
 		}
 	}
-	if eta == nil || start.IsZero() || !eta.After(start) {
+	if eta == nil || start.IsZero() {
+		return nil
+	}
+	if r.Stage.Kind == StageLoad {
+		for _, s := range r.State.Segments {
+			if s.StartedAt != nil && s.FinishedAt == nil && r.Stage.Since.After(*s.StartedAt) {
+				start = start.Add(r.Stage.Since.Sub(*s.StartedAt))
+			}
+		}
+	}
+	if !eta.After(start) {
+		return nil
+	}
+	return &start
+}
+
+// workloadShare is the elapsed share [0, 1] of the workload's planned
+// time at now; ok is false when the plan is unknown.
+func (r Run) workloadShare(now time.Time) (float64, bool) {
+	from, eta := r.WorkloadFrom(), r.ExpectedFinishAt()
+	if from == nil {
 		return 0, false
 	}
-	f := float64(now.Sub(start)) / float64(eta.Sub(start))
+	f := float64(now.Sub(*from)) / float64(eta.Sub(*from))
 	return min(max(f, 0), 1), true
 }

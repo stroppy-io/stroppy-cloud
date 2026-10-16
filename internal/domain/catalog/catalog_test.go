@@ -54,3 +54,48 @@ func TestCatalogBakes(t *testing.T) {
 		t.Error("metric filtering")
 	}
 }
+
+// TestStroppyScriptMatrix pins which drivers each stroppy script runs on
+// (stroppy README and workloads/*: dialect files per driver).
+func TestStroppyScriptMatrix(t *testing.T) {
+	reg := schemas.New()
+	c, err := catalog.New(context.Background(), reg, reg, dbkind.Databases())
+	if err != nil {
+		t.Fatal(err)
+	}
+	v, ok := c.StroppyVersion("")
+	if !ok {
+		t.Fatal("no default stroppy version")
+	}
+	speaks := func(script string, p catalog.Protocol) bool {
+		s, ok := v.Script(script)
+		if !ok {
+			t.Fatalf("no script %s", script)
+		}
+		for _, sp := range s.Protocols {
+			if sp == p {
+				return true
+			}
+		}
+		return false
+	}
+	cases := []struct {
+		script string
+		proto  catalog.Protocol
+		want   bool
+	}{
+		{"tpcc/tx", catalog.ProtoCockroach, true},
+		{"tpcc/tx", catalog.ProtoPicodata, true},
+		{"tpcc/procs", catalog.ProtoPicodata, false},
+		{"tpcc/procs", catalog.ProtoYDBGrpc, false},
+		{"tpcb/procs", catalog.ProtoCockroach, true},
+		{"tpch/tx", catalog.ProtoCockroach, false},
+		{"tpcds", catalog.ProtoCockroach, false},
+		{"tpch/tx", catalog.ProtoYDBGrpcs, true},
+	}
+	for _, tc := range cases {
+		if got := speaks(tc.script, tc.proto); got != tc.want {
+			t.Errorf("%s on %s = %v, want %v", tc.script, tc.proto, got, tc.want)
+		}
+	}
+}

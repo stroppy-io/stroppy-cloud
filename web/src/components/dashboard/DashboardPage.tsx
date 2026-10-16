@@ -133,7 +133,7 @@ export function DashboardPage() {
             <div className={styles.col}>
               <TopResults items={data.top_results ?? []} slug={slug} />
               <Upcoming items={data.upcoming} slug={slug} />
-              <ProvidersHealth providers={data.providers ?? []} limits={data.limits} slug={slug} />
+              <ProvidersHealth providers={data.providers ?? []} slug={slug} />
             </div>
           </div>
         </>

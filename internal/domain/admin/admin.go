@@ -17,7 +17,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/profile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 )
 
@@ -26,7 +25,6 @@ type TenantView struct {
 	Tenant          tenant.Tenant
 	Owner           profile.Profile
 	SuspendedReason string
-	Limits          settings.Limits
 	Counters        Counters
 	LastActivityAt  *time.Time
 }
@@ -58,8 +56,6 @@ type SystemSettings struct {
 	TenantCreation      string
 	PublicRatingEnabled bool
 	ExamplesEnabled     bool
-	DefaultLimits       *settings.Limits
-	RunRetentionMaxDays int
 	StroppyCatalog      json.RawMessage
 	UpdatedAt           time.Time
 	UpdatedBy           *uuid.UUID
@@ -70,9 +66,6 @@ type SystemPatch struct {
 	TenantCreation      *string
 	PublicRatingEnabled *bool
 	ExamplesEnabled     *bool
-	DefaultLimits       *settings.Limits
-	SetDefaultLimits    bool
-	RunRetentionMaxDays *int
 	StroppyCatalog      json.RawMessage
 	SetCatalog          bool
 }
@@ -199,7 +192,6 @@ type Service struct {
 	profiles   profile.Repository
 	runs       run.Repository
 	runSvc     *run.Service
-	limits     settings.Repository
 	namespaces Namespaces
 	probes     Probes
 	audit      *audit.Service
@@ -225,14 +217,14 @@ func (s *Service) Revision() string {
 }
 
 // NewService wires the use cases.
-func NewService(repo Repository, tenants Tenants, profiles profile.Repository, runs run.Repository, runSvc *run.Service, limits settings.Repository, ns Namespaces, probes Probes, auditSvc *audit.Service, adminEmails []string, g run.Graphene, scope func(context.Context, string) context.Context) *Service {
+func NewService(repo Repository, tenants Tenants, profiles profile.Repository, runs run.Repository, runSvc *run.Service, ns Namespaces, probes Probes, auditSvc *audit.Service, adminEmails []string, g run.Graphene, scope func(context.Context, string) context.Context) *Service {
 	emails := map[string]bool{}
 	for _, e := range adminEmails {
 		if e = strings.ToLower(strings.TrimSpace(e)); e != "" {
 			emails[e] = true
 		}
 	}
-	return &Service{repo: repo, tenants: tenants, profiles: profiles, runs: runs, runSvc: runSvc, limits: limits, namespaces: ns, probes: probes, audit: auditSvc, adminEmails: emails, graphene: g, scope: scope}
+	return &Service{repo: repo, tenants: tenants, profiles: profiles, runs: runs, runSvc: runSvc, namespaces: ns, probes: probes, audit: auditSvc, adminEmails: emails, graphene: g, scope: scope}
 }
 
 // IsAdmin reports whether the actor is a platform admin: a person flagged
@@ -277,7 +269,7 @@ func (s *Service) Tenants(ctx context.Context, actor auth.Actor, q TenantQuery) 
 	}
 	out := make([]TenantView, 0, len(list))
 	for _, t := range list {
-		v, err := s.view(ctx, t, false)
+		v, err := s.view(ctx, t)
 		if err != nil {
 			return nil, err
 		}
@@ -295,10 +287,10 @@ func (s *Service) Tenant(ctx context.Context, actor auth.Actor, slug string) (Te
 	if err != nil {
 		return TenantView{}, err
 	}
-	return s.view(ctx, t, true)
+	return s.view(ctx, t)
 }
 
-func (s *Service) view(ctx context.Context, t tenant.Tenant, full bool) (TenantView, error) {
+func (s *Service) view(ctx context.Context, t tenant.Tenant) (TenantView, error) {
 	v := TenantView{Tenant: t}
 	if owner, err := s.profiles.Get(ctx, t.OwnerID); err == nil {
 		v.Owner = owner
@@ -311,32 +303,8 @@ func (s *Service) view(ctx context.Context, t tenant.Tenant, full bool) (TenantV
 		return TenantView{}, err
 	}
 	v.Counters, v.LastActivityAt = counters, last
-	if full {
-		_, override, err := s.limits.Ensure(ctx, t.ID)
-		if err != nil {
-			return TenantView{}, err
-		}
-		if override != nil {
-			v.Limits = *override
-			v.Limits.Overridden = true
-		} else {
-			v.Limits = s.defaultLimits(ctx)
-		}
-	}
 	return v, nil
 }
-
-// defaultLimits are the system default limits (platform ceiling).
-func (s *Service) defaultLimits(ctx context.Context) settings.Limits {
-	sys, err := s.repo.System(ctx)
-	if err == nil && sys.DefaultLimits != nil {
-		return *sys.DefaultLimits
-	}
-	return settings.PlatformLimits
-}
-
-// DefaultLimits implements settings.Defaults.
-func (s *Service) DefaultLimits(ctx context.Context) settings.Limits { return s.defaultLimits(ctx) }
 
 // Suspend blocks a tenant.
 func (s *Service) Suspend(ctx context.Context, actor auth.Actor, slug, reason string) (TenantView, error) {
@@ -368,44 +336,6 @@ func (s *Service) Resume(ctx context.Context, actor auth.Actor, slug string) (Te
 	}
 	s.record(ctx, "admin.tenant.resume", &t.ID, audit.Target{Kind: "tenant", ID: t.ID.String(), Name: t.Slug}, nil)
 	return s.Tenant(ctx, actor, slug)
-}
-
-// SetLimits overrides a tenant's limits (nil = back to defaults).
-func (s *Service) SetLimits(ctx context.Context, actor auth.Actor, slug string, l *settings.Limits) (settings.Limits, error) {
-	if err := s.Require(ctx, actor); err != nil {
-		return settings.Limits{}, err
-	}
-	t, err := s.tenants.BySlug(ctx, slug)
-	if err != nil {
-		return settings.Limits{}, err
-	}
-	if l != nil {
-		def := s.defaultLimits(ctx)
-		if l.MaxConcurrentRuns <= 0 {
-			l.MaxConcurrentRuns = def.MaxConcurrentRuns
-		}
-		if l.MaxMachinesPerRun <= 0 {
-			l.MaxMachinesPerRun = def.MaxMachinesPerRun
-		}
-		if l.MaxSize == "" {
-			l.MaxSize = def.MaxSize
-		}
-		if l.MaxKeep <= 0 {
-			l.MaxKeep = def.MaxKeep
-		}
-		if l.RunRetentionMaxDays <= 0 {
-			l.RunRetentionMaxDays = def.RunRetentionMaxDays
-		}
-	}
-	if err := s.limits.SetLimitsOverride(ctx, t.ID, l); err != nil {
-		return settings.Limits{}, err
-	}
-	s.record(ctx, "admin.tenant.limits", &t.ID, audit.Target{Kind: "tenant", ID: t.ID.String(), Name: t.Slug}, map[string]any{"limits": l})
-	v, err := s.view(ctx, t, true)
-	if err != nil {
-		return settings.Limits{}, err
-	}
-	return v.Limits, nil
 }
 
 // AssignOwner gives an orphaned (or any) tenant a new owner.
@@ -598,9 +528,6 @@ func (s *Service) UpdateSystem(ctx context.Context, actor auth.Actor, p SystemPa
 	}
 	if p.TenantCreation != nil && *p.TenantCreation != "anyone" && *p.TenantCreation != "admin_only" {
 		return SystemSettings{}, errs.Invalid("tenant_creation must be anyone or admin_only").Because("tenant_creation_value")
-	}
-	if p.RunRetentionMaxDays != nil && *p.RunRetentionMaxDays <= 0 {
-		return SystemSettings{}, errs.Invalid("run_retention_max_days must be positive").Because("run_retention_max_days_must_be_positive")
 	}
 	var by *uuid.UUID
 	if actor.UserID != uuid.Nil {

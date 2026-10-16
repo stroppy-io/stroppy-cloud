@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -128,8 +129,8 @@ type runView struct {
 		Live       int    `json:"live"`
 		Limit      int    `json:"limit"`
 	} `json:"queue"`
-	Trigger      string `json:"trigger"`
-	TriggerRef   struct {
+	Trigger    string `json:"trigger"`
+	TriggerRef struct {
 		ParentRunID string `json:"parent_run_id"`
 	} `json:"trigger_ref"`
 	TestRef struct {
@@ -164,6 +165,8 @@ type runView struct {
 
 func TestE2ERuns(t *testing.T) {
 	e := e2eServer(t)
+	// Room for every run: the quota is the only gate.
+	e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 4096, Used: 4, Unit: "cores"}}
 	base, tok, testID, tn := runFixture(t, e)
 	// Every run pauses once its segment started, until released or cancelled.
 	e.graphene.hold("segment.started")
@@ -417,7 +420,6 @@ func TestE2ERuns(t *testing.T) {
 		id := launched.ID
 		var got runView
 		e.want(e.req(http.MethodPost, base+"/runs/"+id+":keep-extend", map[string]any{"duration": "2h"}, tok), http.StatusOK, &got)
-		e.problem(e.req(http.MethodPost, base+"/runs/"+id+":keep-extend", map[string]any{"duration": "999h"}, tok), http.StatusUnprocessableEntity, "limit_exceeded")
 		// Past the pipeline's own hour the extension still holds the stand.
 		e.graphene.advance(90 * time.Minute)
 		if n := treeChild(runTree(t, e, base, tok, id), ".Network"); n == nil || n.Phase != "ready" {
@@ -546,7 +548,7 @@ func TestE2ERuns(t *testing.T) {
 		}
 	})
 
-	t.Run("limits: concurrent runs and viewer access", func(t *testing.T) {
+	t.Run("no cap on concurrent runs; viewer access", func(t *testing.T) {
 		// Cancelled runs of the earlier steps settle through the projector.
 		var live struct {
 			Data []runView `json:"data"`
@@ -562,30 +564,18 @@ func TestE2ERuns(t *testing.T) {
 		e.problem(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, vtok), http.StatusForbidden, "forbidden")
 		e.want(e.req(http.MethodGet, base+"/runs", nil, vtok), http.StatusOK, nil)
 
+		// Only the cloud's quotas gate admission: five runs all start.
 		var ids []string
-		for i := 0; i < 3; i++ {
+		for i := 0; i < 5; i++ {
 			var r runView
 			e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &r)
+			if r.Queue.WaitingFor != "" {
+				t.Fatalf("run %d waits for %s", i, r.Queue.WaitingFor)
+			}
 			ids = append(ids, r.ID)
-		}
-		// A fourth run is accepted and waits for a slot.
-		var waiting runView
-		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &waiting)
-		if waiting.Status != "pending" || waiting.Queue.WaitingFor != "slot" || waiting.Queue.Position != 1 || waiting.Queue.Limit != 3 {
-			t.Fatalf("queued run %+v", waiting)
-		}
-		var cancelledQueued runView
-		e.want(e.req(http.MethodPost, base+"/runs/"+waiting.ID+":cancel", nil, tok), http.StatusOK, &cancelledQueued)
-		if cancelledQueued.Status != "cancelled" {
-			t.Fatalf("a queued run is cancelled at once: %+v", cancelledQueued)
-		}
-		if _, ok := e.graphene.runOf(waiting.ID); ok {
-			t.Fatal("a queued run reached Graphene")
 		}
 		for _, id := range ids {
 			e.want(e.req(http.MethodPost, base+"/runs/"+id+":cancel", nil, tok), http.StatusOK, nil)
 		}
-		// Keep beyond the tenant ceiling is a fit issue of the resolved test.
-		e.problem(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{"keep": "400h"}, tok), http.StatusUnprocessableEntity, "invalid")
 	})
 }

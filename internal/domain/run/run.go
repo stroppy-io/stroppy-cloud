@@ -18,7 +18,6 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
-	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
 
@@ -179,7 +178,33 @@ type Run struct {
 	AdmittedAt *time.Time
 	// Queue is what a queued run waits for.
 	Queue Queue
+	// Stage is where the running segment's stroppy is, read from its log at
+	// request time (never stored); zero when unknown.
+	Stage Stage
 }
+
+// StageKind is what a running segment does: stroppy prepares the data
+// (schema, load, indexes, checks) before the planned load starts.
+type StageKind string
+
+const (
+	StagePreparing StageKind = "preparing"
+	StageLoad      StageKind = "load"
+)
+
+// StageKinds is every stage the server sends.
+var StageKinds = []string{string(StagePreparing), string(StageLoad)}
+
+// Stage is the running segment's stage: the stroppy step it is in (the last
+// one it finished, under load) and since when.
+type Stage struct {
+	Kind  StageKind
+	Step  string
+	Since time.Time
+}
+
+// IsZero reports an unknown stage.
+func (s Stage) IsZero() bool { return s.Kind == "" }
 
 // Queued reports a run the queue has not let start yet.
 func (r Run) Queued() bool { return r.Status == StatusPending && r.AdmittedAt == nil }
@@ -192,8 +217,6 @@ const (
 	// WaitPipelines: the tenant's pipelines are not pushed at this server's
 	// revision yet.
 	WaitPipelines WaitReason = "pipelines"
-	// WaitSlot: the tenant runs max_concurrent_runs already.
-	WaitSlot WaitReason = "slot"
 	// WaitSuiteSlot: the suite runs as many cells as its concurrency.
 	WaitSuiteSlot WaitReason = "suite_slot"
 	// WaitQuota: a provider quota has no room for the run's machines.
@@ -207,7 +230,7 @@ const (
 )
 
 // WaitReasons lists every reason (the contract's enum mirrors it).
-var WaitReasons = []WaitReason{WaitPipelines, WaitSlot, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider, WaitSuspended}
+var WaitReasons = []WaitReason{WaitPipelines, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider, WaitSuspended}
 
 // Queue is the place of a queued run and what holds it.
 type Queue struct {
@@ -350,7 +373,6 @@ type Repository interface {
 	TestRunStats(ctx context.Context, testIDs []uuid.UUID) (map[uuid.UUID]TestRunStat, error)
 	OfSuiteRun(ctx context.Context, suiteRunID uuid.UUID) ([]Run, error)
 	LiveRuns(ctx context.Context) ([]Live, error)
-	LiveCount(ctx context.Context, tenantID uuid.UUID) (int, error)
 	HasLive(ctx context.Context, tenantID uuid.UUID) (bool, error)
 	UpdateMeta(ctx context.Context, id uuid.UUID, p MetaPatch) error
 	SetStatus(ctx context.Context, id uuid.UUID, status Status, phase Phase, reason string, startedAt, finishedAt *time.Time) error
@@ -513,11 +535,6 @@ type Compiler interface {
 type Profiles interface {
 	ByID(ctx context.Context, tenantID, id uuid.UUID) (provider.Profile, error)
 	FreshQuotas(ctx context.Context, p provider.Profile) ([]provider.Quota, error)
-}
-
-// Limits is the tenant's effective ceiling.
-type Limits interface {
-	EffectiveLimits(ctx context.Context, tenantID uuid.UUID) (settings.Limits, error)
 }
 
 // Counts is the status breakdown of a tenant's runs.

@@ -382,7 +382,7 @@ export function stroppyCatalog(): StroppyCatalog {
     {
       id: 'tpch/tx',
       title: 'TPC-H',
-      protocols: ['pg', 'ydb_grpc', 'cockroach'],
+      protocols: ['pg', 'ydb_grpc'],
       steps: [
         { id: 'load_data', title: 'Load data', phase: 'bootstrap' },
         { id: 'run', title: 'Queries', phase: 'workload' },
@@ -2541,14 +2541,6 @@ function tenantMain(): TenantData {
       default_keep: '0s',
       notification_emails: ['bench-alerts@example.com'],
     },
-    limits: {
-      max_concurrent_runs: 5,
-      max_machines_per_run: 24,
-      max_size: 'XL',
-      max_keep: '12h',
-      run_retention_max_days: 180,
-      source: 'tenant_override',
-    },
     providers,
     quotas: quotasFor(),
     webhooks,
@@ -2606,14 +2598,6 @@ function tenantSandbox(): TenantData {
       run_retention_days: 30,
       default_rating: { tenant: false, global: false },
       default_keep: '0s',
-    },
-    limits: {
-      max_concurrent_runs: 2,
-      max_machines_per_run: 8,
-      max_size: 'M',
-      max_keep: '2h',
-      run_retention_max_days: 90,
-      source: 'platform_default',
     },
     providers,
     quotas: {
@@ -2713,14 +2697,6 @@ export function seed(): Omit<MockStore, 'tenant' | 'roleIn' | 'audit'> {
       tenant_creation: 'anyone',
       public_rating_enabled: true,
       examples_enabled: true,
-      default_limits: {
-        max_concurrent_runs: 2,
-        max_machines_per_run: 8,
-        max_size: 'M',
-        max_keep: '2h',
-        run_retention_max_days: 90,
-      },
-      run_retention_max_days: 365,
       stroppy_catalog: {},
       updated_at: daysAgo(3),
       updated_by: admin,

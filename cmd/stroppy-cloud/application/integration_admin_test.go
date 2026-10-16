@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
 )
 
@@ -49,7 +50,7 @@ func TestE2EAdmin(t *testing.T) {
 		}
 	})
 
-	t.Run("tenants: list, details, limits, suspend/resume, assign owner", func(t *testing.T) {
+	t.Run("tenants: list, details, suspend/resume, assign owner", func(t *testing.T) {
 		var list struct {
 			Data []struct {
 				Slug string `json:"slug"`
@@ -65,40 +66,30 @@ func TestE2EAdmin(t *testing.T) {
 				Members   int `json:"members"`
 				Providers int `json:"providers"`
 			} `json:"counters"`
-			Limits struct {
-				MaxConcurrentRuns int    `json:"max_concurrent_runs"`
-				Source            string `json:"source"`
-			} `json:"limits"`
 			SuspendedReason string `json:"suspended_reason"`
 		}
 		e.want(e.req(http.MethodGet, "/api/v1/admin/tenants/"+tn.Slug, nil, rtok), http.StatusOK, &det)
-		if det.Status != "active" || det.Counters.Members != 1 || det.Counters.Providers != 1 || det.Limits.Source != "platform_default" {
+		if det.Status != "active" || det.Counters.Members != 1 || det.Counters.Providers != 1 {
 			t.Fatalf("details %+v", det)
 		}
-		var lim struct {
-			MaxConcurrentRuns int    `json:"max_concurrent_runs"`
-			MaxKeep           string `json:"max_keep"`
-			Source            string `json:"source"`
-		}
-		e.want(e.req(http.MethodPut, "/api/v1/admin/tenants/"+tn.Slug+"/limits", map[string]any{"max_concurrent_runs": 1, "max_keep": "2h"}, rtok), http.StatusOK, &lim)
-		if lim.MaxConcurrentRuns != 1 || lim.MaxKeep != "2h0m0s" || lim.Source != "tenant_override" {
-			t.Fatalf("limits %+v", lim)
-		}
-		// The override is what the tenant now sees and what launches obey.
-		e.want(e.req(http.MethodGet, base+"/limits", nil, tok), http.StatusOK, &lim)
-		if lim.MaxConcurrentRuns != 1 {
-			t.Fatalf("tenant limits %+v", lim)
-		}
+		// One run starts; with no room left in the cloud's quota the next
+		// one waits in the queue.
 		var r runView
 		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &r)
+		var provs struct {
+			Data []struct {
+				ID string `json:"id"`
+			} `json:"data"`
+		}
+		e.want(e.req(http.MethodGet, base+"/providers", nil, tok), http.StatusOK, &provs)
+		e.graphene.mu.Lock()
+		e.graphene.quotas = []provider.Quota{{Name: "compute.instanceCores.count", Limit: 1000, Used: 999, Unit: "cores"}}
+		e.graphene.mu.Unlock()
+		e.want(e.req(http.MethodPost, base+"/providers/"+provs.Data[0].ID+"/quotas:refresh", nil, tok), http.StatusOK, nil)
 		var queued runView
 		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &queued)
-		if queued.Queue.WaitingFor != "slot" || queued.Queue.Limit != 1 {
-			t.Fatalf("the override holds the second run in the queue: %+v", queued)
-		}
-		e.want(e.req(http.MethodPut, "/api/v1/admin/tenants/"+tn.Slug+"/limits", map[string]any{}, rtok), http.StatusOK, &lim)
-		if lim.Source != "platform_default" {
-			t.Fatalf("cleared limits %+v", lim)
+		if queued.Queue.WaitingFor != "quota" {
+			t.Fatalf("no room in the quota holds the second run in the queue: %+v", queued)
 		}
 
 		e.want(e.req(http.MethodPost, "/api/v1/admin/tenants/"+tn.Slug+":suspend", map[string]any{"reason": "unpaid"}, rtok), http.StatusOK, &det)
@@ -169,16 +160,13 @@ func TestE2EAdmin(t *testing.T) {
 		var sys struct {
 			TenantCreation      string `json:"tenant_creation"`
 			PublicRatingEnabled bool   `json:"public_rating_enabled"`
-			DefaultLimits       struct {
-				MaxConcurrentRuns int `json:"max_concurrent_runs"`
-			} `json:"default_limits"`
 		}
 		e.want(e.req(http.MethodGet, "/api/v1/admin/settings", nil, rtok), http.StatusOK, &sys)
-		if sys.TenantCreation != "anyone" || !sys.PublicRatingEnabled || sys.DefaultLimits.MaxConcurrentRuns != 3 {
+		if sys.TenantCreation != "anyone" || !sys.PublicRatingEnabled {
 			t.Fatalf("settings %+v", sys)
 		}
-		e.want(e.req(http.MethodPatch, "/api/v1/admin/settings", map[string]any{"tenant_creation": "admin_only", "public_rating_enabled": false, "default_limits": map[string]any{"max_concurrent_runs": 5}}, rtok), http.StatusOK, &sys)
-		if sys.TenantCreation != "admin_only" || sys.PublicRatingEnabled || sys.DefaultLimits.MaxConcurrentRuns != 5 {
+		e.want(e.req(http.MethodPatch, "/api/v1/admin/settings", map[string]any{"tenant_creation": "admin_only", "public_rating_enabled": false}, rtok), http.StatusOK, &sys)
+		if sys.TenantCreation != "admin_only" || sys.PublicRatingEnabled {
 			t.Fatalf("patched %+v", sys)
 		}
 		var pub struct {
@@ -190,18 +178,11 @@ func TestE2EAdmin(t *testing.T) {
 			t.Fatalf("public config %+v", pub)
 		}
 		e.problem(e.req(http.MethodGet, "/api/v1/public/rating", nil, ""), http.StatusNotFound, "not_found")
-		var lim struct {
-			MaxConcurrentRuns int `json:"max_concurrent_runs"`
-		}
-		e.want(e.req(http.MethodGet, base+"/limits", nil, tok), http.StatusOK, &lim)
-		if lim.MaxConcurrentRuns != 5 {
-			t.Fatalf("default limits not applied %+v", lim)
-		}
 		nobody := e.person(slug("nobody")+"@example.com", "Nobody")
 		e.member(tn, nobody, tenant.RoleMember)
 		ntok := e.token(nobody, tn)
 		e.problem(e.req(http.MethodPost, "/api/v1/tenants", map[string]any{"name": "Blocked"}, ntok), http.StatusForbidden, "forbidden")
-		e.want(e.req(http.MethodPatch, "/api/v1/admin/settings", map[string]any{"tenant_creation": "anyone", "public_rating_enabled": true, "default_limits": map[string]any{}}, rtok), http.StatusOK, nil)
+		e.want(e.req(http.MethodPatch, "/api/v1/admin/settings", map[string]any{"tenant_creation": "anyone", "public_rating_enabled": true}, rtok), http.StatusOK, nil)
 	})
 
 	t.Run("status, resync and the global audit", func(t *testing.T) {

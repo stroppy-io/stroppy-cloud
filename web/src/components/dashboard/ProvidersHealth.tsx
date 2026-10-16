@@ -1,12 +1,10 @@
 import { providerQueries } from '@api/queries/results'
-import type { ProviderProfile, QuotaReport, TenantLimits } from '@api/types'
+import type { ProviderProfile, QuotaReport } from '@api/types'
 import { AppLink } from '@app/AppLink'
-import { KeyValueList } from '@components/KeyValueList'
 import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Text, Tooltip, useStyles2 } from '@grafana/ui'
-import { formatDuration } from '@helpers/format'
 import { quotaAmount, quotaTitle, quotaValue } from '@helpers/quotas'
 import { relativeTime } from '@helpers/time'
 import { useQueries } from '@tanstack/react-query'
@@ -62,7 +60,6 @@ const getStyles = (theme: GrafanaTheme2) => ({
     gap: theme.spacing(0.5),
     alignItems: 'center',
   }),
-  limits: css({ padding: theme.spacing(1, 2) }),
 })
 
 function QuotaBars({ report }: { report: QuotaReport | undefined }) {
@@ -122,11 +119,9 @@ function QuotaBars({ report }: { report: QuotaReport | undefined }) {
 
 export function ProvidersHealth({
   providers,
-  limits,
   slug,
 }: {
   providers: ProviderProfile[]
-  limits?: TenantLimits
   slug: string
 }) {
   const { t } = useTranslation()
@@ -172,20 +167,6 @@ export function ProvidersHealth({
             <QuotaBars report={byId.get(p.id)} />
           </div>
         ))
-      )}
-      {limits && (
-        <div className={styles.limits}>
-          <KeyValueList
-            title={t('dashboard.limits.title')}
-            items={[
-              { label: t('dashboard.limits.concurrent'), value: limits.max_concurrent_runs },
-              { label: t('dashboard.limits.machines'), value: limits.max_machines_per_run },
-              { label: t('dashboard.limits.maxSize'), value: limits.max_size },
-              { label: t('dashboard.limits.maxKeep'), value: formatDuration(limits.max_keep) },
-              { label: t('dashboard.limits.retention'), value: limits.run_retention_max_days },
-            ]}
-          />
-        </div>
       )}
     </Panel>
   )
