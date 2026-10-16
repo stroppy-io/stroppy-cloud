@@ -13,7 +13,9 @@ package provision
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/v2/apis/common/v1"
@@ -187,6 +189,30 @@ func (n Names) Rule(kind string, i int) string { return fmt.Sprintf("%s-%s-%d", 
 // record ready before the cloud object exists, so every resource carries
 // this override.
 func xpReady(c xpv1.Condition) bool { return c.Status == corev1.ConditionTrue }
+
+// failedOn ends a resource's declaration at once when the cloud refuses it
+// for good (cloudRefusal): a quota or a permission does not change while
+// the run waits out the convergence timeout.
+func failedOn[T any, PT interface {
+	*T
+	GetCondition(xpv1.ConditionType) xpv1.Condition
+}]() k8slib.Option[T] {
+	return k8slib.WithFailed(func(live *T) error { return cloudRefusal(PT(live).GetCondition(xpv1.TypeSynced)) })
+}
+
+// permanentRefusal matches what Yandex Cloud and AWS say when a request
+// will not succeed on retry: an exhausted quota or missing rights.
+// Capacity shortages (InsufficientInstanceCapacity) pass on and do recover.
+var permanentRefusal = regexp.MustCompile(`ResourceExhausted|Quota limit|[Qq]uota exceeded|PermissionDenied|[Pp]ermission denied|UnauthorizedOperation|AccessDenied|LimitExceeded`)
+
+// cloudRefusal is the controller's sync failure when the cloud refused the
+// object for good, nil otherwise.
+func cloudRefusal(synced xpv1.Condition) error {
+	if synced.Status != corev1.ConditionFalse || synced.Reason != xpv1.ReasonReconcileError || !permanentRefusal.MatchString(synced.Message) {
+		return nil
+	}
+	return errors.New(synced.Message)
+}
 
 // providerRef points a managed resource at the tenant's ProviderConfig.
 func providerRef(name string) xpv1.ResourceSpec {

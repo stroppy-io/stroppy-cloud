@@ -28,7 +28,7 @@ func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec
 					ProvisionedRcuLimit: ptr(float64(m.ProvisionedRCULimit)), StorageSizeLimit: ptr(float64(m.StorageSizeLimitGB)),
 				}},
 			},
-		}}, k8slib.WithReady(yandexServerlessReady), k8slib.WithTimeout[ydb.DatabaseServerless](30*time.Minute), k8slib.WithResourceOption[ydb.DatabaseServerless](pipeline.Parent(parent)))
+		}}, k8slib.WithReady(yandexServerlessReady), failedOn[ydb.DatabaseServerless](), k8slib.WithTimeout[ydb.DatabaseServerless](30*time.Minute), k8slib.WithResourceOption[ydb.DatabaseServerless](pipeline.Parent(parent)))
 		live, err := handle.TryReady(ctx)
 		if err != nil {
 			return "", err
@@ -51,7 +51,7 @@ func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec
 				ScalePolicy:   []ydb.ScalePolicyParameters{{FixedScale: []ydb.FixedScaleParameters{{Size: ptr(float64(m.NodeCount))}}}},
 				StorageConfig: []ydb.StorageConfigParameters{{GroupCount: ptr(float64(m.StorageGroups)), StorageTypeID: ptr(m.StorageType)}},
 			},
-		}}, k8slib.WithReady(yandexDedicatedReady), k8slib.WithTimeout[ydb.DatabaseDedicated](30*time.Minute), k8slib.WithResourceOption[ydb.DatabaseDedicated](pipeline.Parent(parent)))
+		}}, k8slib.WithReady(yandexDedicatedReady), failedOn[ydb.DatabaseDedicated](), k8slib.WithTimeout[ydb.DatabaseDedicated](30*time.Minute), k8slib.WithResourceOption[ydb.DatabaseDedicated](pipeline.Parent(parent)))
 		live, err := handle.TryReady(ctx)
 		if err != nil {
 			return "", err

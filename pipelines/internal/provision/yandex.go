@@ -45,15 +45,15 @@ func (Yandex) Scheme() k8slib.ClientOption {
 
 // Record declares one of every kind (see Provider).
 func (y Yandex) Record(ctx pipeline.Context, k8s *k8slib.Client) {
-	k8slib.Resource(ctx, k8s, "record-ydb-serverless", &ydb.DatabaseServerless{}, k8slib.WithReady(yandexServerlessReady))
-	k8slib.Resource(ctx, k8s, "record-ydb-dedicated", &ydb.DatabaseDedicated{}, k8slib.WithReady(yandexDedicatedReady))
-	k8slib.Resource(ctx, k8s, "record-nat", &vpc.Gateway{}, k8slib.WithReady(yandexGatewayReady))
-	k8slib.Resource(ctx, k8s, "record-routes", &vpc.RouteTable{}, k8slib.WithReady(yandexRouteTableReady))
-	k8slib.Resource(ctx, k8s, "record-net", &vpc.Network{}, k8slib.WithReady(yandexNetworkReady))
-	k8slib.Resource(ctx, k8s, "record-subnet", &vpc.Subnet{}, k8slib.WithReady(yandexSubnetReady))
-	k8slib.Resource(ctx, k8s, "record-sg", &vpc.SecurityGroup{}, k8slib.WithReady(yandexSGReady))
-	k8slib.Resource(ctx, k8s, "record-disk", &compute.Disk{}, k8slib.WithReady(yandexDiskReady))
-	k8slib.Resource(ctx, k8s, "record-vm", &compute.Instance{}, k8slib.WithReady(yandexInstanceReady))
+	k8slib.Resource(ctx, k8s, "record-ydb-serverless", &ydb.DatabaseServerless{}, k8slib.WithReady(yandexServerlessReady), failedOn[ydb.DatabaseServerless]())
+	k8slib.Resource(ctx, k8s, "record-ydb-dedicated", &ydb.DatabaseDedicated{}, k8slib.WithReady(yandexDedicatedReady), failedOn[ydb.DatabaseDedicated]())
+	k8slib.Resource(ctx, k8s, "record-nat", &vpc.Gateway{}, k8slib.WithReady(yandexGatewayReady), failedOn[vpc.Gateway]())
+	k8slib.Resource(ctx, k8s, "record-routes", &vpc.RouteTable{}, k8slib.WithReady(yandexRouteTableReady), failedOn[vpc.RouteTable]())
+	k8slib.Resource(ctx, k8s, "record-net", &vpc.Network{}, k8slib.WithReady(yandexNetworkReady), failedOn[vpc.Network]())
+	k8slib.Resource(ctx, k8s, "record-subnet", &vpc.Subnet{}, k8slib.WithReady(yandexSubnetReady), failedOn[vpc.Subnet]())
+	k8slib.Resource(ctx, k8s, "record-sg", &vpc.SecurityGroup{}, k8slib.WithReady(yandexSGReady), failedOn[vpc.SecurityGroup]())
+	k8slib.Resource(ctx, k8s, "record-disk", &compute.Disk{}, k8slib.WithReady(yandexDiskReady), failedOn[compute.Disk]())
+	k8slib.Resource(ctx, k8s, "record-vm", &compute.Instance{}, k8slib.WithReady(yandexInstanceReady), failedOn[compute.Instance]())
 }
 
 // Provision declares network → subnet → security group → disks + instances.
@@ -83,7 +83,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			ResourceSpec: providerRef(pc),
 			ForProvider:  vpc.NetworkParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Network())},
 		},
-	}, k8slib.WithReady(yandexNetworkReady))
+	}, k8slib.WithReady(yandexNetworkReady), failedOn[vpc.Network]())
 
 	sg := k8slib.Resource(ctx, k8s, names.SecurityGroup(), &vpc.SecurityGroup{
 		Spec: vpc.SecurityGroupSpec{
@@ -102,15 +102,15 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				}},
 			},
 		},
-	}, k8slib.WithReady(yandexSGReady), k8slib.WithResourceOption[vpc.SecurityGroup](pipeline.Parent(net)))
+	}, k8slib.WithReady(yandexSGReady), failedOn[vpc.SecurityGroup](), k8slib.WithResourceOption[vpc.SecurityGroup](pipeline.Parent(net)))
 
 	byZone := map[string]pipeline.Handle{}
 	var subnetWaiters []func(pipeline.Context) error
 	var parent pipeline.Handle = sg
 	var routeID *string
 	if spec.NeedsPrivateEgress(run) {
-		gateway := k8slib.Resource(ctx, k8s, names.Gateway(), &vpc.Gateway{Spec: vpc.GatewaySpec{ResourceSpec: providerRef(pc), ForProvider: vpc.GatewayParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Gateway()), SharedEgressGateway: []vpc.SharedEgressGatewayParameters{{}}}}}, k8slib.WithReady(yandexGatewayReady), k8slib.WithResourceOption[vpc.Gateway](pipeline.Parent(sg)))
-		routes := k8slib.Resource(ctx, k8s, names.RouteTable(), &vpc.RouteTable{Spec: vpc.RouteTableSpec{ResourceSpec: providerRef(pc), ForProvider: vpc.RouteTableParameters{FolderID: ptr(st.FolderID), Name: ptr(names.RouteTable()), NetworkIDRef: &xpv1.Reference{Name: names.Network()}, StaticRoute: []vpc.StaticRouteParameters{{DestinationPrefix: ptr("0.0.0.0/0"), GatewayIDRef: &xpv1.Reference{Name: names.Gateway()}}}}}}, k8slib.WithReady(yandexRouteTableReady), k8slib.WithResourceOption[vpc.RouteTable](pipeline.Parent(gateway)))
+		gateway := k8slib.Resource(ctx, k8s, names.Gateway(), &vpc.Gateway{Spec: vpc.GatewaySpec{ResourceSpec: providerRef(pc), ForProvider: vpc.GatewayParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Gateway()), SharedEgressGateway: []vpc.SharedEgressGatewayParameters{{}}}}}, k8slib.WithReady(yandexGatewayReady), failedOn[vpc.Gateway](), k8slib.WithResourceOption[vpc.Gateway](pipeline.Parent(sg)))
+		routes := k8slib.Resource(ctx, k8s, names.RouteTable(), &vpc.RouteTable{Spec: vpc.RouteTableSpec{ResourceSpec: providerRef(pc), ForProvider: vpc.RouteTableParameters{FolderID: ptr(st.FolderID), Name: ptr(names.RouteTable()), NetworkIDRef: &xpv1.Reference{Name: names.Network()}, StaticRoute: []vpc.StaticRouteParameters{{DestinationPrefix: ptr("0.0.0.0/0"), GatewayIDRef: &xpv1.Reference{Name: names.Gateway()}}}}}}, k8slib.WithReady(yandexRouteTableReady), failedOn[vpc.RouteTable](), k8slib.WithResourceOption[vpc.RouteTable](pipeline.Parent(gateway)))
 		parent = routes
 		live, err := routes.TryReady(ctx)
 		if err != nil {
@@ -131,7 +131,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 					RouteTableID: routeID,
 				},
 			},
-		}, k8slib.WithReady(yandexSubnetReady), k8slib.WithResourceOption[vpc.Subnet](pipeline.Parent(parent)))
+		}, k8slib.WithReady(yandexSubnetReady), failedOn[vpc.Subnet](), k8slib.WithResourceOption[vpc.Subnet](pipeline.Parent(parent)))
 		subnetWaiters = append(subnetWaiters, func(ctx pipeline.Context) error { _, err := sub.TryReady(ctx); return err })
 		if run.ManagedYDB != nil {
 			parent = sub
@@ -177,7 +177,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 						Labels:    labels(run, m.Labels),
 					},
 				},
-			}, k8slib.WithReady(yandexDiskReady), k8slib.WithResourceOption[compute.Disk](pipeline.Parent(sub)))
+			}, k8slib.WithReady(yandexDiskReady), failedOn[compute.Disk](), k8slib.WithResourceOption[compute.Disk](pipeline.Parent(sub)))
 			diskHandles = append(diskHandles, disk)
 			secondary = append(secondary, compute.SecondaryDiskParameters{
 				DeviceName: ptr(d.Name),
@@ -242,7 +242,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				},
 			},
 		},
-			k8slib.WithReady(yandexInstanceReady),
+			k8slib.WithReady(yandexInstanceReady), failedOn[compute.Instance](),
 			k8slib.WithTimeout[compute.Instance](machineTimeout),
 			k8slib.WithResourceOption[compute.Instance](pipeline.Parent(sub), pipeline.Children(children...)),
 		)

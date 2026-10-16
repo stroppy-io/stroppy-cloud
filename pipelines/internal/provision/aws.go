@@ -41,15 +41,15 @@ func (AWS) Scheme() k8slib.ClientOption { return k8slib.WithScheme(ec2.SchemeBui
 
 // Record declares one of every kind (see Provider).
 func (a AWS) Record(ctx pipeline.Context, k8s *k8slib.Client) {
-	k8slib.Resource(ctx, k8s, "record-vpc", &ec2.VPC{}, k8slib.WithReady(awsVPCReady))
-	k8slib.Resource(ctx, k8s, "record-subnet", &ec2.Subnet{}, k8slib.WithReady(awsSubnetReady))
-	k8slib.Resource(ctx, k8s, "record-igw", &ec2.InternetGateway{}, k8slib.WithReady(awsIGWReady))
-	k8slib.Resource(ctx, k8s, "record-rt", &ec2.RouteTable{}, k8slib.WithReady(awsRouteTableReady))
-	k8slib.Resource(ctx, k8s, "record-route", &ec2.Route{}, k8slib.WithReady(awsRouteReady))
-	k8slib.Resource(ctx, k8s, "record-rta", &ec2.RouteTableAssociation{}, k8slib.WithReady(awsRTAReady))
-	k8slib.Resource(ctx, k8s, "record-sg", &ec2.SecurityGroup{}, k8slib.WithReady(awsSGReady))
-	k8slib.Resource(ctx, k8s, "record-sgr", &ec2.SecurityGroupRule{}, k8slib.WithReady(awsSGRuleReady))
-	k8slib.Resource(ctx, k8s, "record-vm", &ec2.Instance{}, k8slib.WithReady(awsInstanceReady))
+	k8slib.Resource(ctx, k8s, "record-vpc", &ec2.VPC{}, k8slib.WithReady(awsVPCReady), failedOn[ec2.VPC]())
+	k8slib.Resource(ctx, k8s, "record-subnet", &ec2.Subnet{}, k8slib.WithReady(awsSubnetReady), failedOn[ec2.Subnet]())
+	k8slib.Resource(ctx, k8s, "record-igw", &ec2.InternetGateway{}, k8slib.WithReady(awsIGWReady), failedOn[ec2.InternetGateway]())
+	k8slib.Resource(ctx, k8s, "record-rt", &ec2.RouteTable{}, k8slib.WithReady(awsRouteTableReady), failedOn[ec2.RouteTable]())
+	k8slib.Resource(ctx, k8s, "record-route", &ec2.Route{}, k8slib.WithReady(awsRouteReady), failedOn[ec2.Route]())
+	k8slib.Resource(ctx, k8s, "record-rta", &ec2.RouteTableAssociation{}, k8slib.WithReady(awsRTAReady), failedOn[ec2.RouteTableAssociation]())
+	k8slib.Resource(ctx, k8s, "record-sg", &ec2.SecurityGroup{}, k8slib.WithReady(awsSGReady), failedOn[ec2.SecurityGroup]())
+	k8slib.Resource(ctx, k8s, "record-sgr", &ec2.SecurityGroupRule{}, k8slib.WithReady(awsSGRuleReady), failedOn[ec2.SecurityGroupRule]())
+	k8slib.Resource(ctx, k8s, "record-vm", &ec2.Instance{}, k8slib.WithReady(awsInstanceReady), failedOn[ec2.Instance]())
 }
 
 // Provision declares vpc → subnet, igw → route table → route + association,
@@ -82,8 +82,46 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 				Tags:               withName(tags, names.Network()),
 			},
 		},
-	}, k8slib.WithReady(awsVPCReady))
+	}, k8slib.WithReady(awsVPCReady), failedOn[ec2.VPC]())
 
+	igw := k8slib.Resource(ctx, k8s, names.Gateway(), &ec2.InternetGateway{
+		Spec: ec2.InternetGatewaySpec{
+			ResourceSpec: providerRef(pc),
+			ForProvider: ec2.InternetGatewayParameters_2{
+				Region:   region,
+				VPCIDRef: &xpv1.Reference{Name: names.Network()},
+				Tags:     withName(tags, names.Gateway()),
+			},
+		},
+	}, k8slib.WithReady(awsIGWReady), failedOn[ec2.InternetGateway](), k8slib.WithResourceOption[ec2.InternetGateway](pipeline.Parent(vpcRes)))
+
+	rt := k8slib.Resource(ctx, k8s, names.RouteTable(), &ec2.RouteTable{
+		Spec: ec2.RouteTableSpec{
+			ResourceSpec: providerRef(pc),
+			ForProvider: ec2.RouteTableParameters_2{
+				Region:   region,
+				VPCIDRef: &xpv1.Reference{Name: names.Network()},
+				Tags:     withName(tags, names.RouteTable()),
+			},
+		},
+	}, k8slib.WithReady(awsRouteTableReady), failedOn[ec2.RouteTable](), k8slib.WithResourceOption[ec2.RouteTable](pipeline.Parent(igw)))
+
+	k8slib.Resource(ctx, k8s, names.RouteTable()+"-default", &ec2.Route{
+		Spec: ec2.RouteSpec{
+			ResourceSpec: providerRef(pc),
+			ForProvider: ec2.RouteParameters_2{
+				Region:               region,
+				RouteTableIDRef:      &xpv1.Reference{Name: names.RouteTable()},
+				DestinationCidrBlock: ptr("0.0.0.0/0"),
+				GatewayIDRef:         &xpv1.Reference{Name: names.Gateway()},
+			},
+		},
+	}, k8slib.WithReady(awsRouteReady), failedOn[ec2.Route](), k8slib.WithResourceOption[ec2.Route](pipeline.Parent(rt)))
+
+	// One chain, VPC → gateway → route table → subnet → security group →
+	// machines: the stand is deleted children first and siblings at once, so
+	// the gateway (which AWS will not detach while machines hold public
+	// addresses) goes only after the machines.
 	sub := k8slib.Resource(ctx, k8s, names.Subnet(), &ec2.Subnet{
 		Spec: ec2.SubnetSpec{
 			ResourceSpec: providerRef(pc),
@@ -96,41 +134,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 				Tags:                withName(tags, names.Subnet()),
 			},
 		},
-	}, k8slib.WithReady(awsSubnetReady), k8slib.WithResourceOption[ec2.Subnet](pipeline.Parent(vpcRes)))
-
-	igw := k8slib.Resource(ctx, k8s, names.Gateway(), &ec2.InternetGateway{
-		Spec: ec2.InternetGatewaySpec{
-			ResourceSpec: providerRef(pc),
-			ForProvider: ec2.InternetGatewayParameters_2{
-				Region:   region,
-				VPCIDRef: &xpv1.Reference{Name: names.Network()},
-				Tags:     withName(tags, names.Gateway()),
-			},
-		},
-	}, k8slib.WithReady(awsIGWReady), k8slib.WithResourceOption[ec2.InternetGateway](pipeline.Parent(vpcRes)))
-
-	rt := k8slib.Resource(ctx, k8s, names.RouteTable(), &ec2.RouteTable{
-		Spec: ec2.RouteTableSpec{
-			ResourceSpec: providerRef(pc),
-			ForProvider: ec2.RouteTableParameters_2{
-				Region:   region,
-				VPCIDRef: &xpv1.Reference{Name: names.Network()},
-				Tags:     withName(tags, names.RouteTable()),
-			},
-		},
-	}, k8slib.WithReady(awsRouteTableReady), k8slib.WithResourceOption[ec2.RouteTable](pipeline.Parent(igw)))
-
-	k8slib.Resource(ctx, k8s, names.RouteTable()+"-default", &ec2.Route{
-		Spec: ec2.RouteSpec{
-			ResourceSpec: providerRef(pc),
-			ForProvider: ec2.RouteParameters_2{
-				Region:               region,
-				RouteTableIDRef:      &xpv1.Reference{Name: names.RouteTable()},
-				DestinationCidrBlock: ptr("0.0.0.0/0"),
-				GatewayIDRef:         &xpv1.Reference{Name: names.Gateway()},
-			},
-		},
-	}, k8slib.WithReady(awsRouteReady), k8slib.WithResourceOption[ec2.Route](pipeline.Parent(rt)))
+	}, k8slib.WithReady(awsSubnetReady), failedOn[ec2.Subnet](), k8slib.WithResourceOption[ec2.Subnet](pipeline.Parent(rt)))
 
 	k8slib.Resource(ctx, k8s, names.RouteTable()+"-assoc", &ec2.RouteTableAssociation{
 		Spec: ec2.RouteTableAssociationSpec{
@@ -141,7 +145,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 				SubnetIDRef:     &xpv1.Reference{Name: names.Subnet()},
 			},
 		},
-	}, k8slib.WithReady(awsRTAReady), k8slib.WithResourceOption[ec2.RouteTableAssociation](pipeline.Parent(rt)))
+	}, k8slib.WithReady(awsRTAReady), failedOn[ec2.RouteTableAssociation](), k8slib.WithResourceOption[ec2.RouteTableAssociation](pipeline.Parent(sub)))
 
 	sg := k8slib.Resource(ctx, k8s, names.SecurityGroup(), &ec2.SecurityGroup{
 		Spec: ec2.SecurityGroupSpec{
@@ -154,14 +158,14 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 				Tags:        withName(tags, names.SecurityGroup()),
 			},
 		},
-	}, k8slib.WithReady(awsSGReady), k8slib.WithResourceOption[ec2.SecurityGroup](pipeline.Parent(sub)))
+	}, k8slib.WithReady(awsSGReady), failedOn[ec2.SecurityGroup](), k8slib.WithResourceOption[ec2.SecurityGroup](pipeline.Parent(sub)))
 
 	for i, rule := range awsRules(run, cidr) {
 		rule.Region = region
 		rule.SecurityGroupIDRef = &xpv1.Reference{Name: names.SecurityGroup()}
 		k8slib.Resource(ctx, k8s, names.Rule(*rule.Type, i), &ec2.SecurityGroupRule{
 			Spec: ec2.SecurityGroupRuleSpec{ResourceSpec: providerRef(pc), ForProvider: rule},
-		}, k8slib.WithReady(awsSGRuleReady), k8slib.WithResourceOption[ec2.SecurityGroupRule](pipeline.Parent(sg)))
+		}, k8slib.WithReady(awsSGRuleReady), failedOn[ec2.SecurityGroupRule](), k8slib.WithResourceOption[ec2.SecurityGroupRule](pipeline.Parent(sg)))
 	}
 
 	infra := Infra{Root: vpcRes, Machines: map[string]*Machine{}}
@@ -221,7 +225,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 		vm := k8slib.Resource(ctx, k8s, vmName, &ec2.Instance{
 			Spec: ec2.InstanceSpec{ResourceSpec: providerRef(pc), ForProvider: params},
 		},
-			k8slib.WithReady(awsInstanceReady),
+			k8slib.WithReady(awsInstanceReady), failedOn[ec2.Instance](),
 			k8slib.WithTimeout[ec2.Instance](machineTimeout),
 			k8slib.WithResourceOption[ec2.Instance](pipeline.Parent(sg), pipeline.Children(agent)),
 		)
