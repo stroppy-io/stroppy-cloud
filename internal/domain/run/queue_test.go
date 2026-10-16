@@ -27,6 +27,7 @@ func (r queueRepo) LiveCells(context.Context, uuid.UUID) (map[uuid.UUID]int, err
 	}
 	return out, nil
 }
+
 func (r queueRepo) Starting(context.Context, uuid.UUID) ([]Starting, error) { return r.starting, nil }
 
 type queueLimits struct{ max int }
@@ -44,9 +45,18 @@ func (p queuePipelines) PipelinesReady(context.Context, string) (bool, string) {
 	return p.ready, p.status
 }
 
+type queueAccess struct {
+	Access
+	suspended bool
+}
+
+func (a queueAccess) Suspended(context.Context, uuid.UUID) (bool, error) { return a.suspended, nil }
+
 type queueSuites map[uuid.UUID]int
 
-func (s queueSuites) SuiteConcurrency(_ context.Context, id uuid.UUID) (int, error) { return s[id], nil }
+func (s queueSuites) SuiteConcurrency(_ context.Context, id uuid.UUID) (int, error) {
+	return s[id], nil
+}
 
 func TestQueueDecides(t *testing.T) {
 	profile := uuid.New()
@@ -78,7 +88,7 @@ func TestQueueDecides(t *testing.T) {
 	}{
 		{
 			name:      "a big run waits for SSD, the small one behind it goes first",
-			svc:       &Service{repo: queueRepo{}, limits: queueLimits{3}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, limits: queueLimits{3}},
 			runs:      []Run{queued(spec(400, 400, 400), nil), queued(spec(400), nil)},
 			quotas:    ssd(500),
 			admit:     []bool{false, true},
@@ -86,7 +96,7 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "slots run out",
-			svc:       &Service{repo: queueRepo{live: 2}, limits: queueLimits{3}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{live: 2}, limits: queueLimits{3}},
 			runs:      []Run{queued(spec(40), nil), queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{true, false},
@@ -94,7 +104,7 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "a started run not in the cloud's usage yet holds its SSD",
-			svc:       &Service{repo: queueRepo{starting: []Starting{{ProfileID: profile, Spec: spec(400, 400, 400)}}}, limits: queueLimits{5}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{starting: []Starting{{ProfileID: profile, Spec: spec(400, 400, 400)}}}, limits: queueLimits{5}},
 			runs:      []Run{queued(spec(400), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{false},
@@ -102,15 +112,23 @@ func TestQueueDecides(t *testing.T) {
 		},
 		{
 			name:      "suite concurrency",
-			svc:       &Service{repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, limits: queueLimits{5}, suites: queueSuites{sr: 2}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{cells: map[uuid.UUID]int{sr: 1}}, limits: queueLimits{5}, suites: queueSuites{sr: 2}},
 			runs:      []Run{queued(spec(40), &sr), queued(spec(40), &sr), queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{true, false, true},
 			waitingOn: []WaitReason{"", WaitSuiteSlot, ""},
 		},
 		{
+			name:      "a suspended tenant starts nothing",
+			svc:       &Service{access: queueAccess{suspended: true}, repo: queueRepo{}, limits: queueLimits{5}},
+			runs:      []Run{queued(spec(40), nil)},
+			quotas:    ssd(0),
+			admit:     []bool{false},
+			waitingOn: []WaitReason{WaitSuspended},
+		},
+		{
 			name:      "pipelines not pushed hold everything",
-			svc:       &Service{repo: queueRepo{}, limits: queueLimits{5}, pipelines: queuePipelines{status: "pending"}},
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}, limits: queueLimits{5}, pipelines: queuePipelines{status: "pending"}},
 			runs:      []Run{queued(spec(40), nil), queued(spec(40), nil)},
 			quotas:    ssd(0),
 			admit:     []bool{false, false},

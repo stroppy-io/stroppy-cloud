@@ -3441,10 +3441,10 @@ export interface components {
             detail?: string;
         };
         /**
-         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready.
+         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform admin suspended the tenant.
          * @enum {string}
          */
-        RunWaitReason: "pipelines" | "slot" | "suite_slot" | "quota" | "quota_unknown" | "provider";
+        RunWaitReason: "pipelines" | "slot" | "suite_slot" | "quota" | "quota_unknown" | "provider" | "suspended";
         /** @description Definition frozen at launch. */
         RunSnapshot: {
             /** @description Frozen final deployment overrides used for replay. */

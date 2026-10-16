@@ -180,6 +180,16 @@ type decision struct {
 //nolint:funlen,gocognit // one ordered checklist
 func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, quotas map[uuid.UUID]quotaRead) (decision, error) {
 	d := decision{admit: make([]bool, len(queued)), waits: make([]Queue, len(queued))}
+	// Launch checked the author's rights; a run admitted later still must
+	// not start for a tenant a platform admin suspended meanwhile.
+	if suspended, err := s.access.Suspended(ctx, tenantID); err != nil {
+		return d, err
+	} else if suspended {
+		for i := range queued {
+			d.waits[i] = Queue{WaitingFor: WaitSuspended, Position: i + 1}
+		}
+		return d, nil
+	}
 	if s.pipelines != nil {
 		if ready, status := s.pipelines.PipelinesReady(ctx, queued[0].GrapheneNamespace); !ready {
 			for i := range queued {

@@ -199,10 +199,12 @@ const (
 	WaitQuotaUnknown WaitReason = "quota_unknown"
 	// WaitProvider: the run's provider profile is not ready.
 	WaitProvider WaitReason = "provider"
+	// WaitSuspended: a platform admin suspended the tenant.
+	WaitSuspended WaitReason = "suspended"
 )
 
 // WaitReasons lists every reason (the contract's enum mirrors it).
-var WaitReasons = []WaitReason{WaitPipelines, WaitSlot, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider}
+var WaitReasons = []WaitReason{WaitPipelines, WaitSlot, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider, WaitSuspended}
 
 // Queue is the place of a queued run and what holds it.
 type Queue struct {
@@ -465,6 +467,8 @@ func (a Artifact) ID() string {
 type Access interface {
 	RoleIn(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) (slug, role string, err error)
 	NamespaceOf(ctx context.Context, tenantID uuid.UUID) (string, error)
+	// Suspended reports a tenant suspended by a platform admin.
+	Suspended(ctx context.Context, tenantID uuid.UUID) (bool, error)
 }
 
 // Publisher emits tenant events (webhooks).

@@ -21826,7 +21826,7 @@ func (s *RunTriggerRef) SetParentRunID(val OptUUID) {
 // Pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot —
 // max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota
 // — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the
-// provider profile is not ready.
+// provider profile is not ready; suspended — a platform admin suspended the tenant.
 // Ref: #/components/schemas/RunWaitReason
 type RunWaitReason string
 
@@ -21837,6 +21837,7 @@ const (
 	RunWaitReasonQuota        RunWaitReason = "quota"
 	RunWaitReasonQuotaUnknown RunWaitReason = "quota_unknown"
 	RunWaitReasonProvider     RunWaitReason = "provider"
+	RunWaitReasonSuspended    RunWaitReason = "suspended"
 )
 
 // AllValues returns all RunWaitReason values.
@@ -21848,6 +21849,7 @@ func (RunWaitReason) AllValues() []RunWaitReason {
 		RunWaitReasonQuota,
 		RunWaitReasonQuotaUnknown,
 		RunWaitReasonProvider,
+		RunWaitReasonSuspended,
 	}
 }
 
@@ -21865,6 +21867,8 @@ func (s RunWaitReason) MarshalText() ([]byte, error) {
 	case RunWaitReasonQuotaUnknown:
 		return []byte(s), nil
 	case RunWaitReasonProvider:
+		return []byte(s), nil
+	case RunWaitReasonSuspended:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -21891,6 +21895,9 @@ func (s *RunWaitReason) UnmarshalText(data []byte) error {
 		return nil
 	case RunWaitReasonProvider:
 		*s = RunWaitReasonProvider
+		return nil
+	case RunWaitReasonSuspended:
+		*s = RunWaitReasonSuspended
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

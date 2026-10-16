@@ -35761,6 +35761,8 @@ func (s *RunWaitReason) Decode(d *jx.Decoder) error {
 		*s = RunWaitReasonQuotaUnknown
 	case RunWaitReasonProvider:
 		*s = RunWaitReasonProvider
+	case RunWaitReasonSuspended:
+		*s = RunWaitReasonSuspended
 	default:
 		*s = RunWaitReason(v)
 	}
