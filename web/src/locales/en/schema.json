@@ -14,5 +14,8 @@
   "valid": "Valid",
   "reset": "Reset to default",
   "diffOnly": "Only changed",
-  "showAll": "Show all fields"
+  "showAll": "Show all fields",
+  "fromFile": "From file",
+  "fileLoaded": "Loaded from {{name}}",
+  "fileUnreadable": "The file could not be read"
 }

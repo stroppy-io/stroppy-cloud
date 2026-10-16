@@ -22,6 +22,7 @@ import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { credentialWidgets } from './credentialWidgets'
 
 export function ProviderEditDrawer({
   provider,
@@ -141,6 +142,7 @@ export function ProviderEditDrawer({
                 value={credentialsValue}
                 errors={cValidation.errors}
                 onChange={setCredentials}
+                widgets={credentialWidgets}
               />
             )}
           </Stack>

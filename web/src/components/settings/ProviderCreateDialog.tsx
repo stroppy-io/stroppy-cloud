@@ -23,6 +23,7 @@ import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { credentialWidgets } from './credentialWidgets'
 import { KIND_LABEL } from './ProvidersPage'
 
 type Step = 'kind' | 'settings' | 'credentials' | 'name'
@@ -272,6 +273,7 @@ export function ProviderCreateDialog({
                   setCredentials(v)
                   setTouched((x) => ({ ...x, credentials: true }))
                 }}
+                widgets={credentialWidgets}
               />
             )}
           </Stack>
