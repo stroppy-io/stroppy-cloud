@@ -134,38 +134,6 @@ func reverseProxy(base string) (http.Handler, error) {
 	return proxy, nil
 }
 
-// spa serves the built web app: real files as-is, every other path gets
-// index.html (client-side routing). API-looking paths stay 404.
-func spa(dist fs.FS) http.HandlerFunc {
-	if dist == nil {
-		return http.NotFound
-	}
-	files := http.FS(dist)
-	static := http.FileServer(files)
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodGet && r.Method != http.MethodHead {
-			http.NotFound(w, r)
-			return
-		}
-		p := strings.TrimPrefix(r.URL.Path, "/")
-		if p == "" || strings.HasPrefix(p, "api/") || strings.HasPrefix(p, "v1/") {
-			if p != "" {
-				http.NotFound(w, r)
-				return
-			}
-			p = "index.html"
-		}
-		if f, err := dist.Open(p); err == nil {
-			_ = f.Close()
-			static.ServeHTTP(w, r)
-			return
-		}
-		r.URL.Path = "/"
-		w.Header().Set("Cache-Control", "no-cache")
-		static.ServeHTTP(w, r)
-	}
-}
-
 // cors allows the SPA's own origin implicitly (same-origin needs nothing)
 // plus the configured extras (the Vite dev server).
 func cors(origins []string) func(http.Handler) http.Handler {
