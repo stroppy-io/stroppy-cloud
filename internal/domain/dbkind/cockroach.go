@@ -1,8 +1,6 @@
 package dbkind
 
 import (
-	"fmt"
-
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
@@ -50,11 +48,7 @@ func planCockroach(p *topology.Plan, params map[string]any) {
 		p.Add(topology.RoleProxy, "haproxy", haproxy)
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDB, Protocol: "cockroach", Port: 26257})
 		p.Client = topology.Endpoint{Role: topology.RoleProxy, Protocol: "cockroach", Port: 26257}
-		p.Requirements[topology.RoleProxy] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "haproxy"}
+		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "haproxy")
 	}
-	p.Requirements[topology.RoleDB] = topology.Requirement{CPU: 4, MemoryGB: 8, DiskGB: 40, Reason: "cockroach node"}
-	p.Label = fmt.Sprintf("cockroach ×%d", nodes)
-	if haproxy > 0 {
-		p.Label += " + haproxy"
-	}
+	p.Requirements[topology.RoleDB] = topology.Because(4, 8, 40, topology.ReasonBaseline, "engine", "cockroach")
 }

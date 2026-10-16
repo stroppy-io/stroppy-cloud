@@ -1,3 +1,4 @@
+import { topologyModeValues } from '@api/enums'
 import type {
   CatalogDatabase,
   DatabaseSpec,
@@ -83,7 +84,7 @@ export function deriveDatabase(
     if (count <= 0) return
     nodes.push({ role, engine: engine(role), count })
     flows.push({ from: role, to, protocol, port })
-    req.proxy = { cpu: 2, memory_gb: 4, reason: `${role} ×${count}` }
+    req.proxy = { cpu: 2, memory_gb: 4, reason: 'proxy' }
   }
 
   switch (kind) {
@@ -101,7 +102,7 @@ export function deriveDatabase(
       if (etcd > 0) {
         nodes.push({ role: 'etcd', engine: 'etcd', count: etcd })
         flows.push({ from: 'master', to: 'etcd', protocol: 'http', port: 2379 })
-        req.etcd = { cpu: 2, memory_gb: 4, reason: `etcd quorum ×${etcd}` }
+        req.etcd = { cpu: 2, memory_gb: 4, reason: 'etcd' }
       }
       proxyRole('proxy', haproxy, 'db', 'pg', 5432)
       if (params.pgbouncer === true)
@@ -120,20 +121,20 @@ export function deriveDatabase(
               cpu: 8,
               memory_gb: Math.max(32, memFromSb),
               disk_gb: 200,
-              reason: 'shared_buffers 8GB',
+              reason: 'shared_buffers',
             }
           : replicas > 0
             ? {
                 cpu: 4,
                 memory_gb: Math.max(16, memFromSb),
                 disk_gb: 80,
-                reason: 'shared_buffers 4GB',
+                reason: 'shared_buffers',
               }
             : {
                 cpu: 2,
                 memory_gb: Math.max(4, memFromSb),
                 disk_gb: 40,
-                reason: 'shared_buffers 1GB',
+                reason: 'shared_buffers',
               }
       break
     }
@@ -159,8 +160,8 @@ export function deriveDatabase(
             : 'single'
       req.db =
         replicas > 0
-          ? { cpu: 4, memory_gb: 16, disk_gb: 80, reason: 'innodb_buffer_pool 8GB' }
-          : { cpu: 2, memory_gb: 4, disk_gb: 40, reason: 'innodb_buffer_pool 1GB' }
+          ? { cpu: 4, memory_gb: 16, disk_gb: 80, reason: 'engine_baseline' }
+          : { cpu: 2, memory_gb: 4, disk_gb: 40, reason: 'engine_baseline' }
       break
     }
     case 'picodata': {
@@ -178,7 +179,7 @@ export function deriveDatabase(
         cpu: instances > 1 ? 4 : 2,
         memory_gb: Math.max(instances > 1 ? 16 : 4, Math.ceil((memtx * 2) / 1024)),
         disk_gb: 60,
-        reason: `memtx ${Math.round(memtx / 1024)}GB`,
+        reason: 'memtx',
       }
       break
     }
@@ -197,10 +198,10 @@ export function deriveDatabase(
               cpu: 8,
               memory_gb: 32,
               disk_gb: 93 * Math.max(3, pdisks),
-              reason: `${pdisks} pdisks × 93GB`,
+              reason: 'pdisks',
             }
           : storage > 1
-            ? { cpu: 4, memory_gb: 16, disk_gb: 100, reason: `${pdisks} pdisks` }
+            ? { cpu: 4, memory_gb: 16, disk_gb: 100, reason: 'pdisks' }
             : { cpu: 2, memory_gb: 8, disk_gb: 60 }
       break
     }
@@ -209,7 +210,7 @@ export function deriveDatabase(
       nodes.push({ role: 'db', engine: 'cockroach', count: n })
       proxyRole('proxy', num(params.haproxy), 'db', 'pg', 26257)
       label = n > 1 ? `cluster-${n}` : 'single'
-      req.db = { cpu: 4, memory_gb: n > 1 ? 24 : 16, disk_gb: 100, reason: 'cockroach cache 25%' }
+      req.db = { cpu: 4, memory_gb: n > 1 ? 24 : 16, disk_gb: 100, reason: 'engine_baseline' }
       break
     }
     case 'ydb_managed': {
@@ -226,7 +227,12 @@ export function deriveDatabase(
   }
   const node_count = nodes.filter((n) => !n.colocated_with).reduce((a, n) => a + n.count, 0)
   return {
-    topology_preview: { label, node_count, nodes, flows: flows.length ? flows : undefined },
+    topology_preview: {
+      mode: topologyModeValues.find((m) => m === label),
+      node_count,
+      nodes,
+      flows: flows.length ? flows : undefined,
+    },
     requirements: req,
   }
 }
@@ -440,7 +446,7 @@ function workloadRequirements(spec: WorkloadSpec): Requirements {
   }, 1)
   const cpu = vus >= 128 ? 16 : vus >= 64 ? 8 : vus >= 32 ? 4 : 2
   const memory_gb = vus >= 128 ? 32 : vus >= 64 ? 16 : vus >= 32 ? 8 : 4
-  return { runner: { cpu, memory_gb, reason: `${vus} VUs` } }
+  return { runner: { cpu, memory_gb, reason: 'runner_load' } }
 }
 
 function decorateWorkload(t: TenantData, wl: Workload): Workload {
@@ -660,7 +666,7 @@ function decorateTest(store: MockStore, t: TenantData, test: Test): Test {
     summary: {
       db_kind: db?.kind,
       db_version: db?.version,
-      topology_label: db?.topology_preview?.label,
+      topology: db?.topology_preview,
       node_count: db?.topology_preview?.node_count,
       protocol: wl?.protocol,
       stroppy_version: wl?.stroppy_version,

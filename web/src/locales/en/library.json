@@ -92,7 +92,19 @@
     "disk": "Disk",
     "chosen": "Chosen size",
     "reason": "Driven by",
-    "notSet": "not set"
+    "notSet": "not set",
+    "reasons": {
+      "engine_baseline": "{{engine}} minimum",
+      "wal_archive": "{{engine}} minimum and room for the WAL archive",
+      "shared_buffers": "twice shared_buffers ({{shared_buffers_gb}} GB)",
+      "proxy": "{{engine}}",
+      "etcd": "etcd for Patroni",
+      "image_baseline": "a database image: the stand's minimum",
+      "cpu_bound": "{{engine}} is CPU-bound",
+      "memtx": "1.5 × memtx memory ({{memtx_gb}} GB) + 1 GB",
+      "pdisks": "{{pdisks}} pdisk(s) × 40 GB + 20 GB filesystem",
+      "runner_load": "{{vus}} virtual users, {{load_workers}} load workers"
+    }
   },
   "usages": {
     "title": "Where it is used",

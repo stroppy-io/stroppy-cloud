@@ -13548,8 +13548,8 @@ type ListDatabasesParams struct {
 	Author    OptString      `json:",omitempty,omitzero"`
 	Favorites OptBool        `json:",omitempty,omitzero"`
 	Kind      []DatabaseKind `json:",omitempty"`
-	// Sort key. `topology` orders by the topology label (the plan label of `topology_preview`), `usages`
-	// by the number of tests referencing the definition.
+	// Sort key. `topology` orders by the topology shape (mode, then nodes of `topology_preview`),
+	// `usages` by the number of tests referencing the definition.
 	Sort   OptListDatabasesSort `json:",omitempty,omitzero"`
 	Order  OptOrder             `json:",omitempty,omitzero"`
 	Cursor OptString            `json:",omitempty,omitzero"`

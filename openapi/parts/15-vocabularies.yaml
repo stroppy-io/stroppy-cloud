@@ -484,3 +484,46 @@ components:
         - "ydb_storage_nodes_required"
         - "ydb_zone_invalid"
         - "ydb_zones_not_strings"
+    TopologyMode:
+      type: string
+      description: >-
+        The flavor of a topology its nodes do not show (the parameter value it comes from); absent for a plain one.
+      enum:
+        - "semi_sync"
+        - "group"
+        - "galera"
+        - "patroni"
+        - "block-4-2"
+        - "mirror-3-dc"
+        - "dedicated"
+        - "serverless"
+    RequirementReason:
+      type: string
+      description: >-
+        What drove a role's minimum hardware; its numbers are in reason_params.
+      enum:
+        - "engine_baseline"
+        - "wal_archive"
+        - "shared_buffers"
+        - "proxy"
+        - "etcd"
+        - "image_baseline"
+        - "cpu_bound"
+        - "memtx"
+        - "pdisks"
+        - "runner_load"
+    TopologyShape:
+      type: object
+      description: A topology as lists show it; the client names it in its language.
+      required: [nodes]
+      properties:
+        mode: { $ref: '#/components/schemas/TopologyMode' }
+        nodes:
+          type: array
+          items:
+            type: object
+            required: [role, count]
+            properties:
+              role: { $ref: '#/components/schemas/TopologyRole' }
+              engine: { type: string, example: haproxy }
+              count: { type: integer, description: 0 for a role sharing another role's machines. }

@@ -591,5 +591,15 @@
     "groups": "groups",
     "gateways": "gateways",
     "bytes": "bytes"
+  },
+  "topologyMode": {
+    "semi_sync": "Semi-sync replication",
+    "group": "Group Replication",
+    "galera": "Galera",
+    "patroni": "Patroni",
+    "block-4-2": "block-4-2",
+    "mirror-3-dc": "mirror-3-dc",
+    "dedicated": "Dedicated",
+    "serverless": "Serverless"
   }
 }

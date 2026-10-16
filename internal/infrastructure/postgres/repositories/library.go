@@ -13,6 +13,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/gen/db"
 )
 
@@ -64,19 +65,44 @@ func listWindow(q library.ListQuery) (limit, offset int64) {
 
 // --- databases --------------------------------------------------------------
 
+// shapeJSON stores a topology shape; it always marshals.
+func shapeJSON(s topology.Shape) json.RawMessage {
+	raw, _ := json.Marshal(s) //nolint:errcheck // plain struct
+	return raw
+}
+
 func (r *LibraryRepo) InsertDatabase(ctx context.Context, d library.Database) error {
 	configs, _ := json.Marshal(d.Spec.Configs)                                //nolint:errcheck // map always marshals
 	external, _ := json.Marshal(map[string]string{"dsn": d.Spec.ExternalDSN}) //nolint:errcheck // map always marshals
 	err := r.q.InsertDatabase(ctx, db.InsertDatabaseParams{
 		ID: d.ID, TenantID: d.TenantID, Name: d.Name, Description: d.Description, Tags: tagsJSON(d.Tags), AuthorID: d.AuthorID,
 		Kind: string(d.Spec.Kind), Version: d.Spec.Version, Image: d.Spec.Image, Params: orEmpty(d.Spec.Params), Configs: orEmpty(configs), External: external, Runtime: orEmpty(d.Spec.Runtime),
-		TopologyLabel: d.Spec.TopologyLabel,
+		Topology: shapeJSON(d.Spec.Topology),
 	})
 	if err != nil {
 		if isUnique(err) {
 			return errs.Conflict("a database with this name exists").Because("a_database_with_this_name_exists")
 		}
 		return infraf("database: insert: %v", err)
+	}
+	return nil
+}
+
+func (r *LibraryRepo) DatabasesWithoutTopology(ctx context.Context, limit int) ([]uuid.UUID, error) {
+	rows, err := r.q.DatabasesWithoutTopology(ctx, int64(limit))
+	if err != nil {
+		return nil, infraf("database: without topology: %v", err)
+	}
+	out := make([]uuid.UUID, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, row.ID)
+	}
+	return out, nil
+}
+
+func (r *LibraryRepo) SetDatabaseTopology(ctx context.Context, id uuid.UUID, s topology.Shape) error {
+	if err := r.q.SetDatabaseTopology(ctx, db.SetDatabaseTopologyParams{Topology: shapeJSON(s), ID: id}); err != nil {
+		return infraf("database: set topology: %v", err)
 	}
 	return nil
 }
@@ -119,7 +145,7 @@ func (r *LibraryRepo) UpdateDatabase(ctx context.Context, id uuid.UUID, p librar
 		params.Runtime = orEmpty(spec.Runtime)
 		configs, _ := json.Marshal(spec.Configs) //nolint:errcheck // map always marshals
 		params.Configs = orEmpty(configs)
-		params.TopologyLabel = &spec.TopologyLabel
+		params.Topology = shapeJSON(spec.Topology)
 	}
 	n, err := r.q.UpdateDatabase(ctx, params)
 	if err != nil {

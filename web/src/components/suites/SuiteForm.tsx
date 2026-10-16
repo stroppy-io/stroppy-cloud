@@ -14,6 +14,7 @@ import {
   TextArea,
 } from '@grafana/ui'
 import { firstError } from '@helpers/form'
+import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
@@ -142,7 +143,7 @@ export function SuiteForm({
       (tests.data?.data ?? []).map((x) => ({
         label: x.name,
         value: x.id,
-        description: [x.summary?.db_kind, x.summary?.db_version, x.summary?.topology_label]
+        description: [x.summary?.db_kind, x.summary?.db_version, topologyText(x.summary?.topology)]
           .filter(Boolean)
           .join(' · '),
       })),

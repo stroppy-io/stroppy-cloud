@@ -38,7 +38,6 @@ export function expandCapacityDemo(
       schema: { id: 'db.postgres.params', version: '1' },
       configs: {},
       topology_preview: {
-        label: 'Patroni · 1 primary + 8 replicas',
         node_count: 14,
         nodes: [
           { role: 'db', engine: 'postgres', count: 1 },
@@ -76,7 +75,6 @@ export function expandCapacityDemo(
       schema: { id: 'db.ydb.params', version: '1' },
       configs: {},
       topology_preview: {
-        label: 'block-4-2 · 32 storage + 31 compute',
         node_count: 63,
         nodes: [
           { role: 'db', engine: 'ydb', count: 32 },
@@ -97,7 +95,6 @@ export function expandCapacityDemo(
       schema: { id: 'db.mysql.params', version: '1' },
       configs: {},
       topology_preview: {
-        label: '1 primary + 8 replicas · ProxySQL',
         node_count: 11,
         nodes: [
           { role: 'db', engine: 'mysql', count: 1 },
@@ -132,7 +129,7 @@ export function expandCapacityDemo(
         cpu: 32,
         memory_gb: 17,
         disk_gb: 20,
-        reason: '2048 VUs / 64; 128 load workers / 4',
+        reason: 'runner_load',
       },
     },
     description: `Sustained capacity measurement on ${db.name}.`,

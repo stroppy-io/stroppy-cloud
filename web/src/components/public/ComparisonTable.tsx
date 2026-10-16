@@ -5,6 +5,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Text, useStyles2 } from '@grafana/ui'
 import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { formatDate } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
 import {
   ReportSection,
@@ -72,7 +73,8 @@ export function ComparisonTable({
                   )}
                 </div>
                 <div className={styles.colSub}>
-                  {dbLabel(c.summary?.db_kind, c.summary?.db_version)} · {c.summary?.topology_label}
+                  {dbLabel(c.summary?.db_kind, c.summary?.db_version)} ·{' '}
+                  {topologyText(c.summary?.topology)}
                   <br />
                   {formatDate(c.started_at)} · {formatDuration(c.duration)}{' '}
                   <StatusBadge status={c.status} iconOnly />

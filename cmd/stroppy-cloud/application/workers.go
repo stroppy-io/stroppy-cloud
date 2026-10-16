@@ -48,6 +48,26 @@ func (a *Application) startWorkers() {
 			a.log.Ctx().Info(ctx, "qps series backfill", xlog.Int("stored", stored), xlog.Int("empty", empty), xlog.Int("skipped", skipped))
 		}
 	})
+	// One pass at startup: definitions, runs and share snapshots stored
+	// before the topology shape get one (runs before shares: shares copy
+	// the run's). Idempotent.
+	a.shutdown.Go(func(ctx context.Context) {
+		dbs, err := a.services.Library.BackfillTopology(ctx)
+		if err != nil {
+			a.log.Ctx().Warn(ctx, "topology backfill: databases", xlog.ErrorCause(err))
+		}
+		runs, err := a.services.Runs.BackfillTopology(ctx)
+		if err != nil {
+			a.log.Ctx().Warn(ctx, "topology backfill: runs", xlog.ErrorCause(err))
+		}
+		shares, err := a.services.Shares.BackfillTopology(ctx)
+		if err != nil {
+			a.log.Ctx().Warn(ctx, "topology backfill: shares", xlog.ErrorCause(err))
+		}
+		if dbs+runs+shares > 0 {
+			a.log.Ctx().Info(ctx, "topology backfill", xlog.Int("databases", dbs), xlog.Int("runs", runs), xlog.Int("shares", shares))
+		}
+	})
 	a.shutdown.Go(func(ctx context.Context) {
 		a.services.Schedules.Run(ctx, scheduleTick)
 	})

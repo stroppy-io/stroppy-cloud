@@ -5,6 +5,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Text, useStyles2 } from '@grafana/ui'
 import { dbLabel, formatDuration, formatMetric, formatNumber } from '@helpers/format'
 import { formatDateTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -99,7 +100,7 @@ export function ReportSummary({ run, title }: { run: SharedRun; title?: string }
             <span className={styles.fact}>
               {t('public.setup.topology')}
               <span className={styles.factV}>
-                {s.topology_label ?? run.topology?.label ?? '—'}
+                {topologyText(s.topology ?? run.topology) || '—'}
                 {s.node_count ? ` · ${s.node_count}n` : ''}
               </span>
             </span>

@@ -8,6 +8,7 @@ package topology
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -48,18 +49,60 @@ type Flow struct {
 	Port     int
 }
 
-// Requirement is the minimum hardware of a role.
+// Requirement is the minimum hardware of a role and what drove it: a
+// reason code (the contract's RequirementReason) with its numbers.
 type Requirement struct {
-	CPU      int
-	MemoryGB float64
-	DiskGB   float64
-	Reason   string
+	CPU          int
+	MemoryGB     float64
+	DiskGB       float64
+	Reason       string
+	ReasonParams map[string]string
+}
+
+// Requirement reasons.
+const (
+	// ReasonBaseline: the engine's own minimum (params: engine).
+	ReasonBaseline = "engine_baseline"
+	// ReasonWALArchive: the baseline plus room for the WAL archive.
+	ReasonWALArchive = "wal_archive"
+	// ReasonSharedBuffers: twice shared_buffers (params: shared_buffers_gb).
+	ReasonSharedBuffers = "shared_buffers"
+	// ReasonProxy: a proxy in front of the database (params: engine).
+	ReasonProxy = "proxy"
+	// ReasonEtcd: the etcd of Patroni.
+	ReasonEtcd = "etcd"
+	// ReasonImage: a database image, the stand's baseline.
+	ReasonImage = "image_baseline"
+	// ReasonCPUBound: a CPU-bound engine (params: engine).
+	ReasonCPUBound = "cpu_bound"
+	// ReasonMemtx: 1.5 × memtx memory + 1 GB (params: memtx_gb).
+	ReasonMemtx = "memtx"
+	// ReasonPDisks: pdisks × 40 GB + 20 GB filesystem (params: pdisks).
+	ReasonPDisks = "pdisks"
+	// ReasonRunnerLoad: virtual users and load workers (params: vus, load_workers).
+	ReasonRunnerLoad = "runner_load"
+)
+
+// RequirementReasons is every reason.
+var RequirementReasons = []string{ReasonBaseline, ReasonWALArchive, ReasonSharedBuffers, ReasonProxy, ReasonEtcd, ReasonImage, ReasonCPUBound, ReasonMemtx, ReasonPDisks, ReasonRunnerLoad}
+
+// Because is a requirement with its reason.
+func Because(cpu int, memGB, diskGB float64, reason string, params ...string) Requirement {
+	r := Requirement{CPU: cpu, MemoryGB: memGB, DiskGB: diskGB, Reason: reason}
+	if len(params) > 0 {
+		r.ReasonParams = map[string]string{}
+		for i := 0; i+1 < len(params); i += 2 {
+			r.ReasonParams[params[i]] = params[i+1]
+		}
+	}
+	return r
 }
 
 // Plan is the compiled topology.
 type Plan struct {
-	Kind  catalog.DatabaseKind
-	Label string
+	Kind catalog.DatabaseKind
+	// Mode is the flavor the nodes do not show (Modes); empty for none.
+	Mode  string
 	Nodes []Node
 	Flows []Flow
 	// Requirements per role (only roles with machines).
@@ -116,27 +159,68 @@ func (p *Plan) Colocate(role, engine, with string) {
 	p.Nodes = append(p.Nodes, Node{Role: role, Engine: engine, Count: 0, ColocatedWith: with})
 }
 
-// Label renders "engine + N replica(s) + patroni + haproxy".
-func Label(engine string, replicas int, replicaWord string, ha bool, haWord string, proxy bool, proxyWord string, extra bool, extraWord string) string {
-	parts := []string{engine}
-	switch replicas {
-	case 0:
-	case 1:
-		parts = append(parts, "1 "+replicaWord)
-	default:
-		parts = append(parts, fmt.Sprintf("%d %ss", replicas, replicaWord))
-	}
-	if ha {
-		parts = append(parts, haWord)
-	}
-	if proxy {
-		parts = append(parts, proxyWord)
-	}
-	if extra {
-		parts = append(parts, extraWord)
-	}
-	return strings.Join(parts, " + ")
+// Modes: the flavor of a topology its nodes do not show (the contract's
+// TopologyMode); empty for a plain one. The values are the params' own.
+const (
+	ModeSemiSync   = "semi_sync"
+	ModeGroup      = "group"
+	ModeGalera     = "galera"
+	ModePatroni    = "patroni"
+	ModeBlock42    = "block-4-2"
+	ModeMirror3DC  = "mirror-3-dc"
+	ModeDedicated  = "dedicated"
+	ModeServerless = "serverless"
+)
+
+// Modes is every mode.
+var Modes = []string{ModeSemiSync, ModeGroup, ModeGalera, ModePatroni, ModeBlock42, ModeMirror3DC, ModeDedicated, ModeServerless}
+
+// Shape is a topology as lists show it: the mode and the nodes; the UI
+// names it in its language.
+type Shape struct {
+	Mode  string      `json:"mode,omitempty"`
+	Nodes []ShapeNode `json:"nodes"`
 }
+
+// ShapeNode is one role of a shape; Count 0 shares another role's machines.
+type ShapeNode struct {
+	Role   string `json:"role"`
+	Engine string `json:"engine,omitempty"`
+	Count  int    `json:"count"`
+}
+
+// Shape is the plan's shape.
+func (p Plan) Shape() Shape {
+	out := Shape{Mode: p.Mode, Nodes: make([]ShapeNode, 0, len(p.Nodes))}
+	for _, n := range p.Nodes {
+		out.Nodes = append(out.Nodes, ShapeNode{Role: n.Role, Engine: n.Engine, Count: n.Count})
+	}
+	return out
+}
+
+// String is the shape for plain-text exports (the UI names it itself):
+// "patroni: db ×1, db-replica ×2, patroni (on db), proxy haproxy ×1".
+func (s Shape) String() string {
+	parts := make([]string, 0, len(s.Nodes))
+	for _, n := range s.Nodes {
+		switch {
+		case n.Count == 0:
+			parts = append(parts, n.Role+" (shared)")
+		case n.Engine != "" && n.Engine != n.Role:
+			parts = append(parts, fmt.Sprintf("%s %s ×%d", n.Role, n.Engine, n.Count))
+		default:
+			parts = append(parts, fmt.Sprintf("%s ×%d", n.Role, n.Count))
+		}
+	}
+	out := strings.Join(parts, ", ")
+	if s.Mode != "" {
+		out = s.Mode + ": " + out
+	}
+	return out
+}
+
+// IsZero reports a shape with nothing in it (a run from before shapes).
+func (s Shape) IsZero() bool { return s.Mode == "" && len(s.Nodes) == 0 }
 
 // RunnerRequirement is the runner's hardware from the workload: virtual
 // users drive CPU, load workers drive memory.
@@ -149,7 +233,7 @@ func RunnerRequirement(maxVUs, maxLoadWorkers int) Requirement {
 		cpu = 2
 	}
 	mem := math.Max(2, math.Ceil(float64(maxVUs)/128)+1)
-	return Requirement{CPU: cpu, MemoryGB: mem, DiskGB: 20, Reason: fmt.Sprintf("%d VUs, %d load workers", maxVUs, maxLoadWorkers)}
+	return Because(cpu, mem, 20, ReasonRunnerLoad, "vus", strconv.Itoa(maxVUs), "load_workers", strconv.Itoa(maxLoadWorkers))
 }
 
 // IntOf reads an integer param, def when absent.

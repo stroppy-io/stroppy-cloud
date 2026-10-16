@@ -214,7 +214,7 @@ components:
         unit: { type: string }
         db_kind: { $ref: '#/components/schemas/DatabaseKind' }
         db_version: { type: string }
-        topology_label: { type: string }
+        topology: { $ref: '#/components/schemas/TopologyShape' }
         node_count: { type: integer }
         sizes: { $ref: '#/components/schemas/RoleSizes' }
         workload_name: { type: string }

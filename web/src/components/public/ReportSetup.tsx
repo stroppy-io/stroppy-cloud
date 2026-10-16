@@ -6,6 +6,7 @@ import { SchemaForm } from '@components/schema/SchemaForm'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Tag, Text, useStyles2 } from '@grafana/ui'
+import { topologyText } from '@helpers/topology'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import {
@@ -190,7 +191,7 @@ export function ReportSetup({ run, index }: { run: SharedRun; index: number }) {
           <SubTitle>
             {t('public.setup.topology')}{' '}
             <Text color="secondary" variant="body">
-              · {run.topology?.label ?? run.summary.topology_label ?? '—'}
+              · {topologyText(run.summary.topology ?? run.topology) || '—'}
               {run.topology?.node_count !== undefined &&
                 ` · ${t('public.setup.nodes', { count: run.topology.node_count })}`}
             </Text>

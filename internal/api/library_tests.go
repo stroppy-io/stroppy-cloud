@@ -208,7 +208,7 @@ func (h *Handler) testOf(t library.Test, fit library.Fit, res library.Resolved, 
 	}
 	summary := oas.TestSummary{}
 	if res.DatabaseDerived != nil {
-		summary.TopologyLabel = oas.NewOptString(res.DatabaseDerived.Plan.Label)
+		summary.Topology = shapeOf(res.DatabaseDerived.Plan.Shape())
 		summary.NodeCount = oas.NewOptInt(res.DatabaseDerived.Plan.NodeCount())
 	}
 	if res.Database != nil {

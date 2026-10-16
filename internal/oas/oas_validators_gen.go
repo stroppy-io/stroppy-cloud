@@ -6610,6 +6610,24 @@ func (s *RatingEntry) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.Topology.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "topology",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.Sizes.Get(); ok {
 			if err := func() error {
 				if err := value.Validate(); err != nil {
@@ -6780,6 +6798,33 @@ func (s RatingPeriod) Validate() error {
 	}
 }
 
+func (s RequirementReason) Validate() error {
+	switch s {
+	case "engine_baseline":
+		return nil
+	case "wal_archive":
+		return nil
+	case "shared_buffers":
+		return nil
+	case "proxy":
+		return nil
+	case "etcd":
+		return nil
+	case "image_baseline":
+		return nil
+	case "cpu_bound":
+		return nil
+	case "memtx":
+		return nil
+	case "pdisks":
+		return nil
+	case "runner_load":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s Requirements) Validate() error {
 	var failures []validate.FieldError
 	for key, elem := range s {
@@ -6901,6 +6946,24 @@ func (s *RoleRequirement) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "disk_gb",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Reason.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "reason",
 			Error: err,
 		})
 	}
@@ -8319,6 +8382,24 @@ func (s *RunSummary) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "protocol",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Topology.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "topology",
 			Error: err,
 		})
 	}
@@ -12794,6 +12875,24 @@ func (s *TestSummary) Validate() error {
 		})
 	}
 	if err := func() error {
+		if value, ok := s.Topology.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "topology",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.Protocol.Get(); ok {
 			if err := func() error {
 				if err := value.Validate(); err != nil {
@@ -13265,12 +13364,53 @@ func (s *TestWriteWorkload1) Validate() error {
 	return nil
 }
 
+func (s TopologyMode) Validate() error {
+	switch s {
+	case "semi_sync":
+		return nil
+	case "group":
+		return nil
+	case "galera":
+		return nil
+	case "patroni":
+		return nil
+	case "block-4-2":
+		return nil
+	case "mirror-3-dc":
+		return nil
+	case "dedicated":
+		return nil
+	case "serverless":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *TopologyPreview) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
 
 	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Mode.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "mode",
+			Error: err,
+		})
+	}
 	if err := func() error {
 		if s.Nodes == nil {
 			return errors.New("nil is invalid value")
@@ -13353,6 +13493,87 @@ func (s TopologyRole) Validate() error {
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
+}
+
+func (s *TopologyShape) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Mode.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "mode",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.Nodes == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Nodes {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "nodes",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *TopologyShapeNodesItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
 }
 
 func (s Trigger) Validate() error {

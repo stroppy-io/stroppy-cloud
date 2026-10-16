@@ -607,28 +607,28 @@ func (q *Queries) ExpireInvites(ctx context.Context) (int64, error) {
 	return tag.RowsAffected(), err
 }
 
-const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology_label)
+const insertDatabaseSQL = `INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);`
 
 type InsertDatabaseParams struct {
-	ID            uuid.UUID
-	TenantID      uuid.UUID
-	Name          string
-	Description   string
-	Tags          json.RawMessage
-	AuthorID      *uuid.UUID
-	Kind          string
-	Version       string
-	Image         string
-	Params        json.RawMessage
-	Configs       json.RawMessage
-	Runtime       json.RawMessage
-	External      json.RawMessage
-	TopologyLabel string
+	ID          uuid.UUID
+	TenantID    uuid.UUID
+	Name        string
+	Description string
+	Tags        json.RawMessage
+	AuthorID    *uuid.UUID
+	Kind        string
+	Version     string
+	Image       string
+	Params      json.RawMessage
+	Configs     json.RawMessage
+	Runtime     json.RawMessage
+	External    json.RawMessage
+	Topology    json.RawMessage
 }
 
 func (q *Queries) InsertDatabase(ctx context.Context, arg InsertDatabaseParams) error {
-	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.External, arg.TopologyLabel)
+	_, err := q.db.Exec(ctx, insertDatabaseSQL, arg.ID, arg.TenantID, arg.Name, arg.Description, arg.Tags, arg.AuthorID, arg.Kind, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.External, arg.Topology)
 	return err
 }
 
@@ -669,25 +669,25 @@ SET name        = COALESCE($1::text, name),
     params      = COALESCE($6::jsonb, params),
     configs     = COALESCE($7::jsonb, configs),
     runtime     = COALESCE($8::jsonb, runtime),
-    topology_label = COALESCE($9::text, topology_label),
+    topology = COALESCE($9::jsonb, topology),
     updated_at  = now()
 WHERE id = $10 AND deleted_at IS NULL;`
 
 type UpdateDatabaseParams struct {
-	Name          *string
-	Description   *string
-	Tags          json.RawMessage
-	Version       *string
-	Image         *string
-	Params        json.RawMessage
-	Configs       json.RawMessage
-	Runtime       json.RawMessage
-	TopologyLabel *string
-	ID            uuid.UUID
+	Name        *string
+	Description *string
+	Tags        json.RawMessage
+	Version     *string
+	Image       *string
+	Params      json.RawMessage
+	Configs     json.RawMessage
+	Runtime     json.RawMessage
+	Topology    json.RawMessage
+	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateDatabase(ctx context.Context, arg UpdateDatabaseParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.TopologyLabel, arg.ID)
+	tag, err := q.db.Exec(ctx, updateDatabaseSQL, arg.Name, arg.Description, arg.Tags, arg.Version, arg.Image, arg.Params, arg.Configs, arg.Runtime, arg.Topology, arg.ID)
 	return tag.RowsAffected(), err
 }
 
@@ -985,6 +985,45 @@ type InlineWorkloadIntoTestsParams struct {
 func (q *Queries) InlineWorkloadIntoTests(ctx context.Context, arg InlineWorkloadIntoTestsParams) (int64, error) {
 	tag, err := q.db.Exec(ctx, inlineWorkloadIntoTestsSQL, arg.Spec, arg.WorkloadID)
 	return tag.RowsAffected(), err
+}
+
+const databasesWithoutTopologySQL = `-- Definitions stored before the topology shape (backfill).
+SELECT id FROM databases WHERE deleted_at IS NULL AND topology = '{}'::jsonb ORDER BY created_at LIMIT $1;`
+
+type DatabasesWithoutTopologyRow struct {
+	ID uuid.UUID
+}
+
+func (q *Queries) DatabasesWithoutTopology(ctx context.Context, lim int64) ([]DatabasesWithoutTopologyRow, error) {
+	rows, err := q.db.Query(ctx, databasesWithoutTopologySQL, lim)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DatabasesWithoutTopologyRow
+	for rows.Next() {
+		var i DatabasesWithoutTopologyRow
+		if err := rows.Scan(&i.ID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const setDatabaseTopologySQL = `UPDATE databases SET topology = $1 WHERE id = $2;`
+
+type SetDatabaseTopologyParams struct {
+	Topology json.RawMessage
+	ID       uuid.UUID
+}
+
+func (q *Queries) SetDatabaseTopology(ctx context.Context, arg SetDatabaseTopologyParams) error {
+	_, err := q.db.Exec(ctx, setDatabaseTopologySQL, arg.Topology, arg.ID)
+	return err
 }
 
 const upsertMemberSQL = `INSERT INTO tenant_members (tenant_id, user_id, role)
@@ -2533,6 +2572,48 @@ func (q *Queries) LiveCellCounts(ctx context.Context, tenantID uuid.UUID) ([]Liv
 	return items, nil
 }
 
+const runsWithoutTopologySQL = `-- Runs stored before the topology shape (backfill).
+SELECT id, snapshot FROM runs WHERE NOT (summary ? 'topology') ORDER BY created_at LIMIT $1;`
+
+type RunsWithoutTopologyRow struct {
+	ID       uuid.UUID
+	Snapshot json.RawMessage
+}
+
+func (q *Queries) RunsWithoutTopology(ctx context.Context, lim int64) ([]RunsWithoutTopologyRow, error) {
+	rows, err := q.db.Query(ctx, runsWithoutTopologySQL, lim)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []RunsWithoutTopologyRow
+	for rows.Next() {
+		var i RunsWithoutTopologyRow
+		if err := rows.Scan(&i.ID, &i.Snapshot); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const setRunTopologySQL = `UPDATE runs SET summary = jsonb_set(summary, '{topology}', $1::jsonb),
+                snapshot = jsonb_set(snapshot, '{topology}', $1::jsonb)
+WHERE id = $2;`
+
+type SetRunTopologyParams struct {
+	Topology json.RawMessage
+	ID       uuid.UUID
+}
+
+func (q *Queries) SetRunTopology(ctx context.Context, arg SetRunTopologyParams) error {
+	_, err := q.db.Exec(ctx, setRunTopologySQL, arg.Topology, arg.ID)
+	return err
+}
+
 const ensureSettingsSQL = `INSERT INTO tenant_settings (tenant_id) VALUES ($1)
 ON CONFLICT (tenant_id) DO UPDATE SET tenant_id = EXCLUDED.tenant_id
 RETURNING tenant_id, run_retention_days, rating_tenant, rating_global, default_keep, notification_emails, limits_override, updated_at;`
@@ -2846,6 +2927,36 @@ UPDATE shares SET revoked_at = now(), updated_at = now() WHERE tenant_id = $1 AN
 func (q *Queries) RevokeSharesOfTenant(ctx context.Context, tenantID uuid.UUID) (int64, error) {
 	tag, err := q.db.Exec(ctx, revokeSharesOfTenantSQL, tenantID)
 	return tag.RowsAffected(), err
+}
+
+const allShareSnapshotsSQL = `-- Every share's snapshot (backfills).
+SELECT id, snapshot, captured_at, title FROM shares ORDER BY created_at;`
+
+type AllShareSnapshotsRow struct {
+	ID         uuid.UUID
+	Snapshot   json.RawMessage
+	CapturedAt time.Time
+	Title      string
+}
+
+func (q *Queries) AllShareSnapshots(ctx context.Context) ([]AllShareSnapshotsRow, error) {
+	rows, err := q.db.Query(ctx, allShareSnapshotsSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AllShareSnapshotsRow
+	for rows.Next() {
+		var i AllShareSnapshotsRow
+		if err := rows.Scan(&i.ID, &i.Snapshot, &i.CapturedAt, &i.Title); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const insertSuiteSQL = `INSERT INTO suites (id, tenant_id, name, description, tags, author_id, tests, axes, cells, concurrency, defaults)
@@ -4433,7 +4544,7 @@ func (q *Queries) AdminRuns(ctx context.Context, arg AdminRunsParams) ([]AdminRu
 		args = append(args, arg.Off)
 		positions[6] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at, r.admitted_at, r.queue,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.status = ANY($%d::text[]))\n  AND ($%d::text = '' OR t.slug = $%d::text)\nORDER BY\n  -- default: live runs (pending, running, cancelling), then the newest.\n  CASE WHEN $%d::text = 'default' THEN r.status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'tenant' AND NOT $%d::boolean THEN t.slug END ASC,\n  CASE WHEN $%d::text = 'tenant' AND $%d::boolean THEN t.slug END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN r.name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN r.name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN r.status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN r.status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN r.trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN r.trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN r.summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN r.summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN r.summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN r.summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN r.summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN r.summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN r.summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN r.summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN r.author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN r.author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN r.tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN r.tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN r.duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN r.duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN r.started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN r.started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN r.finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN r.finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN r.updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN r.updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN r.created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN r.created_at END DESC,\n  r.created_at DESC, r.id\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[5], positions[6]))
+	b.WriteString(fmt.Sprintf("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at, r.admitted_at, r.queue,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.status = ANY($%d::text[]))\n  AND ($%d::text = '' OR t.slug = $%d::text)\nORDER BY\n  -- default: live runs (pending, running, cancelling), then the newest.\n  CASE WHEN $%d::text = 'default' THEN r.status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'tenant' AND NOT $%d::boolean THEN t.slug END ASC,\n  CASE WHEN $%d::text = 'tenant' AND $%d::boolean THEN t.slug END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN r.name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN r.name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN r.status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN r.status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN r.trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN r.trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN r.summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN r.summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN r.summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN r.summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN r.summary->'topology' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN r.summary->'topology' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN r.summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN r.summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN r.author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN r.author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN r.tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN r.tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN r.duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN r.duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN r.started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN r.started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN r.finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN r.finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN r.updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN r.updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN r.created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN r.created_at END DESC,\n  r.created_at DESC, r.id\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[5], positions[6]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4520,7 +4631,7 @@ func (q *Queries) DatabasesOfTenant(ctx context.Context, arg DatabasesOfTenantPa
 		args = append(args, arg.Off)
 		positions[9] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("-- Filters are optional; sort is decided by the caller through sort_key/desc.\n-- `topology` sorts by the plan label written with the params.\n-- `usages` counts the live tests referencing the definition.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR kind = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN topology_label END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN topology_label END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
+	b.WriteString(fmt.Sprintf("-- Filters are optional; sort is decided by the caller through sort_key/desc.\n-- `topology` sorts by the plan label written with the params.\n-- `usages` counts the live tests referencing the definition.\nSELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at\nFROM databases\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR description ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR kind = ANY($%d::text[]))\n  AND ($%d::jsonb IS NULL OR tags @> $%d::jsonb)\nORDER BY\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'kind' AND NOT $%d::boolean THEN kind END ASC,\n  CASE WHEN $%d::text = 'kind' AND $%d::boolean THEN kind END DESC,\n  CASE WHEN $%d::text = 'version' AND NOT $%d::boolean THEN version END ASC,\n  CASE WHEN $%d::text = 'version' AND $%d::boolean THEN version END DESC,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN topology END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN topology END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'usages' AND NOT $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,\n  CASE WHEN $%d::text = 'usages' AND $%d::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  updated_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[6], positions[7], positions[8], positions[9]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4942,7 +5053,7 @@ func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]R
 		args = append(args, arg.Off)
 		positions[24] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue\nFROM runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR test_id::text = $%d::text)\n  AND ($%d::text = '' OR suite_run_id::text = $%d::text)\n  AND (NOT $%d::boolean OR suite_run_id IS NULL)\n  AND ($%d::jsonb IS NULL OR labels @> $%d::jsonb)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)\n  AND ($%d::double precision = 0 OR duration_seconds >= $%d::double precision)\n  AND ($%d::double precision = 0 OR duration_seconds <= $%d::double precision)\n  AND ($%d::boolean = false OR stand_kept)\n  AND ($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))\nORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[11], positions[12], positions[12], positions[13], positions[13], positions[14], positions[14], positions[15], positions[15], positions[16], positions[16], positions[17], positions[17], positions[18], positions[19], positions[19], positions[20], positions[21], positions[20], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[23], positions[24]))
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue\nFROM runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR test_id::text = $%d::text)\n  AND ($%d::text = '' OR suite_run_id::text = $%d::text)\n  AND (NOT $%d::boolean OR suite_run_id IS NULL)\n  AND ($%d::jsonb IS NULL OR labels @> $%d::jsonb)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)\n  AND ($%d::double precision = 0 OR duration_seconds >= $%d::double precision)\n  AND ($%d::double precision = 0 OR duration_seconds <= $%d::double precision)\n  AND ($%d::boolean = false OR stand_kept)\n  AND ($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))\nORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->'topology' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->'topology' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[11], positions[12], positions[12], positions[13], positions[13], positions[14], positions[14], positions[15], positions[15], positions[16], positions[16], positions[17], positions[17], positions[18], positions[19], positions[19], positions[20], positions[21], positions[20], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[23], positions[24]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err

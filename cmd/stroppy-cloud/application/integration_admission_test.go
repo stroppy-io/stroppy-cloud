@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestE2EConcurrentLaunch(t *testing.T) {
@@ -94,10 +95,23 @@ func TestE2EConcurrentLaunch(t *testing.T) {
 			if len(listed.Data) != len(ids) {
 				t.Error("unexpected stored runs")
 			}
-			for id := range ids {
-				e.graphene.release(id)
-				finishRun(t, e, base, tok, id)
-			}
+			// A queued run starts (held, like the others) only once a
+			// started one finished: release whatever has started until all
+			// are done.
+			eventually(t, 20*time.Second, func() bool {
+				e.app.services.Runs.AdmitQueued(e.ctx)
+				done := 0
+				for id := range ids {
+					e.graphene.release(id)
+					e.app.services.Projector.Tick(e.ctx)
+					var r runView
+					e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &r)
+					if r.Status == "completed" || r.Status == "failed" || r.Status == "cancelled" {
+						done++
+					}
+				}
+				return done == len(ids)
+			})
 		})
 	}
 }

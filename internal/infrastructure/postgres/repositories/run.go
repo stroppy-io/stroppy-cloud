@@ -13,6 +13,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/postgres/gen/db"
 )
 
@@ -324,6 +325,28 @@ func (r *RunRepo) SetQPSSeries(ctx context.Context, id uuid.UUID, series []run.P
 func (r *RunRepo) SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *time.Time) error {
 	if err := r.q.SetRunKeep(ctx, db.SetRunKeepParams{ID: id, StandKept: kept, KeepUntil: until}); err != nil {
 		return infraf("run: set keep: %v", err)
+	}
+	return nil
+}
+
+func (r *RunRepo) WithoutTopology(ctx context.Context, limit int) ([]run.Run, error) {
+	rows, err := r.q.RunsWithoutTopology(ctx, int64(limit))
+	if err != nil {
+		return nil, infraf("run: without topology: %v", err)
+	}
+	out := make([]run.Run, 0, len(rows))
+	for _, row := range rows {
+		x := run.Run{ID: row.ID}
+		_ = json.Unmarshal(row.Snapshot, &x.Snapshot) //nolint:errcheck // stored by us
+		out = append(out, x)
+	}
+	return out, nil
+}
+
+func (r *RunRepo) SetTopology(ctx context.Context, id uuid.UUID, s topology.Shape) error {
+	raw, _ := json.Marshal(s) //nolint:errcheck // plain struct
+	if err := r.q.SetRunTopology(ctx, db.SetRunTopologyParams{Topology: raw, ID: id}); err != nil {
+		return infraf("run: set topology: %v", err)
 	}
 	return nil
 }

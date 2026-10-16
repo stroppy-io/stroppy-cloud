@@ -391,7 +391,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	r.Snapshot = Snapshot{
 		Database: *dbSpec, DatabaseName: dbName, Workload: *wlSpec, WorkloadName: wlName,
 		Sizes: spec.Sizes, Execution: spec.Execution, ProviderProfile: Ref{ID: res.Profile.ID, Name: res.Profile.Name}, ProviderKind: string(res.Profile.Kind),
-		EffectiveConfigs: res.DatabaseDerived.EffectiveConfigs, Machines: compiled.Machines, TopologyLabel: res.DatabaseDerived.Plan.Label,
+		EffectiveConfigs: res.DatabaseDerived.EffectiveConfigs, Machines: compiled.Machines, Topology: res.DatabaseDerived.Plan.Shape(),
 	}
 	if spec.Keep > 0 {
 		r.Snapshot.Keep = spec.Keep.String()
@@ -403,7 +403,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	r.Summary = Summary{
 		DBKind: string(dbSpec.Kind), DBVersion: dbSpec.Version, WorkloadName: workloadLabel(wlName, *wlSpec),
 		Protocol: string(wlSpec.Protocol), StroppyVersion: wlSpec.StroppyVersion,
-		TopologyLabel: res.DatabaseDerived.Plan.Label, NodeCount: len(compiled.Machines), ProviderKind: string(res.Profile.Kind),
+		Topology: res.DatabaseDerived.Plan.Shape(), NodeCount: len(compiled.Machines), ProviderKind: string(res.Profile.Kind),
 		ProviderProfile: &Ref{ID: res.Profile.ID, Name: res.Profile.Name}, Sizes: sizes,
 	}
 	r.State = NewState(compiled.Machines, segmentNames(*wlSpec))

@@ -1,8 +1,6 @@
 package dbkind
 
 import (
-	"fmt"
-
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
@@ -89,14 +87,16 @@ func planMySQL(p *topology.Plan, params map[string]any) {
 			p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDBReplica, Protocol: "mysql", Port: 3306})
 		}
 		p.Client = topology.Endpoint{Role: topology.RoleProxy, Protocol: "mysql", Port: 6033}
-		p.Requirements[topology.RoleProxy] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "proxysql"}
+		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "proxysql")
 	}
-	req := topology.Requirement{CPU: 2, MemoryGB: 4, DiskGB: 20, Reason: "mysql baseline"}
+	req := topology.Because(2, 4, 20, topology.ReasonBaseline, "engine", "mysql")
 	p.Requirements[topology.RoleDB] = req
 	if replicas > 0 {
 		p.Requirements[topology.RoleDBReplica] = req
 	}
-	p.Label = topology.Label("mysql", replicas, "replica", mode == "group", "group replication", proxysql > 0, "proxysql", false, "")
+	if replicas > 0 && mode != "async" {
+		p.Mode = mode
+	}
 }
 
 func planMariaDB(p *topology.Plan, params map[string]any) {
@@ -133,19 +133,14 @@ func planMariaDB(p *topology.Plan, params map[string]any) {
 		if replicas > 0 {
 			p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDBReplica, Protocol: "mysql", Port: 3306})
 		}
-		p.Requirements[topology.RoleProxy] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "proxy"}
+		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", p.Nodes[len(p.Nodes)-1].Engine)
 	}
-	req := topology.Requirement{CPU: 2, MemoryGB: 4, DiskGB: 20, Reason: "mariadb baseline"}
+	req := topology.Because(2, 4, 20, topology.ReasonBaseline, "engine", "mariadb")
 	p.Requirements[topology.RoleDB] = req
 	if replicas > 0 {
 		p.Requirements[topology.RoleDBReplica] = req
 	}
-	if mode == "galera" {
-		p.Label = fmt.Sprintf("galera ×%d", topology.IntOf(params, "galera_nodes", 3))
-		if p.Client.Role == topology.RoleProxy {
-			p.Label += " + " + p.Nodes[len(p.Nodes)-1].Engine
-		}
-		return
+	if mode == topology.ModeGalera || (replicas > 0 && mode == topology.ModeSemiSync) {
+		p.Mode = mode
 	}
-	p.Label = topology.Label("mariadb", replicas, "replica", false, "", p.Client.Role == topology.RoleProxy, "proxy", false, "")
 }

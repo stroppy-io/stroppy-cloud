@@ -59,7 +59,7 @@ func (h *Handler) workloadOf(w library.Workload, derived library.WorkloadDerived
 		out.Validation = validationErrOf(derived.Validation)
 		return out
 	}
-	out.Requirements = oas.NewOptRequirements(oas.Requirements{"runner": oas.RoleRequirement{CPU: oas.NewOptInt(derived.Runner.CPU), MemoryGB: oas.NewOptFloat64(derived.Runner.MemoryGB), DiskGB: oas.NewOptFloat64(derived.Runner.DiskGB), Reason: oas.NewOptString(derived.Runner.Reason)}})
+	out.Requirements = oas.NewOptRequirements(oas.Requirements{"runner": requirementOf(derived.Runner)})
 	out.Validation = oas.NewOptValidationResult(oas.ValidationResult{Errors: []oas.ValidationError{}})
 	return out
 }
@@ -211,7 +211,7 @@ func (h *Handler) PreviewWorkload(ctx context.Context, req *oas.WorkloadWrite, p
 	}
 	return &oas.WorkloadPreview{
 		Validation:      oas.ValidationResult{Errors: []oas.ValidationError{}},
-		Requirements:    oas.NewOptRequirements(oas.Requirements{"runner": oas.RoleRequirement{CPU: oas.NewOptInt(derived.Runner.CPU), MemoryGB: oas.NewOptFloat64(derived.Runner.MemoryGB), DiskGB: oas.NewOptFloat64(derived.Runner.DiskGB), Reason: oas.NewOptString(derived.Runner.Reason)}}),
+		Requirements:    oas.NewOptRequirements(oas.Requirements{"runner": requirementOf(derived.Runner)}),
 		SegmentsSummary: segmentsSummaryOf(derived.Segments),
 	}, nil
 }

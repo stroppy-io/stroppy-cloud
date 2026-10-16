@@ -45,7 +45,7 @@ func TestE2ELibrary(t *testing.T) {
 		var got struct {
 			ID              string `json:"id"`
 			TopologyPreview struct {
-				Label     string `json:"label"`
+				Mode      string `json:"mode"`
 				NodeCount int    `json:"node_count"`
 			} `json:"topology_preview"`
 			Requirements     map[string]map[string]any            `json:"requirements"`
@@ -58,7 +58,7 @@ func TestE2ELibrary(t *testing.T) {
 			"configs": map[string]any{"db": map[string]any{"cfg.postgresql.conf@17": map[string]any{"shared_buffers": 2048}}},
 		}, tok), http.StatusCreated, &got)
 		dbID = got.ID
-		if got.TopologyPreview.NodeCount != 1+2+3+1+1 || !strings.Contains(got.TopologyPreview.Label, "patroni") {
+		if got.TopologyPreview.NodeCount != 1+2+3+1+1 || got.TopologyPreview.Mode != "patroni" {
 			t.Fatalf("topology %+v", got.TopologyPreview)
 		}
 		if got.Params["etcd_nodes"] == nil || got.Requirements["db"]["cpu"] == nil {
@@ -81,11 +81,11 @@ func TestE2ELibrary(t *testing.T) {
 				Errors []any `json:"errors"`
 			} `json:"validation"`
 			TopologyPreview struct {
-				Label string `json:"label"`
+				Mode string `json:"mode"`
 			} `json:"topology_preview"`
 		}
 		e.want(e.req(http.MethodPost, base+"/databases:preview", map[string]any{"name": "x", "kind": "mysql", "version": "8.4", "params": map[string]any{"version": "8.4", "replicas": 1, "replication": "semi_sync"}}, tok), http.StatusOK, &preview)
-		if len(preview.Validation.Errors) != 0 || preview.TopologyPreview.Label != "mysql + 1 replica" {
+		if len(preview.Validation.Errors) != 0 || preview.TopologyPreview.Mode != "semi_sync" {
 			t.Fatalf("preview %+v", preview)
 		}
 		var list struct {

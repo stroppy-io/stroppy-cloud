@@ -19,6 +19,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/provider"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/settings"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
 
 // Remote errors retain their meaning across the infrastructure boundary.
@@ -88,7 +89,9 @@ type Snapshot struct {
 	// EffectiveConfigs: role → config schema id → resolved value.
 	EffectiveConfigs map[string]map[string]json.RawMessage `json:"effective_configs,omitempty"`
 	Machines         []MachineSnapshot                     `json:"machines"`
-	TopologyLabel    string                                `json:"topology_label,omitempty"`
+	// Topology is the plan's shape (empty for runs from before shapes until
+	// the backfill fills it).
+	Topology topology.Shape `json:"topology,omitzero"`
 }
 
 // Ref is an id with a name.
@@ -117,7 +120,7 @@ type Summary struct {
 	WorkloadName    string             `json:"workload_name,omitempty"`
 	Protocol        string             `json:"protocol,omitempty"`
 	StroppyVersion  string             `json:"stroppy_version,omitempty"`
-	TopologyLabel   string             `json:"topology_label,omitempty"`
+	Topology        topology.Shape     `json:"topology,omitzero"`
 	NodeCount       int                `json:"node_count,omitempty"`
 	ProviderKind    string             `json:"provider_kind,omitempty"`
 	ProviderProfile *Ref               `json:"provider_profile,omitempty"`
@@ -360,6 +363,9 @@ type Repository interface {
 	SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *time.Time) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
 
+	// WithoutTopology lists runs stored before the topology shape.
+	WithoutTopology(ctx context.Context, limit int) ([]Run, error)
+	SetTopology(ctx context.Context, id uuid.UUID, s topology.Shape) error
 	// Queued lists every queued run, oldest first per tenant.
 	Queued(ctx context.Context) ([]Run, error)
 	// QueuedOf lists the tenant's queued runs, oldest first.

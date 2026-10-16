@@ -24,6 +24,7 @@ import {
   Text,
   useStyles2,
 } from '@grafana/ui'
+import { topologyText } from '@helpers/topology'
 import { useSchemaValidate } from '@hooks/useSchemaValidate'
 import { useTenant } from '@hooks/useTenant'
 import { useDebouncedCallback } from '@tanstack/react-pacer'
@@ -132,7 +133,9 @@ export function DatabaseDetailPage({
         badge={
           <Stack gap={0.5}>
             <Badge color="blue" text={kindVersion(cat, db.kind, db.version)} />
-            {db.topology_preview && <Badge color="darkgrey" text={db.topology_preview.label} />}
+            {db.topology_preview && (
+              <Badge color="darkgrey" text={topologyText(db.topology_preview)} />
+            )}
             {db.image && <Badge color="purple" icon="cube" text={t('library.build.badge')} />}
             {!cat?.deployable && cat && (
               <Badge color="orange" text={t('library.wizard.db.notDeployable')} />
@@ -207,7 +210,10 @@ export function DatabaseDetailPage({
                     '—'
                   ),
                 },
-                { label: t('library.columns.topology'), value: db.topology_preview?.label ?? '—' },
+                {
+                  label: t('library.columns.topology'),
+                  value: topologyText(db.topology_preview) || '—',
+                },
                 {
                   label: t('library.build.image.title'),
                   value: ownImage(db) ? (

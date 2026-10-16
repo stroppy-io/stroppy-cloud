@@ -25,6 +25,7 @@ import { SeedExamplesButton } from '@components/examples/SeedExamplesButton'
 import { RelativeTime } from '@components/RelativeTime'
 import { UserLabel } from '@components/UserAvatar'
 import { Button, ConfirmModal, Stack } from '@grafana/ui'
+import { topologyText } from '@helpers/topology'
 import { toYaml } from '@helpers/yaml'
 import { useTenant } from '@hooks/useTenant'
 import { downloadText, safeFilename } from '@lib/download'
@@ -315,12 +316,12 @@ export function DatabaseListPage({
         header: t('library.columns.topology'),
         minWidth: 240,
         sortKey: 'topology',
-        value: (r) => r.topology_preview?.label,
+        value: (r) => topologyText(r.topology_preview),
         render: (r) => {
           const tp = r.topology_preview
           const primary = tp
             ? [
-                tp.label,
+                topologyText(tp),
                 tp.node_count ? t('library.topology.nodes', { count: tp.node_count }) : undefined,
               ]
                 .filter(Boolean)

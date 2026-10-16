@@ -1,8 +1,8 @@
 package dbkind
 
 import (
-	"fmt"
 	"math"
+	"strconv"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -62,12 +62,8 @@ func planPicodata(p *topology.Plan, params map[string]any) {
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDB, Protocol: p.Client.Protocol, Port: p.Client.Port})
 		p.Client.Role = topology.RoleProxy
 		p.Client.Port = 5000
-		p.Requirements[topology.RoleProxy] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "haproxy"}
+		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "haproxy")
 	}
 	memtx := float64(topology.IntOf(params, "memtx_memory_mb", 2048)) / 1024
-	p.Requirements[topology.RoleDB] = topology.Requirement{CPU: 2, MemoryGB: math.Ceil(memtx*1.5) + 1, DiskGB: 20, Reason: "1.5× memtx_memory + 1 GB"}
-	p.Label = fmt.Sprintf("picodata ×%d", instances)
-	if haproxy > 0 {
-		p.Label += " + haproxy"
-	}
+	p.Requirements[topology.RoleDB] = topology.Because(2, math.Ceil(memtx*1.5)+1, 20, topology.ReasonMemtx, "memtx_gb", strconv.FormatFloat(memtx, 'f', -1, 64))
 }

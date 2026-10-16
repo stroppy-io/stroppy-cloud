@@ -371,7 +371,7 @@ func (h *Handler) ExportPublicShare(ctx context.Context, params oas.ExportPublic
 		b.printf("# %s\n\n", s.Title)
 		if s.Snapshot.Run != nil {
 			r := s.Snapshot.Run
-			b.printf("- status: %s\n- database: %s %s\n- workload: %s (%s)\n- topology: %s\n", r.Status, r.Database.Kind, r.Database.Version, r.Summary.WorkloadName, r.Workload.Protocol, r.Topology)
+			b.printf("- status: %s\n- database: %s %s\n- workload: %s (%s)\n- topology: %s\n", r.Status, r.Database.Kind, r.Database.Version, r.Summary.WorkloadName, r.Workload.Protocol, r.Summary.Topology)
 			if len(r.Summary.Headline) > 0 {
 				b.printf("\n| metric | value |\n|---|---|\n")
 				for k, v := range r.Summary.Headline {

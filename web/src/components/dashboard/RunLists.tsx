@@ -8,6 +8,7 @@ import { Badge, Text, useStyles2 } from '@grafana/ui'
 import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { hardwareLabel, scenarioLabel } from '@helpers/rating'
 import { relativeTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
 import { Panel, PanelEmpty } from './Panel'
 
@@ -152,8 +153,8 @@ export function RecentRuns({ runs, slug }: { runs: Run[]; slug: string }) {
             <div className={styles.main}>
               <div className={styles.name}>{r.name}</div>
               <div className={styles.sub}>
-                {dbLabel(r.summary?.db_kind, r.summary?.db_version)} · {r.summary?.topology_label} ·{' '}
-                {r.summary?.workload_name}
+                {dbLabel(r.summary?.db_kind, r.summary?.db_version)} ·{' '}
+                {topologyText(r.summary?.topology)} · {r.summary?.workload_name}
                 {r.status_reason ? ` · ${r.status_reason}` : ''}
               </div>
             </div>
@@ -279,7 +280,7 @@ export function TopResults({ items, slug }: { items: RatingEntry[]; slug: string
               <span className={styles.rank}>{e.rank}</span>
               <div className={styles.main}>
                 <div className={styles.name}>
-                  {dbLabel(e.db_kind, e.db_version)} · {e.topology_label}
+                  {dbLabel(e.db_kind, e.db_version)} · {topologyText(e.topology)}
                 </div>
                 <div className={styles.sub}>
                   {scenarioLabel(e.scenario)} · {hardwareLabel(t, e.hardware)} · {e.provider_kind}

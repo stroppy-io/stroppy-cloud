@@ -3,6 +3,7 @@ package dbkind_test
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"testing"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -38,8 +39,8 @@ func TestCompilePostgresPatroni(t *testing.T) {
 	if p.Client.Role != topology.RoleProxy || p.Client.Port != 6432 {
 		t.Fatalf("client %+v", p.Client)
 	}
-	if p.Label != "postgres + 2 replicas + patroni + haproxy + pgbouncer" {
-		t.Fatalf("label %q", p.Label)
+	if p.Mode != topology.ModePatroni {
+		t.Fatalf("mode %q", p.Mode)
 	}
 	if _, ok := p.Requirements[topology.RoleEtcd]; !ok {
 		t.Fatal("etcd requirement missing")
@@ -58,8 +59,13 @@ func TestCompileEveryCatalogTemplate(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%s/%s: %v", d.Kind, tpl.ID, err)
 			}
-			if plan.Label == "" {
-				t.Errorf("%s/%s: empty label", d.Kind, tpl.ID)
+			if plan.Mode != "" && !slices.Contains(topology.Modes, plan.Mode) {
+				t.Errorf("%s/%s: mode %q is not a topology mode", d.Kind, tpl.ID, plan.Mode)
+			}
+			for role, req := range plan.Requirements {
+				if !slices.Contains(topology.RequirementReasons, req.Reason) {
+					t.Errorf("%s/%s: %s requirement reason %q is not a reason code", d.Kind, tpl.ID, role, req.Reason)
+				}
 			}
 			// Every role with machines must be a catalog role of the kind.
 			known := map[string]bool{}

@@ -96,7 +96,6 @@ type SharedRun struct {
 	Database    SharedDatabase               `json:"database"`
 	Workload    SharedWorkload               `json:"workload"`
 	Machines    []run.MachineSnapshot        `json:"machines"`
-	Topology    string                       `json:"topology_label,omitempty"`
 	Configs     map[string]map[string]string `json:"configs,omitempty"`
 	Segments    []run.SegmentState           `json:"segments,omitempty"`
 	RunSpecView map[string]any               `json:"-"`
@@ -172,6 +171,8 @@ type Repository interface {
 	SetSnapshot(ctx context.Context, id uuid.UUID, snap Snapshot, capturedAt time.Time, title string) error
 	Revoke(ctx context.Context, id uuid.UUID) error
 	BumpViews(ctx context.Context, id uuid.UUID) error
+	// All lists every share with its snapshot (backfills).
+	All(ctx context.Context) ([]Share, error)
 }
 
 // Masker masks secret fields of a config value.
@@ -366,7 +367,7 @@ func (s *Service) project(ctx context.Context, r run.Run, scope Scope) (SharedRu
 		ID: r.ID, Name: r.Name, Status: r.Status, StartedAt: r.StartedAt, FinishedAt: r.FinishedAt, Duration: r.DurationSeconds, Summary: r.Summary, Result: r.Result, Timeline: events,
 		Database: SharedDatabase{Kind: string(r.Snapshot.Database.Kind), Version: r.Snapshot.Database.Version, Image: r.Snapshot.Database.Image, Params: r.Snapshot.Database.Params},
 		Workload: SharedWorkload{StroppyVersion: r.Snapshot.Workload.StroppyVersion, Protocol: string(r.Snapshot.Workload.Protocol), Segments: r.Snapshot.Workload.Segments},
-		Machines: r.Snapshot.Machines, Topology: r.Snapshot.TopologyLabel, Segments: r.State.Segments,
+		Machines: r.Snapshot.Machines, Segments: r.State.Segments,
 	}
 	if out.Machines == nil {
 		out.Machines = []run.MachineSnapshot{}

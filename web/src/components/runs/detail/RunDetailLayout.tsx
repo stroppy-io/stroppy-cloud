@@ -13,6 +13,7 @@ import { dbLabel, formatDuration } from '@helpers/format'
 import { queueText } from '@helpers/queue'
 import { isTerminal } from '@helpers/run-status'
 import { formatDateTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useRun } from '@hooks/useRun'
 import { useTenant } from '@hooks/useTenant'
 import { useSearch } from '@tanstack/react-router'
@@ -172,7 +173,7 @@ export function RunDetailLayout({ id, children }: { id: string; children: ReactN
               <span className={styles.metaItem}>
                 <Icon name="database" size="sm" />
                 {dbLabel(run.summary?.db_kind, run.summary?.db_version)}
-                {run.summary?.topology_label ? ` · ${run.summary.topology_label}` : ''}
+                {run.summary?.topology ? ` · ${topologyText(run.summary.topology)}` : ''}
                 {run.summary?.node_count ? ` · ${run.summary.node_count}n` : ''}
               </span>
               <span className={styles.metaItem}>

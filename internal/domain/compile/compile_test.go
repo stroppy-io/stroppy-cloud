@@ -99,7 +99,7 @@ func TestCompileCatalogTopologies(t *testing.T) {
 						t.Fatalf("container %s incomplete", ct.Name)
 					}
 				}
-				t.Logf("%s: %d machines, %d containers, url %s", derived.Plan.Label, len(out.Spec.Machines), len(out.Spec.Containers), out.Spec.Workload.URL)
+				t.Logf("%v: %d machines, %d containers, url %s", derived.Plan.Shape(), len(out.Spec.Machines), len(out.Spec.Containers), out.Spec.Workload.URL)
 			})
 		}
 	}

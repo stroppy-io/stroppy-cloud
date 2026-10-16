@@ -2,6 +2,7 @@ import type { Schemas } from '@api/types'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Text, useStyles2 } from '@grafana/ui'
+import { requirementReason } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
 import { roleRank } from './SizesEditor'
 
@@ -73,7 +74,7 @@ export function RequirementsTable({
             <tr key={role}>
               <td style={{ whiteSpace: 'normal' }}>
                 <Text weight="medium">{role}</Text>
-                {r.reason && <span className={styles.reason}>{r.reason}</span>}
+                {r.reason && <span className={styles.reason}>{requirementReason(r)}</span>}
               </td>
               <td className="num">{r.cpu ?? '—'}</td>
               <td className="num">{r.memory_gb !== undefined ? `${r.memory_gb} GB` : '—'}</td>

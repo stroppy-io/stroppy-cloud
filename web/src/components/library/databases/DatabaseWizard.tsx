@@ -22,6 +22,7 @@ import {
   TextArea,
   useStyles2,
 } from '@grafana/ui'
+import { topologyText } from '@helpers/topology'
 import { useSchemaValidate } from '@hooks/useSchemaValidate'
 import { useTenant } from '@hooks/useTenant'
 import { useForm } from '@tanstack/react-form'
@@ -504,7 +505,7 @@ function PreviewSide({ preview, pending }: { preview: Preview | undefined; pendi
       <Panel
         title={t('library.topology.title')}
         description={
-          pending ? t('library.wizard.db.previewUpdating') : preview?.topology_preview?.label
+          pending ? t('library.wizard.db.previewUpdating') : topologyText(preview?.topology_preview)
         }
         dense
       >

@@ -597,5 +597,15 @@
     "groups": "шт.",
     "gateways": "шт.",
     "bytes": "байт"
+  },
+  "topologyMode": {
+    "semi_sync": "Полусинхронная репликация",
+    "group": "Групповая репликация",
+    "galera": "Galera",
+    "patroni": "Patroni",
+    "block-4-2": "block-4-2",
+    "mirror-3-dc": "mirror-3-dc",
+    "dedicated": "Выделенная",
+    "serverless": "Бессерверная"
   }
 }

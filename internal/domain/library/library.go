@@ -58,9 +58,9 @@ type DatabaseSpec struct {
 	Runtime json.RawMessage                       `json:"runtime,omitempty"`
 	// ExternalDSN is set for kind external only (write-only on the API).
 	ExternalDSN string `json:"external_dsn,omitempty"`
-	// TopologyLabel is the plan label DeriveDatabase computes; stored so
-	// the list sorts by it, never part of an exported document.
-	TopologyLabel string `json:"-"`
+	// Topology is the plan's shape DeriveDatabase computes; stored so the
+	// list shows and sorts by it, never part of an exported document.
+	Topology topology.Shape `json:"-"`
 }
 
 // DatabaseSpecPatch changes part of a stored spec. Nil and empty fields keep
@@ -228,6 +228,9 @@ type ListQuery struct {
 // Repository is the storage port.
 type Repository interface {
 	InsertDatabase(ctx context.Context, d Database) error
+	// DatabasesWithoutTopology lists definitions stored before the shape.
+	DatabasesWithoutTopology(ctx context.Context, limit int) ([]uuid.UUID, error)
+	SetDatabaseTopology(ctx context.Context, id uuid.UUID, s topology.Shape) error
 	DatabaseByID(ctx context.Context, id uuid.UUID) (Database, error)
 	Databases(ctx context.Context, tenantID uuid.UUID, q ListQuery) ([]Database, error)
 	UpdateDatabase(ctx context.Context, id uuid.UUID, p EntityPatch, spec *DatabaseSpec) error

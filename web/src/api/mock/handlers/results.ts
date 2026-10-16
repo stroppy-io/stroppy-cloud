@@ -11,6 +11,7 @@ import type {
   TenantDashboard,
   TopologyRole,
 } from '@api/types'
+import { topologyText } from '@helpers/topology'
 import { type HandlerResult, listRoutes, noContent, notFound, problem, route } from '../router'
 import type { MockStore, TenantData } from '../store'
 import { iso, multi, paginate, parseListQuery } from '../util'
@@ -114,7 +115,7 @@ function ratingEntries(
         unit: metric.unit,
         db_kind: s.db_kind ?? 'postgres',
         db_version: s.db_version,
-        topology_label: s.topology_label,
+        topology: s.topology,
         node_count: s.node_count,
         sizes: s.sizes,
         scenario,
@@ -447,7 +448,6 @@ function topologyOf(t: TenantData, run: Run): TopologyPreview | undefined {
   const byRole = new Map<TopologyRole, number>()
   for (const m of machines) byRole.set(m.role, (byRole.get(m.role) ?? 0) + 1)
   return {
-    label: run.summary?.topology_label ?? 'custom',
     node_count: machines.length,
     nodes: [...byRole].map(([role, count]) => ({ role, count })),
   }
@@ -651,7 +651,7 @@ function runMarkdown(r: SharedRun, title: string, captured: string, tenant?: str
     '## Setup',
     '',
     `- Database: ${r.database?.kind} ${r.database?.version ?? ''}`,
-    `- Topology: ${r.topology?.label ?? r.summary.topology_label ?? '—'} (${r.topology?.node_count ?? r.summary.node_count ?? '?'} nodes)`,
+    `- Topology: ${topologyText(r.summary.topology ?? r.topology) || '—'} (${r.topology?.node_count ?? r.summary.node_count ?? '?'} nodes)`,
     `- Workload: ${r.summary.workload_name ?? '—'} · stroppy ${r.workload?.stroppy_version ?? ''} · ${r.workload?.protocol ?? ''}`,
     `- Provider: ${r.summary.provider_kind ?? '—'}`,
     '',

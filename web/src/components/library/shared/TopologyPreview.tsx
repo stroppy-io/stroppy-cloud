@@ -3,6 +3,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui'
 import { isPrimaryRole, roleIcon, roleLabel } from '@helpers/roles'
+import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
 
 type Topology = Schemas['TopologyPreview']
@@ -69,7 +70,7 @@ export function TopologyPreview({
     <Stack direction="column" gap={1.5}>
       {!compact && (
         <Stack gap={1} alignItems="center">
-          <Text weight="medium">{topology.label}</Text>
+          <Text weight="medium">{topologyText(topology)}</Text>
           <Text color="secondary">
             · {t('library.topology.nodes', { count: topology.node_count ?? 0 })}
           </Text>

@@ -55,9 +55,7 @@ func ratingPageOf(p rating.Page, offset, limit int, public bool) *oas.RatingPage
 		if s.DBVersion != "" {
 			item.DbVersion = oas.NewOptString(s.DBVersion)
 		}
-		if s.TopologyLabel != "" {
-			item.TopologyLabel = oas.NewOptString(s.TopologyLabel)
-		}
+		item.Topology = shapeOf(s.Topology)
 		if s.NodeCount > 0 {
 			item.NodeCount = oas.NewOptInt(s.NodeCount)
 		}

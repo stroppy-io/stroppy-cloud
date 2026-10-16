@@ -6,8 +6,10 @@ import {
   metricKeyValues,
   quotaNameValues,
   quotaUnitValues,
+  requirementReasonValues,
   runEventKindValues,
   runWaitReasonValues,
+  topologyModeValues,
   topologyRoleValues,
 } from '@api/enums'
 import { eventKey } from '@components/runs/events/eventTitle'
@@ -23,6 +25,8 @@ const productGroups = new Set(['PostgreSQL', 'MySQL', 'CockroachDB', 'Picodata']
 
 const vocabularies: Record<string, string[]> = {
   TopologyRole: topologyRoleValues.map((r) => `common.topologyRole.${r}`),
+  TopologyMode: topologyModeValues.map((m) => `common.topologyMode.${m}`),
+  RequirementReason: requirementReasonValues.map((r) => `library.requirements.reasons.${r}`),
   RunEventKind: runEventKindValues.map((k) => `runs.events.titles.${eventKey(k)}`),
   RunWaitReason: runWaitReasonValues.map((r) => `runs.queue.${r}`),
   AuditAction: auditActionValues.map((a) => `settings.audit.actions.${a.replaceAll('.', '_')}`),

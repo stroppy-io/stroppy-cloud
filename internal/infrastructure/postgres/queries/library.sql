@@ -1,6 +1,6 @@
 -- name: InsertDatabase :exec
-INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology_label)
-VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @runtime, @external, @topology_label);
+INSERT INTO databases (id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, topology)
+VALUES (@id, @tenant_id, @name, @description, @tags, @author_id, @kind, @version, @image, @params, @configs, @runtime, @external, @topology);
 
 -- name: DatabaseByID :one
 SELECT id, tenant_id, name, description, tags, author_id, kind, version, image, params, configs, runtime, external, created_at, updated_at
@@ -24,8 +24,8 @@ ORDER BY
   CASE WHEN @sort_key::text = 'kind' AND @desc::boolean THEN kind END DESC,
   CASE WHEN @sort_key::text = 'version' AND NOT @desc::boolean THEN version END ASC,
   CASE WHEN @sort_key::text = 'version' AND @desc::boolean THEN version END DESC,
-  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN topology_label END ASC NULLS LAST,
-  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN topology_label END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN topology END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN topology END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'usages' AND NOT @desc::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END ASC,
   CASE WHEN @sort_key::text = 'usages' AND @desc::boolean THEN (SELECT count(*) FROM tests t WHERE t.database_id = databases.id AND t.deleted_at IS NULL) END DESC,
   CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
@@ -47,7 +47,7 @@ SET name        = COALESCE(@name::text, name),
     params      = COALESCE(@params::jsonb, params),
     configs     = COALESCE(@configs::jsonb, configs),
     runtime     = COALESCE(@runtime::jsonb, runtime),
-    topology_label = COALESCE(@topology_label::text, topology_label),
+    topology = COALESCE(@topology::jsonb, topology),
     updated_at  = now()
 WHERE id = @id AND deleted_at IS NULL;
 
@@ -191,3 +191,10 @@ WHERE database_id = @database_id AND deleted_at IS NULL;
 -- name: InlineWorkloadIntoTests :execrows
 UPDATE tests SET workload_id = NULL, workload_inline = @spec, updated_at = now()
 WHERE workload_id = @workload_id AND deleted_at IS NULL;
+
+-- name: DatabasesWithoutTopology :many
+-- Definitions stored before the topology shape (backfill).
+SELECT id FROM databases WHERE deleted_at IS NULL AND topology = '{}'::jsonb ORDER BY created_at LIMIT @lim;
+
+-- name: SetDatabaseTopology :exec
+UPDATE databases SET topology = @topology WHERE id = @id;

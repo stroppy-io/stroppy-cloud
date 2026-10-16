@@ -204,7 +204,11 @@ components:
         cpu: { type: integer }
         memory_gb: { type: number }
         disk_gb: { type: number }
-        reason: { type: string, description: What drove the number (e.g. shared_buffers). }
+        reason: { $ref: '#/components/schemas/RequirementReason' }
+        reason_params:
+          type: object
+          additionalProperties: { type: string }
+          description: The numbers of the reason (engine, memtx_gb, pdisks, vus, load_workers, shared_buffers_gb).
     Size:
       type: string
       enum: [XS, S, M, L, XL]

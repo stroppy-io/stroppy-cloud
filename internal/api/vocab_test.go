@@ -46,6 +46,8 @@ func TestVocabulariesMatchTheContract(t *testing.T) {
 	}{
 		{"DatabaseKind", kinds, values(oas.DatabaseKind("").AllValues())},
 		{"TopologyRole", topology.Roles, values(oas.TopologyRole("").AllValues())},
+		{"TopologyMode", topology.Modes, values(oas.TopologyMode("").AllValues())},
+		{"RequirementReason", topology.RequirementReasons, values(oas.RequirementReason("").AllValues())},
 		{"RunEventKind", run.EventKinds, values(oas.RunEventKind("").AllValues())},
 		{"RunWaitReason", waits, values(oas.RunWaitReason("").AllValues())},
 		{"AuditAction", audit.Actions, values(oas.AuditAction("").AllValues())},

@@ -14816,6 +14816,52 @@ func (o OptRef) Or(d Ref) Ref {
 	return d
 }
 
+// NewOptRequirementReason returns new OptRequirementReason with value set to v.
+func NewOptRequirementReason(v RequirementReason) OptRequirementReason {
+	return OptRequirementReason{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRequirementReason is optional RequirementReason.
+type OptRequirementReason struct {
+	Value RequirementReason
+	Set   bool
+}
+
+// IsSet returns true if OptRequirementReason was set.
+func (o OptRequirementReason) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRequirementReason) Reset() {
+	var v RequirementReason
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRequirementReason) SetTo(v RequirementReason) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRequirementReason) Get() (v RequirementReason, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRequirementReason) Or(d RequirementReason) RequirementReason {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRequirements returns new OptRequirements with value set to v.
 func NewOptRequirements(v Requirements) OptRequirements {
 	return OptRequirements{
@@ -15040,6 +15086,52 @@ func (o OptResyncPipelinesReq) Get() (v ResyncPipelinesReq, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptResyncPipelinesReq) Or(d ResyncPipelinesReq) ResyncPipelinesReq {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptRoleRequirementReasonParams returns new OptRoleRequirementReasonParams with value set to v.
+func NewOptRoleRequirementReasonParams(v RoleRequirementReasonParams) OptRoleRequirementReasonParams {
+	return OptRoleRequirementReasonParams{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRoleRequirementReasonParams is optional RoleRequirementReasonParams.
+type OptRoleRequirementReasonParams struct {
+	Value RoleRequirementReasonParams
+	Set   bool
+}
+
+// IsSet returns true if OptRoleRequirementReasonParams was set.
+func (o OptRoleRequirementReasonParams) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRoleRequirementReasonParams) Reset() {
+	var v RoleRequirementReasonParams
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRoleRequirementReasonParams) SetTo(v RoleRequirementReasonParams) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRoleRequirementReasonParams) Get() (v RoleRequirementReasonParams, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRoleRequirementReasonParams) Or(d RoleRequirementReasonParams) RoleRequirementReasonParams {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -18588,6 +18680,52 @@ func (o OptTestWriteWorkload) Or(d TestWriteWorkload) TestWriteWorkload {
 	return d
 }
 
+// NewOptTopologyMode returns new OptTopologyMode with value set to v.
+func NewOptTopologyMode(v TopologyMode) OptTopologyMode {
+	return OptTopologyMode{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptTopologyMode is optional TopologyMode.
+type OptTopologyMode struct {
+	Value TopologyMode
+	Set   bool
+}
+
+// IsSet returns true if OptTopologyMode was set.
+func (o OptTopologyMode) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptTopologyMode) Reset() {
+	var v TopologyMode
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptTopologyMode) SetTo(v TopologyMode) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptTopologyMode) Get() (v TopologyMode, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptTopologyMode) Or(d TopologyMode) TopologyMode {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptTopologyPreview returns new OptTopologyPreview with value set to v.
 func NewOptTopologyPreview(v TopologyPreview) OptTopologyPreview {
 	return OptTopologyPreview{
@@ -18674,6 +18812,52 @@ func (o OptTopologyRole) Get() (v TopologyRole, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptTopologyRole) Or(d TopologyRole) TopologyRole {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptTopologyShape returns new OptTopologyShape with value set to v.
+func NewOptTopologyShape(v TopologyShape) OptTopologyShape {
+	return OptTopologyShape{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptTopologyShape is optional TopologyShape.
+type OptTopologyShape struct {
+	Value TopologyShape
+	Set   bool
+}
+
+// IsSet returns true if OptTopologyShape was set.
+func (o OptTopologyShape) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptTopologyShape) Reset() {
+	var v TopologyShape
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptTopologyShape) SetTo(v TopologyShape) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptTopologyShape) Get() (v TopologyShape, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptTopologyShape) Or(d TopologyShape) TopologyShape {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -21121,15 +21305,15 @@ func (s *QuotaUnit) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/RatingEntry
 type RatingEntry struct {
-	Rank          int          `json:"rank"`
-	Value         float64      `json:"value"`
-	Unit          string       `json:"unit"`
-	DbKind        DatabaseKind `json:"db_kind"`
-	DbVersion     OptString    `json:"db_version"`
-	TopologyLabel OptString    `json:"topology_label"`
-	NodeCount     OptInt       `json:"node_count"`
-	Sizes         OptRoleSizes `json:"sizes"`
-	WorkloadName  OptString    `json:"workload_name"`
+	Rank         int              `json:"rank"`
+	Value        float64          `json:"value"`
+	Unit         string           `json:"unit"`
+	DbKind       DatabaseKind     `json:"db_kind"`
+	DbVersion    OptString        `json:"db_version"`
+	Topology     OptTopologyShape `json:"topology"`
+	NodeCount    OptInt           `json:"node_count"`
+	Sizes        OptRoleSizes     `json:"sizes"`
+	WorkloadName OptString        `json:"workload_name"`
 	// Workload scenario: the script family (`tpcc/tx` -> `tpcc`); several joined by `+`.
 	Scenario       string          `json:"scenario"`
 	Hardware       HardwareClass   `json:"hardware"`
@@ -21171,9 +21355,9 @@ func (s *RatingEntry) GetDbVersion() OptString {
 	return s.DbVersion
 }
 
-// GetTopologyLabel returns the value of TopologyLabel.
-func (s *RatingEntry) GetTopologyLabel() OptString {
-	return s.TopologyLabel
+// GetTopology returns the value of Topology.
+func (s *RatingEntry) GetTopology() OptTopologyShape {
+	return s.Topology
 }
 
 // GetNodeCount returns the value of NodeCount.
@@ -21261,9 +21445,9 @@ func (s *RatingEntry) SetDbVersion(val OptString) {
 	s.DbVersion = val
 }
 
-// SetTopologyLabel sets the value of TopologyLabel.
-func (s *RatingEntry) SetTopologyLabel(val OptString) {
-	s.TopologyLabel = val
+// SetTopology sets the value of Topology.
+func (s *RatingEntry) SetTopology(val OptTopologyShape) {
+	s.Topology = val
 }
 
 // SetNodeCount sets the value of NodeCount.
@@ -21538,6 +21722,105 @@ func (s *RenderSchemaValueReq) SetValue(val SchemaValue) {
 // SetTemplate sets the value of Template.
 func (s *RenderSchemaValueReq) SetTemplate(val OptString) {
 	s.Template = val
+}
+
+// What drove a role's minimum hardware; its numbers are in reason_params.
+// Ref: #/components/schemas/RequirementReason
+type RequirementReason string
+
+const (
+	RequirementReasonEngineBaseline RequirementReason = "engine_baseline"
+	RequirementReasonWalArchive     RequirementReason = "wal_archive"
+	RequirementReasonSharedBuffers  RequirementReason = "shared_buffers"
+	RequirementReasonProxy          RequirementReason = "proxy"
+	RequirementReasonEtcd           RequirementReason = "etcd"
+	RequirementReasonImageBaseline  RequirementReason = "image_baseline"
+	RequirementReasonCPUBound       RequirementReason = "cpu_bound"
+	RequirementReasonMemtx          RequirementReason = "memtx"
+	RequirementReasonPdisks         RequirementReason = "pdisks"
+	RequirementReasonRunnerLoad     RequirementReason = "runner_load"
+)
+
+// AllValues returns all RequirementReason values.
+func (RequirementReason) AllValues() []RequirementReason {
+	return []RequirementReason{
+		RequirementReasonEngineBaseline,
+		RequirementReasonWalArchive,
+		RequirementReasonSharedBuffers,
+		RequirementReasonProxy,
+		RequirementReasonEtcd,
+		RequirementReasonImageBaseline,
+		RequirementReasonCPUBound,
+		RequirementReasonMemtx,
+		RequirementReasonPdisks,
+		RequirementReasonRunnerLoad,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s RequirementReason) MarshalText() ([]byte, error) {
+	switch s {
+	case RequirementReasonEngineBaseline:
+		return []byte(s), nil
+	case RequirementReasonWalArchive:
+		return []byte(s), nil
+	case RequirementReasonSharedBuffers:
+		return []byte(s), nil
+	case RequirementReasonProxy:
+		return []byte(s), nil
+	case RequirementReasonEtcd:
+		return []byte(s), nil
+	case RequirementReasonImageBaseline:
+		return []byte(s), nil
+	case RequirementReasonCPUBound:
+		return []byte(s), nil
+	case RequirementReasonMemtx:
+		return []byte(s), nil
+	case RequirementReasonPdisks:
+		return []byte(s), nil
+	case RequirementReasonRunnerLoad:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *RequirementReason) UnmarshalText(data []byte) error {
+	switch RequirementReason(data) {
+	case RequirementReasonEngineBaseline:
+		*s = RequirementReasonEngineBaseline
+		return nil
+	case RequirementReasonWalArchive:
+		*s = RequirementReasonWalArchive
+		return nil
+	case RequirementReasonSharedBuffers:
+		*s = RequirementReasonSharedBuffers
+		return nil
+	case RequirementReasonProxy:
+		*s = RequirementReasonProxy
+		return nil
+	case RequirementReasonEtcd:
+		*s = RequirementReasonEtcd
+		return nil
+	case RequirementReasonImageBaseline:
+		*s = RequirementReasonImageBaseline
+		return nil
+	case RequirementReasonCPUBound:
+		*s = RequirementReasonCPUBound
+		return nil
+	case RequirementReasonMemtx:
+		*s = RequirementReasonMemtx
+		return nil
+	case RequirementReasonPdisks:
+		*s = RequirementReasonPdisks
+		return nil
+	case RequirementReasonRunnerLoad:
+		*s = RequirementReasonRunnerLoad
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Minimal hardware per role, computed by the server.
@@ -21851,11 +22134,12 @@ func (s *ResyncPipelinesReq) SetTenantSlug(val OptString) {
 
 // Ref: #/components/schemas/RoleRequirement
 type RoleRequirement struct {
-	CPU      OptInt     `json:"cpu"`
-	MemoryGB OptFloat64 `json:"memory_gb"`
-	DiskGB   OptFloat64 `json:"disk_gb"`
-	// What drove the number (e.g. shared_buffers).
-	Reason OptString `json:"reason"`
+	CPU      OptInt               `json:"cpu"`
+	MemoryGB OptFloat64           `json:"memory_gb"`
+	DiskGB   OptFloat64           `json:"disk_gb"`
+	Reason   OptRequirementReason `json:"reason"`
+	// The numbers of the reason (engine, memtx_gb, pdisks, vus, load_workers, shared_buffers_gb).
+	ReasonParams OptRoleRequirementReasonParams `json:"reason_params"`
 }
 
 // GetCPU returns the value of CPU.
@@ -21874,8 +22158,13 @@ func (s *RoleRequirement) GetDiskGB() OptFloat64 {
 }
 
 // GetReason returns the value of Reason.
-func (s *RoleRequirement) GetReason() OptString {
+func (s *RoleRequirement) GetReason() OptRequirementReason {
 	return s.Reason
+}
+
+// GetReasonParams returns the value of ReasonParams.
+func (s *RoleRequirement) GetReasonParams() OptRoleRequirementReasonParams {
+	return s.ReasonParams
 }
 
 // SetCPU sets the value of CPU.
@@ -21894,8 +22183,25 @@ func (s *RoleRequirement) SetDiskGB(val OptFloat64) {
 }
 
 // SetReason sets the value of Reason.
-func (s *RoleRequirement) SetReason(val OptString) {
+func (s *RoleRequirement) SetReason(val OptRequirementReason) {
 	s.Reason = val
+}
+
+// SetReasonParams sets the value of ReasonParams.
+func (s *RoleRequirement) SetReasonParams(val OptRoleRequirementReasonParams) {
+	s.ReasonParams = val
+}
+
+// The numbers of the reason (engine, memtx_gb, pdisks, vus, load_workers, shared_buffers_gb).
+type RoleRequirementReasonParams map[string]string
+
+func (s *RoleRequirementReasonParams) init() RoleRequirementReasonParams {
+	m := *s
+	if m == nil {
+		m = map[string]string{}
+		*s = m
+	}
+	return m
 }
 
 // Size per role (`db`, `proxy`, `runner`, ...).
@@ -24939,17 +25245,17 @@ func (s *RunStatus) UnmarshalText(data []byte) error {
 // Denormalized fields for lists, sorting and rating.
 // Ref: #/components/schemas/RunSummary
 type RunSummary struct {
-	DbKind          OptDatabaseKind `json:"db_kind"`
-	DbVersion       OptString       `json:"db_version"`
-	WorkloadName    OptString       `json:"workload_name"`
-	Protocol        OptProtocol     `json:"protocol"`
-	StroppyVersion  OptString       `json:"stroppy_version"`
-	TopologyLabel   OptString       `json:"topology_label"`
-	NodeCount       OptInt          `json:"node_count"`
-	ProviderKind    OptProviderKind `json:"provider_kind"`
-	ProviderProfile OptRef          `json:"provider_profile"`
-	Sizes           OptRoleSizes    `json:"sizes"`
-	ProgressPct     OptFloat64      `json:"progress_pct"`
+	DbKind          OptDatabaseKind  `json:"db_kind"`
+	DbVersion       OptString        `json:"db_version"`
+	WorkloadName    OptString        `json:"workload_name"`
+	Protocol        OptProtocol      `json:"protocol"`
+	StroppyVersion  OptString        `json:"stroppy_version"`
+	Topology        OptTopologyShape `json:"topology"`
+	NodeCount       OptInt           `json:"node_count"`
+	ProviderKind    OptProviderKind  `json:"provider_kind"`
+	ProviderProfile OptRef           `json:"provider_profile"`
+	Sizes           OptRoleSizes     `json:"sizes"`
+	ProgressPct     OptFloat64       `json:"progress_pct"`
 	// How far the current phase is (read-time): the workload by elapsed planned time, other phases by
 	// finished steps.
 	PhaseProgressPct OptFloat64 `json:"phase_progress_pct"`
@@ -24996,9 +25302,9 @@ func (s *RunSummary) GetStroppyVersion() OptString {
 	return s.StroppyVersion
 }
 
-// GetTopologyLabel returns the value of TopologyLabel.
-func (s *RunSummary) GetTopologyLabel() OptString {
-	return s.TopologyLabel
+// GetTopology returns the value of Topology.
+func (s *RunSummary) GetTopology() OptTopologyShape {
+	return s.Topology
 }
 
 // GetNodeCount returns the value of NodeCount.
@@ -25076,9 +25382,9 @@ func (s *RunSummary) SetStroppyVersion(val OptString) {
 	s.StroppyVersion = val
 }
 
-// SetTopologyLabel sets the value of TopologyLabel.
-func (s *RunSummary) SetTopologyLabel(val OptString) {
-	s.TopologyLabel = val
+// SetTopology sets the value of Topology.
+func (s *RunSummary) SetTopology(val OptTopologyShape) {
+	s.Topology = val
 }
 
 // SetNodeCount sets the value of NodeCount.
@@ -31580,14 +31886,14 @@ func (s *TestStatus) UnmarshalText(data []byte) error {
 }
 
 type TestSummary struct {
-	DbKind         OptDatabaseKind `json:"db_kind"`
-	DbVersion      OptString       `json:"db_version"`
-	TopologyLabel  OptString       `json:"topology_label"`
-	NodeCount      OptInt          `json:"node_count"`
-	Protocol       OptProtocol     `json:"protocol"`
-	StroppyVersion OptString       `json:"stroppy_version"`
-	LastRun        OptRunRef       `json:"last_run"`
-	RunCount       OptInt          `json:"run_count"`
+	DbKind         OptDatabaseKind  `json:"db_kind"`
+	DbVersion      OptString        `json:"db_version"`
+	Topology       OptTopologyShape `json:"topology"`
+	NodeCount      OptInt           `json:"node_count"`
+	Protocol       OptProtocol      `json:"protocol"`
+	StroppyVersion OptString        `json:"stroppy_version"`
+	LastRun        OptRunRef        `json:"last_run"`
+	RunCount       OptInt           `json:"run_count"`
 }
 
 // GetDbKind returns the value of DbKind.
@@ -31600,9 +31906,9 @@ func (s *TestSummary) GetDbVersion() OptString {
 	return s.DbVersion
 }
 
-// GetTopologyLabel returns the value of TopologyLabel.
-func (s *TestSummary) GetTopologyLabel() OptString {
-	return s.TopologyLabel
+// GetTopology returns the value of Topology.
+func (s *TestSummary) GetTopology() OptTopologyShape {
+	return s.Topology
 }
 
 // GetNodeCount returns the value of NodeCount.
@@ -31640,9 +31946,9 @@ func (s *TestSummary) SetDbVersion(val OptString) {
 	s.DbVersion = val
 }
 
-// SetTopologyLabel sets the value of TopologyLabel.
-func (s *TestSummary) SetTopologyLabel(val OptString) {
-	s.TopologyLabel = val
+// SetTopology sets the value of Topology.
+func (s *TestSummary) SetTopology(val OptTopologyShape) {
+	s.Topology = val
 }
 
 // SetNodeCount sets the value of NodeCount.
@@ -32263,17 +32569,103 @@ func (s *TestWriteWorkload1) SetInline(val WorkloadSpec) {
 	s.Inline = val
 }
 
+// The flavor of a topology its nodes do not show (the parameter value it comes from); absent for a
+// plain one.
+// Ref: #/components/schemas/TopologyMode
+type TopologyMode string
+
+const (
+	TopologyModeSemiSync   TopologyMode = "semi_sync"
+	TopologyModeGroup      TopologyMode = "group"
+	TopologyModeGalera     TopologyMode = "galera"
+	TopologyModePatroni    TopologyMode = "patroni"
+	TopologyModeBlock42    TopologyMode = "block-4-2"
+	TopologyModeMirror3DC  TopologyMode = "mirror-3-dc"
+	TopologyModeDedicated  TopologyMode = "dedicated"
+	TopologyModeServerless TopologyMode = "serverless"
+)
+
+// AllValues returns all TopologyMode values.
+func (TopologyMode) AllValues() []TopologyMode {
+	return []TopologyMode{
+		TopologyModeSemiSync,
+		TopologyModeGroup,
+		TopologyModeGalera,
+		TopologyModePatroni,
+		TopologyModeBlock42,
+		TopologyModeMirror3DC,
+		TopologyModeDedicated,
+		TopologyModeServerless,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s TopologyMode) MarshalText() ([]byte, error) {
+	switch s {
+	case TopologyModeSemiSync:
+		return []byte(s), nil
+	case TopologyModeGroup:
+		return []byte(s), nil
+	case TopologyModeGalera:
+		return []byte(s), nil
+	case TopologyModePatroni:
+		return []byte(s), nil
+	case TopologyModeBlock42:
+		return []byte(s), nil
+	case TopologyModeMirror3DC:
+		return []byte(s), nil
+	case TopologyModeDedicated:
+		return []byte(s), nil
+	case TopologyModeServerless:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *TopologyMode) UnmarshalText(data []byte) error {
+	switch TopologyMode(data) {
+	case TopologyModeSemiSync:
+		*s = TopologyModeSemiSync
+		return nil
+	case TopologyModeGroup:
+		*s = TopologyModeGroup
+		return nil
+	case TopologyModeGalera:
+		*s = TopologyModeGalera
+		return nil
+	case TopologyModePatroni:
+		*s = TopologyModePatroni
+		return nil
+	case TopologyModeBlock42:
+		*s = TopologyModeBlock42
+		return nil
+	case TopologyModeMirror3DC:
+		*s = TopologyModeMirror3DC
+		return nil
+	case TopologyModeDedicated:
+		*s = TopologyModeDedicated
+		return nil
+	case TopologyModeServerless:
+		*s = TopologyModeServerless
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/TopologyPreview
 type TopologyPreview struct {
-	Label     string                     `json:"label"`
+	Mode      OptTopologyMode            `json:"mode"`
 	NodeCount OptInt                     `json:"node_count"`
 	Nodes     []TopologyPreviewNodesItem `json:"nodes"`
 	Flows     []TopologyPreviewFlowsItem `json:"flows"`
 }
 
-// GetLabel returns the value of Label.
-func (s *TopologyPreview) GetLabel() string {
-	return s.Label
+// GetMode returns the value of Mode.
+func (s *TopologyPreview) GetMode() OptTopologyMode {
+	return s.Mode
 }
 
 // GetNodeCount returns the value of NodeCount.
@@ -32291,9 +32683,9 @@ func (s *TopologyPreview) GetFlows() []TopologyPreviewFlowsItem {
 	return s.Flows
 }
 
-// SetLabel sets the value of Label.
-func (s *TopologyPreview) SetLabel(val string) {
-	s.Label = val
+// SetMode sets the value of Mode.
+func (s *TopologyPreview) SetMode(val OptTopologyMode) {
+	s.Mode = val
 }
 
 // SetNodeCount sets the value of NodeCount.
@@ -32502,6 +32894,70 @@ func (s *TopologyRole) UnmarshalText(data []byte) error {
 	default:
 		return errors.Errorf("invalid value: %q", data)
 	}
+}
+
+// A topology as lists show it; the client names it in its language.
+// Ref: #/components/schemas/TopologyShape
+type TopologyShape struct {
+	Mode  OptTopologyMode          `json:"mode"`
+	Nodes []TopologyShapeNodesItem `json:"nodes"`
+}
+
+// GetMode returns the value of Mode.
+func (s *TopologyShape) GetMode() OptTopologyMode {
+	return s.Mode
+}
+
+// GetNodes returns the value of Nodes.
+func (s *TopologyShape) GetNodes() []TopologyShapeNodesItem {
+	return s.Nodes
+}
+
+// SetMode sets the value of Mode.
+func (s *TopologyShape) SetMode(val OptTopologyMode) {
+	s.Mode = val
+}
+
+// SetNodes sets the value of Nodes.
+func (s *TopologyShape) SetNodes(val []TopologyShapeNodesItem) {
+	s.Nodes = val
+}
+
+type TopologyShapeNodesItem struct {
+	Role   TopologyRole `json:"role"`
+	Engine OptString    `json:"engine"`
+	// 0 for a role sharing another role's machines.
+	Count int `json:"count"`
+}
+
+// GetRole returns the value of Role.
+func (s *TopologyShapeNodesItem) GetRole() TopologyRole {
+	return s.Role
+}
+
+// GetEngine returns the value of Engine.
+func (s *TopologyShapeNodesItem) GetEngine() OptString {
+	return s.Engine
+}
+
+// GetCount returns the value of Count.
+func (s *TopologyShapeNodesItem) GetCount() int {
+	return s.Count
+}
+
+// SetRole sets the value of Role.
+func (s *TopologyShapeNodesItem) SetRole(val TopologyRole) {
+	s.Role = val
+}
+
+// SetEngine sets the value of Engine.
+func (s *TopologyShapeNodesItem) SetEngine(val OptString) {
+	s.Engine = val
+}
+
+// SetCount sets the value of Count.
+func (s *TopologyShapeNodesItem) SetCount(val int) {
+	s.Count = val
 }
 
 type TransferTenantReq struct {

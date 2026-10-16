@@ -53,8 +53,8 @@ ORDER BY
   CASE WHEN @sort_key::text = 'db_kind' AND @desc::boolean THEN summary->>'db_kind' END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'workload' AND NOT @desc::boolean THEN summary->>'workload_name' END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'workload' AND @desc::boolean THEN summary->>'workload_name' END DESC NULLS LAST,
-  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN summary->>'topology_label' END ASC NULLS LAST,
-  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN summary->>'topology_label' END DESC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND NOT @desc::boolean THEN summary->'topology' END ASC NULLS LAST,
+  CASE WHEN @sort_key::text = 'topology' AND @desc::boolean THEN summary->'topology' END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'provider' AND NOT @desc::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,
   CASE WHEN @sort_key::text = 'provider' AND @desc::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,
   CASE WHEN @sort_key::text = 'author' AND NOT @desc::boolean THEN author_id::text END ASC NULLS LAST,
@@ -296,3 +296,12 @@ SELECT suite_run_id::uuid AS suite_run_id, count(*)::int AS n FROM runs
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND admitted_at IS NOT NULL AND suite_run_id IS NOT NULL
   AND status IN ('pending', 'running', 'cancelling')
 GROUP BY suite_run_id;
+
+-- name: RunsWithoutTopology :many
+-- Runs stored before the topology shape (backfill).
+SELECT id, snapshot FROM runs WHERE NOT (summary ? 'topology') ORDER BY created_at LIMIT @lim;
+
+-- name: SetRunTopology :exec
+UPDATE runs SET summary = jsonb_set(summary, '{topology}', @topology::jsonb),
+                snapshot = jsonb_set(snapshot, '{topology}', @topology::jsonb)
+WHERE id = @id;

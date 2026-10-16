@@ -74,7 +74,10 @@ func page[T any](items []T, offset, limit int) ([]T, oas.PageMeta) {
 }
 
 func topologyOf(p topology.Plan) oas.TopologyPreview {
-	out := oas.TopologyPreview{Label: p.Label, NodeCount: oas.NewOptInt(p.NodeCount()), Nodes: []oas.TopologyPreviewNodesItem{}, Flows: []oas.TopologyPreviewFlowsItem{}}
+	out := oas.TopologyPreview{NodeCount: oas.NewOptInt(p.NodeCount()), Nodes: []oas.TopologyPreviewNodesItem{}, Flows: []oas.TopologyPreviewFlowsItem{}}
+	if p.Mode != "" {
+		out.Mode = oas.NewOptTopologyMode(oas.TopologyMode(p.Mode))
+	}
 	for _, n := range p.Nodes {
 		item := oas.TopologyPreviewNodesItem{Role: oas.TopologyRole(n.Role), Count: n.Count, Engine: oas.NewOptString(n.Engine)}
 		if n.ColocatedWith != "" {
@@ -95,9 +98,39 @@ func topologyOf(p topology.Plan) oas.TopologyPreview {
 func requirementsOf(reqs map[string]topology.Requirement) oas.Requirements {
 	out := oas.Requirements{}
 	for role, r := range reqs {
-		out[role] = oas.RoleRequirement{CPU: oas.NewOptInt(r.CPU), MemoryGB: oas.NewOptFloat64(r.MemoryGB), DiskGB: oas.NewOptFloat64(r.DiskGB), Reason: oas.NewOptString(r.Reason)}
+		out[role] = requirementOf(r)
 	}
 	return out
+}
+
+func requirementOf(r topology.Requirement) oas.RoleRequirement {
+	out := oas.RoleRequirement{CPU: oas.NewOptInt(r.CPU), MemoryGB: oas.NewOptFloat64(r.MemoryGB), DiskGB: oas.NewOptFloat64(r.DiskGB)}
+	if r.Reason != "" {
+		out.Reason = oas.NewOptRequirementReason(oas.RequirementReason(r.Reason))
+	}
+	if len(r.ReasonParams) > 0 {
+		out.ReasonParams = oas.NewOptRoleRequirementReasonParams(oas.RoleRequirementReasonParams(r.ReasonParams))
+	}
+	return out
+}
+
+// shapeOf is a topology shape; unset for a run whose shape is not known yet.
+func shapeOf(s topology.Shape) oas.OptTopologyShape {
+	if s.IsZero() {
+		return oas.OptTopologyShape{}
+	}
+	out := oas.TopologyShape{Nodes: make([]oas.TopologyShapeNodesItem, 0, len(s.Nodes))}
+	if s.Mode != "" {
+		out.Mode = oas.NewOptTopologyMode(oas.TopologyMode(s.Mode))
+	}
+	for _, n := range s.Nodes {
+		item := oas.TopologyShapeNodesItem{Role: oas.TopologyRole(n.Role), Count: n.Count}
+		if n.Engine != "" {
+			item.Engine = oas.NewOptString(n.Engine)
+		}
+		out.Nodes = append(out.Nodes, item)
+	}
+	return oas.NewOptTopologyShape(out)
 }
 
 func configsOf(configs map[string]map[string]json.RawMessage) map[string]map[string]oas.SchemaValue {

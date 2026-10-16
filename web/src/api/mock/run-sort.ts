@@ -28,7 +28,7 @@ const KEYS: Record<string, (r: Run & { tenant?: { slug?: string } }) => Key> = {
   name: (r) => r.name.toLowerCase(),
   db_kind: (r) => r.summary?.db_kind,
   workload: (r) => r.summary?.workload_name?.toLowerCase(),
-  topology: (r) => r.summary?.topology_label,
+  topology: (r) => JSON.stringify(r.summary?.topology ?? null),
   provider: (r) => r.summary?.provider_profile?.name ?? r.snapshot.provider_profile.name,
   trigger: (r) => r.trigger,
   author: (r) => r.author.display_name?.toLowerCase(),

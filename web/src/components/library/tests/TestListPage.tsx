@@ -26,6 +26,7 @@ import { useAutoRefresh } from '@components/DataTable/useAutoRefresh'
 import { SeedExamplesButton } from '@components/examples/SeedExamplesButton'
 import { UserLabel } from '@components/UserAvatar'
 import { Badge, Button, ConfirmModal, Stack } from '@grafana/ui'
+import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import {
   keepPreviousData,
@@ -120,7 +121,7 @@ function databaseView(r: Test, t: TFunction) {
   const primary = `${kind}${version ? ` ${version}` : ''}`
   const nodes = r.summary?.node_count ?? db?.topology_preview?.node_count
   const topo = [
-    r.summary?.topology_label ?? db?.topology_preview?.label,
+    topologyText(r.summary?.topology ?? db?.topology_preview),
     nodes ? t('library.topology.nodes', { count: nodes }) : undefined,
   ]
     .filter(Boolean)

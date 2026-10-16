@@ -54,3 +54,7 @@ UPDATE shares SET view_count = view_count + 1 WHERE id = @id;
 -- name: RevokeSharesOfTenant :execrows
 -- A deleted tenant's public links stop working with it.
 UPDATE shares SET revoked_at = now(), updated_at = now() WHERE tenant_id = @tenant_id AND revoked_at IS NULL;
+
+-- name: AllShareSnapshots :many
+-- Every share's snapshot (backfills).
+SELECT id, snapshot, captured_at, title FROM shares ORDER BY created_at;

@@ -7,6 +7,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, useStyles2 } from '@grafana/ui'
 import { formatMetric } from '@helpers/format'
 import { hardwareLabel } from '@helpers/rating'
+import { topologyText } from '@helpers/topology'
 import { useQuery } from '@tanstack/react-query'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useTranslation } from 'react-i18next'
@@ -127,9 +128,11 @@ export function RatingRows({
     <div className={styles.rows}>
       <AnimatePresence initial={false} mode="popLayout">
         {rows.map((e, i) => {
-          const meta = [e.topology_label, hardwareLabel(t, e.hardware), e.provider_kind].filter(
-            Boolean
-          )
+          const meta = [
+            topologyText(e.topology),
+            hardwareLabel(t, e.hardware),
+            e.provider_kind,
+          ].filter(Boolean)
           const href = e.share_token && shareHref ? shareHref(e.share_token) : undefined
           const body = (
             <>

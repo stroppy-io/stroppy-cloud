@@ -21,6 +21,7 @@ import {
   useStyles2,
 } from '@grafana/ui'
 import { sortRoles } from '@helpers/sizes'
+import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
@@ -195,7 +196,11 @@ export function SuiteAxesTab({ suite, readOnly }: { suite: Suite; readOnly?: boo
             options={(tests.data?.data ?? []).map((x) => ({
               label: x.name,
               value: x.id,
-              description: [x.summary?.db_kind, x.summary?.db_version, x.summary?.topology_label]
+              description: [
+                x.summary?.db_kind,
+                x.summary?.db_version,
+                topologyText(x.summary?.topology),
+              ]
                 .filter(Boolean)
                 .join(' · '),
             }))}

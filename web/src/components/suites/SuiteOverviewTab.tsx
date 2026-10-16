@@ -12,6 +12,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, Icon, Stack, Text, useStyles2 } from '@grafana/ui'
 import { formatRoleSizes } from '@helpers/sizes'
 import { formatDateTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
@@ -173,7 +174,7 @@ export function SuiteOverviewTab({
                     {[
                       x?.summary?.db_kind,
                       x?.summary?.db_version,
-                      x?.summary?.topology_label,
+                      topologyText(x?.summary?.topology),
                       formatRoleSizes(x?.sizes),
                     ]
                       .filter(Boolean)

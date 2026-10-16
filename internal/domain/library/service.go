@@ -179,7 +179,7 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 			spec.ExternalDSN = dsn
 		}
 	}
-	spec.TopologyLabel = plan.Label
+	spec.Topology = plan.Shape()
 	return spec, DatabaseDerived{Plan: plan, EffectiveConfigs: effective}, nil
 }
 

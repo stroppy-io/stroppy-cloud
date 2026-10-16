@@ -13,6 +13,7 @@ import { Badge, Divider, Stack, Switch, Text, Tooltip, useStyles2 } from '@grafa
 import { dbLabel, formatDuration } from '@helpers/format'
 import { roleLabel } from '@helpers/roles'
 import { formatDateTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -81,8 +82,8 @@ export function RunSidebar({ run }: { run: Run }) {
           },
           {
             label: t('runs.overview.snapshot.topology'),
-            value: s?.topology_label
-              ? `${s.topology_label}${s.node_count ? ` · ${s.node_count}n` : ''}`
+            value: s?.topology
+              ? `${topologyText(s.topology)}${s.node_count ? ` · ${s.node_count}n` : ''}`
               : '—',
           },
           {

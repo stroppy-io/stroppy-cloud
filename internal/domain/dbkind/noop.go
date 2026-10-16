@@ -20,8 +20,7 @@ func pgNoop() Kind {
 		plan: func(p *topology.Plan, params map[string]any) {
 			p.Add(topology.RoleDB, "pg_noop", 1)
 			p.Client = topology.Endpoint{Role: topology.RoleDB, Protocol: "pg", Port: topology.IntOf(params, "port", 5432)}
-			p.Requirements[topology.RoleDB] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "pg-noop is CPU-bound"}
-			p.Label = "pg-noop"
+			p.Requirements[topology.RoleDB] = topology.Because(2, 2, 10, topology.ReasonCPUBound, "engine", "pg-noop")
 		},
 		login: func(map[string]any) topology.Login {
 			// pg-noop accepts any login and needs no password.
@@ -43,7 +42,6 @@ func noop() Kind {
 		},
 		plan: func(p *topology.Plan, _ map[string]any) {
 			p.Client = topology.Endpoint{Role: topology.RoleRunner, Protocol: "noop"}
-			p.Label = "noop (runner only)"
 		},
 	}
 }

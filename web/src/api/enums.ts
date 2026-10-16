@@ -26,6 +26,8 @@ export const quotaNameValues = ["compute.instances.count", "compute.instanceCore
 
 export const quotaUnitValues = ["instances", "cores", "bytes", "disks", "networks", "subnets", "security-groups", "addresses", "vcpus", "tib", "vpcs", "groups", "gateways"] as const satisfies readonly Schemas['QuotaUnit'][]
 
+export const requirementReasonValues = ["engine_baseline", "wal_archive", "shared_buffers", "proxy", "etcd", "image_baseline", "cpu_bound", "memtx", "pdisks", "runner_load"] as const satisfies readonly Schemas['RequirementReason'][]
+
 export const runEventKindValues = ["run-started", "run-completed", "run-failed", "run-timed-out", "run-terminated", "run-cancelled", "activity-failed", "activity-timed-out", "phase.started", "phase.finished", "phase.failed", "machine.ready", "container.ready", "segment.started", "segment.finished", "segment.failed", "baseline.started", "baseline.finished", "stand.kept", "result.published"] as const satisfies readonly Schemas['RunEventKind'][]
 
 export const runPhaseValues = ["queued", "provisioning", "deploying", "workload", "collecting", "teardown", "done"] as const satisfies readonly Schemas['RunPhase'][]
@@ -43,6 +45,8 @@ export const sizeValues = ["XS", "S", "M", "L", "XL"] as const satisfies readonl
 export const tenantRoleValues = ["owner", "admin", "member", "viewer"] as const satisfies readonly Schemas['TenantRole'][]
 
 export const testStatusValues = ["draft", "ready", "needs_attention"] as const satisfies readonly Schemas['TestStatus'][]
+
+export const topologyModeValues = ["semi_sync", "group", "galera", "patroni", "block-4-2", "mirror-3-dc", "dedicated", "serverless"] as const satisfies readonly Schemas['TopologyMode'][]
 
 export const topologyRoleValues = ["db", "db-replica", "db-compute", "etcd", "proxy", "runner", "coordinator", "patroni", "patroni-replica", "pgbouncer"] as const satisfies readonly Schemas['TopologyRole'][]
 

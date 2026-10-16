@@ -14,8 +14,8 @@ paths:
         - name: sort
           in: query
           description: >-
-            Sort key. `topology` orders by the topology label (the plan label
-            of `topology_preview`), `usages` by the number of tests
+            Sort key. `topology` orders by the topology shape (mode, then
+            nodes of `topology_preview`), `usages` by the number of tests
             referencing the definition.
           schema: { type: string, enum: [name, created_at, updated_at, kind, version, topology, usages, author], default: updated_at }
         - $ref: '#/components/parameters/order'
@@ -703,9 +703,9 @@ components:
             additionalProperties: { $ref: '#/components/schemas/SchemaValue' }
     TopologyPreview:
       type: object
-      required: [nodes, label]
+      required: [nodes]
       properties:
-        label: { type: string, example: 'master + 2 replicas + haproxy' }
+        mode: { $ref: '#/components/schemas/TopologyMode' }
         node_count: { type: integer }
         nodes:
           type: array
@@ -860,7 +860,7 @@ components:
               properties:
                 db_kind: { $ref: '#/components/schemas/DatabaseKind' }
                 db_version: { type: string }
-                topology_label: { type: string }
+                topology: { $ref: '#/components/schemas/TopologyShape' }
                 node_count: { type: integer }
                 protocol: { $ref: '#/components/schemas/Protocol' }
                 stroppy_version: { type: string }

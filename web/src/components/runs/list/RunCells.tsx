@@ -9,6 +9,7 @@ import { seriesToFrame } from '@helpers/dataframe'
 import { dbLabel, durationSeconds, formatDuration, formatMetric } from '@helpers/format'
 import { queueText } from '@helpers/queue'
 import { formatTime } from '@helpers/time'
+import { topologyText } from '@helpers/topology'
 import type { TFunction } from 'i18next'
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -73,7 +74,7 @@ export function databaseView(r: Run, t: TFunction) {
   if (!s?.db_kind) return { primary: undefined }
   const primary = dbLabel(s.db_kind, s.db_version)
   const secondary = [
-    s.topology_label,
+    topologyText(s.topology),
     s.node_count ? t('runs.list.nodes', { count: s.node_count }) : undefined,
   ]
     .filter(Boolean)

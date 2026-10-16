@@ -130,9 +130,7 @@ func summaryOf(s run.Summary) oas.RunSummary {
 	if s.StroppyVersion != "" {
 		out.StroppyVersion = oas.NewOptString(s.StroppyVersion)
 	}
-	if s.TopologyLabel != "" {
-		out.TopologyLabel = oas.NewOptString(s.TopologyLabel)
-	}
+	out.Topology = shapeOf(s.Topology)
 	if s.NodeCount > 0 {
 		out.NodeCount = oas.NewOptInt(s.NodeCount)
 	}
@@ -960,7 +958,7 @@ func runMarkdown(r run.Run) io.Reader {
 	b := &bytesBuilder{}
 	b.printf("# %s\n\n", r.Name)
 	b.printf("- status: %s (%s)\n- database: %s %s\n- workload: %s (%s)\n- topology: %s, %d machines\n- provider: %s\n",
-		r.Status, r.Phase, r.Summary.DBKind, r.Summary.DBVersion, r.Summary.WorkloadName, r.Summary.Protocol, r.Summary.TopologyLabel, r.Summary.NodeCount, r.Summary.ProviderKind)
+		r.Status, r.Phase, r.Summary.DBKind, r.Summary.DBVersion, r.Summary.WorkloadName, r.Summary.Protocol, r.Summary.Topology, r.Summary.NodeCount, r.Summary.ProviderKind)
 	if len(r.Summary.Headline) > 0 {
 		b.printf("\n## Headline\n\n| metric | value |\n|---|---|\n")
 		for k, v := range r.Summary.Headline {

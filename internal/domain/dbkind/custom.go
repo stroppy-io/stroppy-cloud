@@ -1,9 +1,6 @@
 package dbkind
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 )
@@ -42,11 +39,7 @@ func custom() Kind {
 				Role: topology.RoleDB, Protocol: topology.StrOf(params, "protocol", "pg"), Port: topology.IntOf(params, "port", 5432),
 				URL: topology.StrOf(params, "url", ""),
 			}
-			p.Requirements[topology.RoleDB] = topology.Requirement{CPU: 2, MemoryGB: 4, DiskGB: 20, Reason: "a database image: the stand's baseline"}
-			p.Label = imageName(topology.StrOf(params, "image", "custom"))
-			if nodes > 1 {
-				p.Label += fmt.Sprintf(" ×%d", nodes)
-			}
+			p.Requirements[topology.RoleDB] = topology.Because(2, 4, 20, topology.ReasonImage)
 		},
 		login: func(params map[string]any) topology.Login {
 			return topology.Login{User: topology.StrOf(params, "user", ""), Password: topology.StrOf(params, "password", ""), Database: topology.StrOf(params, "database", "")}
@@ -55,13 +48,4 @@ func custom() Kind {
 			return []catalog.Protocol{catalog.Protocol(topology.StrOf(params, "protocol", "pg"))}
 		},
 	}
-}
-
-// imageName is the image without its registry path: "ghcr.io/acme/mydb:1.4"
-// → "mydb:1.4".
-func imageName(image string) string {
-	if i := strings.LastIndexByte(image, '/'); i >= 0 {
-		return image[i+1:]
-	}
-	return image
 }

@@ -21722,6 +21722,39 @@ func (s *OptRef) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes RequirementReason as json.
+func (o OptRequirementReason) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes RequirementReason from json.
+func (o *OptRequirementReason) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRequirementReason to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRequirementReason) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRequirementReason) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes Requirements as json.
 func (o OptRequirements) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -21886,6 +21919,40 @@ func (s OptResyncPipelinesReq) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptResyncPipelinesReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RoleRequirementReasonParams as json.
+func (o OptRoleRequirementReasonParams) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RoleRequirementReasonParams from json.
+func (o *OptRoleRequirementReasonParams) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRoleRequirementReasonParams to nil")
+	}
+	o.Set = true
+	o.Value = make(RoleRequirementReasonParams)
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRoleRequirementReasonParams) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRoleRequirementReasonParams) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -24454,6 +24521,39 @@ func (s *OptTestWriteWorkload) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes TopologyMode as json.
+func (o OptTopologyMode) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes TopologyMode from json.
+func (o *OptTopologyMode) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptTopologyMode to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptTopologyMode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptTopologyMode) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes TopologyPreview as json.
 func (o OptTopologyPreview) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -24516,6 +24616,39 @@ func (s OptTopologyRole) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptTopologyRole) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TopologyShape as json.
+func (o OptTopologyShape) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes TopologyShape from json.
+func (o *OptTopologyShape) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptTopologyShape to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptTopologyShape) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptTopologyShape) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -28196,9 +28329,9 @@ func (s *RatingEntry) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.TopologyLabel.Set {
-			e.FieldStart("topology_label")
-			s.TopologyLabel.Encode(e)
+		if s.Topology.Set {
+			e.FieldStart("topology")
+			s.Topology.Encode(e)
 		}
 	}
 	{
@@ -28275,7 +28408,7 @@ var jsonFieldsNameOfRatingEntry = [18]string{
 	2:  "unit",
 	3:  "db_kind",
 	4:  "db_version",
-	5:  "topology_label",
+	5:  "topology",
 	6:  "node_count",
 	7:  "sizes",
 	8:  "workload_name",
@@ -28355,15 +28488,15 @@ func (s *RatingEntry) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"db_version\"")
 			}
-		case "topology_label":
+		case "topology":
 			if err := func() error {
-				s.TopologyLabel.Reset()
-				if err := s.TopologyLabel.Decode(d); err != nil {
+				s.Topology.Reset()
+				if err := s.Topology.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"topology_label\"")
+				return errors.Wrap(err, "decode field \"topology\"")
 			}
 		case "node_count":
 			if err := func() error {
@@ -29040,6 +29173,62 @@ func (s *RenderSchemaValueReq) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RenderSchemaValueReq) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RequirementReason as json.
+func (s RequirementReason) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes RequirementReason from json.
+func (s *RequirementReason) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RequirementReason to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch RequirementReason(v) {
+	case RequirementReasonEngineBaseline:
+		*s = RequirementReasonEngineBaseline
+	case RequirementReasonWalArchive:
+		*s = RequirementReasonWalArchive
+	case RequirementReasonSharedBuffers:
+		*s = RequirementReasonSharedBuffers
+	case RequirementReasonProxy:
+		*s = RequirementReasonProxy
+	case RequirementReasonEtcd:
+		*s = RequirementReasonEtcd
+	case RequirementReasonImageBaseline:
+		*s = RequirementReasonImageBaseline
+	case RequirementReasonCPUBound:
+		*s = RequirementReasonCPUBound
+	case RequirementReasonMemtx:
+		*s = RequirementReasonMemtx
+	case RequirementReasonPdisks:
+		*s = RequirementReasonPdisks
+	case RequirementReasonRunnerLoad:
+		*s = RequirementReasonRunnerLoad
+	default:
+		*s = RequirementReason(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RequirementReason) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RequirementReason) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -29948,13 +30137,20 @@ func (s *RoleRequirement) encodeFields(e *jx.Encoder) {
 			s.Reason.Encode(e)
 		}
 	}
+	{
+		if s.ReasonParams.Set {
+			e.FieldStart("reason_params")
+			s.ReasonParams.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfRoleRequirement = [4]string{
+var jsonFieldsNameOfRoleRequirement = [5]string{
 	0: "cpu",
 	1: "memory_gb",
 	2: "disk_gb",
 	3: "reason",
+	4: "reason_params",
 }
 
 // Decode decodes RoleRequirement from json.
@@ -30005,6 +30201,16 @@ func (s *RoleRequirement) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"reason\"")
 			}
+		case "reason_params":
+			if err := func() error {
+				s.ReasonParams.Reset()
+				if err := s.ReasonParams.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"reason_params\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -30025,6 +30231,62 @@ func (s *RoleRequirement) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RoleRequirement) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s RoleRequirementReasonParams) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s RoleRequirementReasonParams) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		e.Str(elem)
+	}
+}
+
+// Decode decodes RoleRequirementReasonParams from json.
+func (s *RoleRequirementReasonParams) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RoleRequirementReasonParams to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem string
+		if err := func() error {
+			v, err := d.Str()
+			elem = string(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RoleRequirementReasonParams")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RoleRequirementReasonParams) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RoleRequirementReasonParams) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -36466,9 +36728,9 @@ func (s *RunSummary) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.TopologyLabel.Set {
-			e.FieldStart("topology_label")
-			s.TopologyLabel.Encode(e)
+		if s.Topology.Set {
+			e.FieldStart("topology")
+			s.Topology.Encode(e)
 		}
 	}
 	{
@@ -36543,7 +36805,7 @@ var jsonFieldsNameOfRunSummary = [16]string{
 	2:  "workload_name",
 	3:  "protocol",
 	4:  "stroppy_version",
-	5:  "topology_label",
+	5:  "topology",
 	6:  "node_count",
 	7:  "provider_kind",
 	8:  "provider_profile",
@@ -36614,15 +36876,15 @@ func (s *RunSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"stroppy_version\"")
 			}
-		case "topology_label":
+		case "topology":
 			if err := func() error {
-				s.TopologyLabel.Reset()
-				if err := s.TopologyLabel.Decode(d); err != nil {
+				s.Topology.Reset()
+				if err := s.Topology.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"topology_label\"")
+				return errors.Wrap(err, "decode field \"topology\"")
 			}
 		case "node_count":
 			if err := func() error {
@@ -51891,9 +52153,9 @@ func (s *TestSummary) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.TopologyLabel.Set {
-			e.FieldStart("topology_label")
-			s.TopologyLabel.Encode(e)
+		if s.Topology.Set {
+			e.FieldStart("topology")
+			s.Topology.Encode(e)
 		}
 	}
 	{
@@ -51931,7 +52193,7 @@ func (s *TestSummary) encodeFields(e *jx.Encoder) {
 var jsonFieldsNameOfTestSummary = [8]string{
 	0: "db_kind",
 	1: "db_version",
-	2: "topology_label",
+	2: "topology",
 	3: "node_count",
 	4: "protocol",
 	5: "stroppy_version",
@@ -51967,15 +52229,15 @@ func (s *TestSummary) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"db_version\"")
 			}
-		case "topology_label":
+		case "topology":
 			if err := func() error {
-				s.TopologyLabel.Reset()
-				if err := s.TopologyLabel.Decode(d); err != nil {
+				s.Topology.Reset()
+				if err := s.Topology.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"topology_label\"")
+				return errors.Wrap(err, "decode field \"topology\"")
 			}
 		case "node_count":
 			if err := func() error {
@@ -53738,6 +54000,58 @@ func (s *TestWriteWorkload1) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes TopologyMode as json.
+func (s TopologyMode) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes TopologyMode from json.
+func (s *TopologyMode) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TopologyMode to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch TopologyMode(v) {
+	case TopologyModeSemiSync:
+		*s = TopologyModeSemiSync
+	case TopologyModeGroup:
+		*s = TopologyModeGroup
+	case TopologyModeGalera:
+		*s = TopologyModeGalera
+	case TopologyModePatroni:
+		*s = TopologyModePatroni
+	case TopologyModeBlock42:
+		*s = TopologyModeBlock42
+	case TopologyModeMirror3DC:
+		*s = TopologyModeMirror3DC
+	case TopologyModeDedicated:
+		*s = TopologyModeDedicated
+	case TopologyModeServerless:
+		*s = TopologyModeServerless
+	default:
+		*s = TopologyMode(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s TopologyMode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TopologyMode) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *TopologyPreview) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -53748,8 +54062,10 @@ func (s *TopologyPreview) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *TopologyPreview) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("label")
-		e.Str(s.Label)
+		if s.Mode.Set {
+			e.FieldStart("mode")
+			s.Mode.Encode(e)
+		}
 	}
 	{
 		if s.NodeCount.Set {
@@ -53778,7 +54094,7 @@ func (s *TopologyPreview) encodeFields(e *jx.Encoder) {
 }
 
 var jsonFieldsNameOfTopologyPreview = [4]string{
-	0: "label",
+	0: "mode",
 	1: "node_count",
 	2: "nodes",
 	3: "flows",
@@ -53793,17 +54109,15 @@ func (s *TopologyPreview) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "label":
-			requiredBitSet[0] |= 1 << 0
+		case "mode":
 			if err := func() error {
-				v, err := d.Str()
-				s.Label = string(v)
-				if err != nil {
+				s.Mode.Reset()
+				if err := s.Mode.Decode(d); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"label\"")
+				return errors.Wrap(err, "decode field \"mode\"")
 			}
 		case "node_count":
 			if err := func() error {
@@ -53860,7 +54174,7 @@ func (s *TopologyPreview) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000101,
+		0b00000100,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -54250,6 +54564,257 @@ func (s TopologyRole) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *TopologyRole) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *TopologyShape) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *TopologyShape) encodeFields(e *jx.Encoder) {
+	{
+		if s.Mode.Set {
+			e.FieldStart("mode")
+			s.Mode.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("nodes")
+		e.ArrStart()
+		for _, elem := range s.Nodes {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+}
+
+var jsonFieldsNameOfTopologyShape = [2]string{
+	0: "mode",
+	1: "nodes",
+}
+
+// Decode decodes TopologyShape from json.
+func (s *TopologyShape) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TopologyShape to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "mode":
+			if err := func() error {
+				s.Mode.Reset()
+				if err := s.Mode.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"mode\"")
+			}
+		case "nodes":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				s.Nodes = make([]TopologyShapeNodesItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem TopologyShapeNodesItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Nodes = append(s.Nodes, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"nodes\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode TopologyShape")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000010,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfTopologyShape) {
+					name = jsonFieldsNameOfTopologyShape[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *TopologyShape) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TopologyShape) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *TopologyShapeNodesItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *TopologyShapeNodesItem) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("role")
+		s.Role.Encode(e)
+	}
+	{
+		if s.Engine.Set {
+			e.FieldStart("engine")
+			s.Engine.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("count")
+		e.Int(s.Count)
+	}
+}
+
+var jsonFieldsNameOfTopologyShapeNodesItem = [3]string{
+	0: "role",
+	1: "engine",
+	2: "count",
+}
+
+// Decode decodes TopologyShapeNodesItem from json.
+func (s *TopologyShapeNodesItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TopologyShapeNodesItem to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "role":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.Role.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"role\"")
+			}
+		case "engine":
+			if err := func() error {
+				s.Engine.Reset()
+				if err := s.Engine.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"engine\"")
+			}
+		case "count":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Int()
+				s.Count = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"count\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode TopologyShapeNodesItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000101,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfTopologyShapeNodesItem) {
+					name = jsonFieldsNameOfTopologyShapeNodesItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *TopologyShapeNodesItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TopologyShapeNodesItem) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

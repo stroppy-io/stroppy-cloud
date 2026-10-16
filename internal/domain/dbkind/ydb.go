@@ -1,7 +1,7 @@
 package dbkind
 
 import (
-	"fmt"
+	"strconv"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -55,7 +55,7 @@ func ydbManaged() Kind {
 		},
 		plan: func(p *topology.Plan, params map[string]any) {
 			p.Client = topology.Endpoint{Role: "", Protocol: "ydb_grpcs", Port: 2135}
-			p.Label = fmt.Sprintf("managed ydb %s", topology.StrOf(params, "type", "dedicated"))
+			p.Mode = topology.StrOf(params, "type", topology.ModeDedicated)
 		},
 	}
 }
@@ -69,7 +69,9 @@ func planYDB(p *topology.Plan, params map[string]any) {
 	p.Flows = append(p.Flows, topology.Flow{From: topology.RoleDBCompute, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001}, topology.Flow{From: topology.RoleDB, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001})
 	p.Client = topology.Endpoint{Role: topology.RoleDBCompute, Protocol: "ydb_grpc", Port: 2136}
 	// The compiler's own floor: every pdisk file plus filesystem headroom.
-	p.Requirements[topology.RoleDB] = topology.Requirement{CPU: 4, MemoryGB: 8, DiskGB: float64(40*pdisks + 20), Reason: fmt.Sprintf("%d pdisk(s) × 40 GB + 20 GB filesystem", pdisks)}
-	p.Requirements[topology.RoleDBCompute] = topology.Requirement{CPU: 4, MemoryGB: 8, DiskGB: 20, Reason: "ydb database node"}
-	p.Label = fmt.Sprintf("ydb %s: %d storage + %d database", topology.StrOf(params, "fault_tolerance", "none"), storage, compute)
+	p.Requirements[topology.RoleDB] = topology.Because(4, 8, float64(40*pdisks+20), topology.ReasonPDisks, "pdisks", strconv.Itoa(pdisks))
+	p.Requirements[topology.RoleDBCompute] = topology.Because(4, 8, 20, topology.ReasonBaseline, "engine", "ydb")
+	if ft := topology.StrOf(params, "fault_tolerance", "none"); ft != "none" {
+		p.Mode = ft
+	}
 }

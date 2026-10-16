@@ -110,6 +110,20 @@ func (r *ShareRepo) Update(ctx context.Context, id uuid.UUID, p share.Patch, exp
 	return nil
 }
 
+func (r *ShareRepo) All(ctx context.Context) ([]share.Share, error) {
+	rows, err := r.q.AllShareSnapshots(ctx)
+	if err != nil {
+		return nil, infraf("share: all: %v", err)
+	}
+	out := make([]share.Share, 0, len(rows))
+	for _, row := range rows {
+		x := share.Share{ID: row.ID, CapturedAt: row.CapturedAt, Title: row.Title}
+		_ = json.Unmarshal(row.Snapshot, &x.Snapshot) //nolint:errcheck // stored by us
+		out = append(out, x)
+	}
+	return out, nil
+}
+
 func (r *ShareRepo) SetSnapshot(ctx context.Context, id uuid.UUID, snap share.Snapshot, capturedAt time.Time, title string) error {
 	raw, _ := json.Marshal(snap) //nolint:errcheck // struct
 	if err := r.q.SetShareSnapshot(ctx, db.SetShareSnapshotParams{ID: id, Snapshot: raw, CapturedAt: capturedAt, Title: title}); err != nil {

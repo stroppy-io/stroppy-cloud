@@ -1470,7 +1470,7 @@ paths:
             $ref: '#/components/schemas/DatabaseKind'
       - name: sort
         in: query
-        description: Sort key. `topology` orders by the topology label (the plan label of `topology_preview`),
+        description: Sort key. `topology` orders by the topology shape (mode, then nodes of `topology_preview`),
           `usages` by the number of tests referencing the definition.
         schema:
           type: string
@@ -4989,8 +4989,12 @@ components:
         disk_gb:
           type: number
         reason:
-          type: string
-          description: What drove the number (e.g. shared_buffers).
+          $ref: '#/components/schemas/RequirementReason'
+        reason_params:
+          type: object
+          additionalProperties:
+            type: string
+          description: The numbers of the reason (engine, memtx_gb, pdisks, vus, load_workers, shared_buffers_gb).
     Size:
       type: string
       enum:
@@ -5605,6 +5609,57 @@ components:
       - ydb_storage_nodes_required
       - ydb_zone_invalid
       - ydb_zones_not_strings
+    TopologyMode:
+      type: string
+      description: The flavor of a topology its nodes do not show (the parameter value it comes from);
+        absent for a plain one.
+      enum:
+      - semi_sync
+      - group
+      - galera
+      - patroni
+      - block-4-2
+      - mirror-3-dc
+      - dedicated
+      - serverless
+    RequirementReason:
+      type: string
+      description: What drove a role's minimum hardware; its numbers are in reason_params.
+      enum:
+      - engine_baseline
+      - wal_archive
+      - shared_buffers
+      - proxy
+      - etcd
+      - image_baseline
+      - cpu_bound
+      - memtx
+      - pdisks
+      - runner_load
+    TopologyShape:
+      type: object
+      description: A topology as lists show it; the client names it in its language.
+      required:
+      - nodes
+      properties:
+        mode:
+          $ref: '#/components/schemas/TopologyMode'
+        nodes:
+          type: array
+          items:
+            type: object
+            required:
+            - role
+            - count
+            properties:
+              role:
+                $ref: '#/components/schemas/TopologyRole'
+              engine:
+                type: string
+                example: haproxy
+              count:
+                type: integer
+                description: 0 for a role sharing another role's machines.
     PublicConfig:
       type: object
       required:
@@ -6994,11 +7049,9 @@ components:
       type: object
       required:
       - nodes
-      - label
       properties:
-        label:
-          type: string
-          example: master + 2 replicas + haproxy
+        mode:
+          $ref: '#/components/schemas/TopologyMode'
         node_count:
           type: integer
         nodes:
@@ -7238,8 +7291,8 @@ components:
                 $ref: '#/components/schemas/DatabaseKind'
               db_version:
                 type: string
-              topology_label:
-                type: string
+              topology:
+                $ref: '#/components/schemas/TopologyShape'
               node_count:
                 type: integer
               protocol:
@@ -7445,8 +7498,8 @@ components:
           $ref: '#/components/schemas/Protocol'
         stroppy_version:
           type: string
-        topology_label:
-          type: string
+        topology:
+          $ref: '#/components/schemas/TopologyShape'
         node_count:
           type: integer
         provider_kind:
@@ -9040,8 +9093,8 @@ components:
           $ref: '#/components/schemas/DatabaseKind'
         db_version:
           type: string
-        topology_label:
-          type: string
+        topology:
+          $ref: '#/components/schemas/TopologyShape'
         node_count:
           type: integer
         sizes:

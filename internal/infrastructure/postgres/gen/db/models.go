@@ -148,23 +148,23 @@ type WebhookDeliveries struct {
 }
 
 type Databases struct {
-	ID            uuid.UUID
-	TenantID      uuid.UUID
-	Name          string
-	Description   string
-	Tags          json.RawMessage
-	AuthorID      *uuid.UUID
-	Kind          string
-	Version       string
-	Image         string
-	Params        json.RawMessage
-	Configs       json.RawMessage
-	Runtime       json.RawMessage
-	External      json.RawMessage
-	TopologyLabel string
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	DeletedAt     *time.Time
+	ID          uuid.UUID
+	TenantID    uuid.UUID
+	Name        string
+	Description string
+	Tags        json.RawMessage
+	AuthorID    *uuid.UUID
+	Kind        string
+	Version     string
+	Image       string
+	Params      json.RawMessage
+	Configs     json.RawMessage
+	Runtime     json.RawMessage
+	External    json.RawMessage
+	Topology    json.RawMessage
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   *time.Time
 }
 
 type Workloads struct {

@@ -2,6 +2,7 @@ package dbkind
 
 import (
 	"math"
+	"strconv"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -118,16 +119,14 @@ func planPostgres(p *topology.Plan, kind catalog.DatabaseKind, params map[string
 	}
 	p.Client = client
 
-	dbReq := topology.Requirement{CPU: 2, MemoryGB: 4, DiskGB: 20, Reason: "postgres baseline"}
+	dbReq := topology.Because(2, 4, 20, topology.ReasonBaseline, "engine", engine)
 	if topology.BoolOf(params, "wal_archive") {
-		dbReq.DiskGB += 20
-		dbReq.Reason = "postgres baseline + WAL archive"
+		dbReq = topology.Because(2, 4, 40, topology.ReasonWALArchive, "engine", engine)
 	}
 	if kind == catalog.OrioleDB {
 		sb := float64(topology.IntOf(params, "shared_buffers_mb", 1024)) / 1024
 		if sb*2 > dbReq.MemoryGB {
-			dbReq.MemoryGB = math.Ceil(sb * 2)
-			dbReq.Reason = "2× shared_buffers"
+			dbReq = topology.Because(dbReq.CPU, math.Ceil(sb*2), dbReq.DiskGB, topology.ReasonSharedBuffers, "shared_buffers_gb", strconv.FormatFloat(sb, 'f', -1, 64))
 		}
 	}
 	p.Requirements[topology.RoleDB] = dbReq
@@ -135,10 +134,12 @@ func planPostgres(p *topology.Plan, kind catalog.DatabaseKind, params map[string
 		p.Requirements[topology.RoleDBReplica] = dbReq
 	}
 	if ha == "patroni" {
-		p.Requirements[topology.RoleEtcd] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "etcd"}
+		p.Requirements[topology.RoleEtcd] = topology.Because(2, 2, 10, topology.ReasonEtcd)
 	}
 	if haproxy > 0 {
-		p.Requirements[topology.RoleProxy] = topology.Requirement{CPU: 2, MemoryGB: 2, DiskGB: 10, Reason: "haproxy"}
+		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "haproxy")
 	}
-	p.Label = topology.Label(engine, replicas, "replica", ha == "patroni", "patroni", haproxy > 0, "haproxy", pgbouncer, "pgbouncer")
+	if ha == topology.ModePatroni {
+		p.Mode = topology.ModePatroni
+	}
 }

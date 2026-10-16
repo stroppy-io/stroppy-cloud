@@ -564,8 +564,8 @@ function databases(): Database[] {
       'postgres',
       '17',
       { replicas: 0, ha: 'none', extensions: ['pg_stat_statements'] },
-      { label: 'single', node_count: 1, nodes: [{ role: 'db', engine: 'postgres', count: 1 }] },
-      { db: { cpu: 2, memory_gb: 4, disk_gb: 40, reason: 'shared_buffers 1GB' } },
+      { node_count: 1, nodes: [{ role: 'db', engine: 'postgres', count: 1 }] },
+      { db: { cpu: 2, memory_gb: 4, disk_gb: 40, reason: 'shared_buffers' } },
       olga,
       40,
       {
@@ -581,7 +581,6 @@ function databases(): Database[] {
       '17',
       { replicas: 2, sync_replicas: 1, ha: 'patroni', etcd_nodes: 3, haproxy: 2, pgbouncer: true },
       {
-        label: 'patroni-ha',
         node_count: 8,
         nodes: [
           { role: 'db', engine: 'postgres', count: 1 },
@@ -597,7 +596,7 @@ function databases(): Database[] {
         ],
       },
       {
-        db: { cpu: 8, memory_gb: 32, disk_gb: 200, reason: 'shared_buffers 8GB' },
+        db: { cpu: 8, memory_gb: 32, disk_gb: 200, reason: 'shared_buffers' },
         proxy: { cpu: 2, memory_gb: 4 },
         etcd: { cpu: 2, memory_gb: 4 },
       },
@@ -615,7 +614,6 @@ function databases(): Database[] {
       '18',
       { replicas: 1, ha: 'none' },
       {
-        label: 'primary-replica',
         node_count: 2,
         nodes: [
           { role: 'db', engine: 'postgres', count: 1 },
@@ -634,14 +632,13 @@ function databases(): Database[] {
       '8.4',
       { replicas: 2 },
       {
-        label: 'source-replica',
         node_count: 3,
         nodes: [
           { role: 'db', engine: 'mysql', count: 1 },
           { role: 'db-replica', engine: 'mysql', count: 2 },
         ],
       },
-      { db: { cpu: 4, memory_gb: 16, disk_gb: 80, reason: 'innodb_buffer_pool 8GB' } },
+      { db: { cpu: 4, memory_gb: 16, disk_gb: 80, reason: 'engine_baseline' } },
       lena,
       18
     ),
@@ -652,14 +649,13 @@ function databases(): Database[] {
       '26',
       { nodes: 9, erasure: 'mirror-3-dc', pdisks_per_node: 3 },
       {
-        label: 'mirror-3-dc',
         node_count: 9,
         nodes: [
           { role: 'db', engine: 'ydb', count: 9 },
           { role: 'db-compute', engine: 'ydb', count: 3, colocated_with: 'storage' },
         ],
       },
-      { db: { cpu: 8, memory_gb: 32, disk_gb: 300, reason: '3 pdisks × 93GB' } },
+      { db: { cpu: 8, memory_gb: 32, disk_gb: 300, reason: 'pdisks' } },
       max,
       12,
       { description: '9 storage nodes, 3 fail domains.', tags: { env: 'ha' } }
@@ -671,7 +667,6 @@ function databases(): Database[] {
       '25',
       { nodes: 3 },
       {
-        label: 'cluster-3',
         node_count: 3,
         nodes: [{ role: 'db', engine: 'cockroach', count: 3 }],
       },
@@ -686,11 +681,10 @@ function databases(): Database[] {
       '26',
       { instances: 3, replication_factor: 2 },
       {
-        label: 'cluster-3',
         node_count: 3,
         nodes: [{ role: 'db', engine: 'picodata', count: 3 }],
       },
-      { db: { cpu: 4, memory_gb: 16, disk_gb: 60, reason: 'memtx 8GB' } },
+      { db: { cpu: 4, memory_gb: 16, disk_gb: 60, reason: 'memtx' } },
       olga,
       3
     ),
@@ -700,7 +694,7 @@ function databases(): Database[] {
       'orioledb',
       '17',
       { replicas: 0 },
-      { label: 'single', node_count: 1, nodes: [{ role: 'db', engine: 'orioledb', count: 1 }] },
+      { node_count: 1, nodes: [{ role: 'db', engine: 'orioledb', count: 1 }] },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 80 } },
       max,
       2
@@ -748,7 +742,7 @@ function workloads(): Workload[] {
       'tpcc-100wh-64vu-10m',
       'pg',
       [seg('tpcc', 'tpcc/tx', { warehouses: 100, load_workers: 32 }, { vus: 64, duration: '10m' })],
-      { cpu: 8, memory_gb: 16, reason: '64 VUs' },
+      { cpu: 8, memory_gb: 16, reason: 'runner_load' },
       olga,
       30,
       {
@@ -803,7 +797,7 @@ function workloads(): Workload[] {
       'ydb-simple-kv',
       'ydb_grpc',
       [seg('kv', 'simple', { rows: '10000000' }, { vus: 128, duration: '10m' })],
-      { cpu: 16, memory_gb: 32, reason: '128 VUs' },
+      { cpu: 16, memory_gb: 32, reason: 'runner_load' },
       max,
       10
     ),
@@ -1203,7 +1197,7 @@ export function buildRun(s: RunSeed): Run {
       workload_name: s.wl.name,
       protocol: s.wl.protocol,
       stroppy_version: s.wl.stroppy_version,
-      topology_label: s.db.topology_preview?.label,
+      topology: s.db.topology_preview,
       node_count: s.db.topology_preview?.node_count,
       provider_kind: s.provider.kind,
       provider_profile: { id: s.provider.id, name: s.provider.name },
@@ -1528,7 +1522,7 @@ function providersFor(): ProviderProfile[] {
       name: 'yc-old-key',
       kind: 'yandex',
       status: 'failed',
-      status_reason: 'service account key is revoked (iam: 401)',
+      status_reason: 'engine_baseline',
       verified_at: null,
       settings: {
         cloud_id: 'b1gzzzzzzzzzzzzzzzzz',
@@ -1604,7 +1598,7 @@ function quotasFor(): Record<string, QuotaReport> {
     'prov-yc-broken': {
       observed_at: null,
       stale: true,
-      unavailable_reason: 'profile failed verification',
+      unavailable_reason: 'engine_baseline',
       quotas: [],
     },
   }
@@ -1828,7 +1822,7 @@ function tenantMain(): TenantData {
       durationMin: 14,
       author: max,
       provider: prov('prov-yc-main'),
-      reason: 'cancelled by Max Ivanov',
+      reason: 'engine_baseline',
     },
     {
       id: 'run-c3',
@@ -1876,7 +1870,7 @@ function tenantMain(): TenantData {
       durationMin: 4,
       author: lena,
       provider: prov('prov-yc-main'),
-      reason: 'quota exceeded: compute.cores (512/512) in folder b1gy…',
+      reason: 'engine_baseline',
     },
     {
       id: 'run-c5',
@@ -1928,7 +1922,7 @@ function tenantMain(): TenantData {
       provider: prov('prov-yc-main'),
       trigger: 'schedule',
       trigger_ref: { schedule_id: 'sch-smoke' },
-      reason: 'threshold violated: p99 312ms > 200ms',
+      reason: 'engine_baseline',
     },
     {
       id: 'run-c7',
@@ -2045,7 +2039,7 @@ function tenantMain(): TenantData {
       durationMin: 2,
       author: max,
       provider: prov('prov-aws-eu'),
-      reason: 'cancelled by Max Ivanov',
+      reason: 'engine_baseline',
     },
     {
       id: 'run-c13',
@@ -2626,7 +2620,7 @@ function tenantSandbox(): TenantData {
       'prov-sb-yc': {
         observed_at: null,
         stale: true,
-        unavailable_reason: 'verification in progress',
+        unavailable_reason: 'engine_baseline',
         quotas: [],
       },
     },

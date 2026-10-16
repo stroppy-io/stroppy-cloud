@@ -9,6 +9,7 @@ import {
 import { RankBadge } from '@components/RankBadge'
 import { dbLabel, formatMetric, shortId } from '@helpers/format'
 import { hardwareLabel, scenarioLabel } from '@helpers/rating'
+import { topologyText } from '@helpers/topology'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -80,7 +81,7 @@ export function RatingTable({
         render: (r) => {
           const primary = dbLabel(r.db_kind, r.db_version)
           const secondary = [
-            r.topology_label,
+            topologyText(r.topology),
             r.node_count ? t('runs.list.nodes', { count: r.node_count }) : undefined,
           ]
             .filter(Boolean)

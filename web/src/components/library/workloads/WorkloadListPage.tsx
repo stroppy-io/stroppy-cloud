@@ -26,6 +26,7 @@ import { RelativeTime } from '@components/RelativeTime'
 import { UserLabel } from '@components/UserAvatar'
 import { Button, ConfirmModal, Stack } from '@grafana/ui'
 import { formatDuration } from '@helpers/format'
+import { requirementReason } from '@helpers/topology'
 import { toYaml } from '@helpers/yaml'
 import { useTenant } from '@hooks/useTenant'
 import { downloadText, safeFilename } from '@lib/download'
@@ -419,8 +420,8 @@ export function WorkloadListPage({
             .join(' · ')
           return {
             primary: primary || undefined,
-            secondary: run.reason,
-            title: [primary, run.reason].filter(Boolean).join('\n'),
+            secondary: requirementReason(run) || undefined,
+            title: [primary, requirementReason(run)].filter(Boolean).join('\n'),
           }
         },
       }),

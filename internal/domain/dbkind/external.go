@@ -20,7 +20,6 @@ func external() Kind {
 		},
 		plan: func(p *topology.Plan, params map[string]any) {
 			p.Client = topology.Endpoint{Role: "", Protocol: topology.StrOf(params, "protocol", "pg")}
-			p.Label = "external " + p.Client.Protocol
 		},
 		protocols: func(params map[string]any) []catalog.Protocol {
 			// The DSN speaks one protocol; the workload has to speak the same.

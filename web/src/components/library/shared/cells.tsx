@@ -4,6 +4,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Icon, Tooltip, useStyles2 } from '@grafana/ui'
 import { durationSeconds, formatDuration } from '@helpers/format'
+import { requirementReason } from '@helpers/topology'
 import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 
@@ -215,7 +216,7 @@ export function requirementsLine(
     .map(([role, r]) => {
       const body = roleReq(r)
       if (!body) return undefined
-      return `${role}: ${body}${withReason && r.reason ? ` (${r.reason})` : ''}`
+      return `${role}: ${body}${withReason && r.reason ? ` (${requirementReason(r)})` : ''}`
     })
     .filter(Boolean)
   return parts.length ? parts.join(withReason ? '\n' : '; ') : undefined

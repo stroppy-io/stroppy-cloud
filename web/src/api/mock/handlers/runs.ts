@@ -621,7 +621,6 @@ route('POST', '/api/v1/t/:slug/runs/:id:save-as-test', ({ store, params, body })
       updated_at: now,
       ...run.snapshot.database,
       topology_preview: {
-        label: run.summary?.topology_label ?? 'custom',
         node_count: run.summary?.node_count,
         nodes: [],
       },
