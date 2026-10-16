@@ -223,7 +223,6 @@
       "keep_is_not_a_duration": "Stand keep time is a duration, e.g. 30m or 2h",
       "keep_must_not_be_negative": "Stand keep time cannot be negative",
       "kind_must_be_yandex_or_aws": "The provider is Yandex Cloud or AWS",
-      "limit_concurrent_runs": "Concurrent run limit reached: {{live}} of {{limit}} running. Wait or cancel one",
       "limit_keep": "Keep time {{keep}} is above the tenant limit {{limit}}",
       "limit_machines_per_run": "The run needs {{machines}} machines; the tenant limit is {{limit}}",
       "limit_size": "Size {{size}} for role {{role}} is above the tenant limit {{limit}}",
@@ -549,7 +548,10 @@
     "etcd": "etcd",
     "coordinator": "Coordinator",
     "proxy": "Proxy",
-    "runner": "Runner"
+    "runner": "Runner",
+    "patroni": "Patroni",
+    "patroni-replica": "Patroni (replica)",
+    "pgbouncer": "PgBouncer"
   },
   "quota": {
     "compute_instances_count": "Machines",

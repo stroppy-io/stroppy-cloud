@@ -93,7 +93,7 @@ export interface MockStore {
   roleIn(slug: string): TenantRole | undefined
   audit(
     slug: string | undefined,
-    action: string,
+    action: AuditEntry['action'],
     target: AuditEntry['target'],
     details?: Record<string, unknown>
   ): void

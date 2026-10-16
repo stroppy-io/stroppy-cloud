@@ -6,6 +6,7 @@
       "vite.config.ts",
       "!src/routeTree.gen.ts",
       "!src/api/schema.d.ts",
+      "!src/api/enums.ts",
       "!src/schemas",
       "!src/kit/tokens.css"
     ]

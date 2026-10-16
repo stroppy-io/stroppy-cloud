@@ -103,7 +103,11 @@ func (st *State) Apply(current Status, e RawEvent) Outcome {
 }
 
 func (e RawEvent) timeline(title, errText string) *Event {
-	return &Event{GrapheneID: e.ID, At: e.At, Kind: e.Kind, Title: title, Subject: e.Subject, Status: e.Status, Error: errText, Attempt: e.Attempt}
+	kind, ok := EventKind(e.Kind)
+	if !ok {
+		return nil
+	}
+	return &Event{GrapheneID: e.ID, At: e.At, Kind: kind, Title: title, Subject: e.Subject, Status: e.Status, Error: errText, Attempt: e.Attempt}
 }
 
 func (st *State) applyMilestone(e RawEvent, m Milestone) Outcome {

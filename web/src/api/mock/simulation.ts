@@ -1,4 +1,4 @@
-import type { Run, RunPhase } from '@api/types'
+import type { Run, RunEvent, RunPhase } from '@api/types'
 import {
   downsample,
   progressSegments,
@@ -80,7 +80,7 @@ class Simulation {
       p.started_at = p.id === 'provisioning' ? iso() : null
       p.finished_at = null
     }
-    this.pushEvent(run, live, 'run.started', 'Run started')
+    this.pushEvent(run, live, 'run-started', 'Run started')
     this.pushEvent(run, live, 'phase.started', 'Provisioning started', 'provisioning')
     this.publishRun(slug, run, live)
   }
@@ -92,7 +92,6 @@ class Simulation {
     run.status = 'cancelling'
     run.status_reason = `cancelled by ${this.store.me.display_name}`
     live.overview.status = 'cancelling'
-    this.pushEvent(run, live, 'run.cancelling', 'Cancellation requested', undefined, 'cancelling')
     this.publishRun(slug, run, live)
     // finish teardown quickly
     window.setTimeout(() => this.finish(slug, run, live, 'cancelled'), 4000)
@@ -212,11 +211,11 @@ class Simulation {
       sample('latency_p95_ms', p99 * (0.7 + 0.1 * Math.abs(Math.sin(elapsed / 6))))
       sample('latency_p50_ms', p99 * (0.3 + 0.04 * Math.sin(elapsed / 7)))
       sample('errors', this.rand() < 0.05 ? 1 : 0)
-      sample('db_cpu', 65 + 20 * Math.abs(Math.sin(elapsed / 11)))
-      sample('db_cache_hit', 98 + this.rand())
-      sample('db_io_read', 10e6 + 6e6 * Math.abs(Math.sin(elapsed / 13)))
-      sample('db_io_write', 28e6 + 12e6 * Math.abs(Math.cos(elapsed / 10)))
-      sample('runner_cpu', 58 + this.rand() * 24)
+      sample('node_cpu_usage', 65 + 20 * Math.abs(Math.sin(elapsed / 11)))
+      sample('pg_stat_database_blks_hit_ratio', 98 + this.rand())
+      sample('node_disk_io_bytes', 10e6 + 6e6 * Math.abs(Math.sin(elapsed / 13)))
+      sample('node_network_bytes', 28e6 + 12e6 * Math.abs(Math.cos(elapsed / 10)))
+      sample('iterations_per_second', 58 + this.rand() * 24)
       this.emit(`run.metrics/${run.id}`, {
         window: { start: iso(live.phaseStartedAt), end: iso(nowMs), segment: seg?.name },
         series: Object.entries(live.metrics).map(([key, points]) => ({
@@ -240,7 +239,10 @@ class Simulation {
         time: iso(nowMs),
         seq: ++live.seq,
         message: msg,
-        level: msg.startsWith('ERROR') ? 'error' : msg.startsWith('WARNING') ? 'warn' : 'info',
+        level: (msg.startsWith('ERROR') ? 'error' : msg.startsWith('WARNING') ? 'warn' : 'info') as
+          | 'error'
+          | 'warn'
+          | 'info',
         stream: 'stdout',
         role: m?.role,
         machine: m?.name,
@@ -388,7 +390,11 @@ class Simulation {
     this.pushEvent(
       run,
       live,
-      `run.${status}`,
+      status === 'completed'
+        ? 'run-completed'
+        : status === 'cancelled'
+          ? 'run-cancelled'
+          : 'run-failed',
       `Run ${status}`,
       undefined,
       status,
@@ -400,7 +406,7 @@ class Simulation {
   private pushEvent(
     run: Run,
     live: RunLive,
-    kind: string,
+    kind: RunEvent['kind'],
     title: string,
     subject?: string,
     status?: string,

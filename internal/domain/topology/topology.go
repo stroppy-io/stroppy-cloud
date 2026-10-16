@@ -22,7 +22,14 @@ const (
 	RoleProxy       = "proxy"
 	RoleRunner      = "runner"
 	RoleCoordinator = "coordinator"
+	// Roles that share another role's machines (Plan.Colocate).
+	RolePatroni        = "patroni"
+	RolePatroniReplica = "patroni-replica"
+	RolePgBouncer      = "pgbouncer"
 )
+
+// Roles is every role (the contract's TopologyRole is the same list).
+var Roles = []string{RoleDB, RoleDBReplica, RoleDBCompute, RoleEtcd, RoleProxy, RoleRunner, RoleCoordinator, RolePatroni, RolePatroniReplica, RolePgBouncer}
 
 // Node is one role of the plan.
 type Node struct {

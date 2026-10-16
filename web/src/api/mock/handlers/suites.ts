@@ -78,16 +78,7 @@ function machinesOf(t: TenantData, test: Test | undefined, sizes: RoleSizes | un
   const nodes = db?.topology_preview?.nodes ?? [{ role: 'db', count: 1 }]
   for (const n of nodes) {
     if (n.colocated_with) continue
-    const roleKey =
-      n.role === 'master' ||
-      n.role === 'replica' ||
-      n.role === 'storage' ||
-      n.role === 'node' ||
-      n.role === 'instance'
-        ? 'db'
-        : n.role === 'haproxy'
-          ? 'proxy'
-          : n.role
+    const roleKey = n.role === 'db-replica' || n.role === 'db-compute' ? 'db' : n.role
     const rs = s[roleKey] ?? s.db
     for (let i = 0; i < (n.count ?? 1); i++) add(rs?.size, rs?.disk?.gb)
   }
@@ -272,14 +263,14 @@ export function buildPreview(t: TenantData, spec: Schemas['SuiteSpec']): SuitePr
     const share = enabled ? Math.min(1, concurrency / enabled) : 1
     for (const q of report?.quotas ?? []) {
       const need =
-        q.name === 'compute.cores'
+        q.name === 'compute.instanceCores.count'
           ? agg.cpu * share
-          : q.name === 'compute.memory'
-            ? agg.memory_gb * share
-            : q.name === 'compute.instances'
+          : q.name === 'compute.instanceMemory.size'
+            ? agg.memory_gb * 2 ** 30 * share
+            : q.name === 'compute.instances.count'
               ? agg.machines * share
-              : q.name === 'compute.ssd'
-                ? agg.disk_gb * share
+              : q.name === 'compute.ssdDisks.size'
+                ? agg.disk_gb * 2 ** 30 * share
                 : 0
       if (need && q.used + need > q.limit)
         issues.push(
@@ -524,7 +515,7 @@ function createSuiteRun(
   t.suiteRuns.unshift(sr)
   fillSlots(store, slug, t, sr)
   refreshProgress(sr)
-  store.audit(slug, 'suite_run.launch', { kind: 'suite_run', id: sr.id, name: sr.name })
+  store.audit(slug, 'suite.launch', { kind: 'suite_run', id: sr.id, name: sr.name })
   ensureScheduler(store)
   return sr
 }
@@ -633,7 +624,7 @@ route('POST', '/api/v1/t/:slug/suites:import', ({ store, params, body }) => {
     cells: computeCells(t, full),
   }
   t.suites.unshift(suite)
-  store.audit(params.slug, 'suite.import', { kind: 'suite', id: suite.id, name: suite.name })
+  store.audit(params.slug, 'suite.create', { kind: 'suite', id: suite.id, name: suite.name })
   return { json: decorateSuite(t, suite) }
 })
 
@@ -746,7 +737,7 @@ route('POST', '/api/v1/t/:slug/suites/:id:clone', ({ store, params, body }) => {
     summary: undefined,
   }
   t.suites.unshift(clone)
-  store.audit(params.slug, 'suite.clone', { kind: 'suite', id: clone.id, name: clone.name })
+  store.audit(params.slug, 'suite.create', { kind: 'suite', id: clone.id, name: clone.name })
   return { status: 201, json: decorateSuite(t, clone) }
 })
 
@@ -1161,7 +1152,7 @@ route('POST', '/api/v1/t/:slug/schedules/:id:pause', ({ store, params }) => {
   s.enabled = false
   s.updated_at = iso()
   recomputeNext(s)
-  store.audit(params.slug, 'schedule.pause', { kind: 'schedule', id: s.id, name: s.name })
+  store.audit(params.slug, 'schedule.update', { kind: 'schedule', id: s.id, name: s.name })
   return { json: decorateSchedule(t, s) }
 })
 
@@ -1171,7 +1162,7 @@ route('POST', '/api/v1/t/:slug/schedules/:id:resume', ({ store, params }) => {
   s.enabled = true
   s.updated_at = iso()
   recomputeNext(s)
-  store.audit(params.slug, 'schedule.resume', { kind: 'schedule', id: s.id, name: s.name })
+  store.audit(params.slug, 'schedule.update', { kind: 'schedule', id: s.id, name: s.name })
   return { json: decorateSchedule(t, s) }
 })
 
@@ -1222,7 +1213,7 @@ route('POST', '/api/v1/t/:slug/schedules/:id:run-now', ({ store, params }) => {
     ref = { kind: 'suite_run', id: sr.id, name: sr.name, status: sr.status, at: iso() }
   }
   s.last_run = ref
-  store.audit(params.slug, 'schedule.run_now', { kind: 'schedule', id: s.id, name: s.name })
+  store.audit(params.slug, 'schedule.update', { kind: 'schedule', id: s.id, name: s.name })
   return { status: 201, json: ref }
 })
 

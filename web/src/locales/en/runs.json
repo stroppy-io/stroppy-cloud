@@ -286,7 +286,9 @@
       "stand_kept": "Stand kept",
       "result_published": "Result published",
       "run_timed_out": "Run timed out",
-      "run_terminated": "Run terminated"
+      "run_terminated": "Run terminated",
+      "activity_failed": "Step failed: {{subject}}",
+      "activity_timed_out": "Step timed out: {{subject}}"
     },
     "kinds": {
       "run": "run",

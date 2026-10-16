@@ -196,7 +196,7 @@ func TestE2EScenarios(t *testing.T) {
 				} `json:"data"`
 			}
 			e.want(e.req(http.MethodGet, base+"/runs/"+r.ID+"/events?limit=200", nil, tok), http.StatusOK, &events)
-			terminal := map[string]string{"completed": "run-completed", "failed": "run-failed", "cancelled": "run-canceled"}[c.status]
+			terminal := map[string]string{"completed": "run-completed", "failed": "run-failed", "cancelled": "run-cancelled"}[c.status]
 			if len(events.Data) == 0 || events.Data[0].Kind != "run-started" || events.Data[len(events.Data)-1].Kind != terminal {
 				t.Fatalf("timeline %+v", events.Data)
 			}

@@ -843,6 +843,123 @@ func (s ArtifactKind) Validate() error {
 	}
 }
 
+func (s AuditAction) Validate() error {
+	switch s {
+	case "admin.pipelines.resync":
+		return nil
+	case "admin.run.cancel":
+		return nil
+	case "admin.settings.update":
+		return nil
+	case "admin.tenant.assign_owner":
+		return nil
+	case "admin.tenant.delete":
+		return nil
+	case "admin.tenant.limits":
+		return nil
+	case "admin.tenant.resume":
+		return nil
+	case "admin.tenant.suspend":
+		return nil
+	case "admin.user.platform_admin":
+		return nil
+	case "database.create":
+		return nil
+	case "database.delete":
+		return nil
+	case "database.update":
+		return nil
+	case "invite.accept":
+		return nil
+	case "invite.create":
+		return nil
+	case "invite.revoke":
+		return nil
+	case "member.leave":
+		return nil
+	case "member.remove":
+		return nil
+	case "member.role":
+		return nil
+	case "provider.create":
+		return nil
+	case "provider.delete":
+		return nil
+	case "provider.update":
+		return nil
+	case "run.cancel":
+		return nil
+	case "run.delete":
+		return nil
+	case "run.keep.extend":
+		return nil
+	case "run.keep.release":
+		return nil
+	case "run.launch":
+		return nil
+	case "run.update":
+		return nil
+	case "schedule.create":
+		return nil
+	case "schedule.delete":
+		return nil
+	case "schedule.update":
+		return nil
+	case "share.create":
+		return nil
+	case "share.rebuild":
+		return nil
+	case "share.revoke":
+		return nil
+	case "suite.create":
+		return nil
+	case "suite.delete":
+		return nil
+	case "suite.launch":
+		return nil
+	case "suite.update":
+		return nil
+	case "suite_run.cancel":
+		return nil
+	case "suite_run.delete":
+		return nil
+	case "tenant.create":
+		return nil
+	case "tenant.delete":
+		return nil
+	case "tenant.transfer":
+		return nil
+	case "tenant.update":
+		return nil
+	case "test.create":
+		return nil
+	case "test.delete":
+		return nil
+	case "test.update":
+		return nil
+	case "token.create":
+		return nil
+	case "token.revoke":
+		return nil
+	case "webhook.create":
+		return nil
+	case "webhook.delete":
+		return nil
+	case "webhook.rotate":
+		return nil
+	case "webhook.update":
+		return nil
+	case "workload.create":
+		return nil
+	case "workload.delete":
+		return nil
+	case "workload.update":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *AuditEntry) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -857,6 +974,28 @@ func (s *AuditEntry) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "actor",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Action.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "action",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Target.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "target",
 			Error: err,
 		})
 	}
@@ -902,6 +1041,36 @@ func (s AuditEntryActorKind) Validate() error {
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}
+}
+
+func (s *AuditEntryTarget) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Kind.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "kind",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
 }
 
 func (s *AuditPage) Validate() error {
@@ -955,6 +1124,45 @@ func (s *AuditPage) Validate() error {
 	return nil
 }
 
+func (s AuditTargetKind) Validate() error {
+	switch s {
+	case "database":
+		return nil
+	case "invite":
+		return nil
+	case "namespace":
+		return nil
+	case "provider":
+		return nil
+	case "run":
+		return nil
+	case "schedule":
+		return nil
+	case "share":
+		return nil
+	case "suite":
+		return nil
+	case "suite_run":
+		return nil
+	case "system_settings":
+		return nil
+	case "tenant":
+		return nil
+	case "test":
+		return nil
+	case "token":
+		return nil
+	case "user":
+		return nil
+	case "webhook":
+		return nil
+	case "workload":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *CatalogDatabase) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -986,6 +1194,23 @@ func (s *CatalogDatabase) Validate() error {
 	if err := func() error {
 		if s.Roles == nil {
 			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Roles {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
@@ -1030,6 +1255,29 @@ func (s *CatalogDatabase) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "protocols",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *CatalogDatabaseRolesItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
 			Error: err,
 		})
 	}
@@ -1785,23 +2033,34 @@ func (s *Database) Validate() error {
 }
 
 func (s DatabaseKind) Validate() error {
-	alias := (string)(s)
-	if err := (validate.String{
-		MinLength:     0,
-		MinLengthSet:  false,
-		MaxLength:     0,
-		MaxLengthSet:  false,
-		Email:         false,
-		Hostname:      false,
-		Regex:         regexMap["^[a-z][a-z0-9_]{0,31}$"],
-		MinNumeric:    0,
-		MinNumericSet: false,
-		MaxNumeric:    0,
-		MaxNumericSet: false,
-	}).Validate(string(alias)); err != nil {
-		return errors.Wrap(err, "string")
+	switch s {
+	case "postgres":
+		return nil
+	case "orioledb":
+		return nil
+	case "mysql":
+		return nil
+	case "mariadb":
+		return nil
+	case "picodata":
+		return nil
+	case "ydb":
+		return nil
+	case "ydb_managed":
+		return nil
+	case "cockroach":
+		return nil
+	case "pg_noop":
+		return nil
+	case "noop":
+		return nil
+	case "external":
+		return nil
+	case "custom":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
 	}
-	return nil
 }
 
 func (s *DatabasePatch) Validate() error {
@@ -2083,6 +2342,481 @@ func (s DiffChangesItemOp) Validate() error {
 	case "remove":
 		return nil
 	case "replace":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s ErrorReason) Validate() error {
+	switch s {
+	case "a_database_with_this_name_exists":
+		return nil
+	case "a_pending_invite_for_this_email_exists":
+		return nil
+	case "a_profile_with_this_name_exists":
+		return nil
+	case "a_suite_with_this_name_exists":
+		return nil
+	case "a_test_with_this_name_exists":
+		return nil
+	case "a_workload_with_this_name_exists":
+		return nil
+	case "account_already_owns_a_tenant":
+		return nil
+	case "after_is_not_an_event_id":
+		return nil
+	case "already_the_owner":
+		return nil
+	case "artifact_not_downloadable":
+		return nil
+	case "artifact_not_found":
+		return nil
+	case "artifact_unavailable":
+		return nil
+	case "at_least_one_event":
+		return nil
+	case "at_least_one_segment":
+		return nil
+	case "at_most_20_notification_emails":
+		return nil
+	case "authentication_required":
+		return nil
+	case "cancel_run_before_delete":
+		return nil
+	case "cancel_suite_run_before_delete":
+		return nil
+	case "cancel_unavailable":
+		return nil
+	case "catalog_no_qps_series":
+		return nil
+	case "comparison_request_is_required":
+		return nil
+	case "config_version_mismatch":
+		return nil
+	case "cron_invalid":
+		return nil
+	case "cron_never_fires":
+		return nil
+	case "cursor_invalid":
+		return nil
+	case "cursor_is_not_an_event_id":
+		return nil
+	case "database_not_found":
+		return nil
+	case "database_ref_and_inline_are_exclusive":
+		return nil
+	case "db_kind_not_launchable":
+		return nil
+	case "db_kind_unknown":
+		return nil
+	case "db_version_no_image":
+		return nil
+	case "db_version_unknown":
+		return nil
+	case "default_keep_is_not_a_duration":
+		return nil
+	case "default_keep_range":
+		return nil
+	case "delete_resources_unavailable":
+		return nil
+	case "delivery_id_is_not_a_uuid":
+		return nil
+	case "delivery_not_found":
+		return nil
+	case "disk_size_out_of_range":
+		return nil
+	case "display_name_longer_than_64":
+		return nil
+	case "document_api_version":
+		return nil
+	case "document_kind":
+		return nil
+	case "document_kind_must_be_suite":
+		return nil
+	case "duration_is_not_a_positive_duration":
+		return nil
+	case "duration_max_is_not_a_duration":
+		return nil
+	case "duration_min_is_not_a_duration":
+		return nil
+	case "email_is_not_valid":
+		return nil
+	case "end_must_be_after_start":
+		return nil
+	case "example_not_found":
+		return nil
+	case "examples_not_found":
+		return nil
+	case "expires_at_is_in_the_past":
+		return nil
+	case "export_format_unavailable":
+		return nil
+	case "favorites_belong_to_users_not_tokens":
+		return nil
+	case "grafana_is_not_connected":
+		return nil
+	case "graphene_dropped_log_records":
+		return nil
+	case "graphene_dropped_metric_records":
+		return nil
+	case "graphene_telemetry_run_not_found":
+		return nil
+	case "invalid_log_cursor_for_this_selection":
+		return nil
+	case "invalid_log_direction":
+		return nil
+	case "invalid_metric_step":
+		return nil
+	case "invite_is_not_pending":
+		return nil
+	case "invite_not_found":
+		return nil
+	case "is_platform_admin_is_required":
+		return nil
+	case "keep_is_not_a_duration":
+		return nil
+	case "keep_must_not_be_negative":
+		return nil
+	case "kind_must_be_yandex_or_aws":
+		return nil
+	case "limit_keep":
+		return nil
+	case "limit_machines_per_run":
+		return nil
+	case "limit_size":
+		return nil
+	case "log_cursor_ambiguous":
+		return nil
+	case "logs_store_is_not_connected":
+		return nil
+	case "managed_ydb_autoscaling_unsupported":
+		return nil
+	case "managed_ydb_deletion_protection":
+		return nil
+	case "managed_ydb_requires_named_credentials":
+		return nil
+	case "managed_ydb_requires_yandex_cloud":
+		return nil
+	case "managed_ydb_type_unknown":
+		return nil
+	case "max_keep_is_not_a_duration":
+		return nil
+	case "maxscale_mariadb_only":
+		return nil
+	case "member_not_found":
+		return nil
+	case "metadata_name_is_required":
+		return nil
+	case "metric_not_rating_eligible":
+		return nil
+	case "metrics_snapshot_invalid":
+		return nil
+	case "metrics_store_is_not_connected":
+		return nil
+	case "metrics_unavailable":
+		return nil
+	case "metrics_unknown":
+		return nil
+	case "name_is_required":
+		return nil
+	case "name_must_be_1_128_characters":
+		return nil
+	case "name_must_be_1_64_characters":
+		return nil
+	case "no_cells_to_run":
+		return nil
+	case "no_failed_cells":
+		return nil
+	case "notification_email_invalid":
+		return nil
+	case "only_test_examples_can_be_quick_run":
+		return nil
+	case "options_is_not_a_json_object":
+		return nil
+	case "owner_cannot_be_removed":
+		return nil
+	case "owner_role_by_transfer_only":
+		return nil
+	case "patroni_image_required":
+		return nil
+	case "patroni_requires_haproxy":
+		return nil
+	case "pdf_export_is_not_available_yet":
+		return nil
+	case "platform_admin_required":
+		return nil
+	case "profile_is_not_verified":
+		return nil
+	case "profile_not_found":
+		return nil
+	case "profile_not_ready":
+		return nil
+	case "provider_busy":
+		return nil
+	case "provider_cleanup_failed":
+		return nil
+	case "provider_cleanup_pending":
+		return nil
+	case "provider_is_being_deleted":
+		return nil
+	case "provider_is_not_ready":
+		return nil
+	case "provider_is_unavailable":
+		return nil
+	case "provider_kind_unknown":
+		return nil
+	case "provider_profile_id_is_not_a_uuid":
+		return nil
+	case "provider_profile_not_found":
+		return nil
+	case "provider_quota_check_unavailable":
+		return nil
+	case "provider_quota_exceeded":
+		return nil
+	case "provider_secret_unavailable":
+		return nil
+	case "pty_streams_are_not_connected_yet":
+		return nil
+	case "public_rating_not_found":
+		return nil
+	case "query_is_required":
+		return nil
+	case "quick_run_needs_profile":
+		return nil
+	case "ref_id_not_uuid":
+		return nil
+	case "ref_needs_id_or_name":
+		return nil
+	case "ref_not_found":
+		return nil
+	case "referenced_by_tests":
+		return nil
+	case "requires_role":
+		return nil
+	case "requires_role_admin":
+		return nil
+	case "requires_role_member":
+		return nil
+	case "resume_machine_missing":
+		return nil
+	case "resume_stand_unknown":
+		return nil
+	case "retention_days_range":
+		return nil
+	case "role_must_be_admin_member_or_viewer":
+		return nil
+	case "role_must_be_member_or_viewer":
+		return nil
+	case "run_already_finished":
+		return nil
+	case "run_id_is_not_a_uuid":
+		return nil
+	case "run_id_is_required":
+		return nil
+	case "run_idempotency_conflict":
+		return nil
+	case "run_ids_2_to_16_runs":
+		return nil
+	case "run_not_found":
+		return nil
+	case "run_retention_max_days_must_be_positive":
+		return nil
+	case "run_submit_unavailable":
+		return nil
+	case "schedule_fire_failed":
+		return nil
+	case "schedule_not_found":
+		return nil
+	case "schema_has_no_templates":
+		return nil
+	case "schema_not_found":
+		return nil
+	case "scope_must_be_overview_metrics_or_configs":
+		return nil
+	case "script_protocol_unsupported":
+		return nil
+	case "segment_not_found":
+		return nil
+	case "share_already_revoked":
+		return nil
+	case "share_metrics_single_run_only":
+		return nil
+	case "share_not_found":
+		return nil
+	case "shell_input_failed":
+		return nil
+	case "shell_input_invalid":
+		return nil
+	case "shell_machine_unknown":
+		return nil
+	case "shell_not_found":
+		return nil
+	case "shell_open_failed":
+		return nil
+	case "shell_session_ended":
+		return nil
+	case "shell_size_invalid":
+		return nil
+	case "shell_stand_gone":
+		return nil
+	case "size_not_chosen":
+		return nil
+	case "size_unavailable":
+		return nil
+	case "size_unknown":
+		return nil
+	case "slug_format":
+		return nil
+	case "slug_is_taken":
+		return nil
+	case "spec_is_required":
+		return nil
+	case "stand_lost_run":
+		return nil
+	case "stand_unavailable":
+		return nil
+	case "step_is_not_a_duration":
+		return nil
+	case "stroppy_protocol_unsupported":
+		return nil
+	case "stroppy_script_unknown":
+		return nil
+	case "stroppy_version_not_found":
+		return nil
+	case "stroppy_version_unknown":
+		return nil
+	case "sub_id_and_topic_are_required":
+		return nil
+	case "subscription_exists_or_too_many":
+		return nil
+	case "suite_cell_invalid":
+		return nil
+	case "suite_not_found":
+		return nil
+	case "suite_run_already_finished":
+		return nil
+	case "suite_run_id_is_not_a_uuid":
+		return nil
+	case "suite_run_id_is_required":
+		return nil
+	case "suite_run_idempotency_conflict":
+		return nil
+	case "suite_run_not_found":
+		return nil
+	case "suite_test_invalid":
+		return nil
+	case "suite_test_ref_or_inline":
+		return nil
+	case "suites_are_not_available":
+		return nil
+	case "target_kind_must_be_test_or_suite":
+		return nil
+	case "telemetry_requires_a_run_scope":
+		return nil
+	case "telemetry_unavailable":
+		return nil
+	case "tenant_creation_admin_only":
+		return nil
+	case "tenant_creation_value":
+		return nil
+	case "tenant_has_active_work":
+		return nil
+	case "tenant_has_live_runs":
+		return nil
+	case "tenant_is_being_deleted":
+		return nil
+	case "tenant_is_suspended":
+		return nil
+	case "tenant_namespace_unavailable":
+		return nil
+	case "tenant_not_found":
+		return nil
+	case "tenant_slug_taken":
+		return nil
+	case "test_does_not_fit":
+		return nil
+	case "test_is_not_fully_resolved":
+		return nil
+	case "test_not_found":
+		return nil
+	case "test_used_by":
+		return nil
+	case "the_new_owner_already_owns_a_tenant":
+		return nil
+	case "the_stand_is_not_kept":
+		return nil
+	case "the_suite_of_this_run_is_gone":
+		return nil
+	case "theme_unknown":
+		return nil
+	case "this_share_does_not_include_metrics":
+		return nil
+	case "timezone_unknown":
+		return nil
+	case "token_expired":
+		return nil
+	case "token_not_found":
+		return nil
+	case "token_not_recognized":
+		return nil
+	case "token_rejected":
+		return nil
+	case "token_role_cannot_exceed_your_role":
+		return nil
+	case "tokens_cannot_accept_invites":
+		return nil
+	case "tokens_cannot_create_tenants":
+		return nil
+	case "tokens_cannot_mint_tokens":
+		return nil
+	case "topic_must_be_kind_id":
+		return nil
+	case "ttl_is_not_a_positive_duration":
+		return nil
+	case "unknown_share_kind":
+		return nil
+	case "unsupported_document_body":
+		return nil
+	case "url_not_absolute_http":
+		return nil
+	case "user_already_owns_a_tenant":
+		return nil
+	case "user_id_is_not_a_uuid":
+		return nil
+	case "user_not_found":
+		return nil
+	case "value_is_not_a_json_object":
+		return nil
+	case "viewers_cannot_change_schedules":
+		return nil
+	case "viewers_cannot_change_suites":
+		return nil
+	case "viewers_cannot_launch_or_change_runs":
+		return nil
+	case "viewers_cannot_share":
+		return nil
+	case "webhook_event_unknown":
+		return nil
+	case "webhook_not_found":
+		return nil
+	case "window_does_not_overlap_the_shared_run":
+		return nil
+	case "workload_not_found":
+		return nil
+	case "workload_ref_and_inline_are_exclusive":
+		return nil
+	case "ydb_disk_too_small":
+		return nil
+	case "ydb_mirror3dc_yandex_only":
+		return nil
+	case "ydb_needs_three_zones":
+		return nil
+	case "ydb_storage_nodes_required":
+		return nil
+	case "ydb_zone_invalid":
+		return nil
+	case "ydb_zones_not_strings":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -3356,6 +4090,23 @@ func (s *ListRunEventsOK) Validate() error {
 		if s.Data == nil {
 			return errors.New("nil is invalid value")
 		}
+		var failures []validate.FieldError
+		for i, elem := range s.Data {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
@@ -4230,6 +4981,55 @@ func (s ListWorkloadsSort) Validate() error {
 	}
 }
 
+func (s LogLevel) Validate() error {
+	switch s {
+	case "trace":
+		return nil
+	case "debug":
+		return nil
+	case "info":
+		return nil
+	case "warn":
+		return nil
+	case "error":
+		return nil
+	case "fatal":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s *LogLine) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Level.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "level",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *LogPage) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -4239,6 +5039,23 @@ func (s *LogPage) Validate() error {
 	if err := func() error {
 		if s.Data == nil {
 			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Data {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
@@ -4507,6 +5324,28 @@ func (s *MetricDef) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if err := s.Key.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "key",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Group.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "group",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if err := s.Scope.Validate(); err != nil {
 			return err
 		}
@@ -4555,6 +5394,102 @@ func (s MetricDefScope) Validate() error {
 	case "db":
 		return nil
 	case "host":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s MetricGroup) Validate() error {
+	switch s {
+	case "Headline":
+		return nil
+	case "Workload":
+		return nil
+	case "Bootstrap":
+		return nil
+	case "Host":
+		return nil
+	case "PostgreSQL":
+		return nil
+	case "MySQL":
+		return nil
+	case "CockroachDB":
+		return nil
+	case "Picodata":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s MetricKey) Validate() error {
+	switch s {
+	case "tps":
+		return nil
+	case "qps":
+		return nil
+	case "latency_p50_ms":
+		return nil
+	case "latency_p95_ms":
+		return nil
+	case "latency_p99_ms":
+		return nil
+	case "errors":
+		return nil
+	case "iterations_total":
+		return nil
+	case "iterations_per_second":
+		return nil
+	case "queries_per_second":
+		return nil
+	case "failed_iterations_total":
+		return nil
+	case "failed_queries_total":
+		return nil
+	case "iteration_duration_avg":
+		return nil
+	case "iteration_duration_p90":
+		return nil
+	case "iteration_duration_p99":
+		return nil
+	case "load_duration_seconds":
+		return nil
+	case "node_cpu_usage":
+		return nil
+	case "node_memory_used_bytes":
+		return nil
+	case "node_disk_io_bytes":
+		return nil
+	case "node_network_bytes":
+		return nil
+	case "pg_stat_database_xact_commit":
+		return nil
+	case "pg_stat_database_xact_rollback":
+		return nil
+	case "pg_stat_database_blks_hit_ratio":
+		return nil
+	case "pg_stat_activity_count":
+		return nil
+	case "pg_locks_count":
+		return nil
+	case "pg_replication_lag_seconds":
+		return nil
+	case "mysql_global_status_queries":
+		return nil
+	case "mysql_global_status_threads_connected":
+		return nil
+	case "mysql_global_status_innodb_buffer_pool_hit_ratio":
+		return nil
+	case "mysql_slave_status_seconds_behind_master":
+		return nil
+	case "cockroach_sql_txn_commit_count":
+		return nil
+	case "cockroach_sql_service_latency_p99":
+		return nil
+	case "cockroach_live_nodes":
+		return nil
+	case "picodata_instances_online":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -4907,6 +5842,24 @@ func (s *Problem) Validate() error {
 	}
 
 	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Reason.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "reason",
+			Error: err,
+		})
+	}
 	if err := func() error {
 		if value, ok := s.Validation.Get(); ok {
 			if err := func() error {
@@ -5328,21 +6281,6 @@ func (s QueryRunLogsDirection) Validate() error {
 	}
 }
 
-func (s QueryRunLogsLevelItem) Validate() error {
-	switch s {
-	case "debug":
-		return nil
-	case "info":
-		return nil
-	case "warn":
-		return nil
-	case "error":
-		return nil
-	default:
-		return errors.Errorf("invalid value: %v", s)
-	}
-}
-
 func (s *QueryRunLogsRawReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -5456,6 +6394,57 @@ func (s *QueryRunMetricsRawReq) Validate() error {
 	return nil
 }
 
+func (s QuotaName) Validate() error {
+	switch s {
+	case "compute.instances.count":
+		return nil
+	case "compute.instanceCores.count":
+		return nil
+	case "compute.instanceMemory.size":
+		return nil
+	case "compute.ssdDisks.size":
+		return nil
+	case "compute.hddDisks.size":
+		return nil
+	case "compute.ssdNonReplicatedDisks.size":
+		return nil
+	case "compute.ssdIOM3Disks.size":
+		return nil
+	case "compute.instanceHighFreqCores.count":
+		return nil
+	case "compute.disks.count":
+		return nil
+	case "vpc.networks.count":
+		return nil
+	case "vpc.subnets.count":
+		return nil
+	case "vpc.securityGroups.count":
+		return nil
+	case "vpc.externalStaticAddresses.count":
+		return nil
+	case "ec2.standard.vcpus":
+		return nil
+	case "ec2.spot.standard.vcpus":
+		return nil
+	case "ebs.gp3.storage":
+		return nil
+	case "ebs.gp2.storage":
+		return nil
+	case "ebs.io2.storage":
+		return nil
+	case "vpc.vpcs":
+		return nil
+	case "vpc.security_groups":
+		return nil
+	case "vpc.internet_gateways":
+		return nil
+	case "ec2.elastic_ips":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *QuotaReport) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -5503,6 +6492,35 @@ func (s *QuotaReportQuotasItem) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if err := s.Name.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "name",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Unit.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "unit",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if err := (validate.Float{}).Validate(float64(s.Limit)); err != nil {
 			return errors.Wrap(err, "float")
 		}
@@ -5528,6 +6546,39 @@ func (s *QuotaReportQuotasItem) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s QuotaUnit) Validate() error {
+	switch s {
+	case "instances":
+		return nil
+	case "cores":
+		return nil
+	case "bytes":
+		return nil
+	case "disks":
+		return nil
+	case "networks":
+		return nil
+	case "subnets":
+		return nil
+	case "security-groups":
+		return nil
+	case "addresses":
+		return nil
+	case "vcpus":
+		return nil
+	case "tib":
+		return nil
+	case "vpcs":
+		return nil
+	case "groups":
+		return nil
+	case "gateways":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *RatingEntry) Validate() error {
@@ -6072,6 +7123,76 @@ func (s *Run) Validate() error {
 	return nil
 }
 
+func (s *RunEvent) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Kind.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "kind",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s RunEventKind) Validate() error {
+	switch s {
+	case "run-started":
+		return nil
+	case "run-completed":
+		return nil
+	case "run-failed":
+		return nil
+	case "run-timed-out":
+		return nil
+	case "run-terminated":
+		return nil
+	case "run-cancelled":
+		return nil
+	case "activity-failed":
+		return nil
+	case "activity-timed-out":
+		return nil
+	case "phase.started":
+		return nil
+	case "phase.finished":
+		return nil
+	case "phase.failed":
+		return nil
+	case "machine.ready":
+		return nil
+	case "container.ready":
+		return nil
+	case "segment.started":
+		return nil
+	case "segment.finished":
+		return nil
+	case "segment.failed":
+		return nil
+	case "baseline.started":
+		return nil
+	case "baseline.finished":
+		return nil
+	case "stand.kept":
+		return nil
+	case "result.published":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *RunMetrics) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -6451,6 +7572,17 @@ func (s *RunOverviewComponentsItem) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if err := s.Status.Validate(); err != nil {
 			return err
 		}
@@ -6492,6 +7624,17 @@ func (s *RunOverviewMachinesItem) Validate() error {
 	}
 
 	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
 	if err := func() error {
 		if err := s.Status.Validate(); err != nil {
 			return err
@@ -7090,6 +8233,17 @@ func (s *RunSnapshotMachinesItem) Validate() error {
 	}
 
 	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
 	if err := func() error {
 		if err := s.Size.Validate(); err != nil {
 			return err
@@ -8190,6 +9344,23 @@ func (s *SharedRun) Validate() error {
 	if err := func() error {
 		if s.Timeline == nil {
 			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Timeline {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
 		}
 		return nil
 	}(); err != nil {
@@ -11805,6 +12976,24 @@ func (s *TestValidationEstimatedMachinesItem) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if value, ok := s.Role.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.Size.Get(); ok {
 			if err := func() error {
 				if err := value.Validate(); err != nil {
@@ -12086,6 +13275,23 @@ func (s *TopologyPreview) Validate() error {
 		if s.Nodes == nil {
 			return errors.New("nil is invalid value")
 		}
+		var failures []validate.FieldError
+		for i, elem := range s.Nodes {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
@@ -12097,6 +13303,56 @@ func (s *TopologyPreview) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s *TopologyPreviewNodesItem) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Role.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "role",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s TopologyRole) Validate() error {
+	switch s {
+	case "db":
+		return nil
+	case "db-replica":
+		return nil
+	case "db-compute":
+		return nil
+	case "etcd":
+		return nil
+	case "proxy":
+		return nil
+	case "runner":
+		return nil
+	case "coordinator":
+		return nil
+	case "patroni":
+		return nil
+	case "patroni-replica":
+		return nil
+	case "pgbouncer":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s Trigger) Validate() error {

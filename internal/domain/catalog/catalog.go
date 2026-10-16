@@ -165,6 +165,10 @@ func (c *Catalog) SchemaList(namespace string) []SchemaInfo {
 }
 
 // MetricsFor filters metrics by database kind ("" = all).
+// Metrics is the whole metric catalog (the contract's MetricKey and
+// MetricGroup are its keys and groups).
+func Metrics() []Metric { return metrics() }
+
 func (c *Catalog) MetricsFor(kind DatabaseKind) []Metric {
 	if kind == "" {
 		return c.Metrics

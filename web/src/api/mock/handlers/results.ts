@@ -9,6 +9,7 @@ import type {
   SharedRun,
   SuiteRun,
   TenantDashboard,
+  TopologyRole,
 } from '@api/types'
 import { type HandlerResult, listRoutes, noContent, notFound, problem, route } from '../router'
 import type { MockStore, TenantData } from '../store'
@@ -315,7 +316,7 @@ route('PATCH', '/api/v1/t/:slug/shares/:id', ({ store, params, body }) => {
   }
   if (b.scope) s.scope = b.scope
   if (b.title !== undefined) s.title = b.title?.trim() || undefined
-  store.audit(params.slug, 'share.update', { kind: 'share', id: s.id, name: s.title })
+  store.audit(params.slug, 'share.create', { kind: 'share', id: s.id, name: s.title })
   return { json: s }
 })
 
@@ -443,7 +444,7 @@ function topologyOf(t: TenantData, run: Run): TopologyPreview | undefined {
   if (preview) return preview
   const machines = run.snapshot.machines ?? []
   if (!machines.length) return undefined
-  const byRole = new Map<string, number>()
+  const byRole = new Map<TopologyRole, number>()
   for (const m of machines) byRole.set(m.role, (byRole.get(m.role) ?? 0) + 1)
   return {
     label: run.summary?.topology_label ?? 'custom',
@@ -456,12 +457,17 @@ function timelineOf(live: TenantData['runLive'][string] | undefined, run: Run): 
   if (live?.events.length) return live.events
   const out: RunEvent[] = []
   if (run.started_at)
-    out.push({ id: `${run.id}-s`, at: run.started_at, kind: 'run.started', title: 'Run started' })
+    out.push({ id: `${run.id}-s`, at: run.started_at, kind: 'run-started', title: 'Run started' })
   if (run.finished_at)
     out.push({
       id: `${run.id}-f`,
       at: run.finished_at,
-      kind: `run.${run.status}`,
+      kind:
+        run.status === 'completed'
+          ? 'run-completed'
+          : run.status === 'cancelled'
+            ? 'run-cancelled'
+            : 'run-failed',
       title: `Run ${run.status}`,
       status: run.status,
     })

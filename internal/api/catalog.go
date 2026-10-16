@@ -192,7 +192,7 @@ func databaseOf(d catalog.Database) oas.CatalogDatabase {
 		out.Versions = append(out.Versions, item)
 	}
 	for _, r := range d.Roles {
-		item := oas.CatalogDatabaseRolesItem{Role: r.Role, Title: r.Title, ConfigSchemas: r.ConfigSchemas}
+		item := oas.CatalogDatabaseRolesItem{Role: oas.TopologyRole(r.Role), Title: r.Title, ConfigSchemas: r.ConfigSchemas}
 		if item.ConfigSchemas == nil {
 			item.ConfigSchemas = []string{}
 		}
@@ -305,7 +305,7 @@ func stroppyVersionOf(v catalog.StroppyVersion) oas.StroppyCatalogVersionsItem {
 
 func metricOf(m catalog.Metric) oas.MetricDef {
 	out := oas.MetricDef{
-		Key: m.Key, Title: m.Title, Unit: m.Unit, HigherIsBetter: m.HigherIsBetter, Group: m.Group,
+		Key: oas.MetricKey(m.Key), Title: m.Title, Unit: m.Unit, HigherIsBetter: m.HigherIsBetter, Group: oas.MetricGroup(m.Group),
 		Scope: oas.MetricDefScope(m.Scope), DbKinds: make([]oas.DatabaseKind, 0, len(m.DBKinds)), RatingEligible: oas.NewOptBool(m.RatingEligible),
 	}
 	if m.Description != "" {

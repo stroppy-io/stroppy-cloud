@@ -26,7 +26,9 @@ func logLineOf(l observe.LogLine) oas.LogLine {
 			*dst = oas.NewOptString(v)
 		}
 	}
-	set(&out.Level, l.Level)
+	if l.Level != "" {
+		out.Level = oas.NewOptLogLevel(oas.LogLevel(l.Level))
+	}
 	set(&out.Stream, l.Stream)
 	set(&out.Role, l.Role)
 	set(&out.Machine, l.Machine)

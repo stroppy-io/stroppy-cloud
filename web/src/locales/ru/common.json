@@ -223,7 +223,6 @@
       "keep_is_not_a_duration": "Срок хранения стенда — длительность, например 30m или 2h",
       "keep_must_not_be_negative": "Срок хранения стенда не может быть отрицательным",
       "kind_must_be_yandex_or_aws": "Провайдер — Yandex Cloud или AWS",
-      "limit_concurrent_runs": "Достигнут лимит одновременных запусков: идёт {{live}} из {{limit}}. Дождитесь окончания или отмените один",
       "limit_keep": "Срок хранения {{keep}} больше лимита тенанта {{limit}}",
       "limit_machines_per_run": "Запуску нужно {{machines}} машин, лимит тенанта — {{limit}}",
       "limit_size": "Размер {{size}} для роли {{role}} больше лимита тенанта {{limit}}",
@@ -555,7 +554,10 @@
     "etcd": "etcd",
     "coordinator": "Координатор",
     "proxy": "Прокси",
-    "runner": "Раннер"
+    "runner": "Раннер",
+    "patroni": "Patroni",
+    "patroni-replica": "Patroni на реплике",
+    "pgbouncer": "PgBouncer"
   },
   "quota": {
     "compute_instances_count": "Машины",

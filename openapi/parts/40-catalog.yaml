@@ -235,11 +235,6 @@ components:
       description: '`<namespace>.<name>` or `<namespace>.<name>@<version>` (latest when no version).'
       schema: { type: string, example: 'cfg.postgresql.conf@16' }
   schemas:
-    DatabaseKind:
-      type: string
-      pattern: '^[a-z][a-z0-9_]{0,31}$'
-      description: A database kind id; the kinds that exist are listed by GET /catalog/databases.
-      example: postgres
     Protocol:
       type: string
       enum: [pg, mysql, picodata, ydb_grpc, ydb_grpcs, cockroach, noop]
@@ -266,7 +261,7 @@ components:
             type: object
             required: [role, title]
             properties:
-              role: { type: string, example: master }
+              role: { $ref: '#/components/schemas/TopologyRole' }
               title: { type: string }
               engine: { type: string, example: postgres }
               config_schemas:
@@ -434,12 +429,12 @@ components:
       type: object
       required: [key, title, unit, higher_is_better, group, scope]
       properties:
-        key: { type: string, example: tps }
+        key: { $ref: '#/components/schemas/MetricKey' }
         title: { type: string }
         description: { type: string }
         unit: { type: string }
         higher_is_better: { type: boolean }
-        group: { type: string, example: throughput }
+        group: { $ref: '#/components/schemas/MetricGroup' }
         scope: { type: string, enum: [result, db, host] }
         db_kinds:
           type: array

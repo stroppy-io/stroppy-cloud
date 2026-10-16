@@ -193,9 +193,9 @@ func quotaReportOf(p provider.Profile) *oas.QuotaReport {
 		out.ObservedAt.SetToNull()
 	}
 	for _, q := range p.Quotas {
-		item := oas.QuotaReportQuotasItem{Name: q.Name, Limit: q.Limit, Used: q.Used}
+		item := oas.QuotaReportQuotasItem{Name: oas.QuotaName(q.Name), Limit: q.Limit, Used: q.Used}
 		if q.Unit != "" {
-			item.Unit = oas.NewOptString(q.Unit)
+			item.Unit = oas.NewOptQuotaUnit(oas.QuotaUnit(q.Unit))
 		}
 		if q.Zone != "" {
 			item.Zone = oas.NewOptString(q.Zone)

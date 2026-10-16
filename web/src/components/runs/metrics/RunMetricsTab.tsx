@@ -45,10 +45,8 @@ const GROUP_KEYS: Record<string, string> = {
   Workload: 'workload',
   Bootstrap: 'bootstrap',
   Host: 'host',
-  Other: 'other',
 }
-const groupRank = (g: string) =>
-  ({ Headline: 0, Workload: 1, Bootstrap: 2, Host: 4, Other: 5 })[g] ?? 3
+const groupRank = (g: string) => ({ Headline: 0, Workload: 1, Bootstrap: 2, Host: 4 })[g] ?? 3
 const PANEL_HEIGHT = { grid: 240, list: 320 } as const
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -212,7 +210,6 @@ export function RunMetricsTab({
 
   const defs = catalog.data?.data ?? []
   const groups = useMemo(() => {
-    const present = new Set(metrics.data?.series.map((s) => s.key) ?? [])
     const byGroup = new Map<string, MetricDef[]>()
     for (const d of defs) {
       if (d.db_kinds?.length && run?.summary?.db_kind && !d.db_kinds.includes(run.summary.db_kind))
@@ -221,22 +218,8 @@ export function RunMetricsTab({
       list.push(d)
       byGroup.set(d.group, list)
     }
-    // series without a catalog entry still get a panel
-    for (const k of present)
-      if (!defs.some((d) => d.key === k)) {
-        const list = byGroup.get('Other') ?? []
-        list.push({
-          key: k,
-          title: k,
-          unit: '',
-          higher_is_better: false,
-          group: 'Other',
-          scope: 'result',
-        })
-        byGroup.set('Other', list)
-      }
     return [...byGroup.entries()].sort(([a], [b]) => groupRank(a) - groupRank(b))
-  }, [defs, metrics.data, run])
+  }, [defs, run])
   // A database group is the product's name (PostgreSQL, MySQL) in any language.
   const groupLabel = (g: string) => (GROUP_KEYS[g] ? t(`runs.metrics.groups.${GROUP_KEYS[g]}`) : g)
   const withData = (list: MetricDef[]) =>

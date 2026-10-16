@@ -1,5 +1,6 @@
 import '@xterm/xterm/css/xterm.css'
 import { ApiError, errorText } from '@api/errors'
+import type { ErrorReason } from '@api/types'
 import { getWs, type ShellEvent, type ShellHandle } from '@api/ws'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -38,7 +39,7 @@ function problemText(p: unknown): string {
   const o = (p ?? {}) as {
     code?: string
     detail?: string
-    reason?: string
+    reason?: ErrorReason
     params?: Record<string, string>
   }
   return errorText(

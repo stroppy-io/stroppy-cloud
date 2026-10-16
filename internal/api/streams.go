@@ -239,9 +239,10 @@ func (s *Streams) Events(ctx context.Context, actor auth.Actor, topic, cursor st
 	for _, e := range list {
 		// Pointers: ogen's MarshalJSON has pointer receivers and the
 		// optional fields do not survive encoding/json's fallback.
-		ev := runEventOf(e)
-		out = append(out, &ev)
 		next = strconv.FormatInt(e.ID, 10)
+		if ev, ok := runEventOf(e); ok {
+			out = append(out, &ev)
+		}
 	}
 	return out, next, nil
 }

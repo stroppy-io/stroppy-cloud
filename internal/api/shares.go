@@ -267,7 +267,9 @@ func sharedRunOf(r share.SharedRun) oas.SharedRun {
 		out.Database = oas.NewOptSharedRunDatabase(db)
 	}
 	for _, e := range r.Timeline {
-		out.Timeline = append(out.Timeline, runEventOf(e))
+		if item, ok := runEventOf(e); ok {
+			out.Timeline = append(out.Timeline, item)
+		}
 	}
 	for _, m := range r.Machines {
 		out.Machines = append(out.Machines, oas.SharedRunMachinesItem{Name: oas.NewOptString(m.Name), Role: oas.NewOptString(m.Role), Size: oas.NewOptSize(oas.Size(m.Size)), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB), DiskGB: oas.NewOptInt(m.DiskGB), DiskType: oas.NewOptString(m.DiskType), InstanceType: oas.NewOptString(m.InstanceType), Location: oas.NewOptString(m.Location)})

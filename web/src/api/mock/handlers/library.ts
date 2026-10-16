@@ -5,6 +5,7 @@ import type {
   Run,
   Schemas,
   TestValidation,
+  TopologyRole,
   ValidationError,
   WorkloadSpec,
 } from '@api/types'
@@ -72,7 +73,13 @@ export function deriveDatabase(
   const req: Requirements = {}
   let label = 'single'
   const engine = (role: string) => catalog?.roles.find((r) => r.role === role)?.engine ?? kind
-  const proxyRole = (role: string, count: number, to: string, protocol: string, port: number) => {
+  const proxyRole = (
+    role: TopologyRole,
+    count: number,
+    to: TopologyRole,
+    protocol: string,
+    port: number
+  ) => {
     if (count <= 0) return
     nodes.push({ role, engine: engine(role), count })
     flows.push({ from: role, to, protocol, port })
@@ -86,9 +93,9 @@ export function deriveDatabase(
       const ha = str(params.ha) ?? 'none'
       const haproxy = num(params.haproxy)
       const etcd = ha === 'patroni' ? num(params.etcd_nodes, 3) : 0
-      nodes.push({ role: 'master', engine: engine('master'), count: 1 })
+      nodes.push({ role: 'db', engine: engine('master'), count: 1 })
       if (replicas > 0) {
-        nodes.push({ role: 'replica', engine: engine('replica'), count: replicas })
+        nodes.push({ role: 'db-replica', engine: engine('replica'), count: replicas })
         flows.push({ from: 'master', to: 'replica', protocol: 'pg', port: 5432 })
       }
       if (etcd > 0) {
@@ -96,10 +103,10 @@ export function deriveDatabase(
         flows.push({ from: 'master', to: 'etcd', protocol: 'http', port: 2379 })
         req.etcd = { cpu: 2, memory_gb: 4, reason: `etcd quorum ×${etcd}` }
       }
-      proxyRole('haproxy', haproxy, 'master', 'pg', 5432)
+      proxyRole('proxy', haproxy, 'db', 'pg', 5432)
       if (params.pgbouncer === true)
         nodes.push({
-          role: 'pgbouncer',
+          role: 'proxy',
           engine: 'pgbouncer',
           count: 1 + replicas,
           colocated_with: 'master',
@@ -136,13 +143,13 @@ export function deriveDatabase(
       const galera = params.galera === true || replication === 'galera'
       const galeraNodes = num(params.galera_nodes, 3)
       const replicas = galera ? galeraNodes - 1 : num(params.replicas)
-      nodes.push({ role: 'master', engine: engine('master'), count: 1 })
+      nodes.push({ role: 'db', engine: engine('master'), count: 1 })
       if (replicas > 0) {
-        nodes.push({ role: 'replica', engine: engine('replica'), count: replicas })
+        nodes.push({ role: 'db-replica', engine: engine('replica'), count: replicas })
         flows.push({ from: 'master', to: 'replica', protocol: 'mysql', port: 3306 })
       }
-      proxyRole('proxysql', num(params.proxysql), 'master', 'mysql', 6033)
-      if (params.maxscale === true) proxyRole('maxscale', 1, 'master', 'mysql', 4006)
+      proxyRole('proxy', num(params.proxysql), 'db', 'mysql', 6033)
+      if (params.maxscale === true) proxyRole('proxy', 1, 'db', 'mysql', 4006)
       label = galera
         ? 'galera'
         : replication === 'group'
@@ -163,8 +170,8 @@ export function deriveDatabase(
         0
       )
       const instances = num(params.instances, fromTiers || 1)
-      nodes.push({ role: 'instance', engine: 'picodata', count: instances })
-      proxyRole('haproxy', num(params.haproxy), 'instance', 'pg', 4327)
+      nodes.push({ role: 'db', engine: 'picodata', count: instances })
+      proxyRole('proxy', num(params.haproxy), 'db', 'pg', 4327)
       label = instances > 1 ? `cluster-${instances}` : 'single'
       const memtx = num(params.memtx_memory_mb, 2048)
       req.db = {
@@ -180,9 +187,9 @@ export function deriveDatabase(
       const database = num(params.database_nodes, Math.min(3, storage))
       const ft = str(params.erasure) ?? str(params.fault_tolerance) ?? 'none'
       const pdisks = num(params.pdisks_per_node, 1)
-      nodes.push({ role: 'storage', engine: 'ydb', count: storage })
-      nodes.push({ role: 'database', engine: 'ydb', count: database, colocated_with: 'storage' })
-      proxyRole('haproxy', num(params.haproxy), 'database', 'grpc', 2135)
+      nodes.push({ role: 'db', engine: 'ydb', count: storage })
+      nodes.push({ role: 'db-compute', engine: 'ydb', count: database, colocated_with: 'storage' })
+      proxyRole('proxy', num(params.haproxy), 'db-compute', 'grpc', 2135)
       label = ft !== 'none' ? ft : storage > 1 ? `cluster-${storage}` : 'single'
       req.db =
         ft === 'mirror-3-dc'
@@ -199,20 +206,20 @@ export function deriveDatabase(
     }
     case 'cockroach': {
       const n = num(params.nodes, 3)
-      nodes.push({ role: 'node', engine: 'cockroach', count: n })
-      proxyRole('haproxy', num(params.haproxy), 'node', 'pg', 26257)
+      nodes.push({ role: 'db', engine: 'cockroach', count: n })
+      proxyRole('proxy', num(params.haproxy), 'db', 'pg', 26257)
       label = n > 1 ? `cluster-${n}` : 'single'
       req.db = { cpu: 4, memory_gb: n > 1 ? 24 : 16, disk_gb: 100, reason: 'cockroach cache 25%' }
       break
     }
     case 'ydb_managed': {
       const n = str(params.type) === 'serverless' ? 0 : num(params.node_count, 3)
-      nodes.push({ role: 'managed', engine: 'ydb', count: n })
+      nodes.push({ role: 'db', engine: 'ydb', count: n })
       label = str(params.type) ?? 'managed'
       break
     }
     default: {
-      const role = catalog?.roles[0]?.role ?? kind
+      const role: TopologyRole = catalog?.roles[0]?.role ?? 'db'
       nodes.push({ role, engine: engine(role), count: 1 })
       label = catalog?.topologies[0]?.id ?? kind
     }
@@ -932,7 +939,7 @@ route('POST', '/api/v1/t/:slug/databases:import', ({ store, params, body }) => {
     ...deriveDatabase(cat, spec.kind, p),
   }
   t.databases.unshift(db)
-  store.audit(params.slug, 'database.import', { kind: 'database', id: db.id, name: db.name })
+  store.audit(params.slug, 'database.create', { kind: 'database', id: db.id, name: db.name })
   return { json: decorateDatabase(store, t, db) }
 })
 
@@ -1007,7 +1014,7 @@ route('POST', '/api/v1/t/:slug/databases/:id:clone', ({ store, params, body }) =
     (body as { name?: string } | undefined)?.name?.trim() || uniqueName(t.databases, db.name)
   const copy: Database = { ...db, ...entityBase(store, name, db.description, db.tags) }
   t.databases.unshift(copy)
-  store.audit(params.slug, 'database.clone', { kind: 'database', id: copy.id, name: copy.name })
+  store.audit(params.slug, 'database.create', { kind: 'database', id: copy.id, name: copy.name })
   return { status: 201, json: decorateDatabase(store, t, copy) }
 })
 
@@ -1171,7 +1178,7 @@ route('POST', '/api/v1/t/:slug/workloads:import', ({ store, params, body }) => {
     requirements: workloadRequirements(spec),
   }
   t.workloads.unshift(wl)
-  store.audit(params.slug, 'workload.import', { kind: 'workload', id: wl.id, name: wl.name })
+  store.audit(params.slug, 'workload.create', { kind: 'workload', id: wl.id, name: wl.name })
   return { json: decorateWorkload(t, wl) }
 })
 
@@ -1240,7 +1247,7 @@ route('POST', '/api/v1/t/:slug/workloads/:id:clone', ({ store, params, body }) =
     (body as { name?: string } | undefined)?.name?.trim() || uniqueName(t.workloads, wl.name)
   const copy: Workload = { ...wl, ...entityBase(store, name, wl.description, wl.tags) }
   t.workloads.unshift(copy)
-  store.audit(params.slug, 'workload.clone', { kind: 'workload', id: copy.id, name: copy.name })
+  store.audit(params.slug, 'workload.create', { kind: 'workload', id: copy.id, name: copy.name })
   return { status: 201, json: decorateWorkload(t, copy) }
 })
 
@@ -1338,7 +1345,7 @@ route('POST', '/api/v1/t/:slug/tests:import', ({ store, params, body }) => {
     validation: v.validation,
   }
   t.tests.unshift(test)
-  store.audit(params.slug, 'test.import', { kind: 'test', id: test.id, name: test.name })
+  store.audit(params.slug, 'test.create', { kind: 'test', id: test.id, name: test.name })
   return { json: decorateTest(store, t, test) }
 })
 
@@ -1425,7 +1432,7 @@ route('POST', '/api/v1/t/:slug/tests/:id:clone', ({ store, params, body }) => {
     (body as { name?: string } | undefined)?.name?.trim() || uniqueName(t.tests, test.name)
   const copy: Test = { ...test, ...entityBase(store, name, test.description, test.tags) }
   t.tests.unshift(copy)
-  store.audit(params.slug, 'test.clone', { kind: 'test', id: copy.id, name: copy.name })
+  store.audit(params.slug, 'test.create', { kind: 'test', id: copy.id, name: copy.name })
   return { status: 201, json: decorateTest(store, t, copy) }
 })
 

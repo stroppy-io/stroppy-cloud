@@ -76,7 +76,7 @@ func page[T any](items []T, offset, limit int) ([]T, oas.PageMeta) {
 func topologyOf(p topology.Plan) oas.TopologyPreview {
 	out := oas.TopologyPreview{Label: p.Label, NodeCount: oas.NewOptInt(p.NodeCount()), Nodes: []oas.TopologyPreviewNodesItem{}, Flows: []oas.TopologyPreviewFlowsItem{}}
 	for _, n := range p.Nodes {
-		item := oas.TopologyPreviewNodesItem{Role: n.Role, Count: n.Count, Engine: oas.NewOptString(n.Engine)}
+		item := oas.TopologyPreviewNodesItem{Role: oas.TopologyRole(n.Role), Count: n.Count, Engine: oas.NewOptString(n.Engine)}
 		if n.ColocatedWith != "" {
 			item.ColocatedWith = oas.NewOptString(n.ColocatedWith)
 		}

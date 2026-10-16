@@ -74,10 +74,10 @@ components:
           description: Stable machine-readable code. Branch on this, never on `detail`.
           example: test_not_ready
         reason:
-          type: string
+          allOf: [{ $ref: '#/components/schemas/ErrorReason' }]
           description: >-
             Stable machine key of why it failed, finer than `code`
-            (`tenant_slug_taken`, `limit_concurrent_runs`, `<entity>_not_found`).
+            (`tenant_slug_taken`, `provider_quota_exceeded`, `<entity>_not_found`).
             Clients show their own text for it; `detail` is the English
             fallback for an unknown reason.
           example: tenant_slug_taken

@@ -76,7 +76,7 @@ func snapshotOf(s run.Snapshot) oas.RunSnapshot {
 		out.EffectiveConfigs = oas.NewOptRunSnapshotEffectiveConfigs(ec)
 	}
 	for _, m := range s.Machines {
-		item := oas.RunSnapshotMachinesItem{Name: m.Name, Role: m.Role, Size: oas.Size(m.Size), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB)}
+		item := oas.RunSnapshotMachinesItem{Name: m.Name, Role: oas.TopologyRole(m.Role), Size: oas.Size(m.Size), CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB)}
 		if m.DiskGB > 0 {
 			item.DiskGB = oas.NewOptInt(m.DiskGB)
 		}
@@ -658,13 +658,21 @@ func (h *Handler) ListRunEvents(ctx context.Context, params oas.ListRunEventsPar
 	}
 	out := &oas.ListRunEventsOK{Data: make([]oas.RunEvent, 0, len(events)), Meta: meta}
 	for _, e := range events {
-		out.Data = append(out.Data, runEventOf(e))
+		if item, ok := runEventOf(e); ok {
+			out.Data = append(out.Data, item)
+		}
 	}
 	return out, nil
 }
 
-func runEventOf(e run.Event) oas.RunEvent {
-	item := oas.RunEvent{ID: strconv.FormatInt(e.ID, 10), At: e.At, Kind: e.Kind, Title: e.Title}
+// runEventOf is one timeline entry; false for a kind the contract does not
+// name (stored before the vocabulary was fixed).
+func runEventOf(e run.Event) (oas.RunEvent, bool) {
+	kind, ok := run.EventKind(e.Kind)
+	if !ok {
+		return oas.RunEvent{}, false
+	}
+	item := oas.RunEvent{ID: strconv.FormatInt(e.ID, 10), At: e.At, Kind: oas.RunEventKind(kind), Title: e.Title}
 	if e.Subject != "" {
 		item.Subject = oas.NewOptString(e.Subject)
 	}
@@ -686,7 +694,7 @@ func runEventOf(e run.Event) oas.RunEvent {
 		}
 		item.Payload = oas.NewOptRunEventPayload(p)
 	}
-	return item
+	return item, true
 }
 
 // GetRunOverview — the projected state (persisted; live comes over WS).
@@ -744,7 +752,7 @@ func overviewOf(r run.Run, live bool) *oas.RunOverview {
 	}
 	for _, m := range r.Snapshot.Machines {
 		ms := st.Machines[m.Name]
-		item := oas.RunOverviewMachinesItem{Name: m.Name, Role: m.Role, Status: oas.RunOverviewMachinesItemStatus(orDefault(ms.Status, "pending")), Presence: oas.RunOverviewMachinesItemPresence(orDefault(ms.Presence, "offline")), Size: oas.NewOptSize(oas.Size(m.Size)), LastHeartbeatAt: optTime(ms.LastHeartbeatAt)}
+		item := oas.RunOverviewMachinesItem{Name: m.Name, Role: oas.TopologyRole(m.Role), Status: oas.RunOverviewMachinesItemStatus(orDefault(ms.Status, "pending")), Presence: oas.RunOverviewMachinesItemPresence(orDefault(ms.Presence, "offline")), Size: oas.NewOptSize(oas.Size(m.Size)), LastHeartbeatAt: optTime(ms.LastHeartbeatAt)}
 		if ms.AgentID != "" {
 			item.AgentID = oas.NewOptString(ms.AgentID)
 		}
@@ -783,7 +791,7 @@ func overviewOf(r run.Run, live bool) *oas.RunOverview {
 	}
 	for _, c := range runSpec.Containers {
 		cs := st.Containers[c.Name]
-		item := oas.RunOverviewComponentsItem{ID: c.Name, Role: c.Role, Machine: c.Machine, Image: oas.NewOptString(c.Image), Status: oas.RunOverviewComponentsItemStatus(orDefault(cs.Status, "pending")), Endpoints: []oas.RunOverviewComponentsItemEndpointsItem{}}
+		item := oas.RunOverviewComponentsItem{ID: c.Name, Role: oas.TopologyRole(c.Role), Machine: c.Machine, Image: oas.NewOptString(c.Image), Status: oas.RunOverviewComponentsItemStatus(orDefault(cs.Status, "pending")), Endpoints: []oas.RunOverviewComponentsItemEndpointsItem{}}
 		if c.Scrape != "" {
 			item.Scrape = oas.NewOptString(c.Scrape)
 		}

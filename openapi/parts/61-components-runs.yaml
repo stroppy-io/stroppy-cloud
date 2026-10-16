@@ -177,7 +177,7 @@ components:
             required: [name, role, size]
             properties:
               name: { type: string }
-              role: { type: string }
+              role: { $ref: '#/components/schemas/TopologyRole' }
               size: { $ref: '#/components/schemas/Size' }
               cpu: { type: integer }
               memory_gb: { type: integer }
@@ -317,7 +317,7 @@ components:
             required: [id, role, machine, status]
             properties:
               id: { type: string }
-              role: { type: string }
+              role: { $ref: '#/components/schemas/TopologyRole' }
               engine: { type: string }
               image: { type: string }
               machine: { type: string }
@@ -338,7 +338,7 @@ components:
             required: [name, role, status, presence]
             properties:
               name: { type: string }
-              role: { type: string }
+              role: { $ref: '#/components/schemas/TopologyRole' }
               status: { type: string, enum: [pending, creating, ready, failed, deleting, deleted] }
               presence: { type: string, enum: [online, stale, offline, terminated] }
               agent_id: { type: string }
@@ -416,10 +416,7 @@ components:
       properties:
         id: { type: string }
         at: { type: string, format: date-time }
-        kind:
-          type: string
-          example: segment.finished
-          description: 'run.*, phase.*, segment.*, machine.*, component.*, activity.*'
+        kind: { $ref: '#/components/schemas/RunEventKind' }
         title: { type: string }
         subject: { type: string, description: Graphene ref or role/machine. }
         status: { type: string }
@@ -439,7 +436,7 @@ components:
         time: { type: string, format: date-time }
         seq: { type: integer }
         message: { type: string }
-        level: { type: string }
+        level: { $ref: '#/components/schemas/LogLevel' }
         stream: { type: string }
         role: { type: string }
         machine: { type: string }

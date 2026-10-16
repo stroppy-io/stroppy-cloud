@@ -354,7 +354,9 @@ func (h *Handler) AdminListAudit(ctx context.Context, params oas.AdminListAuditP
 		entries = entries[:limit]
 	}
 	for _, e := range entries {
-		pg.Data = append(pg.Data, auditOf(e))
+		if entry, ok := auditOf(e); ok {
+			pg.Data = append(pg.Data, entry)
+		}
 	}
 	pg.Meta.HasMore = oas.NewOptBool(hasMore)
 	if hasMore {

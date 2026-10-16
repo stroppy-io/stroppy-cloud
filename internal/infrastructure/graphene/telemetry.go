@@ -344,15 +344,9 @@ func (l *Logs) Facets(ctx context.Context, scope observe.Scope, start, end time.
 	return out, nil
 }
 
-// logLevel is a record's level as the API names it: lower case, and none
-// for OTLP's UNSPECIFIED (a line its source wrote without one).
-func logLevel(severity string) string {
-	l := strings.ToLower(severity)
-	if l == "unspecified" {
-		return ""
-	}
-	return l
-}
+// logLevel is a record's level as the API names it (observe.LogLevels);
+// none for OTLP's UNSPECIFIED or a severity that names no level.
+func logLevel(severity string) string { return observe.LogLevel(severity) }
 
 func (m *Metrics) Query(ctx context.Context, q observe.MetricQuery) ([]observe.Series, []error, error) {
 	var out []observe.Series

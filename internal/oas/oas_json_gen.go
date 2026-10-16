@@ -4098,6 +4098,152 @@ func (s *ArtifactKind) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes AuditAction as json.
+func (s AuditAction) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes AuditAction from json.
+func (s *AuditAction) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuditAction to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch AuditAction(v) {
+	case AuditActionAdminPipelinesResync:
+		*s = AuditActionAdminPipelinesResync
+	case AuditActionAdminRunCancel:
+		*s = AuditActionAdminRunCancel
+	case AuditActionAdminSettingsUpdate:
+		*s = AuditActionAdminSettingsUpdate
+	case AuditActionAdminTenantAssignOwner:
+		*s = AuditActionAdminTenantAssignOwner
+	case AuditActionAdminTenantDelete:
+		*s = AuditActionAdminTenantDelete
+	case AuditActionAdminTenantLimits:
+		*s = AuditActionAdminTenantLimits
+	case AuditActionAdminTenantResume:
+		*s = AuditActionAdminTenantResume
+	case AuditActionAdminTenantSuspend:
+		*s = AuditActionAdminTenantSuspend
+	case AuditActionAdminUserPlatformAdmin:
+		*s = AuditActionAdminUserPlatformAdmin
+	case AuditActionDatabaseCreate:
+		*s = AuditActionDatabaseCreate
+	case AuditActionDatabaseDelete:
+		*s = AuditActionDatabaseDelete
+	case AuditActionDatabaseUpdate:
+		*s = AuditActionDatabaseUpdate
+	case AuditActionInviteAccept:
+		*s = AuditActionInviteAccept
+	case AuditActionInviteCreate:
+		*s = AuditActionInviteCreate
+	case AuditActionInviteRevoke:
+		*s = AuditActionInviteRevoke
+	case AuditActionMemberLeave:
+		*s = AuditActionMemberLeave
+	case AuditActionMemberRemove:
+		*s = AuditActionMemberRemove
+	case AuditActionMemberRole:
+		*s = AuditActionMemberRole
+	case AuditActionProviderCreate:
+		*s = AuditActionProviderCreate
+	case AuditActionProviderDelete:
+		*s = AuditActionProviderDelete
+	case AuditActionProviderUpdate:
+		*s = AuditActionProviderUpdate
+	case AuditActionRunCancel:
+		*s = AuditActionRunCancel
+	case AuditActionRunDelete:
+		*s = AuditActionRunDelete
+	case AuditActionRunKeepExtend:
+		*s = AuditActionRunKeepExtend
+	case AuditActionRunKeepRelease:
+		*s = AuditActionRunKeepRelease
+	case AuditActionRunLaunch:
+		*s = AuditActionRunLaunch
+	case AuditActionRunUpdate:
+		*s = AuditActionRunUpdate
+	case AuditActionScheduleCreate:
+		*s = AuditActionScheduleCreate
+	case AuditActionScheduleDelete:
+		*s = AuditActionScheduleDelete
+	case AuditActionScheduleUpdate:
+		*s = AuditActionScheduleUpdate
+	case AuditActionShareCreate:
+		*s = AuditActionShareCreate
+	case AuditActionShareRebuild:
+		*s = AuditActionShareRebuild
+	case AuditActionShareRevoke:
+		*s = AuditActionShareRevoke
+	case AuditActionSuiteCreate:
+		*s = AuditActionSuiteCreate
+	case AuditActionSuiteDelete:
+		*s = AuditActionSuiteDelete
+	case AuditActionSuiteLaunch:
+		*s = AuditActionSuiteLaunch
+	case AuditActionSuiteUpdate:
+		*s = AuditActionSuiteUpdate
+	case AuditActionSuiteRunCancel:
+		*s = AuditActionSuiteRunCancel
+	case AuditActionSuiteRunDelete:
+		*s = AuditActionSuiteRunDelete
+	case AuditActionTenantCreate:
+		*s = AuditActionTenantCreate
+	case AuditActionTenantDelete:
+		*s = AuditActionTenantDelete
+	case AuditActionTenantTransfer:
+		*s = AuditActionTenantTransfer
+	case AuditActionTenantUpdate:
+		*s = AuditActionTenantUpdate
+	case AuditActionTestCreate:
+		*s = AuditActionTestCreate
+	case AuditActionTestDelete:
+		*s = AuditActionTestDelete
+	case AuditActionTestUpdate:
+		*s = AuditActionTestUpdate
+	case AuditActionTokenCreate:
+		*s = AuditActionTokenCreate
+	case AuditActionTokenRevoke:
+		*s = AuditActionTokenRevoke
+	case AuditActionWebhookCreate:
+		*s = AuditActionWebhookCreate
+	case AuditActionWebhookDelete:
+		*s = AuditActionWebhookDelete
+	case AuditActionWebhookRotate:
+		*s = AuditActionWebhookRotate
+	case AuditActionWebhookUpdate:
+		*s = AuditActionWebhookUpdate
+	case AuditActionWorkloadCreate:
+		*s = AuditActionWorkloadCreate
+	case AuditActionWorkloadDelete:
+		*s = AuditActionWorkloadDelete
+	case AuditActionWorkloadUpdate:
+		*s = AuditActionWorkloadUpdate
+	default:
+		*s = AuditAction(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s AuditAction) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuditAction) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *AuditEntry) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -4127,7 +4273,7 @@ func (s *AuditEntry) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("action")
-		e.Str(s.Action)
+		s.Action.Encode(e)
 	}
 	{
 		e.FieldStart("target")
@@ -4214,9 +4360,7 @@ func (s *AuditEntry) Decode(d *jx.Decoder) error {
 		case "action":
 			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				v, err := d.Str()
-				s.Action = string(v)
-				if err != nil {
+				if err := s.Action.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -4757,6 +4901,74 @@ func (s *AuditPage) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes AuditTargetKind as json.
+func (s AuditTargetKind) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes AuditTargetKind from json.
+func (s *AuditTargetKind) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuditTargetKind to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch AuditTargetKind(v) {
+	case AuditTargetKindDatabase:
+		*s = AuditTargetKindDatabase
+	case AuditTargetKindInvite:
+		*s = AuditTargetKindInvite
+	case AuditTargetKindNamespace:
+		*s = AuditTargetKindNamespace
+	case AuditTargetKindProvider:
+		*s = AuditTargetKindProvider
+	case AuditTargetKindRun:
+		*s = AuditTargetKindRun
+	case AuditTargetKindSchedule:
+		*s = AuditTargetKindSchedule
+	case AuditTargetKindShare:
+		*s = AuditTargetKindShare
+	case AuditTargetKindSuite:
+		*s = AuditTargetKindSuite
+	case AuditTargetKindSuiteRun:
+		*s = AuditTargetKindSuiteRun
+	case AuditTargetKindSystemSettings:
+		*s = AuditTargetKindSystemSettings
+	case AuditTargetKindTenant:
+		*s = AuditTargetKindTenant
+	case AuditTargetKindTest:
+		*s = AuditTargetKindTest
+	case AuditTargetKindToken:
+		*s = AuditTargetKindToken
+	case AuditTargetKindUser:
+		*s = AuditTargetKindUser
+	case AuditTargetKindWebhook:
+		*s = AuditTargetKindWebhook
+	case AuditTargetKindWorkload:
+		*s = AuditTargetKindWorkload
+	default:
+		*s = AuditTargetKind(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s AuditTargetKind) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuditTargetKind) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *BakedValue) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -5264,7 +5476,7 @@ func (s *CatalogDatabaseRolesItem) Encode(e *jx.Encoder) {
 func (s *CatalogDatabaseRolesItem) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("role")
-		e.Str(s.Role)
+		s.Role.Encode(e)
 	}
 	{
 		e.FieldStart("title")
@@ -5307,9 +5519,7 @@ func (s *CatalogDatabaseRolesItem) Decode(d *jx.Decoder) error {
 		case "role":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Role = string(v)
-				if err != nil {
+				if err := s.Role.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -8732,9 +8942,7 @@ func (s *DatabaseExternal) UnmarshalJSON(data []byte) error {
 
 // Encode encodes DatabaseKind as json.
 func (s DatabaseKind) Encode(e *jx.Encoder) {
-	unwrapped := string(s)
-
-	e.Str(unwrapped)
+	e.Str(string(s))
 }
 
 // Decode decodes DatabaseKind from json.
@@ -8742,18 +8950,40 @@ func (s *DatabaseKind) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode DatabaseKind to nil")
 	}
-	var unwrapped string
-	if err := func() error {
-		v, err := d.Str()
-		unwrapped = string(v)
-		if err != nil {
-			return err
-		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "alias")
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
 	}
-	*s = DatabaseKind(unwrapped)
+	// Try to use constant string.
+	switch DatabaseKind(v) {
+	case DatabaseKindPostgres:
+		*s = DatabaseKindPostgres
+	case DatabaseKindOrioledb:
+		*s = DatabaseKindOrioledb
+	case DatabaseKindMysql:
+		*s = DatabaseKindMysql
+	case DatabaseKindMariadb:
+		*s = DatabaseKindMariadb
+	case DatabaseKindPicodata:
+		*s = DatabaseKindPicodata
+	case DatabaseKindYdb:
+		*s = DatabaseKindYdb
+	case DatabaseKindYdbManaged:
+		*s = DatabaseKindYdbManaged
+	case DatabaseKindCockroach:
+		*s = DatabaseKindCockroach
+	case DatabaseKindPgNoop:
+		*s = DatabaseKindPgNoop
+	case DatabaseKindNoop:
+		*s = DatabaseKindNoop
+	case DatabaseKindExternal:
+		*s = DatabaseKindExternal
+	case DatabaseKindCustom:
+		*s = DatabaseKindCustom
+	default:
+		*s = DatabaseKind(v)
+	}
+
 	return nil
 }
 
@@ -10599,6 +10829,510 @@ func (s DiffChangesItemOp) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *DiffChangesItemOp) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes ErrorReason as json.
+func (s ErrorReason) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes ErrorReason from json.
+func (s *ErrorReason) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ErrorReason to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch ErrorReason(v) {
+	case ErrorReasonADatabaseWithThisNameExists:
+		*s = ErrorReasonADatabaseWithThisNameExists
+	case ErrorReasonAPendingInviteForThisEmailExists:
+		*s = ErrorReasonAPendingInviteForThisEmailExists
+	case ErrorReasonAProfileWithThisNameExists:
+		*s = ErrorReasonAProfileWithThisNameExists
+	case ErrorReasonASuiteWithThisNameExists:
+		*s = ErrorReasonASuiteWithThisNameExists
+	case ErrorReasonATestWithThisNameExists:
+		*s = ErrorReasonATestWithThisNameExists
+	case ErrorReasonAWorkloadWithThisNameExists:
+		*s = ErrorReasonAWorkloadWithThisNameExists
+	case ErrorReasonAccountAlreadyOwnsATenant:
+		*s = ErrorReasonAccountAlreadyOwnsATenant
+	case ErrorReasonAfterIsNotAnEventID:
+		*s = ErrorReasonAfterIsNotAnEventID
+	case ErrorReasonAlreadyTheOwner:
+		*s = ErrorReasonAlreadyTheOwner
+	case ErrorReasonArtifactNotDownloadable:
+		*s = ErrorReasonArtifactNotDownloadable
+	case ErrorReasonArtifactNotFound:
+		*s = ErrorReasonArtifactNotFound
+	case ErrorReasonArtifactUnavailable:
+		*s = ErrorReasonArtifactUnavailable
+	case ErrorReasonAtLeastOneEvent:
+		*s = ErrorReasonAtLeastOneEvent
+	case ErrorReasonAtLeastOneSegment:
+		*s = ErrorReasonAtLeastOneSegment
+	case ErrorReasonAtMost20NotificationEmails:
+		*s = ErrorReasonAtMost20NotificationEmails
+	case ErrorReasonAuthenticationRequired:
+		*s = ErrorReasonAuthenticationRequired
+	case ErrorReasonCancelRunBeforeDelete:
+		*s = ErrorReasonCancelRunBeforeDelete
+	case ErrorReasonCancelSuiteRunBeforeDelete:
+		*s = ErrorReasonCancelSuiteRunBeforeDelete
+	case ErrorReasonCancelUnavailable:
+		*s = ErrorReasonCancelUnavailable
+	case ErrorReasonCatalogNoQPSSeries:
+		*s = ErrorReasonCatalogNoQPSSeries
+	case ErrorReasonComparisonRequestIsRequired:
+		*s = ErrorReasonComparisonRequestIsRequired
+	case ErrorReasonConfigVersionMismatch:
+		*s = ErrorReasonConfigVersionMismatch
+	case ErrorReasonCronInvalid:
+		*s = ErrorReasonCronInvalid
+	case ErrorReasonCronNeverFires:
+		*s = ErrorReasonCronNeverFires
+	case ErrorReasonCursorInvalid:
+		*s = ErrorReasonCursorInvalid
+	case ErrorReasonCursorIsNotAnEventID:
+		*s = ErrorReasonCursorIsNotAnEventID
+	case ErrorReasonDatabaseNotFound:
+		*s = ErrorReasonDatabaseNotFound
+	case ErrorReasonDatabaseRefAndInlineAreExclusive:
+		*s = ErrorReasonDatabaseRefAndInlineAreExclusive
+	case ErrorReasonDbKindNotLaunchable:
+		*s = ErrorReasonDbKindNotLaunchable
+	case ErrorReasonDbKindUnknown:
+		*s = ErrorReasonDbKindUnknown
+	case ErrorReasonDbVersionNoImage:
+		*s = ErrorReasonDbVersionNoImage
+	case ErrorReasonDbVersionUnknown:
+		*s = ErrorReasonDbVersionUnknown
+	case ErrorReasonDefaultKeepIsNotADuration:
+		*s = ErrorReasonDefaultKeepIsNotADuration
+	case ErrorReasonDefaultKeepRange:
+		*s = ErrorReasonDefaultKeepRange
+	case ErrorReasonDeleteResourcesUnavailable:
+		*s = ErrorReasonDeleteResourcesUnavailable
+	case ErrorReasonDeliveryIDIsNotAUUID:
+		*s = ErrorReasonDeliveryIDIsNotAUUID
+	case ErrorReasonDeliveryNotFound:
+		*s = ErrorReasonDeliveryNotFound
+	case ErrorReasonDiskSizeOutOfRange:
+		*s = ErrorReasonDiskSizeOutOfRange
+	case ErrorReasonDisplayNameLongerThan64:
+		*s = ErrorReasonDisplayNameLongerThan64
+	case ErrorReasonDocumentAPIVersion:
+		*s = ErrorReasonDocumentAPIVersion
+	case ErrorReasonDocumentKind:
+		*s = ErrorReasonDocumentKind
+	case ErrorReasonDocumentKindMustBeSuite:
+		*s = ErrorReasonDocumentKindMustBeSuite
+	case ErrorReasonDurationIsNotAPositiveDuration:
+		*s = ErrorReasonDurationIsNotAPositiveDuration
+	case ErrorReasonDurationMaxIsNotADuration:
+		*s = ErrorReasonDurationMaxIsNotADuration
+	case ErrorReasonDurationMinIsNotADuration:
+		*s = ErrorReasonDurationMinIsNotADuration
+	case ErrorReasonEmailIsNotValid:
+		*s = ErrorReasonEmailIsNotValid
+	case ErrorReasonEndMustBeAfterStart:
+		*s = ErrorReasonEndMustBeAfterStart
+	case ErrorReasonExampleNotFound:
+		*s = ErrorReasonExampleNotFound
+	case ErrorReasonExamplesNotFound:
+		*s = ErrorReasonExamplesNotFound
+	case ErrorReasonExpiresAtIsInThePast:
+		*s = ErrorReasonExpiresAtIsInThePast
+	case ErrorReasonExportFormatUnavailable:
+		*s = ErrorReasonExportFormatUnavailable
+	case ErrorReasonFavoritesBelongToUsersNotTokens:
+		*s = ErrorReasonFavoritesBelongToUsersNotTokens
+	case ErrorReasonGrafanaIsNotConnected:
+		*s = ErrorReasonGrafanaIsNotConnected
+	case ErrorReasonGrapheneDroppedLogRecords:
+		*s = ErrorReasonGrapheneDroppedLogRecords
+	case ErrorReasonGrapheneDroppedMetricRecords:
+		*s = ErrorReasonGrapheneDroppedMetricRecords
+	case ErrorReasonGrapheneTelemetryRunNotFound:
+		*s = ErrorReasonGrapheneTelemetryRunNotFound
+	case ErrorReasonInvalidLogCursorForThisSelection:
+		*s = ErrorReasonInvalidLogCursorForThisSelection
+	case ErrorReasonInvalidLogDirection:
+		*s = ErrorReasonInvalidLogDirection
+	case ErrorReasonInvalidMetricStep:
+		*s = ErrorReasonInvalidMetricStep
+	case ErrorReasonInviteIsNotPending:
+		*s = ErrorReasonInviteIsNotPending
+	case ErrorReasonInviteNotFound:
+		*s = ErrorReasonInviteNotFound
+	case ErrorReasonIsPlatformAdminIsRequired:
+		*s = ErrorReasonIsPlatformAdminIsRequired
+	case ErrorReasonKeepIsNotADuration:
+		*s = ErrorReasonKeepIsNotADuration
+	case ErrorReasonKeepMustNotBeNegative:
+		*s = ErrorReasonKeepMustNotBeNegative
+	case ErrorReasonKindMustBeYandexOrAWS:
+		*s = ErrorReasonKindMustBeYandexOrAWS
+	case ErrorReasonLimitKeep:
+		*s = ErrorReasonLimitKeep
+	case ErrorReasonLimitMachinesPerRun:
+		*s = ErrorReasonLimitMachinesPerRun
+	case ErrorReasonLimitSize:
+		*s = ErrorReasonLimitSize
+	case ErrorReasonLogCursorAmbiguous:
+		*s = ErrorReasonLogCursorAmbiguous
+	case ErrorReasonLogsStoreIsNotConnected:
+		*s = ErrorReasonLogsStoreIsNotConnected
+	case ErrorReasonManagedYdbAutoscalingUnsupported:
+		*s = ErrorReasonManagedYdbAutoscalingUnsupported
+	case ErrorReasonManagedYdbDeletionProtection:
+		*s = ErrorReasonManagedYdbDeletionProtection
+	case ErrorReasonManagedYdbRequiresNamedCredentials:
+		*s = ErrorReasonManagedYdbRequiresNamedCredentials
+	case ErrorReasonManagedYdbRequiresYandexCloud:
+		*s = ErrorReasonManagedYdbRequiresYandexCloud
+	case ErrorReasonManagedYdbTypeUnknown:
+		*s = ErrorReasonManagedYdbTypeUnknown
+	case ErrorReasonMaxKeepIsNotADuration:
+		*s = ErrorReasonMaxKeepIsNotADuration
+	case ErrorReasonMaxscaleMariadbOnly:
+		*s = ErrorReasonMaxscaleMariadbOnly
+	case ErrorReasonMemberNotFound:
+		*s = ErrorReasonMemberNotFound
+	case ErrorReasonMetadataNameIsRequired:
+		*s = ErrorReasonMetadataNameIsRequired
+	case ErrorReasonMetricNotRatingEligible:
+		*s = ErrorReasonMetricNotRatingEligible
+	case ErrorReasonMetricsSnapshotInvalid:
+		*s = ErrorReasonMetricsSnapshotInvalid
+	case ErrorReasonMetricsStoreIsNotConnected:
+		*s = ErrorReasonMetricsStoreIsNotConnected
+	case ErrorReasonMetricsUnavailable:
+		*s = ErrorReasonMetricsUnavailable
+	case ErrorReasonMetricsUnknown:
+		*s = ErrorReasonMetricsUnknown
+	case ErrorReasonNameIsRequired:
+		*s = ErrorReasonNameIsRequired
+	case ErrorReasonNameMustBe1128Characters:
+		*s = ErrorReasonNameMustBe1128Characters
+	case ErrorReasonNameMustBe164Characters:
+		*s = ErrorReasonNameMustBe164Characters
+	case ErrorReasonNoCellsToRun:
+		*s = ErrorReasonNoCellsToRun
+	case ErrorReasonNoFailedCells:
+		*s = ErrorReasonNoFailedCells
+	case ErrorReasonNotificationEmailInvalid:
+		*s = ErrorReasonNotificationEmailInvalid
+	case ErrorReasonOnlyTestExamplesCanBeQuickRun:
+		*s = ErrorReasonOnlyTestExamplesCanBeQuickRun
+	case ErrorReasonOptionsIsNotAJSONObject:
+		*s = ErrorReasonOptionsIsNotAJSONObject
+	case ErrorReasonOwnerCannotBeRemoved:
+		*s = ErrorReasonOwnerCannotBeRemoved
+	case ErrorReasonOwnerRoleByTransferOnly:
+		*s = ErrorReasonOwnerRoleByTransferOnly
+	case ErrorReasonPatroniImageRequired:
+		*s = ErrorReasonPatroniImageRequired
+	case ErrorReasonPatroniRequiresHaproxy:
+		*s = ErrorReasonPatroniRequiresHaproxy
+	case ErrorReasonPdfExportIsNotAvailableYet:
+		*s = ErrorReasonPdfExportIsNotAvailableYet
+	case ErrorReasonPlatformAdminRequired:
+		*s = ErrorReasonPlatformAdminRequired
+	case ErrorReasonProfileIsNotVerified:
+		*s = ErrorReasonProfileIsNotVerified
+	case ErrorReasonProfileNotFound:
+		*s = ErrorReasonProfileNotFound
+	case ErrorReasonProfileNotReady:
+		*s = ErrorReasonProfileNotReady
+	case ErrorReasonProviderBusy:
+		*s = ErrorReasonProviderBusy
+	case ErrorReasonProviderCleanupFailed:
+		*s = ErrorReasonProviderCleanupFailed
+	case ErrorReasonProviderCleanupPending:
+		*s = ErrorReasonProviderCleanupPending
+	case ErrorReasonProviderIsBeingDeleted:
+		*s = ErrorReasonProviderIsBeingDeleted
+	case ErrorReasonProviderIsNotReady:
+		*s = ErrorReasonProviderIsNotReady
+	case ErrorReasonProviderIsUnavailable:
+		*s = ErrorReasonProviderIsUnavailable
+	case ErrorReasonProviderKindUnknown:
+		*s = ErrorReasonProviderKindUnknown
+	case ErrorReasonProviderProfileIDIsNotAUUID:
+		*s = ErrorReasonProviderProfileIDIsNotAUUID
+	case ErrorReasonProviderProfileNotFound:
+		*s = ErrorReasonProviderProfileNotFound
+	case ErrorReasonProviderQuotaCheckUnavailable:
+		*s = ErrorReasonProviderQuotaCheckUnavailable
+	case ErrorReasonProviderQuotaExceeded:
+		*s = ErrorReasonProviderQuotaExceeded
+	case ErrorReasonProviderSecretUnavailable:
+		*s = ErrorReasonProviderSecretUnavailable
+	case ErrorReasonPtyStreamsAreNotConnectedYet:
+		*s = ErrorReasonPtyStreamsAreNotConnectedYet
+	case ErrorReasonPublicRatingNotFound:
+		*s = ErrorReasonPublicRatingNotFound
+	case ErrorReasonQueryIsRequired:
+		*s = ErrorReasonQueryIsRequired
+	case ErrorReasonQuickRunNeedsProfile:
+		*s = ErrorReasonQuickRunNeedsProfile
+	case ErrorReasonRefIDNotUUID:
+		*s = ErrorReasonRefIDNotUUID
+	case ErrorReasonRefNeedsIDOrName:
+		*s = ErrorReasonRefNeedsIDOrName
+	case ErrorReasonRefNotFound:
+		*s = ErrorReasonRefNotFound
+	case ErrorReasonReferencedByTests:
+		*s = ErrorReasonReferencedByTests
+	case ErrorReasonRequiresRole:
+		*s = ErrorReasonRequiresRole
+	case ErrorReasonRequiresRoleAdmin:
+		*s = ErrorReasonRequiresRoleAdmin
+	case ErrorReasonRequiresRoleMember:
+		*s = ErrorReasonRequiresRoleMember
+	case ErrorReasonResumeMachineMissing:
+		*s = ErrorReasonResumeMachineMissing
+	case ErrorReasonResumeStandUnknown:
+		*s = ErrorReasonResumeStandUnknown
+	case ErrorReasonRetentionDaysRange:
+		*s = ErrorReasonRetentionDaysRange
+	case ErrorReasonRoleMustBeAdminMemberOrViewer:
+		*s = ErrorReasonRoleMustBeAdminMemberOrViewer
+	case ErrorReasonRoleMustBeMemberOrViewer:
+		*s = ErrorReasonRoleMustBeMemberOrViewer
+	case ErrorReasonRunAlreadyFinished:
+		*s = ErrorReasonRunAlreadyFinished
+	case ErrorReasonRunIDIsNotAUUID:
+		*s = ErrorReasonRunIDIsNotAUUID
+	case ErrorReasonRunIDIsRequired:
+		*s = ErrorReasonRunIDIsRequired
+	case ErrorReasonRunIdempotencyConflict:
+		*s = ErrorReasonRunIdempotencyConflict
+	case ErrorReasonRunIds2To16Runs:
+		*s = ErrorReasonRunIds2To16Runs
+	case ErrorReasonRunNotFound:
+		*s = ErrorReasonRunNotFound
+	case ErrorReasonRunRetentionMaxDaysMustBePositive:
+		*s = ErrorReasonRunRetentionMaxDaysMustBePositive
+	case ErrorReasonRunSubmitUnavailable:
+		*s = ErrorReasonRunSubmitUnavailable
+	case ErrorReasonScheduleFireFailed:
+		*s = ErrorReasonScheduleFireFailed
+	case ErrorReasonScheduleNotFound:
+		*s = ErrorReasonScheduleNotFound
+	case ErrorReasonSchemaHasNoTemplates:
+		*s = ErrorReasonSchemaHasNoTemplates
+	case ErrorReasonSchemaNotFound:
+		*s = ErrorReasonSchemaNotFound
+	case ErrorReasonScopeMustBeOverviewMetricsOrConfigs:
+		*s = ErrorReasonScopeMustBeOverviewMetricsOrConfigs
+	case ErrorReasonScriptProtocolUnsupported:
+		*s = ErrorReasonScriptProtocolUnsupported
+	case ErrorReasonSegmentNotFound:
+		*s = ErrorReasonSegmentNotFound
+	case ErrorReasonShareAlreadyRevoked:
+		*s = ErrorReasonShareAlreadyRevoked
+	case ErrorReasonShareMetricsSingleRunOnly:
+		*s = ErrorReasonShareMetricsSingleRunOnly
+	case ErrorReasonShareNotFound:
+		*s = ErrorReasonShareNotFound
+	case ErrorReasonShellInputFailed:
+		*s = ErrorReasonShellInputFailed
+	case ErrorReasonShellInputInvalid:
+		*s = ErrorReasonShellInputInvalid
+	case ErrorReasonShellMachineUnknown:
+		*s = ErrorReasonShellMachineUnknown
+	case ErrorReasonShellNotFound:
+		*s = ErrorReasonShellNotFound
+	case ErrorReasonShellOpenFailed:
+		*s = ErrorReasonShellOpenFailed
+	case ErrorReasonShellSessionEnded:
+		*s = ErrorReasonShellSessionEnded
+	case ErrorReasonShellSizeInvalid:
+		*s = ErrorReasonShellSizeInvalid
+	case ErrorReasonShellStandGone:
+		*s = ErrorReasonShellStandGone
+	case ErrorReasonSizeNotChosen:
+		*s = ErrorReasonSizeNotChosen
+	case ErrorReasonSizeUnavailable:
+		*s = ErrorReasonSizeUnavailable
+	case ErrorReasonSizeUnknown:
+		*s = ErrorReasonSizeUnknown
+	case ErrorReasonSlugFormat:
+		*s = ErrorReasonSlugFormat
+	case ErrorReasonSlugIsTaken:
+		*s = ErrorReasonSlugIsTaken
+	case ErrorReasonSpecIsRequired:
+		*s = ErrorReasonSpecIsRequired
+	case ErrorReasonStandLostRun:
+		*s = ErrorReasonStandLostRun
+	case ErrorReasonStandUnavailable:
+		*s = ErrorReasonStandUnavailable
+	case ErrorReasonStepIsNotADuration:
+		*s = ErrorReasonStepIsNotADuration
+	case ErrorReasonStroppyProtocolUnsupported:
+		*s = ErrorReasonStroppyProtocolUnsupported
+	case ErrorReasonStroppyScriptUnknown:
+		*s = ErrorReasonStroppyScriptUnknown
+	case ErrorReasonStroppyVersionNotFound:
+		*s = ErrorReasonStroppyVersionNotFound
+	case ErrorReasonStroppyVersionUnknown:
+		*s = ErrorReasonStroppyVersionUnknown
+	case ErrorReasonSubIDAndTopicAreRequired:
+		*s = ErrorReasonSubIDAndTopicAreRequired
+	case ErrorReasonSubscriptionExistsOrTooMany:
+		*s = ErrorReasonSubscriptionExistsOrTooMany
+	case ErrorReasonSuiteCellInvalid:
+		*s = ErrorReasonSuiteCellInvalid
+	case ErrorReasonSuiteNotFound:
+		*s = ErrorReasonSuiteNotFound
+	case ErrorReasonSuiteRunAlreadyFinished:
+		*s = ErrorReasonSuiteRunAlreadyFinished
+	case ErrorReasonSuiteRunIDIsNotAUUID:
+		*s = ErrorReasonSuiteRunIDIsNotAUUID
+	case ErrorReasonSuiteRunIDIsRequired:
+		*s = ErrorReasonSuiteRunIDIsRequired
+	case ErrorReasonSuiteRunIdempotencyConflict:
+		*s = ErrorReasonSuiteRunIdempotencyConflict
+	case ErrorReasonSuiteRunNotFound:
+		*s = ErrorReasonSuiteRunNotFound
+	case ErrorReasonSuiteTestInvalid:
+		*s = ErrorReasonSuiteTestInvalid
+	case ErrorReasonSuiteTestRefOrInline:
+		*s = ErrorReasonSuiteTestRefOrInline
+	case ErrorReasonSuitesAreNotAvailable:
+		*s = ErrorReasonSuitesAreNotAvailable
+	case ErrorReasonTargetKindMustBeTestOrSuite:
+		*s = ErrorReasonTargetKindMustBeTestOrSuite
+	case ErrorReasonTelemetryRequiresARunScope:
+		*s = ErrorReasonTelemetryRequiresARunScope
+	case ErrorReasonTelemetryUnavailable:
+		*s = ErrorReasonTelemetryUnavailable
+	case ErrorReasonTenantCreationAdminOnly:
+		*s = ErrorReasonTenantCreationAdminOnly
+	case ErrorReasonTenantCreationValue:
+		*s = ErrorReasonTenantCreationValue
+	case ErrorReasonTenantHasActiveWork:
+		*s = ErrorReasonTenantHasActiveWork
+	case ErrorReasonTenantHasLiveRuns:
+		*s = ErrorReasonTenantHasLiveRuns
+	case ErrorReasonTenantIsBeingDeleted:
+		*s = ErrorReasonTenantIsBeingDeleted
+	case ErrorReasonTenantIsSuspended:
+		*s = ErrorReasonTenantIsSuspended
+	case ErrorReasonTenantNamespaceUnavailable:
+		*s = ErrorReasonTenantNamespaceUnavailable
+	case ErrorReasonTenantNotFound:
+		*s = ErrorReasonTenantNotFound
+	case ErrorReasonTenantSlugTaken:
+		*s = ErrorReasonTenantSlugTaken
+	case ErrorReasonTestDoesNotFit:
+		*s = ErrorReasonTestDoesNotFit
+	case ErrorReasonTestIsNotFullyResolved:
+		*s = ErrorReasonTestIsNotFullyResolved
+	case ErrorReasonTestNotFound:
+		*s = ErrorReasonTestNotFound
+	case ErrorReasonTestUsedBy:
+		*s = ErrorReasonTestUsedBy
+	case ErrorReasonTheNewOwnerAlreadyOwnsATenant:
+		*s = ErrorReasonTheNewOwnerAlreadyOwnsATenant
+	case ErrorReasonTheStandIsNotKept:
+		*s = ErrorReasonTheStandIsNotKept
+	case ErrorReasonTheSuiteOfThisRunIsGone:
+		*s = ErrorReasonTheSuiteOfThisRunIsGone
+	case ErrorReasonThemeUnknown:
+		*s = ErrorReasonThemeUnknown
+	case ErrorReasonThisShareDoesNotIncludeMetrics:
+		*s = ErrorReasonThisShareDoesNotIncludeMetrics
+	case ErrorReasonTimezoneUnknown:
+		*s = ErrorReasonTimezoneUnknown
+	case ErrorReasonTokenExpired:
+		*s = ErrorReasonTokenExpired
+	case ErrorReasonTokenNotFound:
+		*s = ErrorReasonTokenNotFound
+	case ErrorReasonTokenNotRecognized:
+		*s = ErrorReasonTokenNotRecognized
+	case ErrorReasonTokenRejected:
+		*s = ErrorReasonTokenRejected
+	case ErrorReasonTokenRoleCannotExceedYourRole:
+		*s = ErrorReasonTokenRoleCannotExceedYourRole
+	case ErrorReasonTokensCannotAcceptInvites:
+		*s = ErrorReasonTokensCannotAcceptInvites
+	case ErrorReasonTokensCannotCreateTenants:
+		*s = ErrorReasonTokensCannotCreateTenants
+	case ErrorReasonTokensCannotMintTokens:
+		*s = ErrorReasonTokensCannotMintTokens
+	case ErrorReasonTopicMustBeKindID:
+		*s = ErrorReasonTopicMustBeKindID
+	case ErrorReasonTTLIsNotAPositiveDuration:
+		*s = ErrorReasonTTLIsNotAPositiveDuration
+	case ErrorReasonUnknownShareKind:
+		*s = ErrorReasonUnknownShareKind
+	case ErrorReasonUnsupportedDocumentBody:
+		*s = ErrorReasonUnsupportedDocumentBody
+	case ErrorReasonURLNotAbsoluteHTTP:
+		*s = ErrorReasonURLNotAbsoluteHTTP
+	case ErrorReasonUserAlreadyOwnsATenant:
+		*s = ErrorReasonUserAlreadyOwnsATenant
+	case ErrorReasonUserIDIsNotAUUID:
+		*s = ErrorReasonUserIDIsNotAUUID
+	case ErrorReasonUserNotFound:
+		*s = ErrorReasonUserNotFound
+	case ErrorReasonValueIsNotAJSONObject:
+		*s = ErrorReasonValueIsNotAJSONObject
+	case ErrorReasonViewersCannotChangeSchedules:
+		*s = ErrorReasonViewersCannotChangeSchedules
+	case ErrorReasonViewersCannotChangeSuites:
+		*s = ErrorReasonViewersCannotChangeSuites
+	case ErrorReasonViewersCannotLaunchOrChangeRuns:
+		*s = ErrorReasonViewersCannotLaunchOrChangeRuns
+	case ErrorReasonViewersCannotShare:
+		*s = ErrorReasonViewersCannotShare
+	case ErrorReasonWebhookEventUnknown:
+		*s = ErrorReasonWebhookEventUnknown
+	case ErrorReasonWebhookNotFound:
+		*s = ErrorReasonWebhookNotFound
+	case ErrorReasonWindowDoesNotOverlapTheSharedRun:
+		*s = ErrorReasonWindowDoesNotOverlapTheSharedRun
+	case ErrorReasonWorkloadNotFound:
+		*s = ErrorReasonWorkloadNotFound
+	case ErrorReasonWorkloadRefAndInlineAreExclusive:
+		*s = ErrorReasonWorkloadRefAndInlineAreExclusive
+	case ErrorReasonYdbDiskTooSmall:
+		*s = ErrorReasonYdbDiskTooSmall
+	case ErrorReasonYdbMirror3dcYandexOnly:
+		*s = ErrorReasonYdbMirror3dcYandexOnly
+	case ErrorReasonYdbNeedsThreeZones:
+		*s = ErrorReasonYdbNeedsThreeZones
+	case ErrorReasonYdbStorageNodesRequired:
+		*s = ErrorReasonYdbStorageNodesRequired
+	case ErrorReasonYdbZoneInvalid:
+		*s = ErrorReasonYdbZoneInvalid
+	case ErrorReasonYdbZonesNotStrings:
+		*s = ErrorReasonYdbZonesNotStrings
+	default:
+		*s = ErrorReason(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s ErrorReason) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ErrorReason) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -16801,6 +17535,54 @@ func (s *ListWorkloadsOK) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes LogLevel as json.
+func (s LogLevel) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes LogLevel from json.
+func (s *LogLevel) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode LogLevel to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch LogLevel(v) {
+	case LogLevelTrace:
+		*s = LogLevelTrace
+	case LogLevelDebug:
+		*s = LogLevelDebug
+	case LogLevelInfo:
+		*s = LogLevelInfo
+	case LogLevelWarn:
+		*s = LogLevelWarn
+	case LogLevelError:
+		*s = LogLevelError
+	case LogLevelFatal:
+		*s = LogLevelFatal
+	default:
+		*s = LogLevel(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s LogLevel) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *LogLevel) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *LogLine) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -17986,7 +18768,7 @@ func (s *MetricDef) Encode(e *jx.Encoder) {
 func (s *MetricDef) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("key")
-		e.Str(s.Key)
+		s.Key.Encode(e)
 	}
 	{
 		e.FieldStart("title")
@@ -18008,7 +18790,7 @@ func (s *MetricDef) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("group")
-		e.Str(s.Group)
+		s.Group.Encode(e)
 	}
 	{
 		e.FieldStart("scope")
@@ -18056,9 +18838,7 @@ func (s *MetricDef) Decode(d *jx.Decoder) error {
 		case "key":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Key = string(v)
-				if err != nil {
+				if err := s.Key.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -18114,9 +18894,7 @@ func (s *MetricDef) Decode(d *jx.Decoder) error {
 		case "group":
 			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				v, err := d.Str()
-				s.Group = string(v)
-				if err != nil {
+				if err := s.Group.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -18255,6 +19033,160 @@ func (s MetricDefScope) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *MetricDefScope) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MetricGroup as json.
+func (s MetricGroup) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes MetricGroup from json.
+func (s *MetricGroup) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MetricGroup to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch MetricGroup(v) {
+	case MetricGroupHeadline:
+		*s = MetricGroupHeadline
+	case MetricGroupWorkload:
+		*s = MetricGroupWorkload
+	case MetricGroupBootstrap:
+		*s = MetricGroupBootstrap
+	case MetricGroupHost:
+		*s = MetricGroupHost
+	case MetricGroupPostgreSQL:
+		*s = MetricGroupPostgreSQL
+	case MetricGroupMySQL:
+		*s = MetricGroupMySQL
+	case MetricGroupCockroachDB:
+		*s = MetricGroupCockroachDB
+	case MetricGroupPicodata:
+		*s = MetricGroupPicodata
+	default:
+		*s = MetricGroup(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s MetricGroup) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MetricGroup) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes MetricKey as json.
+func (s MetricKey) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes MetricKey from json.
+func (s *MetricKey) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode MetricKey to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch MetricKey(v) {
+	case MetricKeyTps:
+		*s = MetricKeyTps
+	case MetricKeyQPS:
+		*s = MetricKeyQPS
+	case MetricKeyLatencyP50Ms:
+		*s = MetricKeyLatencyP50Ms
+	case MetricKeyLatencyP95Ms:
+		*s = MetricKeyLatencyP95Ms
+	case MetricKeyLatencyP99Ms:
+		*s = MetricKeyLatencyP99Ms
+	case MetricKeyErrors:
+		*s = MetricKeyErrors
+	case MetricKeyIterationsTotal:
+		*s = MetricKeyIterationsTotal
+	case MetricKeyIterationsPerSecond:
+		*s = MetricKeyIterationsPerSecond
+	case MetricKeyQueriesPerSecond:
+		*s = MetricKeyQueriesPerSecond
+	case MetricKeyFailedIterationsTotal:
+		*s = MetricKeyFailedIterationsTotal
+	case MetricKeyFailedQueriesTotal:
+		*s = MetricKeyFailedQueriesTotal
+	case MetricKeyIterationDurationAvg:
+		*s = MetricKeyIterationDurationAvg
+	case MetricKeyIterationDurationP90:
+		*s = MetricKeyIterationDurationP90
+	case MetricKeyIterationDurationP99:
+		*s = MetricKeyIterationDurationP99
+	case MetricKeyLoadDurationSeconds:
+		*s = MetricKeyLoadDurationSeconds
+	case MetricKeyNodeCPUUsage:
+		*s = MetricKeyNodeCPUUsage
+	case MetricKeyNodeMemoryUsedBytes:
+		*s = MetricKeyNodeMemoryUsedBytes
+	case MetricKeyNodeDiskIoBytes:
+		*s = MetricKeyNodeDiskIoBytes
+	case MetricKeyNodeNetworkBytes:
+		*s = MetricKeyNodeNetworkBytes
+	case MetricKeyPgStatDatabaseXactCommit:
+		*s = MetricKeyPgStatDatabaseXactCommit
+	case MetricKeyPgStatDatabaseXactRollback:
+		*s = MetricKeyPgStatDatabaseXactRollback
+	case MetricKeyPgStatDatabaseBlksHitRatio:
+		*s = MetricKeyPgStatDatabaseBlksHitRatio
+	case MetricKeyPgStatActivityCount:
+		*s = MetricKeyPgStatActivityCount
+	case MetricKeyPgLocksCount:
+		*s = MetricKeyPgLocksCount
+	case MetricKeyPgReplicationLagSeconds:
+		*s = MetricKeyPgReplicationLagSeconds
+	case MetricKeyMysqlGlobalStatusQueries:
+		*s = MetricKeyMysqlGlobalStatusQueries
+	case MetricKeyMysqlGlobalStatusThreadsConnected:
+		*s = MetricKeyMysqlGlobalStatusThreadsConnected
+	case MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio:
+		*s = MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio
+	case MetricKeyMysqlSlaveStatusSecondsBehindMaster:
+		*s = MetricKeyMysqlSlaveStatusSecondsBehindMaster
+	case MetricKeyCockroachSQLTxnCommitCount:
+		*s = MetricKeyCockroachSQLTxnCommitCount
+	case MetricKeyCockroachSQLServiceLatencyP99:
+		*s = MetricKeyCockroachSQLServiceLatencyP99
+	case MetricKeyCockroachLiveNodes:
+		*s = MetricKeyCockroachLiveNodes
+	case MetricKeyPicodataInstancesOnline:
+		*s = MetricKeyPicodataInstancesOnline
+	default:
+		*s = MetricKey(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s MetricKey) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *MetricKey) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -18929,6 +19861,39 @@ func (s *OptAuditEntryDetails) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes AuditTargetKind as json.
+func (o OptAuditTargetKind) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes AuditTargetKind from json.
+func (o *OptAuditTargetKind) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptAuditTargetKind to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptAuditTargetKind) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptAuditTargetKind) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes BakedValue as json.
 func (o OptBakedValue) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -19301,7 +20266,7 @@ func (o OptDatabaseKind) Encode(e *jx.Encoder) {
 	if !o.Set {
 		return
 	}
-	o.Value.Encode(e)
+	e.Str(string(o.Value))
 }
 
 // Decode decodes DatabaseKind from json.
@@ -19666,6 +20631,39 @@ func (s OptDateTime) MarshalJSON() ([]byte, error) {
 func (s *OptDateTime) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d, json.DecodeDateTime)
+}
+
+// Encode encodes ErrorReason as json.
+func (o OptErrorReason) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes ErrorReason from json.
+func (o *OptErrorReason) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptErrorReason to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptErrorReason) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptErrorReason) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
 }
 
 // Encode encodes ExampleTags as json.
@@ -20036,6 +21034,39 @@ func (s OptLaunchOverridesLabels) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptLaunchOverridesLabels) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes LogLevel as json.
+func (o OptLogLevel) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes LogLevel from json.
+func (o *OptLogLevel) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptLogLevel to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptLogLevel) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptLogLevel) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -20588,6 +21619,39 @@ func (s OptProviderKind) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptProviderKind) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes QuotaUnit as json.
+func (o OptQuotaUnit) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes QuotaUnit from json.
+func (o *OptQuotaUnit) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptQuotaUnit to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptQuotaUnit) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptQuotaUnit) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -23419,6 +24483,39 @@ func (s OptTopologyPreview) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptTopologyPreview) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TopologyRole as json.
+func (o OptTopologyRole) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes TopologyRole from json.
+func (o *OptTopologyRole) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptTopologyRole to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptTopologyRole) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptTopologyRole) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -26574,6 +27671,86 @@ func (s *QueryRunMetricsRawReq) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes QuotaName as json.
+func (s QuotaName) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes QuotaName from json.
+func (s *QuotaName) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode QuotaName to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch QuotaName(v) {
+	case QuotaNameComputeInstancesCount:
+		*s = QuotaNameComputeInstancesCount
+	case QuotaNameComputeInstanceCoresCount:
+		*s = QuotaNameComputeInstanceCoresCount
+	case QuotaNameComputeInstanceMemorySize:
+		*s = QuotaNameComputeInstanceMemorySize
+	case QuotaNameComputeSsdDisksSize:
+		*s = QuotaNameComputeSsdDisksSize
+	case QuotaNameComputeHddDisksSize:
+		*s = QuotaNameComputeHddDisksSize
+	case QuotaNameComputeSsdNonReplicatedDisksSize:
+		*s = QuotaNameComputeSsdNonReplicatedDisksSize
+	case QuotaNameComputeSsdIOM3DisksSize:
+		*s = QuotaNameComputeSsdIOM3DisksSize
+	case QuotaNameComputeInstanceHighFreqCoresCount:
+		*s = QuotaNameComputeInstanceHighFreqCoresCount
+	case QuotaNameComputeDisksCount:
+		*s = QuotaNameComputeDisksCount
+	case QuotaNameVpcNetworksCount:
+		*s = QuotaNameVpcNetworksCount
+	case QuotaNameVpcSubnetsCount:
+		*s = QuotaNameVpcSubnetsCount
+	case QuotaNameVpcSecurityGroupsCount:
+		*s = QuotaNameVpcSecurityGroupsCount
+	case QuotaNameVpcExternalStaticAddressesCount:
+		*s = QuotaNameVpcExternalStaticAddressesCount
+	case QuotaNameEc2StandardVcpus:
+		*s = QuotaNameEc2StandardVcpus
+	case QuotaNameEc2SpotStandardVcpus:
+		*s = QuotaNameEc2SpotStandardVcpus
+	case QuotaNameEbsGp3Storage:
+		*s = QuotaNameEbsGp3Storage
+	case QuotaNameEbsGp2Storage:
+		*s = QuotaNameEbsGp2Storage
+	case QuotaNameEbsIo2Storage:
+		*s = QuotaNameEbsIo2Storage
+	case QuotaNameVpcVpcs:
+		*s = QuotaNameVpcVpcs
+	case QuotaNameVpcSecurityGroups:
+		*s = QuotaNameVpcSecurityGroups
+	case QuotaNameVpcInternetGateways:
+		*s = QuotaNameVpcInternetGateways
+	case QuotaNameEc2ElasticIps:
+		*s = QuotaNameEc2ElasticIps
+	default:
+		*s = QuotaName(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s QuotaName) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *QuotaName) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *QuotaReport) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -26757,7 +27934,7 @@ func (s *QuotaReportQuotasItem) Encode(e *jx.Encoder) {
 func (s *QuotaReportQuotasItem) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("name")
-		e.Str(s.Name)
+		s.Name.Encode(e)
 	}
 	{
 		if s.Title.Set {
@@ -26808,9 +27985,7 @@ func (s *QuotaReportQuotasItem) Decode(d *jx.Decoder) error {
 		case "name":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Name = string(v)
-				if err != nil {
+				if err := s.Name.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -26923,6 +28098,68 @@ func (s *QuotaReportQuotasItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *QuotaReportQuotasItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes QuotaUnit as json.
+func (s QuotaUnit) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes QuotaUnit from json.
+func (s *QuotaUnit) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode QuotaUnit to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch QuotaUnit(v) {
+	case QuotaUnitInstances:
+		*s = QuotaUnitInstances
+	case QuotaUnitCores:
+		*s = QuotaUnitCores
+	case QuotaUnitBytes:
+		*s = QuotaUnitBytes
+	case QuotaUnitDisks:
+		*s = QuotaUnitDisks
+	case QuotaUnitNetworks:
+		*s = QuotaUnitNetworks
+	case QuotaUnitSubnets:
+		*s = QuotaUnitSubnets
+	case QuotaUnitSecurityGroups:
+		*s = QuotaUnitSecurityGroups
+	case QuotaUnitAddresses:
+		*s = QuotaUnitAddresses
+	case QuotaUnitVcpus:
+		*s = QuotaUnitVcpus
+	case QuotaUnitTib:
+		*s = QuotaUnitTib
+	case QuotaUnitVpcs:
+		*s = QuotaUnitVpcs
+	case QuotaUnitGroups:
+		*s = QuotaUnitGroups
+	case QuotaUnitGateways:
+		*s = QuotaUnitGateways
+	default:
+		*s = QuotaUnit(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s QuotaUnit) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *QuotaUnit) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -29883,7 +31120,7 @@ func (s *RunEvent) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("kind")
-		e.Str(s.Kind)
+		s.Kind.Encode(e)
 	}
 	{
 		e.FieldStart("title")
@@ -29976,9 +31213,7 @@ func (s *RunEvent) Decode(d *jx.Decoder) error {
 		case "kind":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				v, err := d.Str()
-				s.Kind = string(v)
-				if err != nil {
+				if err := s.Kind.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -30110,6 +31345,82 @@ func (s *RunEvent) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunEvent) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes RunEventKind as json.
+func (s RunEventKind) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes RunEventKind from json.
+func (s *RunEventKind) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunEventKind to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch RunEventKind(v) {
+	case RunEventKindRunStarted:
+		*s = RunEventKindRunStarted
+	case RunEventKindRunCompleted:
+		*s = RunEventKindRunCompleted
+	case RunEventKindRunFailed:
+		*s = RunEventKindRunFailed
+	case RunEventKindRunTimedOut:
+		*s = RunEventKindRunTimedOut
+	case RunEventKindRunTerminated:
+		*s = RunEventKindRunTerminated
+	case RunEventKindRunCancelled:
+		*s = RunEventKindRunCancelled
+	case RunEventKindActivityFailed:
+		*s = RunEventKindActivityFailed
+	case RunEventKindActivityTimedOut:
+		*s = RunEventKindActivityTimedOut
+	case RunEventKindPhaseStarted:
+		*s = RunEventKindPhaseStarted
+	case RunEventKindPhaseFinished:
+		*s = RunEventKindPhaseFinished
+	case RunEventKindPhaseFailed:
+		*s = RunEventKindPhaseFailed
+	case RunEventKindMachineReady:
+		*s = RunEventKindMachineReady
+	case RunEventKindContainerReady:
+		*s = RunEventKindContainerReady
+	case RunEventKindSegmentStarted:
+		*s = RunEventKindSegmentStarted
+	case RunEventKindSegmentFinished:
+		*s = RunEventKindSegmentFinished
+	case RunEventKindSegmentFailed:
+		*s = RunEventKindSegmentFailed
+	case RunEventKindBaselineStarted:
+		*s = RunEventKindBaselineStarted
+	case RunEventKindBaselineFinished:
+		*s = RunEventKindBaselineFinished
+	case RunEventKindStandKept:
+		*s = RunEventKindStandKept
+	case RunEventKindResultPublished:
+		*s = RunEventKindResultPublished
+	default:
+		*s = RunEventKind(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s RunEventKind) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunEventKind) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -31550,7 +32861,7 @@ func (s *RunOverviewComponentsItem) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("role")
-		e.Str(s.Role)
+		s.Role.Encode(e)
 	}
 	{
 		if s.Engine.Set {
@@ -31625,9 +32936,7 @@ func (s *RunOverviewComponentsItem) Decode(d *jx.Decoder) error {
 		case "role":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Role = string(v)
-				if err != nil {
+				if err := s.Role.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -32033,7 +33342,7 @@ func (s *RunOverviewMachinesItem) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("role")
-		e.Str(s.Role)
+		s.Role.Encode(e)
 	}
 	{
 		e.FieldStart("status")
@@ -32118,9 +33427,7 @@ func (s *RunOverviewMachinesItem) Decode(d *jx.Decoder) error {
 		case "role":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Role = string(v)
-				if err != nil {
+				if err := s.Role.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -34857,7 +36164,7 @@ func (s *RunSnapshotMachinesItem) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("role")
-		e.Str(s.Role)
+		s.Role.Encode(e)
 	}
 	{
 		e.FieldStart("size")
@@ -34937,9 +36244,7 @@ func (s *RunSnapshotMachinesItem) Decode(d *jx.Decoder) error {
 		case "role":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Role = string(v)
-				if err != nil {
+				if err := s.Role.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -52759,7 +54064,7 @@ func (s *TopologyPreviewNodesItem) Encode(e *jx.Encoder) {
 func (s *TopologyPreviewNodesItem) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("role")
-		e.Str(s.Role)
+		s.Role.Encode(e)
 	}
 	{
 		if s.Engine.Set {
@@ -52798,9 +54103,7 @@ func (s *TopologyPreviewNodesItem) Decode(d *jx.Decoder) error {
 		case "role":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Str()
-				s.Role = string(v)
-				if err != nil {
+				if err := s.Role.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -52891,6 +54194,62 @@ func (s *TopologyPreviewNodesItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *TopologyPreviewNodesItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TopologyRole as json.
+func (s TopologyRole) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes TopologyRole from json.
+func (s *TopologyRole) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TopologyRole to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch TopologyRole(v) {
+	case TopologyRoleDb:
+		*s = TopologyRoleDb
+	case TopologyRoleDbReplica:
+		*s = TopologyRoleDbReplica
+	case TopologyRoleDbCompute:
+		*s = TopologyRoleDbCompute
+	case TopologyRoleEtcd:
+		*s = TopologyRoleEtcd
+	case TopologyRoleProxy:
+		*s = TopologyRoleProxy
+	case TopologyRoleRunner:
+		*s = TopologyRoleRunner
+	case TopologyRoleCoordinator:
+		*s = TopologyRoleCoordinator
+	case TopologyRolePatroni:
+		*s = TopologyRolePatroni
+	case TopologyRolePatroniReplica:
+		*s = TopologyRolePatroniReplica
+	case TopologyRolePgbouncer:
+		*s = TopologyRolePgbouncer
+	default:
+		*s = TopologyRole(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s TopologyRole) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TopologyRole) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -2219,13 +2219,427 @@ func (s *ArtifactKind) UnmarshalText(data []byte) error {
 	}
 }
 
+// What an audit entry records.
+// Ref: #/components/schemas/AuditAction
+type AuditAction string
+
+const (
+	AuditActionAdminPipelinesResync   AuditAction = "admin.pipelines.resync"
+	AuditActionAdminRunCancel         AuditAction = "admin.run.cancel"
+	AuditActionAdminSettingsUpdate    AuditAction = "admin.settings.update"
+	AuditActionAdminTenantAssignOwner AuditAction = "admin.tenant.assign_owner"
+	AuditActionAdminTenantDelete      AuditAction = "admin.tenant.delete"
+	AuditActionAdminTenantLimits      AuditAction = "admin.tenant.limits"
+	AuditActionAdminTenantResume      AuditAction = "admin.tenant.resume"
+	AuditActionAdminTenantSuspend     AuditAction = "admin.tenant.suspend"
+	AuditActionAdminUserPlatformAdmin AuditAction = "admin.user.platform_admin"
+	AuditActionDatabaseCreate         AuditAction = "database.create"
+	AuditActionDatabaseDelete         AuditAction = "database.delete"
+	AuditActionDatabaseUpdate         AuditAction = "database.update"
+	AuditActionInviteAccept           AuditAction = "invite.accept"
+	AuditActionInviteCreate           AuditAction = "invite.create"
+	AuditActionInviteRevoke           AuditAction = "invite.revoke"
+	AuditActionMemberLeave            AuditAction = "member.leave"
+	AuditActionMemberRemove           AuditAction = "member.remove"
+	AuditActionMemberRole             AuditAction = "member.role"
+	AuditActionProviderCreate         AuditAction = "provider.create"
+	AuditActionProviderDelete         AuditAction = "provider.delete"
+	AuditActionProviderUpdate         AuditAction = "provider.update"
+	AuditActionRunCancel              AuditAction = "run.cancel"
+	AuditActionRunDelete              AuditAction = "run.delete"
+	AuditActionRunKeepExtend          AuditAction = "run.keep.extend"
+	AuditActionRunKeepRelease         AuditAction = "run.keep.release"
+	AuditActionRunLaunch              AuditAction = "run.launch"
+	AuditActionRunUpdate              AuditAction = "run.update"
+	AuditActionScheduleCreate         AuditAction = "schedule.create"
+	AuditActionScheduleDelete         AuditAction = "schedule.delete"
+	AuditActionScheduleUpdate         AuditAction = "schedule.update"
+	AuditActionShareCreate            AuditAction = "share.create"
+	AuditActionShareRebuild           AuditAction = "share.rebuild"
+	AuditActionShareRevoke            AuditAction = "share.revoke"
+	AuditActionSuiteCreate            AuditAction = "suite.create"
+	AuditActionSuiteDelete            AuditAction = "suite.delete"
+	AuditActionSuiteLaunch            AuditAction = "suite.launch"
+	AuditActionSuiteUpdate            AuditAction = "suite.update"
+	AuditActionSuiteRunCancel         AuditAction = "suite_run.cancel"
+	AuditActionSuiteRunDelete         AuditAction = "suite_run.delete"
+	AuditActionTenantCreate           AuditAction = "tenant.create"
+	AuditActionTenantDelete           AuditAction = "tenant.delete"
+	AuditActionTenantTransfer         AuditAction = "tenant.transfer"
+	AuditActionTenantUpdate           AuditAction = "tenant.update"
+	AuditActionTestCreate             AuditAction = "test.create"
+	AuditActionTestDelete             AuditAction = "test.delete"
+	AuditActionTestUpdate             AuditAction = "test.update"
+	AuditActionTokenCreate            AuditAction = "token.create"
+	AuditActionTokenRevoke            AuditAction = "token.revoke"
+	AuditActionWebhookCreate          AuditAction = "webhook.create"
+	AuditActionWebhookDelete          AuditAction = "webhook.delete"
+	AuditActionWebhookRotate          AuditAction = "webhook.rotate"
+	AuditActionWebhookUpdate          AuditAction = "webhook.update"
+	AuditActionWorkloadCreate         AuditAction = "workload.create"
+	AuditActionWorkloadDelete         AuditAction = "workload.delete"
+	AuditActionWorkloadUpdate         AuditAction = "workload.update"
+)
+
+// AllValues returns all AuditAction values.
+func (AuditAction) AllValues() []AuditAction {
+	return []AuditAction{
+		AuditActionAdminPipelinesResync,
+		AuditActionAdminRunCancel,
+		AuditActionAdminSettingsUpdate,
+		AuditActionAdminTenantAssignOwner,
+		AuditActionAdminTenantDelete,
+		AuditActionAdminTenantLimits,
+		AuditActionAdminTenantResume,
+		AuditActionAdminTenantSuspend,
+		AuditActionAdminUserPlatformAdmin,
+		AuditActionDatabaseCreate,
+		AuditActionDatabaseDelete,
+		AuditActionDatabaseUpdate,
+		AuditActionInviteAccept,
+		AuditActionInviteCreate,
+		AuditActionInviteRevoke,
+		AuditActionMemberLeave,
+		AuditActionMemberRemove,
+		AuditActionMemberRole,
+		AuditActionProviderCreate,
+		AuditActionProviderDelete,
+		AuditActionProviderUpdate,
+		AuditActionRunCancel,
+		AuditActionRunDelete,
+		AuditActionRunKeepExtend,
+		AuditActionRunKeepRelease,
+		AuditActionRunLaunch,
+		AuditActionRunUpdate,
+		AuditActionScheduleCreate,
+		AuditActionScheduleDelete,
+		AuditActionScheduleUpdate,
+		AuditActionShareCreate,
+		AuditActionShareRebuild,
+		AuditActionShareRevoke,
+		AuditActionSuiteCreate,
+		AuditActionSuiteDelete,
+		AuditActionSuiteLaunch,
+		AuditActionSuiteUpdate,
+		AuditActionSuiteRunCancel,
+		AuditActionSuiteRunDelete,
+		AuditActionTenantCreate,
+		AuditActionTenantDelete,
+		AuditActionTenantTransfer,
+		AuditActionTenantUpdate,
+		AuditActionTestCreate,
+		AuditActionTestDelete,
+		AuditActionTestUpdate,
+		AuditActionTokenCreate,
+		AuditActionTokenRevoke,
+		AuditActionWebhookCreate,
+		AuditActionWebhookDelete,
+		AuditActionWebhookRotate,
+		AuditActionWebhookUpdate,
+		AuditActionWorkloadCreate,
+		AuditActionWorkloadDelete,
+		AuditActionWorkloadUpdate,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AuditAction) MarshalText() ([]byte, error) {
+	switch s {
+	case AuditActionAdminPipelinesResync:
+		return []byte(s), nil
+	case AuditActionAdminRunCancel:
+		return []byte(s), nil
+	case AuditActionAdminSettingsUpdate:
+		return []byte(s), nil
+	case AuditActionAdminTenantAssignOwner:
+		return []byte(s), nil
+	case AuditActionAdminTenantDelete:
+		return []byte(s), nil
+	case AuditActionAdminTenantLimits:
+		return []byte(s), nil
+	case AuditActionAdminTenantResume:
+		return []byte(s), nil
+	case AuditActionAdminTenantSuspend:
+		return []byte(s), nil
+	case AuditActionAdminUserPlatformAdmin:
+		return []byte(s), nil
+	case AuditActionDatabaseCreate:
+		return []byte(s), nil
+	case AuditActionDatabaseDelete:
+		return []byte(s), nil
+	case AuditActionDatabaseUpdate:
+		return []byte(s), nil
+	case AuditActionInviteAccept:
+		return []byte(s), nil
+	case AuditActionInviteCreate:
+		return []byte(s), nil
+	case AuditActionInviteRevoke:
+		return []byte(s), nil
+	case AuditActionMemberLeave:
+		return []byte(s), nil
+	case AuditActionMemberRemove:
+		return []byte(s), nil
+	case AuditActionMemberRole:
+		return []byte(s), nil
+	case AuditActionProviderCreate:
+		return []byte(s), nil
+	case AuditActionProviderDelete:
+		return []byte(s), nil
+	case AuditActionProviderUpdate:
+		return []byte(s), nil
+	case AuditActionRunCancel:
+		return []byte(s), nil
+	case AuditActionRunDelete:
+		return []byte(s), nil
+	case AuditActionRunKeepExtend:
+		return []byte(s), nil
+	case AuditActionRunKeepRelease:
+		return []byte(s), nil
+	case AuditActionRunLaunch:
+		return []byte(s), nil
+	case AuditActionRunUpdate:
+		return []byte(s), nil
+	case AuditActionScheduleCreate:
+		return []byte(s), nil
+	case AuditActionScheduleDelete:
+		return []byte(s), nil
+	case AuditActionScheduleUpdate:
+		return []byte(s), nil
+	case AuditActionShareCreate:
+		return []byte(s), nil
+	case AuditActionShareRebuild:
+		return []byte(s), nil
+	case AuditActionShareRevoke:
+		return []byte(s), nil
+	case AuditActionSuiteCreate:
+		return []byte(s), nil
+	case AuditActionSuiteDelete:
+		return []byte(s), nil
+	case AuditActionSuiteLaunch:
+		return []byte(s), nil
+	case AuditActionSuiteUpdate:
+		return []byte(s), nil
+	case AuditActionSuiteRunCancel:
+		return []byte(s), nil
+	case AuditActionSuiteRunDelete:
+		return []byte(s), nil
+	case AuditActionTenantCreate:
+		return []byte(s), nil
+	case AuditActionTenantDelete:
+		return []byte(s), nil
+	case AuditActionTenantTransfer:
+		return []byte(s), nil
+	case AuditActionTenantUpdate:
+		return []byte(s), nil
+	case AuditActionTestCreate:
+		return []byte(s), nil
+	case AuditActionTestDelete:
+		return []byte(s), nil
+	case AuditActionTestUpdate:
+		return []byte(s), nil
+	case AuditActionTokenCreate:
+		return []byte(s), nil
+	case AuditActionTokenRevoke:
+		return []byte(s), nil
+	case AuditActionWebhookCreate:
+		return []byte(s), nil
+	case AuditActionWebhookDelete:
+		return []byte(s), nil
+	case AuditActionWebhookRotate:
+		return []byte(s), nil
+	case AuditActionWebhookUpdate:
+		return []byte(s), nil
+	case AuditActionWorkloadCreate:
+		return []byte(s), nil
+	case AuditActionWorkloadDelete:
+		return []byte(s), nil
+	case AuditActionWorkloadUpdate:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AuditAction) UnmarshalText(data []byte) error {
+	switch AuditAction(data) {
+	case AuditActionAdminPipelinesResync:
+		*s = AuditActionAdminPipelinesResync
+		return nil
+	case AuditActionAdminRunCancel:
+		*s = AuditActionAdminRunCancel
+		return nil
+	case AuditActionAdminSettingsUpdate:
+		*s = AuditActionAdminSettingsUpdate
+		return nil
+	case AuditActionAdminTenantAssignOwner:
+		*s = AuditActionAdminTenantAssignOwner
+		return nil
+	case AuditActionAdminTenantDelete:
+		*s = AuditActionAdminTenantDelete
+		return nil
+	case AuditActionAdminTenantLimits:
+		*s = AuditActionAdminTenantLimits
+		return nil
+	case AuditActionAdminTenantResume:
+		*s = AuditActionAdminTenantResume
+		return nil
+	case AuditActionAdminTenantSuspend:
+		*s = AuditActionAdminTenantSuspend
+		return nil
+	case AuditActionAdminUserPlatformAdmin:
+		*s = AuditActionAdminUserPlatformAdmin
+		return nil
+	case AuditActionDatabaseCreate:
+		*s = AuditActionDatabaseCreate
+		return nil
+	case AuditActionDatabaseDelete:
+		*s = AuditActionDatabaseDelete
+		return nil
+	case AuditActionDatabaseUpdate:
+		*s = AuditActionDatabaseUpdate
+		return nil
+	case AuditActionInviteAccept:
+		*s = AuditActionInviteAccept
+		return nil
+	case AuditActionInviteCreate:
+		*s = AuditActionInviteCreate
+		return nil
+	case AuditActionInviteRevoke:
+		*s = AuditActionInviteRevoke
+		return nil
+	case AuditActionMemberLeave:
+		*s = AuditActionMemberLeave
+		return nil
+	case AuditActionMemberRemove:
+		*s = AuditActionMemberRemove
+		return nil
+	case AuditActionMemberRole:
+		*s = AuditActionMemberRole
+		return nil
+	case AuditActionProviderCreate:
+		*s = AuditActionProviderCreate
+		return nil
+	case AuditActionProviderDelete:
+		*s = AuditActionProviderDelete
+		return nil
+	case AuditActionProviderUpdate:
+		*s = AuditActionProviderUpdate
+		return nil
+	case AuditActionRunCancel:
+		*s = AuditActionRunCancel
+		return nil
+	case AuditActionRunDelete:
+		*s = AuditActionRunDelete
+		return nil
+	case AuditActionRunKeepExtend:
+		*s = AuditActionRunKeepExtend
+		return nil
+	case AuditActionRunKeepRelease:
+		*s = AuditActionRunKeepRelease
+		return nil
+	case AuditActionRunLaunch:
+		*s = AuditActionRunLaunch
+		return nil
+	case AuditActionRunUpdate:
+		*s = AuditActionRunUpdate
+		return nil
+	case AuditActionScheduleCreate:
+		*s = AuditActionScheduleCreate
+		return nil
+	case AuditActionScheduleDelete:
+		*s = AuditActionScheduleDelete
+		return nil
+	case AuditActionScheduleUpdate:
+		*s = AuditActionScheduleUpdate
+		return nil
+	case AuditActionShareCreate:
+		*s = AuditActionShareCreate
+		return nil
+	case AuditActionShareRebuild:
+		*s = AuditActionShareRebuild
+		return nil
+	case AuditActionShareRevoke:
+		*s = AuditActionShareRevoke
+		return nil
+	case AuditActionSuiteCreate:
+		*s = AuditActionSuiteCreate
+		return nil
+	case AuditActionSuiteDelete:
+		*s = AuditActionSuiteDelete
+		return nil
+	case AuditActionSuiteLaunch:
+		*s = AuditActionSuiteLaunch
+		return nil
+	case AuditActionSuiteUpdate:
+		*s = AuditActionSuiteUpdate
+		return nil
+	case AuditActionSuiteRunCancel:
+		*s = AuditActionSuiteRunCancel
+		return nil
+	case AuditActionSuiteRunDelete:
+		*s = AuditActionSuiteRunDelete
+		return nil
+	case AuditActionTenantCreate:
+		*s = AuditActionTenantCreate
+		return nil
+	case AuditActionTenantDelete:
+		*s = AuditActionTenantDelete
+		return nil
+	case AuditActionTenantTransfer:
+		*s = AuditActionTenantTransfer
+		return nil
+	case AuditActionTenantUpdate:
+		*s = AuditActionTenantUpdate
+		return nil
+	case AuditActionTestCreate:
+		*s = AuditActionTestCreate
+		return nil
+	case AuditActionTestDelete:
+		*s = AuditActionTestDelete
+		return nil
+	case AuditActionTestUpdate:
+		*s = AuditActionTestUpdate
+		return nil
+	case AuditActionTokenCreate:
+		*s = AuditActionTokenCreate
+		return nil
+	case AuditActionTokenRevoke:
+		*s = AuditActionTokenRevoke
+		return nil
+	case AuditActionWebhookCreate:
+		*s = AuditActionWebhookCreate
+		return nil
+	case AuditActionWebhookDelete:
+		*s = AuditActionWebhookDelete
+		return nil
+	case AuditActionWebhookRotate:
+		*s = AuditActionWebhookRotate
+		return nil
+	case AuditActionWebhookUpdate:
+		*s = AuditActionWebhookUpdate
+		return nil
+	case AuditActionWorkloadCreate:
+		*s = AuditActionWorkloadCreate
+		return nil
+	case AuditActionWorkloadDelete:
+		*s = AuditActionWorkloadDelete
+		return nil
+	case AuditActionWorkloadUpdate:
+		*s = AuditActionWorkloadUpdate
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/AuditEntry
 type AuditEntry struct {
 	ID        string               `json:"id"`
 	At        time.Time            `json:"at"`
 	Actor     AuditEntryActor      `json:"actor"`
 	Tenant    OptRef               `json:"tenant"`
-	Action    string               `json:"action"`
+	Action    AuditAction          `json:"action"`
 	Target    AuditEntryTarget     `json:"target"`
 	Details   OptAuditEntryDetails `json:"details"`
 	RequestID OptString            `json:"request_id"`
@@ -2252,7 +2666,7 @@ func (s *AuditEntry) GetTenant() OptRef {
 }
 
 // GetAction returns the value of Action.
-func (s *AuditEntry) GetAction() string {
+func (s *AuditEntry) GetAction() AuditAction {
 	return s.Action
 }
 
@@ -2292,7 +2706,7 @@ func (s *AuditEntry) SetTenant(val OptRef) {
 }
 
 // SetAction sets the value of Action.
-func (s *AuditEntry) SetAction(val string) {
+func (s *AuditEntry) SetAction(val AuditAction) {
 	s.Action = val
 }
 
@@ -2414,13 +2828,13 @@ func (s *AuditEntryDetails) init() AuditEntryDetails {
 }
 
 type AuditEntryTarget struct {
-	Kind OptString `json:"kind"`
-	ID   OptString `json:"id"`
-	Name OptString `json:"name"`
+	Kind OptAuditTargetKind `json:"kind"`
+	ID   OptString          `json:"id"`
+	Name OptString          `json:"name"`
 }
 
 // GetKind returns the value of Kind.
-func (s *AuditEntryTarget) GetKind() OptString {
+func (s *AuditEntryTarget) GetKind() OptAuditTargetKind {
 	return s.Kind
 }
 
@@ -2435,7 +2849,7 @@ func (s *AuditEntryTarget) GetName() OptString {
 }
 
 // SetKind sets the value of Kind.
-func (s *AuditEntryTarget) SetKind(val OptString) {
+func (s *AuditEntryTarget) SetKind(val OptAuditTargetKind) {
 	s.Kind = val
 }
 
@@ -2473,6 +2887,147 @@ func (s *AuditPage) SetData(val []AuditEntry) {
 // SetMeta sets the value of Meta.
 func (s *AuditPage) SetMeta(val PageMeta) {
 	s.Meta = val
+}
+
+// The kind of object an audit entry is about.
+// Ref: #/components/schemas/AuditTargetKind
+type AuditTargetKind string
+
+const (
+	AuditTargetKindDatabase       AuditTargetKind = "database"
+	AuditTargetKindInvite         AuditTargetKind = "invite"
+	AuditTargetKindNamespace      AuditTargetKind = "namespace"
+	AuditTargetKindProvider       AuditTargetKind = "provider"
+	AuditTargetKindRun            AuditTargetKind = "run"
+	AuditTargetKindSchedule       AuditTargetKind = "schedule"
+	AuditTargetKindShare          AuditTargetKind = "share"
+	AuditTargetKindSuite          AuditTargetKind = "suite"
+	AuditTargetKindSuiteRun       AuditTargetKind = "suite_run"
+	AuditTargetKindSystemSettings AuditTargetKind = "system_settings"
+	AuditTargetKindTenant         AuditTargetKind = "tenant"
+	AuditTargetKindTest           AuditTargetKind = "test"
+	AuditTargetKindToken          AuditTargetKind = "token"
+	AuditTargetKindUser           AuditTargetKind = "user"
+	AuditTargetKindWebhook        AuditTargetKind = "webhook"
+	AuditTargetKindWorkload       AuditTargetKind = "workload"
+)
+
+// AllValues returns all AuditTargetKind values.
+func (AuditTargetKind) AllValues() []AuditTargetKind {
+	return []AuditTargetKind{
+		AuditTargetKindDatabase,
+		AuditTargetKindInvite,
+		AuditTargetKindNamespace,
+		AuditTargetKindProvider,
+		AuditTargetKindRun,
+		AuditTargetKindSchedule,
+		AuditTargetKindShare,
+		AuditTargetKindSuite,
+		AuditTargetKindSuiteRun,
+		AuditTargetKindSystemSettings,
+		AuditTargetKindTenant,
+		AuditTargetKindTest,
+		AuditTargetKindToken,
+		AuditTargetKindUser,
+		AuditTargetKindWebhook,
+		AuditTargetKindWorkload,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AuditTargetKind) MarshalText() ([]byte, error) {
+	switch s {
+	case AuditTargetKindDatabase:
+		return []byte(s), nil
+	case AuditTargetKindInvite:
+		return []byte(s), nil
+	case AuditTargetKindNamespace:
+		return []byte(s), nil
+	case AuditTargetKindProvider:
+		return []byte(s), nil
+	case AuditTargetKindRun:
+		return []byte(s), nil
+	case AuditTargetKindSchedule:
+		return []byte(s), nil
+	case AuditTargetKindShare:
+		return []byte(s), nil
+	case AuditTargetKindSuite:
+		return []byte(s), nil
+	case AuditTargetKindSuiteRun:
+		return []byte(s), nil
+	case AuditTargetKindSystemSettings:
+		return []byte(s), nil
+	case AuditTargetKindTenant:
+		return []byte(s), nil
+	case AuditTargetKindTest:
+		return []byte(s), nil
+	case AuditTargetKindToken:
+		return []byte(s), nil
+	case AuditTargetKindUser:
+		return []byte(s), nil
+	case AuditTargetKindWebhook:
+		return []byte(s), nil
+	case AuditTargetKindWorkload:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AuditTargetKind) UnmarshalText(data []byte) error {
+	switch AuditTargetKind(data) {
+	case AuditTargetKindDatabase:
+		*s = AuditTargetKindDatabase
+		return nil
+	case AuditTargetKindInvite:
+		*s = AuditTargetKindInvite
+		return nil
+	case AuditTargetKindNamespace:
+		*s = AuditTargetKindNamespace
+		return nil
+	case AuditTargetKindProvider:
+		*s = AuditTargetKindProvider
+		return nil
+	case AuditTargetKindRun:
+		*s = AuditTargetKindRun
+		return nil
+	case AuditTargetKindSchedule:
+		*s = AuditTargetKindSchedule
+		return nil
+	case AuditTargetKindShare:
+		*s = AuditTargetKindShare
+		return nil
+	case AuditTargetKindSuite:
+		*s = AuditTargetKindSuite
+		return nil
+	case AuditTargetKindSuiteRun:
+		*s = AuditTargetKindSuiteRun
+		return nil
+	case AuditTargetKindSystemSettings:
+		*s = AuditTargetKindSystemSettings
+		return nil
+	case AuditTargetKindTenant:
+		*s = AuditTargetKindTenant
+		return nil
+	case AuditTargetKindTest:
+		*s = AuditTargetKindTest
+		return nil
+	case AuditTargetKindToken:
+		*s = AuditTargetKindToken
+		return nil
+	case AuditTargetKindUser:
+		*s = AuditTargetKindUser
+		return nil
+	case AuditTargetKindWebhook:
+		*s = AuditTargetKindWebhook
+		return nil
+	case AuditTargetKindWorkload:
+		*s = AuditTargetKindWorkload
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Schemapb `Baked` (schema embedded + canonical values), protoJSON.
@@ -2655,15 +3210,15 @@ func (s *CatalogDatabase) SetDeployable(val bool) {
 }
 
 type CatalogDatabaseRolesItem struct {
-	Role   string    `json:"role"`
-	Title  string    `json:"title"`
-	Engine OptString `json:"engine"`
+	Role   TopologyRole `json:"role"`
+	Title  string       `json:"title"`
+	Engine OptString    `json:"engine"`
 	// Software configs rendered for this role.
 	ConfigSchemas []string `json:"config_schemas"`
 }
 
 // GetRole returns the value of Role.
-func (s *CatalogDatabaseRolesItem) GetRole() string {
+func (s *CatalogDatabaseRolesItem) GetRole() TopologyRole {
 	return s.Role
 }
 
@@ -2683,7 +3238,7 @@ func (s *CatalogDatabaseRolesItem) GetConfigSchemas() []string {
 }
 
 // SetRole sets the value of Role.
-func (s *CatalogDatabaseRolesItem) SetRole(val string) {
+func (s *CatalogDatabaseRolesItem) SetRole(val TopologyRole) {
 	s.Role = val
 }
 
@@ -3848,7 +4403,119 @@ func (s *DatabaseExternal) SetDsn(val OptString) {
 	s.Dsn = val
 }
 
+// A database kind. Adding a kind is a code change: the server list (internal/domain/dbkind) and this
+// enum are kept equal by a test.
+// Ref: #/components/schemas/DatabaseKind
 type DatabaseKind string
+
+const (
+	DatabaseKindPostgres   DatabaseKind = "postgres"
+	DatabaseKindOrioledb   DatabaseKind = "orioledb"
+	DatabaseKindMysql      DatabaseKind = "mysql"
+	DatabaseKindMariadb    DatabaseKind = "mariadb"
+	DatabaseKindPicodata   DatabaseKind = "picodata"
+	DatabaseKindYdb        DatabaseKind = "ydb"
+	DatabaseKindYdbManaged DatabaseKind = "ydb_managed"
+	DatabaseKindCockroach  DatabaseKind = "cockroach"
+	DatabaseKindPgNoop     DatabaseKind = "pg_noop"
+	DatabaseKindNoop       DatabaseKind = "noop"
+	DatabaseKindExternal   DatabaseKind = "external"
+	DatabaseKindCustom     DatabaseKind = "custom"
+)
+
+// AllValues returns all DatabaseKind values.
+func (DatabaseKind) AllValues() []DatabaseKind {
+	return []DatabaseKind{
+		DatabaseKindPostgres,
+		DatabaseKindOrioledb,
+		DatabaseKindMysql,
+		DatabaseKindMariadb,
+		DatabaseKindPicodata,
+		DatabaseKindYdb,
+		DatabaseKindYdbManaged,
+		DatabaseKindCockroach,
+		DatabaseKindPgNoop,
+		DatabaseKindNoop,
+		DatabaseKindExternal,
+		DatabaseKindCustom,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s DatabaseKind) MarshalText() ([]byte, error) {
+	switch s {
+	case DatabaseKindPostgres:
+		return []byte(s), nil
+	case DatabaseKindOrioledb:
+		return []byte(s), nil
+	case DatabaseKindMysql:
+		return []byte(s), nil
+	case DatabaseKindMariadb:
+		return []byte(s), nil
+	case DatabaseKindPicodata:
+		return []byte(s), nil
+	case DatabaseKindYdb:
+		return []byte(s), nil
+	case DatabaseKindYdbManaged:
+		return []byte(s), nil
+	case DatabaseKindCockroach:
+		return []byte(s), nil
+	case DatabaseKindPgNoop:
+		return []byte(s), nil
+	case DatabaseKindNoop:
+		return []byte(s), nil
+	case DatabaseKindExternal:
+		return []byte(s), nil
+	case DatabaseKindCustom:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *DatabaseKind) UnmarshalText(data []byte) error {
+	switch DatabaseKind(data) {
+	case DatabaseKindPostgres:
+		*s = DatabaseKindPostgres
+		return nil
+	case DatabaseKindOrioledb:
+		*s = DatabaseKindOrioledb
+		return nil
+	case DatabaseKindMysql:
+		*s = DatabaseKindMysql
+		return nil
+	case DatabaseKindMariadb:
+		*s = DatabaseKindMariadb
+		return nil
+	case DatabaseKindPicodata:
+		*s = DatabaseKindPicodata
+		return nil
+	case DatabaseKindYdb:
+		*s = DatabaseKindYdb
+		return nil
+	case DatabaseKindYdbManaged:
+		*s = DatabaseKindYdbManaged
+		return nil
+	case DatabaseKindCockroach:
+		*s = DatabaseKindCockroach
+		return nil
+	case DatabaseKindPgNoop:
+		*s = DatabaseKindPgNoop
+		return nil
+	case DatabaseKindNoop:
+		*s = DatabaseKindNoop
+		return nil
+	case DatabaseKindExternal:
+		*s = DatabaseKindExternal
+		return nil
+	case DatabaseKindCustom:
+		*s = DatabaseKindCustom
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
 
 // Merged schema.
 // Ref: #/components/schemas/DatabasePatch
@@ -4495,6 +5162,1673 @@ func (s DownloadRunArtifactOK) Read(p []byte) (n int, err error) {
 		return 0, io.EOF
 	}
 	return s.Data.Read(p)
+}
+
+// Why exactly a request failed (Problem.reason); its text and the params it reads are the client's.
+// Ref: #/components/schemas/ErrorReason
+type ErrorReason string
+
+const (
+	ErrorReasonADatabaseWithThisNameExists         ErrorReason = "a_database_with_this_name_exists"
+	ErrorReasonAPendingInviteForThisEmailExists    ErrorReason = "a_pending_invite_for_this_email_exists"
+	ErrorReasonAProfileWithThisNameExists          ErrorReason = "a_profile_with_this_name_exists"
+	ErrorReasonASuiteWithThisNameExists            ErrorReason = "a_suite_with_this_name_exists"
+	ErrorReasonATestWithThisNameExists             ErrorReason = "a_test_with_this_name_exists"
+	ErrorReasonAWorkloadWithThisNameExists         ErrorReason = "a_workload_with_this_name_exists"
+	ErrorReasonAccountAlreadyOwnsATenant           ErrorReason = "account_already_owns_a_tenant"
+	ErrorReasonAfterIsNotAnEventID                 ErrorReason = "after_is_not_an_event_id"
+	ErrorReasonAlreadyTheOwner                     ErrorReason = "already_the_owner"
+	ErrorReasonArtifactNotDownloadable             ErrorReason = "artifact_not_downloadable"
+	ErrorReasonArtifactNotFound                    ErrorReason = "artifact_not_found"
+	ErrorReasonArtifactUnavailable                 ErrorReason = "artifact_unavailable"
+	ErrorReasonAtLeastOneEvent                     ErrorReason = "at_least_one_event"
+	ErrorReasonAtLeastOneSegment                   ErrorReason = "at_least_one_segment"
+	ErrorReasonAtMost20NotificationEmails          ErrorReason = "at_most_20_notification_emails"
+	ErrorReasonAuthenticationRequired              ErrorReason = "authentication_required"
+	ErrorReasonCancelRunBeforeDelete               ErrorReason = "cancel_run_before_delete"
+	ErrorReasonCancelSuiteRunBeforeDelete          ErrorReason = "cancel_suite_run_before_delete"
+	ErrorReasonCancelUnavailable                   ErrorReason = "cancel_unavailable"
+	ErrorReasonCatalogNoQPSSeries                  ErrorReason = "catalog_no_qps_series"
+	ErrorReasonComparisonRequestIsRequired         ErrorReason = "comparison_request_is_required"
+	ErrorReasonConfigVersionMismatch               ErrorReason = "config_version_mismatch"
+	ErrorReasonCronInvalid                         ErrorReason = "cron_invalid"
+	ErrorReasonCronNeverFires                      ErrorReason = "cron_never_fires"
+	ErrorReasonCursorInvalid                       ErrorReason = "cursor_invalid"
+	ErrorReasonCursorIsNotAnEventID                ErrorReason = "cursor_is_not_an_event_id"
+	ErrorReasonDatabaseNotFound                    ErrorReason = "database_not_found"
+	ErrorReasonDatabaseRefAndInlineAreExclusive    ErrorReason = "database_ref_and_inline_are_exclusive"
+	ErrorReasonDbKindNotLaunchable                 ErrorReason = "db_kind_not_launchable"
+	ErrorReasonDbKindUnknown                       ErrorReason = "db_kind_unknown"
+	ErrorReasonDbVersionNoImage                    ErrorReason = "db_version_no_image"
+	ErrorReasonDbVersionUnknown                    ErrorReason = "db_version_unknown"
+	ErrorReasonDefaultKeepIsNotADuration           ErrorReason = "default_keep_is_not_a_duration"
+	ErrorReasonDefaultKeepRange                    ErrorReason = "default_keep_range"
+	ErrorReasonDeleteResourcesUnavailable          ErrorReason = "delete_resources_unavailable"
+	ErrorReasonDeliveryIDIsNotAUUID                ErrorReason = "delivery_id_is_not_a_uuid"
+	ErrorReasonDeliveryNotFound                    ErrorReason = "delivery_not_found"
+	ErrorReasonDiskSizeOutOfRange                  ErrorReason = "disk_size_out_of_range"
+	ErrorReasonDisplayNameLongerThan64             ErrorReason = "display_name_longer_than_64"
+	ErrorReasonDocumentAPIVersion                  ErrorReason = "document_api_version"
+	ErrorReasonDocumentKind                        ErrorReason = "document_kind"
+	ErrorReasonDocumentKindMustBeSuite             ErrorReason = "document_kind_must_be_suite"
+	ErrorReasonDurationIsNotAPositiveDuration      ErrorReason = "duration_is_not_a_positive_duration"
+	ErrorReasonDurationMaxIsNotADuration           ErrorReason = "duration_max_is_not_a_duration"
+	ErrorReasonDurationMinIsNotADuration           ErrorReason = "duration_min_is_not_a_duration"
+	ErrorReasonEmailIsNotValid                     ErrorReason = "email_is_not_valid"
+	ErrorReasonEndMustBeAfterStart                 ErrorReason = "end_must_be_after_start"
+	ErrorReasonExampleNotFound                     ErrorReason = "example_not_found"
+	ErrorReasonExamplesNotFound                    ErrorReason = "examples_not_found"
+	ErrorReasonExpiresAtIsInThePast                ErrorReason = "expires_at_is_in_the_past"
+	ErrorReasonExportFormatUnavailable             ErrorReason = "export_format_unavailable"
+	ErrorReasonFavoritesBelongToUsersNotTokens     ErrorReason = "favorites_belong_to_users_not_tokens"
+	ErrorReasonGrafanaIsNotConnected               ErrorReason = "grafana_is_not_connected"
+	ErrorReasonGrapheneDroppedLogRecords           ErrorReason = "graphene_dropped_log_records"
+	ErrorReasonGrapheneDroppedMetricRecords        ErrorReason = "graphene_dropped_metric_records"
+	ErrorReasonGrapheneTelemetryRunNotFound        ErrorReason = "graphene_telemetry_run_not_found"
+	ErrorReasonInvalidLogCursorForThisSelection    ErrorReason = "invalid_log_cursor_for_this_selection"
+	ErrorReasonInvalidLogDirection                 ErrorReason = "invalid_log_direction"
+	ErrorReasonInvalidMetricStep                   ErrorReason = "invalid_metric_step"
+	ErrorReasonInviteIsNotPending                  ErrorReason = "invite_is_not_pending"
+	ErrorReasonInviteNotFound                      ErrorReason = "invite_not_found"
+	ErrorReasonIsPlatformAdminIsRequired           ErrorReason = "is_platform_admin_is_required"
+	ErrorReasonKeepIsNotADuration                  ErrorReason = "keep_is_not_a_duration"
+	ErrorReasonKeepMustNotBeNegative               ErrorReason = "keep_must_not_be_negative"
+	ErrorReasonKindMustBeYandexOrAWS               ErrorReason = "kind_must_be_yandex_or_aws"
+	ErrorReasonLimitKeep                           ErrorReason = "limit_keep"
+	ErrorReasonLimitMachinesPerRun                 ErrorReason = "limit_machines_per_run"
+	ErrorReasonLimitSize                           ErrorReason = "limit_size"
+	ErrorReasonLogCursorAmbiguous                  ErrorReason = "log_cursor_ambiguous"
+	ErrorReasonLogsStoreIsNotConnected             ErrorReason = "logs_store_is_not_connected"
+	ErrorReasonManagedYdbAutoscalingUnsupported    ErrorReason = "managed_ydb_autoscaling_unsupported"
+	ErrorReasonManagedYdbDeletionProtection        ErrorReason = "managed_ydb_deletion_protection"
+	ErrorReasonManagedYdbRequiresNamedCredentials  ErrorReason = "managed_ydb_requires_named_credentials"
+	ErrorReasonManagedYdbRequiresYandexCloud       ErrorReason = "managed_ydb_requires_yandex_cloud"
+	ErrorReasonManagedYdbTypeUnknown               ErrorReason = "managed_ydb_type_unknown"
+	ErrorReasonMaxKeepIsNotADuration               ErrorReason = "max_keep_is_not_a_duration"
+	ErrorReasonMaxscaleMariadbOnly                 ErrorReason = "maxscale_mariadb_only"
+	ErrorReasonMemberNotFound                      ErrorReason = "member_not_found"
+	ErrorReasonMetadataNameIsRequired              ErrorReason = "metadata_name_is_required"
+	ErrorReasonMetricNotRatingEligible             ErrorReason = "metric_not_rating_eligible"
+	ErrorReasonMetricsSnapshotInvalid              ErrorReason = "metrics_snapshot_invalid"
+	ErrorReasonMetricsStoreIsNotConnected          ErrorReason = "metrics_store_is_not_connected"
+	ErrorReasonMetricsUnavailable                  ErrorReason = "metrics_unavailable"
+	ErrorReasonMetricsUnknown                      ErrorReason = "metrics_unknown"
+	ErrorReasonNameIsRequired                      ErrorReason = "name_is_required"
+	ErrorReasonNameMustBe1128Characters            ErrorReason = "name_must_be_1_128_characters"
+	ErrorReasonNameMustBe164Characters             ErrorReason = "name_must_be_1_64_characters"
+	ErrorReasonNoCellsToRun                        ErrorReason = "no_cells_to_run"
+	ErrorReasonNoFailedCells                       ErrorReason = "no_failed_cells"
+	ErrorReasonNotificationEmailInvalid            ErrorReason = "notification_email_invalid"
+	ErrorReasonOnlyTestExamplesCanBeQuickRun       ErrorReason = "only_test_examples_can_be_quick_run"
+	ErrorReasonOptionsIsNotAJSONObject             ErrorReason = "options_is_not_a_json_object"
+	ErrorReasonOwnerCannotBeRemoved                ErrorReason = "owner_cannot_be_removed"
+	ErrorReasonOwnerRoleByTransferOnly             ErrorReason = "owner_role_by_transfer_only"
+	ErrorReasonPatroniImageRequired                ErrorReason = "patroni_image_required"
+	ErrorReasonPatroniRequiresHaproxy              ErrorReason = "patroni_requires_haproxy"
+	ErrorReasonPdfExportIsNotAvailableYet          ErrorReason = "pdf_export_is_not_available_yet"
+	ErrorReasonPlatformAdminRequired               ErrorReason = "platform_admin_required"
+	ErrorReasonProfileIsNotVerified                ErrorReason = "profile_is_not_verified"
+	ErrorReasonProfileNotFound                     ErrorReason = "profile_not_found"
+	ErrorReasonProfileNotReady                     ErrorReason = "profile_not_ready"
+	ErrorReasonProviderBusy                        ErrorReason = "provider_busy"
+	ErrorReasonProviderCleanupFailed               ErrorReason = "provider_cleanup_failed"
+	ErrorReasonProviderCleanupPending              ErrorReason = "provider_cleanup_pending"
+	ErrorReasonProviderIsBeingDeleted              ErrorReason = "provider_is_being_deleted"
+	ErrorReasonProviderIsNotReady                  ErrorReason = "provider_is_not_ready"
+	ErrorReasonProviderIsUnavailable               ErrorReason = "provider_is_unavailable"
+	ErrorReasonProviderKindUnknown                 ErrorReason = "provider_kind_unknown"
+	ErrorReasonProviderProfileIDIsNotAUUID         ErrorReason = "provider_profile_id_is_not_a_uuid"
+	ErrorReasonProviderProfileNotFound             ErrorReason = "provider_profile_not_found"
+	ErrorReasonProviderQuotaCheckUnavailable       ErrorReason = "provider_quota_check_unavailable"
+	ErrorReasonProviderQuotaExceeded               ErrorReason = "provider_quota_exceeded"
+	ErrorReasonProviderSecretUnavailable           ErrorReason = "provider_secret_unavailable"
+	ErrorReasonPtyStreamsAreNotConnectedYet        ErrorReason = "pty_streams_are_not_connected_yet"
+	ErrorReasonPublicRatingNotFound                ErrorReason = "public_rating_not_found"
+	ErrorReasonQueryIsRequired                     ErrorReason = "query_is_required"
+	ErrorReasonQuickRunNeedsProfile                ErrorReason = "quick_run_needs_profile"
+	ErrorReasonRefIDNotUUID                        ErrorReason = "ref_id_not_uuid"
+	ErrorReasonRefNeedsIDOrName                    ErrorReason = "ref_needs_id_or_name"
+	ErrorReasonRefNotFound                         ErrorReason = "ref_not_found"
+	ErrorReasonReferencedByTests                   ErrorReason = "referenced_by_tests"
+	ErrorReasonRequiresRole                        ErrorReason = "requires_role"
+	ErrorReasonRequiresRoleAdmin                   ErrorReason = "requires_role_admin"
+	ErrorReasonRequiresRoleMember                  ErrorReason = "requires_role_member"
+	ErrorReasonResumeMachineMissing                ErrorReason = "resume_machine_missing"
+	ErrorReasonResumeStandUnknown                  ErrorReason = "resume_stand_unknown"
+	ErrorReasonRetentionDaysRange                  ErrorReason = "retention_days_range"
+	ErrorReasonRoleMustBeAdminMemberOrViewer       ErrorReason = "role_must_be_admin_member_or_viewer"
+	ErrorReasonRoleMustBeMemberOrViewer            ErrorReason = "role_must_be_member_or_viewer"
+	ErrorReasonRunAlreadyFinished                  ErrorReason = "run_already_finished"
+	ErrorReasonRunIDIsNotAUUID                     ErrorReason = "run_id_is_not_a_uuid"
+	ErrorReasonRunIDIsRequired                     ErrorReason = "run_id_is_required"
+	ErrorReasonRunIdempotencyConflict              ErrorReason = "run_idempotency_conflict"
+	ErrorReasonRunIds2To16Runs                     ErrorReason = "run_ids_2_to_16_runs"
+	ErrorReasonRunNotFound                         ErrorReason = "run_not_found"
+	ErrorReasonRunRetentionMaxDaysMustBePositive   ErrorReason = "run_retention_max_days_must_be_positive"
+	ErrorReasonRunSubmitUnavailable                ErrorReason = "run_submit_unavailable"
+	ErrorReasonScheduleFireFailed                  ErrorReason = "schedule_fire_failed"
+	ErrorReasonScheduleNotFound                    ErrorReason = "schedule_not_found"
+	ErrorReasonSchemaHasNoTemplates                ErrorReason = "schema_has_no_templates"
+	ErrorReasonSchemaNotFound                      ErrorReason = "schema_not_found"
+	ErrorReasonScopeMustBeOverviewMetricsOrConfigs ErrorReason = "scope_must_be_overview_metrics_or_configs"
+	ErrorReasonScriptProtocolUnsupported           ErrorReason = "script_protocol_unsupported"
+	ErrorReasonSegmentNotFound                     ErrorReason = "segment_not_found"
+	ErrorReasonShareAlreadyRevoked                 ErrorReason = "share_already_revoked"
+	ErrorReasonShareMetricsSingleRunOnly           ErrorReason = "share_metrics_single_run_only"
+	ErrorReasonShareNotFound                       ErrorReason = "share_not_found"
+	ErrorReasonShellInputFailed                    ErrorReason = "shell_input_failed"
+	ErrorReasonShellInputInvalid                   ErrorReason = "shell_input_invalid"
+	ErrorReasonShellMachineUnknown                 ErrorReason = "shell_machine_unknown"
+	ErrorReasonShellNotFound                       ErrorReason = "shell_not_found"
+	ErrorReasonShellOpenFailed                     ErrorReason = "shell_open_failed"
+	ErrorReasonShellSessionEnded                   ErrorReason = "shell_session_ended"
+	ErrorReasonShellSizeInvalid                    ErrorReason = "shell_size_invalid"
+	ErrorReasonShellStandGone                      ErrorReason = "shell_stand_gone"
+	ErrorReasonSizeNotChosen                       ErrorReason = "size_not_chosen"
+	ErrorReasonSizeUnavailable                     ErrorReason = "size_unavailable"
+	ErrorReasonSizeUnknown                         ErrorReason = "size_unknown"
+	ErrorReasonSlugFormat                          ErrorReason = "slug_format"
+	ErrorReasonSlugIsTaken                         ErrorReason = "slug_is_taken"
+	ErrorReasonSpecIsRequired                      ErrorReason = "spec_is_required"
+	ErrorReasonStandLostRun                        ErrorReason = "stand_lost_run"
+	ErrorReasonStandUnavailable                    ErrorReason = "stand_unavailable"
+	ErrorReasonStepIsNotADuration                  ErrorReason = "step_is_not_a_duration"
+	ErrorReasonStroppyProtocolUnsupported          ErrorReason = "stroppy_protocol_unsupported"
+	ErrorReasonStroppyScriptUnknown                ErrorReason = "stroppy_script_unknown"
+	ErrorReasonStroppyVersionNotFound              ErrorReason = "stroppy_version_not_found"
+	ErrorReasonStroppyVersionUnknown               ErrorReason = "stroppy_version_unknown"
+	ErrorReasonSubIDAndTopicAreRequired            ErrorReason = "sub_id_and_topic_are_required"
+	ErrorReasonSubscriptionExistsOrTooMany         ErrorReason = "subscription_exists_or_too_many"
+	ErrorReasonSuiteCellInvalid                    ErrorReason = "suite_cell_invalid"
+	ErrorReasonSuiteNotFound                       ErrorReason = "suite_not_found"
+	ErrorReasonSuiteRunAlreadyFinished             ErrorReason = "suite_run_already_finished"
+	ErrorReasonSuiteRunIDIsNotAUUID                ErrorReason = "suite_run_id_is_not_a_uuid"
+	ErrorReasonSuiteRunIDIsRequired                ErrorReason = "suite_run_id_is_required"
+	ErrorReasonSuiteRunIdempotencyConflict         ErrorReason = "suite_run_idempotency_conflict"
+	ErrorReasonSuiteRunNotFound                    ErrorReason = "suite_run_not_found"
+	ErrorReasonSuiteTestInvalid                    ErrorReason = "suite_test_invalid"
+	ErrorReasonSuiteTestRefOrInline                ErrorReason = "suite_test_ref_or_inline"
+	ErrorReasonSuitesAreNotAvailable               ErrorReason = "suites_are_not_available"
+	ErrorReasonTargetKindMustBeTestOrSuite         ErrorReason = "target_kind_must_be_test_or_suite"
+	ErrorReasonTelemetryRequiresARunScope          ErrorReason = "telemetry_requires_a_run_scope"
+	ErrorReasonTelemetryUnavailable                ErrorReason = "telemetry_unavailable"
+	ErrorReasonTenantCreationAdminOnly             ErrorReason = "tenant_creation_admin_only"
+	ErrorReasonTenantCreationValue                 ErrorReason = "tenant_creation_value"
+	ErrorReasonTenantHasActiveWork                 ErrorReason = "tenant_has_active_work"
+	ErrorReasonTenantHasLiveRuns                   ErrorReason = "tenant_has_live_runs"
+	ErrorReasonTenantIsBeingDeleted                ErrorReason = "tenant_is_being_deleted"
+	ErrorReasonTenantIsSuspended                   ErrorReason = "tenant_is_suspended"
+	ErrorReasonTenantNamespaceUnavailable          ErrorReason = "tenant_namespace_unavailable"
+	ErrorReasonTenantNotFound                      ErrorReason = "tenant_not_found"
+	ErrorReasonTenantSlugTaken                     ErrorReason = "tenant_slug_taken"
+	ErrorReasonTestDoesNotFit                      ErrorReason = "test_does_not_fit"
+	ErrorReasonTestIsNotFullyResolved              ErrorReason = "test_is_not_fully_resolved"
+	ErrorReasonTestNotFound                        ErrorReason = "test_not_found"
+	ErrorReasonTestUsedBy                          ErrorReason = "test_used_by"
+	ErrorReasonTheNewOwnerAlreadyOwnsATenant       ErrorReason = "the_new_owner_already_owns_a_tenant"
+	ErrorReasonTheStandIsNotKept                   ErrorReason = "the_stand_is_not_kept"
+	ErrorReasonTheSuiteOfThisRunIsGone             ErrorReason = "the_suite_of_this_run_is_gone"
+	ErrorReasonThemeUnknown                        ErrorReason = "theme_unknown"
+	ErrorReasonThisShareDoesNotIncludeMetrics      ErrorReason = "this_share_does_not_include_metrics"
+	ErrorReasonTimezoneUnknown                     ErrorReason = "timezone_unknown"
+	ErrorReasonTokenExpired                        ErrorReason = "token_expired"
+	ErrorReasonTokenNotFound                       ErrorReason = "token_not_found"
+	ErrorReasonTokenNotRecognized                  ErrorReason = "token_not_recognized"
+	ErrorReasonTokenRejected                       ErrorReason = "token_rejected"
+	ErrorReasonTokenRoleCannotExceedYourRole       ErrorReason = "token_role_cannot_exceed_your_role"
+	ErrorReasonTokensCannotAcceptInvites           ErrorReason = "tokens_cannot_accept_invites"
+	ErrorReasonTokensCannotCreateTenants           ErrorReason = "tokens_cannot_create_tenants"
+	ErrorReasonTokensCannotMintTokens              ErrorReason = "tokens_cannot_mint_tokens"
+	ErrorReasonTopicMustBeKindID                   ErrorReason = "topic_must_be_kind_id"
+	ErrorReasonTTLIsNotAPositiveDuration           ErrorReason = "ttl_is_not_a_positive_duration"
+	ErrorReasonUnknownShareKind                    ErrorReason = "unknown_share_kind"
+	ErrorReasonUnsupportedDocumentBody             ErrorReason = "unsupported_document_body"
+	ErrorReasonURLNotAbsoluteHTTP                  ErrorReason = "url_not_absolute_http"
+	ErrorReasonUserAlreadyOwnsATenant              ErrorReason = "user_already_owns_a_tenant"
+	ErrorReasonUserIDIsNotAUUID                    ErrorReason = "user_id_is_not_a_uuid"
+	ErrorReasonUserNotFound                        ErrorReason = "user_not_found"
+	ErrorReasonValueIsNotAJSONObject               ErrorReason = "value_is_not_a_json_object"
+	ErrorReasonViewersCannotChangeSchedules        ErrorReason = "viewers_cannot_change_schedules"
+	ErrorReasonViewersCannotChangeSuites           ErrorReason = "viewers_cannot_change_suites"
+	ErrorReasonViewersCannotLaunchOrChangeRuns     ErrorReason = "viewers_cannot_launch_or_change_runs"
+	ErrorReasonViewersCannotShare                  ErrorReason = "viewers_cannot_share"
+	ErrorReasonWebhookEventUnknown                 ErrorReason = "webhook_event_unknown"
+	ErrorReasonWebhookNotFound                     ErrorReason = "webhook_not_found"
+	ErrorReasonWindowDoesNotOverlapTheSharedRun    ErrorReason = "window_does_not_overlap_the_shared_run"
+	ErrorReasonWorkloadNotFound                    ErrorReason = "workload_not_found"
+	ErrorReasonWorkloadRefAndInlineAreExclusive    ErrorReason = "workload_ref_and_inline_are_exclusive"
+	ErrorReasonYdbDiskTooSmall                     ErrorReason = "ydb_disk_too_small"
+	ErrorReasonYdbMirror3dcYandexOnly              ErrorReason = "ydb_mirror3dc_yandex_only"
+	ErrorReasonYdbNeedsThreeZones                  ErrorReason = "ydb_needs_three_zones"
+	ErrorReasonYdbStorageNodesRequired             ErrorReason = "ydb_storage_nodes_required"
+	ErrorReasonYdbZoneInvalid                      ErrorReason = "ydb_zone_invalid"
+	ErrorReasonYdbZonesNotStrings                  ErrorReason = "ydb_zones_not_strings"
+)
+
+// AllValues returns all ErrorReason values.
+func (ErrorReason) AllValues() []ErrorReason {
+	return []ErrorReason{
+		ErrorReasonADatabaseWithThisNameExists,
+		ErrorReasonAPendingInviteForThisEmailExists,
+		ErrorReasonAProfileWithThisNameExists,
+		ErrorReasonASuiteWithThisNameExists,
+		ErrorReasonATestWithThisNameExists,
+		ErrorReasonAWorkloadWithThisNameExists,
+		ErrorReasonAccountAlreadyOwnsATenant,
+		ErrorReasonAfterIsNotAnEventID,
+		ErrorReasonAlreadyTheOwner,
+		ErrorReasonArtifactNotDownloadable,
+		ErrorReasonArtifactNotFound,
+		ErrorReasonArtifactUnavailable,
+		ErrorReasonAtLeastOneEvent,
+		ErrorReasonAtLeastOneSegment,
+		ErrorReasonAtMost20NotificationEmails,
+		ErrorReasonAuthenticationRequired,
+		ErrorReasonCancelRunBeforeDelete,
+		ErrorReasonCancelSuiteRunBeforeDelete,
+		ErrorReasonCancelUnavailable,
+		ErrorReasonCatalogNoQPSSeries,
+		ErrorReasonComparisonRequestIsRequired,
+		ErrorReasonConfigVersionMismatch,
+		ErrorReasonCronInvalid,
+		ErrorReasonCronNeverFires,
+		ErrorReasonCursorInvalid,
+		ErrorReasonCursorIsNotAnEventID,
+		ErrorReasonDatabaseNotFound,
+		ErrorReasonDatabaseRefAndInlineAreExclusive,
+		ErrorReasonDbKindNotLaunchable,
+		ErrorReasonDbKindUnknown,
+		ErrorReasonDbVersionNoImage,
+		ErrorReasonDbVersionUnknown,
+		ErrorReasonDefaultKeepIsNotADuration,
+		ErrorReasonDefaultKeepRange,
+		ErrorReasonDeleteResourcesUnavailable,
+		ErrorReasonDeliveryIDIsNotAUUID,
+		ErrorReasonDeliveryNotFound,
+		ErrorReasonDiskSizeOutOfRange,
+		ErrorReasonDisplayNameLongerThan64,
+		ErrorReasonDocumentAPIVersion,
+		ErrorReasonDocumentKind,
+		ErrorReasonDocumentKindMustBeSuite,
+		ErrorReasonDurationIsNotAPositiveDuration,
+		ErrorReasonDurationMaxIsNotADuration,
+		ErrorReasonDurationMinIsNotADuration,
+		ErrorReasonEmailIsNotValid,
+		ErrorReasonEndMustBeAfterStart,
+		ErrorReasonExampleNotFound,
+		ErrorReasonExamplesNotFound,
+		ErrorReasonExpiresAtIsInThePast,
+		ErrorReasonExportFormatUnavailable,
+		ErrorReasonFavoritesBelongToUsersNotTokens,
+		ErrorReasonGrafanaIsNotConnected,
+		ErrorReasonGrapheneDroppedLogRecords,
+		ErrorReasonGrapheneDroppedMetricRecords,
+		ErrorReasonGrapheneTelemetryRunNotFound,
+		ErrorReasonInvalidLogCursorForThisSelection,
+		ErrorReasonInvalidLogDirection,
+		ErrorReasonInvalidMetricStep,
+		ErrorReasonInviteIsNotPending,
+		ErrorReasonInviteNotFound,
+		ErrorReasonIsPlatformAdminIsRequired,
+		ErrorReasonKeepIsNotADuration,
+		ErrorReasonKeepMustNotBeNegative,
+		ErrorReasonKindMustBeYandexOrAWS,
+		ErrorReasonLimitKeep,
+		ErrorReasonLimitMachinesPerRun,
+		ErrorReasonLimitSize,
+		ErrorReasonLogCursorAmbiguous,
+		ErrorReasonLogsStoreIsNotConnected,
+		ErrorReasonManagedYdbAutoscalingUnsupported,
+		ErrorReasonManagedYdbDeletionProtection,
+		ErrorReasonManagedYdbRequiresNamedCredentials,
+		ErrorReasonManagedYdbRequiresYandexCloud,
+		ErrorReasonManagedYdbTypeUnknown,
+		ErrorReasonMaxKeepIsNotADuration,
+		ErrorReasonMaxscaleMariadbOnly,
+		ErrorReasonMemberNotFound,
+		ErrorReasonMetadataNameIsRequired,
+		ErrorReasonMetricNotRatingEligible,
+		ErrorReasonMetricsSnapshotInvalid,
+		ErrorReasonMetricsStoreIsNotConnected,
+		ErrorReasonMetricsUnavailable,
+		ErrorReasonMetricsUnknown,
+		ErrorReasonNameIsRequired,
+		ErrorReasonNameMustBe1128Characters,
+		ErrorReasonNameMustBe164Characters,
+		ErrorReasonNoCellsToRun,
+		ErrorReasonNoFailedCells,
+		ErrorReasonNotificationEmailInvalid,
+		ErrorReasonOnlyTestExamplesCanBeQuickRun,
+		ErrorReasonOptionsIsNotAJSONObject,
+		ErrorReasonOwnerCannotBeRemoved,
+		ErrorReasonOwnerRoleByTransferOnly,
+		ErrorReasonPatroniImageRequired,
+		ErrorReasonPatroniRequiresHaproxy,
+		ErrorReasonPdfExportIsNotAvailableYet,
+		ErrorReasonPlatformAdminRequired,
+		ErrorReasonProfileIsNotVerified,
+		ErrorReasonProfileNotFound,
+		ErrorReasonProfileNotReady,
+		ErrorReasonProviderBusy,
+		ErrorReasonProviderCleanupFailed,
+		ErrorReasonProviderCleanupPending,
+		ErrorReasonProviderIsBeingDeleted,
+		ErrorReasonProviderIsNotReady,
+		ErrorReasonProviderIsUnavailable,
+		ErrorReasonProviderKindUnknown,
+		ErrorReasonProviderProfileIDIsNotAUUID,
+		ErrorReasonProviderProfileNotFound,
+		ErrorReasonProviderQuotaCheckUnavailable,
+		ErrorReasonProviderQuotaExceeded,
+		ErrorReasonProviderSecretUnavailable,
+		ErrorReasonPtyStreamsAreNotConnectedYet,
+		ErrorReasonPublicRatingNotFound,
+		ErrorReasonQueryIsRequired,
+		ErrorReasonQuickRunNeedsProfile,
+		ErrorReasonRefIDNotUUID,
+		ErrorReasonRefNeedsIDOrName,
+		ErrorReasonRefNotFound,
+		ErrorReasonReferencedByTests,
+		ErrorReasonRequiresRole,
+		ErrorReasonRequiresRoleAdmin,
+		ErrorReasonRequiresRoleMember,
+		ErrorReasonResumeMachineMissing,
+		ErrorReasonResumeStandUnknown,
+		ErrorReasonRetentionDaysRange,
+		ErrorReasonRoleMustBeAdminMemberOrViewer,
+		ErrorReasonRoleMustBeMemberOrViewer,
+		ErrorReasonRunAlreadyFinished,
+		ErrorReasonRunIDIsNotAUUID,
+		ErrorReasonRunIDIsRequired,
+		ErrorReasonRunIdempotencyConflict,
+		ErrorReasonRunIds2To16Runs,
+		ErrorReasonRunNotFound,
+		ErrorReasonRunRetentionMaxDaysMustBePositive,
+		ErrorReasonRunSubmitUnavailable,
+		ErrorReasonScheduleFireFailed,
+		ErrorReasonScheduleNotFound,
+		ErrorReasonSchemaHasNoTemplates,
+		ErrorReasonSchemaNotFound,
+		ErrorReasonScopeMustBeOverviewMetricsOrConfigs,
+		ErrorReasonScriptProtocolUnsupported,
+		ErrorReasonSegmentNotFound,
+		ErrorReasonShareAlreadyRevoked,
+		ErrorReasonShareMetricsSingleRunOnly,
+		ErrorReasonShareNotFound,
+		ErrorReasonShellInputFailed,
+		ErrorReasonShellInputInvalid,
+		ErrorReasonShellMachineUnknown,
+		ErrorReasonShellNotFound,
+		ErrorReasonShellOpenFailed,
+		ErrorReasonShellSessionEnded,
+		ErrorReasonShellSizeInvalid,
+		ErrorReasonShellStandGone,
+		ErrorReasonSizeNotChosen,
+		ErrorReasonSizeUnavailable,
+		ErrorReasonSizeUnknown,
+		ErrorReasonSlugFormat,
+		ErrorReasonSlugIsTaken,
+		ErrorReasonSpecIsRequired,
+		ErrorReasonStandLostRun,
+		ErrorReasonStandUnavailable,
+		ErrorReasonStepIsNotADuration,
+		ErrorReasonStroppyProtocolUnsupported,
+		ErrorReasonStroppyScriptUnknown,
+		ErrorReasonStroppyVersionNotFound,
+		ErrorReasonStroppyVersionUnknown,
+		ErrorReasonSubIDAndTopicAreRequired,
+		ErrorReasonSubscriptionExistsOrTooMany,
+		ErrorReasonSuiteCellInvalid,
+		ErrorReasonSuiteNotFound,
+		ErrorReasonSuiteRunAlreadyFinished,
+		ErrorReasonSuiteRunIDIsNotAUUID,
+		ErrorReasonSuiteRunIDIsRequired,
+		ErrorReasonSuiteRunIdempotencyConflict,
+		ErrorReasonSuiteRunNotFound,
+		ErrorReasonSuiteTestInvalid,
+		ErrorReasonSuiteTestRefOrInline,
+		ErrorReasonSuitesAreNotAvailable,
+		ErrorReasonTargetKindMustBeTestOrSuite,
+		ErrorReasonTelemetryRequiresARunScope,
+		ErrorReasonTelemetryUnavailable,
+		ErrorReasonTenantCreationAdminOnly,
+		ErrorReasonTenantCreationValue,
+		ErrorReasonTenantHasActiveWork,
+		ErrorReasonTenantHasLiveRuns,
+		ErrorReasonTenantIsBeingDeleted,
+		ErrorReasonTenantIsSuspended,
+		ErrorReasonTenantNamespaceUnavailable,
+		ErrorReasonTenantNotFound,
+		ErrorReasonTenantSlugTaken,
+		ErrorReasonTestDoesNotFit,
+		ErrorReasonTestIsNotFullyResolved,
+		ErrorReasonTestNotFound,
+		ErrorReasonTestUsedBy,
+		ErrorReasonTheNewOwnerAlreadyOwnsATenant,
+		ErrorReasonTheStandIsNotKept,
+		ErrorReasonTheSuiteOfThisRunIsGone,
+		ErrorReasonThemeUnknown,
+		ErrorReasonThisShareDoesNotIncludeMetrics,
+		ErrorReasonTimezoneUnknown,
+		ErrorReasonTokenExpired,
+		ErrorReasonTokenNotFound,
+		ErrorReasonTokenNotRecognized,
+		ErrorReasonTokenRejected,
+		ErrorReasonTokenRoleCannotExceedYourRole,
+		ErrorReasonTokensCannotAcceptInvites,
+		ErrorReasonTokensCannotCreateTenants,
+		ErrorReasonTokensCannotMintTokens,
+		ErrorReasonTopicMustBeKindID,
+		ErrorReasonTTLIsNotAPositiveDuration,
+		ErrorReasonUnknownShareKind,
+		ErrorReasonUnsupportedDocumentBody,
+		ErrorReasonURLNotAbsoluteHTTP,
+		ErrorReasonUserAlreadyOwnsATenant,
+		ErrorReasonUserIDIsNotAUUID,
+		ErrorReasonUserNotFound,
+		ErrorReasonValueIsNotAJSONObject,
+		ErrorReasonViewersCannotChangeSchedules,
+		ErrorReasonViewersCannotChangeSuites,
+		ErrorReasonViewersCannotLaunchOrChangeRuns,
+		ErrorReasonViewersCannotShare,
+		ErrorReasonWebhookEventUnknown,
+		ErrorReasonWebhookNotFound,
+		ErrorReasonWindowDoesNotOverlapTheSharedRun,
+		ErrorReasonWorkloadNotFound,
+		ErrorReasonWorkloadRefAndInlineAreExclusive,
+		ErrorReasonYdbDiskTooSmall,
+		ErrorReasonYdbMirror3dcYandexOnly,
+		ErrorReasonYdbNeedsThreeZones,
+		ErrorReasonYdbStorageNodesRequired,
+		ErrorReasonYdbZoneInvalid,
+		ErrorReasonYdbZonesNotStrings,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ErrorReason) MarshalText() ([]byte, error) {
+	switch s {
+	case ErrorReasonADatabaseWithThisNameExists:
+		return []byte(s), nil
+	case ErrorReasonAPendingInviteForThisEmailExists:
+		return []byte(s), nil
+	case ErrorReasonAProfileWithThisNameExists:
+		return []byte(s), nil
+	case ErrorReasonASuiteWithThisNameExists:
+		return []byte(s), nil
+	case ErrorReasonATestWithThisNameExists:
+		return []byte(s), nil
+	case ErrorReasonAWorkloadWithThisNameExists:
+		return []byte(s), nil
+	case ErrorReasonAccountAlreadyOwnsATenant:
+		return []byte(s), nil
+	case ErrorReasonAfterIsNotAnEventID:
+		return []byte(s), nil
+	case ErrorReasonAlreadyTheOwner:
+		return []byte(s), nil
+	case ErrorReasonArtifactNotDownloadable:
+		return []byte(s), nil
+	case ErrorReasonArtifactNotFound:
+		return []byte(s), nil
+	case ErrorReasonArtifactUnavailable:
+		return []byte(s), nil
+	case ErrorReasonAtLeastOneEvent:
+		return []byte(s), nil
+	case ErrorReasonAtLeastOneSegment:
+		return []byte(s), nil
+	case ErrorReasonAtMost20NotificationEmails:
+		return []byte(s), nil
+	case ErrorReasonAuthenticationRequired:
+		return []byte(s), nil
+	case ErrorReasonCancelRunBeforeDelete:
+		return []byte(s), nil
+	case ErrorReasonCancelSuiteRunBeforeDelete:
+		return []byte(s), nil
+	case ErrorReasonCancelUnavailable:
+		return []byte(s), nil
+	case ErrorReasonCatalogNoQPSSeries:
+		return []byte(s), nil
+	case ErrorReasonComparisonRequestIsRequired:
+		return []byte(s), nil
+	case ErrorReasonConfigVersionMismatch:
+		return []byte(s), nil
+	case ErrorReasonCronInvalid:
+		return []byte(s), nil
+	case ErrorReasonCronNeverFires:
+		return []byte(s), nil
+	case ErrorReasonCursorInvalid:
+		return []byte(s), nil
+	case ErrorReasonCursorIsNotAnEventID:
+		return []byte(s), nil
+	case ErrorReasonDatabaseNotFound:
+		return []byte(s), nil
+	case ErrorReasonDatabaseRefAndInlineAreExclusive:
+		return []byte(s), nil
+	case ErrorReasonDbKindNotLaunchable:
+		return []byte(s), nil
+	case ErrorReasonDbKindUnknown:
+		return []byte(s), nil
+	case ErrorReasonDbVersionNoImage:
+		return []byte(s), nil
+	case ErrorReasonDbVersionUnknown:
+		return []byte(s), nil
+	case ErrorReasonDefaultKeepIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonDefaultKeepRange:
+		return []byte(s), nil
+	case ErrorReasonDeleteResourcesUnavailable:
+		return []byte(s), nil
+	case ErrorReasonDeliveryIDIsNotAUUID:
+		return []byte(s), nil
+	case ErrorReasonDeliveryNotFound:
+		return []byte(s), nil
+	case ErrorReasonDiskSizeOutOfRange:
+		return []byte(s), nil
+	case ErrorReasonDisplayNameLongerThan64:
+		return []byte(s), nil
+	case ErrorReasonDocumentAPIVersion:
+		return []byte(s), nil
+	case ErrorReasonDocumentKind:
+		return []byte(s), nil
+	case ErrorReasonDocumentKindMustBeSuite:
+		return []byte(s), nil
+	case ErrorReasonDurationIsNotAPositiveDuration:
+		return []byte(s), nil
+	case ErrorReasonDurationMaxIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonDurationMinIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonEmailIsNotValid:
+		return []byte(s), nil
+	case ErrorReasonEndMustBeAfterStart:
+		return []byte(s), nil
+	case ErrorReasonExampleNotFound:
+		return []byte(s), nil
+	case ErrorReasonExamplesNotFound:
+		return []byte(s), nil
+	case ErrorReasonExpiresAtIsInThePast:
+		return []byte(s), nil
+	case ErrorReasonExportFormatUnavailable:
+		return []byte(s), nil
+	case ErrorReasonFavoritesBelongToUsersNotTokens:
+		return []byte(s), nil
+	case ErrorReasonGrafanaIsNotConnected:
+		return []byte(s), nil
+	case ErrorReasonGrapheneDroppedLogRecords:
+		return []byte(s), nil
+	case ErrorReasonGrapheneDroppedMetricRecords:
+		return []byte(s), nil
+	case ErrorReasonGrapheneTelemetryRunNotFound:
+		return []byte(s), nil
+	case ErrorReasonInvalidLogCursorForThisSelection:
+		return []byte(s), nil
+	case ErrorReasonInvalidLogDirection:
+		return []byte(s), nil
+	case ErrorReasonInvalidMetricStep:
+		return []byte(s), nil
+	case ErrorReasonInviteIsNotPending:
+		return []byte(s), nil
+	case ErrorReasonInviteNotFound:
+		return []byte(s), nil
+	case ErrorReasonIsPlatformAdminIsRequired:
+		return []byte(s), nil
+	case ErrorReasonKeepIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonKeepMustNotBeNegative:
+		return []byte(s), nil
+	case ErrorReasonKindMustBeYandexOrAWS:
+		return []byte(s), nil
+	case ErrorReasonLimitKeep:
+		return []byte(s), nil
+	case ErrorReasonLimitMachinesPerRun:
+		return []byte(s), nil
+	case ErrorReasonLimitSize:
+		return []byte(s), nil
+	case ErrorReasonLogCursorAmbiguous:
+		return []byte(s), nil
+	case ErrorReasonLogsStoreIsNotConnected:
+		return []byte(s), nil
+	case ErrorReasonManagedYdbAutoscalingUnsupported:
+		return []byte(s), nil
+	case ErrorReasonManagedYdbDeletionProtection:
+		return []byte(s), nil
+	case ErrorReasonManagedYdbRequiresNamedCredentials:
+		return []byte(s), nil
+	case ErrorReasonManagedYdbRequiresYandexCloud:
+		return []byte(s), nil
+	case ErrorReasonManagedYdbTypeUnknown:
+		return []byte(s), nil
+	case ErrorReasonMaxKeepIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonMaxscaleMariadbOnly:
+		return []byte(s), nil
+	case ErrorReasonMemberNotFound:
+		return []byte(s), nil
+	case ErrorReasonMetadataNameIsRequired:
+		return []byte(s), nil
+	case ErrorReasonMetricNotRatingEligible:
+		return []byte(s), nil
+	case ErrorReasonMetricsSnapshotInvalid:
+		return []byte(s), nil
+	case ErrorReasonMetricsStoreIsNotConnected:
+		return []byte(s), nil
+	case ErrorReasonMetricsUnavailable:
+		return []byte(s), nil
+	case ErrorReasonMetricsUnknown:
+		return []byte(s), nil
+	case ErrorReasonNameIsRequired:
+		return []byte(s), nil
+	case ErrorReasonNameMustBe1128Characters:
+		return []byte(s), nil
+	case ErrorReasonNameMustBe164Characters:
+		return []byte(s), nil
+	case ErrorReasonNoCellsToRun:
+		return []byte(s), nil
+	case ErrorReasonNoFailedCells:
+		return []byte(s), nil
+	case ErrorReasonNotificationEmailInvalid:
+		return []byte(s), nil
+	case ErrorReasonOnlyTestExamplesCanBeQuickRun:
+		return []byte(s), nil
+	case ErrorReasonOptionsIsNotAJSONObject:
+		return []byte(s), nil
+	case ErrorReasonOwnerCannotBeRemoved:
+		return []byte(s), nil
+	case ErrorReasonOwnerRoleByTransferOnly:
+		return []byte(s), nil
+	case ErrorReasonPatroniImageRequired:
+		return []byte(s), nil
+	case ErrorReasonPatroniRequiresHaproxy:
+		return []byte(s), nil
+	case ErrorReasonPdfExportIsNotAvailableYet:
+		return []byte(s), nil
+	case ErrorReasonPlatformAdminRequired:
+		return []byte(s), nil
+	case ErrorReasonProfileIsNotVerified:
+		return []byte(s), nil
+	case ErrorReasonProfileNotFound:
+		return []byte(s), nil
+	case ErrorReasonProfileNotReady:
+		return []byte(s), nil
+	case ErrorReasonProviderBusy:
+		return []byte(s), nil
+	case ErrorReasonProviderCleanupFailed:
+		return []byte(s), nil
+	case ErrorReasonProviderCleanupPending:
+		return []byte(s), nil
+	case ErrorReasonProviderIsBeingDeleted:
+		return []byte(s), nil
+	case ErrorReasonProviderIsNotReady:
+		return []byte(s), nil
+	case ErrorReasonProviderIsUnavailable:
+		return []byte(s), nil
+	case ErrorReasonProviderKindUnknown:
+		return []byte(s), nil
+	case ErrorReasonProviderProfileIDIsNotAUUID:
+		return []byte(s), nil
+	case ErrorReasonProviderProfileNotFound:
+		return []byte(s), nil
+	case ErrorReasonProviderQuotaCheckUnavailable:
+		return []byte(s), nil
+	case ErrorReasonProviderQuotaExceeded:
+		return []byte(s), nil
+	case ErrorReasonProviderSecretUnavailable:
+		return []byte(s), nil
+	case ErrorReasonPtyStreamsAreNotConnectedYet:
+		return []byte(s), nil
+	case ErrorReasonPublicRatingNotFound:
+		return []byte(s), nil
+	case ErrorReasonQueryIsRequired:
+		return []byte(s), nil
+	case ErrorReasonQuickRunNeedsProfile:
+		return []byte(s), nil
+	case ErrorReasonRefIDNotUUID:
+		return []byte(s), nil
+	case ErrorReasonRefNeedsIDOrName:
+		return []byte(s), nil
+	case ErrorReasonRefNotFound:
+		return []byte(s), nil
+	case ErrorReasonReferencedByTests:
+		return []byte(s), nil
+	case ErrorReasonRequiresRole:
+		return []byte(s), nil
+	case ErrorReasonRequiresRoleAdmin:
+		return []byte(s), nil
+	case ErrorReasonRequiresRoleMember:
+		return []byte(s), nil
+	case ErrorReasonResumeMachineMissing:
+		return []byte(s), nil
+	case ErrorReasonResumeStandUnknown:
+		return []byte(s), nil
+	case ErrorReasonRetentionDaysRange:
+		return []byte(s), nil
+	case ErrorReasonRoleMustBeAdminMemberOrViewer:
+		return []byte(s), nil
+	case ErrorReasonRoleMustBeMemberOrViewer:
+		return []byte(s), nil
+	case ErrorReasonRunAlreadyFinished:
+		return []byte(s), nil
+	case ErrorReasonRunIDIsNotAUUID:
+		return []byte(s), nil
+	case ErrorReasonRunIDIsRequired:
+		return []byte(s), nil
+	case ErrorReasonRunIdempotencyConflict:
+		return []byte(s), nil
+	case ErrorReasonRunIds2To16Runs:
+		return []byte(s), nil
+	case ErrorReasonRunNotFound:
+		return []byte(s), nil
+	case ErrorReasonRunRetentionMaxDaysMustBePositive:
+		return []byte(s), nil
+	case ErrorReasonRunSubmitUnavailable:
+		return []byte(s), nil
+	case ErrorReasonScheduleFireFailed:
+		return []byte(s), nil
+	case ErrorReasonScheduleNotFound:
+		return []byte(s), nil
+	case ErrorReasonSchemaHasNoTemplates:
+		return []byte(s), nil
+	case ErrorReasonSchemaNotFound:
+		return []byte(s), nil
+	case ErrorReasonScopeMustBeOverviewMetricsOrConfigs:
+		return []byte(s), nil
+	case ErrorReasonScriptProtocolUnsupported:
+		return []byte(s), nil
+	case ErrorReasonSegmentNotFound:
+		return []byte(s), nil
+	case ErrorReasonShareAlreadyRevoked:
+		return []byte(s), nil
+	case ErrorReasonShareMetricsSingleRunOnly:
+		return []byte(s), nil
+	case ErrorReasonShareNotFound:
+		return []byte(s), nil
+	case ErrorReasonShellInputFailed:
+		return []byte(s), nil
+	case ErrorReasonShellInputInvalid:
+		return []byte(s), nil
+	case ErrorReasonShellMachineUnknown:
+		return []byte(s), nil
+	case ErrorReasonShellNotFound:
+		return []byte(s), nil
+	case ErrorReasonShellOpenFailed:
+		return []byte(s), nil
+	case ErrorReasonShellSessionEnded:
+		return []byte(s), nil
+	case ErrorReasonShellSizeInvalid:
+		return []byte(s), nil
+	case ErrorReasonShellStandGone:
+		return []byte(s), nil
+	case ErrorReasonSizeNotChosen:
+		return []byte(s), nil
+	case ErrorReasonSizeUnavailable:
+		return []byte(s), nil
+	case ErrorReasonSizeUnknown:
+		return []byte(s), nil
+	case ErrorReasonSlugFormat:
+		return []byte(s), nil
+	case ErrorReasonSlugIsTaken:
+		return []byte(s), nil
+	case ErrorReasonSpecIsRequired:
+		return []byte(s), nil
+	case ErrorReasonStandLostRun:
+		return []byte(s), nil
+	case ErrorReasonStandUnavailable:
+		return []byte(s), nil
+	case ErrorReasonStepIsNotADuration:
+		return []byte(s), nil
+	case ErrorReasonStroppyProtocolUnsupported:
+		return []byte(s), nil
+	case ErrorReasonStroppyScriptUnknown:
+		return []byte(s), nil
+	case ErrorReasonStroppyVersionNotFound:
+		return []byte(s), nil
+	case ErrorReasonStroppyVersionUnknown:
+		return []byte(s), nil
+	case ErrorReasonSubIDAndTopicAreRequired:
+		return []byte(s), nil
+	case ErrorReasonSubscriptionExistsOrTooMany:
+		return []byte(s), nil
+	case ErrorReasonSuiteCellInvalid:
+		return []byte(s), nil
+	case ErrorReasonSuiteNotFound:
+		return []byte(s), nil
+	case ErrorReasonSuiteRunAlreadyFinished:
+		return []byte(s), nil
+	case ErrorReasonSuiteRunIDIsNotAUUID:
+		return []byte(s), nil
+	case ErrorReasonSuiteRunIDIsRequired:
+		return []byte(s), nil
+	case ErrorReasonSuiteRunIdempotencyConflict:
+		return []byte(s), nil
+	case ErrorReasonSuiteRunNotFound:
+		return []byte(s), nil
+	case ErrorReasonSuiteTestInvalid:
+		return []byte(s), nil
+	case ErrorReasonSuiteTestRefOrInline:
+		return []byte(s), nil
+	case ErrorReasonSuitesAreNotAvailable:
+		return []byte(s), nil
+	case ErrorReasonTargetKindMustBeTestOrSuite:
+		return []byte(s), nil
+	case ErrorReasonTelemetryRequiresARunScope:
+		return []byte(s), nil
+	case ErrorReasonTelemetryUnavailable:
+		return []byte(s), nil
+	case ErrorReasonTenantCreationAdminOnly:
+		return []byte(s), nil
+	case ErrorReasonTenantCreationValue:
+		return []byte(s), nil
+	case ErrorReasonTenantHasActiveWork:
+		return []byte(s), nil
+	case ErrorReasonTenantHasLiveRuns:
+		return []byte(s), nil
+	case ErrorReasonTenantIsBeingDeleted:
+		return []byte(s), nil
+	case ErrorReasonTenantIsSuspended:
+		return []byte(s), nil
+	case ErrorReasonTenantNamespaceUnavailable:
+		return []byte(s), nil
+	case ErrorReasonTenantNotFound:
+		return []byte(s), nil
+	case ErrorReasonTenantSlugTaken:
+		return []byte(s), nil
+	case ErrorReasonTestDoesNotFit:
+		return []byte(s), nil
+	case ErrorReasonTestIsNotFullyResolved:
+		return []byte(s), nil
+	case ErrorReasonTestNotFound:
+		return []byte(s), nil
+	case ErrorReasonTestUsedBy:
+		return []byte(s), nil
+	case ErrorReasonTheNewOwnerAlreadyOwnsATenant:
+		return []byte(s), nil
+	case ErrorReasonTheStandIsNotKept:
+		return []byte(s), nil
+	case ErrorReasonTheSuiteOfThisRunIsGone:
+		return []byte(s), nil
+	case ErrorReasonThemeUnknown:
+		return []byte(s), nil
+	case ErrorReasonThisShareDoesNotIncludeMetrics:
+		return []byte(s), nil
+	case ErrorReasonTimezoneUnknown:
+		return []byte(s), nil
+	case ErrorReasonTokenExpired:
+		return []byte(s), nil
+	case ErrorReasonTokenNotFound:
+		return []byte(s), nil
+	case ErrorReasonTokenNotRecognized:
+		return []byte(s), nil
+	case ErrorReasonTokenRejected:
+		return []byte(s), nil
+	case ErrorReasonTokenRoleCannotExceedYourRole:
+		return []byte(s), nil
+	case ErrorReasonTokensCannotAcceptInvites:
+		return []byte(s), nil
+	case ErrorReasonTokensCannotCreateTenants:
+		return []byte(s), nil
+	case ErrorReasonTokensCannotMintTokens:
+		return []byte(s), nil
+	case ErrorReasonTopicMustBeKindID:
+		return []byte(s), nil
+	case ErrorReasonTTLIsNotAPositiveDuration:
+		return []byte(s), nil
+	case ErrorReasonUnknownShareKind:
+		return []byte(s), nil
+	case ErrorReasonUnsupportedDocumentBody:
+		return []byte(s), nil
+	case ErrorReasonURLNotAbsoluteHTTP:
+		return []byte(s), nil
+	case ErrorReasonUserAlreadyOwnsATenant:
+		return []byte(s), nil
+	case ErrorReasonUserIDIsNotAUUID:
+		return []byte(s), nil
+	case ErrorReasonUserNotFound:
+		return []byte(s), nil
+	case ErrorReasonValueIsNotAJSONObject:
+		return []byte(s), nil
+	case ErrorReasonViewersCannotChangeSchedules:
+		return []byte(s), nil
+	case ErrorReasonViewersCannotChangeSuites:
+		return []byte(s), nil
+	case ErrorReasonViewersCannotLaunchOrChangeRuns:
+		return []byte(s), nil
+	case ErrorReasonViewersCannotShare:
+		return []byte(s), nil
+	case ErrorReasonWebhookEventUnknown:
+		return []byte(s), nil
+	case ErrorReasonWebhookNotFound:
+		return []byte(s), nil
+	case ErrorReasonWindowDoesNotOverlapTheSharedRun:
+		return []byte(s), nil
+	case ErrorReasonWorkloadNotFound:
+		return []byte(s), nil
+	case ErrorReasonWorkloadRefAndInlineAreExclusive:
+		return []byte(s), nil
+	case ErrorReasonYdbDiskTooSmall:
+		return []byte(s), nil
+	case ErrorReasonYdbMirror3dcYandexOnly:
+		return []byte(s), nil
+	case ErrorReasonYdbNeedsThreeZones:
+		return []byte(s), nil
+	case ErrorReasonYdbStorageNodesRequired:
+		return []byte(s), nil
+	case ErrorReasonYdbZoneInvalid:
+		return []byte(s), nil
+	case ErrorReasonYdbZonesNotStrings:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ErrorReason) UnmarshalText(data []byte) error {
+	switch ErrorReason(data) {
+	case ErrorReasonADatabaseWithThisNameExists:
+		*s = ErrorReasonADatabaseWithThisNameExists
+		return nil
+	case ErrorReasonAPendingInviteForThisEmailExists:
+		*s = ErrorReasonAPendingInviteForThisEmailExists
+		return nil
+	case ErrorReasonAProfileWithThisNameExists:
+		*s = ErrorReasonAProfileWithThisNameExists
+		return nil
+	case ErrorReasonASuiteWithThisNameExists:
+		*s = ErrorReasonASuiteWithThisNameExists
+		return nil
+	case ErrorReasonATestWithThisNameExists:
+		*s = ErrorReasonATestWithThisNameExists
+		return nil
+	case ErrorReasonAWorkloadWithThisNameExists:
+		*s = ErrorReasonAWorkloadWithThisNameExists
+		return nil
+	case ErrorReasonAccountAlreadyOwnsATenant:
+		*s = ErrorReasonAccountAlreadyOwnsATenant
+		return nil
+	case ErrorReasonAfterIsNotAnEventID:
+		*s = ErrorReasonAfterIsNotAnEventID
+		return nil
+	case ErrorReasonAlreadyTheOwner:
+		*s = ErrorReasonAlreadyTheOwner
+		return nil
+	case ErrorReasonArtifactNotDownloadable:
+		*s = ErrorReasonArtifactNotDownloadable
+		return nil
+	case ErrorReasonArtifactNotFound:
+		*s = ErrorReasonArtifactNotFound
+		return nil
+	case ErrorReasonArtifactUnavailable:
+		*s = ErrorReasonArtifactUnavailable
+		return nil
+	case ErrorReasonAtLeastOneEvent:
+		*s = ErrorReasonAtLeastOneEvent
+		return nil
+	case ErrorReasonAtLeastOneSegment:
+		*s = ErrorReasonAtLeastOneSegment
+		return nil
+	case ErrorReasonAtMost20NotificationEmails:
+		*s = ErrorReasonAtMost20NotificationEmails
+		return nil
+	case ErrorReasonAuthenticationRequired:
+		*s = ErrorReasonAuthenticationRequired
+		return nil
+	case ErrorReasonCancelRunBeforeDelete:
+		*s = ErrorReasonCancelRunBeforeDelete
+		return nil
+	case ErrorReasonCancelSuiteRunBeforeDelete:
+		*s = ErrorReasonCancelSuiteRunBeforeDelete
+		return nil
+	case ErrorReasonCancelUnavailable:
+		*s = ErrorReasonCancelUnavailable
+		return nil
+	case ErrorReasonCatalogNoQPSSeries:
+		*s = ErrorReasonCatalogNoQPSSeries
+		return nil
+	case ErrorReasonComparisonRequestIsRequired:
+		*s = ErrorReasonComparisonRequestIsRequired
+		return nil
+	case ErrorReasonConfigVersionMismatch:
+		*s = ErrorReasonConfigVersionMismatch
+		return nil
+	case ErrorReasonCronInvalid:
+		*s = ErrorReasonCronInvalid
+		return nil
+	case ErrorReasonCronNeverFires:
+		*s = ErrorReasonCronNeverFires
+		return nil
+	case ErrorReasonCursorInvalid:
+		*s = ErrorReasonCursorInvalid
+		return nil
+	case ErrorReasonCursorIsNotAnEventID:
+		*s = ErrorReasonCursorIsNotAnEventID
+		return nil
+	case ErrorReasonDatabaseNotFound:
+		*s = ErrorReasonDatabaseNotFound
+		return nil
+	case ErrorReasonDatabaseRefAndInlineAreExclusive:
+		*s = ErrorReasonDatabaseRefAndInlineAreExclusive
+		return nil
+	case ErrorReasonDbKindNotLaunchable:
+		*s = ErrorReasonDbKindNotLaunchable
+		return nil
+	case ErrorReasonDbKindUnknown:
+		*s = ErrorReasonDbKindUnknown
+		return nil
+	case ErrorReasonDbVersionNoImage:
+		*s = ErrorReasonDbVersionNoImage
+		return nil
+	case ErrorReasonDbVersionUnknown:
+		*s = ErrorReasonDbVersionUnknown
+		return nil
+	case ErrorReasonDefaultKeepIsNotADuration:
+		*s = ErrorReasonDefaultKeepIsNotADuration
+		return nil
+	case ErrorReasonDefaultKeepRange:
+		*s = ErrorReasonDefaultKeepRange
+		return nil
+	case ErrorReasonDeleteResourcesUnavailable:
+		*s = ErrorReasonDeleteResourcesUnavailable
+		return nil
+	case ErrorReasonDeliveryIDIsNotAUUID:
+		*s = ErrorReasonDeliveryIDIsNotAUUID
+		return nil
+	case ErrorReasonDeliveryNotFound:
+		*s = ErrorReasonDeliveryNotFound
+		return nil
+	case ErrorReasonDiskSizeOutOfRange:
+		*s = ErrorReasonDiskSizeOutOfRange
+		return nil
+	case ErrorReasonDisplayNameLongerThan64:
+		*s = ErrorReasonDisplayNameLongerThan64
+		return nil
+	case ErrorReasonDocumentAPIVersion:
+		*s = ErrorReasonDocumentAPIVersion
+		return nil
+	case ErrorReasonDocumentKind:
+		*s = ErrorReasonDocumentKind
+		return nil
+	case ErrorReasonDocumentKindMustBeSuite:
+		*s = ErrorReasonDocumentKindMustBeSuite
+		return nil
+	case ErrorReasonDurationIsNotAPositiveDuration:
+		*s = ErrorReasonDurationIsNotAPositiveDuration
+		return nil
+	case ErrorReasonDurationMaxIsNotADuration:
+		*s = ErrorReasonDurationMaxIsNotADuration
+		return nil
+	case ErrorReasonDurationMinIsNotADuration:
+		*s = ErrorReasonDurationMinIsNotADuration
+		return nil
+	case ErrorReasonEmailIsNotValid:
+		*s = ErrorReasonEmailIsNotValid
+		return nil
+	case ErrorReasonEndMustBeAfterStart:
+		*s = ErrorReasonEndMustBeAfterStart
+		return nil
+	case ErrorReasonExampleNotFound:
+		*s = ErrorReasonExampleNotFound
+		return nil
+	case ErrorReasonExamplesNotFound:
+		*s = ErrorReasonExamplesNotFound
+		return nil
+	case ErrorReasonExpiresAtIsInThePast:
+		*s = ErrorReasonExpiresAtIsInThePast
+		return nil
+	case ErrorReasonExportFormatUnavailable:
+		*s = ErrorReasonExportFormatUnavailable
+		return nil
+	case ErrorReasonFavoritesBelongToUsersNotTokens:
+		*s = ErrorReasonFavoritesBelongToUsersNotTokens
+		return nil
+	case ErrorReasonGrafanaIsNotConnected:
+		*s = ErrorReasonGrafanaIsNotConnected
+		return nil
+	case ErrorReasonGrapheneDroppedLogRecords:
+		*s = ErrorReasonGrapheneDroppedLogRecords
+		return nil
+	case ErrorReasonGrapheneDroppedMetricRecords:
+		*s = ErrorReasonGrapheneDroppedMetricRecords
+		return nil
+	case ErrorReasonGrapheneTelemetryRunNotFound:
+		*s = ErrorReasonGrapheneTelemetryRunNotFound
+		return nil
+	case ErrorReasonInvalidLogCursorForThisSelection:
+		*s = ErrorReasonInvalidLogCursorForThisSelection
+		return nil
+	case ErrorReasonInvalidLogDirection:
+		*s = ErrorReasonInvalidLogDirection
+		return nil
+	case ErrorReasonInvalidMetricStep:
+		*s = ErrorReasonInvalidMetricStep
+		return nil
+	case ErrorReasonInviteIsNotPending:
+		*s = ErrorReasonInviteIsNotPending
+		return nil
+	case ErrorReasonInviteNotFound:
+		*s = ErrorReasonInviteNotFound
+		return nil
+	case ErrorReasonIsPlatformAdminIsRequired:
+		*s = ErrorReasonIsPlatformAdminIsRequired
+		return nil
+	case ErrorReasonKeepIsNotADuration:
+		*s = ErrorReasonKeepIsNotADuration
+		return nil
+	case ErrorReasonKeepMustNotBeNegative:
+		*s = ErrorReasonKeepMustNotBeNegative
+		return nil
+	case ErrorReasonKindMustBeYandexOrAWS:
+		*s = ErrorReasonKindMustBeYandexOrAWS
+		return nil
+	case ErrorReasonLimitKeep:
+		*s = ErrorReasonLimitKeep
+		return nil
+	case ErrorReasonLimitMachinesPerRun:
+		*s = ErrorReasonLimitMachinesPerRun
+		return nil
+	case ErrorReasonLimitSize:
+		*s = ErrorReasonLimitSize
+		return nil
+	case ErrorReasonLogCursorAmbiguous:
+		*s = ErrorReasonLogCursorAmbiguous
+		return nil
+	case ErrorReasonLogsStoreIsNotConnected:
+		*s = ErrorReasonLogsStoreIsNotConnected
+		return nil
+	case ErrorReasonManagedYdbAutoscalingUnsupported:
+		*s = ErrorReasonManagedYdbAutoscalingUnsupported
+		return nil
+	case ErrorReasonManagedYdbDeletionProtection:
+		*s = ErrorReasonManagedYdbDeletionProtection
+		return nil
+	case ErrorReasonManagedYdbRequiresNamedCredentials:
+		*s = ErrorReasonManagedYdbRequiresNamedCredentials
+		return nil
+	case ErrorReasonManagedYdbRequiresYandexCloud:
+		*s = ErrorReasonManagedYdbRequiresYandexCloud
+		return nil
+	case ErrorReasonManagedYdbTypeUnknown:
+		*s = ErrorReasonManagedYdbTypeUnknown
+		return nil
+	case ErrorReasonMaxKeepIsNotADuration:
+		*s = ErrorReasonMaxKeepIsNotADuration
+		return nil
+	case ErrorReasonMaxscaleMariadbOnly:
+		*s = ErrorReasonMaxscaleMariadbOnly
+		return nil
+	case ErrorReasonMemberNotFound:
+		*s = ErrorReasonMemberNotFound
+		return nil
+	case ErrorReasonMetadataNameIsRequired:
+		*s = ErrorReasonMetadataNameIsRequired
+		return nil
+	case ErrorReasonMetricNotRatingEligible:
+		*s = ErrorReasonMetricNotRatingEligible
+		return nil
+	case ErrorReasonMetricsSnapshotInvalid:
+		*s = ErrorReasonMetricsSnapshotInvalid
+		return nil
+	case ErrorReasonMetricsStoreIsNotConnected:
+		*s = ErrorReasonMetricsStoreIsNotConnected
+		return nil
+	case ErrorReasonMetricsUnavailable:
+		*s = ErrorReasonMetricsUnavailable
+		return nil
+	case ErrorReasonMetricsUnknown:
+		*s = ErrorReasonMetricsUnknown
+		return nil
+	case ErrorReasonNameIsRequired:
+		*s = ErrorReasonNameIsRequired
+		return nil
+	case ErrorReasonNameMustBe1128Characters:
+		*s = ErrorReasonNameMustBe1128Characters
+		return nil
+	case ErrorReasonNameMustBe164Characters:
+		*s = ErrorReasonNameMustBe164Characters
+		return nil
+	case ErrorReasonNoCellsToRun:
+		*s = ErrorReasonNoCellsToRun
+		return nil
+	case ErrorReasonNoFailedCells:
+		*s = ErrorReasonNoFailedCells
+		return nil
+	case ErrorReasonNotificationEmailInvalid:
+		*s = ErrorReasonNotificationEmailInvalid
+		return nil
+	case ErrorReasonOnlyTestExamplesCanBeQuickRun:
+		*s = ErrorReasonOnlyTestExamplesCanBeQuickRun
+		return nil
+	case ErrorReasonOptionsIsNotAJSONObject:
+		*s = ErrorReasonOptionsIsNotAJSONObject
+		return nil
+	case ErrorReasonOwnerCannotBeRemoved:
+		*s = ErrorReasonOwnerCannotBeRemoved
+		return nil
+	case ErrorReasonOwnerRoleByTransferOnly:
+		*s = ErrorReasonOwnerRoleByTransferOnly
+		return nil
+	case ErrorReasonPatroniImageRequired:
+		*s = ErrorReasonPatroniImageRequired
+		return nil
+	case ErrorReasonPatroniRequiresHaproxy:
+		*s = ErrorReasonPatroniRequiresHaproxy
+		return nil
+	case ErrorReasonPdfExportIsNotAvailableYet:
+		*s = ErrorReasonPdfExportIsNotAvailableYet
+		return nil
+	case ErrorReasonPlatformAdminRequired:
+		*s = ErrorReasonPlatformAdminRequired
+		return nil
+	case ErrorReasonProfileIsNotVerified:
+		*s = ErrorReasonProfileIsNotVerified
+		return nil
+	case ErrorReasonProfileNotFound:
+		*s = ErrorReasonProfileNotFound
+		return nil
+	case ErrorReasonProfileNotReady:
+		*s = ErrorReasonProfileNotReady
+		return nil
+	case ErrorReasonProviderBusy:
+		*s = ErrorReasonProviderBusy
+		return nil
+	case ErrorReasonProviderCleanupFailed:
+		*s = ErrorReasonProviderCleanupFailed
+		return nil
+	case ErrorReasonProviderCleanupPending:
+		*s = ErrorReasonProviderCleanupPending
+		return nil
+	case ErrorReasonProviderIsBeingDeleted:
+		*s = ErrorReasonProviderIsBeingDeleted
+		return nil
+	case ErrorReasonProviderIsNotReady:
+		*s = ErrorReasonProviderIsNotReady
+		return nil
+	case ErrorReasonProviderIsUnavailable:
+		*s = ErrorReasonProviderIsUnavailable
+		return nil
+	case ErrorReasonProviderKindUnknown:
+		*s = ErrorReasonProviderKindUnknown
+		return nil
+	case ErrorReasonProviderProfileIDIsNotAUUID:
+		*s = ErrorReasonProviderProfileIDIsNotAUUID
+		return nil
+	case ErrorReasonProviderProfileNotFound:
+		*s = ErrorReasonProviderProfileNotFound
+		return nil
+	case ErrorReasonProviderQuotaCheckUnavailable:
+		*s = ErrorReasonProviderQuotaCheckUnavailable
+		return nil
+	case ErrorReasonProviderQuotaExceeded:
+		*s = ErrorReasonProviderQuotaExceeded
+		return nil
+	case ErrorReasonProviderSecretUnavailable:
+		*s = ErrorReasonProviderSecretUnavailable
+		return nil
+	case ErrorReasonPtyStreamsAreNotConnectedYet:
+		*s = ErrorReasonPtyStreamsAreNotConnectedYet
+		return nil
+	case ErrorReasonPublicRatingNotFound:
+		*s = ErrorReasonPublicRatingNotFound
+		return nil
+	case ErrorReasonQueryIsRequired:
+		*s = ErrorReasonQueryIsRequired
+		return nil
+	case ErrorReasonQuickRunNeedsProfile:
+		*s = ErrorReasonQuickRunNeedsProfile
+		return nil
+	case ErrorReasonRefIDNotUUID:
+		*s = ErrorReasonRefIDNotUUID
+		return nil
+	case ErrorReasonRefNeedsIDOrName:
+		*s = ErrorReasonRefNeedsIDOrName
+		return nil
+	case ErrorReasonRefNotFound:
+		*s = ErrorReasonRefNotFound
+		return nil
+	case ErrorReasonReferencedByTests:
+		*s = ErrorReasonReferencedByTests
+		return nil
+	case ErrorReasonRequiresRole:
+		*s = ErrorReasonRequiresRole
+		return nil
+	case ErrorReasonRequiresRoleAdmin:
+		*s = ErrorReasonRequiresRoleAdmin
+		return nil
+	case ErrorReasonRequiresRoleMember:
+		*s = ErrorReasonRequiresRoleMember
+		return nil
+	case ErrorReasonResumeMachineMissing:
+		*s = ErrorReasonResumeMachineMissing
+		return nil
+	case ErrorReasonResumeStandUnknown:
+		*s = ErrorReasonResumeStandUnknown
+		return nil
+	case ErrorReasonRetentionDaysRange:
+		*s = ErrorReasonRetentionDaysRange
+		return nil
+	case ErrorReasonRoleMustBeAdminMemberOrViewer:
+		*s = ErrorReasonRoleMustBeAdminMemberOrViewer
+		return nil
+	case ErrorReasonRoleMustBeMemberOrViewer:
+		*s = ErrorReasonRoleMustBeMemberOrViewer
+		return nil
+	case ErrorReasonRunAlreadyFinished:
+		*s = ErrorReasonRunAlreadyFinished
+		return nil
+	case ErrorReasonRunIDIsNotAUUID:
+		*s = ErrorReasonRunIDIsNotAUUID
+		return nil
+	case ErrorReasonRunIDIsRequired:
+		*s = ErrorReasonRunIDIsRequired
+		return nil
+	case ErrorReasonRunIdempotencyConflict:
+		*s = ErrorReasonRunIdempotencyConflict
+		return nil
+	case ErrorReasonRunIds2To16Runs:
+		*s = ErrorReasonRunIds2To16Runs
+		return nil
+	case ErrorReasonRunNotFound:
+		*s = ErrorReasonRunNotFound
+		return nil
+	case ErrorReasonRunRetentionMaxDaysMustBePositive:
+		*s = ErrorReasonRunRetentionMaxDaysMustBePositive
+		return nil
+	case ErrorReasonRunSubmitUnavailable:
+		*s = ErrorReasonRunSubmitUnavailable
+		return nil
+	case ErrorReasonScheduleFireFailed:
+		*s = ErrorReasonScheduleFireFailed
+		return nil
+	case ErrorReasonScheduleNotFound:
+		*s = ErrorReasonScheduleNotFound
+		return nil
+	case ErrorReasonSchemaHasNoTemplates:
+		*s = ErrorReasonSchemaHasNoTemplates
+		return nil
+	case ErrorReasonSchemaNotFound:
+		*s = ErrorReasonSchemaNotFound
+		return nil
+	case ErrorReasonScopeMustBeOverviewMetricsOrConfigs:
+		*s = ErrorReasonScopeMustBeOverviewMetricsOrConfigs
+		return nil
+	case ErrorReasonScriptProtocolUnsupported:
+		*s = ErrorReasonScriptProtocolUnsupported
+		return nil
+	case ErrorReasonSegmentNotFound:
+		*s = ErrorReasonSegmentNotFound
+		return nil
+	case ErrorReasonShareAlreadyRevoked:
+		*s = ErrorReasonShareAlreadyRevoked
+		return nil
+	case ErrorReasonShareMetricsSingleRunOnly:
+		*s = ErrorReasonShareMetricsSingleRunOnly
+		return nil
+	case ErrorReasonShareNotFound:
+		*s = ErrorReasonShareNotFound
+		return nil
+	case ErrorReasonShellInputFailed:
+		*s = ErrorReasonShellInputFailed
+		return nil
+	case ErrorReasonShellInputInvalid:
+		*s = ErrorReasonShellInputInvalid
+		return nil
+	case ErrorReasonShellMachineUnknown:
+		*s = ErrorReasonShellMachineUnknown
+		return nil
+	case ErrorReasonShellNotFound:
+		*s = ErrorReasonShellNotFound
+		return nil
+	case ErrorReasonShellOpenFailed:
+		*s = ErrorReasonShellOpenFailed
+		return nil
+	case ErrorReasonShellSessionEnded:
+		*s = ErrorReasonShellSessionEnded
+		return nil
+	case ErrorReasonShellSizeInvalid:
+		*s = ErrorReasonShellSizeInvalid
+		return nil
+	case ErrorReasonShellStandGone:
+		*s = ErrorReasonShellStandGone
+		return nil
+	case ErrorReasonSizeNotChosen:
+		*s = ErrorReasonSizeNotChosen
+		return nil
+	case ErrorReasonSizeUnavailable:
+		*s = ErrorReasonSizeUnavailable
+		return nil
+	case ErrorReasonSizeUnknown:
+		*s = ErrorReasonSizeUnknown
+		return nil
+	case ErrorReasonSlugFormat:
+		*s = ErrorReasonSlugFormat
+		return nil
+	case ErrorReasonSlugIsTaken:
+		*s = ErrorReasonSlugIsTaken
+		return nil
+	case ErrorReasonSpecIsRequired:
+		*s = ErrorReasonSpecIsRequired
+		return nil
+	case ErrorReasonStandLostRun:
+		*s = ErrorReasonStandLostRun
+		return nil
+	case ErrorReasonStandUnavailable:
+		*s = ErrorReasonStandUnavailable
+		return nil
+	case ErrorReasonStepIsNotADuration:
+		*s = ErrorReasonStepIsNotADuration
+		return nil
+	case ErrorReasonStroppyProtocolUnsupported:
+		*s = ErrorReasonStroppyProtocolUnsupported
+		return nil
+	case ErrorReasonStroppyScriptUnknown:
+		*s = ErrorReasonStroppyScriptUnknown
+		return nil
+	case ErrorReasonStroppyVersionNotFound:
+		*s = ErrorReasonStroppyVersionNotFound
+		return nil
+	case ErrorReasonStroppyVersionUnknown:
+		*s = ErrorReasonStroppyVersionUnknown
+		return nil
+	case ErrorReasonSubIDAndTopicAreRequired:
+		*s = ErrorReasonSubIDAndTopicAreRequired
+		return nil
+	case ErrorReasonSubscriptionExistsOrTooMany:
+		*s = ErrorReasonSubscriptionExistsOrTooMany
+		return nil
+	case ErrorReasonSuiteCellInvalid:
+		*s = ErrorReasonSuiteCellInvalid
+		return nil
+	case ErrorReasonSuiteNotFound:
+		*s = ErrorReasonSuiteNotFound
+		return nil
+	case ErrorReasonSuiteRunAlreadyFinished:
+		*s = ErrorReasonSuiteRunAlreadyFinished
+		return nil
+	case ErrorReasonSuiteRunIDIsNotAUUID:
+		*s = ErrorReasonSuiteRunIDIsNotAUUID
+		return nil
+	case ErrorReasonSuiteRunIDIsRequired:
+		*s = ErrorReasonSuiteRunIDIsRequired
+		return nil
+	case ErrorReasonSuiteRunIdempotencyConflict:
+		*s = ErrorReasonSuiteRunIdempotencyConflict
+		return nil
+	case ErrorReasonSuiteRunNotFound:
+		*s = ErrorReasonSuiteRunNotFound
+		return nil
+	case ErrorReasonSuiteTestInvalid:
+		*s = ErrorReasonSuiteTestInvalid
+		return nil
+	case ErrorReasonSuiteTestRefOrInline:
+		*s = ErrorReasonSuiteTestRefOrInline
+		return nil
+	case ErrorReasonSuitesAreNotAvailable:
+		*s = ErrorReasonSuitesAreNotAvailable
+		return nil
+	case ErrorReasonTargetKindMustBeTestOrSuite:
+		*s = ErrorReasonTargetKindMustBeTestOrSuite
+		return nil
+	case ErrorReasonTelemetryRequiresARunScope:
+		*s = ErrorReasonTelemetryRequiresARunScope
+		return nil
+	case ErrorReasonTelemetryUnavailable:
+		*s = ErrorReasonTelemetryUnavailable
+		return nil
+	case ErrorReasonTenantCreationAdminOnly:
+		*s = ErrorReasonTenantCreationAdminOnly
+		return nil
+	case ErrorReasonTenantCreationValue:
+		*s = ErrorReasonTenantCreationValue
+		return nil
+	case ErrorReasonTenantHasActiveWork:
+		*s = ErrorReasonTenantHasActiveWork
+		return nil
+	case ErrorReasonTenantHasLiveRuns:
+		*s = ErrorReasonTenantHasLiveRuns
+		return nil
+	case ErrorReasonTenantIsBeingDeleted:
+		*s = ErrorReasonTenantIsBeingDeleted
+		return nil
+	case ErrorReasonTenantIsSuspended:
+		*s = ErrorReasonTenantIsSuspended
+		return nil
+	case ErrorReasonTenantNamespaceUnavailable:
+		*s = ErrorReasonTenantNamespaceUnavailable
+		return nil
+	case ErrorReasonTenantNotFound:
+		*s = ErrorReasonTenantNotFound
+		return nil
+	case ErrorReasonTenantSlugTaken:
+		*s = ErrorReasonTenantSlugTaken
+		return nil
+	case ErrorReasonTestDoesNotFit:
+		*s = ErrorReasonTestDoesNotFit
+		return nil
+	case ErrorReasonTestIsNotFullyResolved:
+		*s = ErrorReasonTestIsNotFullyResolved
+		return nil
+	case ErrorReasonTestNotFound:
+		*s = ErrorReasonTestNotFound
+		return nil
+	case ErrorReasonTestUsedBy:
+		*s = ErrorReasonTestUsedBy
+		return nil
+	case ErrorReasonTheNewOwnerAlreadyOwnsATenant:
+		*s = ErrorReasonTheNewOwnerAlreadyOwnsATenant
+		return nil
+	case ErrorReasonTheStandIsNotKept:
+		*s = ErrorReasonTheStandIsNotKept
+		return nil
+	case ErrorReasonTheSuiteOfThisRunIsGone:
+		*s = ErrorReasonTheSuiteOfThisRunIsGone
+		return nil
+	case ErrorReasonThemeUnknown:
+		*s = ErrorReasonThemeUnknown
+		return nil
+	case ErrorReasonThisShareDoesNotIncludeMetrics:
+		*s = ErrorReasonThisShareDoesNotIncludeMetrics
+		return nil
+	case ErrorReasonTimezoneUnknown:
+		*s = ErrorReasonTimezoneUnknown
+		return nil
+	case ErrorReasonTokenExpired:
+		*s = ErrorReasonTokenExpired
+		return nil
+	case ErrorReasonTokenNotFound:
+		*s = ErrorReasonTokenNotFound
+		return nil
+	case ErrorReasonTokenNotRecognized:
+		*s = ErrorReasonTokenNotRecognized
+		return nil
+	case ErrorReasonTokenRejected:
+		*s = ErrorReasonTokenRejected
+		return nil
+	case ErrorReasonTokenRoleCannotExceedYourRole:
+		*s = ErrorReasonTokenRoleCannotExceedYourRole
+		return nil
+	case ErrorReasonTokensCannotAcceptInvites:
+		*s = ErrorReasonTokensCannotAcceptInvites
+		return nil
+	case ErrorReasonTokensCannotCreateTenants:
+		*s = ErrorReasonTokensCannotCreateTenants
+		return nil
+	case ErrorReasonTokensCannotMintTokens:
+		*s = ErrorReasonTokensCannotMintTokens
+		return nil
+	case ErrorReasonTopicMustBeKindID:
+		*s = ErrorReasonTopicMustBeKindID
+		return nil
+	case ErrorReasonTTLIsNotAPositiveDuration:
+		*s = ErrorReasonTTLIsNotAPositiveDuration
+		return nil
+	case ErrorReasonUnknownShareKind:
+		*s = ErrorReasonUnknownShareKind
+		return nil
+	case ErrorReasonUnsupportedDocumentBody:
+		*s = ErrorReasonUnsupportedDocumentBody
+		return nil
+	case ErrorReasonURLNotAbsoluteHTTP:
+		*s = ErrorReasonURLNotAbsoluteHTTP
+		return nil
+	case ErrorReasonUserAlreadyOwnsATenant:
+		*s = ErrorReasonUserAlreadyOwnsATenant
+		return nil
+	case ErrorReasonUserIDIsNotAUUID:
+		*s = ErrorReasonUserIDIsNotAUUID
+		return nil
+	case ErrorReasonUserNotFound:
+		*s = ErrorReasonUserNotFound
+		return nil
+	case ErrorReasonValueIsNotAJSONObject:
+		*s = ErrorReasonValueIsNotAJSONObject
+		return nil
+	case ErrorReasonViewersCannotChangeSchedules:
+		*s = ErrorReasonViewersCannotChangeSchedules
+		return nil
+	case ErrorReasonViewersCannotChangeSuites:
+		*s = ErrorReasonViewersCannotChangeSuites
+		return nil
+	case ErrorReasonViewersCannotLaunchOrChangeRuns:
+		*s = ErrorReasonViewersCannotLaunchOrChangeRuns
+		return nil
+	case ErrorReasonViewersCannotShare:
+		*s = ErrorReasonViewersCannotShare
+		return nil
+	case ErrorReasonWebhookEventUnknown:
+		*s = ErrorReasonWebhookEventUnknown
+		return nil
+	case ErrorReasonWebhookNotFound:
+		*s = ErrorReasonWebhookNotFound
+		return nil
+	case ErrorReasonWindowDoesNotOverlapTheSharedRun:
+		*s = ErrorReasonWindowDoesNotOverlapTheSharedRun
+		return nil
+	case ErrorReasonWorkloadNotFound:
+		*s = ErrorReasonWorkloadNotFound
+		return nil
+	case ErrorReasonWorkloadRefAndInlineAreExclusive:
+		*s = ErrorReasonWorkloadRefAndInlineAreExclusive
+		return nil
+	case ErrorReasonYdbDiskTooSmall:
+		*s = ErrorReasonYdbDiskTooSmall
+		return nil
+	case ErrorReasonYdbMirror3dcYandexOnly:
+		*s = ErrorReasonYdbMirror3dcYandexOnly
+		return nil
+	case ErrorReasonYdbNeedsThreeZones:
+		*s = ErrorReasonYdbNeedsThreeZones
+		return nil
+	case ErrorReasonYdbStorageNodesRequired:
+		*s = ErrorReasonYdbStorageNodesRequired
+		return nil
+	case ErrorReasonYdbZoneInvalid:
+		*s = ErrorReasonYdbZoneInvalid
+		return nil
+	case ErrorReasonYdbZonesNotStrings:
+		*s = ErrorReasonYdbZonesNotStrings
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/Example
@@ -7538,12 +9872,83 @@ func (s *ListWorkloadsSort) UnmarshalText(data []byte) error {
 	}
 }
 
+// A log line level, normalized from the source severity.
+// Ref: #/components/schemas/LogLevel
+type LogLevel string
+
+const (
+	LogLevelTrace LogLevel = "trace"
+	LogLevelDebug LogLevel = "debug"
+	LogLevelInfo  LogLevel = "info"
+	LogLevelWarn  LogLevel = "warn"
+	LogLevelError LogLevel = "error"
+	LogLevelFatal LogLevel = "fatal"
+)
+
+// AllValues returns all LogLevel values.
+func (LogLevel) AllValues() []LogLevel {
+	return []LogLevel{
+		LogLevelTrace,
+		LogLevelDebug,
+		LogLevelInfo,
+		LogLevelWarn,
+		LogLevelError,
+		LogLevelFatal,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s LogLevel) MarshalText() ([]byte, error) {
+	switch s {
+	case LogLevelTrace:
+		return []byte(s), nil
+	case LogLevelDebug:
+		return []byte(s), nil
+	case LogLevelInfo:
+		return []byte(s), nil
+	case LogLevelWarn:
+		return []byte(s), nil
+	case LogLevelError:
+		return []byte(s), nil
+	case LogLevelFatal:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *LogLevel) UnmarshalText(data []byte) error {
+	switch LogLevel(data) {
+	case LogLevelTrace:
+		*s = LogLevelTrace
+		return nil
+	case LogLevelDebug:
+		*s = LogLevelDebug
+		return nil
+	case LogLevelInfo:
+		*s = LogLevelInfo
+		return nil
+	case LogLevelWarn:
+		*s = LogLevelWarn
+		return nil
+	case LogLevelError:
+		*s = LogLevelError
+		return nil
+	case LogLevelFatal:
+		*s = LogLevelFatal
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/LogLine
 type LogLine struct {
 	Time      time.Time        `json:"time"`
 	Seq       OptInt           `json:"seq"`
 	Message   string           `json:"message"`
-	Level     OptString        `json:"level"`
+	Level     OptLogLevel      `json:"level"`
 	Stream    OptString        `json:"stream"`
 	Role      OptString        `json:"role"`
 	Machine   OptString        `json:"machine"`
@@ -7569,7 +9974,7 @@ func (s *LogLine) GetMessage() string {
 }
 
 // GetLevel returns the value of Level.
-func (s *LogLine) GetLevel() OptString {
+func (s *LogLine) GetLevel() OptLogLevel {
 	return s.Level
 }
 
@@ -7624,7 +10029,7 @@ func (s *LogLine) SetMessage(val string) {
 }
 
 // SetLevel sets the value of Level.
-func (s *LogLine) SetLevel(val OptString) {
+func (s *LogLine) SetLevel(val OptLogLevel) {
 	s.Level = val
 }
 
@@ -8012,19 +10417,19 @@ func (s *MemberUser) SetAvatar(val OptString) {
 
 // Ref: #/components/schemas/MetricDef
 type MetricDef struct {
-	Key            string         `json:"key"`
+	Key            MetricKey      `json:"key"`
 	Title          string         `json:"title"`
 	Description    OptString      `json:"description"`
 	Unit           string         `json:"unit"`
 	HigherIsBetter bool           `json:"higher_is_better"`
-	Group          string         `json:"group"`
+	Group          MetricGroup    `json:"group"`
 	Scope          MetricDefScope `json:"scope"`
 	DbKinds        []DatabaseKind `json:"db_kinds"`
 	RatingEligible OptBool        `json:"rating_eligible"`
 }
 
 // GetKey returns the value of Key.
-func (s *MetricDef) GetKey() string {
+func (s *MetricDef) GetKey() MetricKey {
 	return s.Key
 }
 
@@ -8049,7 +10454,7 @@ func (s *MetricDef) GetHigherIsBetter() bool {
 }
 
 // GetGroup returns the value of Group.
-func (s *MetricDef) GetGroup() string {
+func (s *MetricDef) GetGroup() MetricGroup {
 	return s.Group
 }
 
@@ -8069,7 +10474,7 @@ func (s *MetricDef) GetRatingEligible() OptBool {
 }
 
 // SetKey sets the value of Key.
-func (s *MetricDef) SetKey(val string) {
+func (s *MetricDef) SetKey(val MetricKey) {
 	s.Key = val
 }
 
@@ -8094,7 +10499,7 @@ func (s *MetricDef) SetHigherIsBetter(val bool) {
 }
 
 // SetGroup sets the value of Group.
-func (s *MetricDef) SetGroup(val string) {
+func (s *MetricDef) SetGroup(val MetricGroup) {
 	s.Group = val
 }
 
@@ -8155,6 +10560,351 @@ func (s *MetricDefScope) UnmarshalText(data []byte) error {
 		return nil
 	case MetricDefScopeHost:
 		*s = MetricDefScopeHost
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// The group a metric is shown under; a database group reads as the product name.
+// Ref: #/components/schemas/MetricGroup
+type MetricGroup string
+
+const (
+	MetricGroupHeadline    MetricGroup = "Headline"
+	MetricGroupWorkload    MetricGroup = "Workload"
+	MetricGroupBootstrap   MetricGroup = "Bootstrap"
+	MetricGroupHost        MetricGroup = "Host"
+	MetricGroupPostgreSQL  MetricGroup = "PostgreSQL"
+	MetricGroupMySQL       MetricGroup = "MySQL"
+	MetricGroupCockroachDB MetricGroup = "CockroachDB"
+	MetricGroupPicodata    MetricGroup = "Picodata"
+)
+
+// AllValues returns all MetricGroup values.
+func (MetricGroup) AllValues() []MetricGroup {
+	return []MetricGroup{
+		MetricGroupHeadline,
+		MetricGroupWorkload,
+		MetricGroupBootstrap,
+		MetricGroupHost,
+		MetricGroupPostgreSQL,
+		MetricGroupMySQL,
+		MetricGroupCockroachDB,
+		MetricGroupPicodata,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricGroup) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricGroupHeadline:
+		return []byte(s), nil
+	case MetricGroupWorkload:
+		return []byte(s), nil
+	case MetricGroupBootstrap:
+		return []byte(s), nil
+	case MetricGroupHost:
+		return []byte(s), nil
+	case MetricGroupPostgreSQL:
+		return []byte(s), nil
+	case MetricGroupMySQL:
+		return []byte(s), nil
+	case MetricGroupCockroachDB:
+		return []byte(s), nil
+	case MetricGroupPicodata:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricGroup) UnmarshalText(data []byte) error {
+	switch MetricGroup(data) {
+	case MetricGroupHeadline:
+		*s = MetricGroupHeadline
+		return nil
+	case MetricGroupWorkload:
+		*s = MetricGroupWorkload
+		return nil
+	case MetricGroupBootstrap:
+		*s = MetricGroupBootstrap
+		return nil
+	case MetricGroupHost:
+		*s = MetricGroupHost
+		return nil
+	case MetricGroupPostgreSQL:
+		*s = MetricGroupPostgreSQL
+		return nil
+	case MetricGroupMySQL:
+		*s = MetricGroupMySQL
+		return nil
+	case MetricGroupCockroachDB:
+		*s = MetricGroupCockroachDB
+		return nil
+	case MetricGroupPicodata:
+		*s = MetricGroupPicodata
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// A metric of the catalog.
+// Ref: #/components/schemas/MetricKey
+type MetricKey string
+
+const (
+	MetricKeyTps                                       MetricKey = "tps"
+	MetricKeyQPS                                       MetricKey = "qps"
+	MetricKeyLatencyP50Ms                              MetricKey = "latency_p50_ms"
+	MetricKeyLatencyP95Ms                              MetricKey = "latency_p95_ms"
+	MetricKeyLatencyP99Ms                              MetricKey = "latency_p99_ms"
+	MetricKeyErrors                                    MetricKey = "errors"
+	MetricKeyIterationsTotal                           MetricKey = "iterations_total"
+	MetricKeyIterationsPerSecond                       MetricKey = "iterations_per_second"
+	MetricKeyQueriesPerSecond                          MetricKey = "queries_per_second"
+	MetricKeyFailedIterationsTotal                     MetricKey = "failed_iterations_total"
+	MetricKeyFailedQueriesTotal                        MetricKey = "failed_queries_total"
+	MetricKeyIterationDurationAvg                      MetricKey = "iteration_duration_avg"
+	MetricKeyIterationDurationP90                      MetricKey = "iteration_duration_p90"
+	MetricKeyIterationDurationP99                      MetricKey = "iteration_duration_p99"
+	MetricKeyLoadDurationSeconds                       MetricKey = "load_duration_seconds"
+	MetricKeyNodeCPUUsage                              MetricKey = "node_cpu_usage"
+	MetricKeyNodeMemoryUsedBytes                       MetricKey = "node_memory_used_bytes"
+	MetricKeyNodeDiskIoBytes                           MetricKey = "node_disk_io_bytes"
+	MetricKeyNodeNetworkBytes                          MetricKey = "node_network_bytes"
+	MetricKeyPgStatDatabaseXactCommit                  MetricKey = "pg_stat_database_xact_commit"
+	MetricKeyPgStatDatabaseXactRollback                MetricKey = "pg_stat_database_xact_rollback"
+	MetricKeyPgStatDatabaseBlksHitRatio                MetricKey = "pg_stat_database_blks_hit_ratio"
+	MetricKeyPgStatActivityCount                       MetricKey = "pg_stat_activity_count"
+	MetricKeyPgLocksCount                              MetricKey = "pg_locks_count"
+	MetricKeyPgReplicationLagSeconds                   MetricKey = "pg_replication_lag_seconds"
+	MetricKeyMysqlGlobalStatusQueries                  MetricKey = "mysql_global_status_queries"
+	MetricKeyMysqlGlobalStatusThreadsConnected         MetricKey = "mysql_global_status_threads_connected"
+	MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio MetricKey = "mysql_global_status_innodb_buffer_pool_hit_ratio"
+	MetricKeyMysqlSlaveStatusSecondsBehindMaster       MetricKey = "mysql_slave_status_seconds_behind_master"
+	MetricKeyCockroachSQLTxnCommitCount                MetricKey = "cockroach_sql_txn_commit_count"
+	MetricKeyCockroachSQLServiceLatencyP99             MetricKey = "cockroach_sql_service_latency_p99"
+	MetricKeyCockroachLiveNodes                        MetricKey = "cockroach_live_nodes"
+	MetricKeyPicodataInstancesOnline                   MetricKey = "picodata_instances_online"
+)
+
+// AllValues returns all MetricKey values.
+func (MetricKey) AllValues() []MetricKey {
+	return []MetricKey{
+		MetricKeyTps,
+		MetricKeyQPS,
+		MetricKeyLatencyP50Ms,
+		MetricKeyLatencyP95Ms,
+		MetricKeyLatencyP99Ms,
+		MetricKeyErrors,
+		MetricKeyIterationsTotal,
+		MetricKeyIterationsPerSecond,
+		MetricKeyQueriesPerSecond,
+		MetricKeyFailedIterationsTotal,
+		MetricKeyFailedQueriesTotal,
+		MetricKeyIterationDurationAvg,
+		MetricKeyIterationDurationP90,
+		MetricKeyIterationDurationP99,
+		MetricKeyLoadDurationSeconds,
+		MetricKeyNodeCPUUsage,
+		MetricKeyNodeMemoryUsedBytes,
+		MetricKeyNodeDiskIoBytes,
+		MetricKeyNodeNetworkBytes,
+		MetricKeyPgStatDatabaseXactCommit,
+		MetricKeyPgStatDatabaseXactRollback,
+		MetricKeyPgStatDatabaseBlksHitRatio,
+		MetricKeyPgStatActivityCount,
+		MetricKeyPgLocksCount,
+		MetricKeyPgReplicationLagSeconds,
+		MetricKeyMysqlGlobalStatusQueries,
+		MetricKeyMysqlGlobalStatusThreadsConnected,
+		MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio,
+		MetricKeyMysqlSlaveStatusSecondsBehindMaster,
+		MetricKeyCockroachSQLTxnCommitCount,
+		MetricKeyCockroachSQLServiceLatencyP99,
+		MetricKeyCockroachLiveNodes,
+		MetricKeyPicodataInstancesOnline,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s MetricKey) MarshalText() ([]byte, error) {
+	switch s {
+	case MetricKeyTps:
+		return []byte(s), nil
+	case MetricKeyQPS:
+		return []byte(s), nil
+	case MetricKeyLatencyP50Ms:
+		return []byte(s), nil
+	case MetricKeyLatencyP95Ms:
+		return []byte(s), nil
+	case MetricKeyLatencyP99Ms:
+		return []byte(s), nil
+	case MetricKeyErrors:
+		return []byte(s), nil
+	case MetricKeyIterationsTotal:
+		return []byte(s), nil
+	case MetricKeyIterationsPerSecond:
+		return []byte(s), nil
+	case MetricKeyQueriesPerSecond:
+		return []byte(s), nil
+	case MetricKeyFailedIterationsTotal:
+		return []byte(s), nil
+	case MetricKeyFailedQueriesTotal:
+		return []byte(s), nil
+	case MetricKeyIterationDurationAvg:
+		return []byte(s), nil
+	case MetricKeyIterationDurationP90:
+		return []byte(s), nil
+	case MetricKeyIterationDurationP99:
+		return []byte(s), nil
+	case MetricKeyLoadDurationSeconds:
+		return []byte(s), nil
+	case MetricKeyNodeCPUUsage:
+		return []byte(s), nil
+	case MetricKeyNodeMemoryUsedBytes:
+		return []byte(s), nil
+	case MetricKeyNodeDiskIoBytes:
+		return []byte(s), nil
+	case MetricKeyNodeNetworkBytes:
+		return []byte(s), nil
+	case MetricKeyPgStatDatabaseXactCommit:
+		return []byte(s), nil
+	case MetricKeyPgStatDatabaseXactRollback:
+		return []byte(s), nil
+	case MetricKeyPgStatDatabaseBlksHitRatio:
+		return []byte(s), nil
+	case MetricKeyPgStatActivityCount:
+		return []byte(s), nil
+	case MetricKeyPgLocksCount:
+		return []byte(s), nil
+	case MetricKeyPgReplicationLagSeconds:
+		return []byte(s), nil
+	case MetricKeyMysqlGlobalStatusQueries:
+		return []byte(s), nil
+	case MetricKeyMysqlGlobalStatusThreadsConnected:
+		return []byte(s), nil
+	case MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio:
+		return []byte(s), nil
+	case MetricKeyMysqlSlaveStatusSecondsBehindMaster:
+		return []byte(s), nil
+	case MetricKeyCockroachSQLTxnCommitCount:
+		return []byte(s), nil
+	case MetricKeyCockroachSQLServiceLatencyP99:
+		return []byte(s), nil
+	case MetricKeyCockroachLiveNodes:
+		return []byte(s), nil
+	case MetricKeyPicodataInstancesOnline:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *MetricKey) UnmarshalText(data []byte) error {
+	switch MetricKey(data) {
+	case MetricKeyTps:
+		*s = MetricKeyTps
+		return nil
+	case MetricKeyQPS:
+		*s = MetricKeyQPS
+		return nil
+	case MetricKeyLatencyP50Ms:
+		*s = MetricKeyLatencyP50Ms
+		return nil
+	case MetricKeyLatencyP95Ms:
+		*s = MetricKeyLatencyP95Ms
+		return nil
+	case MetricKeyLatencyP99Ms:
+		*s = MetricKeyLatencyP99Ms
+		return nil
+	case MetricKeyErrors:
+		*s = MetricKeyErrors
+		return nil
+	case MetricKeyIterationsTotal:
+		*s = MetricKeyIterationsTotal
+		return nil
+	case MetricKeyIterationsPerSecond:
+		*s = MetricKeyIterationsPerSecond
+		return nil
+	case MetricKeyQueriesPerSecond:
+		*s = MetricKeyQueriesPerSecond
+		return nil
+	case MetricKeyFailedIterationsTotal:
+		*s = MetricKeyFailedIterationsTotal
+		return nil
+	case MetricKeyFailedQueriesTotal:
+		*s = MetricKeyFailedQueriesTotal
+		return nil
+	case MetricKeyIterationDurationAvg:
+		*s = MetricKeyIterationDurationAvg
+		return nil
+	case MetricKeyIterationDurationP90:
+		*s = MetricKeyIterationDurationP90
+		return nil
+	case MetricKeyIterationDurationP99:
+		*s = MetricKeyIterationDurationP99
+		return nil
+	case MetricKeyLoadDurationSeconds:
+		*s = MetricKeyLoadDurationSeconds
+		return nil
+	case MetricKeyNodeCPUUsage:
+		*s = MetricKeyNodeCPUUsage
+		return nil
+	case MetricKeyNodeMemoryUsedBytes:
+		*s = MetricKeyNodeMemoryUsedBytes
+		return nil
+	case MetricKeyNodeDiskIoBytes:
+		*s = MetricKeyNodeDiskIoBytes
+		return nil
+	case MetricKeyNodeNetworkBytes:
+		*s = MetricKeyNodeNetworkBytes
+		return nil
+	case MetricKeyPgStatDatabaseXactCommit:
+		*s = MetricKeyPgStatDatabaseXactCommit
+		return nil
+	case MetricKeyPgStatDatabaseXactRollback:
+		*s = MetricKeyPgStatDatabaseXactRollback
+		return nil
+	case MetricKeyPgStatDatabaseBlksHitRatio:
+		*s = MetricKeyPgStatDatabaseBlksHitRatio
+		return nil
+	case MetricKeyPgStatActivityCount:
+		*s = MetricKeyPgStatActivityCount
+		return nil
+	case MetricKeyPgLocksCount:
+		*s = MetricKeyPgLocksCount
+		return nil
+	case MetricKeyPgReplicationLagSeconds:
+		*s = MetricKeyPgReplicationLagSeconds
+		return nil
+	case MetricKeyMysqlGlobalStatusQueries:
+		*s = MetricKeyMysqlGlobalStatusQueries
+		return nil
+	case MetricKeyMysqlGlobalStatusThreadsConnected:
+		*s = MetricKeyMysqlGlobalStatusThreadsConnected
+		return nil
+	case MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio:
+		*s = MetricKeyMysqlGlobalStatusInnodbBufferPoolHitRatio
+		return nil
+	case MetricKeyMysqlSlaveStatusSecondsBehindMaster:
+		*s = MetricKeyMysqlSlaveStatusSecondsBehindMaster
+		return nil
+	case MetricKeyCockroachSQLTxnCommitCount:
+		*s = MetricKeyCockroachSQLTxnCommitCount
+		return nil
+	case MetricKeyCockroachSQLServiceLatencyP99:
+		*s = MetricKeyCockroachSQLServiceLatencyP99
+		return nil
+	case MetricKeyCockroachLiveNodes:
+		*s = MetricKeyCockroachLiveNodes
+		return nil
+	case MetricKeyPicodataInstancesOnline:
+		*s = MetricKeyPicodataInstancesOnline
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -8893,6 +11643,52 @@ func (o OptAuditEntryDetails) Get() (v AuditEntryDetails, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptAuditEntryDetails) Or(d AuditEntryDetails) AuditEntryDetails {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptAuditTargetKind returns new OptAuditTargetKind with value set to v.
+func NewOptAuditTargetKind(v AuditTargetKind) OptAuditTargetKind {
+	return OptAuditTargetKind{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptAuditTargetKind is optional AuditTargetKind.
+type OptAuditTargetKind struct {
+	Value AuditTargetKind
+	Set   bool
+}
+
+// IsSet returns true if OptAuditTargetKind was set.
+func (o OptAuditTargetKind) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptAuditTargetKind) Reset() {
+	var v AuditTargetKind
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptAuditTargetKind) SetTo(v AuditTargetKind) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptAuditTargetKind) Get() (v AuditTargetKind, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptAuditTargetKind) Or(d AuditTargetKind) AuditTargetKind {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -9911,6 +12707,52 @@ func (o OptDateTime) Or(d time.Time) time.Time {
 	return d
 }
 
+// NewOptErrorReason returns new OptErrorReason with value set to v.
+func NewOptErrorReason(v ErrorReason) OptErrorReason {
+	return OptErrorReason{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptErrorReason is optional ErrorReason.
+type OptErrorReason struct {
+	Value ErrorReason
+	Set   bool
+}
+
+// IsSet returns true if OptErrorReason was set.
+func (o OptErrorReason) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptErrorReason) Reset() {
+	var v ErrorReason
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptErrorReason) SetTo(v ErrorReason) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptErrorReason) Get() (v ErrorReason, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptErrorReason) Or(d ErrorReason) ErrorReason {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptExampleTags returns new OptExampleTags with value set to v.
 func NewOptExampleTags(v ExampleTags) OptExampleTags {
 	return OptExampleTags{
@@ -10923,6 +13765,52 @@ func (o OptListWorkloadsSort) Or(d ListWorkloadsSort) ListWorkloadsSort {
 	return d
 }
 
+// NewOptLogLevel returns new OptLogLevel with value set to v.
+func NewOptLogLevel(v LogLevel) OptLogLevel {
+	return OptLogLevel{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptLogLevel is optional LogLevel.
+type OptLogLevel struct {
+	Value LogLevel
+	Set   bool
+}
+
+// IsSet returns true if OptLogLevel was set.
+func (o OptLogLevel) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptLogLevel) Reset() {
+	var v LogLevel
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptLogLevel) SetTo(v LogLevel) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptLogLevel) Get() (v LogLevel, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptLogLevel) Or(d LogLevel) LogLevel {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptLogLineFields returns new OptLogLineFields with value set to v.
 func NewOptLogLineFields(v LogLineFields) OptLogLineFields {
 	return OptLogLineFields{
@@ -11738,6 +14626,52 @@ func (o OptQueryRunLogsDirection) Get() (v QueryRunLogsDirection, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptQueryRunLogsDirection) Or(d QueryRunLogsDirection) QueryRunLogsDirection {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptQuotaUnit returns new OptQuotaUnit with value set to v.
+func NewOptQuotaUnit(v QuotaUnit) OptQuotaUnit {
+	return OptQuotaUnit{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptQuotaUnit is optional QuotaUnit.
+type OptQuotaUnit struct {
+	Value QuotaUnit
+	Set   bool
+}
+
+// IsSet returns true if OptQuotaUnit was set.
+func (o OptQuotaUnit) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptQuotaUnit) Reset() {
+	var v QuotaUnit
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptQuotaUnit) SetTo(v QuotaUnit) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptQuotaUnit) Get() (v QuotaUnit, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptQuotaUnit) Or(d QuotaUnit) QuotaUnit {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -15700,6 +18634,52 @@ func (o OptTopologyPreview) Or(d TopologyPreview) TopologyPreview {
 	return d
 }
 
+// NewOptTopologyRole returns new OptTopologyRole with value set to v.
+func NewOptTopologyRole(v TopologyRole) OptTopologyRole {
+	return OptTopologyRole{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptTopologyRole is optional TopologyRole.
+type OptTopologyRole struct {
+	Value TopologyRole
+	Set   bool
+}
+
+// IsSet returns true if OptTopologyRole was set.
+func (o OptTopologyRole) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptTopologyRole) Reset() {
+	var v TopologyRole
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptTopologyRole) SetTo(v TopologyRole) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptTopologyRole) Get() (v TopologyRole, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptTopologyRole) Or(d TopologyRole) TopologyRole {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptURI returns new OptURI with value set to v.
 func NewOptURI(v url.URL) OptURI {
 	return OptURI{
@@ -16678,9 +19658,9 @@ type Problem struct {
 	// Stable machine-readable code. Branch on this, never on `detail`.
 	Code string `json:"code"`
 	// Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`,
-	// `limit_concurrent_runs`, `<entity>_not_found`). Clients show their own text for it; `detail` is
+	// `provider_quota_exceeded`, `<entity>_not_found`). Clients show their own text for it; `detail` is
 	// the English fallback for an unknown reason.
-	Reason OptString `json:"reason"`
+	Reason OptErrorReason `json:"reason"`
 	// Values for the reason's text, e.g. slug=acme.
 	Params     OptProblemParams    `json:"params"`
 	RequestID  OptString           `json:"request_id"`
@@ -16718,7 +19698,7 @@ func (s *Problem) GetCode() string {
 }
 
 // GetReason returns the value of Reason.
-func (s *Problem) GetReason() OptString {
+func (s *Problem) GetReason() OptErrorReason {
 	return s.Reason
 }
 
@@ -16768,7 +19748,7 @@ func (s *Problem) SetCode(val string) {
 }
 
 // SetReason sets the value of Reason.
-func (s *Problem) SetReason(val OptString) {
+func (s *Problem) SetReason(val OptErrorReason) {
 	s.Reason = val
 }
 
@@ -17543,61 +20523,6 @@ func (s *QueryRunLogsDirection) UnmarshalText(data []byte) error {
 	}
 }
 
-type QueryRunLogsLevelItem string
-
-const (
-	QueryRunLogsLevelItemDebug QueryRunLogsLevelItem = "debug"
-	QueryRunLogsLevelItemInfo  QueryRunLogsLevelItem = "info"
-	QueryRunLogsLevelItemWarn  QueryRunLogsLevelItem = "warn"
-	QueryRunLogsLevelItemError QueryRunLogsLevelItem = "error"
-)
-
-// AllValues returns all QueryRunLogsLevelItem values.
-func (QueryRunLogsLevelItem) AllValues() []QueryRunLogsLevelItem {
-	return []QueryRunLogsLevelItem{
-		QueryRunLogsLevelItemDebug,
-		QueryRunLogsLevelItemInfo,
-		QueryRunLogsLevelItemWarn,
-		QueryRunLogsLevelItemError,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s QueryRunLogsLevelItem) MarshalText() ([]byte, error) {
-	switch s {
-	case QueryRunLogsLevelItemDebug:
-		return []byte(s), nil
-	case QueryRunLogsLevelItemInfo:
-		return []byte(s), nil
-	case QueryRunLogsLevelItemWarn:
-		return []byte(s), nil
-	case QueryRunLogsLevelItemError:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *QueryRunLogsLevelItem) UnmarshalText(data []byte) error {
-	switch QueryRunLogsLevelItem(data) {
-	case QueryRunLogsLevelItemDebug:
-		*s = QueryRunLogsLevelItemDebug
-		return nil
-	case QueryRunLogsLevelItemInfo:
-		*s = QueryRunLogsLevelItemInfo
-		return nil
-	case QueryRunLogsLevelItemWarn:
-		*s = QueryRunLogsLevelItemWarn
-		return nil
-	case QueryRunLogsLevelItemError:
-		*s = QueryRunLogsLevelItemError
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 type QueryRunLogsRawReq struct {
 	Query string      `json:"query"`
 	Start OptDateTime `json:"start"`
@@ -17758,6 +20683,190 @@ func (s *QueryRunMetricsRawReq) SetStep(val OptString) {
 	s.Step = val
 }
 
+// A provider quota the quotas pipeline reports (Yandex Cloud Quota Manager ids, AWS Service Quotas
+// names).
+// Ref: #/components/schemas/QuotaName
+type QuotaName string
+
+const (
+	QuotaNameComputeInstancesCount             QuotaName = "compute.instances.count"
+	QuotaNameComputeInstanceCoresCount         QuotaName = "compute.instanceCores.count"
+	QuotaNameComputeInstanceMemorySize         QuotaName = "compute.instanceMemory.size"
+	QuotaNameComputeSsdDisksSize               QuotaName = "compute.ssdDisks.size"
+	QuotaNameComputeHddDisksSize               QuotaName = "compute.hddDisks.size"
+	QuotaNameComputeSsdNonReplicatedDisksSize  QuotaName = "compute.ssdNonReplicatedDisks.size"
+	QuotaNameComputeSsdIOM3DisksSize           QuotaName = "compute.ssdIOM3Disks.size"
+	QuotaNameComputeInstanceHighFreqCoresCount QuotaName = "compute.instanceHighFreqCores.count"
+	QuotaNameComputeDisksCount                 QuotaName = "compute.disks.count"
+	QuotaNameVpcNetworksCount                  QuotaName = "vpc.networks.count"
+	QuotaNameVpcSubnetsCount                   QuotaName = "vpc.subnets.count"
+	QuotaNameVpcSecurityGroupsCount            QuotaName = "vpc.securityGroups.count"
+	QuotaNameVpcExternalStaticAddressesCount   QuotaName = "vpc.externalStaticAddresses.count"
+	QuotaNameEc2StandardVcpus                  QuotaName = "ec2.standard.vcpus"
+	QuotaNameEc2SpotStandardVcpus              QuotaName = "ec2.spot.standard.vcpus"
+	QuotaNameEbsGp3Storage                     QuotaName = "ebs.gp3.storage"
+	QuotaNameEbsGp2Storage                     QuotaName = "ebs.gp2.storage"
+	QuotaNameEbsIo2Storage                     QuotaName = "ebs.io2.storage"
+	QuotaNameVpcVpcs                           QuotaName = "vpc.vpcs"
+	QuotaNameVpcSecurityGroups                 QuotaName = "vpc.security_groups"
+	QuotaNameVpcInternetGateways               QuotaName = "vpc.internet_gateways"
+	QuotaNameEc2ElasticIps                     QuotaName = "ec2.elastic_ips"
+)
+
+// AllValues returns all QuotaName values.
+func (QuotaName) AllValues() []QuotaName {
+	return []QuotaName{
+		QuotaNameComputeInstancesCount,
+		QuotaNameComputeInstanceCoresCount,
+		QuotaNameComputeInstanceMemorySize,
+		QuotaNameComputeSsdDisksSize,
+		QuotaNameComputeHddDisksSize,
+		QuotaNameComputeSsdNonReplicatedDisksSize,
+		QuotaNameComputeSsdIOM3DisksSize,
+		QuotaNameComputeInstanceHighFreqCoresCount,
+		QuotaNameComputeDisksCount,
+		QuotaNameVpcNetworksCount,
+		QuotaNameVpcSubnetsCount,
+		QuotaNameVpcSecurityGroupsCount,
+		QuotaNameVpcExternalStaticAddressesCount,
+		QuotaNameEc2StandardVcpus,
+		QuotaNameEc2SpotStandardVcpus,
+		QuotaNameEbsGp3Storage,
+		QuotaNameEbsGp2Storage,
+		QuotaNameEbsIo2Storage,
+		QuotaNameVpcVpcs,
+		QuotaNameVpcSecurityGroups,
+		QuotaNameVpcInternetGateways,
+		QuotaNameEc2ElasticIps,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s QuotaName) MarshalText() ([]byte, error) {
+	switch s {
+	case QuotaNameComputeInstancesCount:
+		return []byte(s), nil
+	case QuotaNameComputeInstanceCoresCount:
+		return []byte(s), nil
+	case QuotaNameComputeInstanceMemorySize:
+		return []byte(s), nil
+	case QuotaNameComputeSsdDisksSize:
+		return []byte(s), nil
+	case QuotaNameComputeHddDisksSize:
+		return []byte(s), nil
+	case QuotaNameComputeSsdNonReplicatedDisksSize:
+		return []byte(s), nil
+	case QuotaNameComputeSsdIOM3DisksSize:
+		return []byte(s), nil
+	case QuotaNameComputeInstanceHighFreqCoresCount:
+		return []byte(s), nil
+	case QuotaNameComputeDisksCount:
+		return []byte(s), nil
+	case QuotaNameVpcNetworksCount:
+		return []byte(s), nil
+	case QuotaNameVpcSubnetsCount:
+		return []byte(s), nil
+	case QuotaNameVpcSecurityGroupsCount:
+		return []byte(s), nil
+	case QuotaNameVpcExternalStaticAddressesCount:
+		return []byte(s), nil
+	case QuotaNameEc2StandardVcpus:
+		return []byte(s), nil
+	case QuotaNameEc2SpotStandardVcpus:
+		return []byte(s), nil
+	case QuotaNameEbsGp3Storage:
+		return []byte(s), nil
+	case QuotaNameEbsGp2Storage:
+		return []byte(s), nil
+	case QuotaNameEbsIo2Storage:
+		return []byte(s), nil
+	case QuotaNameVpcVpcs:
+		return []byte(s), nil
+	case QuotaNameVpcSecurityGroups:
+		return []byte(s), nil
+	case QuotaNameVpcInternetGateways:
+		return []byte(s), nil
+	case QuotaNameEc2ElasticIps:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *QuotaName) UnmarshalText(data []byte) error {
+	switch QuotaName(data) {
+	case QuotaNameComputeInstancesCount:
+		*s = QuotaNameComputeInstancesCount
+		return nil
+	case QuotaNameComputeInstanceCoresCount:
+		*s = QuotaNameComputeInstanceCoresCount
+		return nil
+	case QuotaNameComputeInstanceMemorySize:
+		*s = QuotaNameComputeInstanceMemorySize
+		return nil
+	case QuotaNameComputeSsdDisksSize:
+		*s = QuotaNameComputeSsdDisksSize
+		return nil
+	case QuotaNameComputeHddDisksSize:
+		*s = QuotaNameComputeHddDisksSize
+		return nil
+	case QuotaNameComputeSsdNonReplicatedDisksSize:
+		*s = QuotaNameComputeSsdNonReplicatedDisksSize
+		return nil
+	case QuotaNameComputeSsdIOM3DisksSize:
+		*s = QuotaNameComputeSsdIOM3DisksSize
+		return nil
+	case QuotaNameComputeInstanceHighFreqCoresCount:
+		*s = QuotaNameComputeInstanceHighFreqCoresCount
+		return nil
+	case QuotaNameComputeDisksCount:
+		*s = QuotaNameComputeDisksCount
+		return nil
+	case QuotaNameVpcNetworksCount:
+		*s = QuotaNameVpcNetworksCount
+		return nil
+	case QuotaNameVpcSubnetsCount:
+		*s = QuotaNameVpcSubnetsCount
+		return nil
+	case QuotaNameVpcSecurityGroupsCount:
+		*s = QuotaNameVpcSecurityGroupsCount
+		return nil
+	case QuotaNameVpcExternalStaticAddressesCount:
+		*s = QuotaNameVpcExternalStaticAddressesCount
+		return nil
+	case QuotaNameEc2StandardVcpus:
+		*s = QuotaNameEc2StandardVcpus
+		return nil
+	case QuotaNameEc2SpotStandardVcpus:
+		*s = QuotaNameEc2SpotStandardVcpus
+		return nil
+	case QuotaNameEbsGp3Storage:
+		*s = QuotaNameEbsGp3Storage
+		return nil
+	case QuotaNameEbsGp2Storage:
+		*s = QuotaNameEbsGp2Storage
+		return nil
+	case QuotaNameEbsIo2Storage:
+		*s = QuotaNameEbsIo2Storage
+		return nil
+	case QuotaNameVpcVpcs:
+		*s = QuotaNameVpcVpcs
+		return nil
+	case QuotaNameVpcSecurityGroups:
+		*s = QuotaNameVpcSecurityGroups
+		return nil
+	case QuotaNameVpcInternetGateways:
+		*s = QuotaNameVpcInternetGateways
+		return nil
+	case QuotaNameEc2ElasticIps:
+		*s = QuotaNameEc2ElasticIps
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/QuotaReport
 type QuotaReport struct {
 	ObservedAt NilDateTime `json:"observed_at"`
@@ -17822,16 +20931,16 @@ func (s *QuotaReport) SetQuotas(val []QuotaReportQuotasItem) {
 }
 
 type QuotaReportQuotasItem struct {
-	Name  string    `json:"name"`
-	Title OptString `json:"title"`
-	Unit  OptString `json:"unit"`
-	Limit float64   `json:"limit"`
-	Used  float64   `json:"used"`
-	Zone  OptString `json:"zone"`
+	Name  QuotaName    `json:"name"`
+	Title OptString    `json:"title"`
+	Unit  OptQuotaUnit `json:"unit"`
+	Limit float64      `json:"limit"`
+	Used  float64      `json:"used"`
+	Zone  OptString    `json:"zone"`
 }
 
 // GetName returns the value of Name.
-func (s *QuotaReportQuotasItem) GetName() string {
+func (s *QuotaReportQuotasItem) GetName() QuotaName {
 	return s.Name
 }
 
@@ -17841,7 +20950,7 @@ func (s *QuotaReportQuotasItem) GetTitle() OptString {
 }
 
 // GetUnit returns the value of Unit.
-func (s *QuotaReportQuotasItem) GetUnit() OptString {
+func (s *QuotaReportQuotasItem) GetUnit() OptQuotaUnit {
 	return s.Unit
 }
 
@@ -17861,7 +20970,7 @@ func (s *QuotaReportQuotasItem) GetZone() OptString {
 }
 
 // SetName sets the value of Name.
-func (s *QuotaReportQuotasItem) SetName(val string) {
+func (s *QuotaReportQuotasItem) SetName(val QuotaName) {
 	s.Name = val
 }
 
@@ -17871,7 +20980,7 @@ func (s *QuotaReportQuotasItem) SetTitle(val OptString) {
 }
 
 // SetUnit sets the value of Unit.
-func (s *QuotaReportQuotasItem) SetUnit(val OptString) {
+func (s *QuotaReportQuotasItem) SetUnit(val OptQuotaUnit) {
 	s.Unit = val
 }
 
@@ -17888,6 +20997,126 @@ func (s *QuotaReportQuotasItem) SetUsed(val float64) {
 // SetZone sets the value of Zone.
 func (s *QuotaReportQuotasItem) SetZone(val OptString) {
 	s.Zone = val
+}
+
+// The unit of a provider quota.
+// Ref: #/components/schemas/QuotaUnit
+type QuotaUnit string
+
+const (
+	QuotaUnitInstances      QuotaUnit = "instances"
+	QuotaUnitCores          QuotaUnit = "cores"
+	QuotaUnitBytes          QuotaUnit = "bytes"
+	QuotaUnitDisks          QuotaUnit = "disks"
+	QuotaUnitNetworks       QuotaUnit = "networks"
+	QuotaUnitSubnets        QuotaUnit = "subnets"
+	QuotaUnitSecurityGroups QuotaUnit = "security-groups"
+	QuotaUnitAddresses      QuotaUnit = "addresses"
+	QuotaUnitVcpus          QuotaUnit = "vcpus"
+	QuotaUnitTib            QuotaUnit = "tib"
+	QuotaUnitVpcs           QuotaUnit = "vpcs"
+	QuotaUnitGroups         QuotaUnit = "groups"
+	QuotaUnitGateways       QuotaUnit = "gateways"
+)
+
+// AllValues returns all QuotaUnit values.
+func (QuotaUnit) AllValues() []QuotaUnit {
+	return []QuotaUnit{
+		QuotaUnitInstances,
+		QuotaUnitCores,
+		QuotaUnitBytes,
+		QuotaUnitDisks,
+		QuotaUnitNetworks,
+		QuotaUnitSubnets,
+		QuotaUnitSecurityGroups,
+		QuotaUnitAddresses,
+		QuotaUnitVcpus,
+		QuotaUnitTib,
+		QuotaUnitVpcs,
+		QuotaUnitGroups,
+		QuotaUnitGateways,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s QuotaUnit) MarshalText() ([]byte, error) {
+	switch s {
+	case QuotaUnitInstances:
+		return []byte(s), nil
+	case QuotaUnitCores:
+		return []byte(s), nil
+	case QuotaUnitBytes:
+		return []byte(s), nil
+	case QuotaUnitDisks:
+		return []byte(s), nil
+	case QuotaUnitNetworks:
+		return []byte(s), nil
+	case QuotaUnitSubnets:
+		return []byte(s), nil
+	case QuotaUnitSecurityGroups:
+		return []byte(s), nil
+	case QuotaUnitAddresses:
+		return []byte(s), nil
+	case QuotaUnitVcpus:
+		return []byte(s), nil
+	case QuotaUnitTib:
+		return []byte(s), nil
+	case QuotaUnitVpcs:
+		return []byte(s), nil
+	case QuotaUnitGroups:
+		return []byte(s), nil
+	case QuotaUnitGateways:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *QuotaUnit) UnmarshalText(data []byte) error {
+	switch QuotaUnit(data) {
+	case QuotaUnitInstances:
+		*s = QuotaUnitInstances
+		return nil
+	case QuotaUnitCores:
+		*s = QuotaUnitCores
+		return nil
+	case QuotaUnitBytes:
+		*s = QuotaUnitBytes
+		return nil
+	case QuotaUnitDisks:
+		*s = QuotaUnitDisks
+		return nil
+	case QuotaUnitNetworks:
+		*s = QuotaUnitNetworks
+		return nil
+	case QuotaUnitSubnets:
+		*s = QuotaUnitSubnets
+		return nil
+	case QuotaUnitSecurityGroups:
+		*s = QuotaUnitSecurityGroups
+		return nil
+	case QuotaUnitAddresses:
+		*s = QuotaUnitAddresses
+		return nil
+	case QuotaUnitVcpus:
+		*s = QuotaUnitVcpus
+		return nil
+	case QuotaUnitTib:
+		*s = QuotaUnitTib
+		return nil
+	case QuotaUnitVpcs:
+		*s = QuotaUnitVpcs
+		return nil
+	case QuotaUnitGroups:
+		*s = QuotaUnitGroups
+		return nil
+	case QuotaUnitGateways:
+		*s = QuotaUnitGateways
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/RatingEntry
@@ -19127,11 +22356,10 @@ func (s *RunBaselineResultVerdictsItem) SetDetail(val OptString) {
 
 // Ref: #/components/schemas/RunEvent
 type RunEvent struct {
-	ID string    `json:"id"`
-	At time.Time `json:"at"`
-	// Run.*, phase.*, segment.*, machine.*, component.*, activity.*.
-	Kind  string `json:"kind"`
-	Title string `json:"title"`
+	ID    string       `json:"id"`
+	At    time.Time    `json:"at"`
+	Kind  RunEventKind `json:"kind"`
+	Title string       `json:"title"`
 	// Graphene ref or role/machine.
 	Subject OptString          `json:"subject"`
 	Status  OptString          `json:"status"`
@@ -19153,7 +22381,7 @@ func (s *RunEvent) GetAt() time.Time {
 }
 
 // GetKind returns the value of Kind.
-func (s *RunEvent) GetKind() string {
+func (s *RunEvent) GetKind() RunEventKind {
 	return s.Kind
 }
 
@@ -19203,7 +22431,7 @@ func (s *RunEvent) SetAt(val time.Time) {
 }
 
 // SetKind sets the value of Kind.
-func (s *RunEvent) SetKind(val string) {
+func (s *RunEvent) SetKind(val RunEventKind) {
 	s.Kind = val
 }
 
@@ -19240,6 +22468,176 @@ func (s *RunEvent) SetPayload(val OptRunEventPayload) {
 // SetLogRef sets the value of LogRef.
 func (s *RunEvent) SetLogRef(val OptRunEventLogRef) {
 	s.LogRef = val
+}
+
+// A run timeline event: Graphene's run lifecycle (run-*), a failed step (activity-*), or a pipeline
+// milestone.
+// Ref: #/components/schemas/RunEventKind
+type RunEventKind string
+
+const (
+	RunEventKindRunStarted       RunEventKind = "run-started"
+	RunEventKindRunCompleted     RunEventKind = "run-completed"
+	RunEventKindRunFailed        RunEventKind = "run-failed"
+	RunEventKindRunTimedOut      RunEventKind = "run-timed-out"
+	RunEventKindRunTerminated    RunEventKind = "run-terminated"
+	RunEventKindRunCancelled     RunEventKind = "run-cancelled"
+	RunEventKindActivityFailed   RunEventKind = "activity-failed"
+	RunEventKindActivityTimedOut RunEventKind = "activity-timed-out"
+	RunEventKindPhaseStarted     RunEventKind = "phase.started"
+	RunEventKindPhaseFinished    RunEventKind = "phase.finished"
+	RunEventKindPhaseFailed      RunEventKind = "phase.failed"
+	RunEventKindMachineReady     RunEventKind = "machine.ready"
+	RunEventKindContainerReady   RunEventKind = "container.ready"
+	RunEventKindSegmentStarted   RunEventKind = "segment.started"
+	RunEventKindSegmentFinished  RunEventKind = "segment.finished"
+	RunEventKindSegmentFailed    RunEventKind = "segment.failed"
+	RunEventKindBaselineStarted  RunEventKind = "baseline.started"
+	RunEventKindBaselineFinished RunEventKind = "baseline.finished"
+	RunEventKindStandKept        RunEventKind = "stand.kept"
+	RunEventKindResultPublished  RunEventKind = "result.published"
+)
+
+// AllValues returns all RunEventKind values.
+func (RunEventKind) AllValues() []RunEventKind {
+	return []RunEventKind{
+		RunEventKindRunStarted,
+		RunEventKindRunCompleted,
+		RunEventKindRunFailed,
+		RunEventKindRunTimedOut,
+		RunEventKindRunTerminated,
+		RunEventKindRunCancelled,
+		RunEventKindActivityFailed,
+		RunEventKindActivityTimedOut,
+		RunEventKindPhaseStarted,
+		RunEventKindPhaseFinished,
+		RunEventKindPhaseFailed,
+		RunEventKindMachineReady,
+		RunEventKindContainerReady,
+		RunEventKindSegmentStarted,
+		RunEventKindSegmentFinished,
+		RunEventKindSegmentFailed,
+		RunEventKindBaselineStarted,
+		RunEventKindBaselineFinished,
+		RunEventKindStandKept,
+		RunEventKindResultPublished,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s RunEventKind) MarshalText() ([]byte, error) {
+	switch s {
+	case RunEventKindRunStarted:
+		return []byte(s), nil
+	case RunEventKindRunCompleted:
+		return []byte(s), nil
+	case RunEventKindRunFailed:
+		return []byte(s), nil
+	case RunEventKindRunTimedOut:
+		return []byte(s), nil
+	case RunEventKindRunTerminated:
+		return []byte(s), nil
+	case RunEventKindRunCancelled:
+		return []byte(s), nil
+	case RunEventKindActivityFailed:
+		return []byte(s), nil
+	case RunEventKindActivityTimedOut:
+		return []byte(s), nil
+	case RunEventKindPhaseStarted:
+		return []byte(s), nil
+	case RunEventKindPhaseFinished:
+		return []byte(s), nil
+	case RunEventKindPhaseFailed:
+		return []byte(s), nil
+	case RunEventKindMachineReady:
+		return []byte(s), nil
+	case RunEventKindContainerReady:
+		return []byte(s), nil
+	case RunEventKindSegmentStarted:
+		return []byte(s), nil
+	case RunEventKindSegmentFinished:
+		return []byte(s), nil
+	case RunEventKindSegmentFailed:
+		return []byte(s), nil
+	case RunEventKindBaselineStarted:
+		return []byte(s), nil
+	case RunEventKindBaselineFinished:
+		return []byte(s), nil
+	case RunEventKindStandKept:
+		return []byte(s), nil
+	case RunEventKindResultPublished:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *RunEventKind) UnmarshalText(data []byte) error {
+	switch RunEventKind(data) {
+	case RunEventKindRunStarted:
+		*s = RunEventKindRunStarted
+		return nil
+	case RunEventKindRunCompleted:
+		*s = RunEventKindRunCompleted
+		return nil
+	case RunEventKindRunFailed:
+		*s = RunEventKindRunFailed
+		return nil
+	case RunEventKindRunTimedOut:
+		*s = RunEventKindRunTimedOut
+		return nil
+	case RunEventKindRunTerminated:
+		*s = RunEventKindRunTerminated
+		return nil
+	case RunEventKindRunCancelled:
+		*s = RunEventKindRunCancelled
+		return nil
+	case RunEventKindActivityFailed:
+		*s = RunEventKindActivityFailed
+		return nil
+	case RunEventKindActivityTimedOut:
+		*s = RunEventKindActivityTimedOut
+		return nil
+	case RunEventKindPhaseStarted:
+		*s = RunEventKindPhaseStarted
+		return nil
+	case RunEventKindPhaseFinished:
+		*s = RunEventKindPhaseFinished
+		return nil
+	case RunEventKindPhaseFailed:
+		*s = RunEventKindPhaseFailed
+		return nil
+	case RunEventKindMachineReady:
+		*s = RunEventKindMachineReady
+		return nil
+	case RunEventKindContainerReady:
+		*s = RunEventKindContainerReady
+		return nil
+	case RunEventKindSegmentStarted:
+		*s = RunEventKindSegmentStarted
+		return nil
+	case RunEventKindSegmentFinished:
+		*s = RunEventKindSegmentFinished
+		return nil
+	case RunEventKindSegmentFailed:
+		*s = RunEventKindSegmentFailed
+		return nil
+	case RunEventKindBaselineStarted:
+		*s = RunEventKindBaselineStarted
+		return nil
+	case RunEventKindBaselineFinished:
+		*s = RunEventKindBaselineFinished
+		return nil
+	case RunEventKindStandKept:
+		*s = RunEventKindStandKept
+		return nil
+	case RunEventKindResultPublished:
+		*s = RunEventKindResultPublished
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Deep link into the logs.
@@ -19728,7 +23126,7 @@ func (s *RunOverview) SetPendingActivity(val OptRunOverviewPendingActivity) {
 
 type RunOverviewComponentsItem struct {
 	ID        string                                   `json:"id"`
-	Role      string                                   `json:"role"`
+	Role      TopologyRole                             `json:"role"`
 	Engine    OptString                                `json:"engine"`
 	Image     OptString                                `json:"image"`
 	Machine   string                                   `json:"machine"`
@@ -19743,7 +23141,7 @@ func (s *RunOverviewComponentsItem) GetID() string {
 }
 
 // GetRole returns the value of Role.
-func (s *RunOverviewComponentsItem) GetRole() string {
+func (s *RunOverviewComponentsItem) GetRole() TopologyRole {
 	return s.Role
 }
 
@@ -19783,7 +23181,7 @@ func (s *RunOverviewComponentsItem) SetID(val string) {
 }
 
 // SetRole sets the value of Role.
-func (s *RunOverviewComponentsItem) SetRole(val string) {
+func (s *RunOverviewComponentsItem) SetRole(val TopologyRole) {
 	s.Role = val
 }
 
@@ -19971,7 +23369,7 @@ func (s *RunOverviewFlowsItem) SetPort(val OptInt) {
 
 type RunOverviewMachinesItem struct {
 	Name               string                          `json:"name"`
-	Role               string                          `json:"role"`
+	Role               TopologyRole                    `json:"role"`
 	Status             RunOverviewMachinesItemStatus   `json:"status"`
 	Presence           RunOverviewMachinesItemPresence `json:"presence"`
 	AgentID            OptString                       `json:"agent_id"`
@@ -19988,7 +23386,7 @@ func (s *RunOverviewMachinesItem) GetName() string {
 }
 
 // GetRole returns the value of Role.
-func (s *RunOverviewMachinesItem) GetRole() string {
+func (s *RunOverviewMachinesItem) GetRole() TopologyRole {
 	return s.Role
 }
 
@@ -20038,7 +23436,7 @@ func (s *RunOverviewMachinesItem) SetName(val string) {
 }
 
 // SetRole sets the value of Role.
-func (s *RunOverviewMachinesItem) SetRole(val string) {
+func (s *RunOverviewMachinesItem) SetRole(val TopologyRole) {
 	s.Role = val
 }
 
@@ -21367,15 +24765,15 @@ func (s *RunSnapshotEffectiveConfigsItem) init() RunSnapshotEffectiveConfigsItem
 }
 
 type RunSnapshotMachinesItem struct {
-	Name         string    `json:"name"`
-	Role         string    `json:"role"`
-	Size         Size      `json:"size"`
-	CPU          OptInt    `json:"cpu"`
-	MemoryGB     OptInt    `json:"memory_gb"`
-	DiskGB       OptInt    `json:"disk_gb"`
-	DiskType     OptString `json:"disk_type"`
-	InstanceType OptString `json:"instance_type"`
-	Location     OptString `json:"location"`
+	Name         string       `json:"name"`
+	Role         TopologyRole `json:"role"`
+	Size         Size         `json:"size"`
+	CPU          OptInt       `json:"cpu"`
+	MemoryGB     OptInt       `json:"memory_gb"`
+	DiskGB       OptInt       `json:"disk_gb"`
+	DiskType     OptString    `json:"disk_type"`
+	InstanceType OptString    `json:"instance_type"`
+	Location     OptString    `json:"location"`
 }
 
 // GetName returns the value of Name.
@@ -21384,7 +24782,7 @@ func (s *RunSnapshotMachinesItem) GetName() string {
 }
 
 // GetRole returns the value of Role.
-func (s *RunSnapshotMachinesItem) GetRole() string {
+func (s *RunSnapshotMachinesItem) GetRole() TopologyRole {
 	return s.Role
 }
 
@@ -21429,7 +24827,7 @@ func (s *RunSnapshotMachinesItem) SetName(val string) {
 }
 
 // SetRole sets the value of Role.
-func (s *RunSnapshotMachinesItem) SetRole(val string) {
+func (s *RunSnapshotMachinesItem) SetRole(val TopologyRole) {
 	s.Role = val
 }
 
@@ -28359,16 +31757,16 @@ func (s *TestValidationEstimated) SetMachines(val []TestValidationEstimatedMachi
 }
 
 type TestValidationEstimatedMachinesItem struct {
-	Role     OptString `json:"role"`
-	Count    OptInt    `json:"count"`
-	Size     OptSize   `json:"size"`
-	CPU      OptInt    `json:"cpu"`
-	MemoryGB OptInt    `json:"memory_gb"`
-	DiskGB   OptInt    `json:"disk_gb"`
+	Role     OptTopologyRole `json:"role"`
+	Count    OptInt          `json:"count"`
+	Size     OptSize         `json:"size"`
+	CPU      OptInt          `json:"cpu"`
+	MemoryGB OptInt          `json:"memory_gb"`
+	DiskGB   OptInt          `json:"disk_gb"`
 }
 
 // GetRole returns the value of Role.
-func (s *TestValidationEstimatedMachinesItem) GetRole() OptString {
+func (s *TestValidationEstimatedMachinesItem) GetRole() OptTopologyRole {
 	return s.Role
 }
 
@@ -28398,7 +31796,7 @@ func (s *TestValidationEstimatedMachinesItem) GetDiskGB() OptInt {
 }
 
 // SetRole sets the value of Role.
-func (s *TestValidationEstimatedMachinesItem) SetRole(val OptString) {
+func (s *TestValidationEstimatedMachinesItem) SetRole(val OptTopologyRole) {
 	s.Role = val
 }
 
@@ -28961,14 +32359,14 @@ func (s *TopologyPreviewFlowsItem) SetPort(val OptInt) {
 }
 
 type TopologyPreviewNodesItem struct {
-	Role          string    `json:"role"`
-	Engine        OptString `json:"engine"`
-	Count         int       `json:"count"`
-	ColocatedWith OptString `json:"colocated_with"`
+	Role          TopologyRole `json:"role"`
+	Engine        OptString    `json:"engine"`
+	Count         int          `json:"count"`
+	ColocatedWith OptString    `json:"colocated_with"`
 }
 
 // GetRole returns the value of Role.
-func (s *TopologyPreviewNodesItem) GetRole() string {
+func (s *TopologyPreviewNodesItem) GetRole() TopologyRole {
 	return s.Role
 }
 
@@ -28988,7 +32386,7 @@ func (s *TopologyPreviewNodesItem) GetColocatedWith() OptString {
 }
 
 // SetRole sets the value of Role.
-func (s *TopologyPreviewNodesItem) SetRole(val string) {
+func (s *TopologyPreviewNodesItem) SetRole(val TopologyRole) {
 	s.Role = val
 }
 
@@ -29005,6 +32403,105 @@ func (s *TopologyPreviewNodesItem) SetCount(val int) {
 // SetColocatedWith sets the value of ColocatedWith.
 func (s *TopologyPreviewNodesItem) SetColocatedWith(val OptString) {
 	s.ColocatedWith = val
+}
+
+// The role of a machine or container in a database topology.
+// Ref: #/components/schemas/TopologyRole
+type TopologyRole string
+
+const (
+	TopologyRoleDb             TopologyRole = "db"
+	TopologyRoleDbReplica      TopologyRole = "db-replica"
+	TopologyRoleDbCompute      TopologyRole = "db-compute"
+	TopologyRoleEtcd           TopologyRole = "etcd"
+	TopologyRoleProxy          TopologyRole = "proxy"
+	TopologyRoleRunner         TopologyRole = "runner"
+	TopologyRoleCoordinator    TopologyRole = "coordinator"
+	TopologyRolePatroni        TopologyRole = "patroni"
+	TopologyRolePatroniReplica TopologyRole = "patroni-replica"
+	TopologyRolePgbouncer      TopologyRole = "pgbouncer"
+)
+
+// AllValues returns all TopologyRole values.
+func (TopologyRole) AllValues() []TopologyRole {
+	return []TopologyRole{
+		TopologyRoleDb,
+		TopologyRoleDbReplica,
+		TopologyRoleDbCompute,
+		TopologyRoleEtcd,
+		TopologyRoleProxy,
+		TopologyRoleRunner,
+		TopologyRoleCoordinator,
+		TopologyRolePatroni,
+		TopologyRolePatroniReplica,
+		TopologyRolePgbouncer,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s TopologyRole) MarshalText() ([]byte, error) {
+	switch s {
+	case TopologyRoleDb:
+		return []byte(s), nil
+	case TopologyRoleDbReplica:
+		return []byte(s), nil
+	case TopologyRoleDbCompute:
+		return []byte(s), nil
+	case TopologyRoleEtcd:
+		return []byte(s), nil
+	case TopologyRoleProxy:
+		return []byte(s), nil
+	case TopologyRoleRunner:
+		return []byte(s), nil
+	case TopologyRoleCoordinator:
+		return []byte(s), nil
+	case TopologyRolePatroni:
+		return []byte(s), nil
+	case TopologyRolePatroniReplica:
+		return []byte(s), nil
+	case TopologyRolePgbouncer:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *TopologyRole) UnmarshalText(data []byte) error {
+	switch TopologyRole(data) {
+	case TopologyRoleDb:
+		*s = TopologyRoleDb
+		return nil
+	case TopologyRoleDbReplica:
+		*s = TopologyRoleDbReplica
+		return nil
+	case TopologyRoleDbCompute:
+		*s = TopologyRoleDbCompute
+		return nil
+	case TopologyRoleEtcd:
+		*s = TopologyRoleEtcd
+		return nil
+	case TopologyRoleProxy:
+		*s = TopologyRoleProxy
+		return nil
+	case TopologyRoleRunner:
+		*s = TopologyRoleRunner
+		return nil
+	case TopologyRoleCoordinator:
+		*s = TopologyRoleCoordinator
+		return nil
+	case TopologyRolePatroni:
+		*s = TopologyRolePatroni
+		return nil
+	case TopologyRolePatroniReplica:
+		*s = TopologyRolePatroniReplica
+		return nil
+	case TopologyRolePgbouncer:
+		*s = TopologyRolePgbouncer
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type TransferTenantReq struct {

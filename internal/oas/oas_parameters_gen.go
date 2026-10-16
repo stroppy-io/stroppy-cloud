@@ -8079,24 +8079,17 @@ func decodeGetCatalogMetricsParams(args [0]string, argsEscaped bool, r *http.Req
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
 				var paramsDotDbKindVal DatabaseKind
 				if err := func() error {
-					var paramsDotDbKindValVal string
-					if err := func() error {
-						val, err := d.DecodeValue()
-						if err != nil {
-							return err
-						}
-
-						c, err := conv.ToString(val)
-						if err != nil {
-							return err
-						}
-
-						paramsDotDbKindValVal = c
-						return nil
-					}(); err != nil {
+					val, err := d.DecodeValue()
+					if err != nil {
 						return err
 					}
-					paramsDotDbKindVal = DatabaseKind(paramsDotDbKindValVal)
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotDbKindVal = DatabaseKind(c)
 					return nil
 				}(); err != nil {
 					return err
@@ -8787,24 +8780,17 @@ func decodeGetPublicRatingParams(args [0]string, argsEscaped bool, r *http.Reque
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotKindVal DatabaseKind
 					if err := func() error {
-						var paramsDotKindValVal string
-						if err := func() error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							paramsDotKindValVal = c
-							return nil
-						}(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
-						paramsDotKindVal = DatabaseKind(paramsDotKindValVal)
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotKindVal = DatabaseKind(c)
 						return nil
 					}(); err != nil {
 						return err
@@ -11919,24 +11905,17 @@ func decodeGetTenantRatingParams(args [1]string, argsEscaped bool, r *http.Reque
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotKindVal DatabaseKind
 					if err := func() error {
-						var paramsDotKindValVal string
-						if err := func() error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							paramsDotKindValVal = c
-							return nil
-						}(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
-						paramsDotKindVal = DatabaseKind(paramsDotKindValVal)
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotKindVal = DatabaseKind(c)
 						return nil
 					}(); err != nil {
 						return err
@@ -13967,24 +13946,17 @@ func decodeListDatabasesParams(args [1]string, argsEscaped bool, r *http.Request
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotKindVal DatabaseKind
 					if err := func() error {
-						var paramsDotKindValVal string
-						if err := func() error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							paramsDotKindValVal = c
-							return nil
-						}(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
-						paramsDotKindVal = DatabaseKind(paramsDotKindValVal)
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotKindVal = DatabaseKind(c)
 						return nil
 					}(); err != nil {
 						return err
@@ -14388,24 +14360,17 @@ func decodeListExamplesParams(args [0]string, argsEscaped bool, r *http.Request)
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
 				var paramsDotDbKindVal DatabaseKind
 				if err := func() error {
-					var paramsDotDbKindValVal string
-					if err := func() error {
-						val, err := d.DecodeValue()
-						if err != nil {
-							return err
-						}
-
-						c, err := conv.ToString(val)
-						if err != nil {
-							return err
-						}
-
-						paramsDotDbKindValVal = c
-						return nil
-					}(); err != nil {
+					val, err := d.DecodeValue()
+					if err != nil {
 						return err
 					}
-					paramsDotDbKindVal = DatabaseKind(paramsDotDbKindValVal)
+
+					c, err := conv.ToString(val)
+					if err != nil {
+						return err
+					}
+
+					paramsDotDbKindVal = DatabaseKind(c)
 					return nil
 				}(); err != nil {
 					return err
@@ -15730,24 +15695,17 @@ func decodeListRunsParams(args [1]string, argsEscaped bool, r *http.Request) (pa
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotKindVal DatabaseKind
 					if err := func() error {
-						var paramsDotKindValVal string
-						if err := func() error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							paramsDotKindValVal = c
-							return nil
-						}(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
-						paramsDotKindVal = DatabaseKind(paramsDotKindValVal)
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotKindVal = DatabaseKind(c)
 						return nil
 					}(); err != nil {
 						return err
@@ -21087,24 +21045,17 @@ func decodeListTestsParams(args [1]string, argsEscaped bool, r *http.Request) (p
 				return d.DecodeArray(func(d uri.Decoder) error {
 					var paramsDotKindVal DatabaseKind
 					if err := func() error {
-						var paramsDotKindValVal string
-						if err := func() error {
-							val, err := d.DecodeValue()
-							if err != nil {
-								return err
-							}
-
-							c, err := conv.ToString(val)
-							if err != nil {
-								return err
-							}
-
-							paramsDotKindValVal = c
-							return nil
-						}(); err != nil {
+						val, err := d.DecodeValue()
+						if err != nil {
 							return err
 						}
-						paramsDotKindVal = DatabaseKind(paramsDotKindValVal)
+
+						c, err := conv.ToString(val)
+						if err != nil {
+							return err
+						}
+
+						paramsDotKindVal = DatabaseKind(c)
 						return nil
 					}(); err != nil {
 						return err
@@ -24594,7 +24545,7 @@ type QueryRunLogsParams struct {
 	Stream    []QueryRunLogsStreamItem `json:",omitempty"`
 	Phase     []string                 `json:",omitempty"`
 	Segment   OptString                `json:",omitempty,omitzero"`
-	Level     []QueryRunLogsLevelItem  `json:",omitempty"`
+	Level     []LogLevel               `json:",omitempty"`
 	Start     OptDateTime              `json:",omitempty,omitzero"`
 	End       OptDateTime              `json:",omitempty,omitzero"`
 	// Substring / phrase search.
@@ -24680,7 +24631,7 @@ func unpackQueryRunLogsParams(packed middleware.Parameters) (params QueryRunLogs
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Level = v.([]QueryRunLogsLevelItem)
+			params.Level = v.([]LogLevel)
 		}
 	}
 	{
@@ -25141,7 +25092,7 @@ func decodeQueryRunLogsParams(args [2]string, argsEscaped bool, r *http.Request)
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
 				return d.DecodeArray(func(d uri.Decoder) error {
-					var paramsDotLevelVal QueryRunLogsLevelItem
+					var paramsDotLevelVal LogLevel
 					if err := func() error {
 						val, err := d.DecodeValue()
 						if err != nil {
@@ -25153,7 +25104,7 @@ func decodeQueryRunLogsParams(args [2]string, argsEscaped bool, r *http.Request)
 							return err
 						}
 
-						paramsDotLevelVal = QueryRunLogsLevelItem(c)
+						paramsDotLevelVal = LogLevel(c)
 						return nil
 					}(); err != nil {
 						return err

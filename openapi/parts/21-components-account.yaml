@@ -249,11 +249,11 @@ components:
             id: { type: string }
             display_name: { type: string }
         tenant: { $ref: '#/components/schemas/Ref' }
-        action: { type: string, example: run.launch }
+        action: { $ref: '#/components/schemas/AuditAction' }
         target:
           type: object
           properties:
-            kind: { type: string }
+            kind: { $ref: '#/components/schemas/AuditTargetKind' }
             id: { type: string }
             name: { type: string }
         details: { type: object, additionalProperties: true }

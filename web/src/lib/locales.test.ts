@@ -12,6 +12,8 @@ const LATIN_BY_DESIGN = new Set([
   'common.fields.cron',
   'common.lang.en',
   'common.topologyRole.etcd',
+  'common.topologyRole.patroni',
+  'common.topologyRole.pgbouncer',
   'common.quota.ec2_spot_standard_vcpus',
   'common.quota.vpc_vpcs',
   'common.quota.ec2_elastic_ips',

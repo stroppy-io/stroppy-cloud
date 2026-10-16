@@ -67,8 +67,9 @@ generate-go: openapi ## Generate the ogen server/client into internal/oas
 	python3 scripts/openapi_to_30.py $(OPENAPI) $(OPENAPI_30)
 	$(OGEN) --config .ogen.yaml --target internal/oas --package oas --clean $(OPENAPI_30)
 
-generate-ts: openapi ## Generate TypeScript API types into web/src/api
+generate-ts: openapi ## Generate TypeScript API types (and enum value lists) into web/src/api
 	cd web && yarn generate
+	python3 scripts/openapi_enums.py $(OPENAPI) web/src/api/enums.ts
 
 .PHONY: contract-check
 contract-check: ## Verify the reviewed contract and the browser JSON boundary

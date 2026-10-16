@@ -53,8 +53,8 @@ function hasDetails(e: AuditEntry): boolean {
   return !!e.details && Object.keys(e.details).length > 0
 }
 
-// internal/domain/audit/uitext_test.go keeps every action and target kind
-// the server records covered in `settings.audit.actions` / `.targetKinds`.
+// The contract's AuditAction / AuditTargetKind; lib/vocab.test.ts keeps every
+// value covered in `settings.audit.actions` / `.targetKinds`.
 function actionLabel(t: TFunction, action: string): string {
   return t(`settings.audit.actions.${action.replace(/\./g, '_')}`, { defaultValue: action })
 }

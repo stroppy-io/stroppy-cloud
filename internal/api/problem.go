@@ -97,7 +97,7 @@ func (h *Handler) NewError(ctx context.Context, err error) *oas.ProblemStatusCod
 		p.Detail = oas.NewOptString(detail)
 	}
 	if domain != nil && domain.Reason != "" {
-		p.Reason = oas.NewOptString(domain.Reason)
+		p.Reason = oas.NewOptErrorReason(oas.ErrorReason(domain.Reason))
 		if len(domain.Params) > 0 {
 			p.Params = oas.NewOptProblemParams(oas.ProblemParams(domain.Params))
 		}

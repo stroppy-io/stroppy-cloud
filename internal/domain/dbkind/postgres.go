@@ -83,8 +83,8 @@ func planPostgres(p *topology.Plan, kind catalog.DatabaseKind, params map[string
 	p.Add(topology.RoleDBReplica, engine, replicas)
 	if ha == "patroni" {
 		p.Add(topology.RoleEtcd, "etcd", topology.IntOf(params, "etcd_nodes", 3))
-		p.Colocate("patroni", "patroni", topology.RoleDB)
-		p.Colocate("patroni-replica", "patroni", topology.RoleDBReplica)
+		p.Colocate(topology.RolePatroni, "patroni", topology.RoleDB)
+		p.Colocate(topology.RolePatroniReplica, "patroni", topology.RoleDBReplica)
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleEtcd, To: topology.RoleEtcd, Protocol: "etcd-peer", Port: 2380})
 		for _, from := range []string{topology.RoleDB, topology.RoleDBReplica} {
 			for _, to := range []string{topology.RoleDB, topology.RoleDBReplica} {
@@ -109,11 +109,11 @@ func planPostgres(p *topology.Plan, kind catalog.DatabaseKind, params map[string
 		}
 		client = topology.Endpoint{Role: topology.RoleProxy, Protocol: "pg", Port: 5000}
 		if pgbouncer {
-			p.Colocate("pgbouncer", "pgbouncer", topology.RoleProxy)
+			p.Colocate(topology.RolePgBouncer, "pgbouncer", topology.RoleProxy)
 			client.Port = 6432
 		}
 	case pgbouncer:
-		p.Colocate("pgbouncer", "pgbouncer", topology.RoleDB)
+		p.Colocate(topology.RolePgBouncer, "pgbouncer", topology.RoleDB)
 		client.Port = 6432
 	}
 	p.Client = client

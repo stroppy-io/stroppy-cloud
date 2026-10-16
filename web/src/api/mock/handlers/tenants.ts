@@ -194,7 +194,7 @@ route('DELETE', '/api/v1/tenants/:slug/members/:userId', ({ store, params }) => 
   t.tenant.member_count = t.members.length
   if (m.user.id === store.me.id)
     store.me.tenants = store.me.tenants.filter((x) => x.tenant.slug !== params.slug)
-  store.audit(params.slug, 'member.remove', {
+  store.audit(params.slug, 'member.role', {
     kind: 'user',
     id: m.user.id,
     name: m.user.display_name,
@@ -286,7 +286,7 @@ route('POST', '/api/v1/tenants/:slug/invites', ({ store, params, body }) => {
   t.invites.unshift(inv)
   store.audit(
     params.slug,
-    'member.invite',
+    'invite.create',
     { kind: 'invite', id: inv.id, name: inv.email },
     { role: inv.role }
   )
@@ -372,7 +372,7 @@ export function seedNewTenantAudit(t: TenantData): void {
     id: uuid(),
     at: daysAgo(0),
     actor: { kind: 'system' },
-    action: 'tenant.bootstrap',
+    action: 'tenant.create',
     target: { kind: 'tenant', id: t.tenant.id },
   })
 }

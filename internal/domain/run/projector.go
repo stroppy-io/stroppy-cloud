@@ -196,6 +196,11 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		}
 		if out.Timeline != nil {
 			ev := *out.Timeline
+			kind, known := EventKind(ev.Kind)
+			if !known {
+				return nil // a milestone this server does not know is not the timeline's
+			}
+			ev.Kind = kind
 			ev.RunID = r.ID
 			if _, err := p.repo.InsertEvent(ctx, ev); err != nil {
 				return err

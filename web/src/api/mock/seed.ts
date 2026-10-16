@@ -76,26 +76,26 @@ export function catalogDatabases(): CatalogDatabase[] {
       pgVersions,
       [
         {
-          role: 'master',
+          role: 'db',
           title: 'Primary',
           engine: 'postgres',
           config_schemas: ['cfg.postgresql.conf', 'cfg.pg_hba.conf'],
         },
         {
-          role: 'replica',
+          role: 'db-replica',
           title: 'Replica',
           engine: 'postgres',
           config_schemas: ['cfg.postgresql.conf'],
         },
         { role: 'etcd', title: 'etcd', engine: 'etcd', config_schemas: ['cfg.etcd'] },
         {
-          role: 'haproxy',
+          role: 'proxy',
           title: 'HAProxy',
           engine: 'haproxy',
           config_schemas: ['cfg.haproxy.cfg'],
         },
         {
-          role: 'pgbouncer',
+          role: 'proxy',
           title: 'PgBouncer',
           engine: 'pgbouncer',
           config_schemas: ['cfg.pgbouncer.ini'],
@@ -128,10 +128,10 @@ export function catalogDatabases(): CatalogDatabase[] {
       'MySQL',
       ['8.4', '8.0'],
       [
-        { role: 'master', title: 'Primary', engine: 'mysql', config_schemas: ['cfg.my.cnf'] },
-        { role: 'replica', title: 'Replica', engine: 'mysql', config_schemas: ['cfg.my.cnf'] },
+        { role: 'db', title: 'Primary', engine: 'mysql', config_schemas: ['cfg.my.cnf'] },
+        { role: 'db-replica', title: 'Replica', engine: 'mysql', config_schemas: ['cfg.my.cnf'] },
         {
-          role: 'proxysql',
+          role: 'proxy',
           title: 'ProxySQL',
           engine: 'proxysql',
           config_schemas: ['cfg.proxysql.cnf'],
@@ -149,19 +149,19 @@ export function catalogDatabases(): CatalogDatabase[] {
       ['11.8', '11.4', '10.11'],
       [
         {
-          role: 'master',
+          role: 'db',
           title: 'Primary',
           engine: 'mariadb',
           config_schemas: ['cfg.mariadb.cnf'],
         },
         {
-          role: 'replica',
+          role: 'db-replica',
           title: 'Replica',
           engine: 'mariadb',
           config_schemas: ['cfg.mariadb.cnf'],
         },
         {
-          role: 'maxscale',
+          role: 'proxy',
           title: 'MaxScale',
           engine: 'maxscale',
           config_schemas: ['cfg.maxscale.cnf'],
@@ -179,7 +179,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       ['26.1', '26', '25'],
       [
         {
-          role: 'instance',
+          role: 'db',
           title: 'Instance',
           engine: 'picodata',
           config_schemas: ['cfg.picodata.yaml'],
@@ -197,13 +197,13 @@ export function catalogDatabases(): CatalogDatabase[] {
       ['26.3', '26.2', '26.1', '25.4'],
       [
         {
-          role: 'storage',
+          role: 'db',
           title: 'Storage',
           engine: 'ydb',
           config_schemas: ['cfg.ydb.config.yaml'],
         },
         {
-          role: 'database',
+          role: 'db-compute',
           title: 'Database',
           engine: 'ydb',
           config_schemas: ['cfg.ydb.config.yaml'],
@@ -219,7 +219,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       'ydb_managed',
       'YDB (managed)',
       ['latest'],
-      [{ role: 'managed', title: 'Managed cluster' }],
+      [{ role: 'db', title: 'Managed cluster' }],
       [{ id: 'managed', title: 'Managed', params: {} }],
       ['ydb_grpcs']
     ),
@@ -229,7 +229,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       ['26', '25', '24'],
       [
         {
-          role: 'node',
+          role: 'db',
           title: 'Node',
           engine: 'cockroach',
           config_schemas: ['cfg.cockroach.flags'],
@@ -247,7 +247,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       ['18', '17', '16'],
       [
         {
-          role: 'master',
+          role: 'db',
           title: 'Primary',
           engine: 'orioledb',
           config_schemas: ['cfg.orioledb.postgresql.conf'],
@@ -260,7 +260,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       'external',
       'External (DSN)',
       ['any'],
-      [{ role: 'external', title: 'External endpoint' }],
+      [{ role: 'db', title: 'External endpoint' }],
       [{ id: 'external', title: 'External', params: {} }],
       ['pg', 'mysql', 'ydb_grpc', 'cockroach'],
       false
@@ -269,7 +269,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       'noop',
       'No-op',
       ['1'],
-      [{ role: 'noop', title: 'No-op' }],
+      [{ role: 'db', title: 'No-op' }],
       [{ id: 'noop', title: 'No-op', params: {} }],
       ['noop'],
       false
@@ -278,7 +278,7 @@ export function catalogDatabases(): CatalogDatabase[] {
       'pg_noop',
       'PG no-op',
       ['1'],
-      [{ role: 'noop', title: 'PG no-op' }],
+      [{ role: 'db', title: 'PG no-op' }],
       [{ id: 'noop', title: 'No-op', params: {} }],
       ['pg'],
       false
@@ -440,80 +440,28 @@ export function stroppyCatalog(): StroppyCatalog {
 }
 
 export function metricDefs(): MetricDef[] {
+  const def = (
+    key: MetricDef['key'],
+    title: string,
+    unit: string,
+    group: MetricDef['group'],
+    higher_is_better = false,
+    scope: MetricDef['scope'] = 'result'
+  ): MetricDef => ({ key, title, unit, group, higher_is_better, scope })
   return [
-    {
-      key: 'queries_per_second',
-      title: 'Queries / s',
-      unit: 'qps',
-      higher_is_better: true,
-      group: 'Throughput',
-    },
-    {
-      key: 'tps',
-      title: 'Transactions / s',
-      unit: 'tps',
-      higher_is_better: true,
-      group: 'Throughput',
-    },
-    {
-      key: 'latency_p50_ms',
-      title: 'Latency p50',
-      unit: 'ms',
-      higher_is_better: false,
-      group: 'Latency',
-    },
-    {
-      key: 'latency_p95_ms',
-      title: 'Latency p95',
-      unit: 'ms',
-      higher_is_better: false,
-      group: 'Latency',
-    },
-    {
-      key: 'latency_p99_ms',
-      title: 'Latency p99',
-      unit: 'ms',
-      higher_is_better: false,
-      group: 'Latency',
-    },
-    { key: 'errors', title: 'Errors', unit: 'count', higher_is_better: false, group: 'Errors' },
-    {
-      key: 'error_rate',
-      title: 'Error rate',
-      unit: 'percent',
-      higher_is_better: false,
-      group: 'Errors',
-    },
-    { key: 'db_cpu', title: 'DB CPU', unit: 'percent', higher_is_better: false, group: 'Database' },
-    {
-      key: 'db_cache_hit',
-      title: 'Cache hit ratio',
-      unit: 'percent',
-      higher_is_better: true,
-      group: 'Database',
-    },
-    {
-      key: 'db_io_read',
-      title: 'Disk read',
-      unit: 'Bps',
-      higher_is_better: false,
-      group: 'Database',
-    },
-    {
-      key: 'db_io_write',
-      title: 'Disk write',
-      unit: 'Bps',
-      higher_is_better: false,
-      group: 'Database',
-    },
-    {
-      key: 'runner_cpu',
-      title: 'Runner CPU',
-      unit: 'percent',
-      higher_is_better: false,
-      group: 'Runner',
-    },
-  ] as MetricDef[]
+    def('queries_per_second', 'Queries per second', '1/s', 'Workload', true),
+    def('tps', 'Throughput', 'tps', 'Headline', true),
+    def('latency_p50_ms', 'Latency p50', 'ms', 'Headline'),
+    def('latency_p95_ms', 'Latency p95', 'ms', 'Headline'),
+    def('latency_p99_ms', 'Latency p99', 'ms', 'Headline'),
+    def('errors', 'Errors', 'count', 'Headline'),
+    def('failed_queries_total', 'Failed queries', 'count', 'Workload'),
+    def('iterations_per_second', 'Iterations per second', '1/s', 'Workload', true),
+    def('node_cpu_usage', 'CPU', 'percent', 'Host', false, 'host'),
+    def('node_disk_io_bytes', 'Disk I/O', 'Bps', 'Host', false, 'host'),
+    def('node_network_bytes', 'Network', 'Bps', 'Host', false, 'host'),
+    def('pg_stat_database_blks_hit_ratio', 'Cache hit ratio', 'percent', 'PostgreSQL', true, 'db'),
+  ]
 }
 
 export function examples(): Example[] {
@@ -616,7 +564,7 @@ function databases(): Database[] {
       'postgres',
       '17',
       { replicas: 0, ha: 'none', extensions: ['pg_stat_statements'] },
-      { label: 'single', node_count: 1, nodes: [{ role: 'master', engine: 'postgres', count: 1 }] },
+      { label: 'single', node_count: 1, nodes: [{ role: 'db', engine: 'postgres', count: 1 }] },
       { db: { cpu: 2, memory_gb: 4, disk_gb: 40, reason: 'shared_buffers 1GB' } },
       olga,
       40,
@@ -636,11 +584,11 @@ function databases(): Database[] {
         label: 'patroni-ha',
         node_count: 8,
         nodes: [
-          { role: 'master', engine: 'postgres', count: 1 },
-          { role: 'replica', engine: 'postgres', count: 2 },
+          { role: 'db', engine: 'postgres', count: 1 },
+          { role: 'db-replica', engine: 'postgres', count: 2 },
           { role: 'etcd', engine: 'etcd', count: 3 },
-          { role: 'haproxy', engine: 'haproxy', count: 2 },
-          { role: 'pgbouncer', engine: 'pgbouncer', count: 3, colocated_with: 'master' },
+          { role: 'proxy', engine: 'haproxy', count: 2 },
+          { role: 'proxy', engine: 'pgbouncer', count: 3, colocated_with: 'master' },
         ],
         flows: [
           { from: 'haproxy', to: 'master', protocol: 'pg', port: 5432 },
@@ -670,8 +618,8 @@ function databases(): Database[] {
         label: 'primary-replica',
         node_count: 2,
         nodes: [
-          { role: 'master', engine: 'postgres', count: 1 },
-          { role: 'replica', engine: 'postgres', count: 1 },
+          { role: 'db', engine: 'postgres', count: 1 },
+          { role: 'db-replica', engine: 'postgres', count: 1 },
         ],
       },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 80 } },
@@ -689,8 +637,8 @@ function databases(): Database[] {
         label: 'source-replica',
         node_count: 3,
         nodes: [
-          { role: 'master', engine: 'mysql', count: 1 },
-          { role: 'replica', engine: 'mysql', count: 2 },
+          { role: 'db', engine: 'mysql', count: 1 },
+          { role: 'db-replica', engine: 'mysql', count: 2 },
         ],
       },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 80, reason: 'innodb_buffer_pool 8GB' } },
@@ -707,8 +655,8 @@ function databases(): Database[] {
         label: 'mirror-3-dc',
         node_count: 9,
         nodes: [
-          { role: 'storage', engine: 'ydb', count: 9 },
-          { role: 'database', engine: 'ydb', count: 3, colocated_with: 'storage' },
+          { role: 'db', engine: 'ydb', count: 9 },
+          { role: 'db-compute', engine: 'ydb', count: 3, colocated_with: 'storage' },
         ],
       },
       { db: { cpu: 8, memory_gb: 32, disk_gb: 300, reason: '3 pdisks × 93GB' } },
@@ -725,7 +673,7 @@ function databases(): Database[] {
       {
         label: 'cluster-3',
         node_count: 3,
-        nodes: [{ role: 'node', engine: 'cockroach', count: 3 }],
+        nodes: [{ role: 'db', engine: 'cockroach', count: 3 }],
       },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 100 } },
       lena,
@@ -740,7 +688,7 @@ function databases(): Database[] {
       {
         label: 'cluster-3',
         node_count: 3,
-        nodes: [{ role: 'instance', engine: 'picodata', count: 3 }],
+        nodes: [{ role: 'db', engine: 'picodata', count: 3 }],
       },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 60, reason: 'memtx 8GB' } },
       olga,
@@ -752,7 +700,7 @@ function databases(): Database[] {
       'orioledb',
       '17',
       { replicas: 0 },
-      { label: 'single', node_count: 1, nodes: [{ role: 'master', engine: 'orioledb', count: 1 }] },
+      { label: 'single', node_count: 1, nodes: [{ role: 'db', engine: 'orioledb', count: 1 }] },
       { db: { cpu: 4, memory_gb: 16, disk_gb: 80 } },
       max,
       2
@@ -1353,13 +1301,13 @@ export function buildLive(run: Run, seedNum: number): RunLive {
   let seq = 0
   const ev = (
     at: number,
-    kind: string,
+    kind: Schemas['RunEvent']['kind'],
     title: string,
     extra: Partial<Schemas['RunEvent']> = {}
   ) => {
     events.push({ id: `${run.id}-e${++seq}`, at: iso(at), kind, title, ...extra })
   }
-  ev(started, 'run.started', 'Run started', { subject: run.name })
+  ev(started, 'run-started', 'Run started', { subject: run.name })
   for (const p of phases) {
     if (p.started_at === null) break
     ev(new Date(p.started_at ?? started).getTime(), 'phase.started', `${p.title} started`, {
@@ -1404,10 +1352,19 @@ export function buildLive(run: Run, seedNum: number): RunLive {
       )
   }
   if (terminal)
-    ev(finished, `run.${run.status}`, `Run ${run.status}`, {
-      status: run.status,
-      error: run.status_reason,
-    })
+    ev(
+      finished,
+      run.status === 'completed'
+        ? 'run-completed'
+        : run.status === 'cancelled'
+          ? 'run-cancelled'
+          : 'run-failed',
+      `Run ${run.status}`,
+      {
+        status: run.status,
+        error: run.status_reason,
+      }
+    )
   const logs: Schemas['LogLine'][] = []
   const lines = [
     'checkpoint complete: wrote 1832 buffers (1.4%)',
@@ -1472,11 +1429,11 @@ export function buildLive(run: Run, seedNum: number): RunLive {
   metrics.latency_p95_ms = pts((i) => p99 * 0.7 * (1 + 0.15 * Math.sin(i / 7)))
   metrics.latency_p99_ms = pts((i) => p99 * (1 + 0.25 * Math.abs(Math.sin(i / 5))) + rand() * 5)
   metrics.errors = pts(() => (rand() < 0.03 ? Math.floor(rand() * 5) : 0))
-  metrics.db_cpu = pts((i) => 62 + 25 * Math.abs(Math.sin(i / 11)) + rand() * 5)
-  metrics.db_cache_hit = pts(() => 97 + rand() * 2.5)
-  metrics.db_io_read = pts((i) => 12e6 + 8e6 * Math.abs(Math.sin(i / 13)))
-  metrics.db_io_write = pts((i) => 30e6 + 15e6 * Math.abs(Math.cos(i / 10)))
-  metrics.runner_cpu = pts(() => 58 + rand() * 24)
+  metrics.node_cpu_usage = pts((i) => 62 + 25 * Math.abs(Math.sin(i / 11)) + rand() * 5)
+  metrics.pg_stat_database_blks_hit_ratio = pts(() => 97 + rand() * 2.5)
+  metrics.node_disk_io_bytes = pts((i) => 12e6 + 8e6 * Math.abs(Math.sin(i / 13)))
+  metrics.node_network_bytes = pts((i) => 30e6 + 15e6 * Math.abs(Math.cos(i / 10)))
+  metrics.iterations_per_second = pts(() => 58 + rand() * 24)
   const cur = PHASES.indexOf(run.phase)
   return {
     overview: {
@@ -1591,11 +1548,41 @@ function quotasFor(): Record<string, QuotaReport> {
       stale: false,
       scope: 'folder b1gy…',
       quotas: [
-        { name: 'compute.instances', title: 'Instances', unit: 'count', limit: 100, used: 23 },
-        { name: 'compute.cores', title: 'vCPU', unit: 'count', limit: 512, used: 196 },
-        { name: 'compute.memory', title: 'RAM', unit: 'GB', limit: 2048, used: 704 },
-        { name: 'compute.ssd', title: 'Network SSD', unit: 'GB', limit: 8192, used: 2100 },
-        { name: 'vpc.addresses', title: 'Public IPs', unit: 'count', limit: 32, used: 11 },
+        {
+          name: 'compute.instances.count',
+          title: 'Instances',
+          unit: 'instances',
+          limit: 100,
+          used: 23,
+        },
+        {
+          name: 'compute.instanceCores.count',
+          title: 'vCPU',
+          unit: 'cores',
+          limit: 512,
+          used: 196,
+        },
+        {
+          name: 'compute.instanceMemory.size',
+          title: 'RAM',
+          unit: 'bytes',
+          limit: 2048 * 2 ** 30,
+          used: 704 * 2 ** 30,
+        },
+        {
+          name: 'compute.ssdDisks.size',
+          title: 'Network SSD',
+          unit: 'bytes',
+          limit: 8192 * 2 ** 30,
+          used: 2100 * 2 ** 30,
+        },
+        {
+          name: 'vpc.externalStaticAddresses.count',
+          title: 'Public IPs',
+          unit: 'addresses',
+          limit: 32,
+          used: 11,
+        },
       ],
     },
     'prov-aws-eu': {
@@ -1604,14 +1591,14 @@ function quotasFor(): Record<string, QuotaReport> {
       scope: 'eu-central-1',
       quotas: [
         {
-          name: 'ec2.vcpus.standard',
+          name: 'ec2.standard.vcpus',
           title: 'On-demand vCPU (standard)',
-          unit: 'count',
+          unit: 'vcpus',
           limit: 256,
           used: 64,
         },
-        { name: 'ebs.gp3', title: 'gp3 storage', unit: 'TB', limit: 50, used: 3.2 },
-        { name: 'vpc.eip', title: 'Elastic IPs', unit: 'count', limit: 5, used: 5 },
+        { name: 'ebs.gp3.storage', title: 'gp3 storage', unit: 'tib', limit: 50, used: 3.2 },
+        { name: 'ec2.elastic_ips', title: 'Elastic IPs', unit: 'addresses', limit: 5, used: 5 },
       ],
     },
     'prov-yc-broken': {
@@ -2513,7 +2500,7 @@ function tenantMain(): TenantData {
       at: daysAgo(2),
       actor: { kind: 'user', id: max.id, display_name: max.display_name },
       tenant: { id: tenant.id, name: tenant.name },
-      action: 'member.invite',
+      action: 'invite.create',
       target: { kind: 'invite', id: 'inv-1', name: 'newbie@example.com' },
       details: { role: 'viewer' },
     },
@@ -2522,7 +2509,7 @@ function tenantMain(): TenantData {
       at: daysAgo(3),
       actor: { kind: 'user', id: admin.id, display_name: admin.display_name },
       tenant: { id: tenant.id, name: tenant.name },
-      action: 'settings.update',
+      action: 'tenant.update',
       target: { kind: 'tenant', id: tenant.id },
       details: { run_retention_days: { from: 30, to: 60 } },
     },

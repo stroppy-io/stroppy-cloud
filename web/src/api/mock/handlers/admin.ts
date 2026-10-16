@@ -120,7 +120,7 @@ route('POST', '/api/v1/admin/pipelines:resync', ({ store, body }) => {
   store.audit(
     undefined,
     'admin.pipelines.resync',
-    { kind: 'pipelines', name: slug ?? 'all' },
+    { kind: 'namespace', name: slug ?? 'all' },
     {
       namespaces: targets.map((n) => n.namespace),
     }
@@ -363,7 +363,12 @@ route('PATCH', '/api/v1/admin/users/:userId', ({ store, params, body }) => {
     u.admin_source = b.is_platform_admin ? 'db' : undefined
     if (u.id === store.me.id) store.me.is_platform_admin = b.is_platform_admin
   }
-  store.audit(undefined, 'admin.user.update', { kind: 'user', id: u.id, name: u.display_name }, b)
+  store.audit(
+    undefined,
+    'admin.user.platform_admin',
+    { kind: 'user', id: u.id, name: u.display_name },
+    b
+  )
   return { json: u }
 })
 
@@ -429,7 +434,12 @@ route('PATCH', '/api/v1/admin/settings', ({ store, body }) => {
   for (const t of Object.values(store.tenants))
     if (t.limits.source !== 'tenant_override')
       t.limits = { ...s.default_limits, source: 'platform_default' }
-  store.audit(undefined, 'admin.settings.update', { kind: 'system' }, b as Record<string, unknown>)
+  store.audit(
+    undefined,
+    'admin.settings.update',
+    { kind: 'system_settings' },
+    b as Record<string, unknown>
+  )
   return { json: s }
 })
 

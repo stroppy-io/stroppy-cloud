@@ -2,11 +2,9 @@ import type { RunEvent } from '@api/types'
 import { i18n } from '@lib/i18n'
 import type { TFunction } from 'i18next'
 
-// An event kind as the locale names it: the pipeline's milestones are
-// `phase.started`, Graphene's run lifecycle is `run-started` /
-// `run-canceled`; both become `phase_started` / `run_cancelled`.
-// internal/domain/run/uitext_test.go keeps every kind the server sends
-// covered in `runs.events.titles`.
+// An event kind (the contract's RunEventKind) as the locale names it:
+// `phase.started` / `run-cancelled` become `phase_started` / `run_cancelled`.
+// lib/vocab.test.ts keeps every kind covered in `runs.events.titles`.
 export function eventKey(kind: string): string {
   return kind.replace(/[.-]/g, '_').replace('canceled', 'cancelled')
 }

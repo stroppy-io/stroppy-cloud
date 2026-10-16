@@ -46,7 +46,7 @@ jobs:
       - run: yarn --cwd web install --frozen-lockfile
       - run: make generate-go generate-ts schemas-export
       - run: python3 pipelines/live/tools/contract_lock.py
-      - run: git diff --exit-code -- internal/oas openapi/openapi.yaml web/src/api/schema.d.ts
+      - run: git diff --exit-code -- internal/oas openapi/openapi.yaml web/src/api/schema.d.ts web/src/api/enums.ts
       - run: yarn --cwd web test:contract
       - run: yarn --cwd web build
       - run: go test ./... -count=1

@@ -75,6 +75,7 @@ src/
 ├── hooks/                # shared React-хуки (useTenant, useUrlFilters, useRunLive …)
 ├── api/
 │   ├── schema.d.ts       # generated: openapi-typescript (make generate-ts) — не править руками
+│   ├── enums.ts          # generated: значения enum'ов контракта (scripts/openapi_enums.py) — не править руками
 │   ├── client.ts         # openapi-fetch instance + auth middleware + problem+json → ApiError
 │   ├── json.ts           # bigint-safe JSON граница (уже есть)
 │   ├── ws.ts             # WS-клиент /api/v1/ws: subscribe/resume/reconnect (без React)

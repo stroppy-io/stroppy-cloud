@@ -35,14 +35,25 @@ workload. URL подключения строит `dbkind.URL` из плана. 
 рецепт в `internal/domain/compile/recipe_<kind>.go`, регистрация в
 `compile.recipes`. Параметры — схема `pipelines/schemas/dbparams/<kind>.go`.
 
-Новый kind = схема + файл в `dbkind` (и строка в `kinds()`) + рецепт.
-Свитчей по kind вне этих мест нет; тест `TestEveryDeployableKindHasRecipe`
-ловит kind без рецепта. Список kind'ов в API — только `/catalog/databases`
-(в OpenAPI `DatabaseKind` — строка, не enum).
+Новый kind = схема + файл в `dbkind` (и строка в `kinds()`) + рецепт +
+значение в enum `DatabaseKind` контракта. Свитчей по kind вне этих мест нет;
+тест `TestEveryDeployableKindHasRecipe` ловит kind без рецепта.
+
+## Словари
+
+Любой набор значений, который сервер отдаёт (kind'ы БД, роли топологии,
+события прогона, причины ожидания в очереди, действия и объекты аудита,
+ключи и группы метрик, квоты и их единицы, уровни логов, причины ошибок), —
+enum в контракте (`openapi/parts/15-vocabularies.yaml` и рядом с полем).
+Доменный список живёт в домене; `internal/api/vocab_test.go` держит его
+равным enum'у. Тексты — только в `web/src/locales`: `web/src/lib/vocab.test.ts`
+проверяет перевод каждого значения на обоих языках. Новое значение =
+правка домена, контракта и локалей в одном изменении; сервер прозы не шлёт.
 
 ## Generated code — не править руками
 
 `internal/oas/*` (ogen), `web/src/api/schema.d.ts` (openapi-typescript),
+`web/src/api/enums.ts` (`scripts/openapi_enums.py`),
 `web/src/schemas/*` (schemapb export). Меняется источник
 (`openapi/parts`, `pipelines/schemas`) → `make openapi generate-go
 generate-ts schemas-export`.

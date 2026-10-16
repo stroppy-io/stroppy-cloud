@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strconv"
 
 	"github.com/go-faster/jx"
@@ -46,7 +47,9 @@ func (h *Handler) ListTenantAudit(ctx context.Context, params oas.ListTenantAudi
 		entries = entries[:limit]
 	}
 	for _, e := range entries {
-		page.Data = append(page.Data, auditOf(e))
+		if entry, ok := auditOf(e); ok {
+			page.Data = append(page.Data, entry)
+		}
 	}
 	page.Meta.HasMore = oas.NewOptBool(hasMore)
 	if hasMore {
@@ -55,9 +58,14 @@ func (h *Handler) ListTenantAudit(ctx context.Context, params oas.ListTenantAudi
 	return page, nil
 }
 
-func auditOf(e audit.Entry) oas.AuditEntry {
+// auditOf is one entry of the log; false for an entry recorded under an
+// action or target kind the contract no longer names (older servers).
+func auditOf(e audit.Entry) (oas.AuditEntry, bool) {
+	if !slices.Contains(audit.Actions, e.Action) || (e.Target.Kind != "" && !slices.Contains(audit.TargetKinds, e.Target.Kind)) {
+		return oas.AuditEntry{}, false
+	}
 	out := oas.AuditEntry{
-		ID: strconv.FormatInt(e.ID, 10), At: e.At, Action: e.Action,
+		ID: strconv.FormatInt(e.ID, 10), At: e.At, Action: oas.AuditAction(e.Action),
 		Actor: oas.AuditEntryActor{Kind: oas.AuditEntryActorKind(e.ActorKind)},
 	}
 	if e.ActorID != "" {
@@ -70,7 +78,7 @@ func auditOf(e audit.Entry) oas.AuditEntry {
 		out.Tenant = oas.NewOptRef(oas.Ref{ID: *e.TenantID})
 	}
 	if e.Target.Kind != "" {
-		out.Target.Kind = oas.NewOptString(e.Target.Kind)
+		out.Target.Kind = oas.NewOptAuditTargetKind(oas.AuditTargetKind(e.Target.Kind))
 	}
 	if e.Target.ID != "" {
 		out.Target.ID = oas.NewOptString(e.Target.ID)
@@ -90,5 +98,5 @@ func auditOf(e audit.Entry) oas.AuditEntry {
 		}
 		out.Details = oas.NewOptAuditEntryDetails(d)
 	}
-	return out
+	return out, true
 }

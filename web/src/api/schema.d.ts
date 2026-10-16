@@ -2344,10 +2344,10 @@ export interface components {
              */
             code: string;
             /**
-             * @description Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`, `limit_concurrent_runs`, `<entity>_not_found`). Clients show their own text for it; `detail` is the English fallback for an unknown reason.
+             * @description Stable machine key of why it failed, finer than `code` (`tenant_slug_taken`, `provider_quota_exceeded`, `<entity>_not_found`). Clients show their own text for it; `detail` is the English fallback for an unknown reason.
              * @example tenant_slug_taken
              */
-            reason?: string;
+            reason?: components["schemas"]["ErrorReason"];
             /** @description Values for the reason's text, e.g. slug=acme. */
             params?: {
                 [key: string]: string;
@@ -2531,6 +2531,61 @@ export interface components {
                 b?: unknown;
             }[];
         };
+        /**
+         * @description A database kind. Adding a kind is a code change: the server list (internal/domain/dbkind) and this enum are kept equal by a test.
+         * @enum {string}
+         */
+        DatabaseKind: "postgres" | "orioledb" | "mysql" | "mariadb" | "picodata" | "ydb" | "ydb_managed" | "cockroach" | "pg_noop" | "noop" | "external" | "custom";
+        /**
+         * @description The role of a machine or container in a database topology.
+         * @enum {string}
+         */
+        TopologyRole: "db" | "db-replica" | "db-compute" | "etcd" | "proxy" | "runner" | "coordinator" | "patroni" | "patroni-replica" | "pgbouncer";
+        /**
+         * @description A run timeline event: Graphene's run lifecycle (run-*), a failed step (activity-*), or a pipeline milestone.
+         * @enum {string}
+         */
+        RunEventKind: "run-started" | "run-completed" | "run-failed" | "run-timed-out" | "run-terminated" | "run-cancelled" | "activity-failed" | "activity-timed-out" | "phase.started" | "phase.finished" | "phase.failed" | "machine.ready" | "container.ready" | "segment.started" | "segment.finished" | "segment.failed" | "baseline.started" | "baseline.finished" | "stand.kept" | "result.published";
+        /**
+         * @description What an audit entry records.
+         * @enum {string}
+         */
+        AuditAction: "admin.pipelines.resync" | "admin.run.cancel" | "admin.settings.update" | "admin.tenant.assign_owner" | "admin.tenant.delete" | "admin.tenant.limits" | "admin.tenant.resume" | "admin.tenant.suspend" | "admin.user.platform_admin" | "database.create" | "database.delete" | "database.update" | "invite.accept" | "invite.create" | "invite.revoke" | "member.leave" | "member.remove" | "member.role" | "provider.create" | "provider.delete" | "provider.update" | "run.cancel" | "run.delete" | "run.keep.extend" | "run.keep.release" | "run.launch" | "run.update" | "schedule.create" | "schedule.delete" | "schedule.update" | "share.create" | "share.rebuild" | "share.revoke" | "suite.create" | "suite.delete" | "suite.launch" | "suite.update" | "suite_run.cancel" | "suite_run.delete" | "tenant.create" | "tenant.delete" | "tenant.transfer" | "tenant.update" | "test.create" | "test.delete" | "test.update" | "token.create" | "token.revoke" | "webhook.create" | "webhook.delete" | "webhook.rotate" | "webhook.update" | "workload.create" | "workload.delete" | "workload.update";
+        /**
+         * @description The kind of object an audit entry is about.
+         * @enum {string}
+         */
+        AuditTargetKind: "database" | "invite" | "namespace" | "provider" | "run" | "schedule" | "share" | "suite" | "suite_run" | "system_settings" | "tenant" | "test" | "token" | "user" | "webhook" | "workload";
+        /**
+         * @description A metric of the catalog.
+         * @enum {string}
+         */
+        MetricKey: "tps" | "qps" | "latency_p50_ms" | "latency_p95_ms" | "latency_p99_ms" | "errors" | "iterations_total" | "iterations_per_second" | "queries_per_second" | "failed_iterations_total" | "failed_queries_total" | "iteration_duration_avg" | "iteration_duration_p90" | "iteration_duration_p99" | "load_duration_seconds" | "node_cpu_usage" | "node_memory_used_bytes" | "node_disk_io_bytes" | "node_network_bytes" | "pg_stat_database_xact_commit" | "pg_stat_database_xact_rollback" | "pg_stat_database_blks_hit_ratio" | "pg_stat_activity_count" | "pg_locks_count" | "pg_replication_lag_seconds" | "mysql_global_status_queries" | "mysql_global_status_threads_connected" | "mysql_global_status_innodb_buffer_pool_hit_ratio" | "mysql_slave_status_seconds_behind_master" | "cockroach_sql_txn_commit_count" | "cockroach_sql_service_latency_p99" | "cockroach_live_nodes" | "picodata_instances_online";
+        /**
+         * @description The group a metric is shown under; a database group reads as the product name.
+         * @enum {string}
+         */
+        MetricGroup: "Headline" | "Workload" | "Bootstrap" | "Host" | "PostgreSQL" | "MySQL" | "CockroachDB" | "Picodata";
+        /**
+         * @description A provider quota the quotas pipeline reports (Yandex Cloud Quota Manager ids, AWS Service Quotas names).
+         * @enum {string}
+         */
+        QuotaName: "compute.instances.count" | "compute.instanceCores.count" | "compute.instanceMemory.size" | "compute.ssdDisks.size" | "compute.hddDisks.size" | "compute.ssdNonReplicatedDisks.size" | "compute.ssdIOM3Disks.size" | "compute.instanceHighFreqCores.count" | "compute.disks.count" | "vpc.networks.count" | "vpc.subnets.count" | "vpc.securityGroups.count" | "vpc.externalStaticAddresses.count" | "ec2.standard.vcpus" | "ec2.spot.standard.vcpus" | "ebs.gp3.storage" | "ebs.gp2.storage" | "ebs.io2.storage" | "vpc.vpcs" | "vpc.security_groups" | "vpc.internet_gateways" | "ec2.elastic_ips";
+        /**
+         * @description The unit of a provider quota.
+         * @enum {string}
+         */
+        QuotaUnit: "instances" | "cores" | "bytes" | "disks" | "networks" | "subnets" | "security-groups" | "addresses" | "vcpus" | "tib" | "vpcs" | "groups" | "gateways";
+        /**
+         * @description A log line level, normalized from the source severity.
+         * @enum {string}
+         */
+        LogLevel: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+        /**
+         * @description Why exactly a request failed (Problem.reason); its text and the params it reads are the client's.
+         * @enum {string}
+         */
+        ErrorReason: "a_database_with_this_name_exists" | "a_pending_invite_for_this_email_exists" | "a_profile_with_this_name_exists" | "a_suite_with_this_name_exists" | "a_test_with_this_name_exists" | "a_workload_with_this_name_exists" | "account_already_owns_a_tenant" | "after_is_not_an_event_id" | "already_the_owner" | "artifact_not_downloadable" | "artifact_not_found" | "artifact_unavailable" | "at_least_one_event" | "at_least_one_segment" | "at_most_20_notification_emails" | "authentication_required" | "cancel_run_before_delete" | "cancel_suite_run_before_delete" | "cancel_unavailable" | "catalog_no_qps_series" | "comparison_request_is_required" | "config_version_mismatch" | "cron_invalid" | "cron_never_fires" | "cursor_invalid" | "cursor_is_not_an_event_id" | "database_not_found" | "database_ref_and_inline_are_exclusive" | "db_kind_not_launchable" | "db_kind_unknown" | "db_version_no_image" | "db_version_unknown" | "default_keep_is_not_a_duration" | "default_keep_range" | "delete_resources_unavailable" | "delivery_id_is_not_a_uuid" | "delivery_not_found" | "disk_size_out_of_range" | "display_name_longer_than_64" | "document_api_version" | "document_kind" | "document_kind_must_be_suite" | "duration_is_not_a_positive_duration" | "duration_max_is_not_a_duration" | "duration_min_is_not_a_duration" | "email_is_not_valid" | "end_must_be_after_start" | "example_not_found" | "examples_not_found" | "expires_at_is_in_the_past" | "export_format_unavailable" | "favorites_belong_to_users_not_tokens" | "grafana_is_not_connected" | "graphene_dropped_log_records" | "graphene_dropped_metric_records" | "graphene_telemetry_run_not_found" | "invalid_log_cursor_for_this_selection" | "invalid_log_direction" | "invalid_metric_step" | "invite_is_not_pending" | "invite_not_found" | "is_platform_admin_is_required" | "keep_is_not_a_duration" | "keep_must_not_be_negative" | "kind_must_be_yandex_or_aws" | "limit_keep" | "limit_machines_per_run" | "limit_size" | "log_cursor_ambiguous" | "logs_store_is_not_connected" | "managed_ydb_autoscaling_unsupported" | "managed_ydb_deletion_protection" | "managed_ydb_requires_named_credentials" | "managed_ydb_requires_yandex_cloud" | "managed_ydb_type_unknown" | "max_keep_is_not_a_duration" | "maxscale_mariadb_only" | "member_not_found" | "metadata_name_is_required" | "metric_not_rating_eligible" | "metrics_snapshot_invalid" | "metrics_store_is_not_connected" | "metrics_unavailable" | "metrics_unknown" | "name_is_required" | "name_must_be_1_128_characters" | "name_must_be_1_64_characters" | "no_cells_to_run" | "no_failed_cells" | "notification_email_invalid" | "only_test_examples_can_be_quick_run" | "options_is_not_a_json_object" | "owner_cannot_be_removed" | "owner_role_by_transfer_only" | "patroni_image_required" | "patroni_requires_haproxy" | "pdf_export_is_not_available_yet" | "platform_admin_required" | "profile_is_not_verified" | "profile_not_found" | "profile_not_ready" | "provider_busy" | "provider_cleanup_failed" | "provider_cleanup_pending" | "provider_is_being_deleted" | "provider_is_not_ready" | "provider_is_unavailable" | "provider_kind_unknown" | "provider_profile_id_is_not_a_uuid" | "provider_profile_not_found" | "provider_quota_check_unavailable" | "provider_quota_exceeded" | "provider_secret_unavailable" | "pty_streams_are_not_connected_yet" | "public_rating_not_found" | "query_is_required" | "quick_run_needs_profile" | "ref_id_not_uuid" | "ref_needs_id_or_name" | "ref_not_found" | "referenced_by_tests" | "requires_role" | "requires_role_admin" | "requires_role_member" | "resume_machine_missing" | "resume_stand_unknown" | "retention_days_range" | "role_must_be_admin_member_or_viewer" | "role_must_be_member_or_viewer" | "run_already_finished" | "run_id_is_not_a_uuid" | "run_id_is_required" | "run_idempotency_conflict" | "run_ids_2_to_16_runs" | "run_not_found" | "run_retention_max_days_must_be_positive" | "run_submit_unavailable" | "schedule_fire_failed" | "schedule_not_found" | "schema_has_no_templates" | "schema_not_found" | "scope_must_be_overview_metrics_or_configs" | "script_protocol_unsupported" | "segment_not_found" | "share_already_revoked" | "share_metrics_single_run_only" | "share_not_found" | "shell_input_failed" | "shell_input_invalid" | "shell_machine_unknown" | "shell_not_found" | "shell_open_failed" | "shell_session_ended" | "shell_size_invalid" | "shell_stand_gone" | "size_not_chosen" | "size_unavailable" | "size_unknown" | "slug_format" | "slug_is_taken" | "spec_is_required" | "stand_lost_run" | "stand_unavailable" | "step_is_not_a_duration" | "stroppy_protocol_unsupported" | "stroppy_script_unknown" | "stroppy_version_not_found" | "stroppy_version_unknown" | "sub_id_and_topic_are_required" | "subscription_exists_or_too_many" | "suite_cell_invalid" | "suite_not_found" | "suite_run_already_finished" | "suite_run_id_is_not_a_uuid" | "suite_run_id_is_required" | "suite_run_idempotency_conflict" | "suite_run_not_found" | "suite_test_invalid" | "suite_test_ref_or_inline" | "suites_are_not_available" | "target_kind_must_be_test_or_suite" | "telemetry_requires_a_run_scope" | "telemetry_unavailable" | "tenant_creation_admin_only" | "tenant_creation_value" | "tenant_has_active_work" | "tenant_has_live_runs" | "tenant_is_being_deleted" | "tenant_is_suspended" | "tenant_namespace_unavailable" | "tenant_not_found" | "tenant_slug_taken" | "test_does_not_fit" | "test_is_not_fully_resolved" | "test_not_found" | "test_used_by" | "the_new_owner_already_owns_a_tenant" | "the_stand_is_not_kept" | "the_suite_of_this_run_is_gone" | "theme_unknown" | "this_share_does_not_include_metrics" | "timezone_unknown" | "token_expired" | "token_not_found" | "token_not_recognized" | "token_rejected" | "token_role_cannot_exceed_your_role" | "tokens_cannot_accept_invites" | "tokens_cannot_create_tenants" | "tokens_cannot_mint_tokens" | "topic_must_be_kind_id" | "ttl_is_not_a_positive_duration" | "unknown_share_kind" | "unsupported_document_body" | "url_not_absolute_http" | "user_already_owns_a_tenant" | "user_id_is_not_a_uuid" | "user_not_found" | "value_is_not_a_json_object" | "viewers_cannot_change_schedules" | "viewers_cannot_change_suites" | "viewers_cannot_launch_or_change_runs" | "viewers_cannot_share" | "webhook_event_unknown" | "webhook_not_found" | "window_does_not_overlap_the_shared_run" | "workload_not_found" | "workload_ref_and_inline_are_exclusive" | "ydb_disk_too_small" | "ydb_mirror3dc_yandex_only" | "ydb_needs_three_zones" | "ydb_storage_nodes_required" | "ydb_zone_invalid" | "ydb_zones_not_strings";
         PublicConfig: {
             /** @description A public report (`/s/<token>`) of a real run that first-run screens offer as "what a result looks like"; absent when the installation has none. */
             demo_report_url?: string;
@@ -2732,10 +2787,9 @@ export interface components {
                 display_name?: string;
             };
             tenant?: components["schemas"]["Ref"];
-            /** @example run.launch */
-            action: string;
+            action: components["schemas"]["AuditAction"];
             target: {
-                kind?: string;
+                kind?: components["schemas"]["AuditTargetKind"];
                 id?: string;
                 name?: string;
             };
@@ -2822,10 +2876,9 @@ export interface components {
             /** @description Scope of the quota snapshot or denied request, e.g. cloud:b1g... for Yandex Cloud. */
             scope?: string;
             quotas: {
-                /** @example compute.instanceCores.count */
-                name: string;
+                name: components["schemas"]["QuotaName"];
                 title?: string;
-                unit?: string;
+                unit?: components["schemas"]["QuotaUnit"];
                 limit: number;
                 used: number;
                 zone?: string;
@@ -2885,11 +2938,6 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /**
-         * @description A database kind id; the kinds that exist are listed by GET /catalog/databases.
-         * @example postgres
-         */
-        DatabaseKind: string;
         /** @enum {string} */
         Protocol: "pg" | "mysql" | "picodata" | "ydb_grpc" | "ydb_grpcs" | "cockroach" | "noop";
         CatalogDatabase: {
@@ -2904,8 +2952,7 @@ export interface components {
                 deprecated?: boolean;
             }[];
             roles: {
-                /** @example master */
-                role: string;
+                role: components["schemas"]["TopologyRole"];
                 title: string;
                 /** @example postgres */
                 engine?: string;
@@ -3048,14 +3095,12 @@ export interface components {
             templates?: string[];
         };
         MetricDef: {
-            /** @example tps */
-            key: string;
+            key: components["schemas"]["MetricKey"];
             title: string;
             description?: string;
             unit: string;
             higher_is_better: boolean;
-            /** @example throughput */
-            group: string;
+            group: components["schemas"]["MetricGroup"];
             /** @enum {string} */
             scope: "result" | "db" | "host";
             db_kinds?: components["schemas"]["DatabaseKind"][];
@@ -3131,7 +3176,7 @@ export interface components {
             label: string;
             node_count?: number;
             nodes: {
-                role: string;
+                role: components["schemas"]["TopologyRole"];
                 engine?: string;
                 count: number;
                 colocated_with?: string;
@@ -3259,7 +3304,7 @@ export interface components {
             /** @description Machines that would be created. */
             estimated?: {
                 machines?: {
-                    role?: string;
+                    role?: components["schemas"]["TopologyRole"];
                     count?: number;
                     size?: components["schemas"]["Size"];
                     cpu?: number;
@@ -3464,7 +3509,7 @@ export interface components {
             };
             machines?: {
                 name: string;
-                role: string;
+                role: components["schemas"]["TopologyRole"];
                 size: components["schemas"]["Size"];
                 cpu?: number;
                 memory_gb?: number;
@@ -3595,7 +3640,7 @@ export interface components {
             /** @description Deployed software (containers) by role. */
             components: {
                 id: string;
-                role: string;
+                role: components["schemas"]["TopologyRole"];
                 engine?: string;
                 image?: string;
                 machine: string;
@@ -3610,7 +3655,7 @@ export interface components {
             }[];
             machines: {
                 name: string;
-                role: string;
+                role: components["schemas"]["TopologyRole"];
                 /** @enum {string} */
                 status: "pending" | "creating" | "ready" | "failed" | "deleting" | "deleted";
                 /** @enum {string} */
@@ -3675,11 +3720,7 @@ export interface components {
             id: string;
             /** Format: date-time */
             at: string;
-            /**
-             * @description run.*, phase.*, segment.*, machine.*, component.*, activity.*
-             * @example segment.finished
-             */
-            kind: string;
+            kind: components["schemas"]["RunEventKind"];
             title: string;
             /** @description Graphene ref or role/machine. */
             subject?: string;
@@ -3702,7 +3743,7 @@ export interface components {
             time: string;
             seq?: number;
             message: string;
-            level?: string;
+            level?: components["schemas"]["LogLevel"];
             stream?: string;
             role?: string;
             machine?: string;
@@ -7089,7 +7130,7 @@ export interface operations {
                 stream?: ("stdout" | "stderr" | "journal" | "pipeline")[];
                 phase?: string[];
                 segment?: string;
-                level?: ("debug" | "info" | "warn" | "error")[];
+                level?: components["schemas"]["LogLevel"][];
                 start?: components["parameters"]["windowStart"];
                 end?: components["parameters"]["windowEnd"];
                 /** @description Substring / phrase search. */

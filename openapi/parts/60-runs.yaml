@@ -180,7 +180,7 @@ paths:
         - { name: stream, in: query, style: form, explode: false, schema: { type: array, items: { type: string, enum: [stdout, stderr, journal, pipeline] } } }
         - { name: phase, in: query, style: form, explode: false, schema: { type: array, items: { type: string } } }
         - { name: segment, in: query, schema: { type: string } }
-        - { name: level, in: query, style: form, explode: false, schema: { type: array, items: { type: string, enum: [debug, info, warn, error] } } }
+        - { name: level, in: query, style: form, explode: false, schema: { type: array, items: { $ref: '#/components/schemas/LogLevel' } } }
         - $ref: '#/components/parameters/windowStart'
         - $ref: '#/components/parameters/windowEnd'
         - { name: q, in: query, schema: { type: string, maxLength: 512 }, description: Substring / phrase search. }

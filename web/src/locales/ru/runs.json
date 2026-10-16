@@ -286,7 +286,9 @@
       "stand_kept": "Стенд оставлен",
       "result_published": "Результат опубликован",
       "run_timed_out": "Запуск не уложился во время",
-      "run_terminated": "Запуск остановлен принудительно"
+      "run_terminated": "Запуск остановлен принудительно",
+      "activity_failed": "Шаг не выполнен: {{subject}}",
+      "activity_timed_out": "Шаг не уложился во время: {{subject}}"
     },
     "kinds": {
       "run": "запуск",

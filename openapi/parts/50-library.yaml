@@ -713,7 +713,7 @@ components:
             type: object
             required: [role, count]
             properties:
-              role: { type: string }
+              role: { $ref: '#/components/schemas/TopologyRole' }
               engine: { type: string }
               count: { type: integer }
               colocated_with: { type: string }
@@ -912,7 +912,7 @@ components:
               items:
                 type: object
                 properties:
-                  role: { type: string }
+                  role: { $ref: '#/components/schemas/TopologyRole' }
                   count: { type: integer }
                   size: { $ref: '#/components/schemas/Size' }
                   cpu: { type: integer }

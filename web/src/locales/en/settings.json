@@ -323,7 +323,18 @@
       "webhook_update": "Webhook changed",
       "workload_create": "Workload created",
       "workload_delete": "Workload deleted",
-      "workload_update": "Workload changed"
+      "workload_update": "Workload changed",
+      "admin_pipelines_resync": "Pipelines pushed again",
+      "admin_run_cancel": "Run cancelled by a platform admin",
+      "admin_settings_update": "Platform settings changed",
+      "admin_tenant_assign_owner": "Tenant owner assigned",
+      "admin_tenant_delete": "Tenant deleted by a platform admin",
+      "admin_tenant_limits": "Tenant limits changed",
+      "admin_tenant_resume": "Tenant resumed",
+      "admin_tenant_suspend": "Tenant suspended",
+      "admin_user_platform_admin": "Platform admin rights changed",
+      "member_leave": "Member left",
+      "member_remove": "Member removed"
     },
     "targetKinds": {
       "database": "database",

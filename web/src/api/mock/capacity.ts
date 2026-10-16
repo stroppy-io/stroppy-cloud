@@ -42,7 +42,7 @@ export function expandCapacityDemo(
         node_count: 14,
         nodes: [
           { role: 'db', engine: 'postgres', count: 1 },
-          { role: 'db_replica', engine: 'postgres', count: 8 },
+          { role: 'db-replica', engine: 'postgres', count: 8 },
           { role: 'etcd', engine: 'etcd', count: 3 },
           { role: 'proxy', engine: 'haproxy', count: 2 },
         ],
@@ -80,7 +80,7 @@ export function expandCapacityDemo(
         node_count: 63,
         nodes: [
           { role: 'db', engine: 'ydb', count: 32 },
-          { role: 'db_compute', engine: 'ydb', count: 31 },
+          { role: 'db-compute', engine: 'ydb', count: 31 },
         ],
         flows: [{ from: 'db_compute', to: 'db', protocol: 'ydb-ic', port: 19001 }],
       },
@@ -101,7 +101,7 @@ export function expandCapacityDemo(
         node_count: 11,
         nodes: [
           { role: 'db', engine: 'mysql', count: 1 },
-          { role: 'db_replica', engine: 'mysql', count: 8 },
+          { role: 'db-replica', engine: 'mysql', count: 8 },
           { role: 'proxy', engine: 'proxysql', count: 2 },
         ],
         flows: [{ from: 'proxy', to: 'db', protocol: 'mysql', port: 6033 }],

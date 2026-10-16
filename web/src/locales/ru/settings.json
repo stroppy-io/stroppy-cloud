@@ -331,7 +331,18 @@
       "webhook_update": "Изменён вебхук",
       "workload_create": "Создана нагрузка",
       "workload_delete": "Удалена нагрузка",
-      "workload_update": "Изменена нагрузка"
+      "workload_update": "Изменена нагрузка",
+      "admin_pipelines_resync": "Пайплайны выкачены заново",
+      "admin_run_cancel": "Запуск отменён администратором платформы",
+      "admin_settings_update": "Изменены настройки платформы",
+      "admin_tenant_assign_owner": "Назначен владелец тенанта",
+      "admin_tenant_delete": "Тенант удалён администратором платформы",
+      "admin_tenant_limits": "Изменены лимиты тенанта",
+      "admin_tenant_resume": "Тенант возобновлён",
+      "admin_tenant_suspend": "Тенант приостановлен",
+      "admin_user_platform_admin": "Изменены права администратора платформы",
+      "member_leave": "Участник вышел",
+      "member_remove": "Участник удалён"
     },
     "targetKinds": {
       "database": "база",

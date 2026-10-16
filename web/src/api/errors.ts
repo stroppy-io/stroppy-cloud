@@ -10,7 +10,7 @@ export class ApiError extends Error {
   readonly validation?: ValidationResult
   readonly problem?: Problem
   /** Stable key of why it failed (`tenant_slug_taken`); its text is ours, see `errorText`. */
-  readonly reason?: string
+  readonly reason?: Problem['reason']
   readonly params: Record<string, string>
 
   constructor(problem: Partial<Problem> & { status: number }) {

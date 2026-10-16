@@ -1,6 +1,8 @@
 import type {
   ProviderProfile,
+  QuotaName,
   QuotaReport,
+  QuotaUnit,
   TenantLimits,
   TenantSettings,
   Webhook,
@@ -86,7 +88,7 @@ route('PATCH', '/api/v1/t/:slug/settings', ({ store, params, body }) => {
   if (b.notification_emails !== undefined) t.settings.notification_emails = b.notification_emails
   store.audit(
     params.slug,
-    'settings.update',
+    'tenant.update',
     { kind: 'tenant', id: t.tenant.id, name: t.tenant.name },
     b as Record<string, unknown>
   )
@@ -124,7 +126,7 @@ function scheduleVerification(slug: string, id: string): void {
     }
     globalStore.audit(
       slug,
-      'provider.verified',
+      'provider.update',
       { kind: 'provider', id, name: p.name },
       {
         status: p.status,
@@ -138,7 +140,7 @@ function freshQuotas(p: ProviderProfile): QuotaReport {
     p.kind === 'yandex'
       ? `folder ${String(p.settings?.folder_id ?? '').slice(0, 6)}…`
       : String(p.settings?.region ?? 'eu-central-1')
-  const q = (name: string, title: string, unit: string, limit: number, ratio: number) => ({
+  const q = (name: QuotaName, title: string, unit: QuotaUnit, limit: number, ratio: number) => ({
     name,
     title,
     unit,
@@ -152,16 +154,16 @@ function freshQuotas(p: ProviderProfile): QuotaReport {
     quotas:
       p.kind === 'yandex'
         ? [
-            q('compute.instances', 'Instances', 'count', 100, 0.12),
-            q('compute.cores', 'vCPU', 'count', 512, 0.2),
-            q('compute.memory', 'RAM', 'GB', 2048, 0.18),
-            q('compute.ssd', 'Network SSD', 'GB', 8192, 0.31),
-            q('vpc.addresses', 'Public IPs', 'count', 32, 0.25),
+            q('compute.instances.count', 'Instances', 'instances', 100, 0.12),
+            q('compute.instanceCores.count', 'vCPU', 'cores', 512, 0.2),
+            q('compute.instanceMemory.size', 'RAM', 'bytes', 2048 * 2 ** 30, 0.18),
+            q('compute.ssdDisks.size', 'Network SSD', 'bytes', 8192 * 2 ** 30, 0.31),
+            q('vpc.externalStaticAddresses.count', 'Public IPs', 'addresses', 32, 0.25),
           ]
         : [
-            q('ec2.vcpus.standard', 'On-demand vCPU (standard)', 'count', 256, 0.15),
-            q('ebs.gp3', 'gp3 storage', 'TB', 50, 0.06),
-            q('vpc.eip', 'Elastic IPs', 'count', 5, 0.4),
+            q('ec2.standard.vcpus', 'On-demand vCPU (standard)', 'vcpus', 256, 0.15),
+            q('ebs.gp3.storage', 'gp3 storage', 'tib', 50, 0.06),
+            q('ec2.elastic_ips', 'Elastic IPs', 'addresses', 5, 0.4),
           ],
   }
 }
@@ -282,7 +284,7 @@ route('POST', '/api/v1/t/:slug/providers/:id:verify', ({ store, params }) => {
   if (!t || !p) return notFound('provider')
   p.status = 'verifying'
   p.status_reason = undefined
-  store.audit(params.slug, 'provider.verify', { kind: 'provider', id: p.id, name: p.name })
+  store.audit(params.slug, 'provider.update', { kind: 'provider', id: p.id, name: p.name })
   scheduleVerification(params.slug, p.id)
   return { status: 202, json: p }
 })
@@ -430,7 +432,7 @@ route('POST', '/api/v1/t/:slug/webhooks/:id:rotate-secret', ({ store, params }) 
   const t = store.tenant(params.slug)
   const wh = t?.webhooks.find((x) => x.id === params.id)
   if (!t || !wh) return notFound('webhook')
-  store.audit(params.slug, 'webhook.rotate_secret', { kind: 'webhook', id: wh.id, name: wh.url })
+  store.audit(params.slug, 'webhook.rotate', { kind: 'webhook', id: wh.id, name: wh.url })
   return { json: { ...wh, secret: secret() } }
 })
 

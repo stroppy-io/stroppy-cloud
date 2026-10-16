@@ -161,7 +161,7 @@ func estimatedOf(res library.Resolved) oas.TestValidationEstimated {
 	out := oas.TestValidationEstimated{Machines: make([]oas.TestValidationEstimatedMachinesItem, 0, len(res.Machines))}
 	for _, m := range res.Machines {
 		out.Machines = append(out.Machines, oas.TestValidationEstimatedMachinesItem{
-			Role: oas.NewOptString(m.Role), Count: oas.NewOptInt(m.Count), Size: oas.NewOptSize(oas.Size(m.Size)),
+			Role: oas.NewOptTopologyRole(oas.TopologyRole(m.Role)), Count: oas.NewOptInt(m.Count), Size: oas.NewOptSize(oas.Size(m.Size)),
 			CPU: oas.NewOptInt(m.CPU), MemoryGB: oas.NewOptInt(m.MemoryGB), DiskGB: oas.NewOptInt(m.DiskGB),
 		})
 	}

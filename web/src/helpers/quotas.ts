@@ -1,9 +1,8 @@
 import { formatBytes, formatNumber } from '@helpers/format'
 import { i18n } from '@lib/i18n'
 
-// Provider quotas (pipelines/internal/cloud: Quota Manager ids for Yandex,
-// Service Quotas codes for AWS) in the UI language; pipelines/internal/cloud
-// quota_uitext_test.go keeps every id and unit covered.
+// Provider quotas (the contract's QuotaName / QuotaUnit) in the UI language;
+// lib/vocab.test.ts keeps every name and unit covered.
 interface QuotaLike {
   name: string
   title?: string | null
