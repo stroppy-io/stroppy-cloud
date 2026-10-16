@@ -76,7 +76,7 @@ UPDATE profiles SET is_platform_admin = @is_platform_admin, updated_at = now() W
 -- name: AdminRuns :many
 SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,
        r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,
-       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at,
+       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at, r.admitted_at, r.queue,
        t.slug AS tenant_slug, t.name AS tenant_name
 FROM runs r JOIN tenants t ON t.id = r.tenant_id
 WHERE r.deleted_at IS NULL

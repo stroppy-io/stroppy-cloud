@@ -16,7 +16,6 @@ import (
 // Pipeline ids of the product pipelines (one image, four binaries).
 const (
 	PipelineRun            = "stroppy-run"
-	PipelineSuite          = "stroppy-suite"
 	PipelineProviderVerify = "stroppy-provider-verify"
 	PipelineQuotas         = "stroppy-quotas"
 	PipelineProviderConfig = "stroppy-provider-config"

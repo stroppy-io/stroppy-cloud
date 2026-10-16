@@ -240,6 +240,8 @@ type Runs struct {
 	Tps               *float64
 	DurationSeconds   *float64
 	IdempotencyKey    string
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 	CreatedAt         time.Time
 	StartedAt         *time.Time
 	FinishedAt        *time.Time

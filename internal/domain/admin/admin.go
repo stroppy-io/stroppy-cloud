@@ -569,11 +569,8 @@ func (s *Service) CancelRun(ctx context.Context, actor auth.Actor, id uuid.UUID)
 	if r.Status.Terminal() || r.DeletedAt != nil {
 		return run.Run{}, errs.Conflict("run already finished").Because("run_already_finished")
 	}
-	if err := s.runs.SetStatus(ctx, id, run.StatusCancelling, r.Phase, "cancelled by platform admin", nil, nil); err != nil {
+	if err := s.runSvc.CancelRun(ctx, r, "cancelled by platform admin"); err != nil {
 		return run.Run{}, err
-	}
-	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
-		return run.Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
 	}
 	s.record(ctx, "admin.run.cancel", &r.TenantID, audit.Target{Kind: "run", ID: id.String(), Name: r.Name}, nil)
 	return s.runs.ByID(ctx, id)

@@ -122,6 +122,12 @@ type runView struct {
 	Phase        string `json:"phase"`
 	StatusReason string `json:"status_reason"`
 	StandKept    bool   `json:"stand_kept"`
+	Queue        struct {
+		WaitingFor string `json:"waiting_for"`
+		Position   int    `json:"position"`
+		Live       int    `json:"live"`
+		Limit      int    `json:"limit"`
+	} `json:"queue"`
 	Trigger      string `json:"trigger"`
 	TriggerRef   struct {
 		ParentRunID string `json:"parent_run_id"`
@@ -562,7 +568,20 @@ func TestE2ERuns(t *testing.T) {
 			e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &r)
 			ids = append(ids, r.ID)
 		}
-		e.problem(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusUnprocessableEntity, "limit_exceeded")
+		// A fourth run is accepted and waits for a slot.
+		var waiting runView
+		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &waiting)
+		if waiting.Status != "pending" || waiting.Queue.WaitingFor != "slot" || waiting.Queue.Position != 1 || waiting.Queue.Limit != 3 {
+			t.Fatalf("queued run %+v", waiting)
+		}
+		var cancelledQueued runView
+		e.want(e.req(http.MethodPost, base+"/runs/"+waiting.ID+":cancel", nil, tok), http.StatusOK, &cancelledQueued)
+		if cancelledQueued.Status != "cancelled" {
+			t.Fatalf("a queued run is cancelled at once: %+v", cancelledQueued)
+		}
+		if _, ok := e.graphene.runOf(waiting.ID); ok {
+			t.Fatal("a queued run reached Graphene")
+		}
 		for _, id := range ids {
 			e.want(e.req(http.MethodPost, base+"/runs/"+id+":cancel", nil, tok), http.StatusOK, nil)
 		}

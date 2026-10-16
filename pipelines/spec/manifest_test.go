@@ -41,7 +41,6 @@ func TestOmittedFieldsFitGrapheneManifest(t *testing.T) {
 		value any
 	}{
 		{"run", run},
-		{"suite", Suite{SuiteRunID: "suite", Tenant: "acme", Cells: []SuiteCell{{ID: "one", RunSpec: run}}}},
 		{"result", Result{}},
 		{"quotas-unavailable", QuotasResult{ObservedAt: time.Now().UTC(), UnavailableReason: "permission_denied", Scope: "cloud:b1g", Quotas: []Quota{}}},
 		{"quotas-available", QuotasResult{ObservedAt: time.Now().UTC(), Quotas: []Quota{}}},
@@ -92,20 +91,6 @@ func TestLiveFixturesFitProductSchemas(t *testing.T) {
 		{"postgres-disk-zone-a.result.json", "spec.result.run@1"},
 		{"postgres-host-metrics.json", "spec.run@1"},
 		{"postgres-host-metrics.result.json", "spec.result.run@1"},
-		{"suite-yandex-postgres-parallel.json", "spec.suite@1"},
-		{"suite-postgres18-topologies.json", "spec.suite@1"},
-		{"suite-postgres-versions.json", "spec.suite@1"},
-		{"suite-postgres-versions-retry.json", "spec.suite@1"},
-		{"suite-postgres-versions-final.json", "spec.suite@1"},
-		{"suite-postgres-patroni.json", "spec.suite@1"},
-		{"suite-native-exports.json", "spec.suite@1"},
-		{"suite-native-tpcc-retry.json", "spec.suite@1"},
-		{"suite-mysql84-single.json", "spec.suite@1"},
-		{"suite-mysql-fixed.json", "spec.suite@1"},
-		{"suite-mariadb-fixed.json", "spec.suite@1"},
-		{"suite-mysql-family-final.json", "spec.suite@1"},
-		{"suite-mysql-clusters.json", "spec.suite@1"},
-		{"suite-mariadb-monitor-fixed.json", "spec.suite@1"},
 		{"mariadb-galera-118.result.json", "spec.result.run@1"},
 		{"mariadb-galera-114.result.json", "spec.result.run@1"},
 		{"mariadb-galera-1011.result.json", "spec.result.run@1"},
@@ -114,7 +99,6 @@ func TestLiveFixturesFitProductSchemas(t *testing.T) {
 		{"mariadb-single-1011.result.json", "spec.result.run@1"},
 		{"mysql-gr-84.result.json", "spec.result.run@1"},
 		{"mysql-gr-80.result.json", "spec.result.run@1"},
-		{"suite-mysql84-single-fixed.json", "spec.suite@1"},
 		{"mysql84-single.result.json", "spec.result.run@1"},
 		{"mysql84-semi-sync.result.json", "spec.result.run@1"},
 		{"mysql80-semi-sync.result.json", "spec.result.run@1"},
@@ -144,7 +128,6 @@ func TestLiveFixturesFitProductSchemas(t *testing.T) {
 		{"pg18-pgbouncer.result.json", "spec.result.run@1"},
 		{"run-yandex-keep.json", "spec.run@1"},
 		{"run-yandex-keep.result.json", "spec.result.run@1"},
-		{"suite-yandex-noop.json", "spec.suite@1"},
 		{"run-yandex-missing-credentials.json", "spec.run@1"},
 	} {
 		t.Run(tc.file, func(t *testing.T) {
@@ -182,48 +165,6 @@ func TestStructuredLiveInputsFitProductSchema(t *testing.T) {
 				t.Fatal(err)
 			}
 			bake(t, "spec.run@1", value)
-		})
-	}
-}
-
-// SuiteResult currently has only the reflected Graphene output contract.
-func TestLiveSuiteResultFitsGrapheneManifest(t *testing.T) {
-	schema, err := manifest.SchemaOf(reflect.TypeOf(SuiteResult{}), schemapb.ID("test", "suite-result", schemapb.Ver(1, 0, 0)))
-	if err != nil {
-		t.Fatal(err)
-	}
-	engine, err := schemapb.Compile(schema)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, name := range []string{
-		"suite-yandex-noop.result.json",
-		"suite-mysql-family-final.result.json",
-		"suite-mariadb-monitor-fixed.result.json",
-		"suite-mysql84-single-fixed.result.json",
-		"suite-postgres18-topologies.result.json",
-		"suite-postgres-versions-final.result.json",
-		"suite-postgres-patroni.result.json",
-		"suite-yandex-postgres-parallel.result.json",
-		"suite-yandex-postgres-parallel-canceled.result.json",
-		"suite-yandex-postgres-parallel-dockerhub.result.json",
-	} {
-		t.Run(name, func(t *testing.T) {
-			raw, err := os.ReadFile(liveFixturePath(t, name))
-			if err != nil {
-				t.Fatal(err)
-			}
-			var value map[string]any
-			if err := json.Unmarshal(raw, &value); err != nil {
-				t.Fatal(err)
-			}
-			_, result, err := engine.Bake(value)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if result.Blocking() {
-				t.Fatalf("live suite result violates Graphene output schema: %v", result.GetErrors())
-			}
 		})
 	}
 }

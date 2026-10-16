@@ -1614,10 +1614,12 @@ func (q *Queries) SetProviderSecretNames(ctx context.Context, arg SetProviderSec
 	return err
 }
 
-const insertRunSQL = `INSERT INTO runs (id, tenant_id, name, status, phase, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
-                  snapshot, run_spec, summary, rating_tenant, rating_global, keep, notes, labels, graphene_namespace, graphene_run_id, pipeline_revision, idempotency_key)
+const insertRunSQL = `-- created_at comes from the caller: the queue orders by it, and the cells of
+-- one suite are stored in one transaction (one now()).
+INSERT INTO runs (id, tenant_id, name, status, phase, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+                  snapshot, run_spec, summary, rating_tenant, rating_global, keep, notes, labels, graphene_namespace, graphene_run_id, pipeline_revision, idempotency_key, created_at)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-        $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25);`
+        $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26);`
 
 type InsertRunParams struct {
 	ID                uuid.UUID
@@ -1645,16 +1647,17 @@ type InsertRunParams struct {
 	GrapheneRunID     string
 	PipelineRevision  string
 	IdempotencyKey    string
+	CreatedAt         time.Time
 }
 
 func (q *Queries) InsertRun(ctx context.Context, arg InsertRunParams) error {
-	_, err := q.db.Exec(ctx, insertRunSQL, arg.ID, arg.TenantID, arg.Name, arg.Status, arg.Phase, arg.Trigger, arg.SuiteRunID, arg.CellID, arg.ScheduleID, arg.ParentRunID, arg.TestID, arg.TestName, arg.AuthorID, arg.Snapshot, arg.RunSpec, arg.Summary, arg.RatingTenant, arg.RatingGlobal, arg.Keep, arg.Notes, arg.Labels, arg.GrapheneNamespace, arg.GrapheneRunID, arg.PipelineRevision, arg.IdempotencyKey)
+	_, err := q.db.Exec(ctx, insertRunSQL, arg.ID, arg.TenantID, arg.Name, arg.Status, arg.Phase, arg.Trigger, arg.SuiteRunID, arg.CellID, arg.ScheduleID, arg.ParentRunID, arg.TestID, arg.TestName, arg.AuthorID, arg.Snapshot, arg.RunSpec, arg.Summary, arg.RatingTenant, arg.RatingGlobal, arg.Keep, arg.Notes, arg.Labels, arg.GrapheneNamespace, arg.GrapheneRunID, arg.PipelineRevision, arg.IdempotencyKey, arg.CreatedAt)
 	return err
 }
 
 const runByIDSQL = `SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs WHERE id = $1;`
 
 type RunByIDRow struct {
@@ -1695,12 +1698,14 @@ type RunByIDRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 }
 
 func (q *Queries) RunByID(ctx context.Context, id uuid.UUID) (RunByIDRow, error) {
 	row := q.db.QueryRow(ctx, runByIDSQL, id)
 	var i RunByIDRow
-	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt)
+	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue)
 	return i, err
 }
 
@@ -1759,7 +1764,8 @@ func (q *Queries) RunFacetValues(ctx context.Context, tenantID uuid.UUID) ([]Run
 
 const liveRunsSQL = `-- Active workflows and terminal runs whose kept infrastructure still needs reconciliation.
 SELECT id, tenant_id, graphene_namespace, last_event_id, status
-FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept) ORDER BY created_at;`
+FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept)
+  AND NOT (status = 'pending' AND admitted_at IS NULL) ORDER BY created_at;`
 
 type LiveRunsRow struct {
 	ID                uuid.UUID
@@ -1791,7 +1797,7 @@ func (q *Queries) LiveRuns(ctx context.Context) ([]LiveRunsRow, error) {
 
 const runsOfSuiteRunSQL = `SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs WHERE suite_run_id = $1 AND deleted_at IS NULL ORDER BY cell_id;`
 
 type RunsOfSuiteRunRow struct {
@@ -1832,6 +1838,8 @@ type RunsOfSuiteRunRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 }
 
 func (q *Queries) RunsOfSuiteRun(ctx context.Context, suiteRunID *uuid.UUID) ([]RunsOfSuiteRunRow, error) {
@@ -1843,7 +1851,7 @@ func (q *Queries) RunsOfSuiteRun(ctx context.Context, suiteRunID *uuid.UUID) ([]
 	var items []RunsOfSuiteRunRow
 	for rows.Next() {
 		var i RunsOfSuiteRunRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1888,7 +1896,8 @@ func (q *Queries) RunsOfSchedule(ctx context.Context, arg RunsOfScheduleParams) 
 	return items, nil
 }
 
-const tenantLiveRunCountSQL = `SELECT count(*)::int AS n FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling');`
+const tenantLiveRunCountSQL = `-- The runs that hold a slot: admitted by the queue and not finished.
+SELECT count(*)::int AS n FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') AND admitted_at IS NOT NULL;`
 
 type TenantLiveRunCountRow struct {
 	N int32
@@ -1991,7 +2000,7 @@ func (q *Queries) SetRunResult(ctx context.Context, arg SetRunResultParams) erro
 const runsWithoutQpsSeriesSQL = `-- Finished runs with a result whose throughput series was never stored (backfill).
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs
 WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND result IS NOT NULL AND NOT (summary ? 'qps_series')
 ORDER BY finished_at DESC NULLS LAST
@@ -2035,6 +2044,8 @@ type RunsWithoutQpsSeriesRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 }
 
 func (q *Queries) RunsWithoutQpsSeries(ctx context.Context, lim int64) ([]RunsWithoutQpsSeriesRow, error) {
@@ -2046,7 +2057,7 @@ func (q *Queries) RunsWithoutQpsSeries(ctx context.Context, lim int64) ([]RunsWi
 	var items []RunsWithoutQpsSeriesRow
 	for rows.Next() {
 		var i RunsWithoutQpsSeriesRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -2288,6 +2299,238 @@ UPDATE runs SET deleted_at = now(), updated_at = now() WHERE tenant_id = $1 AND 
 func (q *Queries) SoftDeleteRunsOfTenant(ctx context.Context, tenantID uuid.UUID) (int64, error) {
 	tag, err := q.db.Exec(ctx, softDeleteRunsOfTenantSQL, tenantID)
 	return tag.RowsAffected(), err
+}
+
+const queuedRunsSQL = `-- Every run still waiting for the queue, oldest first per tenant.
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs WHERE deleted_at IS NULL AND status = 'pending' AND admitted_at IS NULL ORDER BY tenant_id, created_at, id;`
+
+type QueuedRunsRow struct {
+	ID                uuid.UUID
+	TenantID          uuid.UUID
+	Name              string
+	Status            string
+	Phase             string
+	StatusReason      string
+	Trigger           string
+	SuiteRunID        *uuid.UUID
+	CellID            string
+	ScheduleID        *uuid.UUID
+	ParentRunID       *uuid.UUID
+	TestID            *uuid.UUID
+	TestName          string
+	AuthorID          *uuid.UUID
+	Snapshot          json.RawMessage
+	RunSpec           json.RawMessage
+	Summary           json.RawMessage
+	Result            json.RawMessage
+	RuntimeState      json.RawMessage
+	LastEventID       int64
+	RatingTenant      bool
+	RatingGlobal      bool
+	Keep              string
+	KeepUntil         *time.Time
+	StandKept         bool
+	Notes             string
+	Labels            json.RawMessage
+	GrapheneNamespace string
+	GrapheneRunID     string
+	PipelineRevision  string
+	Tps               *float64
+	DurationSeconds   *float64
+	CreatedAt         time.Time
+	StartedAt         *time.Time
+	FinishedAt        *time.Time
+	UpdatedAt         time.Time
+	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
+}
+
+func (q *Queries) QueuedRuns(ctx context.Context) ([]QueuedRunsRow, error) {
+	rows, err := q.db.Query(ctx, queuedRunsSQL)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []QueuedRunsRow
+	for rows.Next() {
+		var i QueuedRunsRow
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const queuedRunsOfTenantSQL = `SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs WHERE tenant_id = $1 AND deleted_at IS NULL AND status = 'pending' AND admitted_at IS NULL ORDER BY created_at, id;`
+
+type QueuedRunsOfTenantRow struct {
+	ID                uuid.UUID
+	TenantID          uuid.UUID
+	Name              string
+	Status            string
+	Phase             string
+	StatusReason      string
+	Trigger           string
+	SuiteRunID        *uuid.UUID
+	CellID            string
+	ScheduleID        *uuid.UUID
+	ParentRunID       *uuid.UUID
+	TestID            *uuid.UUID
+	TestName          string
+	AuthorID          *uuid.UUID
+	Snapshot          json.RawMessage
+	RunSpec           json.RawMessage
+	Summary           json.RawMessage
+	Result            json.RawMessage
+	RuntimeState      json.RawMessage
+	LastEventID       int64
+	RatingTenant      bool
+	RatingGlobal      bool
+	Keep              string
+	KeepUntil         *time.Time
+	StandKept         bool
+	Notes             string
+	Labels            json.RawMessage
+	GrapheneNamespace string
+	GrapheneRunID     string
+	PipelineRevision  string
+	Tps               *float64
+	DurationSeconds   *float64
+	CreatedAt         time.Time
+	StartedAt         *time.Time
+	FinishedAt        *time.Time
+	UpdatedAt         time.Time
+	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
+}
+
+func (q *Queries) QueuedRunsOfTenant(ctx context.Context, tenantID uuid.UUID) ([]QueuedRunsOfTenantRow, error) {
+	rows, err := q.db.Query(ctx, queuedRunsOfTenantSQL, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []QueuedRunsOfTenantRow
+	for rows.Next() {
+		var i QueuedRunsOfTenantRow
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const admitRunSQL = `UPDATE runs SET admitted_at = now(), queue = '{}'::jsonb, updated_at = now()
+WHERE id = $1 AND status = 'pending' AND admitted_at IS NULL AND deleted_at IS NULL;`
+
+func (q *Queries) AdmitRun(ctx context.Context, id uuid.UUID) (int64, error) {
+	tag, err := q.db.Exec(ctx, admitRunSQL, id)
+	return tag.RowsAffected(), err
+}
+
+const setRunQueueSQL = `UPDATE runs SET queue = $1 WHERE id = $2 AND admitted_at IS NULL;`
+
+type SetRunQueueParams struct {
+	Queue json.RawMessage
+	ID    uuid.UUID
+}
+
+func (q *Queries) SetRunQueue(ctx context.Context, arg SetRunQueueParams) error {
+	_, err := q.db.Exec(ctx, setRunQueueSQL, arg.Queue, arg.ID)
+	return err
+}
+
+const cancelQueuedRunSQL = `-- A queued run never reached Graphene: cancelling it is final at once.
+UPDATE runs SET status = 'cancelled', phase = 'done', status_reason = $1, queue = '{}'::jsonb, finished_at = now(), updated_at = now()
+WHERE id = $2 AND status = 'pending' AND admitted_at IS NULL;`
+
+type CancelQueuedRunParams struct {
+	StatusReason string
+	ID           uuid.UUID
+}
+
+func (q *Queries) CancelQueuedRun(ctx context.Context, arg CancelQueuedRunParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, cancelQueuedRunSQL, arg.StatusReason, arg.ID)
+	return tag.RowsAffected(), err
+}
+
+const startingRunsSQL = `-- Admitted runs whose machines may not exist yet: the cloud does not count
+-- them in its usage, the queue does.
+SELECT id, (snapshot->'provider_profile'->>'id')::uuid AS profile_id, run_spec FROM runs
+WHERE tenant_id = $1 AND deleted_at IS NULL AND admitted_at IS NOT NULL
+  AND status IN ('pending', 'running') AND phase IN ('queued', 'provisioning');`
+
+type StartingRunsRow struct {
+	ID        uuid.UUID
+	ProfileID *uuid.UUID
+	RunSpec   json.RawMessage
+}
+
+func (q *Queries) StartingRuns(ctx context.Context, tenantID uuid.UUID) ([]StartingRunsRow, error) {
+	rows, err := q.db.Query(ctx, startingRunsSQL, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StartingRunsRow
+	for rows.Next() {
+		var i StartingRunsRow
+		if err := rows.Scan(&i.ID, &i.ProfileID, &i.RunSpec); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const liveCellCountsSQL = `-- Admitted, unfinished cells per suite run of a tenant.
+SELECT suite_run_id::uuid AS suite_run_id, count(*)::int AS n FROM runs
+WHERE tenant_id = $1 AND deleted_at IS NULL AND admitted_at IS NOT NULL AND suite_run_id IS NOT NULL
+  AND status IN ('pending', 'running', 'cancelling')
+GROUP BY suite_run_id;`
+
+type LiveCellCountsRow struct {
+	SuiteRunID *uuid.UUID
+	N          int32
+}
+
+func (q *Queries) LiveCellCounts(ctx context.Context, tenantID uuid.UUID) ([]LiveCellCountsRow, error) {
+	rows, err := q.db.Query(ctx, liveCellCountsSQL, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []LiveCellCountsRow
+	for rows.Next() {
+		var i LiveCellCountsRow
+		if err := rows.Scan(&i.SuiteRunID, &i.N); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const ensureSettingsSQL = `INSERT INTO tenant_settings (tenant_id) VALUES ($1)
@@ -4156,6 +4399,8 @@ type AdminRunsRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 	TenantSlug        string
 	TenantName        string
 }
@@ -4188,7 +4433,7 @@ func (q *Queries) AdminRuns(ctx context.Context, arg AdminRunsParams) ([]AdminRu
 		args = append(args, arg.Off)
 		positions[6] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.status = ANY($%d::text[]))\n  AND ($%d::text = '' OR t.slug = $%d::text)\nORDER BY\n  -- default: live runs (pending, running, cancelling), then the newest.\n  CASE WHEN $%d::text = 'default' THEN r.status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'tenant' AND NOT $%d::boolean THEN t.slug END ASC,\n  CASE WHEN $%d::text = 'tenant' AND $%d::boolean THEN t.slug END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN r.name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN r.name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN r.status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN r.status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN r.trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN r.trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN r.summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN r.summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN r.summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN r.summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN r.summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN r.summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN r.summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN r.summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN r.author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN r.author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN r.tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN r.tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN r.duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN r.duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN r.started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN r.started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN r.finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN r.finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN r.updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN r.updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN r.created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN r.created_at END DESC,\n  r.created_at DESC, r.id\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[5], positions[6]))
+	b.WriteString(fmt.Sprintf("SELECT r.id, r.tenant_id, r.name, r.status, r.phase, r.status_reason, r.trigger, r.suite_run_id, r.cell_id, r.schedule_id, r.parent_run_id, r.test_id, r.test_name, r.author_id,\n       r.snapshot, r.run_spec, r.summary, r.result, r.runtime_state, r.last_event_id, r.rating_tenant, r.rating_global, r.keep, r.keep_until, r.stand_kept, r.notes, r.labels,\n       r.graphene_namespace, r.graphene_run_id, r.pipeline_revision, r.tps, r.duration_seconds, r.created_at, r.started_at, r.finished_at, r.updated_at, r.deleted_at, r.admitted_at, r.queue,\n       t.slug AS tenant_slug, t.name AS tenant_name\nFROM runs r JOIN tenants t ON t.id = r.tenant_id\nWHERE r.deleted_at IS NULL\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR r.status = ANY($%d::text[]))\n  AND ($%d::text = '' OR t.slug = $%d::text)\nORDER BY\n  -- default: live runs (pending, running, cancelling), then the newest.\n  CASE WHEN $%d::text = 'default' THEN r.status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'tenant' AND NOT $%d::boolean THEN t.slug END ASC,\n  CASE WHEN $%d::text = 'tenant' AND $%d::boolean THEN t.slug END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN r.name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN r.name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN r.status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN r.status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN r.trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN r.trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN r.summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN r.summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN r.summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN r.summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN r.summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN r.summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN r.summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN r.summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN r.author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN r.author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN r.tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN r.tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (r.summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (r.summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((r.summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN r.duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN r.duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN r.started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN r.started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN r.finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN r.finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN r.updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN r.updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN r.created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN r.created_at END DESC,\n  r.created_at DESC, r.id\nLIMIT $%d OFFSET $%d;", positions[1], positions[1], positions[2], positions[2], positions[3], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[3], positions[4], positions[5], positions[6]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4197,7 +4442,7 @@ func (q *Queries) AdminRuns(ctx context.Context, arg AdminRunsParams) ([]AdminRu
 	var items []AdminRunsRow
 	for rows.Next() {
 		var i AdminRunsRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.TenantSlug, &i.TenantName); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue, &i.TenantSlug, &i.TenantName); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -4593,6 +4838,8 @@ type RunsOfTenantRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 }
 
 func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]RunsOfTenantRow, error) {
@@ -4695,7 +4942,7 @@ func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]R
 		args = append(args, arg.Off)
 		positions[24] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR test_id::text = $%d::text)\n  AND ($%d::text = '' OR suite_run_id::text = $%d::text)\n  AND (NOT $%d::boolean OR suite_run_id IS NULL)\n  AND ($%d::jsonb IS NULL OR labels @> $%d::jsonb)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)\n  AND ($%d::double precision = 0 OR duration_seconds >= $%d::double precision)\n  AND ($%d::double precision = 0 OR duration_seconds <= $%d::double precision)\n  AND ($%d::boolean = false OR stand_kept)\n  AND ($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))\nORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[11], positions[12], positions[12], positions[13], positions[13], positions[14], positions[14], positions[15], positions[15], positions[16], positions[16], positions[17], positions[17], positions[18], positions[19], positions[19], positions[20], positions[21], positions[20], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[23], positions[24]))
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue\nFROM runs\nWHERE tenant_id = $%d AND deleted_at IS NULL\n  AND ($%d::text = '' OR name ILIKE '%%' || $%d::text || '%%' OR test_name ILIKE '%%' || $%d::text || '%%')\n  AND ($%d::text = '' OR author_id::text = $%d::text)\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR status = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->>'db_kind' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR summary->'provider_profile'->>'id' = ANY($%d::text[]))\n  AND (COALESCE(cardinality($%d::text[]), 0) = 0 OR trigger = ANY($%d::text[]))\n  AND ($%d::text = '' OR test_id::text = $%d::text)\n  AND ($%d::text = '' OR suite_run_id::text = $%d::text)\n  AND (NOT $%d::boolean OR suite_run_id IS NULL)\n  AND ($%d::jsonb IS NULL OR labels @> $%d::jsonb)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR started_at <= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at >= $%d::timestamptz)\n  AND ($%d::timestamptz <= '1970-01-02'::timestamptz OR finished_at <= $%d::timestamptz)\n  AND ($%d::double precision = 0 OR duration_seconds >= $%d::double precision)\n  AND ($%d::double precision = 0 OR duration_seconds <= $%d::double precision)\n  AND ($%d::boolean = false OR stand_kept)\n  AND ($%d::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text))\nORDER BY\n  -- default: the viewer's favorites, then live runs, then the newest.\n  CASE WHEN $%d::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = $%d::text) END DESC,\n  CASE WHEN $%d::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,\n  CASE WHEN $%d::text = 'name' AND NOT $%d::boolean THEN name END ASC,\n  CASE WHEN $%d::text = 'name' AND $%d::boolean THEN name END DESC,\n  CASE WHEN $%d::text = 'status' AND NOT $%d::boolean THEN status END ASC,\n  CASE WHEN $%d::text = 'status' AND $%d::boolean THEN status END DESC,\n  CASE WHEN $%d::text = 'trigger' AND NOT $%d::boolean THEN trigger END ASC,\n  CASE WHEN $%d::text = 'trigger' AND $%d::boolean THEN trigger END DESC,\n  CASE WHEN $%d::text = 'db_kind' AND NOT $%d::boolean THEN summary->>'db_kind' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'db_kind' AND $%d::boolean THEN summary->>'db_kind' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND NOT $%d::boolean THEN summary->>'workload_name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'workload' AND $%d::boolean THEN summary->>'workload_name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND NOT $%d::boolean THEN summary->>'topology_label' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'topology' AND $%d::boolean THEN summary->>'topology_label' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND NOT $%d::boolean THEN summary->'provider_profile'->>'name' END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'provider' AND $%d::boolean THEN summary->'provider_profile'->>'name' END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND NOT $%d::boolean THEN author_id::text END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'author' AND $%d::boolean THEN author_id::text END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND NOT $%d::boolean THEN tps END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'tps' AND $%d::boolean THEN tps END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p99' AND $%d::boolean THEN (summary->'headline'->>'latency_p99_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND NOT $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'p50' AND $%d::boolean THEN (summary->'headline'->>'latency_p50_ms')::float8 END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND NOT $%d::boolean THEN (summary->'headline'->>'qps')::float8 END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'qps' AND $%d::boolean THEN (summary->'headline'->>'qps')::float8 END DESC NULLS LAST,\n  -- A run without errors in its headline had none: it sorts as 0.\n  CASE WHEN $%d::text = 'errors' AND NOT $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END ASC,\n  CASE WHEN $%d::text = 'errors' AND $%d::boolean THEN COALESCE((summary->'headline'->>'errors')::float8, 0) END DESC,\n  CASE WHEN $%d::text = 'duration' AND NOT $%d::boolean THEN duration_seconds END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'duration' AND $%d::boolean THEN duration_seconds END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND NOT $%d::boolean THEN started_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'started_at' AND $%d::boolean THEN started_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND NOT $%d::boolean THEN finished_at END ASC NULLS LAST,\n  CASE WHEN $%d::text = 'finished_at' AND $%d::boolean THEN finished_at END DESC NULLS LAST,\n  CASE WHEN $%d::text = 'updated_at' AND NOT $%d::boolean THEN updated_at END ASC,\n  CASE WHEN $%d::text = 'updated_at' AND $%d::boolean THEN updated_at END DESC,\n  CASE WHEN $%d::text = 'created_at' AND NOT $%d::boolean THEN created_at END ASC,\n  CASE WHEN $%d::text = 'created_at' AND $%d::boolean THEN created_at END DESC,\n  created_at DESC, id\nLIMIT $%d OFFSET $%d;", positions[1], positions[2], positions[2], positions[2], positions[3], positions[3], positions[4], positions[4], positions[5], positions[5], positions[6], positions[6], positions[7], positions[7], positions[8], positions[8], positions[9], positions[9], positions[10], positions[11], positions[11], positions[12], positions[12], positions[13], positions[13], positions[14], positions[14], positions[15], positions[15], positions[16], positions[16], positions[17], positions[17], positions[18], positions[19], positions[19], positions[20], positions[21], positions[20], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[20], positions[22], positions[23], positions[24]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4704,7 +4951,7 @@ func (q *Queries) RunsOfTenant(ctx context.Context, arg RunsOfTenantParams) ([]R
 	var items []RunsOfTenantRow
 	for rows.Next() {
 		var i RunsOfTenantRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -4853,6 +5100,8 @@ type RunsByIdsRow struct {
 	FinishedAt        *time.Time
 	UpdatedAt         time.Time
 	DeletedAt         *time.Time
+	AdmittedAt        *time.Time
+	Queue             json.RawMessage
 }
 
 func (q *Queries) RunsByIds(ctx context.Context, arg RunsByIdsParams) ([]RunsByIdsRow, error) {
@@ -4863,7 +5112,7 @@ func (q *Queries) RunsByIds(ctx context.Context, arg RunsByIdsParams) ([]RunsByI
 		args = append(args, arg.Ids)
 		positions[1] = len(args)
 	}
-	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at\nFROM runs WHERE id = ANY($%d::uuid[]) AND deleted_at IS NULL;", positions[1]))
+	b.WriteString(fmt.Sprintf("SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,\n       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,\n       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue\nFROM runs WHERE id = ANY($%d::uuid[]) AND deleted_at IS NULL;", positions[1]))
 	rows, err := q.db.Query(ctx, b.String(), args...)
 	if err != nil {
 		return nil, err
@@ -4872,7 +5121,7 @@ func (q *Queries) RunsByIds(ctx context.Context, arg RunsByIdsParams) ([]RunsByI
 	var items []RunsByIdsRow
 	for rows.Next() {
 		var i RunsByIdsRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Status, &i.Phase, &i.StatusReason, &i.Trigger, &i.SuiteRunID, &i.CellID, &i.ScheduleID, &i.ParentRunID, &i.TestID, &i.TestName, &i.AuthorID, &i.Snapshot, &i.RunSpec, &i.Summary, &i.Result, &i.RuntimeState, &i.LastEventID, &i.RatingTenant, &i.RatingGlobal, &i.Keep, &i.KeepUntil, &i.StandKept, &i.Notes, &i.Labels, &i.GrapheneNamespace, &i.GrapheneRunID, &i.PipelineRevision, &i.Tps, &i.DurationSeconds, &i.CreatedAt, &i.StartedAt, &i.FinishedAt, &i.UpdatedAt, &i.DeletedAt, &i.AdmittedAt, &i.Queue); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

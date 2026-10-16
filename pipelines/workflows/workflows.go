@@ -1,5 +1,4 @@
-// Package workflows is the public door to the stroppy-run and
-// stroppy-suite bodies: their ids, entry points, the wire names of the
+// Package workflows is the public door to the stroppy-run body: its id, entry points, the wire names of the
 // activities they dispatch and the milestones they emit. The implementation
 // stays in internal/; this is what a simulation needs to run the REAL
 // workflow on pipelinetest — the server's end-to-end tests drive it in
@@ -14,21 +13,14 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/activities"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/events"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/run"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/internal/suite"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
-// Pipeline ids.
-const (
-	RunPipelineID   = run.PipelineID
-	SuitePipelineID = suite.PipelineID
-)
+// RunPipelineID is the pipeline id of stroppy-run.
+const RunPipelineID = run.PipelineID
 
 // Run is the body of stroppy-run.
 func Run(ctx pipeline.Context, r spec.Run) (spec.Result, error) { return run.Run(ctx, r) }
-
-// Suite is the body of stroppy-suite.
-func Suite(ctx pipeline.Context, s spec.Suite) (spec.SuiteResult, error) { return suite.Run(ctx, s) }
 
 // Wire names of the activities. Worker-side ones run on the run queue,
 // agent-side ones on the agent's run queue.
@@ -81,7 +73,4 @@ const (
 	BaselineFinished = events.BaselineFinished
 	StandKept        = events.StandKept
 	ResultPublished  = events.ResultPublished
-	CellStarted      = suite.CellStarted
-	CellFinished     = suite.CellFinished
-	CellFailed       = suite.CellFailed
 )

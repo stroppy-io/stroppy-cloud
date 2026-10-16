@@ -408,7 +408,7 @@ func Run() *schemapb.Schema {
 		MustBuild()
 }
 
-// Run can be validated as a root or as a suite cell.
+// runRule applies a rule to the run, validated as a root or nested.
 func runRule(expr, message string) *schemapb.RuleB {
 	return schemapb.Rule("[this == null ? root : this].all(r, "+strings.ReplaceAll(expr, "root", "r")+")", message)
 }

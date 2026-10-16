@@ -21,19 +21,6 @@ func (r *Run) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// UnmarshalJSON uses the same default as spec.suite@1 for omitted settings.
-func (s *Suite) UnmarshalJSON(data []byte) error {
-	type plain Suite
-	out := plain{Defaults: SuiteDefaults{ContinueOnFailure: true}}
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&out); err != nil {
-		return err
-	}
-	*s = Suite(out)
-	return nil
-}
-
 // DecodeObject preserves integer precision in dynamic schema input (notably
 // uint64 seeds), while returning the concrete numeric types schemapb accepts.
 func DecodeObject(data []byte) (map[string]any, error) {

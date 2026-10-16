@@ -48,7 +48,6 @@ build: web-build ## Build the stroppy-server binary (with embedded SPA)
 build-pipelines: ## Build the graphene pipeline binaries (linux/amd64, shipped in the server image)
 	@mkdir -p bin
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-run ./cmd/run/
-	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-suite ./cmd/suite/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-provider-verify ./cmd/provider-verify/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-provider-config ./cmd/provider-config/
 	cd pipelines && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -o ../bin/stroppy-quotas ./cmd/quotas/

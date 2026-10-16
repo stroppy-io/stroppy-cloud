@@ -119,6 +119,34 @@ components:
           type: array
           readOnly: true
           items: { $ref: '#/components/schemas/Ref' }
+        queue: { $ref: '#/components/schemas/RunQueue' }
+    RunQueue:
+      type: object
+      readOnly: true
+      description: >-
+        Set while the run waits in the tenant's queue (status pending, never handed to
+        Graphene): its place and what holds it. A run that fits starts before the ones
+        ahead of it that do not.
+      required: [waiting_for, position]
+      properties:
+        waiting_for: { $ref: '#/components/schemas/RunWaitReason' }
+        position: { type: integer, minimum: 1, description: 1-based among the tenant's queued runs. }
+        live: { type: integer, description: 'Occupied slots (slot, suite_slot).' }
+        limit: { type: integer, description: 'Allowed slots (slot, suite_slot).' }
+        quota: { type: string, description: 'Provider quota without room (quota).', example: compute.ssdDisks.size }
+        zone: { type: string, description: Zone of a zonal quota. }
+        need: { type: number, description: What the run needs of the quota, in unit. }
+        free: { type: number, description: What is free of the quota, in unit. }
+        unit: { type: string }
+        detail: { type: string, description: 'State behind pipelines, provider and quota_unknown.' }
+    RunWaitReason:
+      type: string
+      enum: [pipelines, slot, suite_slot, quota, quota_unknown, provider]
+      description: >-
+        pipelines — the tenant's pipelines are not pushed at this server's revision yet;
+        slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its
+        concurrency; quota — a provider quota has no room; quota_unknown — the quotas could
+        not be read; provider — the provider profile is not ready.
     RunSnapshot:
       type: object
       description: Definition frozen at launch.

@@ -90,7 +90,8 @@ func (g *recoveryGraphene) Holdings(context.Context, string) ([]Holding, error) 
 
 func recoveryFixture() (*recoveryRepo, *recoveryGraphene, *Projector) {
 	now := time.Now().UTC()
-	repo := &recoveryRepo{r: Run{ID: uuid.New(), Status: StatusPending, CreatedAt: now, RunSpec: json.RawMessage(`{}`)}, events: map[int64]Event{}}
+	// Admitted by the queue: the projector owns its submission.
+	repo := &recoveryRepo{r: Run{ID: uuid.New(), Status: StatusPending, CreatedAt: now, AdmittedAt: &now, RunSpec: json.RawMessage(`{}`)}, events: map[int64]Event{}}
 	g := &recoveryGraphene{status: "completed", raw: json.RawMessage(`{"summary":{"tps":123},"metrics":{"count":{"value":9007199254740993}}}`), events: []RawEvent{{ID: 1, Kind: "run-started", At: now}, {ID: 2, Kind: "run-completed", At: now.Add(time.Second)}}}
 	log := xlog.NewConsole(xlog.WithWriter(io.Discard))
 	p := NewProjector(repo, g, nil, func(ctx context.Context, _ string) context.Context { return ctx }, log)
@@ -137,13 +138,22 @@ func TestRecoverySubmissionSameIdentity(t *testing.T) {
 	}
 }
 
-func TestRecoveryNeverSubmitsSuiteCell(t *testing.T) {
+func TestRecoverySubmitsAdmittedSuiteCell(t *testing.T) {
 	repo, g, p := recoveryFixture()
 	id := uuid.New()
-	repo.r.SuiteRunID = &id
+	repo.r.SuiteRunID, repo.r.GrapheneRunID = &id, id.String()+"-a"
 	p.follow(context.Background(), Live{ID: repo.r.ID})
-	if g.starts != 0 || repo.r.Status != StatusCompleted {
-		t.Fatal("projector independently launched a suite cell")
+	if g.starts != 1 || g.ids[0] != id.String()+"-a" || repo.r.Status != StatusCompleted {
+		t.Fatal("an admitted suite cell is a run like any other: the projector submits it under its Graphene id")
+	}
+}
+
+func TestRecoveryLeavesQueuedRunToTheQueue(t *testing.T) {
+	repo, g, p := recoveryFixture()
+	repo.r.AdmittedAt = nil
+	p.follow(context.Background(), Live{ID: repo.r.ID})
+	if g.starts != 0 || repo.r.Status != StatusPending {
+		t.Fatal("projector started a queued run")
 	}
 }
 
@@ -184,10 +194,21 @@ func TestRecoveryKeepUsesRemoteDeadline(t *testing.T) {
 
 func TestRecoveryOldMissingIdentityIsNotRelaunched(t *testing.T) {
 	repo, g, p := recoveryFixture()
-	repo.r.CreatedAt = time.Now().Add(-48 * time.Hour)
+	long := time.Now().Add(-48 * time.Hour)
+	repo.r.CreatedAt, repo.r.AdmittedAt = long, &long
 	g.statusErr = ErrRemoteNotFound
 	p.follow(context.Background(), Live{ID: repo.r.ID})
 	if g.starts != 0 || repo.r.Status != StatusPending {
 		t.Fatal("possibly forgotten execution was recreated")
+	}
+}
+
+func TestRecoveryLongQueuedRunStartsOnAdmission(t *testing.T) {
+	repo, g, p := recoveryFixture()
+	repo.r.CreatedAt = time.Now().Add(-48 * time.Hour)
+	g.statusErr = ErrRemoteNotFound
+	p.follow(context.Background(), Live{ID: repo.r.ID})
+	if g.starts != 1 {
+		t.Fatal("a run admitted now after days in the queue is a fresh submission")
 	}
 }

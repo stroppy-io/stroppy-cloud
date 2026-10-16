@@ -102,5 +102,12 @@
     "demoLead": "Want to see what you will get?",
     "demo": "Example report",
     "done": "done"
+  },
+  "pipelines": {
+    "pendingTitle": "The tenant is getting ready",
+    "behindTitle": "The tenant is being updated to the new server version",
+    "progress": "Pushing the pipelines: {{pushed}} of {{total}}. This takes a few minutes; launched runs wait in the queue and start by themselves.",
+    "failedTitle": "The pipelines could not be pushed",
+    "failed": "{{error}}. Launched runs wait in the queue; the push is retried automatically."
   }
 }

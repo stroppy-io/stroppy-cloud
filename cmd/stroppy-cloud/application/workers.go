@@ -17,7 +17,10 @@ const (
 	webhookTick   = 5 * time.Second
 	quotaSweep    = 15 * time.Minute
 	projectorTick = 3 * time.Second
-	scheduleTick  = 30 * time.Second
+	// queueTick re-checks queued runs; launches, finished runs and pushed
+	// pipelines nudge the queue sooner.
+	queueTick    = 15 * time.Second
+	scheduleTick = 30 * time.Second
 	// qpsBackfillConcurrency bounds the metric store queries of the
 	// startup series backfill.
 	qpsBackfillConcurrency = 4
@@ -32,6 +35,9 @@ func (a *Application) startWorkers() {
 	})
 	a.shutdown.Go(func(ctx context.Context) {
 		a.services.SuiteProj.Run(ctx, projectorTick)
+	})
+	a.shutdown.Go(func(ctx context.Context) {
+		a.services.Runs.RunQueue(ctx, queueTick)
 	})
 	// One pass at startup: finished runs without a stored throughput
 	// series (older than the series, or finished while the metric store

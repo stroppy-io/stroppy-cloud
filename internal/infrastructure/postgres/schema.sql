@@ -296,6 +296,10 @@ CREATE TABLE runs (
     tps                 double precision,
     duration_seconds    double precision,
     idempotency_key     text        NOT NULL DEFAULT '',
+    -- admitted_at is when the queue let the run start; NULL = still queued
+    -- (pending, never handed to Graphene). queue says what it waits for.
+    admitted_at         timestamptz,
+    queue               jsonb       NOT NULL DEFAULT '{}'::jsonb,
     created_at          timestamptz NOT NULL DEFAULT now(),
     started_at          timestamptz,
     finished_at         timestamptz,
@@ -305,6 +309,7 @@ CREATE TABLE runs (
 CREATE INDEX runs_tenant_idx ON runs (tenant_id, created_at DESC) WHERE deleted_at IS NULL;
 CREATE INDEX runs_test_idx ON runs (test_id, created_at DESC) WHERE deleted_at IS NULL;
 CREATE INDEX runs_live_idx ON runs (status) WHERE deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling');
+CREATE INDEX runs_queue_idx ON runs (tenant_id, created_at) WHERE deleted_at IS NULL AND status = 'pending' AND admitted_at IS NULL;
 CREATE UNIQUE INDEX runs_idempotency_idx ON runs (tenant_id, idempotency_key) WHERE idempotency_key <> '';
 
 -- run_events: the timeline the server keeps (milestones from the pipeline

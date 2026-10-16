@@ -71,6 +71,7 @@ func (r *RunRepo) insert(ctx context.Context, x run.Run, idempotencyKey string) 
 		SuiteRunID: x.SuiteRunID, CellID: x.CellID, ScheduleID: x.ScheduleID, ParentRunID: x.ParentRunID, TestID: x.TestID, TestName: x.TestName,
 		AuthorID: x.AuthorID, Snapshot: snapshot, RunSpec: orEmpty(x.RunSpec), Summary: summary, RatingTenant: x.RatingTenant, RatingGlobal: x.RatingGlobal,
 		Keep: keepText(x.Keep), Notes: x.Notes, Labels: labels, GrapheneNamespace: x.GrapheneNamespace, GrapheneRunID: x.GrapheneRunID, PipelineRevision: x.PipelineRevision, IdempotencyKey: idempotencyKey,
+		CreatedAt: createdAt(x.CreatedAt),
 	})
 	if err != nil {
 		if isUnique(err) {
@@ -327,6 +328,95 @@ func (r *RunRepo) SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *t
 	return nil
 }
 
+func (r *RunRepo) Queued(ctx context.Context) ([]run.Run, error) {
+	rows, err := r.q.QueuedRuns(ctx)
+	if err != nil {
+		return nil, infraf("run: queued: %v", err)
+	}
+	out := make([]run.Run, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, runOf(db.RunByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *RunRepo) QueuedOf(ctx context.Context, tenantID uuid.UUID) ([]run.Run, error) {
+	rows, err := r.q.QueuedRunsOfTenant(ctx, tenantID)
+	if err != nil {
+		return nil, infraf("run: queued of tenant: %v", err)
+	}
+	out := make([]run.Run, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, runOf(db.RunByIDRow(row)))
+	}
+	return out, nil
+}
+
+// createdAt keeps the caller's creation time; a zero one is now.
+func createdAt(t time.Time) time.Time {
+	if t.IsZero() {
+		return time.Now().UTC()
+	}
+	return t
+}
+
+func (r *RunRepo) AdmitQueued(ctx context.Context, id uuid.UUID) (bool, error) {
+	n, err := r.q.AdmitRun(ctx, id)
+	if err != nil {
+		return false, infraf("run: admit: %v", err)
+	}
+	return n > 0, nil
+}
+
+func (r *RunRepo) SetQueue(ctx context.Context, id uuid.UUID, q run.Queue) error {
+	raw, err := json.Marshal(q)
+	if err != nil {
+		return err
+	}
+	if err := r.q.SetRunQueue(ctx, db.SetRunQueueParams{Queue: raw, ID: id}); err != nil {
+		return infraf("run: queue: %v", err)
+	}
+	return nil
+}
+
+func (r *RunRepo) CancelQueued(ctx context.Context, id uuid.UUID, reason string) (bool, error) {
+	n, err := r.q.CancelQueuedRun(ctx, db.CancelQueuedRunParams{StatusReason: reason, ID: id})
+	if err != nil {
+		return false, infraf("run: cancel queued: %v", err)
+	}
+	return n > 0, nil
+}
+
+func (r *RunRepo) Starting(ctx context.Context, tenantID uuid.UUID) ([]run.Starting, error) {
+	rows, err := r.q.StartingRuns(ctx, tenantID)
+	if err != nil {
+		return nil, infraf("run: starting: %v", err)
+	}
+	out := make([]run.Starting, 0, len(rows))
+	for _, row := range rows {
+		st := run.Starting{Spec: row.RunSpec}
+		if row.ProfileID != nil {
+			st.ProfileID = *row.ProfileID
+		}
+		out = append(out, st)
+	}
+	return out, nil
+}
+
+func (r *RunRepo) LiveCells(ctx context.Context, tenantID uuid.UUID) (map[uuid.UUID]int, error) {
+	rows, err := r.q.LiveCellCounts(ctx, tenantID)
+	if err != nil {
+		return nil, infraf("run: live cells: %v", err)
+	}
+	out := make(map[uuid.UUID]int, len(rows))
+	for _, row := range rows {
+		if row.SuiteRunID != nil {
+			out[*row.SuiteRunID] = int(row.N)
+		}
+	}
+	return out, nil
+}
+
 func (r *RunRepo) SoftDelete(ctx context.Context, id uuid.UUID) error {
 	n, err := r.q.SoftDeleteRun(ctx, id)
 	if err != nil {
@@ -398,7 +488,9 @@ func runOf(row db.RunByIDRow) run.Run {
 		RatingTenant: row.RatingTenant, RatingGlobal: row.RatingGlobal, KeepUntil: row.KeepUntil, StandKept: row.StandKept, Notes: row.Notes,
 		GrapheneNamespace: row.GrapheneNamespace, GrapheneRunID: row.GrapheneRunID, PipelineRevision: row.PipelineRevision, TPS: row.Tps, DurationSeconds: row.DurationSeconds,
 		CreatedAt: row.CreatedAt, StartedAt: row.StartedAt, FinishedAt: row.FinishedAt, UpdatedAt: row.UpdatedAt, DeletedAt: row.DeletedAt, Labels: map[string]string{},
+		AdmittedAt: row.AdmittedAt,
 	}
+	_ = json.Unmarshal(row.Queue, &x.Queue)        //nolint:errcheck // stored by us
 	_ = json.Unmarshal(row.Snapshot, &x.Snapshot)  //nolint:errcheck // stored by us
 	_ = json.Unmarshal(row.Summary, &x.Summary)    //nolint:errcheck // stored by us
 	_ = json.Unmarshal(row.RuntimeState, &x.State) //nolint:errcheck // stored by us

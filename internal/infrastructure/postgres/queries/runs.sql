@@ -1,13 +1,15 @@
 -- name: InsertRun :exec
+-- created_at comes from the caller: the queue orders by it, and the cells of
+-- one suite are stored in one transaction (one now()).
 INSERT INTO runs (id, tenant_id, name, status, phase, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
-                  snapshot, run_spec, summary, rating_tenant, rating_global, keep, notes, labels, graphene_namespace, graphene_run_id, pipeline_revision, idempotency_key)
+                  snapshot, run_spec, summary, rating_tenant, rating_global, keep, notes, labels, graphene_namespace, graphene_run_id, pipeline_revision, idempotency_key, created_at)
 VALUES (@id, @tenant_id, @name, @status, @phase, @trigger, @suite_run_id, @cell_id, @schedule_id, @parent_run_id, @test_id, @test_name, @author_id,
-        @snapshot, @run_spec, @summary, @rating_tenant, @rating_global, @keep, @notes, @labels, @graphene_namespace, @graphene_run_id, @pipeline_revision, @idempotency_key);
+        @snapshot, @run_spec, @summary, @rating_tenant, @rating_global, @keep, @notes, @labels, @graphene_namespace, @graphene_run_id, @pipeline_revision, @idempotency_key, @created_at);
 
 -- name: RunByID :one
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs WHERE id = @id;
 
 -- name: RunByIdempotencyKey :one
@@ -16,7 +18,7 @@ SELECT id FROM runs WHERE tenant_id = @tenant_id AND idempotency_key = @key AND 
 -- name: RunsOfTenant :many
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@search::text = '' OR name ILIKE '%' || @search::text || '%' OR test_name ILIKE '%' || @search::text || '%')
@@ -94,19 +96,21 @@ SELECT field, value, count(*)::int AS count FROM (
 -- name: LiveRuns :many
 -- Active workflows and terminal runs whose kept infrastructure still needs reconciliation.
 SELECT id, tenant_id, graphene_namespace, last_event_id, status
-FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept) ORDER BY created_at;
+FROM runs WHERE deleted_at IS NULL AND (status IN ('pending', 'running', 'cancelling') OR stand_kept)
+  AND NOT (status = 'pending' AND admitted_at IS NULL) ORDER BY created_at;
 
 -- name: RunsOfSuiteRun :many
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs WHERE suite_run_id = @suite_run_id AND deleted_at IS NULL ORDER BY cell_id;
 
 -- name: RunsOfSchedule :many
 SELECT id, name, status, created_at FROM runs WHERE schedule_id = @schedule_id AND deleted_at IS NULL ORDER BY created_at DESC LIMIT @lim;
 
 -- name: TenantLiveRunCount :one
-SELECT count(*)::int AS n FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling');
+-- The runs that hold a slot: admitted by the queue and not finished.
+SELECT count(*)::int AS n FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling') AND admitted_at IS NOT NULL;
 
 -- name: TenantHasLiveRuns :one
 SELECT EXISTS (SELECT 1 FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status IN ('pending', 'running', 'cancelling'))::boolean AS live;
@@ -142,7 +146,7 @@ UPDATE runs SET result = @result, summary = @summary, tps = @tps, updated_at = n
 -- Finished runs with a result whose throughput series was never stored (backfill).
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs
 WHERE deleted_at IS NULL AND status IN ('completed', 'failed', 'cancelled') AND result IS NOT NULL AND NOT (summary ? 'qps_series')
 ORDER BY finished_at DESC NULLS LAST
@@ -241,7 +245,7 @@ FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL;
 -- name: RunsByIDs :many
 SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
        snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
-       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
 FROM runs WHERE id = ANY(@ids::uuid[]) AND deleted_at IS NULL;
 
 -- name: TestRunStats :many
@@ -253,3 +257,42 @@ ORDER BY test_id, created_at DESC;
 -- A deleted tenant takes its runs with it: they leave the rating and every
 -- list with the tenant.
 UPDATE runs SET deleted_at = now(), updated_at = now() WHERE tenant_id = @tenant_id AND deleted_at IS NULL;
+
+-- name: QueuedRuns :many
+-- Every run still waiting for the queue, oldest first per tenant.
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs WHERE deleted_at IS NULL AND status = 'pending' AND admitted_at IS NULL ORDER BY tenant_id, created_at, id;
+
+-- name: QueuedRunsOfTenant :many
+SELECT id, tenant_id, name, status, phase, status_reason, trigger, suite_run_id, cell_id, schedule_id, parent_run_id, test_id, test_name, author_id,
+       snapshot, run_spec, summary, result, runtime_state, last_event_id, rating_tenant, rating_global, keep, keep_until, stand_kept, notes, labels,
+       graphene_namespace, graphene_run_id, pipeline_revision, tps, duration_seconds, created_at, started_at, finished_at, updated_at, deleted_at, admitted_at, queue
+FROM runs WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND status = 'pending' AND admitted_at IS NULL ORDER BY created_at, id;
+
+-- name: AdmitRun :execrows
+UPDATE runs SET admitted_at = now(), queue = '{}'::jsonb, updated_at = now()
+WHERE id = @id AND status = 'pending' AND admitted_at IS NULL AND deleted_at IS NULL;
+
+-- name: SetRunQueue :exec
+UPDATE runs SET queue = @queue WHERE id = @id AND admitted_at IS NULL;
+
+-- name: CancelQueuedRun :execrows
+-- A queued run never reached Graphene: cancelling it is final at once.
+UPDATE runs SET status = 'cancelled', phase = 'done', status_reason = @status_reason, queue = '{}'::jsonb, finished_at = now(), updated_at = now()
+WHERE id = @id AND status = 'pending' AND admitted_at IS NULL;
+
+-- name: StartingRuns :many
+-- Admitted runs whose machines may not exist yet: the cloud does not count
+-- them in its usage, the queue does.
+SELECT id, (snapshot->'provider_profile'->>'id')::uuid AS profile_id, run_spec FROM runs
+WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND admitted_at IS NOT NULL
+  AND status IN ('pending', 'running') AND phase IN ('queued', 'provisioning');
+
+-- name: LiveCellCounts :many
+-- Admitted, unfinished cells per suite run of a tenant.
+SELECT suite_run_id::uuid AS suite_run_id, count(*)::int AS n FROM runs
+WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND admitted_at IS NOT NULL AND suite_run_id IS NOT NULL
+  AND status IN ('pending', 'running', 'cancelling')
+GROUP BY suite_run_id;

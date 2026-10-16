@@ -10,6 +10,7 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Icon, LoadingPlaceholder, Stack, Text, Tooltip, useStyles2 } from '@grafana/ui'
 import { dbLabel, formatDuration } from '@helpers/format'
+import { queueText } from '@helpers/queue'
 import { isTerminal } from '@helpers/run-status'
 import { formatDateTime } from '@helpers/time'
 import { useRun } from '@hooks/useRun'
@@ -215,7 +216,18 @@ export function RunDetailLayout({ id, children }: { id: string; children: ReactN
                 </span>
               )}
             </div>
-            {!isTerminal(run.status) && (
+            {run.queue && (
+              <div className={styles.reason}>
+                <Alert
+                  severity="info"
+                  title={`${t('runs.queue.title')} · ${t('runs.queue.position', { position: run.queue.position })}`}
+                  bottomSpacing={0}
+                >
+                  {queueText(run.queue)}. {t('runs.queue.hint')}
+                </Alert>
+              </div>
+            )}
+            {!isTerminal(run.status) && !run.queue && (
               <div className={styles.progress}>
                 <RunProgress run={run} />
               </div>

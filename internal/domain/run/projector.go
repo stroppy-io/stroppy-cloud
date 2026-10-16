@@ -27,6 +27,7 @@ type Projector struct {
 	scope     func(ctx context.Context, namespace string) context.Context
 	log       *xlog.Logger
 	telemetry Telemetry
+	onFinish  func()
 
 	mu       sync.Mutex
 	active   map[uuid.UUID]struct{}
@@ -163,8 +164,11 @@ func (p *Projector) follow(ctx context.Context, l Live) {
 		p.finish(ctx, sctx, r, terminal.Status, terminal.Reason, terminal.At)
 		return
 	}
-	if r.SuiteRunID == nil && (r.Status == StatusPending || (r.Status == StatusCancelling && r.StartedAt == nil)) {
-		if err := Submit(sctx, p.graphene, r.CreatedAt, r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+	if r.Queued() {
+		return // the queue starts it
+	}
+	if r.Status == StatusPending || (r.Status == StatusCancelling && r.StartedAt == nil) {
+		if err := Submit(sctx, p.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
 			if errors.Is(err, ErrStartRejected) {
 				_ = p.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // retried on the next tick
 			}
@@ -291,7 +295,14 @@ func TerminalOf(s string) (Status, bool) {
 }
 
 // finish stores the result of a finished run and tells the webhooks.
+// OnFinish is called after a run finished: its slot and quota are free
+// for the queue.
+func (p *Projector) OnFinish(fn func()) { p.onFinish = fn }
+
 func (p *Projector) finish(ctx, sctx context.Context, r Run, status Status, reason string, at time.Time) {
+	if p.onFinish != nil {
+		defer p.onFinish()
+	}
 	// A run that did not complete still collected something: its partial
 	// result rides in the failure. Keep the raw envelope so explicit zeroes
 	// and opaque report extensions survive storage.

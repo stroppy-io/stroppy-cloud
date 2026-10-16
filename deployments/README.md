@@ -5,7 +5,7 @@ in a static Go binary, then copy the binary into
 `gcr.io/distroless/static-debian12:nonroot`. One process serves API and UI.
 There is no separate frontend container or runtime Node/Nginx dependency.
 Stroppy also includes five pipeline binaries from the same checkout under
-`/opt/stroppy/pipelines`: run, suite, provider-verify, provider-config and quotas. The server
+`/opt/stroppy/pipelines`: run, provider-verify, provider-config and quotas. The server
 publishes those binaries to tenant namespaces through Graphene using the SDK's
 `selfbuild.PushBinary`, then registers their exported manifests. Publication
 does not invoke the pipeline CLI's `push` command, which rebuilds from source

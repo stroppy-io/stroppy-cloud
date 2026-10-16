@@ -18,11 +18,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/tenant"
-	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
-
-// Pipeline is the Graphene pipeline id of a suite run.
-const Pipeline = "stroppy-suite"
 
 // Webhook event names.
 const (
@@ -472,17 +468,15 @@ func (s *Service) UsingTest(ctx context.Context, testID uuid.UUID) ([]library.Us
 
 // --- runs -------------------------------------------------------------------
 
-// LaunchSuite prepares every enabled cell, stores the suite run and its
-// child runs, then starts the stroppy-suite pipeline.
-//
-//nolint:funlen // one linear checklist
+// LaunchSuite prepares every enabled cell and stores the suite run with its
+// cells queued; the run queue starts the cells, at most the suite's
+// concurrency at a time, and the projector derives the suite's status from
+// them.
 func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, in Launch, idempotencyKey string) (SuiteRun, error) {
 	if err := s.writer(ctx, actor, tenantID); err != nil {
 		return SuiteRun{}, err
 	}
 	var sr SuiteRun
-	var prepared []run.Prepared
-	var params spec.Suite
 	replayed := false
 	err := s.runRepo.Admit(ctx, tenantID, func(ctx context.Context) error {
 		if idempotencyKey != "" {
@@ -497,7 +491,7 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 			}
 		}
 		var err error
-		sr, prepared, params, err = s.prepareLaunch(ctx, actor, tenantID, suiteID, in, idempotencyKey)
+		sr, err = s.prepareLaunch(ctx, actor, tenantID, suiteID, in, idempotencyKey)
 		return err
 	})
 	if err != nil {
@@ -507,33 +501,16 @@ func (s *Service) LaunchSuite(ctx context.Context, actor auth.Actor, tenantID, s
 		return sr, nil
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "suite.launch", Target: audit.Target{Kind: "suite_run", ID: sr.ID.String(), Name: sr.Name}, Details: map[string]any{"suite": suiteID, "cells": len(sr.Cells)}}) //nolint:errcheck // audit never blocks
-	labels := map[string]string{"stroppy.io/tenant": params.Tenant, "stroppy.io/suite-run": sr.ID.String()}
-	if err := run.Submit(s.scope(ctx, sr.GrapheneNamespace), s.graphene, sr.CreatedAt, sr.ID.String(), Pipeline, params, labels); err != nil {
-		if !errors.Is(err, run.ErrStartRejected) {
-			// All child specs were committed with the suite; recovery does
-			// not consult mutable library records or launch children itself.
-			return s.ownedRun(ctx, tenantID, sr.ID)
-		}
-		reason := "start: " + err.Error()
-		fin := time.Now().UTC()
-		_ = s.repo.SetRunStatus(ctx, sr.ID, run.StatusFailed, reason, nil, &fin) //nolint:errcheck // reported below
-		for _, p := range prepared {
-			_ = s.runRepo.SetStatus(ctx, p.Run.ID, run.StatusFailed, run.PhaseDone, reason, nil, &fin) //nolint:errcheck // best-effort
-		}
-		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "graphene did not accept the suite run", err).Because("run_submit_unavailable")
-	}
-	for _, p := range prepared {
-		s.runs.MarkStarted(ctx, p.Run)
-	}
 	s.publish(ctx, tenantID, EventSuiteStarted, sr)
+	s.runs.AdmitTenant(ctx, tenantID)
 	return s.ownedRun(ctx, tenantID, sr.ID)
 }
 
 // prepareLaunch validates and persists the whole matrix atomically under tenant admission.
-func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, in Launch, idempotencyKey string) (SuiteRun, []run.Prepared, spec.Suite, error) {
+func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID, suiteID uuid.UUID, in Launch, idempotencyKey string) (SuiteRun, error) {
 	x, err := s.owned(ctx, tenantID, suiteID)
 	if err != nil {
-		return SuiteRun{}, nil, spec.Suite{}, err
+		return SuiteRun{}, err
 	}
 	cells := Generate(x, s.testNames(ctx, actor, x))
 	wanted := map[string]bool{}
@@ -551,15 +528,15 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 		chosen = append(chosen, c)
 	}
 	if len(chosen) == 0 {
-		return SuiteRun{}, nil, spec.Suite{}, errs.Invalid("no cells to run").Because("no_cells_to_run")
+		return SuiteRun{}, errs.Invalid("no cells to run").Because("no_cells_to_run")
 	}
 	concurrency := x.Concurrency
 	if in.Concurrency > 0 {
 		concurrency = in.Concurrency
 	}
-	slug, ns, err := s.tenantScope(ctx, actor, tenantID)
+	_, ns, err := s.tenantScope(ctx, actor, tenantID)
 	if err != nil {
-		return SuiteRun{}, nil, spec.Suite{}, err
+		return SuiteRun{}, err
 	}
 	trigger := in.Trigger
 	if trigger == "" {
@@ -572,11 +549,10 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 	srID := uuid.New()
 	prepared := make([]run.Prepared, 0, len(chosen))
 	cellRuns := make([]CellRun, 0, len(chosen))
-	specCells := make([]spec.SuiteCell, 0, len(chosen))
-	for i, c := range chosen {
+	for _, c := range chosen {
 		testSpec, o, err := s.cellSpec(ctx, actor, x, c)
 		if err != nil {
-			return SuiteRun{}, nil, spec.Suite{}, errs.Invalid(err.Error()).Because("suite_cell_invalid", "error", err.Error())
+			return SuiteRun{}, errs.Invalid(err.Error()).Because("suite_cell_invalid", "error", err.Error())
 		}
 		if in.Keep != nil {
 			o.Keep = in.Keep
@@ -597,20 +573,15 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 		if testRef != nil && isInline(x, c.TestID) {
 			testRef = nil
 		}
-		p, err := s.runs.Prepare(ctx, actor, tenantID, testSpec, testRef, o, run.PrepareOptions{GrapheneRunID: srID.String() + "-" + c.ID, ExtraLive: min(i, concurrency-1)})
+		p, err := s.runs.Prepare(ctx, actor, tenantID, testSpec, testRef, o, run.PrepareOptions{GrapheneRunID: srID.String() + "-" + c.ID})
 		if err != nil {
 			if e, ok := errors.AsType[*errs.Error](err); ok {
 				e.Detail = "cell " + c.ID + ": " + e.Detail
 			}
-			return SuiteRun{}, nil, spec.Suite{}, err
-		}
-		var rs spec.Run
-		if err := json.Unmarshal(p.Compiled.Spec, &rs); err != nil {
-			return SuiteRun{}, nil, spec.Suite{}, errs.Wrap(errs.CodeInternal, "run spec", err)
+			return SuiteRun{}, err
 		}
 		prepared = append(prepared, p)
 		cellRuns = append(cellRuns, CellRun{CellID: c.ID, Name: c.Name, RunID: p.Run.ID})
-		specCells = append(specCells, spec.SuiteCell{ID: c.ID, RunSpec: rs})
 	}
 	now := time.Now().UTC()
 	sr := SuiteRun{
@@ -619,15 +590,14 @@ func (s *Service) prepareLaunch(ctx context.Context, actor auth.Actor, tenantID,
 		GrapheneNamespace: ns, CreatedAt: now, UpdatedAt: now,
 	}
 	if err := s.repo.InsertRun(ctx, sr, idempotencyKey); err != nil {
-		return SuiteRun{}, nil, spec.Suite{}, err
+		return SuiteRun{}, err
 	}
 	for _, p := range prepared {
 		if err := s.runs.Insert(ctx, p.Run); err != nil {
-			return SuiteRun{}, nil, spec.Suite{}, err
+			return SuiteRun{}, err
 		}
 	}
-	params := spec.Suite{SuiteRunID: srID.String(), Tenant: slug, Cells: specCells, Concurrency: concurrency, Defaults: spec.SuiteDefaults{ContinueOnFailure: true, Labels: in.Labels}}
-	return sr, prepared, params, nil
+	return sr, nil
 }
 
 func isInline(x Suite, id uuid.UUID) bool {
@@ -742,18 +712,21 @@ func (s *Service) CancelRun(ctx context.Context, actor auth.Actor, tenantID, id 
 	if r.Status.Terminal() {
 		return SuiteRun{}, errs.Conflict("suite run already finished").Because("suite_run_already_finished")
 	}
-	// Mark first (suite and cells): the projectors may record terminal
-	// statuses the moment Graphene acknowledges; terminal never moves back.
+	// Mark the suite first: the projector finishes it as cancelled once
+	// its cells are done; queued cells end at once, started ones stop.
 	if err := s.repo.SetRunStatus(ctx, id, run.StatusCancelling, "cancel requested", nil, nil); err != nil {
 		return SuiteRun{}, err
 	}
+	var failed error
 	for _, child := range r.Runs {
 		if !child.Status.Terminal() {
-			_ = s.runRepo.SetStatus(ctx, child.ID, run.StatusCancelling, child.Phase, "suite cancelled", nil, nil) //nolint:errcheck // best-effort
+			if err := s.runs.CancelRun(ctx, child, "suite cancelled"); err != nil {
+				failed = err
+			}
 		}
 	}
-	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.ID.String()); err != nil {
-		return SuiteRun{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
+	if failed != nil {
+		return SuiteRun{}, failed
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "suite_run.cancel", Target: audit.Target{Kind: "suite_run", ID: id.String()}}) //nolint:errcheck // audit never blocks
 	return s.ownedRun(ctx, tenantID, id)
@@ -771,8 +744,12 @@ func (s *Service) DeleteRun(ctx context.Context, actor auth.Actor, tenantID, id 
 	if !r.Status.Terminal() {
 		return errs.Conflict("cancel the suite run before deleting it").Because("cancel_suite_run_before_delete")
 	}
-	if err := s.graphene.DeleteRef(s.scope(ctx, r.GrapheneNamespace), r.GrapheneRef()); err != nil {
-		return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err).Because("delete_resources_unavailable")
+	for _, child := range r.Runs {
+		if child.AdmittedAt != nil {
+			if err := s.graphene.DeleteRef(s.scope(ctx, r.GrapheneNamespace), child.GrapheneRef()); err != nil {
+				return errs.Wrap(errs.CodeUnavailable, "delete graphene resources", err).Because("delete_resources_unavailable")
+			}
+		}
 	}
 	for _, child := range r.Runs {
 		_ = s.runRepo.SoftDelete(ctx, child.ID) //nolint:errcheck // best-effort

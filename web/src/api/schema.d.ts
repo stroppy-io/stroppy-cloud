@@ -3414,7 +3414,37 @@ export interface components {
                 pipeline_revision?: string;
             };
             readonly shares?: components["schemas"]["Ref"][];
+            queue?: components["schemas"]["RunQueue"];
         };
+        /** @description Set while the run waits in the tenant's queue (status pending, never handed to Graphene): its place and what holds it. A run that fits starts before the ones ahead of it that do not. */
+        RunQueue: {
+            waiting_for: components["schemas"]["RunWaitReason"];
+            /** @description 1-based among the tenant's queued runs. */
+            position: number;
+            /** @description Occupied slots (slot, suite_slot). */
+            live?: number;
+            /** @description Allowed slots (slot, suite_slot). */
+            limit?: number;
+            /**
+             * @description Provider quota without room (quota).
+             * @example compute.ssdDisks.size
+             */
+            quota?: string;
+            /** @description Zone of a zonal quota. */
+            zone?: string;
+            /** @description What the run needs of the quota */
+            need?: number;
+            /** @description What is free of the quota */
+            free?: number;
+            unit?: string;
+            /** @description State behind pipelines, provider and quota_unknown. */
+            detail?: string;
+        };
+        /**
+         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot — max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready.
+         * @enum {string}
+         */
+        RunWaitReason: "pipelines" | "slot" | "suite_slot" | "quota" | "quota_unknown" | "provider";
         /** @description Definition frozen at launch. */
         RunSnapshot: {
             /** @description Frozen final deployment overrides used for replay. */
@@ -4170,6 +4200,7 @@ export interface components {
             }[];
         };
         TenantDashboard: {
+            pipelines: components["schemas"]["TenantPipelines"];
             run_counts: {
                 total?: number;
                 pending?: number;
@@ -4186,6 +4217,16 @@ export interface components {
             top_results?: components["schemas"]["RatingEntry"][];
             providers?: components["schemas"]["ProviderProfile"][];
             limits?: components["schemas"]["TenantLimits"];
+        };
+        /** @description Whether the tenant's namespace carries this server's pipelines. A new tenant (and every tenant after a server upgrade) gets them pushed in a few minutes; until then launched runs wait in the queue. */
+        TenantPipelines: {
+            /** @enum {string} */
+            status: "synced" | "pending" | "behind" | "failed";
+            /** @description Pipelines already in place while a push is in flight. */
+            pushed: number;
+            total: number;
+            /** @description Why the last push failed. */
+            error?: string;
         };
         AdminStatus: {
             version: string;

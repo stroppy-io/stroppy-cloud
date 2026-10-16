@@ -142,18 +142,28 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 		}
 	}
 	var sr suiteRunView
-	t.Run("launch prepares every cell and starts stroppy-suite", func(t *testing.T) {
+	t.Run("launch prepares every cell and queues them as runs", func(t *testing.T) {
 		e.graphene.scenario = cellTPS(func(i int) float64 { return float64(1000 + 100*i) })
 		e.want(e.req(http.MethodPost, base+"/suites/"+created.ID+":launch", map[string]any{"name": "m1"}, tok), http.StatusCreated, &sr)
 		if sr.Status != "pending" || sr.Progress.Total != 2 || sr.Progress.Pending != 2 || len(sr.Cells) != 2 || sr.Cells[0].Run.ID == "" {
 			t.Fatalf("suite run %+v", sr)
 		}
-		fr, ok := e.graphene.runOf(sr.ID)
-		if !ok || fr.pipeline != "stroppy-suite" || fr.namespace != tn.GrapheneNamespace {
-			t.Fatalf("graphene %+v", fr)
+		// No suite pipeline: the queue starts the cells as ordinary runs
+		// under "<suite_run_id>-<cell_id>".
+		if _, ok := e.graphene.runOf(sr.ID); ok {
+			t.Fatal("the suite run itself went to Graphene")
 		}
-		if !strings.Contains(string(fr.params), `"suite_run_id":"`+sr.ID+`"`) || strings.Count(string(fr.params), `"run_spec"`) != 2 {
-			t.Fatalf("params %s", fr.params[:200])
+		started := 0
+		for _, c := range sr.Cells {
+			if fr, ok := e.graphene.runOf(sr.ID + "-" + c.CellID); ok {
+				if fr.pipeline != "stroppy-run" || fr.namespace != tn.GrapheneNamespace {
+					t.Fatalf("graphene %+v", fr)
+				}
+				started++
+			}
+		}
+		if started == 0 {
+			t.Fatal("no cell started")
 		}
 		var child runView
 		e.want(e.req(http.MethodGet, base+"/runs/"+sr.Cells[0].Run.ID, nil, tok), http.StatusOK, &child)
@@ -176,8 +186,8 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 	})
 
 	t.Run("children and the suite are projected to completion", func(t *testing.T) {
-		// stroppy-suite ran its cells as child runs "<suite_run_id>-<cell_id>".
 		eventually(t, 10*time.Second, func() bool {
+			e.app.services.Runs.AdmitQueued(ctx)
 			e.app.services.SuiteProj.Tick(ctx)
 			e.app.services.Projector.Tick(ctx)
 			var got suiteRunView
@@ -225,10 +235,10 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 
 	t.Run("cancel cascades, retry-failed relaunches cancelled cells, compare shows regression", func(t *testing.T) {
 		var second suiteRunView
-		// The suite pauses once it started its first cell.
+		// The cells pause in their workload.
 		e.graphene.scenario = func(runID string, _ json.RawMessage) simScenario {
-			if strings.Count(runID, "-") == 4 {
-				return simScenario{Hold: "cell.started"}
+			if strings.Count(runID, "-") > 4 {
+				return simScenario{Hold: "segment.started"}
 			}
 			return simScenario{}
 		}
@@ -238,6 +248,7 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 		var cancelled suiteRunView
 		e.want(e.req(http.MethodPost, base+"/suite-runs/"+second.ID+":cancel", nil, tok), http.StatusOK, &cancelled)
 		eventually(t, 10*time.Second, func() bool {
+			e.app.services.Runs.AdmitQueued(ctx)
 			e.app.services.SuiteProj.Tick(ctx)
 			e.app.services.Projector.Tick(ctx)
 			e.want(e.req(http.MethodGet, base+"/suite-runs/"+second.ID, nil, tok), http.StatusOK, &cancelled)
@@ -254,6 +265,7 @@ func TestE2ESuitesAndSchedules(t *testing.T) {
 		// The retry measures lower tps: compared to the first run it regresses.
 		var done suiteRunView
 		eventually(t, 10*time.Second, func() bool {
+			e.app.services.Runs.AdmitQueued(ctx)
 			e.app.services.SuiteProj.Tick(ctx)
 			e.app.services.Projector.Tick(ctx)
 			e.want(e.req(http.MethodGet, base+"/suite-runs/"+retry.ID, nil, tok), http.StatusOK, &done)

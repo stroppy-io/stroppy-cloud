@@ -7,6 +7,7 @@ import type { GrafanaTheme2, IconName } from '@grafana/data'
 import { Icon, Sparkline, Tooltip, useStyles2, useTheme2 } from '@grafana/ui'
 import { seriesToFrame } from '@helpers/dataframe'
 import { dbLabel, durationSeconds, formatDuration, formatMetric } from '@helpers/format'
+import { queueText } from '@helpers/queue'
 import { formatTime } from '@helpers/time'
 import type { TFunction } from 'i18next'
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
@@ -233,6 +234,14 @@ export function RunTimeCell({ run }: { run: Run }) {
   const running = run.status === 'running' || run.status === 'cancelling'
   const now = useNow(30_000, running)
   const start = run.started_at ?? undefined
+  if (run.queue)
+    return (
+      <Tooltip content={queueText(run.queue)}>
+        <span className={styles.timeSub}>
+          {t('runs.list.queued')} · {t('runs.queue.position', { position: run.queue.position })}
+        </span>
+      </Tooltip>
+    )
   if (run.status === 'pending' || !start)
     return <span className={styles.timeSub}>{t('runs.list.queued')}</span>
 

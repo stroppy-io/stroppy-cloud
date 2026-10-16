@@ -378,8 +378,9 @@ components:
               finished_at: { type: string, format: date-time }
     TenantDashboard:
       type: object
-      required: [run_counts, recent_runs, recent_suite_runs, upcoming]
+      required: [run_counts, recent_runs, recent_suite_runs, upcoming, pipelines]
       properties:
+        pipelines: { $ref: '#/components/schemas/TenantPipelines' }
         run_counts:
           type: object
           properties:
@@ -407,3 +408,16 @@ components:
           type: array
           items: { $ref: '#/components/schemas/ProviderProfile' }
         limits: { $ref: '#/components/schemas/TenantLimits' }
+    TenantPipelines:
+      type: object
+      readOnly: true
+      description: >-
+        Whether the tenant's namespace carries this server's pipelines. A new tenant (and
+        every tenant after a server upgrade) gets them pushed in a few minutes; until then
+        launched runs wait in the queue.
+      required: [status, pushed, total]
+      properties:
+        status: { type: string, enum: [synced, pending, behind, failed] }
+        pushed: { type: integer, description: Pipelines already in place while a push is in flight. }
+        total: { type: integer }
+        error: { type: string, description: Why the last push failed. }

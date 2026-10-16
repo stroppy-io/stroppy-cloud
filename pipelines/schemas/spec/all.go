@@ -12,6 +12,5 @@ func All() []*schemapb.Schema {
 		ResultQuotas(),
 		ResultRun(),
 		Run(),
-		Suite(),
 	}
 }

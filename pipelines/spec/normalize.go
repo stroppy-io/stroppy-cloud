@@ -2,7 +2,6 @@ package spec
 
 import (
 	"encoding/json"
-	"fmt"
 	"sync"
 	"time"
 
@@ -25,26 +24,11 @@ func NormalizeRun(in Run) (Run, error) {
 	return out, err
 }
 
-// NormalizeSuite validates every child before dispatching the first one.
-func NormalizeSuite(in Suite) (Suite, error) {
-	var out Suite
-	err := normalize(in, &out, suiteEngine)
-	if err == nil {
-		for _, cell := range out.Cells {
-			if e := ResourceErrors(CheckResources(cell.RunSpec)); e != nil {
-				return Suite{}, fmt.Errorf("cell %s: %w", cell.ID, e)
-			}
-		}
-	}
-	return out, err
-}
-
 // Engines are compiled once: building a schema and compiling its rules
 // costs tens of milliseconds, and the schemas are fixed for the process.
 // A compiled Engine is immutable and safe for concurrent use.
 var (
 	runEngine            = compiled(specschema.Run)
-	suiteEngine          = compiled(specschema.Suite)
 	providerConfigEngine = compiled(specschema.ProviderConfig)
 )
 

@@ -196,6 +196,7 @@ route('GET', '/api/v1/t/:slug/dashboard', ({ store, params }) => {
     .slice(0, 8)
   const top = ratingEntries(store, new URLSearchParams({ metric: 'tps' }), 'tenant', params.slug)
   const dashboard: TenantDashboard = {
+    pipelines: { status: 'synced', pushed: 4, total: 4 },
     run_counts: {
       total: runs.length,
       pending: runs.filter((r) => r.status === 'pending').length,

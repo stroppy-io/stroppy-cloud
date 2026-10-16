@@ -70,7 +70,7 @@
     },
     "pipes": {
       "title": "Пайплайны",
-      "body": "stroppy-run, stroppy-suite.",
+      "body": "stroppy-run, stroppy-quotas, stroppy-provider-verify, stroppy-provider-config.",
       "more": "Код запуска на обычном Go: создать сеть и машины, развернуть контейнеры, провести сегменты нагрузки, собрать результат. Собирается в один образ с сервером, и при старте сервер публикует бинари и манифесты в namespace каждого тенанта.",
       "tech": "Go · Graphene SDK",
       "facts": [

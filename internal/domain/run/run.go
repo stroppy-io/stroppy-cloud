@@ -172,6 +172,71 @@ type Run struct {
 	FinishedAt       *time.Time
 	UpdatedAt        time.Time
 	DeletedAt        *time.Time
+	// AdmittedAt is when the queue let the run start; nil while queued.
+	AdmittedAt *time.Time
+	// Queue is what a queued run waits for.
+	Queue Queue
+}
+
+// Queued reports a run the queue has not let start yet.
+func (r Run) Queued() bool { return r.Status == StatusPending && r.AdmittedAt == nil }
+
+// WaitReason is why a queued run has not started.
+type WaitReason string
+
+// Wait reasons.
+const (
+	// WaitPipelines: the tenant's pipelines are not pushed at this server's
+	// revision yet.
+	WaitPipelines WaitReason = "pipelines"
+	// WaitSlot: the tenant runs max_concurrent_runs already.
+	WaitSlot WaitReason = "slot"
+	// WaitSuiteSlot: the suite runs as many cells as its concurrency.
+	WaitSuiteSlot WaitReason = "suite_slot"
+	// WaitQuota: a provider quota has no room for the run's machines.
+	WaitQuota WaitReason = "quota"
+	// WaitQuotaUnknown: the provider quotas could not be read.
+	WaitQuotaUnknown WaitReason = "quota_unknown"
+	// WaitProvider: the run's provider profile is not ready.
+	WaitProvider WaitReason = "provider"
+)
+
+// WaitReasons lists every reason (the contract's enum mirrors it).
+var WaitReasons = []WaitReason{WaitPipelines, WaitSlot, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider}
+
+// Queue is the place of a queued run and what holds it.
+type Queue struct {
+	WaitingFor WaitReason `json:"waiting_for,omitempty"`
+	// Position is 1-based among the tenant's queued runs.
+	Position int `json:"position,omitempty"`
+	// Live and Limit are the occupied and allowed slots (slot, suite_slot).
+	Live  int `json:"live,omitempty"`
+	Limit int `json:"limit,omitempty"`
+	// Quota names the quota without room (quota): what the run needs and
+	// what is free, in Unit; Zone for a zonal quota.
+	Quota string  `json:"quota,omitempty"`
+	Zone  string  `json:"zone,omitempty"`
+	Need  float64 `json:"need,omitempty"`
+	Free  float64 `json:"free,omitempty"`
+	Unit  string  `json:"unit,omitempty"`
+	// Detail is the state behind pipelines / provider / quota_unknown.
+	Detail string `json:"detail,omitempty"`
+}
+
+// Starting is an admitted run whose machines may not exist yet.
+type Starting struct {
+	ProfileID uuid.UUID
+	Spec      json.RawMessage
+}
+
+// PipelineReadiness says whether a namespace carries this server's pipelines.
+type PipelineReadiness interface {
+	PipelinesReady(ctx context.Context, namespace string) (ready bool, status string)
+}
+
+// SuiteConcurrency is the cell concurrency of a suite run.
+type SuiteConcurrency interface {
+	SuiteConcurrency(ctx context.Context, suiteRunID uuid.UUID) (int, error)
 }
 
 // GrapheneRef is the run's ref in Graphene.
@@ -292,6 +357,22 @@ type Repository interface {
 	SetQPSSeries(ctx context.Context, id uuid.UUID, series []Point) error
 	SetKeep(ctx context.Context, id uuid.UUID, kept bool, until *time.Time) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
+
+	// Queued lists every queued run, oldest first per tenant.
+	Queued(ctx context.Context) ([]Run, error)
+	// QueuedOf lists the tenant's queued runs, oldest first.
+	QueuedOf(ctx context.Context, tenantID uuid.UUID) ([]Run, error)
+	// AdmitQueued marks a queued run admitted; false when it is not queued
+	// any more (cancelled, admitted by another server).
+	AdmitQueued(ctx context.Context, id uuid.UUID) (bool, error)
+	SetQueue(ctx context.Context, id uuid.UUID, q Queue) error
+	// CancelQueued finishes a queued run as cancelled; false when it is not
+	// queued any more.
+	CancelQueued(ctx context.Context, id uuid.UUID, reason string) (bool, error)
+	// Starting lists the tenant's admitted runs still before their machines.
+	Starting(ctx context.Context, tenantID uuid.UUID) ([]Starting, error)
+	// LiveCells counts admitted unfinished cells per suite run of a tenant.
+	LiveCells(ctx context.Context, tenantID uuid.UUID) (map[uuid.UUID]int, error)
 
 	InsertEvent(ctx context.Context, e Event) (bool, error)
 	EventsAfter(ctx context.Context, runID uuid.UUID, after int64, limit int) ([]Event, error)

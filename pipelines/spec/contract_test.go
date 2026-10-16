@@ -22,7 +22,6 @@ func TestPipelineFieldContract(t *testing.T) {
 	}{
 		{"spec.run@1", Run{}},
 		{"test.runtime@1", Runtime{}},
-		{"spec.suite@1", Suite{}},
 		{"spec.result.run@1", Result{}},
 		{"spec.provider_verify@1", ProviderVerify{}},
 		{"spec.provider_config@1", ProviderConfig{}},

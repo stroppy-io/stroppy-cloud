@@ -57,7 +57,7 @@ func TestE2EConcurrentLaunch(t *testing.T) {
 			wg.Wait()
 			close(responses)
 			ids := map[string]bool{}
-			created, limited := 0, 0
+			created := 0
 			for r := range responses {
 				if r.Status == http.StatusCreated {
 					var view runView
@@ -66,8 +66,6 @@ func TestE2EConcurrentLaunch(t *testing.T) {
 					}
 					ids[view.ID] = true
 					created++
-				} else if !sameKey && r.Status == http.StatusUnprocessableEntity && strings.Contains(string(r.Body), "limit_exceeded") {
-					limited++
 				} else {
 					t.Errorf("unexpected admission response %d %s", r.Status, r.Body)
 				}
@@ -75,8 +73,21 @@ func TestE2EConcurrentLaunch(t *testing.T) {
 			if sameKey && (created != n || len(ids) != 1) {
 				t.Errorf("replay created=%d distinct=%d", created, len(ids))
 			}
-			if !sameKey && (created != 3 || limited != n-3) {
-				t.Errorf("limit 3: created=%d rejected=%d", created, limited)
+			if !sameKey {
+				// Every launch is accepted; three hold the slots, the rest wait.
+				started, waiting := 0, 0
+				for id := range ids {
+					var v runView
+					e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &v)
+					if _, ok := e.graphene.runOf(id); ok {
+						started++
+					} else if v.Queue.WaitingFor == "slot" {
+						waiting++
+					}
+				}
+				if created != n || started != 3 || waiting != n-3 {
+					t.Errorf("limit 3: created=%d started=%d waiting=%d", created, started, waiting)
+				}
 			}
 			var listed struct{ Data []runView }
 			e.want(e.req(http.MethodGet, base+"/runs", nil, tok), http.StatusOK, &listed)

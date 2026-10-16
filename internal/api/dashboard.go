@@ -26,6 +26,14 @@ func (h *Handler) GetTenantDashboard(ctx context.Context, params oas.GetTenantDa
 			Failed: oas.NewOptInt(counts.Failed), Cancelled: oas.NewOptInt(counts.Cancelled), KeptStands: oas.NewOptInt(counts.KeptStands),
 		},
 		RecentRuns: []oas.Run{}, RecentSuiteRuns: []oas.SuiteRun{}, Upcoming: []oas.Schedule{}, TopResults: []oas.RatingEntry{}, Providers: []oas.ProviderProfile{},
+		Pipelines: oas.TenantPipelines{Status: oas.TenantPipelinesStatusSynced},
+	}
+	if h.deps.Pipelines != nil {
+		push := h.deps.Pipelines.TenantPipelines(ctx, t.GrapheneNamespace)
+		out.Pipelines = oas.TenantPipelines{Status: oas.TenantPipelinesStatus(push.Status), Pushed: push.Pushed, Total: push.Total}
+		if push.Error != "" {
+			out.Pipelines.Error = oas.NewOptString(push.Error)
+		}
 	}
 	if finished := counts.Completed + counts.Failed + counts.Cancelled; finished > 0 {
 		out.SuccessRate = oas.NewOptFloat64(float64(counts.Completed) / float64(finished) * 100)

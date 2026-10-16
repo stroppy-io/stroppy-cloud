@@ -181,8 +181,9 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 			AuthMode: "kratos", KratosPublicURL: a.cfg.Auth.KratosPublicURL,
 			TenantCreation: "anyone", PublicRating: true, Examples: true, DemoReportURL: a.cfg.DemoReportURL,
 		},
-		Probes: a.infra.Probes(),
-		Log:    a.log,
+		Probes:    a.infra.Probes(),
+		Pipelines: pipelineReadiness{p: a.services.Pipelines, enabled: a.cfg.Infra.Pipelines.Dir != ""},
+		Log:       a.log,
 	})
 	apiServer, err := oas.NewServer(handler, api.NewSecurity(verifier),
 		oas.WithPathPrefix(""),

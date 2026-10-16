@@ -108,14 +108,6 @@ func TestResultFitsSchema(t *testing.T) {
 	})
 }
 
-func TestSuiteFitsSchema(t *testing.T) {
-	bake(t, "spec.suite@1", Suite{
-		SuiteRunID: "8f1c3f2a-0000-4000-8000-000000000002", Tenant: "acme",
-		Cells:       []SuiteCell{{ID: "pg17-m", RunSpec: sampleRun()}},
-		Concurrency: 2, Defaults: SuiteDefaults{ContinueOnFailure: true, Labels: map[string]string{"suite": "nightly"}},
-	})
-}
-
 func TestServicePipelinesFitSchema(t *testing.T) {
 	bake(t, "spec.result.quotas@1", QuotasResult{ObservedAt: time.Now().UTC(), UnavailableReason: "permission_denied", Scope: "cloud:b1g", Quotas: []Quota{}})
 	bake(t, "spec.provider_verify@1", ProviderVerify{Provider: ProviderAWS, Settings: json.RawMessage(`{"region":"eu-central-1"}`), CredentialsSecret: "aws-keys", DryRun: true})

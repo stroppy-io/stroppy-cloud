@@ -15,6 +15,7 @@ import (
 	pipelinespec "github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 
 	"github.com/google/uuid"
+	"github.com/gopherex/xlog"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/auth"
@@ -40,11 +41,16 @@ type Service struct {
 	audit     *audit.Service
 	// scope binds a Graphene call to a tenant namespace.
 	scope func(ctx context.Context, namespace string) context.Context
+	// The queue (queue.go).
+	pipelines PipelineReadiness
+	suites    SuiteConcurrency
+	log       *xlog.Logger
+	nudge     chan struct{}
 }
 
 // NewService wires the use cases.
 func NewService(repo Repository, g Graphene, access Access, lib *library.Service, profiles Profiles, limits Limits, compiler Compiler, publisher Publisher, auditSvc *audit.Service, scope func(context.Context, string) context.Context) *Service {
-	return &Service{repo: repo, graphene: g, access: access, library: lib, profiles: profiles, limits: limits, compiler: compiler, publisher: publisher, audit: auditSvc, scope: scope}
+	return &Service{repo: repo, graphene: g, access: access, library: lib, profiles: profiles, limits: limits, compiler: compiler, publisher: publisher, audit: auditSvc, scope: scope, nudge: make(chan struct{}, 1)}
 }
 
 // Overrides are the launch-time deviations from a test.
@@ -216,12 +222,9 @@ func (s *Service) replay(ctx context.Context, tenantID uuid.UUID, key string) (R
 
 // PrepareOptions are what a launch context (suite, schedule) adds.
 type PrepareOptions struct {
-	// GrapheneRunID is the id the run has on the Graphene side when it is
-	// started by another pipeline (suite cells).
+	// GrapheneRunID is the id the run has on the Graphene side when it
+	// differs from the row id (suite cells).
 	GrapheneRunID string
-	// ExtraLive counts sibling runs prepared in the same batch against
-	// max_concurrent_runs.
-	ExtraLive int
 	// Stand is the run whose kept stand this run continues on (resume): no
 	// machines are created, so quotas are not checked and keep is off.
 	Stand *Run
@@ -260,7 +263,8 @@ func (s *Service) launchOn(ctx context.Context, actor auth.Actor, tenantID uuid.
 	if replayed {
 		return admitted, nil
 	}
-	return s.Start(ctx, admitted)
+	s.admitTenantNow(ctx, tenantID)
+	return s.repo.ByID(ctx, admitted.ID)
 }
 
 // Prepare resolves the test, checks fit/limits/quotas and compiles the
@@ -327,7 +331,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	if res.Profile.Status != provider.StatusReady {
 		return Prepared{}, errs.Invalid(fmt.Sprintf("provider profile %q is %s", res.Profile.Name, res.Profile.Status)).Because("profile_not_ready", "name", res.Profile.Name, "status", string(res.Profile.Status))
 	}
-	if err := s.checkLimits(ctx, tenantID, spec, res, opts.ExtraLive); err != nil {
+	if err := s.checkLimits(ctx, tenantID, spec, res); err != nil {
 		return Prepared{}, err
 	}
 	slug, ns, err := s.tenantScope(ctx, actor, tenantID)
@@ -426,16 +430,21 @@ func resumeOf(stand Run, next pipelinespec.Run) (*pipelinespec.Resume, error) {
 	return out, nil
 }
 
-// Insert stores a prepared run without starting it (suite cells: the
-// suite pipeline starts them).
+// Insert stores a prepared run queued (suite cells); the queue starts it.
 func (s *Service) Insert(ctx context.Context, r Run) error {
 	return s.repo.Insert(ctx, r, "")
+}
+
+// AdmitTenant runs the queue over one tenant now (after a batch of
+// inserts, such as a suite's cells).
+func (s *Service) AdmitTenant(ctx context.Context, tenantID uuid.UUID) {
+	s.admitTenantNow(ctx, tenantID)
 }
 
 // Start hands a stored run to Graphene and records the outcome.
 func (s *Service) Start(ctx context.Context, r Run) (Run, error) {
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &r.TenantID, Action: "run.launch", Target: audit.Target{Kind: "run", ID: r.ID.String(), Name: r.Name}, Details: map[string]any{"test": r.TestID, "trigger": r.Trigger}}) //nolint:errcheck // audit never blocks
-	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.CreatedAt, r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
+	if err := Submit(s.scope(ctx, r.GrapheneNamespace), s.graphene, r.submittedAt(), r.GrapheneID(), "stroppy-run", r.RunSpec, runLabels(r)); err != nil {
 		if errors.Is(err, ErrStartRejected) {
 			_ = s.repo.SetStatus(ctx, r.ID, StatusFailed, PhaseDone, "start: "+err.Error(), nil, ptr(time.Now().UTC())) //nolint:errcheck // reported below
 			return Run{}, errs.Wrap(errs.CodeUnavailable, "graphene rejected the run", err).Because("run_submit_unavailable")
@@ -446,12 +455,6 @@ func (s *Service) Start(ctx context.Context, r Run) (Run, error) {
 	}
 	s.publish(ctx, r.TenantID, EventRunStarted, r)
 	return s.repo.ByID(ctx, r.ID)
-}
-
-// MarkStarted records that another pipeline started the run (suites).
-func (s *Service) MarkStarted(ctx context.Context, r Run) {
-	_ = s.audit.Record(ctx, audit.Entry{TenantID: &r.TenantID, Action: "run.launch", Target: audit.Target{Kind: "run", ID: r.ID.String(), Name: r.Name}, Details: map[string]any{"suite_run": r.SuiteRunID, "cell": r.CellID}}) //nolint:errcheck // audit never blocks
-	s.publish(ctx, r.TenantID, EventRunStarted, r)
 }
 
 func (s *Service) tenantScope(ctx context.Context, actor auth.Actor, tenantID uuid.UUID) (slug, ns string, err error) {
@@ -513,18 +516,12 @@ func segmentNames(w library.WorkloadSpec) []string {
 }
 
 // checkLimits enforces the tenant's ceiling (§16.4).
-func (s *Service) checkLimits(ctx context.Context, tenantID uuid.UUID, spec library.TestSpec, res library.Resolved, extraLive int) error {
+// checkLimits refuses what the tenant may never run; how many runs are live
+// is the queue's business, not a refusal.
+func (s *Service) checkLimits(ctx context.Context, tenantID uuid.UUID, spec library.TestSpec, res library.Resolved) error {
 	lim, err := s.limits.EffectiveLimits(ctx, tenantID)
 	if err != nil {
 		return err
-	}
-	live, err := s.repo.LiveCount(ctx, tenantID)
-	if err != nil {
-		return err
-	}
-	live += extraLive
-	if lim.MaxConcurrentRuns > 0 && live >= lim.MaxConcurrentRuns {
-		return errs.Newf(errs.CodeLimit, "max_concurrent_runs: %d runs are live, limit %d", live, lim.MaxConcurrentRuns).Because("limit_concurrent_runs", "live", strconv.Itoa(live), "limit", strconv.Itoa(lim.MaxConcurrentRuns))
 	}
 	machines := 0
 	for _, m := range res.Machines {
@@ -555,33 +552,71 @@ func sizeIndex(size string) int {
 	return -1
 }
 
-// checkQuotas compares the final run's compute, storage and egress against fresh
-// quotas; unknown quota names are ignored. A zonal quota is compared with the
-// machines placed in its zone only.
+// checkQuotas refuses a run that can never fit: it needs more than a
+// provider quota's whole limit. A run that only waits for room is queued.
 func (s *Service) checkQuotas(ctx context.Context, p provider.Profile, res pipelinespec.Run) error {
 	quotas, err := s.profiles.FreshQuotas(ctx, p)
 	if err != nil {
 		return errs.Wrap(errs.CodeUnavailable, "provider quotas", err).Because("provider_quota_check_unavailable")
 	}
+	sf, never := quotaShortfall(quotas, nil, res)
+	if !never {
+		return nil
+	}
+	q := sf.quota
+	name := q.Name
+	if q.Zone != "" {
+		name += " (" + q.Zone + ")"
+	}
+	return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f needed > %.0f %s limit", name, sf.need, q.Limit, q.Unit).Because("provider_quota_exceeded", "quota", q.Name, "zone", q.Zone, "used", strconv.FormatFloat(q.Used, 'f', 0, 64), "need", strconv.FormatFloat(sf.need, 'f', 0, 64), "limit", strconv.FormatFloat(q.Limit, 'f', 0, 64), "unit", q.Unit)
+}
+
+// shortfall is the first quota a run does not fit into.
+type shortfall struct {
+	quota      provider.Quota
+	need, free float64
+}
+
+// quotaShortfall finds the first quota without room for res once the held
+// runs (admitted, machines not created yet, so not in the cloud's usage)
+// take their share; never is set when res exceeds the whole limit. Unknown
+// quota names are ignored; a zonal quota counts the machines of its zone.
+func quotaShortfall(quotas []provider.Quota, held []pipelinespec.Run, res pipelinespec.Run) (sf *shortfall, never bool) {
 	total, byZone := runDemand(res)
+	type demands struct {
+		total  demand
+		byZone map[string]demand
+	}
+	heldDemand := make([]demands, len(held))
+	for i, h := range held {
+		heldDemand[i].total, heldDemand[i].byZone = runDemand(h)
+	}
 	for _, q := range quotas {
 		d := total
 		if q.Zone != "" {
 			d = byZone[q.Zone]
 		}
 		need, ok := d.need(q, res)
-		if !ok {
+		if !ok || q.Limit < 0 || need <= 0 {
 			continue
 		}
-		if q.Limit >= 0 && need > 0 && q.Used+need > q.Limit {
-			name := q.Name
+		if need > q.Limit {
+			return &shortfall{quota: q, need: need, free: max(0, q.Limit-q.Used)}, true
+		}
+		taken := 0.0
+		for i, h := range held {
+			hd := heldDemand[i].total
 			if q.Zone != "" {
-				name += " (" + q.Zone + ")"
+				hd = heldDemand[i].byZone[q.Zone]
 			}
-			return errs.Newf(errs.CodeLimit, "provider quota %s: %.0f used + %.0f needed > %.0f %s", name, q.Used, need, q.Limit, q.Unit).Because("provider_quota_exceeded", "quota", q.Name, "zone", q.Zone, "used", strconv.FormatFloat(q.Used, 'f', 0, 64), "need", strconv.FormatFloat(need, 'f', 0, 64), "limit", strconv.FormatFloat(q.Limit, 'f', 0, 64), "unit", q.Unit)
+			n, _ := hd.need(q, h)
+			taken += n
+		}
+		if q.Used+taken+need > q.Limit {
+			return &shortfall{quota: q, need: need, free: max(0, q.Limit-q.Used-taken)}, false
 		}
 	}
-	return nil
+	return nil, false
 }
 
 // demand is what a set of machines takes from the provider.
@@ -900,16 +935,47 @@ func (s *Service) Cancel(ctx context.Context, actor auth.Actor, tenantID, id uui
 	if r.Status.Terminal() {
 		return Run{}, errs.Conflict("run already finished").Because("run_already_finished")
 	}
-	// Mark first: the projector may record the terminal status the
-	// moment Graphene acknowledges, and a terminal status never moves back.
-	if err := s.repo.SetStatus(ctx, id, StatusCancelling, r.Phase, "cancel requested", nil, nil); err != nil {
+	if err := s.CancelRun(ctx, r, "cancel requested"); err != nil {
 		return Run{}, err
-	}
-	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
-		return Run{}, errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
 	}
 	_ = s.audit.Record(ctx, audit.Entry{TenantID: &tenantID, Action: "run.cancel", Target: audit.Target{Kind: "run", ID: id.String()}, Details: nil}) //nolint:errcheck // audit never blocks
 	return s.repo.ByID(ctx, id)
+}
+
+// CancelRun stops a run without an access check (the caller checked it, as
+// a suite cancelling its cells): a queued run is cancelled at once, a
+// started one is asked to stop in Graphene.
+func (s *Service) CancelRun(ctx context.Context, r Run, reason string) error {
+	if r.Queued() {
+		ok, err := s.repo.CancelQueued(ctx, r.ID, reason)
+		if err != nil {
+			return err
+		}
+		if ok {
+			cur, err := s.repo.ByID(ctx, r.ID)
+			if err == nil {
+				s.publish(ctx, r.TenantID, EventRunCancelled, cur)
+			}
+			s.Nudge()
+			return nil
+		}
+		// Admitted meanwhile: cancel it as a started run.
+		if r, err = s.repo.ByID(ctx, r.ID); err != nil {
+			return err
+		}
+		if r.Status.Terminal() {
+			return nil
+		}
+	}
+	// Mark first: the projector may record the terminal status the
+	// moment Graphene acknowledges, and a terminal status never moves back.
+	if err := s.repo.SetStatus(ctx, r.ID, StatusCancelling, r.Phase, reason, nil, nil); err != nil {
+		return err
+	}
+	if err := s.graphene.CancelRun(s.scope(ctx, r.GrapheneNamespace), r.GrapheneID()); err != nil {
+		return errs.Wrap(errs.CodeUnavailable, "cancel", err).Because("cancel_unavailable")
+	}
+	return nil
 }
 
 // Delete soft-deletes the run and removes its Graphene resources.

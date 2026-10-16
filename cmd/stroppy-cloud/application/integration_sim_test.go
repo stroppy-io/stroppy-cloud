@@ -26,7 +26,6 @@ import (
 	"github.com/graphene-ci/pipeline/pkg/pipeline"
 	"github.com/graphene-ci/pipeline/pkg/pipelinetest"
 	"github.com/graphene-ci/pipeline/pkg/ref"
-	"github.com/graphene-ci/pipeline/pkg/wire"
 
 	managementv1 "github.com/graphene-ci/graphene/pkg/proto/management/v1"
 
@@ -192,15 +191,6 @@ func simulate(runID, pipelineID string, params json.RawMessage, start time.Time,
 			}
 		}
 		wf, input = pipelinetest.Workflow(w, workflows.RunPipelineID, workflows.Run), rs
-	case workflows.SuitePipelineID:
-		var s spec.Suite
-		if err := json.Unmarshal(params, &s); err != nil {
-			return nil, fmt.Errorf("suite spec: %w", err)
-		}
-		if err := simChildren(w, rr, runID, s, start, childScenario); err != nil {
-			return nil, err
-		}
-		wf, input = pipelinetest.Workflow(w, workflows.SuitePipelineID, workflows.Suite), s
 	default:
 		return nil, fmt.Errorf("pipeline %s is not simulated", pipelineID)
 	}
@@ -279,8 +269,6 @@ func partialResult(pipelineID string, err error) json.RawMessage {
 	switch pipelineID {
 	case workflows.RunPipelineID:
 		out = &spec.Result{}
-	case workflows.SuitePipelineID:
-		out = &spec.SuiteResult{}
 	default:
 		return nil
 	}
@@ -684,56 +672,3 @@ func simStroppyLog(seg spec.Segment, res spec.SegmentResult) string {
 }
 
 // --- suites ------------------------------------------------------------------
-
-// simChildren answers the child-run contract with pre-simulated runs of
-// every cell: start-child records the child at its virtual offset,
-// await-child returns once the child's own duration has passed.
-func simChildren(w *pipelinetest.World, rr *simRecorder, suiteID string, s spec.Suite, start time.Time, childScenario simChildScenario) error {
-	pre := map[string]*simRecord{}
-	for _, c := range s.Cells {
-		childID := suiteID + "-" + c.ID
-		sc := simScenario{}
-		if childScenario != nil {
-			sc = childScenario(childID, c.RunSpec)
-		}
-		params, err := json.Marshal(c.RunSpec)
-		if err != nil {
-			return err
-		}
-		// Simulated from the suite's start; shifted when it really starts.
-		child, err := simulate(childID, workflows.RunPipelineID, params, start, sc, 0, nil)
-		if err != nil {
-			return err
-		}
-		pre[childID] = child
-	}
-	started := map[string]time.Time{}
-	pipelinetest.Handle1(w, wire.StartChildRunActivity, func(ctx workflow.Context, req wire.StartChildRunRequest) (any, error) {
-		child, ok := pre[string(req.RunId)]
-		if !ok {
-			return nil, fmt.Errorf("unknown child %s", req.RunId)
-		}
-		now := workflow.Now(ctx)
-		started[string(req.RunId)] = now
-		rr.mu.Lock()
-		rr.rec.Children = append(rr.rec.Children, simChild{RunID: string(req.RunId), At: now.Sub(start), Rec: child})
-		rr.mu.Unlock()
-		return nil, nil
-	})
-	pipelinetest.Handle1(w, wire.AwaitChildRunActivity, func(ctx workflow.Context, req wire.AwaitChildRunRequest) (any, error) {
-		child := pre[string(req.RunId)]
-		if child == nil {
-			return nil, fmt.Errorf("unknown child %s", req.RunId)
-		}
-		if wait := started[string(req.RunId)].Add(child.Duration).Sub(workflow.Now(ctx)); wait > 0 {
-			if err := workflow.Sleep(ctx, wait); err != nil {
-				return nil, err
-			}
-		}
-		if child.Status != "completed" {
-			return nil, temporal.NewNonRetryableApplicationError("child run "+string(req.RunId)+" "+child.Status+": "+child.Error, "ChildFailed", nil)
-		}
-		return child.Result, nil
-	})
-	return nil
-}

@@ -89,46 +89,6 @@ type Summary struct {
 	Duration     Duration `json:"duration,omitempty"`
 }
 
-// Suite is spec.suite@1 — a fan-out of runs.
-type Suite struct {
-	SuiteRunID  string        `json:"suite_run_id"`
-	Tenant      string        `json:"tenant"`
-	Cells       []SuiteCell   `json:"cells"`
-	Concurrency int           `json:"concurrency,omitempty"`
-	Defaults    SuiteDefaults `json:"defaults"`
-}
-
-// SuiteCell is one run of a suite.
-type SuiteCell struct {
-	ID      string `json:"id"`
-	RunSpec Run    `json:"run_spec"`
-}
-
-// SuiteDefaults apply to the whole fan-out.
-type SuiteDefaults struct {
-	// ContinueOnFailure keeps starting cells after one fails.
-	ContinueOnFailure bool `json:"continue_on_failure"`
-	// Labels are stamped on every child run.
-	Labels map[string]string `json:"labels,omitempty"`
-}
-
-// SuiteResult is what stroppy-suite returns.
-type SuiteResult struct {
-	Cells []SuiteCellResult `json:"cells"`
-	Total int               `json:"total"`
-	Done  int               `json:"done"`
-	Fail  int               `json:"failed"`
-}
-
-// SuiteCellResult pairs a cell with its outcome.
-type SuiteCellResult struct {
-	ID     string  `json:"id"`
-	RunID  string  `json:"run_id"`
-	Status string  `json:"status"`
-	Error  string  `json:"error,omitempty"`
-	Result *Result `json:"result,omitempty"`
-}
-
 // ProviderVerify is spec.provider_verify@1 — params of the credential
 // verification pipeline.
 type ProviderVerify struct {

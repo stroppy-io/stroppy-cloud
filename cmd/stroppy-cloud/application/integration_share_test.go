@@ -22,6 +22,7 @@ func finishRun(t *testing.T, e *e2e, base, tok, id string) runView {
 	t.Helper()
 	var r runView
 	eventually(t, 10*time.Second, func() bool {
+		e.app.services.Runs.AdmitQueued(e.ctx)
 		e.app.services.Projector.Tick(e.ctx)
 		e.want(e.req(http.MethodGet, base+"/runs/"+id, nil, tok), http.StatusOK, &r)
 		return r.Status == "completed" || r.Status == "failed" || r.Status == "cancelled"

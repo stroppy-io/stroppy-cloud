@@ -1,7 +1,7 @@
 // Package suite is the matrix launcher (§16.7): a Suite is tests × axes
-// materialized into cells; a SuiteRun executes the enabled cells through
-// the stroppy-suite pipeline, each cell being an ordinary Run with
-// suite_run_id / cell_id.
+// materialized into cells; a SuiteRun queues the enabled cells as ordinary
+// Runs with suite_run_id / cell_id — the run queue starts at most the
+// suite's concurrency of them at a time — and takes its status from them.
 package suite
 
 import (

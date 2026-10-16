@@ -582,5 +582,17 @@
     "closedError": "The terminal did not open.",
     "failed": "Could not open the terminal",
     "reconnect": "Connect again"
+  },
+  "queue": {
+    "title": "Waiting in the queue",
+    "position": "#{{position}} in the queue",
+    "pipelines": "The tenant's pipelines are being pushed",
+    "slot": "Waiting for a free slot: {{live}} of {{limit}} runs are going",
+    "suite_slot": "Waiting for a suite slot: {{live}} of {{limit}} cells are going",
+    "quota": "Waiting for room in “{{quota}}”{{zone}}: needs {{need}}, {{free}} free",
+    "quota_zone": " in {{zone}}",
+    "quota_unknown": "The provider quotas could not be read; the queue retries",
+    "provider": "The provider is not ready ({{detail}})",
+    "hint": "The run starts by itself once there is room. Runs behind it that fit may start first."
   }
 }

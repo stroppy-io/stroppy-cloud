@@ -88,6 +88,7 @@ type AdminListRunsOKDataItem struct {
 	Result   OptRunResult                       `json:"result"`
 	Graphene OptAdminListRunsOKDataItemGraphene `json:"graphene"`
 	Shares   []Ref                              `json:"shares"`
+	Queue    OptRunQueue                        `json:"queue"`
 	Tenant   OptRef                             `json:"tenant"`
 }
 
@@ -214,6 +215,11 @@ func (s *AdminListRunsOKDataItem) GetGraphene() OptAdminListRunsOKDataItemGraphe
 // GetShares returns the value of Shares.
 func (s *AdminListRunsOKDataItem) GetShares() []Ref {
 	return s.Shares
+}
+
+// GetQueue returns the value of Queue.
+func (s *AdminListRunsOKDataItem) GetQueue() OptRunQueue {
+	return s.Queue
 }
 
 // GetTenant returns the value of Tenant.
@@ -344,6 +350,11 @@ func (s *AdminListRunsOKDataItem) SetGraphene(val OptAdminListRunsOKDataItemGrap
 // SetShares sets the value of Shares.
 func (s *AdminListRunsOKDataItem) SetShares(val []Ref) {
 	s.Shares = val
+}
+
+// SetQueue sets the value of Queue.
+func (s *AdminListRunsOKDataItem) SetQueue(val OptRunQueue) {
+	s.Queue = val
 }
 
 // SetTenant sets the value of Tenant.
@@ -12653,6 +12664,52 @@ func (o OptRunPatchLabels) Or(d RunPatchLabels) RunPatchLabels {
 	return d
 }
 
+// NewOptRunQueue returns new OptRunQueue with value set to v.
+func NewOptRunQueue(v RunQueue) OptRunQueue {
+	return OptRunQueue{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunQueue is optional RunQueue.
+type OptRunQueue struct {
+	Value RunQueue
+	Set   bool
+}
+
+// IsSet returns true if OptRunQueue was set.
+func (o OptRunQueue) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunQueue) Reset() {
+	var v RunQueue
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunQueue) SetTo(v RunQueue) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunQueue) Get() (v RunQueue, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunQueue) Or(d RunQueue) RunQueue {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRunRef returns new OptRunRef with value set to v.
 func NewOptRunRef(v RunRef) OptRunRef {
 	return OptRunRef{
@@ -18720,6 +18777,7 @@ type Run struct {
 	Result   OptRunResult   `json:"result"`
 	Graphene OptRunGraphene `json:"graphene"`
 	Shares   []Ref          `json:"shares"`
+	Queue    OptRunQueue    `json:"queue"`
 }
 
 // GetID returns the value of ID.
@@ -18847,6 +18905,11 @@ func (s *Run) GetShares() []Ref {
 	return s.Shares
 }
 
+// GetQueue returns the value of Queue.
+func (s *Run) GetQueue() OptRunQueue {
+	return s.Queue
+}
+
 // SetID sets the value of ID.
 func (s *Run) SetID(val uuid.UUID) {
 	s.ID = val
@@ -18970,6 +19033,11 @@ func (s *Run) SetGraphene(val OptRunGraphene) {
 // SetShares sets the value of Shares.
 func (s *Run) SetShares(val []Ref) {
 	s.Shares = val
+}
+
+// SetQueue sets the value of Queue.
+func (s *Run) SetQueue(val OptRunQueue) {
+	s.Queue = val
 }
 
 // Ref: #/components/schemas/RunBaselineResult
@@ -20660,6 +20728,130 @@ func (s *RunPhase) UnmarshalText(data []byte) error {
 	}
 }
 
+// Set while the run waits in the tenant's queue (status pending, never handed to Graphene): its
+// place and what holds it. A run that fits starts before the ones ahead of it that do not.
+// Ref: #/components/schemas/RunQueue
+type RunQueue struct {
+	WaitingFor RunWaitReason `json:"waiting_for"`
+	// 1-based among the tenant's queued runs.
+	Position int `json:"position"`
+	// Occupied slots (slot, suite_slot).
+	Live OptInt `json:"live"`
+	// Allowed slots (slot, suite_slot).
+	Limit OptInt `json:"limit"`
+	// Provider quota without room (quota).
+	Quota OptString `json:"quota"`
+	// Zone of a zonal quota.
+	Zone OptString `json:"zone"`
+	// What the run needs of the quota.
+	Need OptFloat64 `json:"need"`
+	// What is free of the quota.
+	Free OptFloat64 `json:"free"`
+	Unit OptString  `json:"unit"`
+	// State behind pipelines, provider and quota_unknown.
+	Detail OptString `json:"detail"`
+}
+
+// GetWaitingFor returns the value of WaitingFor.
+func (s *RunQueue) GetWaitingFor() RunWaitReason {
+	return s.WaitingFor
+}
+
+// GetPosition returns the value of Position.
+func (s *RunQueue) GetPosition() int {
+	return s.Position
+}
+
+// GetLive returns the value of Live.
+func (s *RunQueue) GetLive() OptInt {
+	return s.Live
+}
+
+// GetLimit returns the value of Limit.
+func (s *RunQueue) GetLimit() OptInt {
+	return s.Limit
+}
+
+// GetQuota returns the value of Quota.
+func (s *RunQueue) GetQuota() OptString {
+	return s.Quota
+}
+
+// GetZone returns the value of Zone.
+func (s *RunQueue) GetZone() OptString {
+	return s.Zone
+}
+
+// GetNeed returns the value of Need.
+func (s *RunQueue) GetNeed() OptFloat64 {
+	return s.Need
+}
+
+// GetFree returns the value of Free.
+func (s *RunQueue) GetFree() OptFloat64 {
+	return s.Free
+}
+
+// GetUnit returns the value of Unit.
+func (s *RunQueue) GetUnit() OptString {
+	return s.Unit
+}
+
+// GetDetail returns the value of Detail.
+func (s *RunQueue) GetDetail() OptString {
+	return s.Detail
+}
+
+// SetWaitingFor sets the value of WaitingFor.
+func (s *RunQueue) SetWaitingFor(val RunWaitReason) {
+	s.WaitingFor = val
+}
+
+// SetPosition sets the value of Position.
+func (s *RunQueue) SetPosition(val int) {
+	s.Position = val
+}
+
+// SetLive sets the value of Live.
+func (s *RunQueue) SetLive(val OptInt) {
+	s.Live = val
+}
+
+// SetLimit sets the value of Limit.
+func (s *RunQueue) SetLimit(val OptInt) {
+	s.Limit = val
+}
+
+// SetQuota sets the value of Quota.
+func (s *RunQueue) SetQuota(val OptString) {
+	s.Quota = val
+}
+
+// SetZone sets the value of Zone.
+func (s *RunQueue) SetZone(val OptString) {
+	s.Zone = val
+}
+
+// SetNeed sets the value of Need.
+func (s *RunQueue) SetNeed(val OptFloat64) {
+	s.Need = val
+}
+
+// SetFree sets the value of Free.
+func (s *RunQueue) SetFree(val OptFloat64) {
+	s.Free = val
+}
+
+// SetUnit sets the value of Unit.
+func (s *RunQueue) SetUnit(val OptString) {
+	s.Unit = val
+}
+
+// SetDetail sets the value of Detail.
+func (s *RunQueue) SetDetail(val OptString) {
+	s.Detail = val
+}
+
 // Ref: #/components/schemas/RunRef
 type RunRef struct {
 	ID        uuid.UUID      `json:"id"`
@@ -21629,6 +21821,80 @@ func (s *RunTriggerRef) SetCellID(val OptString) {
 // SetParentRunID sets the value of ParentRunID.
 func (s *RunTriggerRef) SetParentRunID(val OptUUID) {
 	s.ParentRunID = val
+}
+
+// Pipelines — the tenant's pipelines are not pushed at this server's revision yet; slot —
+// max_concurrent_runs reached; suite_slot — the suite runs as many cells as its concurrency; quota
+// — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the
+// provider profile is not ready.
+// Ref: #/components/schemas/RunWaitReason
+type RunWaitReason string
+
+const (
+	RunWaitReasonPipelines    RunWaitReason = "pipelines"
+	RunWaitReasonSlot         RunWaitReason = "slot"
+	RunWaitReasonSuiteSlot    RunWaitReason = "suite_slot"
+	RunWaitReasonQuota        RunWaitReason = "quota"
+	RunWaitReasonQuotaUnknown RunWaitReason = "quota_unknown"
+	RunWaitReasonProvider     RunWaitReason = "provider"
+)
+
+// AllValues returns all RunWaitReason values.
+func (RunWaitReason) AllValues() []RunWaitReason {
+	return []RunWaitReason{
+		RunWaitReasonPipelines,
+		RunWaitReasonSlot,
+		RunWaitReasonSuiteSlot,
+		RunWaitReasonQuota,
+		RunWaitReasonQuotaUnknown,
+		RunWaitReasonProvider,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s RunWaitReason) MarshalText() ([]byte, error) {
+	switch s {
+	case RunWaitReasonPipelines:
+		return []byte(s), nil
+	case RunWaitReasonSlot:
+		return []byte(s), nil
+	case RunWaitReasonSuiteSlot:
+		return []byte(s), nil
+	case RunWaitReasonQuota:
+		return []byte(s), nil
+	case RunWaitReasonQuotaUnknown:
+		return []byte(s), nil
+	case RunWaitReasonProvider:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *RunWaitReason) UnmarshalText(data []byte) error {
+	switch RunWaitReason(data) {
+	case RunWaitReasonPipelines:
+		*s = RunWaitReasonPipelines
+		return nil
+	case RunWaitReasonSlot:
+		*s = RunWaitReasonSlot
+		return nil
+	case RunWaitReasonSuiteSlot:
+		*s = RunWaitReasonSuiteSlot
+		return nil
+	case RunWaitReasonQuota:
+		*s = RunWaitReasonQuota
+		return nil
+	case RunWaitReasonQuotaUnknown:
+		*s = RunWaitReasonQuotaUnknown
+		return nil
+	case RunWaitReasonProvider:
+		*s = RunWaitReasonProvider
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type SaveRunAsTestReq struct {
@@ -26301,6 +26567,7 @@ func (s *TenantCreate) SetDescription(val OptString) {
 
 // Ref: #/components/schemas/TenantDashboard
 type TenantDashboard struct {
+	Pipelines       TenantPipelines          `json:"pipelines"`
 	RunCounts       TenantDashboardRunCounts `json:"run_counts"`
 	SuccessRate     OptFloat64               `json:"success_rate"`
 	RecentRuns      []Run                    `json:"recent_runs"`
@@ -26309,6 +26576,11 @@ type TenantDashboard struct {
 	TopResults      []RatingEntry            `json:"top_results"`
 	Providers       []ProviderProfile        `json:"providers"`
 	Limits          OptTenantLimits          `json:"limits"`
+}
+
+// GetPipelines returns the value of Pipelines.
+func (s *TenantDashboard) GetPipelines() TenantPipelines {
+	return s.Pipelines
 }
 
 // GetRunCounts returns the value of RunCounts.
@@ -26349,6 +26621,11 @@ func (s *TenantDashboard) GetProviders() []ProviderProfile {
 // GetLimits returns the value of Limits.
 func (s *TenantDashboard) GetLimits() OptTenantLimits {
 	return s.Limits
+}
+
+// SetPipelines sets the value of Pipelines.
+func (s *TenantDashboard) SetPipelines(val TenantPipelines) {
+	s.Pipelines = val
 }
 
 // SetRunCounts sets the value of RunCounts.
@@ -26714,6 +26991,114 @@ func (s *TenantPatch) SetDescription(val OptString) {
 // SetPublicName sets the value of PublicName.
 func (s *TenantPatch) SetPublicName(val OptNilString) {
 	s.PublicName = val
+}
+
+// Whether the tenant's namespace carries this server's pipelines. A new tenant (and every tenant
+// after a server upgrade) gets them pushed in a few minutes; until then launched runs wait in the
+// queue.
+// Ref: #/components/schemas/TenantPipelines
+type TenantPipelines struct {
+	Status TenantPipelinesStatus `json:"status"`
+	// Pipelines already in place while a push is in flight.
+	Pushed int `json:"pushed"`
+	Total  int `json:"total"`
+	// Why the last push failed.
+	Error OptString `json:"error"`
+}
+
+// GetStatus returns the value of Status.
+func (s *TenantPipelines) GetStatus() TenantPipelinesStatus {
+	return s.Status
+}
+
+// GetPushed returns the value of Pushed.
+func (s *TenantPipelines) GetPushed() int {
+	return s.Pushed
+}
+
+// GetTotal returns the value of Total.
+func (s *TenantPipelines) GetTotal() int {
+	return s.Total
+}
+
+// GetError returns the value of Error.
+func (s *TenantPipelines) GetError() OptString {
+	return s.Error
+}
+
+// SetStatus sets the value of Status.
+func (s *TenantPipelines) SetStatus(val TenantPipelinesStatus) {
+	s.Status = val
+}
+
+// SetPushed sets the value of Pushed.
+func (s *TenantPipelines) SetPushed(val int) {
+	s.Pushed = val
+}
+
+// SetTotal sets the value of Total.
+func (s *TenantPipelines) SetTotal(val int) {
+	s.Total = val
+}
+
+// SetError sets the value of Error.
+func (s *TenantPipelines) SetError(val OptString) {
+	s.Error = val
+}
+
+type TenantPipelinesStatus string
+
+const (
+	TenantPipelinesStatusSynced  TenantPipelinesStatus = "synced"
+	TenantPipelinesStatusPending TenantPipelinesStatus = "pending"
+	TenantPipelinesStatusBehind  TenantPipelinesStatus = "behind"
+	TenantPipelinesStatusFailed  TenantPipelinesStatus = "failed"
+)
+
+// AllValues returns all TenantPipelinesStatus values.
+func (TenantPipelinesStatus) AllValues() []TenantPipelinesStatus {
+	return []TenantPipelinesStatus{
+		TenantPipelinesStatusSynced,
+		TenantPipelinesStatusPending,
+		TenantPipelinesStatusBehind,
+		TenantPipelinesStatusFailed,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s TenantPipelinesStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case TenantPipelinesStatusSynced:
+		return []byte(s), nil
+	case TenantPipelinesStatusPending:
+		return []byte(s), nil
+	case TenantPipelinesStatusBehind:
+		return []byte(s), nil
+	case TenantPipelinesStatusFailed:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *TenantPipelinesStatus) UnmarshalText(data []byte) error {
+	switch TenantPipelinesStatus(data) {
+	case TenantPipelinesStatusSynced:
+		*s = TenantPipelinesStatusSynced
+		return nil
+	case TenantPipelinesStatusPending:
+		*s = TenantPipelinesStatusPending
+		return nil
+	case TenantPipelinesStatusBehind:
+		*s = TenantPipelinesStatusBehind
+		return nil
+	case TenantPipelinesStatusFailed:
+		*s = TenantPipelinesStatusFailed
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/TenantRole

@@ -22,6 +22,15 @@ func Submit(ctx context.Context, g Graphene, createdAt time.Time, id, pipeline s
 	return g.StartRun(ctx, id, pipeline, params, labels)
 }
 
+// submittedAt is when the run was first handed to Graphene: its admission
+// (a queued run may wait for days before), else its creation.
+func (r Run) submittedAt() time.Time {
+	if r.AdmittedAt != nil {
+		return *r.AdmittedAt
+	}
+	return r.CreatedAt
+}
+
 func runLabels(r Run) map[string]string {
 	labels := make(map[string]string, len(r.Labels)+1)
 	for k, v := range r.Labels {

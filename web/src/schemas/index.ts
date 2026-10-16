@@ -117,8 +117,6 @@ import specResultRun1Schema from './spec.result.run_v1.json';
 import type { SpecResultRun1 } from './spec.result.run_v1';
 import specRun1Schema from './spec.run_v1.json';
 import type { SpecRun1 } from './spec.run_v1';
-import specSuite1Schema from './spec.suite_v1.json';
-import type { SpecSuite1 } from './spec.suite_v1';
 import systemLimits1Schema from './system.limits_v1.json';
 import type { SystemLimits1 } from './system.limits_v1';
 import systemSizes1Schema from './system.sizes_v1.json';
@@ -197,7 +195,6 @@ export const schemaIds = [
   "spec.result.quotas@1",
   "spec.result.run@1",
   "spec.run@1",
-  "spec.suite@1",
   "system.limits@1",
   "system.sizes@1",
   "system.stroppy_catalog@1",
@@ -270,7 +267,6 @@ export type SchemaValue<Id extends SchemaId> =
   Id extends "spec.result.quotas@1" ? SpecResultQuotas1 :
   Id extends "spec.result.run@1" ? SpecResultRun1 :
   Id extends "spec.run@1" ? SpecRun1 :
-  Id extends "spec.suite@1" ? SpecSuite1 :
   Id extends "system.limits@1" ? SystemLimits1 :
   Id extends "system.sizes@1" ? SystemSizes1 :
   Id extends "system.stroppy_catalog@1" ? SystemStroppyCatalog1 :
@@ -341,7 +337,6 @@ export const schemas: Record<SchemaId, unknown> = {
   "spec.result.quotas@1": specResultQuotas1Schema,
   "spec.result.run@1": specResultRun1Schema,
   "spec.run@1": specRun1Schema,
-  "spec.suite@1": specSuite1Schema,
   "system.limits@1": systemLimits1Schema,
   "system.sizes@1": systemSizes1Schema,
   "system.stroppy_catalog@1": systemStroppyCatalog1Schema,
@@ -412,7 +407,6 @@ export type {
   SpecResultQuotas1,
   SpecResultRun1,
   SpecRun1,
-  SpecSuite1,
   SystemLimits1,
   SystemSizes1,
   SystemStroppyCatalog1,

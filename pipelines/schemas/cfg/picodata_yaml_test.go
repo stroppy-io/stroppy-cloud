@@ -79,7 +79,7 @@ func TestPicodata261(t *testing.T) {
 		Valid: []map[string]any{{}, picodataFull()},
 		Invalid: append(picodataInvalid(), schematest.Invalid{
 			Value: map[string]any{"tiers": []any{map[string]any{"name": "default", "replication_mode": "sync"}}},
-			Code: "UNKNOWN_FIELD",
+			Code:  "UNKNOWN_FIELD",
 		}),
 		Render: "conf", Contains: []string{"  iproto:\n", "  pgproto:\n", "    system_memory:"},
 	})

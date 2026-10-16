@@ -26,7 +26,7 @@ import (
 )
 
 // Pipelines are the binaries to push, in order.
-var Pipelines = []string{"stroppy-run", "stroppy-suite", "stroppy-provider-verify", "stroppy-quotas", "stroppy-provider-config"}
+var Pipelines = []string{"stroppy-run", "stroppy-provider-verify", "stroppy-quotas", "stroppy-provider-config"}
 
 // Runner executes one push of one pipeline into a namespace.
 type Runner interface {
@@ -65,11 +65,53 @@ type Pusher struct {
 	revision string
 	mu       sync.Mutex
 	busy     map[string]bool
+	// pushed counts the pipelines already pushed into a namespace being
+	// synced (progress for the tenant's page).
+	pushed   map[string]int
+	onSynced func(namespace string)
 }
 
 // New wires the worker; revision defaults to the build version.
 func New(runner Runner, store Store, ns Namespaces, log *xlog.Logger) *Pusher {
-	return &Pusher{runner: runner, store: store, ns: ns, log: log, revision: build.Version, busy: map[string]bool{}}
+	return &Pusher{runner: runner, store: store, ns: ns, log: log, revision: build.Version, busy: map[string]bool{}, pushed: map[string]int{}}
+}
+
+// OnSynced is called after a namespace got every pipeline (the run queue
+// waits for it).
+func (p *Pusher) OnSynced(fn func(namespace string)) { p.onSynced = fn }
+
+// Readiness is a namespace's push state against this server's revision.
+type Readiness struct {
+	// Status: synced | pending | behind | failed.
+	Status string
+	Error  string
+	// Pushed of Total pipelines are in place while a sync is in flight.
+	Pushed, Total int
+}
+
+// Ready reports whether the namespace carries this server's pipelines.
+func (p *Pusher) Ready(ctx context.Context, namespace string) Readiness {
+	out := Readiness{Total: len(Pipelines)}
+	p.mu.Lock()
+	n, busy := p.pushed[namespace]
+	p.mu.Unlock()
+	st, ok, err := p.store.Get(ctx, namespace)
+	switch {
+	case err != nil:
+		out.Status, out.Error = "pending", err.Error()
+	case !ok:
+		out.Status = "pending"
+	case st.Status == "synced" && st.Revision == p.revision:
+		out.Status, out.Pushed = "synced", len(Pipelines)
+	case st.Status == "synced":
+		out.Status = "behind"
+	default:
+		out.Status, out.Error = st.Status, st.Error
+	}
+	if busy && out.Status != "synced" {
+		out.Status, out.Pushed = "pending", n
+	}
+	return out
 }
 
 // Revision is the expected pipeline revision.
@@ -106,8 +148,9 @@ func (p *Pusher) Sync(ctx context.Context, namespace string) bool {
 		return false
 	}
 	p.busy[namespace] = true
+	p.pushed[namespace] = 0
 	p.mu.Unlock()
-	defer func() { p.mu.Lock(); delete(p.busy, namespace); p.mu.Unlock() }()
+	defer func() { p.mu.Lock(); delete(p.busy, namespace); delete(p.pushed, namespace); p.mu.Unlock() }()
 
 	_ = p.store.Set(ctx, State{Namespace: namespace, Revision: p.revision, Status: "pending"}) //nolint:errcheck // best-effort progress
 	for _, pipeline := range Pipelines {
@@ -116,10 +159,16 @@ func (p *Pusher) Sync(ctx context.Context, namespace string) bool {
 			_ = p.store.Set(ctx, State{Namespace: namespace, Revision: p.revision, Status: "failed", Error: pipeline + ": " + err.Error()}) //nolint:errcheck // reported by status
 			return true
 		}
+		p.mu.Lock()
+		p.pushed[namespace]++
+		p.mu.Unlock()
 	}
 	now := time.Now().UTC()
 	if err := p.store.Set(ctx, State{Namespace: namespace, Revision: p.revision, Status: "synced", PushedAt: &now}); err != nil {
 		p.log.Warn("pipelines: record push", xlog.String("namespace", namespace), xlog.Error("error", err))
+	}
+	if p.onSynced != nil {
+		p.onSynced(namespace)
 	}
 	return true
 }

@@ -26,13 +26,6 @@ func TestNormalizePreservesExplicitValues(t *testing.T) {
 	if segments[0].Thresholds.ErrorRate == nil || *segments[0].Thresholds.ErrorRate != 0 {
 		t.Fatal("explicit zero lost")
 	}
-	suite, err := NormalizeSuite(Suite{SuiteRunID: r.RunID, Tenant: r.Tenant, Cells: []SuiteCell{{ID: "one", RunSpec: r}}, Concurrency: 1, Defaults: SuiteDefaults{ContinueOnFailure: false}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if suite.Defaults.ContinueOnFailure {
-		t.Fatal("suite explicit false lost")
-	}
 }
 
 func TestPipelineJSONDoesNotDiscardUnknownFields(t *testing.T) {
@@ -47,13 +40,6 @@ func TestPipelineJSONDoesNotDiscardUnknownFields(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !r.Network.AllowPublicIPs {
-		t.Fatal("schema default true was not applied")
-	}
-	var s Suite
-	if err := json.Unmarshal([]byte(`{}`), &s); err != nil {
-		t.Fatal(err)
-	}
-	if !s.Defaults.ContinueOnFailure {
 		t.Fatal("schema default true was not applied")
 	}
 }

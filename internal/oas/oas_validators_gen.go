@@ -146,6 +146,24 @@ func (s *AdminListRunsOKDataItem) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		if value, ok := s.Queue.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "queue",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -6030,6 +6048,24 @@ func (s *Run) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		if value, ok := s.Queue.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "queue",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -6695,6 +6731,86 @@ func (s RunPhase) Validate() error {
 	}
 }
 
+func (s *RunQueue) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.WaitingFor.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "waiting_for",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := (validate.Int{
+			MinSet:        true,
+			Min:           1,
+			MaxSet:        false,
+			Max:           0,
+			MinExclusive:  false,
+			MaxExclusive:  false,
+			MultipleOfSet: false,
+			MultipleOf:    0,
+			Pattern:       nil,
+		}).Validate(int64(s.Position)); err != nil {
+			return errors.Wrap(err, "int")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "position",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Need.Get(); ok {
+			if err := func() error {
+				if err := (validate.Float{}).Validate(float64(value)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "need",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Free.Get(); ok {
+			if err := func() error {
+				if err := (validate.Float{}).Validate(float64(value)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "free",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *RunRef) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -7236,6 +7352,25 @@ func (s *RunSummaryQPSSeriesItem) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s RunWaitReason) Validate() error {
+	switch s {
+	case "pipelines":
+		return nil
+	case "slot":
+		return nil
+	case "suite_slot":
+		return nil
+	case "quota":
+		return nil
+	case "quota_unknown":
+		return nil
+	case "provider":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *SaveRunAsTestReq) Validate() error {
@@ -10150,6 +10285,17 @@ func (s *TenantDashboard) Validate() error {
 
 	var failures []validate.FieldError
 	if err := func() error {
+		if err := s.Pipelines.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "pipelines",
+			Error: err,
+		})
+	}
+	if err := func() error {
 		if value, ok := s.SuccessRate.Get(); ok {
 			if err := func() error {
 				if err := (validate.Float{}).Validate(float64(value)); err != nil {
@@ -10541,6 +10687,44 @@ func (s *TenantPatch) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s *TenantPipelines) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Status.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "status",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s TenantPipelinesStatus) Validate() error {
+	switch s {
+	case "synced":
+		return nil
+	case "pending":
+		return nil
+	case "behind":
+		return nil
+	case "failed":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s TenantRole) Validate() error {

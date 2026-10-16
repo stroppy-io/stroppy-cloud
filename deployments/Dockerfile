@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache
       -ldflags="-w -s -X github.com/stroppy-io/stroppy-cloud/internal/build.Version=${VERSION} -X github.com/stroppy-io/stroppy-cloud/internal/build.Commit=${COMMIT} -X github.com/stroppy-io/stroppy-cloud/internal/build.BuildTime=${build_time}" \
       -o /out/stroppy-cloud ./cmd/stroppy-cloud/
 RUN --mount=type=cache,target=/go/pkg/mod --mount=type=cache,target=/root/.cache/go-build \
-    set -e; cd pipelines; for p in run suite provider-verify quotas provider-config; do \
+    set -e; cd pipelines; for p in run provider-verify quotas provider-config; do \
       go build -trimpath -ldflags="-w -s" -o /out/pipelines/stroppy-$p ./cmd/$p/; \
     done
 

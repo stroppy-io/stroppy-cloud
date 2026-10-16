@@ -260,7 +260,7 @@ func (f *fakeGraphene) StartRun(_ context.Context, req *connect.Request[manageme
 	f.mu.Unlock()
 
 	switch pipelineID {
-	case workflows.RunPipelineID, workflows.SuitePipelineID:
+	case workflows.RunPipelineID:
 		now := time.Now().UTC()
 		rec, err := simulate(id, pipelineID, params, now, sc, 0, childScenario)
 		if err == nil && f.speed <= 0 {

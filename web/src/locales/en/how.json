@@ -76,7 +76,7 @@
     },
     "pipes": {
       "title": "Pipelines",
-      "body": "stroppy-run, stroppy-suite.",
+      "body": "stroppy-run, stroppy-quotas, stroppy-provider-verify, stroppy-provider-config.",
       "more": "The run's code, in plain Go: create the network and machines, deploy containers, drive the load segments, collect the result. It ships in one image with the server, which publishes the binaries and manifests into every tenant's namespace on start.",
       "tech": "Go · Graphene SDK",
       "facts": [

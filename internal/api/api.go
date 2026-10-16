@@ -5,6 +5,8 @@
 package api
 
 import (
+	"context"
+
 	"github.com/google/uuid"
 
 	"github.com/gopherex/xlog"
@@ -58,7 +60,21 @@ type Deps struct {
 	Schemas   *schemas.Registry
 	Public    PublicConfig
 	Probes    Probes
+	Pipelines PipelineStatus
 	Log       *xlog.Logger
+}
+
+// PipelineStatus is a tenant namespace's pipeline push state; nil reports
+// every namespace as synced.
+type PipelineStatus interface {
+	TenantPipelines(ctx context.Context, namespace string) PipelinePush
+}
+
+// PipelinePush is the push state of one namespace.
+type PipelinePush struct {
+	Status        string // synced | pending | behind | failed
+	Pushed, Total int
+	Error         string
 }
 
 // LiveProjection tells whether a run's projection is fed from Graphene

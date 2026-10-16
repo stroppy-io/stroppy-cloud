@@ -91,7 +91,11 @@ func TestE2EAdmin(t *testing.T) {
 		}
 		var r runView
 		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &r)
-		e.problem(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusUnprocessableEntity, "limit_exceeded")
+		var queued runView
+		e.want(e.req(http.MethodPost, base+"/tests/"+testID+":launch", map[string]any{}, tok), http.StatusCreated, &queued)
+		if queued.Queue.WaitingFor != "slot" || queued.Queue.Limit != 1 {
+			t.Fatalf("the override holds the second run in the queue: %+v", queued)
+		}
 		e.want(e.req(http.MethodPut, "/api/v1/admin/tenants/"+tn.Slug+"/limits", map[string]any{}, rtok), http.StatusOK, &lim)
 		if lim.Source != "platform_default" {
 			t.Fatalf("cleared limits %+v", lim)
@@ -119,8 +123,16 @@ func TestE2EAdmin(t *testing.T) {
 			} `json:"data"`
 		}
 		e.want(e.req(http.MethodGet, "/api/v1/admin/runs?status=pending&tenant="+tn.Slug, nil, rtok), http.StatusOK, &queue)
-		if len(queue.Data) != 1 || queue.Data[0].ID != r.ID || queue.Data[0].Tenant.Name != tn.Slug {
+		seen := map[string]bool{}
+		for _, q := range queue.Data {
+			seen[q.ID] = q.Tenant.Name == tn.Slug
+		}
+		if len(queue.Data) != 2 || !seen[r.ID] || !seen[queued.ID] {
 			t.Fatalf("queue %+v", queue)
+		}
+		e.want(e.req(http.MethodPost, "/api/v1/admin/runs/"+queued.ID+":cancel", nil, rtok), http.StatusOK, &queued)
+		if queued.Status != "cancelled" {
+			t.Fatalf("a queued run is cancelled at once: %+v", queued)
 		}
 		e.want(e.req(http.MethodPost, "/api/v1/admin/runs/"+r.ID+":cancel", nil, rtok), http.StatusOK, &r)
 		if r.Status != "cancelling" {

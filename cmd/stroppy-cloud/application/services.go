@@ -12,6 +12,7 @@ import (
 	"github.com/gopherex/xlog"
 	"github.com/gopherex/xshutdown"
 
+	"github.com/stroppy-io/stroppy-cloud/internal/api"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/admin"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/audit"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
@@ -109,7 +110,7 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	projector := run.NewProjector(runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)
 	suiteRepo := repositories.NewSuiteRepo(db)
 	suites := suite.NewService(suiteRepo, runs, runRepo, infra.Graphene, tenants, lib, webhooks, auditSvc, graphene.WithNamespace)
-	suiteProj := suite.NewProjector(suiteRepo, runRepo, infra.Graphene, webhooks, graphene.WithNamespace, log)
+	suiteProj := suite.NewProjector(suiteRepo, runRepo, webhooks, log)
 	schedules := schedule.NewService(repositories.NewScheduleRepo(db), tenants, scheduleLauncher{runs: runs, suites: suites, lib: lib}, auditSvc, log)
 	lib.WithTestUsers(testUsers{suites: suites, schedules: suiteRepo})
 	cmp := compare.NewService(runRepo, tenants, cat)
@@ -124,6 +125,9 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	}
 	pusher := pipelines.New(runner, repositories.NewPipelineRepo(db), tenantNamespaces{tenantRepo}, log)
 	tenants.WithPipelines(pusher)
+	pusher.OnSynced(func(string) { runs.Nudge() })
+	runs.WithQueue(pipelineReadiness{p: pusher, enabled: cfg.Infra.Pipelines.Dir != ""}, suiteConcurrency{suiteRepo}, log)
+	projector.OnFinish(runs.Nudge)
 	adminSvc.WithPipelines(pusherStates{pusher})
 	observeSvc := observe.NewService(runs, graphene.NewLogs(infra.Graphene), graphene.NewMetrics(infra.Graphene), cat)
 	projector.WithTelemetry(observeSvc)
@@ -202,6 +206,42 @@ type tenantNamespaces struct{ repo *repositories.TenantRepo }
 
 func (t tenantNamespaces) Namespaces(ctx context.Context) ([]string, error) {
 	return t.repo.Namespaces(ctx)
+}
+
+// pipelineReadiness tells the run queue whether a namespace has this
+// server's pipelines; without a pipeline directory nothing is pushed and
+// the namespaces are taken as they are (local stand, tests).
+type pipelineReadiness struct {
+	p       *pipelines.Pusher
+	enabled bool
+}
+
+func (r pipelineReadiness) PipelinesReady(ctx context.Context, ns string) (ready bool, status string) {
+	if !r.enabled {
+		return true, ""
+	}
+	st := r.p.Ready(ctx, ns)
+	return st.Status == "synced", st.Status
+}
+
+// TenantPipelines is the push state for the tenant's dashboard.
+func (r pipelineReadiness) TenantPipelines(ctx context.Context, ns string) api.PipelinePush {
+	if !r.enabled {
+		return api.PipelinePush{Status: "synced", Pushed: len(pipelines.Pipelines), Total: len(pipelines.Pipelines)}
+	}
+	st := r.p.Ready(ctx, ns)
+	return api.PipelinePush{Status: st.Status, Pushed: st.Pushed, Total: st.Total, Error: st.Error}
+}
+
+// suiteConcurrency reads a suite run's cell concurrency for the run queue.
+type suiteConcurrency struct{ repo *repositories.SuiteRepo }
+
+func (s suiteConcurrency) SuiteConcurrency(ctx context.Context, id uuid.UUID) (int, error) {
+	r, err := s.repo.RunByID(ctx, id)
+	if err != nil {
+		return 0, err
+	}
+	return r.Concurrency, nil
 }
 
 // pusherStates adapts the push worker to the admin status page.

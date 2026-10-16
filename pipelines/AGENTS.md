@@ -2,12 +2,11 @@
 
 Отдельный Go-модуль `github.com/stroppy-io/stroppy-cloud/pipelines`. Без
 go.work: сервер подключает `schemas`/`spec` как обычную зависимость по версии
-(тег `pipelines/vX.Y.Z`). Пять бинарников, каждый — один `pipeline.Main`:
+(тег `pipelines/vX.Y.Z`). Четыре бинарника, каждый — один `pipeline.Main`:
 
 | Бинарник | id | Что делает |
 |---|---|---|
 | `cmd/run` | `stroppy-run` | RunSpec → машины (Crossplane yc/aws) → агенты → контейнеры → stroppy-сегменты → Result |
-| `cmd/suite` | `stroppy-suite` | Suite → child-run `stroppy-run` на каждую ячейку (`RunAll`), сводка |
 | `cmd/provider-verify` | `stroppy-provider-verify` | Проверка ключа/прав провайдера, read-only, ничего не создаёт |
 | `cmd/provider-config` | `stroppy-provider-config` | Проверка YC/AWS + постоянная конфигурация профиля; удаление с проверкой использования |
 | `cmd/quotas` | `stroppy-quotas` | Квоты и usage compute/vpc провайдера |
@@ -18,14 +17,13 @@ go.work: сервер подключает `schemas`/`spec` как обычну�
 ## Раскладка
 
 ```
-spec/                 Run, Suite, ProviderVerify, Quotas + Result'ы; Duration ("5m")
+spec/                 Run, ProviderVerify, Quotas + Result'ы; Duration ("5m")
 schemas/              все schemapb-схемы продукта (свой AGENTS.md)
-workflows/            публичная дверь к телам stroppy-run/suite: id, Run/Suite,
+workflows/            публичная дверь к телу stroppy-run: id, Run,
                       wire-имена activities + алиасы payload'ов, имена milestones —
                       для симуляции настоящего workflow вне модуля (e2e сервера)
 internal/run          workflow stroppy-run: run.go (фазы), deploy.go, workload.go,
                       template.go (${ip:...}), phase.go (milestones+parallel), record.go
-internal/suite        fan-out child-run'ов
 internal/provision    Provider{Kind,Scheme,Provision,Record}: yandex.go, aws.go → Infra
 internal/activities   тела activities (воркер: creds.go; агент: hostprep/files/docker/stroppy)
 internal/cloud        SDK-клиенты yc/aws для verify/quotas
@@ -34,7 +32,11 @@ internal/events       Emit(ctx, name, payload) — milestones для проек�
 internal/topo         toposort/GroupBy/Slug — чистые, тестируемые
 ```
 
-## Правила workflow-кода (`internal/run`, `internal/suite`, `internal/probe`)
+Сьют пайплайна нет: ячейки сьюты — обычные `stroppy-run`, их запускает
+очередь сервера (не больше concurrency сьюты одновременно), статус сьюты
+сервер выводит из ячеек.
+
+## Правила workflow-кода (`internal/run`, `internal/probe`)
 
 - **Recording pass.** `record.go` объявляет ВСЕ activities, kinds (оба
   провайдера), docker/agent/artifact/stand на нулевом проходе. Новая
@@ -130,9 +132,6 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   логическое имя остаётся в RunSpec, depends_on, событиях и метке
   `stroppy-container`. Healthcheck и flow-ссылки используют физическое имя.
   Это разделяет одновременно работающие прогоны в одном namespace.
-- Отмена suite возвращает Canceled независимо от continue_on_failure;
-  обычная ошибка ячейки остаётся отдельным исходом. Cleanup Graphene
-  отправляет отмену дочерним run, которые выполняют собственный teardown.
 
 ## Зависимости (не трогать без причины)
 
@@ -159,8 +158,7 @@ postgres/yandex и noop/aws; неизвестный провайдер и отк
 нефатальны; два сегмента, `result_expectations` → degraded; потеря
 activity сегмента (AtMostOnce, без повтора); cancel в provisioning и в
 workload; `keep` → stand + TTL и `keep` игнорируется после провала.
-`internal/suite/sim_test.go` — fan-out через серверный контракт
-start/await-child; `internal/probe/sim_test.go` — verify/quotas. Правило:
+`internal/probe/sim_test.go` — verify/quotas. Правило:
 любой новый шаг workflow — сначала сюда, потом на кластер.
 
 Ловушка Temporal: контексты выводятся по конкретному типу — в
@@ -201,8 +199,6 @@ GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
   и должен быть доступен этому же агенту для чтения/загрузки.
   Полный JSON передаётся в result.segment.report до 64 KiB на сегмент / 256 KiB
   на run; большие отчёты доступны по report_artifact с report_omitted.
-  Сводка suite также ограничивает inline-отчёты суммарно до 256 KiB, сохраняя
-  ссылки на дочерние результаты и артефакты.
   Неизвестная версия/повреждение/отсутствие — явная ошибка без text fallback.
   Старые образы используют полный файл лога с bench summary/compliance.
   Отчёты failed/canceled сохраняются; completed_with_errors проходит обычные
@@ -269,7 +265,7 @@ Run `make contract-check` from the repository root. Do not silently change
 field meanings/defaults, merge rules, diagnostic scopes or result projections
 under the same contract version; follow the handoff compatibility policy.
 
-Inputs use the existing schemas end to end, including nested suite RunSpecs,
+Inputs use the existing schemas end to end, including
 segments, native driver options and machine baseline. See
 [live/tests/platform/contracts/README.md](live/tests/platform/contracts/README.md)
 for server/UI mapping, validation evidence and explicit execution limits.

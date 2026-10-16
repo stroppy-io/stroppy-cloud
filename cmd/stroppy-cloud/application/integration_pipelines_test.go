@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/pipelines"
 )
 
 func TestE2EPipelinePush(t *testing.T) {
@@ -39,7 +41,7 @@ func TestE2EPipelinePush(t *testing.T) {
 	t.Run("a new tenant gets every pipeline pushed", func(t *testing.T) {
 		eventually(t, 10*time.Second, func() bool { return find().Status == "synced" })
 		ns := find()
-		if ns.Revision != st.Pipelines.ExpectedRevision || e.pushes.count(tn.GrapheneNamespace) != 5 {
+		if ns.Revision != st.Pipelines.ExpectedRevision || e.pushes.count(tn.GrapheneNamespace) != len(pipelines.Pipelines) {
 			t.Fatalf("state %+v pushes %d", ns, e.pushes.count(tn.GrapheneNamespace))
 		}
 		// Nothing to do on the periodic check.

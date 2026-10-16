@@ -14,6 +14,7 @@ import { useNavigate } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { checklistOpen, Onboarding } from './Onboarding'
+import { PipelinesBanner } from './PipelinesBanner'
 import { ProvidersHealth } from './ProvidersHealth'
 import { LiveNow, RecentRuns, RecentSuiteRuns, TopResults, Upcoming } from './RunLists'
 import { StatTiles } from './StatTiles'
@@ -112,9 +113,13 @@ export function DashboardPage() {
       ) : !data ? (
         <LoadingPlaceholder text={t('common.misc.loading')} />
       ) : (data.run_counts.total ?? 0) === 0 && !onboarding.checklistHidden ? (
-        <Onboarding slug={slug} tenantName={tenant?.name ?? slug} data={data} />
+        <>
+          <PipelinesBanner pipelines={data.pipelines} />
+          <Onboarding slug={slug} tenantName={tenant?.name ?? slug} data={data} />
+        </>
       ) : (
         <>
+          <PipelinesBanner pipelines={data.pipelines} />
           {checklistOpen(data, onboarding.checklistHidden) && (
             <Onboarding slug={slug} tenantName={tenant?.name ?? slug} data={data} />
           )}

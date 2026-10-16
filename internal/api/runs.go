@@ -226,6 +226,9 @@ func (h *Handler) runOf(r run.Run, favorite *bool) *oas.Run {
 	if r.StatusReason != "" {
 		out.StatusReason = oas.NewOptString(r.StatusReason)
 	}
+	if r.Queued() && r.Queue.WaitingFor != "" {
+		out.Queue = oas.NewOptRunQueue(queueOf(r.Queue))
+	}
 	if r.SuiteRunID != nil || r.ScheduleID != nil || r.ParentRunID != nil {
 		ref := oas.RunTriggerRef{ScheduleID: optUUID(r.ScheduleID), SuiteRunID: optUUID(r.SuiteRunID), ParentRunID: optUUID(r.ParentRunID)}
 		if r.CellID != "" {
@@ -257,6 +260,26 @@ func (h *Handler) runOf(r run.Run, favorite *bool) *oas.Run {
 		g := out.Graphene.Value
 		g.PipelineRevision = oas.NewOptString(r.PipelineRevision)
 		out.Graphene = oas.NewOptRunGraphene(g)
+	}
+	return out
+}
+
+func queueOf(q run.Queue) oas.RunQueue {
+	out := oas.RunQueue{WaitingFor: oas.RunWaitReason(q.WaitingFor), Position: q.Position}
+	if q.Limit > 0 {
+		out.Live, out.Limit = oas.NewOptInt(q.Live), oas.NewOptInt(q.Limit)
+	}
+	if q.Quota != "" {
+		out.Quota, out.Need, out.Free = oas.NewOptString(q.Quota), oas.NewOptFloat64(q.Need), oas.NewOptFloat64(q.Free)
+	}
+	if q.Zone != "" {
+		out.Zone = oas.NewOptString(q.Zone)
+	}
+	if q.Unit != "" {
+		out.Unit = oas.NewOptString(q.Unit)
+	}
+	if q.Detail != "" {
+		out.Detail = oas.NewOptString(q.Detail)
 	}
 	return out
 }
