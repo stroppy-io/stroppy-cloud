@@ -420,7 +420,7 @@
     {
       "choice": {
         "default": {
-          "stringValue": "none"
+          "stringValue": "global"
         },
         "options": [
           {
@@ -467,7 +467,7 @@
           }
         ]
       },
-      "description": "Read-your-own-writes guarantee level; anything but none costs a synchronization wait.",
+      "description": "Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it.",
       "group": "Service",
       "name": "causal_reads",
       "title": "Causal reads"

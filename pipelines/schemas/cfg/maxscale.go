@@ -143,8 +143,14 @@ func maxscaleCnf(major uint64) *schemapb.Schema {
 			trueFalse("master_accept_reads", "false").Title("Primary accepts reads").Group("Service").
 				Desc("Send read traffic to the primary as well as the replicas."),
 			// doc: maxscale-readwritesplit#causal_reads
+			// The upstream default is none; a benchmark reads what other
+			// connections wrote (stroppy validates the loaded data on its own
+			// connections), and an async replica behind the bulk load fails
+			// those checks. global waits for the replica (MASTER_GTID_WAIT,
+			// primary after causal_reads_timeout); 24.02 tracks last_gtid on
+			// the backends itself.
 			schemapb.Choice("causal_reads").Title("Causal reads").Group("Service").
-				Desc("Read-your-own-writes guarantee level; anything but none costs a synchronization wait.").
+				Desc("Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it.").
 				Opt(schemapb.StrV("none"), "none").
 				Opt(schemapb.StrV("local"), "local").
 				Opt(schemapb.StrV("global"), "global").
@@ -152,7 +158,7 @@ func maxscaleCnf(major uint64) *schemapb.Schema {
 				Opt(schemapb.StrV("fast_global"), "fast_global").
 				Opt(schemapb.StrV("universal"), "universal").
 				Opt(schemapb.StrV("fast_universal"), "fast_universal").
-				Default(schemapb.StrV("none")),
+				Default(schemapb.StrV("global")),
 			// doc: maxscale-readwritesplit#causal_reads_timeout (duration, default 10s)
 			schemapb.Int64("causal_reads_timeout").Title("Causal reads timeout").Group("Service").
 				Desc("How long a causal read waits for the replica to catch up before it falls back to the primary.").
