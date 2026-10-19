@@ -328,7 +328,7 @@ func (s *Service) namesOf(ctx context.Context, r run.Run, w Window) ([]MetricNam
 func seriesExpr(name string, matchers []string, fn string, step time.Duration, groupBy []string, agg string, public bool) (string, error) {
 	selectors := []string{"{" + strings.Join(matchers, ",") + "}"}
 	if public && !strings.HasPrefix(name, "docker.container.") {
-		selectors = ownSelectors(matchers)
+		selectors = ownSelectors(name, matchers)
 	}
 	parts := make([]string, len(selectors))
 	for i, sel := range selectors {
@@ -361,13 +361,23 @@ func seriesExpr(name string, matchers []string, fn string, step time.Duration, g
 // ownSelectors narrow a selector to the run's own series, the same split
 // originOf makes: an exporter's (scraped from a container), or the
 // workload's. One selector per kind, joined with `or` by the caller.
-func ownSelectors(matchers []string) []string {
+func ownSelectors(name string, matchers []string) []string {
 	base := strings.Join(matchers, ",")
-	return []string{
-		fmt.Sprintf("{%s,%q=~%q}", base, spec.AttrEntity, "docker/.+"),
+	workload := []string{
 		fmt.Sprintf("{%s,%q=%q}", base, attrRole, "workload"),
 		fmt.Sprintf("{%s,%q=%q}", base, "service.name", "stroppy"),
 	}
+	// As originOf: an agent name is never an exporter's, whatever entity it carries.
+	if agentName(name) {
+		return workload
+	}
+	return append([]string{fmt.Sprintf("{%s,%q=~%q}", base, spec.AttrEntity, "docker/.+")}, workload...)
+}
+
+// agentName is a name of the agent's own instruments (its activities, its
+// HTTP and RPC clients): never the run's, whatever entity it carries.
+func agentName(name string) bool {
+	return strings.HasPrefix(name, "graphene.") || strings.HasPrefix(name, "http.") || strings.HasPrefix(name, "rpc.")
 }
 
 // originOf tells where a name comes from by the labels its series carry.
@@ -378,7 +388,7 @@ func originOf(name string, labels map[string]string) MetricOrigin {
 	// The agent's own instruments (its activities, its HTTP and RPC
 	// clients) carry the container entity they act on: the name tells them
 	// apart from what the container's exporter served.
-	case strings.HasPrefix(name, "graphene.") || strings.HasPrefix(name, "http.") || strings.HasPrefix(name, "rpc."):
+	case agentName(name):
 		return OriginPipeline
 	case strings.HasPrefix(name, "docker.container."):
 		return OriginContainer
@@ -467,7 +477,7 @@ func (s *Service) seriesOf(ctx context.Context, r run.Run, w Window, q SeriesQue
 	// The metric's own labels, from an ungrouped look when grouped.
 	out.Labels = keysOf(own)
 	if len(q.By) > 0 {
-		out.Labels = s.labelsOf(ctx, r, w, name)
+		out.Labels = s.labelsOf(ctx, r, w, name, public)
 	}
 	sort.SliceStable(out.Series, func(i, j int) bool { return out.Series[i].Avg > out.Series[j].Avg })
 	if len(out.Series) > maxSeries {
@@ -477,8 +487,12 @@ func (s *Service) seriesOf(ctx context.Context, r run.Run, w Window, q SeriesQue
 }
 
 // labelsOf are the metric's own label names.
-func (s *Service) labelsOf(ctx context.Context, r run.Run, w Window, name string) []string {
-	raw, err := s.metrics.Raw(ctx, ScopeOf(r), fmt.Sprintf("{__name__=%q}", name), w.Start, w.End, max(w.End.Sub(w.Start)/10, time.Minute))
+func (s *Service) labelsOf(ctx context.Context, r run.Run, w Window, name string, public bool) []string {
+	query := fmt.Sprintf("{__name__=%q}", name)
+	if public && !strings.HasPrefix(name, "docker.container.") {
+		query = strings.Join(ownSelectors(name, []string{fmt.Sprintf("__name__=%q", name)}), " or ")
+	}
+	raw, err := s.metrics.Raw(ctx, ScopeOf(r), query, w.Start, w.End, max(w.End.Sub(w.Start)/10, time.Minute))
 	if err != nil {
 		return []string{}
 	}

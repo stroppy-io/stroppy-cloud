@@ -191,6 +191,10 @@ func TestSeriesExprPublicKeepsTheRunsOwnSeries(t *testing.T) {
 	if !strings.HasPrefix(public, `sum by ("graphene.agent") (rate(`) || strings.Count(public, " or ") != 2 {
 		t.Errorf("public expr = %s", public)
 	}
+	// An agent name never takes the exporter branch, as originOf says.
+	if a, _ := seriesExpr("graphene.activity.seconds_bucket", []string{`__name__="graphene.activity.seconds_bucket"`}, "value", time.Minute, nil, "sum", true); strings.Contains(a, "docker/") {
+		t.Errorf("agent name expr = %s", a)
+	}
 	// Container stats are the run's own by name.
 	if c, _ := seriesExpr("docker.container.cpu.percent", []string{`__name__="docker.container.cpu.percent"`}, "value", time.Minute, nil, "sum", true); strings.Contains(c, " or ") {
 		t.Errorf("container expr = %s", c)
