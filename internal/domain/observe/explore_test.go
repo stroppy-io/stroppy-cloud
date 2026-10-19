@@ -170,3 +170,29 @@ func TestPublicNamesHidePipelineInternals(t *testing.T) {
 		}
 	}
 }
+
+// A public share never draws the agent's series, also not hidden in a sum
+// over a name the agent shares with an exporter.
+func TestSeriesExprPublicKeepsTheRunsOwnSeries(t *testing.T) {
+	matchers := []string{`__name__="go_goroutines"`}
+	private, err := seriesExpr("go_goroutines", matchers, "value", time.Minute, nil, "sum", false)
+	if err != nil || private != `{__name__="go_goroutines"}` {
+		t.Fatalf("private expr = %q, %v", private, err)
+	}
+	public, err := seriesExpr("go_goroutines", matchers, "rate", time.Minute, []string{"machine"}, "sum", true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`"graphene.entity"=~"docker/.+"`, `"graphene.role"="workload"`, `"service.name"="stroppy"`} {
+		if !strings.Contains(public, want) {
+			t.Errorf("public expr lacks %s: %s", want, public)
+		}
+	}
+	if !strings.HasPrefix(public, `sum by ("graphene.agent") (rate(`) || strings.Count(public, " or ") != 2 {
+		t.Errorf("public expr = %s", public)
+	}
+	// Container stats are the run's own by name.
+	if c, _ := seriesExpr("docker.container.cpu.percent", []string{`__name__="docker.container.cpu.percent"`}, "value", time.Minute, nil, "sum", true); strings.Contains(c, " or ") {
+		t.Errorf("container expr = %s", c)
+	}
+}

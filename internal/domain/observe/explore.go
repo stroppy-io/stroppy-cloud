@@ -174,7 +174,7 @@ func (s *Service) MetricSeries(ctx context.Context, actor auth.Actor, tenantID, 
 	if err != nil {
 		return SeriesResult{}, err
 	}
-	return s.seriesOf(ctx, r, w, q)
+	return s.seriesOf(ctx, r, w, q, false)
 }
 
 // SharedMetricSeries draws one name of a shared run.
@@ -190,7 +190,7 @@ func (s *Service) SharedMetricSeries(ctx context.Context, shares SharedRuns, tok
 	if !slices.ContainsFunc(publicNames(names), func(n MetricName) bool { return n.Name == strings.TrimSpace(q.Name) }) {
 		return SeriesResult{}, errs.NotFound("metric")
 	}
-	return s.seriesOf(ctx, r, w, q)
+	return s.seriesOf(ctx, r, w, q, true)
 }
 
 // sharedWindow is the share's run and the asked window clipped to it.
@@ -290,6 +290,11 @@ func (s *Service) namesOf(ctx context.Context, r run.Run, w Window) ([]MetricNam
 			a = &acc{MetricName: MetricName{Name: name, Kind: kind, Origin: originOf(name, g.labels)}, machines: map[string]bool{}, roles: map[string]bool{}, containers: map[string]bool{}}
 			byName[name] = a
 		}
+		// A name the agent shares with an exporter (go_*, process_*) reads as
+		// the run's own: a name is pipeline only when every group is.
+		if o := originOf(name, g.labels); a.Origin == OriginPipeline && o != OriginPipeline {
+			a.Origin = o
+		}
 		count := 0
 		for _, p := range g.points {
 			count = max(count, int(p[1]))
@@ -318,6 +323,53 @@ func (s *Service) namesOf(ctx context.Context, r run.Run, w Window) ([]MetricNam
 	return out, w, nil
 }
 
+// seriesExpr is the PromQL of one drawn name: its selector (narrowed to the
+// run's own series for a public share), rate for counters, and the group-by.
+func seriesExpr(name string, matchers []string, fn string, step time.Duration, groupBy []string, agg string, public bool) (string, error) {
+	selectors := []string{"{" + strings.Join(matchers, ",") + "}"}
+	if public && !strings.HasPrefix(name, "docker.container.") {
+		selectors = ownSelectors(matchers)
+	}
+	parts := make([]string, len(selectors))
+	for i, sel := range selectors {
+		parts[i] = sel
+		if fn == "rate" {
+			parts[i] = fmt.Sprintf("rate(%s[%ds])", sel, int(max(2*step, time.Minute).Seconds()))
+		}
+	}
+	expr := strings.Join(parts, " or ")
+	if len(groupBy) > 0 {
+		by := make([]string, 0, len(groupBy))
+		for _, l := range groupBy {
+			switch l {
+			case "machine":
+				by = append(by, strconv.Quote(spec.AttrAgent))
+			case "container":
+				by = append(by, strconv.Quote(spec.AttrEntity))
+			default:
+				if !labelName.MatchString(l) || internalLabel.MatchString(l) {
+					return "", errs.Invalid("cannot group by "+l).Because("metric_label_unknown", "label", l)
+				}
+				by = append(by, strconv.Quote(l))
+			}
+		}
+		expr = fmt.Sprintf("%s by (%s) (%s)", agg, strings.Join(by, ", "), expr)
+	}
+	return expr, nil
+}
+
+// ownSelectors narrow a selector to the run's own series, the same split
+// originOf makes: an exporter's (scraped from a container), or the
+// workload's. One selector per kind, joined with `or` by the caller.
+func ownSelectors(matchers []string) []string {
+	base := strings.Join(matchers, ",")
+	return []string{
+		fmt.Sprintf("{%s,%q=~%q}", base, spec.AttrEntity, "docker/.+"),
+		fmt.Sprintf("{%s,%q=%q}", base, attrRole, "workload"),
+		fmt.Sprintf("{%s,%q=%q}", base, "service.name", "stroppy"),
+	}
+}
+
 // originOf tells where a name comes from by the labels its series carry.
 func originOf(name string, labels map[string]string) MetricOrigin {
 	switch {
@@ -337,7 +389,10 @@ func originOf(name string, labels map[string]string) MetricOrigin {
 	}
 }
 
-func (s *Service) seriesOf(ctx context.Context, r run.Run, w Window, q SeriesQuery) (SeriesResult, error) {
+// seriesOf draws one name. public keeps only the run's own series (exporters,
+// containers, the workload): the agent's series of a shared name never reach
+// a public share, also not inside a sum.
+func (s *Service) seriesOf(ctx context.Context, r run.Run, w Window, q SeriesQuery, public bool) (SeriesResult, error) {
 	name := strings.TrimSpace(q.Name)
 	if name == "" {
 		return SeriesResult{}, errs.Invalid("name is required").Because("metric_name_required")
@@ -375,26 +430,9 @@ func (s *Service) seriesOf(ctx context.Context, r run.Run, w Window, q SeriesQue
 	if step <= 0 {
 		step = stepFor(w.End.Sub(w.Start))
 	}
-	expr := "{" + strings.Join(matchers, ",") + "}"
-	if fn == "rate" {
-		expr = fmt.Sprintf("rate(%s[%ds])", expr, int(max(2*step, time.Minute).Seconds()))
-	}
-	if len(q.By) > 0 {
-		by := make([]string, 0, len(q.By))
-		for _, l := range q.By {
-			switch l {
-			case "machine":
-				by = append(by, strconv.Quote(spec.AttrAgent))
-			case "container":
-				by = append(by, strconv.Quote(spec.AttrEntity))
-			default:
-				if !labelName.MatchString(l) || internalLabel.MatchString(l) {
-					return SeriesResult{}, errs.Invalid("cannot group by "+l).Because("metric_label_unknown", "label", l)
-				}
-				by = append(by, strconv.Quote(l))
-			}
-		}
-		expr = fmt.Sprintf("%s by (%s) (%s)", agg, strings.Join(by, ", "), expr)
+	expr, err := seriesExpr(name, matchers, fn, step, q.By, agg, public)
+	if err != nil {
+		return SeriesResult{}, err
 	}
 	raw, err := s.metrics.Raw(ctx, ScopeOf(r), expr, w.Start, w.End, step)
 	if err != nil {
