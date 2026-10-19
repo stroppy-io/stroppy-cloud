@@ -104,7 +104,7 @@ const maxSeries = 100
 
 // Labels the pipeline and the OTLP SDK stamp on every series; the
 // explorer shows the metric's own labels only.
-var internalLabel = regexp.MustCompile(`^(__name__|graphene\..*|scope\..*|service\..*|telemetry\..*|stroppy\.run\.id|job|instance)$`)
+var internalLabel = regexp.MustCompile(`^(__name__|graphene\..*|scope\..*|service\..*|telemetry\..*|stroppy\.run\.id|stroppy_run_id|stroppy\.tenant|stroppy_tenant|job|instance)$`)
 
 // A label the explorer may group by: a plain Prometheus or OTLP name.
 var labelName = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.]{0,127}$`)
@@ -144,7 +144,21 @@ func (s *Service) SharedMetricNames(ctx context.Context, shares SharedRuns, toke
 	if err != nil {
 		return nil, Window{}, err
 	}
-	return s.namesOf(ctx, r, w)
+	names, w, err := s.namesOf(ctx, r, w)
+	return publicNames(names), w, err
+}
+
+// publicNames is what a public share shows: the run's own telemetry
+// (database exporters, containers, the workload), never Graphene's
+// internals (its activities, the agent's calls to the docker socket).
+func publicNames(names []MetricName) []MetricName {
+	out := make([]MetricName, 0, len(names))
+	for _, n := range names {
+		if n.Origin != OriginPipeline {
+			out = append(out, n)
+		}
+	}
+	return out
 }
 
 // MetricSeries draws one name of the run.
@@ -168,6 +182,13 @@ func (s *Service) SharedMetricSeries(ctx context.Context, shares SharedRuns, tok
 	r, w, err := s.sharedWindow(ctx, shares, token, q.Start, q.End)
 	if err != nil {
 		return SeriesResult{}, err
+	}
+	names, _, err := s.namesOf(ctx, r, w)
+	if err != nil {
+		return SeriesResult{}, err
+	}
+	if !slices.ContainsFunc(publicNames(names), func(n MetricName) bool { return n.Name == strings.TrimSpace(q.Name) }) {
+		return SeriesResult{}, errs.NotFound("metric")
 	}
 	return s.seriesOf(ctx, r, w, q)
 }
@@ -302,6 +323,11 @@ func originOf(name string, labels map[string]string) MetricOrigin {
 	switch {
 	case labels["service.name"] == "stroppy" || labels[attrRole] == "workload":
 		return OriginWorkload
+	// The agent's own instruments (its activities, its HTTP and RPC
+	// clients) carry the container entity they act on: the name tells them
+	// apart from what the container's exporter served.
+	case strings.HasPrefix(name, "graphene.") || strings.HasPrefix(name, "http.") || strings.HasPrefix(name, "rpc."):
+		return OriginPipeline
 	case strings.HasPrefix(name, "docker.container."):
 		return OriginContainer
 	case strings.HasPrefix(labels[spec.AttrEntity], "docker/"):

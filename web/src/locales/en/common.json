@@ -237,6 +237,7 @@
       "metric_fn_unknown": "A metric is drawn as its value or its rate, not {{fn}}",
       "metric_label_unknown": "The metric cannot be grouped by {{label}}",
       "metric_name_required": "Pick a metric to draw",
+      "metric_not_found": "This report has no such metric.",
       "metric_not_rating_eligible": "Metric “{{metric}}” is not part of the rating",
       "metrics_snapshot_invalid": "Could not read metrics. Retry later",
       "metrics_store_is_not_connected": "The metric store is not connected",

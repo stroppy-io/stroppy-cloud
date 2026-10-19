@@ -3,6 +3,7 @@ package observe
 import (
 	"context"
 	"encoding/json"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -144,5 +145,28 @@ func TestMetricSeriesBuildsTheQuery(t *testing.T) {
 	}
 	if _, err := svc.MetricSeries(context.Background(), auth.Actor{}, uuid.New(), r.ID, SeriesQuery{Name: "x", By: []string{"graphene.namespace"}}); err == nil {
 		t.Fatal("internal label accepted")
+	}
+}
+
+// A public share shows the run's own telemetry, not Graphene's internals,
+// and no series carries the tenant or run stamps.
+func TestPublicNamesHidePipelineInternals(t *testing.T) {
+	names := []MetricName{
+		{Name: "graphene.activity.seconds_bucket", Origin: OriginPipeline},
+		{Name: "pg_up", Origin: OriginExporter},
+		{Name: "stroppy_iterations_total", Origin: OriginWorkload},
+		{Name: "docker.container.cpu.percent", Origin: OriginContainer},
+	}
+	if o := originOf("graphene.activity.seconds_bucket", map[string]string{"graphene.entity": "docker/db-1-postgres"}); o != OriginPipeline {
+		t.Errorf("the agent's activity metric reads as %s", o)
+	}
+	got := publicNames(names)
+	if len(got) != 3 || slices.ContainsFunc(got, func(n MetricName) bool { return n.Origin == OriginPipeline }) {
+		t.Errorf("public names = %v", got)
+	}
+	for _, l := range []string{"stroppy_tenant", "stroppy.tenant", "stroppy_run_id", "stroppy.run.id"} {
+		if !internalLabel.MatchString(l) {
+			t.Errorf("label %s reaches the explorer", l)
+		}
 	}
 }

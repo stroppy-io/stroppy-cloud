@@ -2488,6 +2488,8 @@ func (s ErrorReason) Validate() error {
 		return nil
 	case "metric_name_required":
 		return nil
+	case "metric_not_found":
+		return nil
 	case "metric_not_rating_eligible":
 		return nil
 	case "metrics_snapshot_invalid":

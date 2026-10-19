@@ -5230,6 +5230,7 @@ const (
 	ErrorReasonMetricFnUnknown                     ErrorReason = "metric_fn_unknown"
 	ErrorReasonMetricLabelUnknown                  ErrorReason = "metric_label_unknown"
 	ErrorReasonMetricNameRequired                  ErrorReason = "metric_name_required"
+	ErrorReasonMetricNotFound                      ErrorReason = "metric_not_found"
 	ErrorReasonMetricNotRatingEligible             ErrorReason = "metric_not_rating_eligible"
 	ErrorReasonMetricsSnapshotInvalid              ErrorReason = "metrics_snapshot_invalid"
 	ErrorReasonMetricsStoreIsNotConnected          ErrorReason = "metrics_store_is_not_connected"
@@ -5468,6 +5469,7 @@ func (ErrorReason) AllValues() []ErrorReason {
 		ErrorReasonMetricFnUnknown,
 		ErrorReasonMetricLabelUnknown,
 		ErrorReasonMetricNameRequired,
+		ErrorReasonMetricNotFound,
 		ErrorReasonMetricNotRatingEligible,
 		ErrorReasonMetricsSnapshotInvalid,
 		ErrorReasonMetricsStoreIsNotConnected,
@@ -5785,6 +5787,8 @@ func (s ErrorReason) MarshalText() ([]byte, error) {
 	case ErrorReasonMetricLabelUnknown:
 		return []byte(s), nil
 	case ErrorReasonMetricNameRequired:
+		return []byte(s), nil
+	case ErrorReasonMetricNotFound:
 		return []byte(s), nil
 	case ErrorReasonMetricNotRatingEligible:
 		return []byte(s), nil
@@ -6338,6 +6342,9 @@ func (s *ErrorReason) UnmarshalText(data []byte) error {
 		return nil
 	case ErrorReasonMetricNameRequired:
 		*s = ErrorReasonMetricNameRequired
+		return nil
+	case ErrorReasonMetricNotFound:
+		*s = ErrorReasonMetricNotFound
 		return nil
 	case ErrorReasonMetricNotRatingEligible:
 		*s = ErrorReasonMetricNotRatingEligible

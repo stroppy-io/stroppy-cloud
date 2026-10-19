@@ -337,6 +337,7 @@ components:
         - "metric_fn_unknown"
         - "metric_label_unknown"
         - "metric_name_required"
+        - "metric_not_found"
         - "metric_not_rating_eligible"
         - "metrics_snapshot_invalid"
         - "metrics_store_is_not_connected"

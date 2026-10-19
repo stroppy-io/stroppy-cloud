@@ -237,6 +237,7 @@
       "metric_fn_unknown": "Метрику можно показать значением или скоростью, а не {{fn}}",
       "metric_label_unknown": "По метке {{label}} метрику не сгруппировать",
       "metric_name_required": "Выберите метрику",
+      "metric_not_found": "Такой метрики в этом отчёте нет.",
       "metric_not_rating_eligible": "Метрика «{{metric}}» не участвует в рейтинге",
       "metrics_snapshot_invalid": "Не удалось прочитать метрики. Повторите позже",
       "metrics_store_is_not_connected": "Хранилище метрик не подключено",

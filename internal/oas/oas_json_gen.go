@@ -10988,6 +10988,8 @@ func (s *ErrorReason) Decode(d *jx.Decoder) error {
 		*s = ErrorReasonMetricLabelUnknown
 	case ErrorReasonMetricNameRequired:
 		*s = ErrorReasonMetricNameRequired
+	case ErrorReasonMetricNotFound:
+		*s = ErrorReasonMetricNotFound
 	case ErrorReasonMetricNotRatingEligible:
 		*s = ErrorReasonMetricNotRatingEligible
 	case ErrorReasonMetricsSnapshotInvalid:
