@@ -23,6 +23,13 @@
         margin: 0 auto;
         padding: 0 24px 64px;
       }
+      .themed {
+        background: var(--st-canvas);
+        color: var(--st-text);
+      }
+      .themed-body {
+        padding: 0 calc(var(--st-space) * 2);
+      }
       .toc {
         position: sticky;
         top: 72px;
@@ -104,8 +111,11 @@
     </style>
   </head>
 
-  <!-- 2. The page: class st-doc turns on the kit's HTML styles; data-theme picks dark or light. -->
-  <body class="st-doc" data-theme="dark">
+  <!-- 2. The page: class st-doc turns on the kit's HTML styles; data-theme picks
+       dark (also the default), light or system (the reader's colour scheme). -->
+  <body class="st-doc" data-theme="system">
+    <!-- 3. Bar hatches for static charts: hatch.svg, pasted once anywhere in the page. -->
+    <svg class="st-hatch-defs" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><defs><pattern id="st-hatch-1" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-1)"/></pattern><pattern id="st-hatch-2" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-2)"/><path d="M0 6 L6 0 M-1 1 L1 -1 M5 7 L7 5" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern><pattern id="st-hatch-3" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-3)"/><path d="M0 0 L6 6 M5 -1 L7 1 M-1 5 L1 7" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern><pattern id="st-hatch-4" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-4)"/><path d="M0 6 L6 0 M0 0 L6 6" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern><pattern id="st-hatch-5" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-5)"/><path d="M0 3 L6 3" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern><pattern id="st-hatch-6" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-6)"/><path d="M3 0 L3 6" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern><pattern id="st-hatch-7" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-7)"/><path d="M3 3 m-1 0 a1 1 0 1 0 2 0 a1 1 0 1 0 -2 0" style="fill:var(--st-panel)"/></pattern><pattern id="st-hatch-8" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" style="fill:var(--st-series-8)"/><path d="M0 3 L3 0 M3 6 L6 3" style="fill:none;stroke:var(--st-panel);stroke-width:1.5"/></pattern></defs></svg>
     <div class="bar">
       <svg width="26" height="26" viewBox="0 0 128 128" aria-hidden="true">
         <g fill="var(--st-mark)">
@@ -123,13 +133,18 @@
       <strong>Stroppy UI kit</strong>
       <small id="version"></small>
       <span class="grow"></span>
-      <button type="button" class="st-button" data-variant="text" id="theme">Switch to light</button>
+      <nav aria-label="Theme" id="theme">
+        <a href="#" data-theme-pick="dark">Dark</a>
+        <a href="#" data-theme-pick="light">Light</a>
+        <a href="#" data-theme-pick="system" aria-current="true">System</a>
+      </nav>
     </div>
 
     <div class="page">
       <div class="toc" role="navigation" aria-label="Contents">
         <a href="#setup">Setup</a>
         <a href="#palette">Palette</a>
+        <a href="#themes">Themes</a>
         <a href="#type">Text</a>
         <a href="#tones">Tones</a>
         <a href="#tags">Tags and status</a>
@@ -145,6 +160,7 @@
         <a href="#lists">Lists, quotes, code</a>
         <a href="#legend">Series and legend</a>
         <a href="#charts">Charts</a>
+        <a href="#progressive">Charts over static</a>
         <a href="#logo">Logo</a>
       </div>
 
@@ -158,17 +174,17 @@
         <section class="demo" id="setup">
           <h2>Setup</h2>
           <p>
-            Link the four stylesheets in this order, put <code>class="st-doc"</code> and
-            <code>data-theme="dark"</code> (or <code>light</code>) on <code>&lt;body&gt;</code>, and
-            load <code>chart.js</code> if the page has charts. The theme can change at runtime:
-            set the attribute, charts redraw by themselves.
+            Link the four stylesheets in this order, put <code>class="st-doc"</code> and a
+            <code>data-theme</code> on <code>&lt;body&gt;</code>, and load <code>chart.js</code> if
+            the page has charts. The theme can change at runtime: set the attribute, charts redraw
+            by themselves.
           </p>
           <pre>&lt;link rel="stylesheet" href="tokens.css"&gt;
 &lt;link rel="stylesheet" href="fonts.css"&gt;
 &lt;link rel="stylesheet" href="base.css"&gt;
 &lt;link rel="stylesheet" href="chart.css"&gt;
 …
-&lt;body class="st-doc" data-theme="dark"&gt;
+&lt;body class="st-doc" data-theme="system"&gt;   &lt;!-- dark | light | system --&gt;
 …
 &lt;script src="chart.js"&gt;&lt;/script&gt;</pre>
           <p>
@@ -186,6 +202,50 @@
             code that is not CSS.
           </p>
           <div class="swatches" id="swatches"></div>
+        </section>
+
+        <section class="demo" id="themes">
+          <h2>Themes</h2>
+          <p>
+            <code>data-theme</code> picks the palette with CSS alone: <code>dark</code> (also what a
+            page without the attribute gets), <code>light</code>, or <code>system</code> — the
+            reader's <code>prefers-color-scheme</code>. It works on any element, the nearest one
+            wins, and an explicit <code>dark</code> or <code>light</code> beats the system
+            preference. Print is always light, whatever the screen shows. No script is involved:
+            the three panels below look right with JavaScript off.
+          </p>
+          <div class="ex">
+            <div class="st-grid">
+              <div class="st-panel themed" data-theme="dark">
+                <header>data-theme="dark"</header>
+                <div class="themed-body">
+                  <p>Text, <a href="#themes">a link</a>, <code>code</code>, <mark>a mark</mark>.</p>
+                  <p><span class="st-tag" data-tone="success">passed</span> <span class="st-tag" data-tone="warning">slow</span> <span class="st-tag" data-tone="error">failed</span></p>
+                  <p><a class="st-button" data-variant="primary" href="#themes">Primary</a> <a class="st-button" href="#themes">Action</a></p>
+                  <ul class="st-legend"><li data-series="1"><svg class="st-swatch" data-series="1" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>main</li><li data-series="2"><svg class="st-swatch" data-series="2" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>replica</li></ul>
+                </div>
+              </div>
+              <div class="st-panel themed" data-theme="light">
+                <header>data-theme="light"</header>
+                <div class="themed-body">
+                  <p>Text, <a href="#themes">a link</a>, <code>code</code>, <mark>a mark</mark>.</p>
+                  <p><span class="st-tag" data-tone="success">passed</span> <span class="st-tag" data-tone="warning">slow</span> <span class="st-tag" data-tone="error">failed</span></p>
+                  <p><a class="st-button" data-variant="primary" href="#themes">Primary</a> <a class="st-button" href="#themes">Action</a></p>
+                  <ul class="st-legend"><li data-series="1"><svg class="st-swatch" data-series="1" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>main</li><li data-series="2"><svg class="st-swatch" data-series="2" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>replica</li></ul>
+                </div>
+              </div>
+              <div class="st-panel themed" data-theme="system">
+                <header>data-theme="system"</header>
+                <div class="themed-body">
+                  <p>Text, <a href="#themes">a link</a>, <code>code</code>, <mark>a mark</mark>.</p>
+                  <p><span class="st-tag" data-tone="success">passed</span> <span class="st-tag" data-tone="warning">slow</span> <span class="st-tag" data-tone="error">failed</span></p>
+                  <p><a class="st-button" data-variant="primary" href="#themes">Primary</a> <a class="st-button" href="#themes">Action</a></p>
+                  <ul class="st-legend"><li data-series="1"><svg class="st-swatch" data-series="1" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>main</li><li data-series="2"><svg class="st-swatch" data-series="2" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>replica</li></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p>Tab through the links and buttons above: the focus ring reads in every theme.</p>
         </section>
 
         <section class="demo" id="type">
@@ -444,6 +504,11 @@ jit = off</pre>
               <tr><td><code>series</code></td><td><code>[{ title, unit?, points: [[time, value], …] }]</code> — the shape of a run's metric series. <code>time</code> in seconds or milliseconds since the epoch; <code>value</code> may be <code>null</code> (a gap). Colours go by position: series 1, 2, …</td></tr>
               <tr><td><code>options.unit</code></td><td>Unit on the axis and in the tooltip when the series don't say one.</td></tr>
               <tr><td><code>options.height</code></td><td>Height of the plot in pixels; 200 by default. The legend adds to it.</td></tr>
+              <tr><td><code>options.curve</code></td><td><code>'smooth'</code> (default, the app's look) or <code>'linear'</code>: straight segments between observations, nothing interpolated.</td></tr>
+              <tr><td><code>options.time</code></td><td><code>'clock'</code> (default, wall-clock labels) or <code>'elapsed'</code>: time since <code>options.origin</code> (default: the first point), as <code>m:ss</code>.</td></tr>
+              <tr><td><code>options.markers</code></td><td><code>[{ at, label, tone? }]</code>: phases and events as dashed vertical lines; <code>at</code> in the points' time units, <code>tone</code> one of the kit's tones.</td></tr>
+              <tr><td><code>options.kind</code>, <code>options.categories</code></td><td><code>'bars'</code> draws grouped bars, one group per category (histogram buckets, segments); points are <code>[categoryIndex, value]</code>.</td></tr>
+              <tr><td><code>options.label</code></td><td>Accessible name of the drawn chart.</td></tr>
             </tbody>
           </table>
 
@@ -465,7 +530,7 @@ jit = off</pre>
 StroppyChart.mount('#chart-tps', series, { unit: 'tps' })</pre>
 
           <h3>One series, milliseconds, a gap, taller</h3>
-          <p>A single series has no legend. <code>null</code> values leave a gap the line bridges.</p>
+          <p>A single series has no legend. A <code>null</code> value is a missing observation: the line breaks there and is never drawn across it.</p>
           <div class="ex">
             <div class="st-panel">
               <header>p99 latency<small>ms</small></header>
@@ -477,7 +542,7 @@ StroppyChart.mount('#chart-tps', series, { unit: 'tps' })</pre>
 ], { height: 260 })</pre>
 
           <h3>Many series</h3>
-          <p>Up to eight distinct colours; the ninth starts over.</p>
+          <p>Up to eight distinct colours and dashes; the ninth starts over. With several series each has its own dash too, so they can be told apart without colour.</p>
           <div class="ex">
             <div class="st-panel">
               <header>CPU by machine<small>%</small></header>
@@ -489,6 +554,109 @@ StroppyChart.mount('#chart-tps', series, { unit: 'tps' })</pre>
           <h3>Remove a chart</h3>
           <pre>const chart = StroppyChart.mount('#chart', series)
 chart.destroy()   // stops following the size and theme, empties the element</pre>
+        </section>
+
+        <section class="demo" id="progressive">
+          <h2>Charts over a static chart</h2>
+          <p>
+            A report can draw its charts without JavaScript — an SVG and a table of the numbers — and
+            let the kit add the interactive one on top. <code>StroppyChart.enhance(figure, series,
+            options)</code> mounts the live chart next to <code>.st-chart-static</code> and hides the
+            static plot only after it is up: the figure gets <code>data-st-chart="live"</code> and an
+            <code>st-chart:live</code> event fires. If anything fails — the script is blocked, missing
+            or throws — the live container is removed, the figure gets
+            <code>data-st-chart="failed"</code>, <code>st-chart:failed</code> fires with the error, and
+            the static chart stays. Print always uses the static plot. The numbers table is the
+            page's; the kit never hides it.
+          </p>
+          <p>Turn JavaScript off and reload: these figures show their static charts and tables.</p>
+
+          <h3>Elapsed time, phases, a gap, two series</h3>
+          <div class="ex">
+            <figure class="st-chart-figure st-panel" id="fig-tps">
+              <header>Throughput<small>tps</small></header>
+              <div class="st-chart-static">
+                <svg class="st-chart-svg" viewBox="0 0 640 220" role="img" aria-label="Throughput, main and replica, over the run">
+  <g class="st-chart-grid"><line x1="56" y1="192.0" x2="632" y2="192.0"/><line x1="56" y1="121.2" x2="632" y2="121.2"/><line x1="56" y1="50.5" x2="632" y2="50.5"/></g>
+  <g class="st-axis st-axis-y"><text x="50" y="196.0" text-anchor="end">0 tps</text><text x="50" y="125.2" text-anchor="end">100 tps</text><text x="50" y="54.5" text-anchor="end">200 tps</text></g>
+  <g class="st-axis st-axis-x"><line x1="56" y1="192" x2="632" y2="192"/><text x="56.0" y="212" text-anchor="middle">0:00</text><text x="171.2" y="212" text-anchor="middle">2:00</text><text x="286.4" y="212" text-anchor="middle">4:00</text><text x="401.6" y="212" text-anchor="middle">6:00</text><text x="516.8" y="212" text-anchor="middle">8:00</text><text x="632.0" y="212" text-anchor="middle">10:00</text></g>
+  <g class="st-marker" data-tone="muted"><line x1="56.0" y1="8" x2="56.0" y2="192"/><text x="60.0" y="20">load</text></g><g class="st-marker" data-tone="primary"><line x1="171.2" y1="8" x2="171.2" y2="192"/><text x="175.2" y="20">run</text></g>
+  <g class="st-series" data-series="1"><path class="st-area" d="M56.0 192.0 L56.0 50.5 L75.2 47.0 L94.4 43.9 L113.6 41.5 L132.8 40.1 L152.0 39.9 L171.2 40.8 L190.4 21.6 L209.6 24.3 L228.8 27.7 L248.0 31.3 L267.2 34.5 L286.4 37.3 L286.4 192.0 Z M382.4 192.0 L382.4 35.4 L401.6 32.2 L420.8 28.7 L440.0 25.3 L459.2 22.2 L478.4 20.0 L497.6 18.8 L516.8 18.8 L536.0 19.8 L555.2 21.9 L574.4 24.8 L593.6 28.2 L612.8 31.8 L632.0 35.0 L632.0 192.0 Z"/><path class="st-line" d="M56.0 50.5 L75.2 47.0 L94.4 43.9 L113.6 41.5 L132.8 40.1 L152.0 39.9 L171.2 40.8 L190.4 21.6 L209.6 24.3 L228.8 27.7 L248.0 31.3 L267.2 34.5 L286.4 37.3 M382.4 35.4 L401.6 32.2 L420.8 28.7 L440.0 25.3 L459.2 22.2 L478.4 20.0 L497.6 18.8 L516.8 18.8 L536.0 19.8 L555.2 21.9 L574.4 24.8 L593.6 28.2 L612.8 31.8 L632.0 35.0"/></g>
+  <g class="st-series" data-series="2"><path class="st-area" d="M56.0 192.0 L56.0 79.9 L75.2 78.8 L94.4 79.0 L113.6 80.1 L132.8 82.2 L152.0 84.9 L171.2 87.7 L190.4 76.0 L209.6 77.8 L228.8 78.7 L248.0 78.5 L267.2 77.1 L286.4 74.9 L305.6 72.3 L324.8 69.5 L344.0 67.0 L363.2 65.3 L382.4 64.6 L401.6 65.0 L420.8 66.5 L440.0 68.8 L459.2 71.6 L478.4 74.3 L497.6 76.6 L516.8 78.2 L536.0 78.8 L555.2 78.2 L574.4 76.6 L593.6 74.2 L612.8 71.5 L632.0 68.7 L632.0 192.0 Z"/><path class="st-line" d="M56.0 79.9 L75.2 78.8 L94.4 79.0 L113.6 80.1 L132.8 82.2 L152.0 84.9 L171.2 87.7 L190.4 76.0 L209.6 77.8 L228.8 78.7 L248.0 78.5 L267.2 77.1 L286.4 74.9 L305.6 72.3 L324.8 69.5 L344.0 67.0 L363.2 65.3 L382.4 64.6 L401.6 65.0 L420.8 66.5 L440.0 68.8 L459.2 71.6 L478.4 74.3 L497.6 76.6 L516.8 78.2 L536.0 78.8 L555.2 78.2 L574.4 76.6 L593.6 74.2 L612.8 71.5 L632.0 68.7"/></g>
+</svg>
+                <ul class="st-legend"><li data-series="1"><svg class="st-swatch" data-series="1" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>main</li><li data-series="2"><svg class="st-swatch" data-series="2" viewBox="0 0 24 10" aria-hidden="true"><line x1="0" y1="5" x2="24" y2="5"/></svg>replica</li></ul>
+              </div>
+              <details>
+                <summary>Numbers</summary>
+                <table class="st-chart-data st-compact">
+                  <thead><tr><th>elapsed</th><th>main, tps</th><th>replica, tps</th></tr></thead>
+                  <tbody><tr><td>0:00</td><td>200.0</td><td>158.4</td></tr><tr><td>1:00</td><td>212.6</td><td>158.1</td></tr><tr><td>2:00</td><td>213.6</td><td>147.4</td></tr><tr><td>3:00</td><td>232.1</td><td>160.1</td></tr><tr><td>4:00</td><td>218.6</td><td>165.4</td></tr><tr><td>5:00</td><td>—</td><td>176.6</td></tr><tr><td>6:00</td><td>225.8</td><td>179.4</td></tr><tr><td>7:00</td><td>239.9</td><td>170.2</td></tr><tr><td>8:00</td><td>244.8</td><td>160.8</td></tr><tr><td>9:00</td><td>236.2</td><td>163.1</td></tr><tr><td>10:00</td><td>221.8</td><td>174.2</td></tr></tbody>
+                </table>
+              </details>
+            </figure>
+            <script type="application/json" id="fig-tps-data">[{"title": "main", "unit": "tps", "points": [[1760400000, 200.0], [1760400020, 204.9], [1760400040, 209.3], [1760400060, 212.6], [1760400080, 214.6], [1760400100, 214.9], [1760400120, 213.6], [1760400140, 240.8], [1760400160, 236.9], [1760400180, 232.1], [1760400200, 227.1], [1760400220, 222.5], [1760400240, 218.6], [1760400260, null], [1760400280, null], [1760400300, null], [1760400320, null], [1760400340, 221.3], [1760400360, 225.8], [1760400380, 230.8], [1760400400, 235.6], [1760400420, 239.9], [1760400440, 243.0], [1760400460, 244.7], [1760400480, 244.8], [1760400500, 243.3], [1760400520, 240.3], [1760400540, 236.2], [1760400560, 231.4], [1760400580, 226.4], [1760400600, 221.8]]}, {"title": "replica", "unit": "tps", "points": [[1760400000, 158.4], [1760400020, 159.9], [1760400040, 159.7], [1760400060, 158.1], [1760400080, 155.2], [1760400100, 151.4], [1760400120, 147.4], [1760400140, 163.9], [1760400160, 161.3], [1760400180, 160.1], [1760400200, 160.4], [1760400220, 162.3], [1760400240, 165.4], [1760400260, 169.2], [1760400280, 173.1], [1760400300, 176.6], [1760400320, 179.0], [1760400340, 180.0], [1760400360, 179.4], [1760400380, 177.3], [1760400400, 174.1], [1760400420, 170.2], [1760400440, 166.3], [1760400460, 163.0], [1760400480, 160.8], [1760400500, 160.0], [1760400520, 160.8], [1760400540, 163.1], [1760400560, 166.4], [1760400580, 170.3], [1760400600, 174.2]]}]</script>
+          </div>
+          <pre>StroppyChart.enhance('#fig-tps', series, {
+  unit: 'tps', curve: 'linear', time: 'elapsed', origin: 1760400000,
+  markers: [{ at: 1760400000, label: 'load' }, { at: 1760400120, label: 'run', tone: 'primary' }],
+})</pre>
+
+          <h3>Grouped bars: a latency histogram</h3>
+          <div class="ex">
+            <figure class="st-chart-figure st-panel" id="fig-hist">
+              <header>Latency histogram<small>transactions</small></header>
+              <div class="st-chart-static">
+                <svg class="st-chart-svg" viewBox="0 0 640 220" role="img" aria-label="Latency histogram, new_order and payment">
+  <g class="st-chart-grid"><line x1="56" y1="192.0" x2="632" y2="192.0"/><line x1="56" y1="113.1" x2="632" y2="113.1"/><line x1="56" y1="34.3" x2="632" y2="34.3"/></g>
+  <g class="st-axis st-axis-y"><text x="50" y="196.0" text-anchor="end">0</text><text x="50" y="117.1" text-anchor="end">300</text><text x="50" y="38.3" text-anchor="end">600</text></g>
+  <g class="st-axis st-axis-x"><line x1="56" y1="192" x2="632" y2="192"/><text x="97.1" y="212" text-anchor="middle">≤1 ms</text><text x="179.4" y="212" text-anchor="middle">≤2 ms</text><text x="261.7" y="212" text-anchor="middle">≤5 ms</text><text x="344.0" y="212" text-anchor="middle">≤10 ms</text><text x="426.3" y="212" text-anchor="middle">≤25 ms</text><text x="508.6" y="212" text-anchor="middle">≤50 ms</text><text x="590.9" y="212" text-anchor="middle">>50 ms</text></g>
+  <g class="st-series" data-series="1"><rect class="st-chart-bar" x="67.5" y="160.5" width="28.6" height="31.5" tabindex="0"><title>≤1 ms · 120</title></rect><rect class="st-chart-bar" x="149.8" y="102.6" width="28.6" height="89.4" tabindex="0"><title>≤2 ms · 340</title></rect><rect class="st-chart-bar" x="232.1" y="31.7" width="28.6" height="160.3" tabindex="0"><title>≤5 ms · 610</title></rect><rect class="st-chart-bar" x="314.4" y="118.4" width="28.6" height="73.6" tabindex="0"><title>≤10 ms · 280</title></rect><rect class="st-chart-bar" x="396.7" y="168.3" width="28.6" height="23.7" tabindex="0"><title>≤25 ms · 90</title></rect><rect class="st-chart-bar" x="478.9" y="185.4" width="28.6" height="6.6" tabindex="0"><title>≤50 ms · 25</title></rect><rect class="st-chart-bar" x="561.2" y="190.4" width="28.6" height="1.6" tabindex="0"><title>>50 ms · 6</title></rect></g><g class="st-series" data-series="2"><rect class="st-chart-bar" x="97.1" y="171.0" width="28.6" height="21.0" tabindex="0"><title>≤1 ms · 80</title></rect><rect class="st-chart-bar" x="179.4" y="123.7" width="28.6" height="68.3" tabindex="0"><title>≤2 ms · 260</title></rect><rect class="st-chart-bar" x="261.7" y="50.1" width="28.6" height="141.9" tabindex="0"><title>≤5 ms · 540</title></rect><rect class="st-chart-bar" x="344.0" y="89.5" width="28.6" height="102.5" tabindex="0"><title>≤10 ms · 390</title></rect><rect class="st-chart-bar" x="426.3" y="149.9" width="28.6" height="42.1" tabindex="0"><title>≤25 ms · 160</title></rect><rect class="st-chart-bar" x="508.6" y="181.5" width="28.6" height="10.5" tabindex="0"><title>≤50 ms · 40</title></rect><rect class="st-chart-bar" x="590.9" y="188.8" width="28.6" height="3.2" tabindex="0"><title>>50 ms · 12</title></rect></g>
+</svg>
+                <ul class="st-legend"><li data-series="1"><svg class="st-swatch-bar" data-series="1" viewBox="0 0 12 12" aria-hidden="true"><rect width="12" height="12" rx="2"/></svg>new_order</li><li data-series="2"><svg class="st-swatch-bar" data-series="2" viewBox="0 0 12 12" aria-hidden="true"><rect width="12" height="12" rx="2"/></svg>payment</li></ul>
+              </div>
+              <details>
+                <summary>Numbers</summary>
+                <table class="st-chart-data st-compact">
+                  <thead><tr><th>bucket</th><th>new_order</th><th>payment</th></tr></thead>
+                  <tbody><tr><td>≤1 ms</td><td>120</td><td>80</td></tr><tr><td>≤2 ms</td><td>340</td><td>260</td></tr><tr><td>≤5 ms</td><td>610</td><td>540</td></tr><tr><td>≤10 ms</td><td>280</td><td>390</td></tr><tr><td>≤25 ms</td><td>90</td><td>160</td></tr><tr><td>≤50 ms</td><td>25</td><td>40</td></tr><tr><td>>50 ms</td><td>6</td><td>12</td></tr></tbody>
+                </table>
+              </details>
+            </figure>
+            <script type="application/json" id="fig-hist-data">{"categories": ["≤1 ms", "≤2 ms", "≤5 ms", "≤10 ms", "≤25 ms", "≤50 ms", ">50 ms"], "series": [{"title": "new_order", "points": [[0, 120], [1, 340], [2, 610], [3, 280], [4, 90], [5, 25], [6, 6]]}, {"title": "payment", "points": [[0, 80], [1, 260], [2, 540], [3, 390], [4, 160], [5, 40], [6, 12]]}]}</script>
+          </div>
+          <pre>StroppyChart.enhance('#fig-hist', data.series, { kind: 'bars', categories: data.categories })</pre>
+
+          <h3>A failed enhancement keeps the static chart</h3>
+          <p>This figure asks for a chart with no series, so <code>enhance</code> fails on purpose. The static chart stays; the page can react to the event.</p>
+          <div class="ex">
+            <figure class="st-chart-figure st-panel" id="fig-fail">
+              <header>Throughput<small>tps</small></header>
+              <div class="st-chart-static">
+                <svg class="st-chart-svg" viewBox="0 0 640 220" role="img" aria-label="Throughput, main and replica, over the run">
+  <g class="st-chart-grid"><line x1="56" y1="192.0" x2="632" y2="192.0"/><line x1="56" y1="121.2" x2="632" y2="121.2"/><line x1="56" y1="50.5" x2="632" y2="50.5"/></g>
+  <g class="st-axis st-axis-y"><text x="50" y="196.0" text-anchor="end">0 tps</text><text x="50" y="125.2" text-anchor="end">100 tps</text><text x="50" y="54.5" text-anchor="end">200 tps</text></g>
+  <g class="st-axis st-axis-x"><line x1="56" y1="192" x2="632" y2="192"/><text x="56.0" y="212" text-anchor="middle">0:00</text><text x="171.2" y="212" text-anchor="middle">2:00</text><text x="286.4" y="212" text-anchor="middle">4:00</text><text x="401.6" y="212" text-anchor="middle">6:00</text><text x="516.8" y="212" text-anchor="middle">8:00</text><text x="632.0" y="212" text-anchor="middle">10:00</text></g>
+  <g class="st-marker" data-tone="muted"><line x1="56.0" y1="8" x2="56.0" y2="192"/><text x="60.0" y="20">load</text></g><g class="st-marker" data-tone="primary"><line x1="171.2" y1="8" x2="171.2" y2="192"/><text x="175.2" y="20">run</text></g>
+  <g class="st-series" data-series="1"><path class="st-area" d="M56.0 192.0 L56.0 50.5 L75.2 47.0 L94.4 43.9 L113.6 41.5 L132.8 40.1 L152.0 39.9 L171.2 40.8 L190.4 21.6 L209.6 24.3 L228.8 27.7 L248.0 31.3 L267.2 34.5 L286.4 37.3 L286.4 192.0 Z M382.4 192.0 L382.4 35.4 L401.6 32.2 L420.8 28.7 L440.0 25.3 L459.2 22.2 L478.4 20.0 L497.6 18.8 L516.8 18.8 L536.0 19.8 L555.2 21.9 L574.4 24.8 L593.6 28.2 L612.8 31.8 L632.0 35.0 L632.0 192.0 Z"/><path class="st-line" d="M56.0 50.5 L75.2 47.0 L94.4 43.9 L113.6 41.5 L132.8 40.1 L152.0 39.9 L171.2 40.8 L190.4 21.6 L209.6 24.3 L228.8 27.7 L248.0 31.3 L267.2 34.5 L286.4 37.3 M382.4 35.4 L401.6 32.2 L420.8 28.7 L440.0 25.3 L459.2 22.2 L478.4 20.0 L497.6 18.8 L516.8 18.8 L536.0 19.8 L555.2 21.9 L574.4 24.8 L593.6 28.2 L612.8 31.8 L632.0 35.0"/></g>
+  <g class="st-series" data-series="2"><path class="st-area" d="M56.0 192.0 L56.0 79.9 L75.2 78.8 L94.4 79.0 L113.6 80.1 L132.8 82.2 L152.0 84.9 L171.2 87.7 L190.4 76.0 L209.6 77.8 L228.8 78.7 L248.0 78.5 L267.2 77.1 L286.4 74.9 L305.6 72.3 L324.8 69.5 L344.0 67.0 L363.2 65.3 L382.4 64.6 L401.6 65.0 L420.8 66.5 L440.0 68.8 L459.2 71.6 L478.4 74.3 L497.6 76.6 L516.8 78.2 L536.0 78.8 L555.2 78.2 L574.4 76.6 L593.6 74.2 L612.8 71.5 L632.0 68.7 L632.0 192.0 Z"/><path class="st-line" d="M56.0 79.9 L75.2 78.8 L94.4 79.0 L113.6 80.1 L132.8 82.2 L152.0 84.9 L171.2 87.7 L190.4 76.0 L209.6 77.8 L228.8 78.7 L248.0 78.5 L267.2 77.1 L286.4 74.9 L305.6 72.3 L324.8 69.5 L344.0 67.0 L363.2 65.3 L382.4 64.6 L401.6 65.0 L420.8 66.5 L440.0 68.8 L459.2 71.6 L478.4 74.3 L497.6 76.6 L516.8 78.2 L536.0 78.8 L555.2 78.2 L574.4 76.6 L593.6 74.2 L612.8 71.5 L632.0 68.7"/></g>
+</svg>
+              </div>
+              <p id="fig-fail-note" hidden><small data-tone="warning">Interactive chart unavailable — the static chart is shown.</small></p>
+            </figure>
+          </div>
+          <pre>figure.addEventListener('st-chart:failed', (e) =&gt; console.warn(e.detail.error))
+StroppyChart.enhance(figure, [])   // returns null</pre>
+
+          <h3>The contract</h3>
+          <table class="st-compact">
+            <thead><tr><th>Piece</th><th>Whose</th></tr></thead>
+            <tbody>
+              <tr><td>Values, units, series names and order, the static SVG and the table</td><td>The page. The kit infers, resamples and merges nothing.</td></tr>
+              <tr><td><code>.st-chart-figure</code>, <code>.st-chart-static</code>, <code>.st-chart-svg</code> classes, <code>data-series</code>, <code>data-tone</code></td><td>The kit styles them; series 1–8 have the same colour and dash (lines) or hatch (bars) in the SVG and the live chart.</td></tr>
+              <tr><td><code>hatch.svg</code></td><td>Paste once into a page with static bar charts: the patterns <code>#st-hatch-1..8</code> that <code>.st-chart-bar</code> and <code>.st-swatch-bar</code> fill with. Without it bars fall back to plain colours.</td></tr>
+              <tr><td><code>data-st-chart="live" | "failed"</code>, <code>st-chart:live</code> / <code>st-chart:failed</code> events</td><td>Set by <code>enhance()</code>; the static plot is hidden on screen only with <code>live</code>.</td></tr>
+            </tbody>
+          </table>
         </section>
 
         <section class="demo" id="logo">
@@ -528,13 +696,17 @@ chart.destroy()   // stops following the size and theme, empties the element</pr
       // This page only: theme switch, palette, the markup under each example,
       // sample data. A report needs none of it but the StroppyChart.mount calls.
       const body = document.body
-      const themeButton = document.getElementById('theme')
-      themeButton.addEventListener('click', () => {
-        const next = body.dataset.theme === 'dark' ? 'light' : 'dark'
-        body.dataset.theme = next
-        themeButton.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark'
-        drawSwatches()
-      })
+      // The page's theme: dark, light or the reader's scheme. Only the attribute matters.
+      for (const a of document.querySelectorAll('[data-theme-pick]')) {
+        a.addEventListener('click', (e) => {
+          e.preventDefault()
+          body.dataset.theme = a.dataset.themePick
+          for (const b of document.querySelectorAll('[data-theme-pick]'))
+            b.toggleAttribute('aria-current', b === a)
+          drawSwatches()
+        })
+      }
+      matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => drawSwatches())
 
       fetch('VERSION')
         .then((r) => (r.ok ? r.text() : ''))
@@ -608,6 +780,27 @@ chart.destroy()   // stops following the size and theme, empties the element</pr
         ]),
       }))
       StroppyChart.mount('#chart-cpu', machines)
+
+      // Charts over static ones.
+      StroppyChart.enhance('#fig-tps', JSON.parse(document.getElementById('fig-tps-data').textContent), {
+        unit: 'tps',
+        curve: 'linear',
+        time: 'elapsed',
+        origin: 1760400000,
+        markers: [
+          { at: 1760400000, label: 'load' },
+          { at: 1760400120, label: 'run', tone: 'primary' },
+        ],
+        label: 'Throughput, main and replica, over the run',
+      })
+      const hist = JSON.parse(document.getElementById('fig-hist-data').textContent)
+      StroppyChart.enhance('#fig-hist', hist.series, { kind: 'bars', categories: hist.categories })
+      const failing = document.getElementById('fig-fail')
+      failing.addEventListener('st-chart:failed', (e) => {
+        document.getElementById('fig-fail-note').hidden = false
+        console.warn('chart failed as intended:', e.detail.error.message)
+      })
+      StroppyChart.enhance(failing, [])
     </script>
   </body>
 </html>
