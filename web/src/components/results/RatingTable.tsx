@@ -150,6 +150,14 @@ export function RatingTable({
     ],
     [t, unit, metricTitle, scope, slug, rows, newTab]
   )
+  const rowHref = (r: RatingEntry) =>
+    scope === 'tenant'
+      ? r.run_id
+        ? `/t/${slug}/runs/${r.run_id}`
+        : undefined
+      : r.share_token
+        ? `/s/${r.share_token}`
+        : undefined
   return (
     <DataTable<RatingEntry>
       columns={columns}
@@ -162,14 +170,16 @@ export function RatingTable({
       empty={empty}
       filtered={filtered}
       onClearFilters={onClearFilters}
-      rowHref={(r) =>
-        scope === 'tenant'
-          ? r.run_id
-            ? `/t/${slug}/runs/${r.run_id}`
-            : undefined
-          : r.share_token
-            ? `/s/${r.share_token}`
-            : undefined
+      rowHref={rowHref}
+      // Embedded in another site the frame keeps the board: a row opens its
+      // report in a new tab, the same as the link in its cell.
+      onRowClick={
+        newTab
+          ? (r) => {
+              const href = rowHref(r)
+              if (href) window.open(href, '_blank', 'noopener')
+            }
+          : undefined
       }
     />
   )

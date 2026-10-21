@@ -2,6 +2,7 @@ import { ErrorState } from '@app/ErrorState'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, Checkbox, EmptyState, Icon, Text, useStyles2 } from '@grafana/ui'
+import { useRouter } from '@tanstack/react-router'
 import {
   type ColumnDef,
   createSortedRowModel,
@@ -260,6 +261,7 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
   const density: Density = props.density ?? (props.dense ? 'compact' : 'default')
   const rowHeight = props.rowHeight ?? DENSITY_ROW[density]
   const styles = useStyles2(getStyles)
+  const router = useRouter()
   const { t } = useTranslation()
   const selectable = !!onSelectedChange
 
@@ -400,10 +402,9 @@ export function DataTable<T extends RowData>(props: DataTableProps<T>) {
       return
     }
     if (onRowClick) onRowClick(row)
-    else if (href) {
-      window.history.pushState(null, '', href)
-      window.dispatchEvent(new PopStateEvent('popstate'))
-    }
+    // Through the router's history, so a page's navigation guard (an embed
+    // keeping its frame, useBlocker) sees it like any link.
+    else if (href) router.history.push(href)
   }
 
   let state: ReactNode

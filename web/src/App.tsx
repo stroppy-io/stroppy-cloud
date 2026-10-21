@@ -5,6 +5,7 @@ import { css, Global } from '@emotion/react'
 import { ThemeContext } from '@grafana/data'
 import { GlobalStyles } from '@grafana/ui'
 import { onAuthLost } from '@lib/auth'
+import { isPublicPath } from '@routes/__root'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
@@ -71,10 +72,13 @@ export function App() {
   }
   const theme = getAppTheme(mode)
   // A 401 anywhere (expired session, revoked token) drops the cache and
-  // returns to the login page.
+  // returns to the login page — except on a public page (a shared report,
+  // the rating, an embed): a guest there has nothing to sign in to, and one
+  // stray call needing a session must not take the page away.
   useEffect(() => {
     onAuthLost(() => {
       queryClient.clear()
+      if (isPublicPath(window.location.pathname)) return
       void router.navigate({ to: '/login' })
     })
   }, [])

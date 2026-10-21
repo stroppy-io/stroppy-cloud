@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { themeCommand } from './useEmbedBridge'
+import { leavesEmbed, themeCommand } from './useEmbedBridge'
 
 describe('embed bridge', () => {
   const origins = ['https://stroppy.io', 'http://localhost:3000']
@@ -24,5 +24,14 @@ describe('embed bridge', () => {
     ).toBeUndefined()
     expect(themeCommand({ origin: 'https://stroppy.io', data: null }, origins)).toBeUndefined()
     expect(themeCommand({ origin: 'https://stroppy.io', data }, [])).toBeUndefined()
+  })
+})
+
+describe('embed navigation guard', () => {
+  it('keeps the embed in the frame and sends everything else to a new tab', () => {
+    expect(leavesEmbed('/embed/leaderboard')).toBe(false)
+    expect(leavesEmbed('/s/abc')).toBe(true)
+    expect(leavesEmbed('/leaderboard')).toBe(true)
+    expect(leavesEmbed('/embedded')).toBe(true)
   })
 })

@@ -1,3 +1,4 @@
+import { useBlocker, useRouter } from '@tanstack/react-router'
 import { type RefObject, useEffect, useRef } from 'react'
 
 // The postMessage protocol of an embed (/embed/*) with the page that frames
@@ -105,4 +106,28 @@ export function useEmbedBridge(
     window.addEventListener('message', listen)
     return () => window.removeEventListener('message', listen)
   }, [origins])
+}
+
+/** Whether a navigation leaves the embeds: then it belongs in a new tab, not in the frame. */
+export function leavesEmbed(pathname: string): boolean {
+  return !pathname.startsWith('/embed/')
+}
+
+/**
+ * Keeps the frame on its embed: any navigation out of /embed/* (a row, a
+ * link in an empty state, whatever is added later) opens in a new tab and
+ * the frame stays — a report drawn inside the host page has no way back.
+ * Rows and cell links open their tab directly (a click keeps the browser's
+ * popup permission); this is the guard behind them.
+ */
+export function useEmbedNavigationGuard() {
+  const router = useRouter()
+  useBlocker({
+    shouldBlockFn: ({ next }) => {
+      if (!leavesEmbed(next.pathname)) return false
+      const href = router.buildLocation({ to: next.pathname, search: next.search } as never).href
+      window.open(href, '_blank', 'noopener')
+      return true
+    },
+  })
 }

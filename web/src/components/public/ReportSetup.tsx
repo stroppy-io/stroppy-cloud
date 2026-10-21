@@ -1,4 +1,3 @@
-import { catalogQueries } from '@api/queries/catalog'
 import type { Schemas, SharedRun } from '@api/types'
 import { KeyValueList } from '@components/KeyValueList'
 import type { Schema } from '@components/schema/engine'
@@ -104,13 +103,30 @@ function Topology({ topo }: { topo: TopologyPreview }) {
   )
 }
 
+// Each schema is its own chunk, loaded when a report shows that kind.
+const SCHEMAS = import.meta.glob<Schema>('../../schemas/db.*.params_v*.json', { import: 'default' })
+
+/** The latest bundled params schema of a database kind; null when none ships. */
+async function bundledParamsSchema(kind: string): Promise<Schema | null> {
+  const prefix = `../../schemas/db.${kind}.params_v`
+  const version = (path: string) => Number(path.slice(prefix.length, -'.json'.length))
+  const path = Object.keys(SCHEMAS)
+    .filter((p) => p.startsWith(prefix))
+    .sort((a, b) => version(b) - version(a))[0]
+  return path ? SCHEMAS[path]() : null
+}
+
 function ParamsBlock({ kind, params }: { kind?: string; params?: Record<string, unknown> }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const rs = useReportStyles()
+  // The schema ships with the app (web/src/schemas): a guest reading a
+  // shared report has no session for the catalog API.
   const schema = useQuery({
-    ...catalogQueries.schema(`db.${kind ?? 'unknown'}.params`),
+    queryKey: ['public', 'schema', `db.${kind}.params`],
+    queryFn: () => bundledParamsSchema(kind ?? ''),
     enabled: !!kind,
+    staleTime: Number.POSITIVE_INFINITY,
     retry: false,
   })
   const entries = Object.entries(params ?? {})

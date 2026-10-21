@@ -5,7 +5,7 @@ import { RatingBoard, type RatingFilters, toRatingQuery } from '@components/resu
 import { css, cx } from '@emotion/css'
 import { type GrafanaTheme2, ThemeContext } from '@grafana/data'
 import { Icon, useStyles2, useTheme2 } from '@grafana/ui'
-import { type EmbedTheme, useEmbedBridge } from '@hooks/useEmbedBridge'
+import { type EmbedTheme, useEmbedBridge, useEmbedNavigationGuard } from '@hooks/useEmbedBridge'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -194,6 +194,7 @@ function Embed({
   const [ready, setReady] = useState(false)
   const markReady = useMemo(() => () => setReady(true), [])
   useEmbedBridge(root, { ready, origins, onTheme })
+  useEmbedNavigationGuard()
   const transparent = search.bg === 'transparent'
   useEffect(() => {
     if (!transparent) return

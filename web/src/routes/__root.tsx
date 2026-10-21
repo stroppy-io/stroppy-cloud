@@ -89,7 +89,7 @@ function ChunkReload({ error, reset }: { error: unknown; reset: () => void }) {
 
 // Everything outside these prefixes needs a Kratos session (whose cookie
 // must exchange into a JWT) or the static dev token.
-const PUBLIC_PREFIXES = [
+export const PUBLIC_PREFIXES = [
   '/land',
   '/how',
   '/kit',
@@ -103,11 +103,15 @@ const PUBLIC_PREFIXES = [
   '/embed/',
 ]
 
+/** Pages a guest reads without signing in (`/` included: the landing). */
+export function isPublicPath(pathname: string): boolean {
+  return pathname === '/' || PUBLIC_PREFIXES.some((p) => pathname.startsWith(p))
+}
+
 export const Route = createRootRouteWithContext<RouterContext>()({
   beforeLoad: async ({ location }) => {
     // `/` is public too: the landing for guests, the app for the signed in.
-    if (location.pathname === '/') return
-    if (PUBLIC_PREFIXES.some((p) => location.pathname.startsWith(p))) return
+    if (isPublicPath(location.pathname)) return
     const cfg = await loadPublicConfig()
     if (cfg.auth.mode === 'kratos' && !(await getAccessToken())) {
       throw redirect({ to: '/login', search: { next: location.href } })
