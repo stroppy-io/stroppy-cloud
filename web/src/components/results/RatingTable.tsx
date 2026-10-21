@@ -28,6 +28,7 @@ export function RatingTable({
   empty,
   filtered,
   onClearFilters,
+  newTab,
 }: {
   rows: RatingEntry[]
   unit?: string
@@ -40,6 +41,8 @@ export function RatingTable({
   empty?: DataTableEmpty
   filtered?: boolean
   onClearFilters?: () => void
+  /** Rows open their run in a new tab (an embed elsewhere sends readers to the app). */
+  newTab?: boolean
 }) {
   const { t } = useTranslation()
   const columns = useMemo<DataTableColumn<RatingEntry>[]>(
@@ -68,7 +71,11 @@ export function RatingTable({
             : {
                 title: r.tenant_name ?? t('results.rating.anonymous'),
                 link: r.share_token
-                  ? { to: '/s/$token', params: { token: r.share_token } }
+                  ? {
+                      to: '/s/$token',
+                      params: { token: r.share_token },
+                      target: newTab ? '_blank' : undefined,
+                    }
                   : undefined,
                 subtitle: r.share_token ? t('results.rating.openShare') : undefined,
               },
@@ -141,7 +148,7 @@ export function RatingTable({
         value: (r) => r.run_at,
       }),
     ],
-    [t, unit, metricTitle, scope, slug, rows]
+    [t, unit, metricTitle, scope, slug, rows, newTab]
   )
   return (
     <DataTable<RatingEntry>

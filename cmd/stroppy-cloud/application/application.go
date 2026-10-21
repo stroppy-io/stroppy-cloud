@@ -180,6 +180,7 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 		Public: api.PublicConfig{
 			AuthMode: "kratos", KratosPublicURL: a.cfg.Auth.KratosPublicURL,
 			TenantCreation: "anyone", PublicRating: true, Examples: true, DemoReportURL: a.cfg.DemoReportURL,
+			EmbedOrigins: a.cfg.HTTP.PublicCORSOrigins,
 		},
 		Probes:    a.infra.Probes(),
 		Pipelines: pipelineReadiness{p: a.services.Pipelines, enabled: a.cfg.Infra.Pipelines.Dir != ""},
@@ -223,6 +224,7 @@ func (a *Application) httpHandler(verifier api.Verifier) (http.Handler, error) {
 		Liveness:       alive,
 		Readiness:      xprobe.All(a.infra.Probe(), a.ready),
 		CORSOrigins:    a.cfg.HTTP.CORSOrigins,
+		PublicOrigins:  a.cfg.HTTP.PublicCORSOrigins,
 		Log:            a.log,
 	})
 }

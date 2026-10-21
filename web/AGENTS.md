@@ -213,7 +213,7 @@ Grafana-плагин-ориентированные компоненты.
 /land                              → лендинг для всех (шаги-якоря #stand…#get-started); вошедшему в шапке «Открыть консоль»; логотип приложения ведёт сюда
 /leaderboard[?filters]             → публичный рейтинг (фильтры в URL, тёмный)
 /how[#internals]                   → «Как это работает»: два экрана-листания — продукт (модель понятий) и внутренности (архитектура: браузер → Stroppy Cloud → Graphene → ваше облако, шаги прогона чипами; hover — карточка блока)
-/embed/leaderboard[?theme&scenario&limit] → виджет рейтинга для iframe (без шапки)
+/embed/leaderboard[?theme&scenario&limit&filters&bg] → виджет рейтинга для iframe (без шапки), протокол — §6a
 /t/:slug                           → Dashboard (GET /t/{slug}/dashboard)
 /t/:slug/runs[?filters]            → RunList (+facets)
 /t/:slug/runs/:id[/overview|events|logs|metrics|grafana|artifacts|spec]
@@ -234,6 +234,61 @@ Grafana-плагин-ориентированные компоненты.
 /examples                          → галерея (clone / quick-run в текущий тенант)
 /s/:token                          → публичный lab-report (без auth, без AppShell)
 ```
+
+## 6a. Эмбеды для сайта (`/embed/*`)
+
+Сайт (stroppy.io, репо `stroppy-io.github.io`) встраивает облако через
+`<iframe>` и сам читает публичный рейтинг из браузера.
+
+- **CORS** только для `/api/v1/public/*`: GET/HEAD (+ preflight OPTIONS), без
+  credentials, для origin'ов из `http.public_cors_origins`
+  (`STROPPY_HTTP_PUBLIC_CORS_ORIGINS`, по умолчанию `https://stroppy.io`;
+  dev-стенд добавляет `http://localhost:3000` и `http://127.0.0.1:3000`).
+  Остальной API этим origin'ам закрыт; `http.cors_origins` (Vite dev) — отдельный
+  список на весь API. Тот же список приходит фронту в `PublicConfig.embed_origins`.
+- **`/embed/leaderboard`, параметры URL:**
+
+  | Параметр | Значение |
+  |---|---|
+  | `theme` | `dark` (по умолчанию) или `light` |
+  | `filters` | `1` — вся доска с панелью фильтров (`RatingBoard`); без него — компактный виджет |
+  | `scenario`, `metric`, `period`, `limit` | что показать; `limit` — только компактный виджет |
+  | `kind`, `version`, `provider`, `stroppy`, `hardware` | фильтры доски (как на `/leaderboard`, JSON-массивы) |
+  | `bg` | `transparent` — без своего фона, просвечивает страница; у `<iframe>` должен быть `style="color-scheme: normal"` (иначе браузер подкладывает непрозрачный фон под фрейм с другой цветовой схемой) |
+
+  С `filters=1` фильтры живут в URL фрейма (`replace`). Строки и подвал
+  открывают облако в новой вкладке. Выпадающие меню рендерятся в
+  `#grafana-portal-container` внутри корня эмбеда и открываются вверх или вниз,
+  где больше места; пока меню открыто, высота, которую эмбед сообщает
+  странице, включает место под меню (`EMBED_MENU_ROOM`).
+- **postMessage** (`hooks/useEmbedBridge.ts`), для обоих вариантов:
+
+  | Направление | Сообщение |
+  |---|---|
+  | эмбед → страница | `{type: 'stroppy-embed:ready'}` — один раз, когда данные отрисованы (или пришла ошибка) |
+  | эмбед → страница | `{type: 'stroppy-embed:height', height: <int px>}` — `ResizeObserver` на корне, только при изменении, округлено вверх |
+  | страница → эмбед | `{type: 'stroppy-embed:theme', theme: 'dark' \| 'light'}` — сменить тему без перезагрузки |
+
+  Эмбед шлёт с `targetOrigin '*'` (данные публичные). Команды принимает
+  только от `window.parent` с origin из `embed_origins`, остальное игнорирует.
+  У корня эмбеда нет `min-height: 100vh`: высоту задаёт содержимое, иначе она
+  зацикливается с авто-высотой фрейма.
+
+  Пример на странице сайта:
+
+  ```html
+  <iframe id="rating" src="https://cloud.stroppy.io/embed/leaderboard?filters=1&bg=transparent"
+          style="width:100%;border:0;color-scheme:normal" loading="lazy"></iframe>
+  <script>
+    const frame = document.getElementById('rating')
+    addEventListener('message', (e) => {
+      if (e.source !== frame.contentWindow) return
+      if (e.data?.type === 'stroppy-embed:height') frame.style.height = e.data.height + 'px'
+    })
+    // при смене темы сайта:
+    frame.contentWindow.postMessage({ type: 'stroppy-embed:theme', theme: 'light' }, 'https://cloud.stroppy.io')
+  </script>
+  ```
 
 ## 7. Данные: OpenAPI + react-query
 

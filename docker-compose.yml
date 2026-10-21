@@ -74,6 +74,9 @@ services:
       STROPPY_HTTP_ADDR: :18347
       STROPPY_HTTP_PUBLIC_URL: ${STROPPY_HTTP_PUBLIC_URL:-http://localhost:18347}
       STROPPY_HTTP_CORS_ORIGINS: ${STROPPY_HTTP_CORS_ORIGINS:-http://localhost:5173}
+      # The product site may read /api/v1/public/* and steer the embeds; the
+      # local site dev server (stroppy-io.github.io) runs on :3000.
+      STROPPY_HTTP_PUBLIC_CORS_ORIGINS: ${STROPPY_HTTP_PUBLIC_CORS_ORIGINS:-https://stroppy.io,http://localhost:3000,http://127.0.0.1:3000}
       STROPPY_LOG_LEVEL: ${STROPPY_LOG_LEVEL:-info}
       STROPPY_LOG_FORMAT: console
       STROPPY_TRACE_ENABLED: "false"

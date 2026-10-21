@@ -10,6 +10,7 @@ route('GET', '/api/v1/public/config', ({ store }) => ({
     examples_enabled: store.system.examples_enabled,
     version: store.version,
     commit: 'mock',
+    embed_origins: ['https://stroppy.io', 'http://localhost:3000', 'http://127.0.0.1:3000'],
   },
 }))
 

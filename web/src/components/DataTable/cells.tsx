@@ -13,6 +13,8 @@ export interface CellLink {
   to: string
   params?: Record<string, string>
   search?: Record<string, unknown>
+  /** `_blank` opens the link in a new tab (an embed sends readers to the full app). */
+  target?: '_blank'
 }
 
 // `AppLink` is typed per route; a cell link targets whichever route the column passes in.
@@ -33,6 +35,8 @@ function CellAppLink({
     to: link.to,
     params: link.params,
     search: link.search,
+    target: link.target,
+    rel: link.target === '_blank' ? 'noreferrer' : undefined,
     plain,
     className,
     title,

@@ -2665,6 +2665,8 @@ export interface components {
             tenant_creation: "anyone" | "admin_only";
             public_rating_enabled: boolean;
             examples_enabled?: boolean;
+            /** @description Origins of the pages (the product site) that may read the public API and steer the embeds (`/embed/*`) by postMessage; an embed ignores messages from any other origin. */
+            embed_origins?: string[];
             version: string;
             commit?: string;
         };

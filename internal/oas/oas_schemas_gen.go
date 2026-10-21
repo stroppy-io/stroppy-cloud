@@ -20633,8 +20633,11 @@ type PublicConfig struct {
 	TenantCreation      PublicConfigTenantCreation `json:"tenant_creation"`
 	PublicRatingEnabled bool                       `json:"public_rating_enabled"`
 	ExamplesEnabled     OptBool                    `json:"examples_enabled"`
-	Version             string                     `json:"version"`
-	Commit              OptString                  `json:"commit"`
+	// Origins of the pages (the product site) that may read the public API and steer the embeds
+	// (`/embed/*`) by postMessage; an embed ignores messages from any other origin.
+	EmbedOrigins []string  `json:"embed_origins"`
+	Version      string    `json:"version"`
+	Commit       OptString `json:"commit"`
 }
 
 // GetDemoReportURL returns the value of DemoReportURL.
@@ -20660,6 +20663,11 @@ func (s *PublicConfig) GetPublicRatingEnabled() bool {
 // GetExamplesEnabled returns the value of ExamplesEnabled.
 func (s *PublicConfig) GetExamplesEnabled() OptBool {
 	return s.ExamplesEnabled
+}
+
+// GetEmbedOrigins returns the value of EmbedOrigins.
+func (s *PublicConfig) GetEmbedOrigins() []string {
+	return s.EmbedOrigins
 }
 
 // GetVersion returns the value of Version.
@@ -20695,6 +20703,11 @@ func (s *PublicConfig) SetPublicRatingEnabled(val bool) {
 // SetExamplesEnabled sets the value of ExamplesEnabled.
 func (s *PublicConfig) SetExamplesEnabled(val OptBool) {
 	s.ExamplesEnabled = val
+}
+
+// SetEmbedOrigins sets the value of EmbedOrigins.
+func (s *PublicConfig) SetEmbedOrigins(val []string) {
+	s.EmbedOrigins = val
 }
 
 // SetVersion sets the value of Version.

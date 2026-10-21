@@ -27029,6 +27029,16 @@ func (s *PublicConfig) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.EmbedOrigins != nil {
+			e.FieldStart("embed_origins")
+			e.ArrStart()
+			for _, elem := range s.EmbedOrigins {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
+	}
+	{
 		e.FieldStart("version")
 		e.Str(s.Version)
 	}
@@ -27040,14 +27050,15 @@ func (s *PublicConfig) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfPublicConfig = [7]string{
+var jsonFieldsNameOfPublicConfig = [8]string{
 	0: "demo_report_url",
 	1: "auth",
 	2: "tenant_creation",
 	3: "public_rating_enabled",
 	4: "examples_enabled",
-	5: "version",
-	6: "commit",
+	5: "embed_origins",
+	6: "version",
+	7: "commit",
 }
 
 // Decode decodes PublicConfig from json.
@@ -27111,8 +27122,27 @@ func (s *PublicConfig) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"examples_enabled\"")
 			}
+		case "embed_origins":
+			if err := func() error {
+				s.EmbedOrigins = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.EmbedOrigins = append(s.EmbedOrigins, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"embed_origins\"")
+			}
 		case "version":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				v, err := d.Str()
 				s.Version = string(v)
@@ -27143,7 +27173,7 @@ func (s *PublicConfig) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00101110,
+		0b01001110,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

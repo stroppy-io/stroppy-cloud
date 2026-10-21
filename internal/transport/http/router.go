@@ -40,10 +40,14 @@ type Deps struct {
 	Readiness xprobe.Probe
 	// CORSOrigins are extra origins allowed to call the API.
 	CORSOrigins []string
-	Log         *xlog.Logger
+	// PublicOrigins may only read the public API (publicPrefix) from a
+	// browser: GET/HEAD, no credentials.
+	PublicOrigins []string
+	Log           *xlog.Logger
 }
 
 const (
+	publicPrefix      = "/api/v1/public/"
 	kratosPrefix      = "/v1"
 	apiPrefix         = "/api"
 	readHeaderTimeout = 10 * time.Second
@@ -57,6 +61,7 @@ func New(d Deps) (http.Handler, error) {
 	r.Use(xloghttp.Middleware(d.Log))
 	r.Use(middleware.Recoverer)
 	r.Use(cors(d.CORSOrigins))
+	r.Use(publicCORS(d.PublicOrigins))
 
 	// Probes: cheap, unauthenticated, outside tracing.
 	r.Mount("/healthz", xprobe.Mux(
@@ -158,6 +163,45 @@ func cors(origins []string) func(http.Handler) http.Handler {
 				}
 			}
 			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+// publicCORS lets the product site read the public API from a browser: the
+// rating and shared reports, GET and HEAD only, without credentials (a
+// cookie or token never travels cross-site). Nothing else of the API answers
+// these origins; an origin cors() already allows keeps its own headers.
+func publicCORS(origins []string) func(http.Handler) http.Handler {
+	allowed := map[string]bool{}
+	for _, o := range origins {
+		allowed[strings.TrimRight(o, "/")] = true
+	}
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			origin := r.Header.Get("Origin")
+			h := w.Header()
+			if origin == "" || !allowed[origin] || !strings.HasPrefix(r.URL.Path, publicPrefix) || h.Get("Access-Control-Allow-Origin") != "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+			h.Add("Vary", "Origin")
+			switch r.Method {
+			case http.MethodGet, http.MethodHead:
+				h.Set("Access-Control-Allow-Origin", origin)
+				next.ServeHTTP(w, r)
+			case http.MethodOptions:
+				if m := r.Header.Get("Access-Control-Request-Method"); m != http.MethodGet && m != http.MethodHead {
+					w.WriteHeader(http.StatusNoContent) // no CORS headers: the browser refuses
+					return
+				}
+				h.Set("Access-Control-Allow-Origin", origin)
+				h.Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS")
+				h.Set("Access-Control-Allow-Headers", "Content-Type")
+				h.Set("Access-Control-Max-Age", "600")
+				w.WriteHeader(http.StatusNoContent)
+			default:
+				next.ServeHTTP(w, r)
+			}
 		})
 	}
 }

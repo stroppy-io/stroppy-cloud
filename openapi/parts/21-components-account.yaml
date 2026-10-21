@@ -50,6 +50,13 @@ components:
         tenant_creation: { type: string, enum: [anyone, admin_only] }
         public_rating_enabled: { type: boolean }
         examples_enabled: { type: boolean }
+        embed_origins:
+          type: array
+          items: { type: string }
+          description: >-
+            Origins of the pages (the product site) that may read the public
+            API and steer the embeds (`/embed/*`) by postMessage; an embed
+            ignores messages from any other origin.
         version: { type: string }
         commit: { type: string }
     PublicCatalog:

@@ -21,6 +21,9 @@ type PublicConfig struct {
 	Examples       bool
 	// DemoReportURL is a public report of a real run shown to newcomers.
 	DemoReportURL string
+	// EmbedOrigins are the pages (the product site) that read the public
+	// API and steer the embeds by postMessage.
+	EmbedOrigins []string
 }
 
 // GetPublicConfig — bootstrap config.
@@ -33,6 +36,7 @@ func (h *Handler) GetPublicConfig(ctx context.Context) (*oas.PublicConfig, error
 		ExamplesEnabled:     oas.NewOptBool(c.Examples),
 		Version:             build.Version,
 		Commit:              oas.NewOptString(build.Commit),
+		EmbedOrigins:        append([]string{}, c.EmbedOrigins...),
 	}
 	if c.DemoReportURL != "" {
 		out.DemoReportURL = oas.NewOptString(c.DemoReportURL)

@@ -69,6 +69,11 @@ type HTTPConfig struct {
 	// CORSOrigins are extra origins allowed to call the API (the Vite dev
 	// server); the public URL's origin is always allowed.
 	CORSOrigins []string `mapstructure:"cors_origins"`
+	// PublicCORSOrigins may read the public API (/api/v1/public/*: rating,
+	// shared reports) from a browser — the product site — and talk to the
+	// embeds by postMessage. GET only, no credentials; the rest of the API
+	// stays closed to them.
+	PublicCORSOrigins []string `default:"https://stroppy.io" mapstructure:"public_cors_origins"`
 }
 
 // InfraConfig groups every external system under `infra.*`.

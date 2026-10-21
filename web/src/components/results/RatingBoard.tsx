@@ -17,7 +17,7 @@ import {
 import { metricTitle } from '@helpers/metrics'
 import { hardwareLabel, hardwareTotal, scenarioLabel } from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { RatingTable } from './RatingTable'
@@ -78,12 +78,18 @@ export function RatingBoard({
   catalog,
   search,
   onSearchChange,
+  embedded,
 }: {
   scope: 'tenant' | 'global'
   slug?: string
   catalog: 'signed-in' | 'public'
   search: RatingFilters
   onSearchChange: (next: Partial<RatingFilters>) => void
+  /**
+   * In an <iframe> elsewhere: the board takes its content's height (the
+   * frame grows instead of scrolling) and rows open the app in a new tab.
+   */
+  embedded?: boolean
 }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
@@ -262,7 +268,7 @@ export function RatingBoard({
           />
         }
       />
-      <PageFill scroll>
+      <Body embedded={embedded}>
         {list.isError || list.isPending || entries.length === 0 ? (
           <RatingTable
             rows={[]}
@@ -274,6 +280,7 @@ export function RatingBoard({
             filtered={pills.length > 0}
             onClearFilters={clearAll}
             empty={{ message: t('results.rating.empty.title') }}
+            newTab={embedded}
           />
         ) : (
           <div className={styles.sections}>
@@ -294,6 +301,7 @@ export function RatingBoard({
                   metricTitle={metricDef ? metricTitle(metricDef.key, metricDef.title) : undefined}
                   scope={scope}
                   slug={slug}
+                  newTab={embedded}
                 />
               </section>
             ))}
@@ -310,7 +318,12 @@ export function RatingBoard({
             )}
           </div>
         )}
-      </PageFill>
+      </Body>
     </>
   )
+}
+
+// The page's scroll area, or the content itself inside an embed.
+function Body({ embedded, children }: { embedded?: boolean; children: ReactNode }) {
+  return embedded ? <div>{children}</div> : <PageFill scroll>{children}</PageFill>
 }
