@@ -59,8 +59,11 @@ const getStyles = (theme: GrafanaTheme2) => ({
   sectionHead: css({
     display: 'flex',
     alignItems: 'baseline',
-    gap: theme.spacing(1),
+    flexWrap: 'wrap',
+    columnGap: theme.spacing(1),
     marginBottom: theme.spacing(1),
+    // The scenario name stays whole; the hint wraps under it on a narrow screen.
+    '& > :first-child': { whiteSpace: 'nowrap' },
   }),
 })
 
@@ -281,6 +284,7 @@ export function RatingBoard({
             onClearFilters={clearAll}
             empty={{ message: t('results.rating.empty.title') }}
             newTab={embedded}
+            publicPage={catalog === 'public'}
           />
         ) : (
           <div className={styles.sections}>
@@ -302,6 +306,7 @@ export function RatingBoard({
                   scope={scope}
                   slug={slug}
                   newTab={embedded}
+                  publicPage={catalog === 'public'}
                 />
               </section>
             ))}

@@ -18,10 +18,10 @@ const post = (message: Record<string, unknown>) => {
   if (window.parent !== window) window.parent.postMessage(message, '*')
 }
 
-/** The height the frame needs: the content, plus room under an open dropdown. */
+/** The height the frame needs: the content, plus room under an open dropdown (a filter field, not any expanded button). */
 export function embedHeight(root: HTMLElement): number {
   let bottom = root.offsetTop + root.offsetHeight
-  for (const field of root.querySelectorAll('[aria-expanded="true"]')) {
+  for (const field of root.querySelectorAll('[role="combobox"][aria-expanded="true"]')) {
     bottom = Math.max(
       bottom,
       field.getBoundingClientRect().bottom + window.scrollY + EMBED_MENU_ROOM
