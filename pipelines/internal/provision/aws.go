@@ -206,7 +206,7 @@ func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, a
 			AssociatePublicIPAddress: ptr(vmPublic),
 			SubnetIDRef:              &xpv1.Reference{Name: names.Subnet()},
 			VPCSecurityGroupIDRefs:   []xpv1.Reference{{Name: names.SecurityGroup()}},
-			UserData:                 ptr(agent.CloudInit()),
+			UserData:                 ptr(bootScript(agent.CloudInit())),
 			UserDataReplaceOnChange:  ptr(false),
 			RootBlockDevice: []ec2.RootBlockDeviceParameters{{
 				VolumeSize:          ptr(float64(bootGB)),

@@ -245,7 +245,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 					}},
 					SchedulingPolicy: []compute.SchedulingPolicyParameters{{Preemptible: ptr(preemptible)}},
 					Metadata: map[string]*string{
-						"user-data":          ptr(agent.CloudInit()),
+						"user-data":          ptr(bootScript(agent.CloudInit())),
 						"serial-port-enable": ptr("1"),
 					},
 					Labels: labels(run, m.Labels),

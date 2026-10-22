@@ -199,6 +199,11 @@ var snapshotCommands = []string{
 	"sysctl net.ipv4.ip_local_port_range net.ipv4.conf.all.rp_filter net.ipv4.ip_forward",
 	"dmesg 2>&1 | tail -n 50",
 	"cat /etc/sysctl.d/90-stroppy-*.conf",
+	// Package activity during the run restarts network services: show what
+	// was installed or upgraded and what systemd restarted.
+	"tail -n 40 /var/log/dpkg.log",
+	"journalctl --no-pager -n 40 -u unattended-upgrades -u apt-daily.service -u apt-daily-upgrade.service",
+	"journalctl --no-pager -n 60 -u systemd-networkd",
 }
 
 // NetSnapshotRequest names the snapshot and what it is about.
