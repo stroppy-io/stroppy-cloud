@@ -33,6 +33,7 @@ const (
 	ActivityPullImage            = activities.NamePullImage
 	ActivityWaitHealthy          = activities.NameWaitHealthy
 	ActivityWaitDatabase         = activities.NameWaitDatabase
+	ActivityWaitReachable        = activities.NameWaitReachable
 	ActivityRunSegment           = activities.NameRunSegment
 	ActivityRunBaseline          = activities.NameRunBaseline
 )
@@ -53,6 +54,7 @@ type (
 	WaitHealthyResult           = activities.WaitHealthyResult
 	WaitDatabaseRequest         = activities.WaitDatabaseRequest
 	WaitDatabaseResult          = activities.WaitDatabaseResult
+	WaitReachableRequest        = activities.WaitReachableRequest
 	RunSegmentRequest           = activities.RunSegmentRequest
 	RunSegmentResult            = activities.RunSegmentResult
 	RunBaselineRequest          = activities.RunBaselineRequest

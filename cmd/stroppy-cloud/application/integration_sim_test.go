@@ -549,6 +549,9 @@ func simAgents(w *pipelinetest.World, rr *simRecorder, sc simScenario) {
 		}
 		return workflows.WaitHealthyResult{Attempts: 3}, workflow.Sleep(ctx, 10*time.Second)
 	})
+	pipelinetest.Handle1(w, workflows.ActivityWaitReachable, func(ctx workflow.Context, _ workflows.WaitReachableRequest) (workflows.WaitDatabaseResult, error) {
+		return workflows.WaitDatabaseResult{Ready: true, Attempts: 1}, workflow.Sleep(ctx, 2*time.Second)
+	})
 	pipelinetest.Handle1(w, workflows.ActivityWaitDatabase, func(ctx workflow.Context, req workflows.WaitDatabaseRequest) (workflows.WaitDatabaseResult, error) {
 		if err := workflow.Sleep(ctx, 20*time.Second); err != nil {
 			return workflows.WaitDatabaseResult{}, err
