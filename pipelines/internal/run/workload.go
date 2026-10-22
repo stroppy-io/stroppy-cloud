@@ -91,6 +91,9 @@ func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addr
 	if run.ManagedYDB == nil && run.Workload.DriverType != "noop" {
 		_, err := activity.Activity(ctx, runner,
 			activity.Fn(activities.NameWaitReachable, activities.WaitReachable, activities.WaitReachableRequest{Endpoint: url}),
+			// The activity waits five minutes itself; an unreachable database
+			// fails the run with the reason instead of retrying for hours.
+			activity.WithGuarantee(activity.AtMostOnce),
 			activity.WithTimeout(6*time.Minute), activity.WithHeartbeat(time.Minute),
 		)
 		if err != nil {
