@@ -72,7 +72,15 @@ SELECT p.id, p.tenant_id, p.name, p.kind, p.settings, p.secret_names, p.status, 
 FROM provider_profiles p
 JOIN tenants t ON t.id = p.tenant_id AND t.deleted_at IS NULL AND NOT t.retiring
 WHERE p.status = 'ready' AND p.deleted_at IS NULL AND p.kind = @kind AND p.config_revision < @revision::int
+  -- a failed upgrade (status_reason set) is tried again after a pause
+  AND (p.status_reason = '' OR p.updated_at < now() - interval '2 minutes')
 ORDER BY p.created_at;
+
+-- name: RetryProviderUpgrade :execrows
+-- A failed upgrade leaves the profile ready on its old configuration (its
+-- runs keep their own networks) with the reason, to be tried again.
+UPDATE provider_profiles SET status = 'ready', status_reason = @reason, updated_at = now()
+WHERE id = @id AND verify_run_id = @run_id AND deleted_at IS NULL;
 
 -- name: BeginProviderUpgrade :execrows
 -- A ready profile re-applies its configuration while queued runs wait for

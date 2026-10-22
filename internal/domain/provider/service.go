@@ -322,7 +322,13 @@ func configureParams(p Profile, action string) ConfigureParams {
 	return ConfigureParams{Action: action, Provider: p.Kind, ProfileID: p.ID.String(), Settings: p.Settings, CredentialsSecret: ActiveCredentials(p)}
 }
 
-func (s *Service) startVerify(ns string, p Profile) {
+func (s *Service) startVerify(ns string, p Profile) { s.configure(ns, p, false) }
+
+// configure runs ensure for the profile's operation. A failed upgrade (the
+// server's own, e.g. the cloud's network quota is still held by old runs)
+// leaves the profile ready on its old configuration to be tried again; a
+// failed verification fails the profile.
+func (s *Service) configure(ns string, p Profile, upgrade bool) {
 	s.mu.Lock()
 	if s.inflight[p.ID] {
 		s.mu.Unlock()
@@ -337,6 +343,10 @@ func (s *Service) startVerify(ns string, p Profile) {
 			return
 		} // transport/shutdown: reattach the same durable run later
 		if !out.OK {
+			if upgrade {
+				_ = s.repo.RetryUpgrade(ctx, p.ID, p.VerifyRunID, "network upgrade: "+out.Error) //nolint:errcheck // retried by the next sweep
+				return
+			}
 			_ = s.repo.FinishOperation(ctx, p.ID, p.VerifyRunID, StatusFailed, out.Error) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
 			return
 		}
@@ -388,7 +398,7 @@ func (s *Service) UpgradeStale(ctx context.Context) error {
 			continue
 		}
 		p.Status, p.VerifyRunID = StatusVerifying, runID
-		s.startVerify(ns, p)
+		s.configure(ns, p, true)
 	}
 	return nil
 }

@@ -13,6 +13,7 @@ type upgradeRepo struct {
 	busy     map[uuid.UUID]bool
 	begun    []uuid.UUID
 	finished map[uuid.UUID]Status
+	reasons  []string
 }
 
 func (r *upgradeRepo) Stale(_ context.Context, kind Kind, revision int) ([]Profile, error) {
@@ -35,15 +36,25 @@ func (r *upgradeRepo) FinishOperation(_ context.Context, id uuid.UUID, _ string,
 	return nil
 }
 
+func (r *upgradeRepo) RetryUpgrade(_ context.Context, id uuid.UUID, _, reason string) error {
+	r.finished[id] = StatusReady
+	r.reasons = append(r.reasons, reason)
+	return nil
+}
+
 func (r *upgradeRepo) SetQuotas(context.Context, uuid.UUID, QuotasResult) error { return nil }
 
 type upgradePipelines struct {
 	Pipelines
 	actions []string
+	fail    string
 }
 
 func (p *upgradePipelines) Configure(_ context.Context, _ string, params ConfigureParams) (VerifyResult, error) {
 	p.actions = append(p.actions, params.Action)
+	if p.fail != "" {
+		return VerifyResult{OK: false, Error: p.fail}, nil
+	}
 	return VerifyResult{OK: true}, nil
 }
 
@@ -120,5 +131,20 @@ func TestUpgradeStaleWaitsForPipelines(t *testing.T) {
 	}
 	if len(repo.begun) != 1 {
 		t.Fatalf("upgraded %v after the pipelines", repo.begun)
+	}
+}
+
+// A failed upgrade (the cloud's network quota still held by old runs)
+// leaves the profile ready on its old configuration, to be tried again.
+func TestFailedUpgradeKeepsTheProfileReady(t *testing.T) {
+	id := uuid.New()
+	repo := &upgradeRepo{stale: []Profile{{ID: id, Kind: KindYandex, Status: StatusReady}}, busy: map[uuid.UUID]bool{}, finished: map[uuid.UUID]Status{}}
+	pipes := &upgradePipelines{fail: "Quota limit vpc.networks.count exceeded"}
+	svc := NewService(repo, nil, pipes, nil, upgradeAccess{}, func(ctx context.Context, _ string) context.Context { return ctx }, nil, func(fn func(context.Context)) { fn(context.Background()) })
+	if err := svc.UpgradeStale(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if repo.finished[id] != StatusReady || len(repo.reasons) != 1 {
+		t.Fatalf("profile ended %q with reasons %v", repo.finished[id], repo.reasons)
 	}
 }

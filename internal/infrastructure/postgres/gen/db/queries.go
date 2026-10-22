@@ -1565,6 +1565,8 @@ SELECT p.id, p.tenant_id, p.name, p.kind, p.settings, p.secret_names, p.status, 
 FROM provider_profiles p
 JOIN tenants t ON t.id = p.tenant_id AND t.deleted_at IS NULL AND NOT t.retiring
 WHERE p.status = 'ready' AND p.deleted_at IS NULL AND p.kind = $1 AND p.config_revision < $2::int
+  -- a failed upgrade (status_reason set) is tried again after a pause
+  AND (p.status_reason = '' OR p.updated_at < now() - interval '2 minutes')
 ORDER BY p.created_at;`
 
 type StaleProviderConfigsParams struct {
@@ -1611,6 +1613,22 @@ func (q *Queries) StaleProviderConfigs(ctx context.Context, arg StaleProviderCon
 		return nil, err
 	}
 	return items, nil
+}
+
+const retryProviderUpgradeSQL = `-- A failed upgrade leaves the profile ready on its old configuration (its
+-- runs keep their own networks) with the reason, to be tried again.
+UPDATE provider_profiles SET status = 'ready', status_reason = $1, updated_at = now()
+WHERE id = $2 AND verify_run_id = $3 AND deleted_at IS NULL;`
+
+type RetryProviderUpgradeParams struct {
+	Reason string
+	ID     uuid.UUID
+	RunID  string
+}
+
+func (q *Queries) RetryProviderUpgrade(ctx context.Context, arg RetryProviderUpgradeParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, retryProviderUpgradeSQL, arg.Reason, arg.ID, arg.RunID)
+	return tag.RowsAffected(), err
 }
 
 const beginProviderUpgradeSQL = `-- A ready profile re-applies its configuration while queued runs wait for

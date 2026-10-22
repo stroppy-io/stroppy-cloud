@@ -192,6 +192,13 @@ func (r *ProviderRepo) FinishOperation(ctx context.Context, id uuid.UUID, runID 
 	return nil
 }
 
+func (r *ProviderRepo) RetryUpgrade(ctx context.Context, id uuid.UUID, runID, reason string) error {
+	if _, err := r.q.RetryProviderUpgrade(ctx, db.RetryProviderUpgradeParams{ID: id, RunID: runID, Reason: reason}); err != nil {
+		return infraf("provider: retry upgrade: %v", err)
+	}
+	return nil
+}
+
 func (r *ProviderRepo) Stale(ctx context.Context, kind provider.Kind, revision int) ([]provider.Profile, error) {
 	rows, err := r.q.StaleProviderConfigs(ctx, db.StaleProviderConfigsParams{Kind: string(kind), Revision: int32(revision)}) //nolint:gosec // a small constant
 	if err != nil {

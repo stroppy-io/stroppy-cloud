@@ -100,9 +100,11 @@ type Repository interface {
 	// Stale lists ready profiles of a kind configured below revision.
 	Stale(ctx context.Context, kind Kind, revision int) ([]Profile, error)
 	// BeginUpgrade turns a stale ready profile verifying for runID while
-	// only queued runs wait for it; false when it is not stale any more or
-	// a started run or kept stand still uses the old configuration.
+	// its queued runs wait; false when it is not stale any more.
 	BeginUpgrade(ctx context.Context, id uuid.UUID, runID string, revision int) (bool, error)
+	// RetryUpgrade ends a failed upgrade: ready on the old configuration,
+	// the reason kept, tried again later.
+	RetryUpgrade(ctx context.Context, id uuid.UUID, runID, reason string) error
 	Pending(ctx context.Context) ([]Profile, error)
 	BeginTenantDeletion(ctx context.Context, id uuid.UUID) error
 	UpdateConfiguration(ctx context.Context, id uuid.UUID, name *string, settings json.RawMessage, credential string, runID string) error
