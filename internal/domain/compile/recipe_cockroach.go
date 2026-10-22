@@ -2,6 +2,7 @@ package compile
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
@@ -100,6 +101,7 @@ func cockroachRecipe(c *compilation) error {
 	if err != nil {
 		return err
 	}
+	settings = sortedSettings(settings)
 	init := c.first(role)
 	var script strings.Builder
 	if len(nodes) > 1 {
@@ -165,4 +167,27 @@ func (c *compilation) initSidecar(role, machine, image, script string, files []s
 		Restart:     "no",
 		DependsOn:   deps,
 	}
+}
+
+// sortedSettings orders the SET CLUSTER SETTING lines of the rendered
+// block: the template prints a map, whose order changes between renders,
+// and the RunSpec must be the same for the same input. The settings are
+// independent, so their order does not matter to the cluster.
+func sortedSettings(block string) string {
+	lines := strings.Split(block, "\n")
+	var set []int
+	for i, l := range lines {
+		if strings.HasPrefix(l, "SET CLUSTER SETTING ") {
+			set = append(set, i)
+		}
+	}
+	sorted := make([]string, len(set))
+	for i, at := range set {
+		sorted[i] = lines[at]
+	}
+	sort.Strings(sorted)
+	for i, at := range set {
+		lines[at] = sorted[i]
+	}
+	return strings.Join(lines, "\n")
 }

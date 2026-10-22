@@ -45,6 +45,9 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 	lib := library.NewService(nil, reg, cat, nil, nil, nil)
 	provider, _ := cat.Provider("yandex")
 	params := map[string]any{"version": tc.version}
+	if tc.kind == catalog.OrioleDB { // the image tag is OrioleDB's version
+		params = map[string]any{"image_tag": tc.version}
+	}
 	for k, v := range tc.params {
 		params[k] = v
 	}
@@ -161,5 +164,36 @@ func TestSummaryRecordsTheSetup(t *testing.T) {
 	})
 	if relaxed.Tuning.Durability != run.DurabilityRelaxed {
 		t.Errorf("synchronous_commit=off reads as %q", relaxed.Tuning.Durability)
+	}
+}
+
+// The same input compiles to the same RunSpec: the entity diffs it, and a
+// rendered map whose order changes would look like a change every time.
+func TestAutoTuningIsDeterministic(t *testing.T) {
+	for _, tc := range []tuneCase{
+		{kind: catalog.Postgres, version: "17"},
+		{kind: catalog.OrioleDB, version: "beta17-pg17"},
+		{kind: catalog.MySQL, version: "8.4", protocol: catalog.ProtoMySQL},
+		{kind: catalog.MariaDB, version: "11.4", protocol: catalog.ProtoMySQL},
+		{kind: catalog.Cockroach, version: "25.4", protocol: catalog.ProtoCockroach},
+		picoCase("26.2", map[string]any{"tiers": picoTiers(3, 1, nil)}),
+		{kind: catalog.YDB, version: "26.2", protocol: catalog.ProtoYDBGrpc},
+	} {
+		t.Run(string(tc.kind), func(t *testing.T) {
+			var first []byte
+			for range 8 {
+				out, _ := compileTuned(t, tc)
+				out.Spec.RunID = ""
+				raw, err := json.Marshal(out.Spec)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if first == nil {
+					first = raw
+				} else if string(raw) != string(first) {
+					t.Fatal("two compilations of the same input differ")
+				}
+			}
+		})
 	}
 }

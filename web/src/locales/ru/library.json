@@ -110,7 +110,7 @@
       "image_baseline": "образ базы: минимум стенда",
       "cpu_bound": "{{engine}} упирается в CPU",
       "memtx": "1,5 × память memtx ({{memtx_gb}} ГБ) + 1 ГБ",
-      "pdisks": "{{pdisks}} pdisk × 40 ГБ + 20 ГБ под файловую систему",
+      "pdisks": "{{pdisks}} pdisk × не меньше 80 ГБ + 20 ГБ под файловую систему",
       "runner_load": "{{vus}} виртуальных пользователей, {{load_workers}} потоков загрузки"
     }
   },
