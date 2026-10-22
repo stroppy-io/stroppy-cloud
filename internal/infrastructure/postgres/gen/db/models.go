@@ -113,6 +113,7 @@ type ProviderProfiles struct {
 	QuotasUnavailableReason string
 	QuotasScope             string
 	ConfigRevision          int32
+	UpgradeAfter            *time.Time
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time

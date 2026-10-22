@@ -345,11 +345,6 @@ func (s *Service) configure(ns string, p Profile, upgrade bool) {
 	s.background(func(ctx context.Context) {
 		defer func() { s.mu.Lock(); delete(s.inflight, p.ID); s.mu.Unlock() }()
 		out, err := s.pipelines.Configure(s.scope(ctx, ns), p.VerifyRunID, configureParams(p, "ensure"))
-		if err != nil && upgrade && ctx.Err() == nil {
-			// A failed upgrade run: back to ready on the old configuration.
-			_ = s.repo.RetryUpgrade(ctx, p.ID, p.VerifyRunID, UpgradeReason+": "+err.Error()) //nolint:errcheck // retried by the next sweep
-			return
-		}
 		if err != nil {
 			return
 		} // transport/shutdown: reattach the same durable run later
