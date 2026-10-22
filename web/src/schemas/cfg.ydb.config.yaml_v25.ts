@@ -65,8 +65,10 @@ export interface CfgYdbConfigYaml25 {
   use_auto_config?: boolean;
   /** Node type. actor_system_config.node_type — STORAGE for a storage node, COMPUTE for a database node, HYBRID for a single-role cluster. */
   node_type?: "STORAGE" | "COMPUTE" | "HYBRID";
-  /** CPU count. actor_system_config.cpu_count — cores the actor system may use; the server fills it from the machine size. */
+  /** CPU count. actor_system_config.cpu_count — cores the actor system splits into its pools; the rest stays for pdisk threads, gRPC and the OS. Auto tuning sizes it from the machine. */
   cpu_count?: number | string;
+  /** Index build CPU. resource_broker_config queue_build_index limit.cpu — concurrent online index-build tasks (upstream 10). Unset keeps the upstream queue. */
+  resource_broker_build_index_cpu?: number | string | null;
   /** gRPC port. grpc_config.port — the plaintext client endpoint (grpc://). */
   grpc_port?: number | string;
   /** Enable grpcs. Serve the TLS client endpoint as well; stroppy then connects with grpcs://. */
@@ -125,6 +127,8 @@ export interface CfgYdbConfigYaml25 {
   readonly feature_flag_block?: string;
   /** Rendered extra sections. */
   readonly custom_lines?: string;
+  /** Rendered resource_broker_config. */
+  readonly resource_broker_block?: string;
   /** Rendered grpc_config TLS keys. */
   readonly grpc_tls_block?: string;
 }

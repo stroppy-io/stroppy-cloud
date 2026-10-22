@@ -113,7 +113,7 @@ export function deriveDatabase(
           colocated_with: 'master',
         })
       label = ha === 'patroni' ? 'patroni-ha' : replicas > 0 ? 'primary-replica' : 'single'
-      const sbMb = num(params.shared_buffers_mb, 0)
+      const sbMb = num(params.main_buffers_mb ?? params.shared_buffers_mb, 0)
       const memFromSb = sbMb ? Math.max(4, Math.ceil((sbMb / 1024) * 4)) : 0
       req.db =
         ha === 'patroni'

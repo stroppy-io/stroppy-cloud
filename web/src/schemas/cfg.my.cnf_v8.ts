@@ -5,8 +5,22 @@
 export interface CfgMyCnf8 {
   /** Buffer pool size. InnoDB buffer pool; the single most important memory setting. Upstream default 128M. [MB] */
   innodb_buffer_pool_size?: number | string;
-  /** Buffer pool instances. Number of buffer pool regions; only meaningful when the pool is larger than 1G. */
-  innodb_buffer_pool_instances?: number | string;
+  /** Buffer pool instances. Number of buffer pool regions; only meaningful when the pool is larger than 1G. Empty = the server picks (8.0: 8 above a 1G pool; 8.4: min(chunks/2, CPUs/4)). */
+  innodb_buffer_pool_instances?: number | string | null;
+  /** Log buffer size. In-memory redo buffer; a large one lets big transactions commit without writing redo early. Upstream default 16M for 8.0. [MB] */
+  innodb_log_buffer_size?: number | string;
+  /** Page cleaner threads. Threads flushing dirty pages; capped at innodb_buffer_pool_instances. Empty = the server default (8.0: 4, 8.4: one per instance). */
+  innodb_page_cleaners?: number | string | null;
+  /** Purge threads. Background threads purging undo; a lagging purge grows the history list. Empty = the server default (8.0: 4, 8.4: 1 up to 16 CPUs, else 4). */
+  innodb_purge_threads?: number | string | null;
+  /** Adaptive hash index. Hash index built over hot B-tree pages; a contention point under concurrent writes. Upstream default ON in 8.0, OFF in 8.4. */
+  innodb_adaptive_hash_index?: "ON" | "OFF";
+  /** Change buffering. Which secondary-index changes are buffered instead of applied to the page. Upstream default all in 8.0, none in 8.4. */
+  innodb_change_buffering?: "none" | "inserts" | "deletes" | "changes" | "purges" | "all";
+  /** Use fdatasync. Flush with fdatasync(), which skips metadata that does not need to reach the disk. Upstream default OFF in 8.0, ON in 8.4. */
+  innodb_use_fdatasync?: "ON" | "OFF";
+  /** Flush neighbors. 0 = flush only the page itself (right for SSD), 1 = contiguous dirty neighbors, 2 = the whole extent. */
+  innodb_flush_neighbors?: number | string;
   /** Redo log capacity. Total redo log size. Replaces the deprecated innodb_log_file_size/innodb_log_files_in_group. [MB] */
   innodb_redo_log_capacity?: number | string;
   /** Flush log at commit. 1 = ACID (flush+fsync on commit), 2 = flush on commit and fsync once a second, 0 = neither. */
@@ -51,6 +65,8 @@ export interface CfgMyCnf8 {
   rpl_semi_sync_source_enabled?: "ON" | "OFF";
   /** Semisync timeout. How long the source waits for a replica ack before falling back to async. [ms] */
   rpl_semi_sync_source_timeout?: number | string;
+  /** Semisync wait point. AFTER_SYNC (lossless, the default) waits for the replica ack before the storage commit, AFTER_COMMIT after it. */
+  rpl_semi_sync_source_wait_point?: "AFTER_SYNC" | "AFTER_COMMIT";
   /** Semisync replica. Semisynchronous replica side; loads semisync_replica.so via plugin_load_add. */
   rpl_semi_sync_replica_enabled?: "ON" | "OFF";
   /** Applier workers. Parallel applier threads on the replica; 0 = single-threaded. */
@@ -75,12 +91,16 @@ export interface CfgMyCnf8 {
   group_replication_enforce_update_everywhere_checks?: "ON" | "OFF";
   /** Transaction consistency. Group synchronization before or after transactions. BEFORE waits for preceding transactions before reads, allowing read-after-write through replicas; this is separate from SQL transaction isolation. */
   group_replication_consistency?: "EVENTUAL" | "BEFORE_ON_PRIMARY_FAILOVER" | "BEFORE" | "AFTER" | "BEFORE_AND_AFTER" | null;
+  /** Exit state action. What a member does when it leaves the group involuntarily. Empty = the server default (8.0: READ_ONLY, 8.4: OFFLINE_MODE). */
+  group_replication_exit_state_action?: "READ_ONLY" | "OFFLINE_MODE" | "ABORT_SERVER" | null;
   /** Bind address. Addresses mysqld listens on; * or 0.0.0.0 for all IPv4. */
   bind_address?: string;
   /** Port. TCP port for the classic MySQL protocol. */
   port?: number | string;
   /** Max connections. Maximum simultaneous client connections. */
   max_connections?: number | string;
+  /** Skip name resolve. Do not reverse-resolve client addresses; accounts must then be granted by IP, % or localhost. */
+  skip_name_resolve?: "ON" | "OFF";
   /** Max connect errors. Interrupted handshakes from one host before it is blocked. */
   max_connect_errors?: number | string;
   /** Thread cache size. Threads kept for reuse after a client disconnects. */
@@ -147,6 +167,8 @@ export interface CfgMyCnf8 {
   custom?: Record<string, string>;
   /** Cluster lines. Rendered topology lines (server_id, report_host). */
   readonly cluster_lines?: string;
+  /** InnoDB server-choice lines. InnoDB counts rendered only when set; empty leaves them to the server. */
+  readonly innodb_choice_lines?: string;
   /** Semisync lines. plugin_load_add and rpl_semi_sync_* lines, emitted only when semisync is on. */
   readonly semisync_lines?: string;
   /** Group replication lines. The whole group_replication_* block, emitted only when group replication is on. */

@@ -5,7 +5,32 @@
     {
       "choice": {
         "default": {
-          "stringValue": "beta17-pg17"
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "Auto",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Engine defaults",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto.",
+      "group": "Tuning",
+      "name": "tuning",
+      "title": "Tuning"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "beta19-pg17"
         },
         "options": [
           {
@@ -24,6 +49,42 @@
             "label": "latest-pg16 (main, PG 16)",
             "value": {
               "stringValue": "latest-pg16"
+            }
+          },
+          {
+            "label": "beta19-pg18 (release, PG 18)",
+            "value": {
+              "stringValue": "beta19-pg18"
+            }
+          },
+          {
+            "label": "beta19-pg17 (release, PG 17)",
+            "value": {
+              "stringValue": "beta19-pg17"
+            }
+          },
+          {
+            "label": "beta19-pg16 (release, PG 16)",
+            "value": {
+              "stringValue": "beta19-pg16"
+            }
+          },
+          {
+            "label": "beta18-pg18 (release, PG 18)",
+            "value": {
+              "stringValue": "beta18-pg18"
+            }
+          },
+          {
+            "label": "beta18-pg17 (release, PG 17)",
+            "value": {
+              "stringValue": "beta18-pg17"
+            }
+          },
+          {
+            "label": "beta18-pg16 (release, PG 16)",
+            "value": {
+              "stringValue": "beta18-pg16"
             }
           },
           {
@@ -84,16 +145,26 @@
       "title": "HAProxy nodes"
     },
     {
-      "description": "shared_buffers for the container; OrioleDB uses it as its primary page pool, so it should dominate the machine's RAM.",
+      "description": "orioledb.main_buffers of every database server, the page cache of OrioleDB tables. Unset = auto tuning sizes it from the machine (30% of RAM); stock tuning keeps the 64MB upstream default. A main_buffers set in the config wins.",
       "group": "Memory",
       "int64": {
-        "default": "1024",
-        "gte": "128",
-        "lte": "1048576"
+        "gte": "64",
+        "lte": "4194304"
       },
+      "name": "main_buffers_mb",
+      "nullable": true,
+      "title": "Main buffers",
+      "unit": "MB"
+    },
+    {
+      "deprecated": true,
+      "description": "Retired: replaced by main_buffers_mb; a stored value is ignored.",
+      "group": "Memory",
+      "int64": {},
       "name": "shared_buffers_mb",
       "title": "Shared buffers",
-      "unit": "MB"
+      "unit": "MB",
+      "when": "false"
     },
     {
       "description": "Locale passed to initdb inside the container; C.UTF-8 keeps collation cheap and image-independent.",
@@ -138,7 +209,7 @@
       "severity": "SEVERITY_WARNING"
     },
     {
-      "expr": "int(root.shared_buffers_mb) \u003e= 512 || int(root.replicas) == 0",
+      "expr": "!(\"main_buffers_mb\" in root) || int(root.main_buffers_mb) \u003e= 512 || int(root.replicas) == 0",
       "id": "buffers-vs-replicas",
       "message": "a replica set with a tiny page pool measures the disk, not the engine",
       "severity": "SEVERITY_WARNING"

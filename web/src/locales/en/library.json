@@ -96,7 +96,7 @@
     "reasons": {
       "engine_baseline": "{{engine}} minimum",
       "wal_archive": "{{engine}} minimum and room for the WAL archive",
-      "shared_buffers": "twice shared_buffers ({{shared_buffers_gb}} GB)",
+      "shared_buffers": "twice the database cache ({{shared_buffers_gb}} GB)",
       "proxy": "{{engine}}",
       "etcd": "etcd for Patroni",
       "image_baseline": "a database image: the stand's minimum",

@@ -805,6 +805,32 @@
           },
           "name": "ulimits",
           "title": "Ulimits"
+        },
+        {
+          "description": "Size of /dev/shm; empty = Docker's 64 MB.",
+          "int64": {
+            "gte": "1",
+            "lte": "1048576"
+          },
+          "name": "shm_size_mb",
+          "title": "Shared memory",
+          "unit": "MB"
+        },
+        {
+          "description": "docker --security-opt values, e.g. seccomp=unconfined.",
+          "list": {
+            "items": [
+              {
+                "string": {
+                  "maxLen": "256",
+                  "minLen": "1"
+                }
+              }
+            ],
+            "maxItems": "8"
+          },
+          "name": "security_opt",
+          "title": "Security options"
         }
       ],
       "strict": true
@@ -3651,6 +3677,32 @@
                     },
                     "name": "ulimits",
                     "title": "Ulimits"
+                  },
+                  {
+                    "description": "Size of /dev/shm; empty = Docker's 64 MB.",
+                    "int64": {
+                      "gte": "1",
+                      "lte": "1048576"
+                    },
+                    "name": "shm_size_mb",
+                    "title": "Shared memory",
+                    "unit": "MB"
+                  },
+                  {
+                    "description": "docker --security-opt values, e.g. seccomp=unconfined.",
+                    "list": {
+                      "items": [
+                        {
+                          "string": {
+                            "maxLen": "256",
+                            "minLen": "1"
+                          }
+                        }
+                      ],
+                      "maxItems": "8"
+                    },
+                    "name": "security_opt",
+                    "title": "Security options"
                   }
                 ],
                 "strict": true

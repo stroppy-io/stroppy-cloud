@@ -27,7 +27,7 @@ export interface CfgCockroachFlags25 {
   http_addr?: string;
   /** SQL address. --sql-addr : a separate listener for client SQL; empty shares --listen-addr. */
   sql_addr?: string;
-  /** Insecure. --insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live. */
+  /** Insecure. --insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live. Must stay on: the stand provisions no node or CA certificates. */
   insecure?: boolean;
   /** Certificates directory. --certs-dir : node and CA certificates; read only in secure mode. */
   certs_dir?: string;
@@ -39,11 +39,13 @@ export interface CfgCockroachFlags25 {
   log?: string;
   /** Cluster settings. SET CLUSTER SETTING <name> = <value>, applied once against the first node after the cluster is initialized. */
   cluster_settings?: Record<string, string>;
+  /** GC TTL of the default range. ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds : how long overwritten MVCC values are kept. Empty keeps the upstream zone (4 hours). [s] */
+  gc_ttl_seconds?: number | string | null;
   /** WAL failover. --wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node. */
   wal_failover?: "disabled" | "among-stores";
   /** Locality advertise address. --locality-advertise-addr : "key=value@address" pairs letting nodes in the same locality use a private address. Filled by the server from topology. */
   locality_advertise_addr?: string | null;
-  /** Max disk temp storage. --max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is taken out of the store, so it must fit inside --store size. */
+  /** Max disk temp storage. --max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is not counted towards the store, so --store size plus this must fit on the disk. */
   max_disk_temp_storage?: string;
   /** Rendered --join. */
   readonly join_flag?: string;
@@ -59,8 +61,8 @@ export interface CfgCockroachFlags25 {
   readonly store_flag?: string;
   /** Rendered --log. */
   readonly log_flag?: string;
-  /** Rendered SQL. Derived: the SET CLUSTER SETTING block. */
+  /** Rendered SQL. Derived: the SET CLUSTER SETTING block and the default zone. */
   readonly settings_sql?: string;
-  /** Rendered 25.x/26.x flags. Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr. */
+  /** Rendered store and locality flags. Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr. */
   readonly modern_flags?: string;
 }

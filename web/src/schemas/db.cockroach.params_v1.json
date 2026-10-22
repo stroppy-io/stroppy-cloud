@@ -5,6 +5,31 @@
     {
       "choice": {
         "default": {
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "Auto",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Engine defaults",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto.",
+      "group": "Tuning",
+      "name": "tuning",
+      "title": "Tuning"
+    },
+    {
+      "choice": {
+        "default": {
           "stringValue": "25.4"
         },
         "options": [
@@ -85,7 +110,7 @@
       "bool": {
         "default": true
       },
-      "description": "Start with --insecure: no TLS and no authentication. Default on — a throwaway benchmark stand should measure the engine, not the handshake.",
+      "description": "Start with --insecure: no TLS and no authentication. Always on: the stand provisions no certificates, so a secure cluster could not start.",
       "group": "Security",
       "name": "insecure",
       "title": "Insecure mode"
@@ -126,6 +151,11 @@
       "expr": "!(\"locality\" in root) || size(root.locality) == 0 || size(root.locality) == int(root.nodes)",
       "id": "locality-per-node",
       "message": "locality must be empty or carry exactly one entry per node"
+    },
+    {
+      "expr": "root.insecure",
+      "id": "insecure-only",
+      "message": "secure mode is not available: the stand provisions no node or CA certificates"
     },
     {
       "expr": "int(root.haproxy) == 0 || int(root.nodes) \u003e= 3",

@@ -29,6 +29,8 @@ export interface CfgHaproxyCfg2ItemItem {
   address: string;
   /** Port. Backend database port. */
   port: number | string;
+  /** Check port. This server's health-check port when it differs from the listener's (instances sharing a machine on their own ports). */
+  check_port?: number | string | null;
   /** Weight. server weight for the balancing algorithm. */
   weight?: number | string;
   /** Backup. server backup: used only when every non-backup server is down. */

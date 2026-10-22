@@ -33,7 +33,7 @@ export interface CfgProxysqlCnf2 {
   restapi_port?: number | string;
   /** Client interfaces. host:port list the SQL proxy listens on; not changeable at runtime. */
   interfaces?: string;
-  /** Worker threads. Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count. */
+  /** Worker threads. Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count (the auto tuning does, up to 16). */
   threads?: number | string;
   /** Max frontend connections. Maximum client connections to the proxy (compiled default 10000, the shipped sample sets 2048). */
   max_connections?: number | string;

@@ -3,13 +3,15 @@
 
 /** root */
 export interface DbCockroachParams1 {
+  /** Tuning. auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto. */
+  tuning?: "auto" | "stock";
   /** CockroachDB version. Server series; the binary is pulled per release train (LTS lines get a year of maintenance plus a year of assistance). */
   version: "26.3" | "26.2" | "25.4" | "25.2" | "24.3" | "24.1";
   /** Nodes. Homogeneous cluster size; 1 for a single-node stand, otherwise an odd number >= 3 so Raft can hold a majority. */
   nodes?: number | string;
   /** Per-node locality. --locality for each node, in node order; leave empty for a flat cluster. When set it must have exactly one entry per node and every entry must use the same keys in the same order. */
   locality?: Array<string>;
-  /** Insecure mode. Start with --insecure: no TLS and no authentication. Default on — a throwaway benchmark stand should measure the engine, not the handshake. */
+  /** Insecure mode. Start with --insecure: no TLS and no authentication. Always on: the stand provisions no certificates, so a secure cluster could not start. */
   insecure?: boolean;
   /** HAProxy nodes. HAProxy instances spreading SQL clients over the nodes (cockroach gen haproxy produces an equivalent config). */
   haproxy?: number | string;

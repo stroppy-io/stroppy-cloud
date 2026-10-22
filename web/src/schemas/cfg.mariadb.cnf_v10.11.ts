@@ -31,7 +31,7 @@ export interface CfgMariadbCnf10_11 {
   binlog_format?: "MIXED" | "ROW" | "STATEMENT";
   /** Binlog row image. How much of each row is logged. */
   binlog_row_image?: "FULL" | "MINIMAL" | "NOBLOB";
-  /** Sync binlog. fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS). */
+  /** Sync binlog. fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS). The auto tuning sets 1, the durability MySQL has by default. */
   sync_binlog?: number | string;
   /** Binlog retention. Purge age of the binary logs; 0 disables purging. Takes precedence over expire_logs_days. [s] */
   binlog_expire_logs_seconds?: number | string;
@@ -69,14 +69,18 @@ export interface CfgMariadbCnf10_11 {
   wsrep_sst_auth?: string | null;
   /** Galera applier threads. Threads applying write-sets from other nodes. */
   wsrep_slave_threads?: number | string;
-  /** Sync wait bitmask. Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT. */
+  /** Sync wait bitmask. Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT. Global value: every session inherits it, health-check and monitor connections included, which MariaDB says must run with 0. */
   wsrep_sync_wait?: number | string;
+  /** Provider options. Galera provider options in one string, e.g. `gcache.size=2G; gcs.fc_limit=128`; empty = the provider's defaults (gcache 128M, fc_limit 16). */
+  wsrep_provider_options?: string | null;
   /** Bind address. Address mariadbd listens on. */
   bind_address?: string;
   /** Port. TCP port. */
   port?: number | string;
   /** Max connections. Maximum simultaneous client connections. */
   max_connections?: number | string;
+  /** Skip name resolve. Do not reverse-resolve client addresses; accounts must then be granted by IP, % or localhost. */
+  skip_name_resolve?: "ON" | "OFF";
   /** Max connect errors. Failed handshakes from one host before it is blocked. */
   max_connect_errors?: number | string;
   /** Thread cache size. Threads kept for reuse. */

@@ -104,7 +104,7 @@
     "reasons": {
       "engine_baseline": "минимум {{engine}}",
       "wal_archive": "минимум {{engine}} и место под архив WAL",
-      "shared_buffers": "вдвое больше shared_buffers ({{shared_buffers_gb}} ГБ)",
+      "shared_buffers": "вдвое больше кэша базы ({{shared_buffers_gb}} ГБ)",
       "proxy": "{{engine}}",
       "etcd": "etcd для Patroni",
       "image_baseline": "образ базы: минимум стенда",

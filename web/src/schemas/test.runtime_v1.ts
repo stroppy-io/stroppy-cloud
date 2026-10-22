@@ -118,6 +118,10 @@ export interface TestRuntime1Container {
   restart?: "no" | "on-failure" | "unless-stopped" | "always";
   /** Ulimits. Soft limits, e.g. nofile; -1 = unlimited. */
   ulimits?: Record<string, number | string>;
+  /** Shared memory. Size of /dev/shm; empty = Docker's 64 MB. [MB] */
+  shm_size_mb?: number | string;
+  /** Security options. docker --security-opt values, e.g. seccomp=unconfined. */
+  security_opt?: Array<string>;
 }
 
 /** object pool */
@@ -611,6 +615,10 @@ export interface TestRuntime1Item2 {
   restart?: "no" | "on-failure" | "unless-stopped" | "always";
   /** Ulimits. Soft limits, e.g. nofile; -1 = unlimited. */
   ulimits?: Record<string, number | string>;
+  /** Shared memory. Size of /dev/shm; empty = Docker's 64 MB. [MB] */
+  shm_size_mb?: number | string;
+  /** Security options. docker --security-opt values, e.g. seccomp=unconfined. */
+  security_opt?: Array<string>;
 }
 
 /** object  */

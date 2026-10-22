@@ -61,7 +61,7 @@ export interface CfgMaxscaleCnf24 {
   enable_root_user?: "true" | "false";
   /** Primary accepts reads. Send read traffic to the primary as well as the replicas. */
   master_accept_reads?: "true" | "false";
-  /** Causal reads. Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it. */
+  /** Causal reads. Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it. Galera supports none and the fast modes only; in front of Galera the server sets none. */
   causal_reads?: "none" | "local" | "global" | "fast" | "fast_global" | "universal" | "fast_universal";
   /** Causal reads timeout. How long a causal read waits for the replica to catch up before it falls back to the primary. [ms] */
   causal_reads_timeout?: number | string;

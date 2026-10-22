@@ -5,6 +5,31 @@
     {
       "choice": {
         "default": {
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "Auto",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Engine defaults",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto.",
+      "group": "Tuning",
+      "name": "tuning",
+      "title": "Tuning"
+    },
+    {
+      "choice": {
+        "default": {
           "stringValue": "26.2"
         },
         "options": [
@@ -73,36 +98,15 @@
       "title": "Erasure mode"
     },
     {
-      "choice": {
-        "default": {
-          "stringValue": "disk"
-        },
-        "options": [
-          {
-            "label": "disk (all pdisks of a host are independent)",
-            "value": {
-              "stringValue": "disk"
-            }
-          },
-          {
-            "label": "body (one host = one domain)",
-            "value": {
-              "stringValue": "body"
-            }
-          },
-          {
-            "label": "rack (one rack = one domain)",
-            "value": {
-              "stringValue": "rack"
-            }
-          }
-        ]
-      },
-      "description": "config.fail_domain_type: which level of host.location the storage layer treats as one failure unit. Upstream uses disk for single-host block-4-2 and rack for mirror-3-dc.",
+      "deprecated": true,
+      "description": "Removed: every storage node is one fail domain. Ignored when present.",
       "group": "Storage",
       "name": "failure_domain",
-      "required": true,
-      "title": "Fail domain level"
+      "string": {
+        "maxLen": "16"
+      },
+      "title": "Fail domain level",
+      "when": "false"
     },
     {
       "description": "Nodes running the BlobStorage layer; together with pdisks_per_node they supply the fail domains the erasure mode demands.",
@@ -127,7 +131,7 @@
       "title": "Database nodes"
     },
     {
-      "description": "Drive entries per host_config; with failure_domain=disk each pdisk is its own fail domain, which is how a small stand reaches 8 or 9 of them.",
+      "description": "Drive entries per host_config, each a file of at least 80 GB on the node's data disk (the disk needs 80 GB per pdisk + 20 GB).",
       "group": "Storage",
       "int64": {
         "default": "1",
@@ -163,28 +167,28 @@
           }
         ]
       },
-      "description": "config.default_disk_type and the drive type of every host_config entry; storage pools are built per device type.",
+      "description": "Drive type of every host_config entry, the storage pool's pdisk filter and pool kind (ssd / nvme / rot) the database is created in.",
       "group": "Storage",
       "name": "disk_type",
       "required": true,
       "title": "PDisk device type"
     },
     {
-      "description": "Blob storage groups created in the database's storage pool; more groups spread tablets wider.",
+      "description": "Blob storage groups created in the database's storage pool; more groups spread tablets and their logs wider. Empty = sized by the tuning (auto: 4, mirror-3-dc from the database-node cores; stock: 1).",
       "group": "Storage",
       "int64": {
-        "default": "1",
         "gte": "1",
         "lte": "1024"
       },
       "name": "storage_groups",
+      "nullable": true,
       "title": "Storage groups"
     },
     {
       "bool": {
         "default": true
       },
-      "description": "Let the recipe size the pdisk files from the machine's free disk instead of a fixed size.",
+      "description": "Size each pdisk file from the data disk: 80% of (disk - 10 GB) split over the node's pdisks, at least 80 GB. Off = 80 GB each.",
       "group": "Storage",
       "name": "auto_size_pdisks",
       "title": "Auto-size pdisks"
@@ -201,13 +205,13 @@
       "title": "Database path"
     },
     {
-      "bool": {
-        "default": false
-      },
-      "description": "Serve the gRPC endpoint over TLS (grpcs://) with a self-signed cluster certificate instead of plain grpc://.",
+      "bool": {},
+      "deprecated": true,
+      "description": "Removed until the stand issues certificates: the endpoint is plain grpc://. Ignored when present.",
       "group": "Database",
       "name": "grpcs",
-      "title": "TLS (grpcs)"
+      "title": "TLS (grpcs)",
+      "when": "false"
     },
     {
       "description": "HAProxy instances spreading gRPC clients over the database nodes.",
@@ -222,10 +226,10 @@
     },
     {
       "computed": {
-        "expr": "int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1)",
+        "expr": "int(root.storage_nodes)",
         "result": "RESULT_TYPE_INT64"
       },
-      "description": "How many independent failure units the storage layer actually gets — what the erasure mode is checked against.",
+      "description": "How many independent failure units the storage layer gets: one per storage node — what the erasure mode is checked against.",
       "group": "Storage",
       "name": "fail_domains",
       "title": "Fail domains"
@@ -238,14 +242,14 @@
   },
   "rules": [
     {
-      "expr": "root.fault_tolerance != \"block-4-2\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) \u003e= 8",
+      "expr": "root.fault_tolerance != \"block-4-2\" || int(root.storage_nodes) \u003e= 8",
       "id": "block42-min-domains",
-      "message": "block-4-2 needs at least 8 fail domains (storage_nodes x pdisks_per_node when failure_domain=disk)"
+      "message": "block-4-2 needs at least 8 fail domains (one per storage node)"
     },
     {
-      "expr": "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) * (root.failure_domain == \"disk\" ? int(root.pdisks_per_node) : 1) \u003e= 9",
+      "expr": "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) \u003e= 9",
       "id": "mirror3dc-min-domains",
-      "message": "mirror-3-dc needs at least 9 fail domains across 3 realms"
+      "message": "mirror-3-dc needs at least 9 fail domains (storage nodes) across 3 realms"
     },
     {
       "expr": "root.fault_tolerance != \"mirror-3-dc\" || int(root.storage_nodes) % 3 == 0",

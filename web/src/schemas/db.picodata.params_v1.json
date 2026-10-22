@@ -5,6 +5,31 @@
     {
       "choice": {
         "default": {
+          "stringValue": "auto"
+        },
+        "options": [
+          {
+            "label": "Auto",
+            "value": {
+              "stringValue": "auto"
+            }
+          },
+          {
+            "label": "Engine defaults",
+            "value": {
+              "stringValue": "stock"
+            }
+          }
+        ]
+      },
+      "description": "auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto.",
+      "group": "Tuning",
+      "name": "tuning",
+      "title": "Tuning"
+    },
+    {
+      "choice": {
+        "default": {
           "stringValue": "26.1"
         },
         "options": [
@@ -118,6 +143,28 @@
                     "group": "Tier",
                     "name": "replication_mode",
                     "title": "Replication mode"
+                  },
+                  {
+                    "choice": {
+                      "options": [
+                        {
+                          "label": "Write (no fsync)",
+                          "value": {
+                            "stringValue": "write"
+                          }
+                        },
+                        {
+                          "label": "Fsync every write",
+                          "value": {
+                            "stringValue": "fsync"
+                          }
+                        }
+                      ]
+                    },
+                    "description": "26.2 only: write = a commit waits for the WAL write, fsync = for its fsync too. Empty = fsync under tuning auto, Picodata's own write under stock; 25.3 and 26.1 always write without fsync.",
+                    "group": "Tier",
+                    "name": "wal_mode",
+                    "title": "WAL mode"
                   }
                 ],
                 "strict": true
@@ -143,10 +190,20 @@
       "title": "Default bucket count"
     },
     {
-      "description": "instance.memtx.memory per instance; Picodata's own default of 64 MB only fits a smoke test.",
+      "description": "Picodata instances started on one machine (one memtx transaction thread each); machines = ceil(instances / this). Replicas of a replicaset never share a machine.",
+      "group": "Topology",
+      "int64": {
+        "default": "1",
+        "gte": "1",
+        "lte": "8"
+      },
+      "name": "instances_per_machine",
+      "title": "Instances per machine"
+    },
+    {
+      "description": "instance.memtx.memory per instance. Empty = sized from the machine's RAM under tuning auto, 2 GB under stock; Picodata's own default of 64 MB only fits a smoke test.",
       "group": "Memory",
       "int64": {
-        "default": "2048",
         "gte": "32",
         "lte": "1048576"
       },
@@ -164,6 +221,47 @@
       },
       "name": "sql_vdbe_opcode_max",
       "title": "SQL instruction limit"
+    },
+    {
+      "description": "Queries one instance runs at once (Picodata default 50; 26.1 and later). Empty = 1.5 × peak virtual users per SQL endpoint, at least 50, under tuning auto.",
+      "group": "SQL runtime",
+      "int64": {
+        "gte": "1",
+        "lte": "100000"
+      },
+      "name": "sql_runtime_concurrency_max",
+      "title": "Concurrent SQL queries"
+    },
+    {
+      "description": "Prepared statements in the LRU cache of a storage instance (Picodata default 50). Empty = 200 under tuning auto.",
+      "group": "SQL runtime",
+      "int64": {
+        "gte": "1",
+        "lte": "100000"
+      },
+      "name": "sql_storage_cache_count_max",
+      "title": "Storage plan cache entries"
+    },
+    {
+      "description": "sql_storage_cache_size_max, the LRU cache of prepared statements on a storage instance (Picodata default 5 MB). Empty = 32 MB under tuning auto.",
+      "group": "SQL runtime",
+      "int64": {
+        "gte": "1",
+        "lte": "4096"
+      },
+      "name": "sql_storage_cache_size_max_mb",
+      "title": "Storage plan cache size",
+      "unit": "MB"
+    },
+    {
+      "description": "Rows a virtual table of one query may collect from the storages (Picodata default 5000). Empty = 50000 under tuning auto, so large validation and batch queries do not stop at the limit.",
+      "group": "SQL runtime",
+      "int64": {
+        "gte": "1",
+        "lte": "100000000"
+      },
+      "name": "sql_motion_row_max",
+      "title": "Rows per motion"
     },
     {
       "description": "HAProxy instances spreading pgproto clients over the instances of the default tier.",
@@ -216,6 +314,11 @@
       "expr": "root.version == \"26.2\" || root.tiers.all(t, t.replication_mode == \"async\")",
       "id": "sync-requires-26-2",
       "message": "synchronous tier replication requires Picodata 26.2"
+    },
+    {
+      "expr": "root.version == \"26.2\" || root.tiers.all(t, !(\"wal_mode\" in t) || t.wal_mode == \"write\")",
+      "id": "fsync-requires-26-2",
+      "message": "the fsync WAL mode requires Picodata 26.2"
     },
     {
       "expr": "int(root.haproxy) == 0 || root.pgproto",

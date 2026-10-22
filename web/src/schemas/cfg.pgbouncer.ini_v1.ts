@@ -39,6 +39,8 @@ export interface CfgPgbouncerIni1 {
   reserve_pool_timeout?: number;
   /** Max DB connections. Cap on server connections per database across all pools; 0 is unlimited. */
   max_db_connections?: number | string;
+  /** Max prepared statements. Protocol-level prepared statements PgBouncer tracks per server connection in transaction and statement pooling; 0 turns the support off. Unset keeps the build's default: 200 on 1.24, 0 on 1.23. */
+  max_prepared_statements?: number | string | null;
   /** Max user connections. Cap on server connections per user across all pools; 0 is unlimited. */
   max_user_connections?: number | string;
   /** Server idle timeout. Close a server connection idle longer than this; 0 disables. [s] */

@@ -3,11 +3,13 @@
 
 /** root */
 export interface DbPostgresParams1 {
+  /** Tuning. auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto. */
+  tuning?: "auto" | "stock";
   /** PostgreSQL version. Server major version; packages come from the PGDG apt repository (apt.postgresql.org). */
   version: "18" | "17" | "16" | "15";
   /** Streaming replicas. Physical streaming standbys next to the primary; 0 = a single node. */
   replicas?: number | string;
-  /** Synchronous replicas. How many of the replicas commit synchronously (synchronous_standby_names); must not exceed replicas. */
+  /** Synchronous replicas. How many replicas a commit waits for: Patroni's synchronous_node_count, or without Patroni synchronous_standby_names = ANY n over the replicas' application names. Must not exceed replicas. */
   sync_replicas?: number | string;
   /** High availability. none = plain primary/standby without failover; patroni = Patroni owns postgres and elects the leader through etcd. */
   ha: "none" | "patroni";
@@ -17,7 +19,7 @@ export interface DbPostgresParams1 {
   haproxy?: number | string;
   /** PgBouncer. Collocate a PgBouncer pooler with every database node. */
   pgbouncer?: boolean;
-  /** WAL archiving. Turn on archive_mode and archive WAL segments to local storage on the primary. */
+  /** WAL archiving. Retired: WAL archiving is not implemented; a stored value is ignored. */
   wal_archive?: boolean;
   /** Extensions. CREATE EXTENSION on the benchmark database after initdb; preload-only ones are added to shared_preload_libraries too. */
   extensions?: Array<"pg_stat_statements" | "pg_buffercache" | "pg_prewarm" | "pg_trgm" | "vector" | "pg_partman" | "postgis" | "hypopg" | "pg_cron">;

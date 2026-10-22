@@ -467,7 +467,7 @@
           }
         ]
       },
-      "description": "Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it.",
+      "description": "Read-your-own-writes guarantee level; anything but none costs a synchronization wait. global: every read sees the writes made through the service before it. Galera supports none and the fast modes only; in front of Galera the server sets none.",
       "group": "Service",
       "name": "causal_reads",
       "title": "Causal reads"
@@ -806,6 +806,11 @@
       "expr": "!(\"causal_reads_timeout\" in root) || !(\"monitor_interval\" in root) || int(root.causal_reads_timeout) \u003e= int(root.monitor_interval)",
       "id": "causal-timeout",
       "message": "causal_reads_timeout below monitor_interval makes causal reads fail before the monitor notices anything"
+    },
+    {
+      "expr": "!(\"monitor_module\" in root) || root.monitor_module != \"galeramon\" || !(\"causal_reads\" in root) || !(root.causal_reads in [\"local\", \"global\", \"universal\"])",
+      "id": "galera-causal-reads",
+      "message": "causal_reads local/global/universal need MASTER_GTID_WAIT, which Galera lacks: use none or a fast mode"
     },
     {
       "expr": "!(\"custom\" in root) || root.custom.all(k, k.matches(\"^[a-z_][a-z0-9_.]*$\"))",

@@ -15,6 +15,8 @@ export interface CfgOrioledbPostgresqlConf16 {
   hash_mem_multiplier?: number;
   /** Maintenance work mem. Memory for VACUUM, CREATE INDEX and ALTER TABLE ADD FOREIGN KEY. [MB] */
   maintenance_work_mem?: number | string;
+  /** Autovacuum work mem. Memory per autovacuum worker. Unset keeps the upstream -1: every worker takes maintenance_work_mem, so a large maintenance_work_mem multiplies by autovacuum_max_workers. Up to PostgreSQL 16 vacuum uses at most 1GB of it. [MB] */
+  autovacuum_work_mem?: number | string | null;
   /** Effective cache size. Planner-only estimate of the OS + PostgreSQL cache available to one query. Allocates nothing. [MB] */
   effective_cache_size?: number | string;
   /** WAL level. How much information is written to the WAL. `replica` is the minimum for streaming replication. */
@@ -57,6 +59,8 @@ export interface CfgOrioledbPostgresqlConf16 {
   random_page_cost?: number;
   /** Effective I/O concurrency. Number of concurrent I/O requests the planner expects the storage to sustain. Upstream default 1 up to PostgreSQL 17. */
   effective_io_concurrency?: number | string;
+  /** Maintenance I/O concurrency. Like effective_io_concurrency, for maintenance work (VACUUM, CREATE INDEX). Unset keeps the upstream default 10. */
+  maintenance_io_concurrency?: number | string | null;
   /** JIT. Allow JIT compilation of expressions; usually off for OLTP benchmarks, where it only adds latency. */
   jit?: "on" | "off";
   /** Default statistics target. Default number of ANALYZE histogram buckets / MCV entries per column. */
@@ -121,6 +125,8 @@ export interface CfgOrioledbPostgresqlConf16 {
   max_parallel_maintenance_workers?: number | string;
   /** Max locks per transaction. Average number of object locks allocated per transaction slot. */
   max_locks_per_transaction?: number | string;
+  /** Max prepared transactions. Transactions that may sit in the prepared (two-phase) state at once. Unset keeps the upstream 0, which disables PREPARE TRANSACTION; a standby needs at least the primary's value. */
+  max_prepared_transactions?: number | string | null;
   /** Deadlock timeout. Time to wait on a lock before running deadlock detection. [ms] */
   deadlock_timeout?: number | string;
   /** Lock timeout. Abort a statement that waits longer than this for any lock; 0 disables. [ms] */
@@ -181,7 +187,7 @@ export interface CfgOrioledbPostgresqlConf16 {
   orioledb_xid_buffers?: number | string;
   /** orioledb.checkpoint_completion_ratio. Share of the checkpoint window spent on OrioleDB tables; the remainder goes to heap tables. */
   orioledb_checkpoint_completion_ratio?: number;
-  /** orioledb.max_io_concurrency. Cap on concurrent OrioleDB I/O operations; 0 lets OrioleDB derive it from main_buffers. */
+  /** orioledb.max_io_concurrency. Cap on concurrent OrioleDB I/O operations, worth raising only when the kernel, not the disk, is the bottleneck under concurrent I/O; 0 (the upstream default) turns the limit off. */
   orioledb_max_io_concurrency?: number | string;
   /** orioledb.bgwriter_num_workers. Background writer processes flushing OrioleDB pages. */
   orioledb_bgwriter_num_workers?: number | string;

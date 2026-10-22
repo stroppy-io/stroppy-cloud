@@ -3,6 +3,8 @@
 
 /** root */
 export interface DbMariadbParams1 {
+  /** Tuning. auto = settings sized from the machine, role, topology and workload (every value the run used is in its configs); stock = the engine's own defaults. A key set in the config wins over auto. */
+  tuning?: "auto" | "stock";
   /** MariaDB version. Server LTS series; packages come from the mariadb_repo_setup repository. */
   version: "11.8" | "11.4" | "10.11";
   /** Replicas. Secondary servers behind the primary; not used in Galera mode, where the cluster is sized by galera_nodes instead. */
@@ -11,7 +13,7 @@ export interface DbMariadbParams1 {
   replication: "async" | "semi_sync" | "galera";
   /** Galera nodes. Size of the Galera cluster; odd only, minimum 3 — quorum needs a strict majority of the last known membership. */
   galera_nodes?: 3 | 5 | 7;
-  /** Buffer pool. auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode. */
+  /** Buffer pool. Buffer pool size under tuning auto: auto = 70% of the database machine's RAM; fixed = buffer_pool_mb; stock = the server's 128 MB and the whole tuning as with tuning stock (the field predates tuning). An innodb_buffer_pool_size set in the config wins over every mode. */
   buffer_pool?: "auto" | "fixed" | "stock";
   /** Buffer pool size. innodb_buffer_pool_size of every database server; the run refuses a size over the machine's RAM. [MB] */
   buffer_pool_mb?: number | string;

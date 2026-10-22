@@ -95,7 +95,7 @@
       "title": "Client interfaces"
     },
     {
-      "description": "Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count.",
+      "description": "Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count (the auto tuning does, up to 16).",
       "group": "MySQL",
       "int64": {
         "default": "4",
