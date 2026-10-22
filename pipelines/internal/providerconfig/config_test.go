@@ -40,7 +40,10 @@ func fixture(t *testing.T) (spec.ProviderConfig, string, map[string]string, fake
 	return p, name, labels, fakeAdapter{fake.NewSimpleDynamicClientWithCustomListKinds(runtime.NewScheme(), lists)}
 }
 
-const testCredentials = `{"sa_key_json":"{\"id\":\"canary-private-credential\"}"}`
+const (
+	testCredentials        = `{"sa_key_json":"{\"id\":\"canary-private-credential\"}"}`
+	testCredentialsRotated = `{"sa_key_json":"{\"id\":\"rotated-private-credential\"}"}`
+)
 
 func TestProfileLifecycleAndRetry(t *testing.T) {
 	p, name, labels, cli := fixture(t)
@@ -106,7 +109,9 @@ func TestUsageAndForeignOwnershipBlockMutations(t *testing.T) {
 			_, e = c.Create(ctx, used, metav1.CreateOptions{})
 			require.NoError(t, e)
 			require.ErrorContains(t, remove(ctx, cli, p.Provider, name, labels), "still in use")
-			require.ErrorContains(t, ensure(ctx, cli, p, name, labels, testCredentials), "still in use")
+			// The same credentials are a no-op next to a live run; a change waits.
+			require.NoError(t, ensure(ctx, cli, p, name, labels, testCredentials))
+			require.ErrorContains(t, ensure(ctx, cli, p, name, labels, testCredentialsRotated), "still in use")
 		})
 	}
 	p, name, labels, cli := fixture(t)

@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 	"time"
 
@@ -98,6 +99,33 @@ func owned(u *unstructured.Unstructured, labels map[string]string) bool {
 	return true
 }
 
+// unchanged reports that every object exists, belongs to the profile, is
+// not being deleted and already holds the wanted spec/data.
+func unchanged(ctx context.Context, cli adapter, labels map[string]string, want ...*unstructured.Unstructured) (bool, error) {
+	for _, u := range want {
+		c, err := cli.ObjectClient(ctx, u)
+		if err != nil {
+			return false, err
+		}
+		old, err := c.Get(ctx, u.GetName(), metav1.GetOptions{})
+		if apierrors.IsNotFound(err) {
+			return false, nil
+		}
+		if err != nil {
+			return false, err
+		}
+		if !owned(old, labels) || old.GetDeletionTimestamp() != nil {
+			return false, nil
+		}
+		for _, field := range []string{"spec", "data"} {
+			if !reflect.DeepEqual(old.Object[field], u.Object[field]) {
+				return false, nil
+			}
+		}
+	}
+	return true, nil
+}
+
 func upsert(ctx context.Context, cli adapter, u *unstructured.Unstructured, labels map[string]string) error {
 	c, err := cli.ObjectClient(ctx, u)
 	if err != nil {
@@ -134,11 +162,6 @@ func upsert(ctx context.Context, cli adapter, u *unstructured.Unstructured, labe
 }
 
 func ensure(ctx context.Context, cli adapter, p spec.ProviderConfig, name string, labels map[string]string, raw string) error {
-	// The profile's own network objects reference the ProviderConfig for
-	// the profile's whole life; they are not a run using it.
-	if err := unused(ctx, cli, p.Provider, name, ownNetwork(p.Provider, name)); err != nil {
-		return err
-	}
 	data, pc, err := providerObjects(request{Provider: p.Provider, Name: name, Settings: p.Settings}, raw)
 	if err != nil {
 		return fmt.Errorf("invalid provider credential or settings payload")
@@ -150,6 +173,21 @@ func ensure(ctx context.Context, cli adapter, p spec.ProviderConfig, name string
 	}
 	secret.Object["data"] = encoded
 	secret.Object["type"] = "Opaque"
+	// Unchanged credentials and config are left alone, so an ensure that
+	// only adds the profile network (an upgrade, a re-verify) runs next to
+	// live runs. A change waits until no run uses the configuration; the
+	// profile's own network objects reference it for its whole life and
+	// are not a run.
+	same, err := unchanged(ctx, cli, labels, pc, secret)
+	if err != nil {
+		return err
+	}
+	if same {
+		return nil
+	}
+	if err := unused(ctx, cli, p.Provider, name, ownNetwork(p.Provider, name)); err != nil {
+		return err
+	}
 	// Check both owners before changing either resource.
 	for _, u := range []*unstructured.Unstructured{pc, secret} {
 		c, e := cli.ObjectClient(ctx, u)

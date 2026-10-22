@@ -76,19 +76,12 @@ ORDER BY p.created_at;
 
 -- name: BeginProviderUpgrade :execrows
 -- A ready profile re-applies its configuration while queued runs wait for
--- it (they are not started on an old configuration); runs already handed
--- to Graphene or kept as stands still use the old one, so they must be gone,
--- and an hour given to Graphene's cleanup of the ones that finished (ensure
--- refuses while any run object still uses the ProviderConfig).
+-- it (they are not started on an old configuration). Runs already handed
+-- to Graphene and kept stands finish in their own networks: the unchanged
+-- ProviderConfig is left alone and only the profile network is added.
 UPDATE provider_profiles p
 SET status = 'verifying', status_reason = '', verify_run_id = @run_id, updated_at = now()
-WHERE p.id = @id AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < @revision::int
- AND NOT EXISTS (
-  SELECT 1 FROM runs r WHERE r.tenant_id = p.tenant_id
-   AND r.snapshot->'provider_profile'->>'id' = p.id::text
-   AND ((r.admitted_at IS NOT NULL AND r.status IN ('pending','running','cancelling')) OR r.stand_kept
-        OR r.finished_at > now() - interval '1 hour')
- );
+WHERE p.id = @id AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < @revision::int;
 
 -- name: PendingProviderOperations :many
 SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,

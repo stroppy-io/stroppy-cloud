@@ -356,9 +356,8 @@ func (s *Service) RecoverPending(ctx context.Context) error {
 
 // UpgradeStale configures again every ready Yandex profile from before
 // the profile network (ConfigRevision), so its runs get a network to join.
-// The profile is verifying meanwhile and its queued runs wait; one with a
-// started run or a kept stand waits until those are gone (they still use
-// their own networks). Runs in the cloud are untouched.
+// The profile is verifying meanwhile and its queued runs wait; started
+// runs and kept stands finish in their own networks, untouched.
 func (s *Service) UpgradeStale(ctx context.Context) error {
 	profiles, err := s.repo.Stale(ctx, KindYandex, ConfigRevision)
 	if err != nil {
