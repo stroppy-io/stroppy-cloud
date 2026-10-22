@@ -40,10 +40,15 @@ WHERE tenant_id = @tenant_id AND deleted_at IS NULL
   AND (@stand_kept_only::boolean = false OR stand_kept)
   AND (@favorites_of::text = '' OR EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = @favorites_of::text))
 ORDER BY
-  -- default: the viewer's favorites, then live runs (queued and running),
-  -- then the most recently finished.
+  -- default: the viewer's favorites, then the queue (next to start first),
+  -- then running runs, then the most recently finished.
   CASE WHEN @sort_key::text = 'default' THEN EXISTS (SELECT 1 FROM favorites f WHERE f.kind = 'run' AND f.target_id = runs.id AND f.user_id::text = @viewer_id::text) END DESC,
-  CASE WHEN @sort_key::text = 'default' THEN status IN ('pending', 'running', 'cancelling') END DESC,
+  CASE WHEN @sort_key::text = 'default' THEN
+    CASE WHEN status = 'pending' AND admitted_at IS NULL THEN 2
+         WHEN status IN ('pending', 'running', 'cancelling') THEN 1
+         ELSE 0 END
+  END DESC,
+  CASE WHEN @sort_key::text = 'default' AND status = 'pending' AND admitted_at IS NULL THEN created_at END ASC,
   CASE WHEN @sort_key::text = 'default' THEN finished_at END DESC NULLS FIRST,
   CASE WHEN @sort_key::text = 'name' AND NOT @desc::boolean THEN name END ASC,
   CASE WHEN @sort_key::text = 'name' AND @desc::boolean THEN name END DESC,
