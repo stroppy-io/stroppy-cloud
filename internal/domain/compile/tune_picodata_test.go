@@ -233,6 +233,10 @@ func TestPicodataInstancesPerMachine(t *testing.T) {
 					}
 					ports[key] = true
 				}
+				// The image's PICODATA_PG_LISTEN would win over the file.
+				if want := fmt.Sprintf("0.0.0.0:%d", c.Ports[1].Host); c.Env["PICODATA_PG_LISTEN"] != want {
+					t.Fatalf("%s: PICODATA_PG_LISTEN %q, want %q", c.Name, c.Env["PICODATA_PG_LISTEN"], want)
+				}
 				conf := fileOf(out, c.Name, picoConf)
 				if !strings.Contains(conf, "  failure_domain: {host: "+c.Machine+"}\n") {
 					t.Fatalf("%s: no failure domain:\n%s", c.Name, conf)

@@ -154,9 +154,11 @@ func picodataRecipe(c *compilation) error {
 		containers = append(containers, name)
 		c.add(spec.Container{
 			Name: name, Role: role, Machine: in.machine, Image: image,
-			Kind:   spec.ContainerKindDatabase,
-			Cmd:    []string{"run", "--config", confDir + "/picodata.yaml"},
-			Env:    map[string]string{"PICODATA_ADMIN_PASSWORD": picodataPassword},
+			Kind: spec.ContainerKindDatabase,
+			Cmd:  []string{"run", "--config", confDir + "/picodata.yaml"},
+			// The official image sets PICODATA_PG_LISTEN=0.0.0.0:4327, and the
+			// environment wins over the file: every slot names its own port.
+			Env:    map[string]string{"PICODATA_ADMIN_PASSWORD": picodataPassword, "PICODATA_PG_LISTEN": fmt.Sprintf("0.0.0.0:%d", in.pg())},
 			Mounts: []spec.Mount{{Source: in.dir(perMachine), Target: picoDataDir}},
 			Files:  []spec.File{{Path: confDir + "/picodata.yaml", Content: conf}},
 			Ports: []spec.Port{
