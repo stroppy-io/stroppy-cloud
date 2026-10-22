@@ -17,6 +17,7 @@ func Orioledb() *schemapb.Schema {
 		Descr("OrioleDB (containerised PostgreSQL storage engine) topology and options.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// Tag list verified against the registry on 2026-09-08: the
 			// repository publishes latest-pgNN (tracking main), beta17-pgNN
 			// (the beta17 release) and pgNN-nightly for majors 16, 17, 18.

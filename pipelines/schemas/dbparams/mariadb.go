@@ -16,6 +16,7 @@ func MariaDB() *schemapb.Schema {
 		Descr("MariaDB topology and options: version, replicas, replication mode (incl. Galera), proxies.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// Community LTS lines alive on 2026-09-08: 11.8 (EOL 2028-06),
 			// 11.4 (EOL 2029-05), 10.11 (EOL 2028-02). 10.6 went EOL
 			// 2026-07-06 and is gone.

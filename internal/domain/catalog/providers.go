@@ -5,6 +5,7 @@ package catalog
 //
 // doc: https://yandex.cloud/en/docs/compute/concepts/vm-platforms
 // doc: https://yandex.cloud/en/docs/compute/concepts/disk#disks-types
+// doc: https://yandex.cloud/en/docs/compute/concepts/limits — disk and VM IOPS/bandwidth
 // doc: https://aws.amazon.com/ec2/instance-types/
 // doc: https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html
 //
@@ -27,10 +28,10 @@ func providers() []Provider {
 				{ID: "highfreq-v3", Title: "Intel Ice Lake compute-optimized (highfreq-v3)"},
 			},
 			DiskTypes: []DiskType{
-				{ID: "network-ssd", Title: "Network SSD", MinGB: 4, StepGB: 4},
-				{ID: "network-ssd-nonreplicated", Title: "Non-replicated SSD", MinGB: 93, StepGB: 93},
-				{ID: "network-ssd-io-m3", Title: "Ultra high-speed SSD (io-m3)", MinGB: 93, StepGB: 93},
-				{ID: "network-hdd", Title: "Network HDD", MinGB: 4, StepGB: 4},
+				{ID: "network-ssd", Title: "Network SSD", MinGB: 4, StepGB: 4, Perf: DiskPerf{UnitGB: 32, ReadIOPSPerUnit: 1000, WriteIOPSPerUnit: 1000, ReadMBpsPerUnit: 15, WriteMBpsPerUnit: 15, MaxReadIOPS: 20000, MaxWriteIOPS: 40000, MaxReadMBps: 450, MaxWriteMBps: 450, VMIOPSPerCPU: 3500, VMMBpsPerCPU: 45}},
+				{ID: "network-ssd-nonreplicated", Title: "Non-replicated SSD", MinGB: 93, StepGB: 93, Perf: DiskPerf{UnitGB: 93, ReadIOPSPerUnit: 28000, WriteIOPSPerUnit: 5600, ReadMBpsPerUnit: 110, WriteMBpsPerUnit: 82, MaxReadIOPS: 75000, MaxWriteIOPS: 75000, MaxReadMBps: 1024, MaxWriteMBps: 1024, VMIOPSPerCPU: 10000, VMMBpsPerCPU: 100}},
+				{ID: "network-ssd-io-m3", Title: "Ultra high-speed SSD (io-m3)", MinGB: 93, StepGB: 93, Perf: DiskPerf{UnitGB: 93, ReadIOPSPerUnit: 28000, WriteIOPSPerUnit: 5600, ReadMBpsPerUnit: 110, WriteMBpsPerUnit: 82, MaxReadIOPS: 75000, MaxWriteIOPS: 40000, MaxReadMBps: 1024, MaxWriteMBps: 1024, VMIOPSPerCPU: 10000, VMMBpsPerCPU: 100}},
+				{ID: "network-hdd", Title: "Network HDD", MinGB: 4, StepGB: 4, Perf: DiskPerf{UnitGB: 256, ReadIOPSPerUnit: 300, WriteIOPSPerUnit: 300, ReadMBpsPerUnit: 30, WriteMBpsPerUnit: 30, MaxReadIOPS: 2000, MaxWriteIOPS: 11000, MaxReadMBps: 240, MaxWriteMBps: 240, VMIOPSPerCPU: 3500, VMMBpsPerCPU: 45}},
 			},
 			Sizes: map[string]map[string]SizeSpec{
 				"db": {
@@ -87,7 +88,7 @@ func providers() []Provider {
 				{ID: "c7i", Title: "c7i — compute optimized, Sapphire Rapids"},
 			},
 			DiskTypes: []DiskType{
-				{ID: "gp3", Title: "General Purpose SSD (gp3)", MinGB: 1, StepGB: 1},
+				{ID: "gp3", Title: "General Purpose SSD (gp3)", MinGB: 1, StepGB: 1, Perf: DiskPerf{ReadIOPSPerUnit: 3000, WriteIOPSPerUnit: 3000, ReadMBpsPerUnit: 125, WriteMBpsPerUnit: 125}},
 				{ID: "io2", Title: "Provisioned IOPS SSD (io2)", MinGB: 4, StepGB: 1},
 				{ID: "st1", Title: "Throughput Optimized HDD (st1)", MinGB: 125, StepGB: 1},
 			},

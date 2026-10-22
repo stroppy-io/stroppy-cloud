@@ -159,6 +159,10 @@ type Container struct {
 	Healthcheck *Healthcheck      `json:"healthcheck,omitempty"`
 	Restart     string            `json:"restart,omitempty"`
 	Ulimits     map[string]int64  `json:"ulimits,omitempty"`
+	// ShmSizeMB sizes /dev/shm (0 = Docker's 64 MB).
+	ShmSizeMB int64 `json:"shm_size_mb,omitempty"`
+	// SecurityOpt are docker --security-opt values.
+	SecurityOpt []string `json:"security_opt,omitempty"`
 }
 
 // The kinds a container is drawn as.

@@ -18,6 +18,7 @@ func Ydb() *schemapb.Schema {
 		Descr("Self-hosted YDB topology: storage/database nodes, erasure mode, pdisks, database path.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// Server lines published on the registry as of 2026-09-08: 26.3
 			// (latest), 26.2, 26.1, 25.4. 24.x is no longer built.
 			// doc: https://ydb.tech/docs/en/changelog-server

@@ -388,6 +388,9 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 		Sizes: spec.Sizes, Execution: spec.Execution, ProviderProfile: Ref{ID: res.Profile.ID, Name: res.Profile.Name}, ProviderKind: string(res.Profile.Kind),
 		EffectiveConfigs: res.DatabaseDerived.EffectiveConfigs, Machines: compiled.Machines, Topology: res.DatabaseDerived.Plan.Shape(),
 	}
+	if compiled.EffectiveConfigs != nil {
+		r.Snapshot.EffectiveConfigs = compiled.EffectiveConfigs
+	}
 	if spec.Keep > 0 {
 		r.Snapshot.Keep = spec.Keep.String()
 	}

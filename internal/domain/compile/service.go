@@ -69,7 +69,11 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	if err != nil {
 		return run.Compiled{}, err
 	}
-	return run.Compiled{Spec: bakedSpec, Machines: out.Machines}, nil
+	compiled := run.Compiled{Spec: bakedSpec, Machines: out.Machines}
+	if len(out.Tuned) > 0 {
+		compiled.EffectiveConfigs = EffectiveWithTuned(req.Derived.EffectiveConfigs, out.Tuned)
+	}
+	return compiled, nil
 }
 
 func (s *Service) preflight(ctx context.Context, db library.DatabaseSpec, wl library.WorkloadSpec, res library.Resolved, test library.TestSpec) ([]library.Issue, error) {

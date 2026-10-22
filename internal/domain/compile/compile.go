@@ -64,6 +64,9 @@ type Output struct {
 	Machines []run.MachineSnapshot
 	// ClientURL is the stroppy driver URL (with placeholders).
 	ClientURL string
+	// Tuned: role → config schema id → key → the value auto tuning put on
+	// top of the effective config (see EffectiveWithTuned).
+	Tuned map[string]map[string]map[string]any
 }
 
 // Compile builds the RunSpec.
@@ -82,6 +85,9 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 		return Output{}, err
 	}
 	c.exporters()
+	if err := c.prepareDatabaseHosts(); err != nil {
+		return Output{}, err
+	}
 	c.managedFlow()
 	if err := c.workload(); err != nil {
 		return Output{}, err
@@ -135,6 +141,8 @@ type compilation struct {
 	out Output
 	// machinesByRole: role → machine names in order.
 	machinesByRole map[string][]string
+	// hosts: machine → the recipe's kernel wishes (prepareDatabaseHosts).
+	hosts map[string]hostTuning
 }
 
 // --- machines ---------------------------------------------------------------

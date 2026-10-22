@@ -17,6 +17,7 @@ func Postgres() *schemapb.Schema {
 		Descr("PostgreSQL topology and options: version, replicas, HA machinery, extensions.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// Community-supported majors as of 2026-09: 14 (EOL 2026-11-12),
 			// 15, 16, 17, 18. 14 is dropped — it dies inside a benchmark
 			// season; 19 is still beta and not offered.

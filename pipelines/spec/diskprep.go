@@ -24,7 +24,9 @@ func EnsureDiskPreparation(r *Run) {
 			if fs == "" {
 				fs = "ext4"
 			}
-			options := "defaults"
+			// No access-time writes: every read of a database file would
+			// otherwise dirty its inode on a disk shared with the WAL.
+			options := "defaults,noatime,nodiratime"
 			if len(d.MountOptions) > 0 {
 				options = strings.Join(d.MountOptions, ",")
 			}

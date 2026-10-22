@@ -17,6 +17,7 @@ func Picodata() *schemapb.Schema {
 		Descr("Picodata topology and options: version, tiers, sharding, memtx memory.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// The 26.x line is what the registry publishes today (26.1.x and
 			// 26.2.x images, tagged 2026-09); 25.3 is kept because the apt
 			// repository still carries it and older result sets reference it.

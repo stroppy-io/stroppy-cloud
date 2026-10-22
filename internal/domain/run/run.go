@@ -524,6 +524,9 @@ type CompileRequest struct {
 type Compiled struct {
 	Spec     json.RawMessage
 	Machines []MachineSnapshot
+	// EffectiveConfigs is the database's resolved configs with the values
+	// auto tuning computed for this run's machines (nil = unchanged).
+	EffectiveConfigs map[string]map[string]json.RawMessage
 }
 
 // Compiler builds and bakes the RunSpec.

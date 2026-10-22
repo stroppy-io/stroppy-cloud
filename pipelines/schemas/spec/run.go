@@ -218,6 +218,13 @@ func Run() *schemapb.Schema {
 					schemapb.MapOf("ulimits", schemapb.Int64("value").Gte(-1)).
 						Title("Ulimits").Desc("Soft limits, e.g. nofile; -1 = unlimited.").
 						MaxEntries(16),
+					// doc: docs.docker.com/reference/cli/docker/container/run/#shm-size — default 64 MB
+					schemapb.Int64("shm_size_mb").Title("Shared memory").Unit("MB").Gte(1).Lte(1048576).
+						Desc("Size of /dev/shm; empty = Docker's 64 MB."),
+					// doc: docs.docker.com/engine/security/seccomp/ — security-opt seccomp=unconfined
+					schemapb.List("security_opt", schemapb.Str("").MinLen(1).MaxLen(256)).
+						Title("Security options").Desc("docker --security-opt values, e.g. seccomp=unconfined.").
+						MaxItems(8),
 				).Strict(),
 			).Title("Containers").Group("Containers").
 				Desc("Everything that runs on the machines: databases, proxies, exporters.").

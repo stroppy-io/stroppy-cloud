@@ -16,6 +16,7 @@ func MySQL() *schemapb.Schema {
 		Descr("MySQL topology and options: version, replicas, replication mode, ProxySQL.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// 8.4 is the current LTS (GA 2024-04, premier support to 2029-04);
 			// 8.0 left premier support in 2025-04 and is offered only for
 			// comparison against historical numbers.

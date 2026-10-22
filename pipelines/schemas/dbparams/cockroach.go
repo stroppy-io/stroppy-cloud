@@ -17,6 +17,7 @@ func Cockroach() *schemapb.Schema {
 		Descr("CockroachDB topology and options: version, node count, locality, TLS mode.").
 		Strict().Coerce().
 		Fields(
+			tuning(),
 			// Supported lines on 2026-09-08. 23.2 LTS went EOL 2026-07-08 and
 			// 24.2 (Innovation) died 2025-02-12, so both are gone; 24.1, 24.3,
 			// 25.2 and 25.4 are the live LTS lines, 26.2 and 26.3 the current

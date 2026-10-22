@@ -120,6 +120,8 @@ type DiskType struct {
 	Title  string
 	MinGB  int
 	StepGB int
+	// Perf is the type's performance model (zero = unknown).
+	Perf DiskPerf
 }
 
 // Image is a boot image.

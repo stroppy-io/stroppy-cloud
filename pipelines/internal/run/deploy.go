@@ -267,6 +267,10 @@ func containerSpec(c spec.Container, run spec.Run, files map[string]string, addr
 			host.Ulimits = append(host.Ulimits, &units.Ulimit{Name: k, Soft: c.Ulimits[k], Hard: c.Ulimits[k]})
 		}
 	}
+	if c.ShmSizeMB > 0 {
+		host.ShmSize = c.ShmSizeMB << 20
+	}
+	host.SecurityOpt = append(host.SecurityOpt, c.SecurityOpt...)
 	ds := dockerlib.Spec{Name: containerName(run.RunID, c.Name), Config: cfg, Host: host, Scrape: scrapeURL(c, run)}
 	if ds.Scrape != "" {
 		ds.ScrapeEvery = scrapeEvery
