@@ -12,6 +12,7 @@ import type {
   ProviderProfile,
   QuotaReport,
   Run,
+  RunOverview,
   RunPhase,
   RunStatus,
   Schedule,
@@ -1221,6 +1222,70 @@ export function buildRun(s: RunSeed): Run {
   }
 }
 
+// The connectivity check after deploy: every path answered, or (a failed run) the database port
+// did not answer from the runner and both ends left a network snapshot.
+function mockConnectivity(runId: string, broken: boolean): RunOverview['connectivity'] {
+  const pairs: NonNullable<RunOverview['connectivity']>['pairs'] = [
+    {
+      from: 'runner-1',
+      to: 'db-1',
+      port: 9100,
+      container: 'node-exporter',
+      critical: false,
+      outcome: 'ok',
+      latency_ms: 0.4,
+      attempts: 1,
+    },
+    {
+      from: 'db-1',
+      to: 'runner-1',
+      port: 9100,
+      container: 'node-exporter',
+      critical: false,
+      outcome: 'ok',
+      latency_ms: 0.3,
+      attempts: 1,
+    },
+    broken
+      ? {
+          from: 'runner-1',
+          to: 'db-1',
+          port: 5432,
+          address: '10.130.0.10:5432',
+          container: 'postgres',
+          critical: true,
+          outcome: 'timeout',
+          latency_ms: 3000,
+          attempts: 4,
+          error: 'dial tcp 10.130.0.10:5432: i/o timeout',
+        }
+      : {
+          from: 'runner-1',
+          to: 'db-1',
+          port: 5432,
+          container: 'postgres',
+          critical: true,
+          outcome: 'ok',
+          latency_ms: 0.5,
+          attempts: 1,
+        },
+  ]
+  const id8 = runId.slice(0, 8)
+  return {
+    checked_at: iso(),
+    total: pairs.length,
+    failed: broken ? 1 : 0,
+    critical: broken ? 1 : 0,
+    pairs,
+    snapshots: broken
+      ? [
+          { machine: 'db-1', artifact_id: `${id8}-netdiag-probe-db-1` },
+          { machine: 'runner-1', artifact_id: `${id8}-netdiag-probe-runner-1` },
+        ]
+      : [],
+  }
+}
+
 // Build a complete "live" record for a terminal run (persisted overview + full event log).
 export function buildLive(run: Run, seedNum: number): RunLive {
   const rand = rng(seedNum)
@@ -1472,6 +1537,8 @@ export function buildLive(run: Run, seedNum: number): RunLive {
         started_at: cur >= 2 || terminal ? iso(wStart + i * 1000) : null,
         finished_at: terminal ? iso(wEnd) : null,
       })),
+      connectivity:
+        cur >= 2 || terminal ? mockConnectivity(run.id, run.status === 'failed') : undefined,
       pending_activity:
         run.status === 'running' && run.phase === 'provisioning'
           ? { activity: 'crossplane.wait_ready', attempt: 1, since: minutesAgo(1) }

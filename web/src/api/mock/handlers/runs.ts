@@ -493,6 +493,10 @@ route('GET', '/api/v1/t/:slug/runs/:id/artifacts', ({ store, params }) => {
 route('GET', '/api/v1/t/:slug/runs/:id/artifacts/:artifactId', ({ store, params }) => {
   const { run } = getRun(store, params.slug, params.id)
   if (!run) return notFound('run')
+  if (params.artifactId.includes('-netdiag-'))
+    return {
+      text: `# network snapshot of ${params.artifactId.split('-netdiag-').pop()}\n\n$ ip route\ndefault via 10.130.0.1 dev eth0\n10.130.0.0/28 dev eth0 proto kernel scope link src 10.130.0.10\n\n$ ss -tn state syn-sent\nRecv-Q Send-Q Local Address:Port Peer Address:Port\n0      1      10.130.0.20:41532  10.130.0.10:5432\n`,
+    }
   return {
     json: { url: `/mock/artifacts/${params.artifactId}`, expires_at: iso(Date.now() + 600_000) },
   }

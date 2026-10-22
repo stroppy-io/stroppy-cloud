@@ -1,4 +1,5 @@
 import { api, unwrap } from '@api/client'
+import { toApiError } from '@api/errors'
 import type { LaunchOverrides, LogPage, Paths, Schemas, Share } from '@api/types'
 import { sortChronological } from '@helpers/log-lines'
 import { infiniteQueryOptions, queryOptions } from '@tanstack/react-query'
@@ -155,6 +156,31 @@ export const runQueries = {
       queryKey: [...keys.t(slug), 'runs', 'artifacts', id],
       queryFn: () =>
         unwrap(api.GET('/api/v1/t/{slug}/runs/{id}/artifacts', { params: { path: { slug, id } } })),
+    }),
+  // A text artifact's body (network snapshots): read once, it never changes.
+  artifactText: (slug: string, id: string, artifactId: string) =>
+    queryOptions({
+      queryKey: [...keys.t(slug), 'runs', 'artifactText', id, artifactId],
+      queryFn: async () => {
+        const { data, error, response } = await api.GET(
+          '/api/v1/t/{slug}/runs/{id}/artifacts/{artifactId}',
+          { params: { path: { slug, id, artifactId } }, parseAs: 'text' }
+        )
+        if (error !== undefined || !response.ok) {
+          // parseAs 'text' hands the problem+json over as a string.
+          let parsed: unknown = error
+          if (typeof error === 'string') {
+            try {
+              parsed = JSON.parse(error)
+            } catch {
+              parsed = undefined
+            }
+          }
+          throw await toApiError(response, parsed)
+        }
+        return typeof data === 'string' ? data : ''
+      },
+      staleTime: Number.POSITIVE_INFINITY,
     }),
   grafanaSession: (slug: string, id: string) =>
     queryOptions({

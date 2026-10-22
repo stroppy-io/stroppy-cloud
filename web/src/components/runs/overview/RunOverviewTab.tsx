@@ -16,6 +16,7 @@ import { useTenant } from '@hooks/useTenant'
 import { useTopic } from '@hooks/useTopic'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { ConnectivityPanel } from './ConnectivityPanel'
 import { PhaseTimeline } from './PhaseTimeline'
 import { RunSidebar } from './RunSidebar'
 import { ComponentsTable, MachinesTable, SegmentsTable } from './StandTables'
@@ -202,6 +203,7 @@ export function RunOverviewTab({ id }: { id: string }) {
           </Alert>
         )}
         <ResultStats run={run} />
+        {o.connectivity && <ConnectivityPanel runId={run.id} check={o.connectivity} />}
         <section className={styles.panel}>
           <Stack direction="column" gap={2}>
             <SectionTitle

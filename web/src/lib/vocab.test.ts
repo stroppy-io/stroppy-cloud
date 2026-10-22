@@ -2,6 +2,7 @@ import {
   auditActionValues,
   auditTargetKindValues,
   commitDurabilityValues,
+  connectivityOutcomeValues,
   errorReasonValues,
   metricGroupValues,
   metricKeyValues,
@@ -48,6 +49,9 @@ const vocabularies: Record<string, string[]> = {
   MetricKind: metricKindValues.map((k) => `runs.metrics.kind.${k}`),
   TuningMode: tuningModeValues.map((m) => `runs.overview.tuning.modes.${m}`),
   CommitDurability: commitDurabilityValues.map((d) => `runs.overview.tuning.durabilities.${d}`),
+  ConnectivityOutcome: connectivityOutcomeValues.map(
+    (o) => `runs.overview.connectivity.outcomes.${o}`
+  ),
 }
 
 describe('vocabularies', () => {

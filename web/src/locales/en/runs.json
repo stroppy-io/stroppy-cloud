@@ -269,6 +269,29 @@
       "copyResource": "Copy resource ID",
       "noResource": "The resource is not created yet",
       "copyMachineName": "Copy machine name"
+    },
+    "connectivity": {
+      "title": "Connectivity",
+      "allOk": "Connectivity: all {{total}} paths between machines answered",
+      "summary": "{{failed}} of {{total}} paths did not answer",
+      "critical": "The run stopped before the workload: the database or its clients cannot reach these ports. The network snapshots below show both ends at the moment of the check.",
+      "warning": "Only secondary ports did not answer (exporters, helpers), so the run went on.",
+      "showAll": "Show all {{total}} paths",
+      "hideOk": "Hide paths that answered",
+      "from": "From",
+      "to": "To",
+      "outcome": "Result",
+      "latency": "Time",
+      "error": "Error",
+      "required": "required",
+      "snapshotsHint": "Network state of the machines on the failed paths: addresses, routes, neighbors, listening ports, hanging connects, firewall rules, sysctl and the kernel log.",
+      "snapshotOf": "Network snapshot of {{machine}}",
+      "outcomes": {
+        "ok": "answered",
+        "refused": "refused",
+        "timeout": "no answer",
+        "other": "other error"
+      }
     }
   },
   "events": {
@@ -304,7 +327,8 @@
       "run_timed_out": "Run timed out",
       "run_terminated": "Run terminated",
       "activity_failed": "Step failed: {{subject}}",
-      "activity_timed_out": "Step timed out: {{subject}}"
+      "activity_timed_out": "Step timed out: {{subject}}",
+      "network_checked": "Connectivity checked"
     },
     "kinds": {
       "run": "run",
@@ -328,7 +352,9 @@
       "kept": "kept",
       "published": "published",
       "timed_out": "timed out",
-      "terminated": "terminated"
+      "terminated": "terminated",
+      "network": "network",
+      "checked": "checked"
     },
     "error": "Error",
     "status": "Status"
