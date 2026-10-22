@@ -75,7 +75,7 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 		}
 		opts.RegistryAuth = auth
 	}
-	for attempt := 1; attempt <= 3; attempt++ {
+	for attempt := 1; attempt <= pullAttempts; attempt++ {
 		rc, pullErr := cli.ImagePull(ctx, req.Image, opts)
 		if pullErr == nil {
 			pullErr = readPullProgress(rc)
@@ -88,13 +88,13 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 		if ctx.Err() != nil {
 			return PullImageResult{}, fmt.Errorf("pull %s: %w", req.Image, pullErr)
 		}
-		if attempt == 3 || !transientRegistryError(pullErr) {
+		if attempt == pullAttempts || !transientRegistryError(pullErr) {
 			// A missing image or a registry that keeps failing does not heal
 			// by retrying the activity forever: the run fails with the reason.
 			return PullImageResult{}, permanent(fmt.Errorf("pull %s: %w", req.Image, pullErr))
 		}
 		obs.Warn(ctx, "transient registry error; retrying image pull", obs.Str("image", req.Image))
-		timer := time.NewTimer(time.Duration(attempt) * 2 * time.Second)
+		timer := time.NewTimer(time.Duration(attempt) * 5 * time.Second)
 		select {
 		case <-ctx.Done():
 			timer.Stop()
@@ -105,9 +105,13 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 	panic("unreachable image pull retry loop")
 }
 
+// pullAttempts bounds the retries of one image pull: a registry mirror
+// under the load of a whole matrix answers late, not never.
+const pullAttempts = 5
+
 func transientRegistryError(err error) bool {
 	message := strings.ToLower(err.Error())
-	for _, marker := range []string{"i/o timeout", "tls handshake timeout", "connection reset by peer", "connection refused", "unexpected eof", "temporary failure", "service unavailable", "bad gateway", "too many requests"} {
+	for _, marker := range []string{"i/o timeout", "tls handshake timeout", "timeout awaiting response headers", "connection reset by peer", "connection refused", "unexpected eof", "temporary failure", "service unavailable", "bad gateway", "gateway timeout", "too many requests"} {
 		if strings.Contains(message, marker) {
 			return true
 		}
