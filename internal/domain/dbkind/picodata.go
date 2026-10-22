@@ -57,7 +57,10 @@ func planPicodata(p *topology.Plan, params map[string]any) {
 	if instances == 0 {
 		instances = 1
 	}
-	p.Add(topology.RoleDB, "picodata", instances)
+	// instances_per_machine packs several instances on one machine; the
+	// last machine may run fewer.
+	perMachine := PicodataInstancesPerMachine(params)
+	p.Add(topology.RoleDB, "picodata", (instances+perMachine-1)/perMachine)
 	if instances > 1 {
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleDB, To: topology.RoleDB, Protocol: "picodata-raft", Port: 3301})
 	}
@@ -73,6 +76,17 @@ func planPicodata(p *topology.Plan, params map[string]any) {
 		p.Client.Port = 5000
 		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "haproxy")
 	}
-	memtx := float64(topology.IntOf(params, "memtx_memory_mb", 2048)) / 1024
-	p.Requirements[topology.RoleDB] = topology.Because(2, math.Ceil(memtx*1.5)+1, 20, topology.ReasonMemtx, "memtx_gb", strconv.FormatFloat(memtx, 'f', -1, 64))
+	// The machine holds the memtx arenas of all its instances. An empty
+	// memtx_memory_mb is sized from the machine under tuning auto and is
+	// 2 GB under stock; the minimum machine has room for 2 GB per
+	// instance, the product's floor for a benchmark.
+	memtx := float64(topology.IntOf(params, "memtx_memory_mb", 2048)*perMachine) / 1024
+	p.Requirements[topology.RoleDB] = topology.Because(2*perMachine, math.Ceil(memtx*1.5)+1, float64(20*perMachine), topology.ReasonMemtx, "memtx_gb", strconv.FormatFloat(memtx, 'f', -1, 64))
+}
+
+// PicodataInstancesPerMachine is the instances_per_machine of the params
+// (at least 1): the compiler deals the instances out over the machines
+// the plan sized with it.
+func PicodataInstancesPerMachine(params map[string]any) int {
+	return max(1, topology.IntOf(params, "instances_per_machine", 1))
 }

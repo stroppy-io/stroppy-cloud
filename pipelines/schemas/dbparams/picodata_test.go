@@ -31,6 +31,18 @@ func TestPicodata(t *testing.T) {
 				"haproxy":              int64(1),
 				"pgproto":              true,
 			},
+			{
+				"version": "26.2",
+				"tiers": []any{map[string]any{
+					"name": "default", "instances": int64(12), "replication_factor": int64(3), "wal_mode": "fsync",
+				}},
+				"instances_per_machine":         int64(4),
+				"sql_runtime_concurrency_max":   int64(192),
+				"sql_storage_cache_count_max":   int64(200),
+				"sql_storage_cache_size_max_mb": int64(32),
+				"sql_motion_row_max":            int64(50000),
+			},
+			{"version": "26.1", "tiers": []any{map[string]any{"name": "default", "instances": int64(1), "wal_mode": "write"}}},
 		},
 		Invalid: []schematest.Invalid{
 			// range: memtx below the engine minimum
@@ -62,6 +74,15 @@ func TestPicodata(t *testing.T) {
 			{
 				Value: map[string]any{"tiers": []any{picoTier("default", 1, 1), picoTier("default", 1, 1)}},
 				Code:  "RULE_VIOLATED", Path: "tier-names-unique",
+			},
+			// cross-field: fsync WAL before 26.2
+			{Value: map[string]any{"version": "26.1", "tiers": []any{
+				map[string]any{"name": "default", "instances": int64(1), "wal_mode": "fsync"},
+			}}, Code: "RULE_VIOLATED", Path: "fsync-requires-26-2"},
+			// range: more instances per machine than the port layout allows
+			{
+				Value: map[string]any{"tiers": []any{picoTier("default", 1, 1)}, "instances_per_machine": int64(9)},
+				Code:  "LTE_VIOLATED", Path: "instances_per_machine",
 			},
 			// cross-field: nobody can vote
 			{Value: map[string]any{"tiers": []any{
