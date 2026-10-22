@@ -4,7 +4,7 @@ import type { Run, Schemas } from '@api/types'
 import { AppLink } from '@app/AppLink'
 import { toast } from '@app/Toaster'
 import { CopyText } from '@components/CopyText'
-import { KeyValueList } from '@components/KeyValueList'
+import { KeyValueList, type KV } from '@components/KeyValueList'
 import { TagsEditor } from '@components/TagsEditor'
 import { UserLabel } from '@components/UserAvatar'
 import { css } from '@emotion/css'
@@ -16,6 +16,7 @@ import { formatDateTime } from '@helpers/time'
 import { topologyText } from '@helpers/topology'
 import { useTenant } from '@hooks/useTenant'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import type { TFunction } from 'i18next'
 import { useTranslation } from 'react-i18next'
 import { NotesEditor } from './NotesEditor'
 
@@ -57,6 +58,7 @@ export function RunSidebar({ run }: { run: Run }) {
   const snap = run.snapshot
   const sizes = Object.entries(snap.sizes ?? {})
   const ref = run.trigger_ref
+  const tuning = tuningItems(t, snap)
 
   return (
     <div className={styles.root}>
@@ -163,6 +165,12 @@ export function RunSidebar({ run }: { run: Run }) {
           },
         ]}
       />
+      {tuning.length > 0 && (
+        <>
+          <Divider spacing={0} />
+          <KeyValueList title={t('runs.overview.tuning.title')} items={tuning} />
+        </>
+      )}
       <Divider spacing={0} />
       <KeyValueList
         title={t('runs.overview.trigger.title')}
@@ -284,3 +292,46 @@ export function RunSidebar({ run }: { run: Run }) {
     </div>
   )
 }
+
+// The database's setup next to its numbers: the tuning mode, what a commit
+// waits for, and per database role the engine's cache and the disk's limits.
+function tuningItems(t: TFunction, snap: Run['snapshot']) {
+  const items: KV[] = []
+  const tuning = snap.tuning
+  if (tuning?.mode)
+    items.push({
+      label: t('runs.overview.tuning.mode'),
+      value: t(`runs.overview.tuning.modes.${tuning.mode}`),
+    })
+  if (tuning?.durability)
+    items.push({
+      label: t('runs.overview.tuning.durability'),
+      value:
+        tuning.durability === 'relaxed' ? (
+          <Text color="warning">{t(`runs.overview.tuning.durabilities.${tuning.durability}`)}</Text>
+        ) : (
+          t(`runs.overview.tuning.durabilities.${tuning.durability}`)
+        ),
+    })
+  const seen = new Set<string>()
+  for (const m of snap.machines ?? []) {
+    if (!m.role.startsWith('db') || seen.has(m.role)) continue
+    seen.add(m.role)
+    if (m.cache_mb)
+      items.push({
+        label: `${t('runs.overview.tuning.cache')} · ${roleLabel(t, m.role)}`,
+        value: formatMB(m.cache_mb),
+      })
+    if (m.disk_write_iops)
+      items.push({
+        label: `${t('runs.overview.tuning.disk')} · ${roleLabel(t, m.role)}`,
+        value: t('runs.overview.tuning.diskValue', {
+          iops: m.disk_write_iops,
+          mbps: m.disk_write_mbps ?? '—',
+        }),
+      })
+  }
+  return items
+}
+
+const formatMB = (mb: number) => (mb >= 1024 ? `${+(mb / 1024).toFixed(1)} GB` : `${mb} MB`)

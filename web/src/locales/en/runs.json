@@ -217,6 +217,22 @@
       "machines": "Machines",
       "presetDisk": "Preset disk"
     },
+    "tuning": {
+      "title": "Database setup",
+      "mode": "Tuning",
+      "durability": "Commit",
+      "cache": "Cache",
+      "disk": "Disk",
+      "diskValue": "{{iops}} IOPS · {{mbps}} MB/s write",
+      "modes": {
+        "auto": "sized for the machine",
+        "stock": "engine defaults"
+      },
+      "durabilities": {
+        "fsync_each_commit": "waits for the disk",
+        "relaxed": "does not wait for the disk — a machine crash loses the last commits"
+      }
+    },
     "trigger": {
       "title": "Trigger",
       "test": "Test",

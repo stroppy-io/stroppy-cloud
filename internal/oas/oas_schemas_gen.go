@@ -3616,6 +3616,50 @@ func (s *CloneRequest) SetName(val OptString) {
 	s.Name = val
 }
 
+// What an acknowledged commit waits for: its log on disk (fsync, or a quorum of replicas that each
+// synced), or nothing (relaxed — a machine crash can lose the last commits).
+// Ref: #/components/schemas/CommitDurability
+type CommitDurability string
+
+const (
+	CommitDurabilityFsyncEachCommit CommitDurability = "fsync_each_commit"
+	CommitDurabilityRelaxed         CommitDurability = "relaxed"
+)
+
+// AllValues returns all CommitDurability values.
+func (CommitDurability) AllValues() []CommitDurability {
+	return []CommitDurability{
+		CommitDurabilityFsyncEachCommit,
+		CommitDurabilityRelaxed,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s CommitDurability) MarshalText() ([]byte, error) {
+	switch s {
+	case CommitDurabilityFsyncEachCommit:
+		return []byte(s), nil
+	case CommitDurabilityRelaxed:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *CommitDurability) UnmarshalText(data []byte) error {
+	switch CommitDurability(data) {
+	case CommitDurabilityFsyncEachCommit:
+		*s = CommitDurabilityFsyncEachCommit
+		return nil
+	case CommitDurabilityRelaxed:
+		*s = CommitDurabilityRelaxed
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/CompareRequest
 type CompareRequest struct {
 	RunIds []uuid.UUID `json:"run_ids"`
@@ -12062,6 +12106,52 @@ func (o OptCloneRequest) Or(d CloneRequest) CloneRequest {
 	return d
 }
 
+// NewOptCommitDurability returns new OptCommitDurability with value set to v.
+func NewOptCommitDurability(v CommitDurability) OptCommitDurability {
+	return OptCommitDurability{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptCommitDurability is optional CommitDurability.
+type OptCommitDurability struct {
+	Value CommitDurability
+	Set   bool
+}
+
+// IsSet returns true if OptCommitDurability was set.
+func (o OptCommitDurability) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptCommitDurability) Reset() {
+	var v CommitDurability
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptCommitDurability) SetTo(v CommitDurability) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptCommitDurability) Get() (v CommitDurability, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptCommitDurability) Or(d CommitDurability) CommitDurability {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptComparison returns new OptComparison with value set to v.
 func NewOptComparison(v Comparison) OptComparison {
 	return OptComparison{
@@ -16270,6 +16360,52 @@ func (o OptRunSnapshotEffectiveConfigs) Or(d RunSnapshotEffectiveConfigs) RunSna
 	return d
 }
 
+// NewOptRunSnapshotTuning returns new OptRunSnapshotTuning with value set to v.
+func NewOptRunSnapshotTuning(v RunSnapshotTuning) OptRunSnapshotTuning {
+	return OptRunSnapshotTuning{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunSnapshotTuning is optional RunSnapshotTuning.
+type OptRunSnapshotTuning struct {
+	Value RunSnapshotTuning
+	Set   bool
+}
+
+// IsSet returns true if OptRunSnapshotTuning was set.
+func (o OptRunSnapshotTuning) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunSnapshotTuning) Reset() {
+	var v RunSnapshotTuning
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunSnapshotTuning) SetTo(v RunSnapshotTuning) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunSnapshotTuning) Get() (v RunSnapshotTuning, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunSnapshotTuning) Or(d RunSnapshotTuning) RunSnapshotTuning {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRunStatus returns new OptRunStatus with value set to v.
 func NewOptRunStatus(v RunStatus) OptRunStatus {
 	return OptRunStatus{
@@ -19024,6 +19160,52 @@ func (o OptTopologyShape) Get() (v TopologyShape, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptTopologyShape) Or(d TopologyShape) TopologyShape {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptTuningMode returns new OptTuningMode with value set to v.
+func NewOptTuningMode(v TuningMode) OptTuningMode {
+	return OptTuningMode{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptTuningMode is optional TuningMode.
+type OptTuningMode struct {
+	Value TuningMode
+	Set   bool
+}
+
+// IsSet returns true if OptTuningMode was set.
+func (o OptTuningMode) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptTuningMode) Reset() {
+	var v TuningMode
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptTuningMode) SetTo(v TuningMode) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptTuningMode) Get() (v TuningMode, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptTuningMode) Or(d TuningMode) TuningMode {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -25526,6 +25708,8 @@ type RunSnapshot struct {
 	// Per role → config schema id → Baked value that was rendered.
 	EffectiveConfigs OptRunSnapshotEffectiveConfigs `json:"effective_configs"`
 	Machines         []RunSnapshotMachinesItem      `json:"machines"`
+	// How the database was set up; absent for runs from before it.
+	Tuning OptRunSnapshotTuning `json:"tuning"`
 }
 
 // GetExecution returns the value of Execution.
@@ -25578,6 +25762,11 @@ func (s *RunSnapshot) GetMachines() []RunSnapshotMachinesItem {
 	return s.Machines
 }
 
+// GetTuning returns the value of Tuning.
+func (s *RunSnapshot) GetTuning() OptRunSnapshotTuning {
+	return s.Tuning
+}
+
 // SetExecution sets the value of Execution.
 func (s *RunSnapshot) SetExecution(val OptSchemaValue) {
 	s.Execution = val
@@ -25628,6 +25817,11 @@ func (s *RunSnapshot) SetMachines(val []RunSnapshotMachinesItem) {
 	s.Machines = val
 }
 
+// SetTuning sets the value of Tuning.
+func (s *RunSnapshot) SetTuning(val OptRunSnapshotTuning) {
+	s.Tuning = val
+}
+
 // Per role → config schema id → Baked value that was rendered.
 type RunSnapshotEffectiveConfigs map[string]RunSnapshotEffectiveConfigsItem
 
@@ -25661,6 +25855,17 @@ type RunSnapshotMachinesItem struct {
 	DiskType     OptString    `json:"disk_type"`
 	InstanceType OptString    `json:"instance_type"`
 	Location     OptString    `json:"location"`
+	// The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache,
+	// memtx arena).
+	CacheMB OptInt `json:"cache_mb"`
+	// Provider read IOPS limit of the data disk.
+	DiskReadIops OptInt `json:"disk_read_iops"`
+	// Provider write IOPS limit of the data disk.
+	DiskWriteIops OptInt `json:"disk_write_iops"`
+	// Provider read bandwidth limit of the data disk.
+	DiskReadMbps OptInt `json:"disk_read_mbps"`
+	// Provider write bandwidth limit of the data disk.
+	DiskWriteMbps OptInt `json:"disk_write_mbps"`
 }
 
 // GetName returns the value of Name.
@@ -25708,6 +25913,31 @@ func (s *RunSnapshotMachinesItem) GetLocation() OptString {
 	return s.Location
 }
 
+// GetCacheMB returns the value of CacheMB.
+func (s *RunSnapshotMachinesItem) GetCacheMB() OptInt {
+	return s.CacheMB
+}
+
+// GetDiskReadIops returns the value of DiskReadIops.
+func (s *RunSnapshotMachinesItem) GetDiskReadIops() OptInt {
+	return s.DiskReadIops
+}
+
+// GetDiskWriteIops returns the value of DiskWriteIops.
+func (s *RunSnapshotMachinesItem) GetDiskWriteIops() OptInt {
+	return s.DiskWriteIops
+}
+
+// GetDiskReadMbps returns the value of DiskReadMbps.
+func (s *RunSnapshotMachinesItem) GetDiskReadMbps() OptInt {
+	return s.DiskReadMbps
+}
+
+// GetDiskWriteMbps returns the value of DiskWriteMbps.
+func (s *RunSnapshotMachinesItem) GetDiskWriteMbps() OptInt {
+	return s.DiskWriteMbps
+}
+
 // SetName sets the value of Name.
 func (s *RunSnapshotMachinesItem) SetName(val string) {
 	s.Name = val
@@ -25751,6 +25981,57 @@ func (s *RunSnapshotMachinesItem) SetInstanceType(val OptString) {
 // SetLocation sets the value of Location.
 func (s *RunSnapshotMachinesItem) SetLocation(val OptString) {
 	s.Location = val
+}
+
+// SetCacheMB sets the value of CacheMB.
+func (s *RunSnapshotMachinesItem) SetCacheMB(val OptInt) {
+	s.CacheMB = val
+}
+
+// SetDiskReadIops sets the value of DiskReadIops.
+func (s *RunSnapshotMachinesItem) SetDiskReadIops(val OptInt) {
+	s.DiskReadIops = val
+}
+
+// SetDiskWriteIops sets the value of DiskWriteIops.
+func (s *RunSnapshotMachinesItem) SetDiskWriteIops(val OptInt) {
+	s.DiskWriteIops = val
+}
+
+// SetDiskReadMbps sets the value of DiskReadMbps.
+func (s *RunSnapshotMachinesItem) SetDiskReadMbps(val OptInt) {
+	s.DiskReadMbps = val
+}
+
+// SetDiskWriteMbps sets the value of DiskWriteMbps.
+func (s *RunSnapshotMachinesItem) SetDiskWriteMbps(val OptInt) {
+	s.DiskWriteMbps = val
+}
+
+// How the database was set up; absent for runs from before it.
+type RunSnapshotTuning struct {
+	Mode       OptTuningMode       `json:"mode"`
+	Durability OptCommitDurability `json:"durability"`
+}
+
+// GetMode returns the value of Mode.
+func (s *RunSnapshotTuning) GetMode() OptTuningMode {
+	return s.Mode
+}
+
+// GetDurability returns the value of Durability.
+func (s *RunSnapshotTuning) GetDurability() OptCommitDurability {
+	return s.Durability
+}
+
+// SetMode sets the value of Mode.
+func (s *RunSnapshotTuning) SetMode(val OptTuningMode) {
+	s.Mode = val
+}
+
+// SetDurability sets the value of Durability.
+func (s *RunSnapshotTuning) SetDurability(val OptCommitDurability) {
+	s.Durability = val
 }
 
 // What a running workload segment does: `preparing` — stroppy prepares the data (schema, load,
@@ -33484,6 +33765,50 @@ func (s *Trigger) UnmarshalText(data []byte) error {
 		return nil
 	case TriggerSchedule:
 		*s = TriggerSchedule
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// The database's tuning: auto sizes the engine's settings from the machine, role, topology and
+// workload; stock keeps the engine's defaults.
+// Ref: #/components/schemas/TuningMode
+type TuningMode string
+
+const (
+	TuningModeAuto  TuningMode = "auto"
+	TuningModeStock TuningMode = "stock"
+)
+
+// AllValues returns all TuningMode values.
+func (TuningMode) AllValues() []TuningMode {
+	return []TuningMode{
+		TuningModeAuto,
+		TuningModeStock,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s TuningMode) MarshalText() ([]byte, error) {
+	switch s {
+	case TuningModeAuto:
+		return []byte(s), nil
+	case TuningModeStock:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *TuningMode) UnmarshalText(data []byte) error {
+	switch TuningMode(data) {
+	case TuningModeAuto:
+		*s = TuningModeAuto
+		return nil
+	case TuningModeStock:
+		*s = TuningModeStock
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

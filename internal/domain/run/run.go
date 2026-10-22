@@ -91,7 +91,50 @@ type Snapshot struct {
 	// Topology is the plan's shape (empty for runs from before shapes until
 	// the backfill fills it).
 	Topology topology.Shape `json:"topology,omitzero"`
+	// Tuning is how the database was set up (empty for runs from before it).
+	Tuning Tuning `json:"tuning,omitzero"`
 }
+
+// Tuning is the setup of the run's database the report shows next to its
+// numbers: whether the settings were sized for the machines and whether a
+// commit waits for the disk. The per-machine sizes are on MachineSnapshot.
+type Tuning struct {
+	Mode       TuningMode       `json:"mode,omitempty"`
+	Durability CommitDurability `json:"durability,omitempty"`
+}
+
+// IsZero reports a run without a tuning record.
+func (t Tuning) IsZero() bool { return t == Tuning{} }
+
+// TuningMode is the database's tuning parameter.
+type TuningMode string
+
+// Tuning modes.
+const (
+	// TuningAuto: settings sized from the machine, role, topology, workload.
+	TuningAuto TuningMode = "auto"
+	// TuningStock: the engine's own defaults.
+	TuningStock TuningMode = "stock"
+)
+
+// TuningModes is the vocabulary of TuningMode (the contract's enum).
+var TuningModes = []string{string(TuningAuto), string(TuningStock)}
+
+// CommitDurability is what an acknowledged commit survives.
+type CommitDurability string
+
+// Commit durabilities.
+const (
+	// DurabilityFsync: a commit returns after its log reached the disk
+	// (fsync, or a quorum of replicas that each did).
+	DurabilityFsync CommitDurability = "fsync_each_commit"
+	// DurabilityRelaxed: a commit returns before its log is on disk; a
+	// machine crash can lose the last acknowledged commits.
+	DurabilityRelaxed CommitDurability = "relaxed"
+)
+
+// CommitDurabilities is the vocabulary of CommitDurability.
+var CommitDurabilities = []string{string(DurabilityFsync), string(DurabilityRelaxed)}
 
 // Ref is an id with a name.
 type Ref struct {
@@ -110,6 +153,14 @@ type MachineSnapshot struct {
 	DiskType     string `json:"disk_type,omitempty"`
 	InstanceType string `json:"instance_type,omitempty"`
 	Location     string `json:"location,omitempty"`
+	// CacheMB is the database engine's own cache on this machine (buffer
+	// pool, shared buffers, block cache, memtx arena); 0 = none or unknown.
+	CacheMB int `json:"cache_mb,omitempty"`
+	// The data disk's provider limits (0 = unknown).
+	DiskReadIOPS  int `json:"disk_read_iops,omitempty"`
+	DiskWriteIOPS int `json:"disk_write_iops,omitempty"`
+	DiskReadMBps  int `json:"disk_read_mbps,omitempty"`
+	DiskWriteMBps int `json:"disk_write_mbps,omitempty"`
 }
 
 // Summary is the denormalized header for lists and sorting.
@@ -527,6 +578,8 @@ type Compiled struct {
 	// EffectiveConfigs is the database's resolved configs with the values
 	// auto tuning computed for this run's machines (nil = unchanged).
 	EffectiveConfigs map[string]map[string]json.RawMessage
+	// Tuning is the database's setup summary for the snapshot.
+	Tuning Tuning
 }
 
 // Compiler builds and bakes the RunSpec.

@@ -391,6 +391,7 @@ func (s *Service) Prepare(ctx context.Context, actor auth.Actor, tenantID uuid.U
 	if compiled.EffectiveConfigs != nil {
 		r.Snapshot.EffectiveConfigs = compiled.EffectiveConfigs
 	}
+	r.Snapshot.Tuning = compiled.Tuning
 	if spec.Keep > 0 {
 		r.Snapshot.Keep = spec.Keep.String()
 	}

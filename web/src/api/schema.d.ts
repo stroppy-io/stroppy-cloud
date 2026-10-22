@@ -2574,6 +2574,16 @@ export interface components {
          */
         DatabaseKind: "postgres" | "orioledb" | "mysql" | "mariadb" | "picodata" | "ydb" | "ydb_managed" | "cockroach" | "pg_noop" | "noop" | "external" | "custom";
         /**
+         * @description The database's tuning: auto sizes the engine's settings from the machine, role, topology and workload; stock keeps the engine's defaults.
+         * @enum {string}
+         */
+        TuningMode: "auto" | "stock";
+        /**
+         * @description What an acknowledged commit waits for: its log on disk (fsync, or a quorum of replicas that each synced), or nothing (relaxed — a machine crash can lose the last commits).
+         * @enum {string}
+         */
+        CommitDurability: "fsync_each_commit" | "relaxed";
+        /**
          * @description The role of a machine or container in a database topology.
          * @enum {string}
          */
@@ -3584,7 +3594,22 @@ export interface components {
                 disk_type?: string;
                 instance_type?: string;
                 location?: string;
+                /** @description The database engine's own cache on this machine, MB (buffer pool, shared buffers, block cache, memtx arena). */
+                cache_mb?: number;
+                /** @description Provider read IOPS limit of the data disk. */
+                disk_read_iops?: number;
+                /** @description Provider write IOPS limit of the data disk. */
+                disk_write_iops?: number;
+                /** @description Provider read bandwidth limit of the data disk */
+                disk_read_mbps?: number;
+                /** @description Provider write bandwidth limit of the data disk */
+                disk_write_mbps?: number;
             }[];
+            /** @description How the database was set up; absent for runs from before it. */
+            tuning?: {
+                mode?: components["schemas"]["TuningMode"];
+                durability?: components["schemas"]["CommitDurability"];
+            };
         };
         /** @description Typed result from the pipeline (`RunResult`). */
         RunResult: {

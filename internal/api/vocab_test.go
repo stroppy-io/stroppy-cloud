@@ -58,6 +58,8 @@ func TestVocabulariesMatchTheContract(t *testing.T) {
 		{"QuotaName", quotaNames, values(oas.QuotaName("").AllValues())},
 		{"QuotaUnit", quotaUnits, values(oas.QuotaUnit("").AllValues())},
 		{"LogLevel", observe.LogLevels, values(oas.LogLevel("").AllValues())},
+		{"TuningMode", run.TuningModes, values(oas.TuningMode("").AllValues())},
+		{"CommitDurability", run.CommitDurabilities, values(oas.CommitDurability("").AllValues())},
 		{"MetricOrigin", strs(observe.MetricOrigins), values(oas.MetricOrigin("").AllValues())},
 		{"MetricKind", strs(observe.MetricKinds), values(oas.MetricKind("").AllValues())},
 		{"ErrorReason", errorReasons(t), values(oas.ErrorReason("").AllValues())},

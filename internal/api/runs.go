@@ -90,7 +90,25 @@ func snapshotOf(s run.Snapshot) oas.RunSnapshot {
 		if m.Location != "" {
 			item.Location = oas.NewOptString(m.Location)
 		}
+		for _, v := range []struct {
+			n   int
+			opt *oas.OptInt
+		}{{m.CacheMB, &item.CacheMB}, {m.DiskReadIOPS, &item.DiskReadIops}, {m.DiskWriteIOPS, &item.DiskWriteIops}, {m.DiskReadMBps, &item.DiskReadMbps}, {m.DiskWriteMBps, &item.DiskWriteMbps}} {
+			if v.n > 0 {
+				*v.opt = oas.NewOptInt(v.n)
+			}
+		}
 		out.Machines = append(out.Machines, item)
+	}
+	if !s.Tuning.IsZero() {
+		t := oas.RunSnapshotTuning{}
+		if s.Tuning.Mode != "" {
+			t.Mode = oas.NewOptTuningMode(oas.TuningMode(s.Tuning.Mode))
+		}
+		if s.Tuning.Durability != "" {
+			t.Durability = oas.NewOptCommitDurability(oas.CommitDurability(s.Tuning.Durability))
+		}
+		out.Tuning = oas.NewOptRunSnapshotTuning(t)
 	}
 	return out
 }

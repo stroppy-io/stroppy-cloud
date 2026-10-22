@@ -67,6 +67,8 @@ type Output struct {
 	// Tuned: role → config schema id → key → the value auto tuning put on
 	// top of the effective config (see EffectiveWithTuned).
 	Tuned map[string]map[string]map[string]any
+	// Tuning is the setup summary of the run's report (summarize).
+	Tuning run.Tuning
 }
 
 // Compile builds the RunSpec.
@@ -129,6 +131,7 @@ func Compile(ctx context.Context, r Renderer, in Input) (Output, error) {
 			}
 		}
 	}
+	c.summarize()
 	sort.SliceStable(c.out.Spec.Containers, func(i, j int) bool { return c.out.Spec.Containers[i].Name < c.out.Spec.Containers[j].Name })
 	return c.out, nil
 }

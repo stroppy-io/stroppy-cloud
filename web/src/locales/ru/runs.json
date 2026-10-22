@@ -217,6 +217,22 @@
       "machines": "Машины",
       "presetDisk": "Диск из пресета"
     },
+    "tuning": {
+      "title": "Настройки базы",
+      "mode": "Тюнинг",
+      "durability": "Коммит",
+      "cache": "Кэш",
+      "disk": "Диск",
+      "diskValue": "{{iops}} IOPS · {{mbps}} МБ/с запись",
+      "modes": {
+        "auto": "по машине",
+        "stock": "по умолчанию движка"
+      },
+      "durabilities": {
+        "fsync_each_commit": "ждёт записи на диск",
+        "relaxed": "не ждёт диска — сбой машины теряет последние коммиты"
+      }
+    },
     "trigger": {
       "title": "Триггер",
       "test": "Тест",

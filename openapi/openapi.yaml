@@ -5282,6 +5282,20 @@ components:
       - noop
       - external
       - custom
+    TuningMode:
+      type: string
+      description: 'The database''s tuning: auto sizes the engine''s settings from the machine, role,
+        topology and workload; stock keeps the engine''s defaults.'
+      enum:
+      - auto
+      - stock
+    CommitDurability:
+      type: string
+      description: 'What an acknowledged commit waits for: its log on disk (fsync, or a quorum of replicas
+        that each synced), or nothing (relaxed — a machine crash can lose the last commits).'
+      enum:
+      - fsync_each_commit
+      - relaxed
     TopologyRole:
       type: string
       description: The role of a machine or container in a database topology.
@@ -7939,6 +7953,32 @@ components:
                 type: string
               location:
                 type: string
+              cache_mb:
+                type: integer
+                description: The database engine's own cache on this machine, MB (buffer pool, shared
+                  buffers, block cache, memtx arena).
+              disk_read_iops:
+                type: integer
+                description: Provider read IOPS limit of the data disk.
+              disk_write_iops:
+                type: integer
+                description: Provider write IOPS limit of the data disk.
+              disk_read_mbps:
+                type: integer
+                description: Provider read bandwidth limit of the data disk
+                MB/s.: null
+              disk_write_mbps:
+                type: integer
+                description: Provider write bandwidth limit of the data disk
+                MB/s.: null
+        tuning:
+          type: object
+          description: How the database was set up; absent for runs from before it.
+          properties:
+            mode:
+              $ref: '#/components/schemas/TuningMode'
+            durability:
+              $ref: '#/components/schemas/CommitDurability'
     RunResult:
       type: object
       description: Typed result from the pipeline (`RunResult`).

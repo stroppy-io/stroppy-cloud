@@ -13,6 +13,7 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/dbkind"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/library"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
 	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
@@ -138,5 +139,27 @@ func TestStockTuningLeavesHostsAlone(t *testing.T) {
 		if c.Kind == spec.ContainerKindDatabase && len(c.Ulimits) > 0 {
 			t.Errorf("%s: ulimits under stock tuning", c.Name)
 		}
+	}
+}
+
+func TestSummaryRecordsTheSetup(t *testing.T) {
+	out, _ := compileTuned(t, tuneCase{kind: catalog.Postgres, version: "17"})
+	if out.Tuning.Mode != run.TuningAuto || out.Tuning.Durability != run.DurabilityFsync {
+		t.Fatalf("tuning = %+v", out.Tuning)
+	}
+	for _, m := range out.Machines {
+		if m.Role != "db" {
+			continue
+		}
+		if m.CacheMB == 0 || m.DiskWriteIOPS != 7000 || m.DiskWriteMBps != 105 {
+			t.Errorf("%s: cache %d MB, disk %d IOPS %d MB/s", m.Name, m.CacheMB, m.DiskWriteIOPS, m.DiskWriteMBps)
+		}
+	}
+	relaxed, _ := compileTuned(t, tuneCase{
+		kind: catalog.Postgres, version: "17",
+		configs: map[string]map[string]json.RawMessage{"db": {"cfg.postgresql.conf@17": json.RawMessage(`{"synchronous_commit":"off"}`)}},
+	})
+	if relaxed.Tuning.Durability != run.DurabilityRelaxed {
+		t.Errorf("synchronous_commit=off reads as %q", relaxed.Tuning.Durability)
 	}
 }

@@ -1,6 +1,7 @@
 import {
   auditActionValues,
   auditTargetKindValues,
+  commitDurabilityValues,
   errorReasonValues,
   metricGroupValues,
   metricKeyValues,
@@ -14,6 +15,7 @@ import {
   runWaitReasonValues,
   topologyModeValues,
   topologyRoleValues,
+  tuningModeValues,
 } from '@api/enums'
 import { eventKey } from '@components/runs/events/eventTitle'
 import { describe, expect, it } from 'vitest'
@@ -44,6 +46,8 @@ const vocabularies: Record<string, string[]> = {
   ErrorReason: errorReasonValues.map((r) => `common.errors.reasons.${r}`),
   MetricOrigin: metricOriginValues.map((o) => `runs.metrics.origin.${o}`),
   MetricKind: metricKindValues.map((k) => `runs.metrics.kind.${k}`),
+  TuningMode: tuningModeValues.map((m) => `runs.overview.tuning.modes.${m}`),
+  CommitDurability: commitDurabilityValues.map((d) => `runs.overview.tuning.durabilities.${d}`),
 }
 
 describe('vocabularies', () => {

@@ -69,7 +69,7 @@ func (s *Service) Compile(ctx context.Context, req run.CompileRequest) (run.Comp
 	if err != nil {
 		return run.Compiled{}, err
 	}
-	compiled := run.Compiled{Spec: bakedSpec, Machines: out.Machines}
+	compiled := run.Compiled{Spec: bakedSpec, Machines: out.Machines, Tuning: out.Tuning}
 	if len(out.Tuned) > 0 {
 		compiled.EffectiveConfigs = EffectiveWithTuned(req.Derived.EffectiveConfigs, out.Tuned)
 	}

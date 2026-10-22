@@ -6951,6 +6951,46 @@ func (s *CloneRequest) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes CommitDurability as json.
+func (s CommitDurability) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes CommitDurability from json.
+func (s *CommitDurability) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode CommitDurability to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch CommitDurability(v) {
+	case CommitDurabilityFsyncEachCommit:
+		*s = CommitDurabilityFsyncEachCommit
+	case CommitDurabilityRelaxed:
+		*s = CommitDurabilityRelaxed
+	default:
+		*s = CommitDurability(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s CommitDurability) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *CommitDurability) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *CompareRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -20133,6 +20173,39 @@ func (s *OptCloneRequest) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes CommitDurability as json.
+func (o OptCommitDurability) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes CommitDurability from json.
+func (o *OptCommitDurability) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptCommitDurability to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptCommitDurability) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptCommitDurability) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes Comparison as json.
 func (o OptComparison) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -22681,6 +22754,39 @@ func (s *OptRunSnapshotEffectiveConfigs) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes RunSnapshotTuning as json.
+func (o OptRunSnapshotTuning) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunSnapshotTuning from json.
+func (o *OptRunSnapshotTuning) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunSnapshotTuning to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunSnapshotTuning) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunSnapshotTuning) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes RunStatus as json.
 func (o OptRunStatus) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -24672,6 +24778,39 @@ func (s OptTopologyShape) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *OptTopologyShape) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TuningMode as json.
+func (o OptTuningMode) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Str(string(o.Value))
+}
+
+// Decode decodes TuningMode from json.
+func (o *OptTuningMode) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptTuningMode to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptTuningMode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptTuningMode) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -37385,19 +37524,26 @@ func (s *RunSnapshot) encodeFields(e *jx.Encoder) {
 			e.ArrEnd()
 		}
 	}
+	{
+		if s.Tuning.Set {
+			e.FieldStart("tuning")
+			s.Tuning.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfRunSnapshot = [10]string{
-	0: "execution",
-	1: "database",
-	2: "database_name",
-	3: "workload",
-	4: "workload_name",
-	5: "sizes",
-	6: "provider_profile",
-	7: "keep",
-	8: "effective_configs",
-	9: "machines",
+var jsonFieldsNameOfRunSnapshot = [11]string{
+	0:  "execution",
+	1:  "database",
+	2:  "database_name",
+	3:  "workload",
+	4:  "workload_name",
+	5:  "sizes",
+	6:  "provider_profile",
+	7:  "keep",
+	8:  "effective_configs",
+	9:  "machines",
+	10: "tuning",
 }
 
 // Decode decodes RunSnapshot from json.
@@ -37515,6 +37661,16 @@ func (s *RunSnapshot) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"machines\"")
+			}
+		case "tuning":
+			if err := func() error {
+				s.Tuning.Reset()
+				if err := s.Tuning.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"tuning\"")
 			}
 		default:
 			return d.Skip()
@@ -37738,18 +37894,53 @@ func (s *RunSnapshotMachinesItem) encodeFields(e *jx.Encoder) {
 			s.Location.Encode(e)
 		}
 	}
+	{
+		if s.CacheMB.Set {
+			e.FieldStart("cache_mb")
+			s.CacheMB.Encode(e)
+		}
+	}
+	{
+		if s.DiskReadIops.Set {
+			e.FieldStart("disk_read_iops")
+			s.DiskReadIops.Encode(e)
+		}
+	}
+	{
+		if s.DiskWriteIops.Set {
+			e.FieldStart("disk_write_iops")
+			s.DiskWriteIops.Encode(e)
+		}
+	}
+	{
+		if s.DiskReadMbps.Set {
+			e.FieldStart("disk_read_mbps")
+			s.DiskReadMbps.Encode(e)
+		}
+	}
+	{
+		if s.DiskWriteMbps.Set {
+			e.FieldStart("disk_write_mbps")
+			s.DiskWriteMbps.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfRunSnapshotMachinesItem = [9]string{
-	0: "name",
-	1: "role",
-	2: "size",
-	3: "cpu",
-	4: "memory_gb",
-	5: "disk_gb",
-	6: "disk_type",
-	7: "instance_type",
-	8: "location",
+var jsonFieldsNameOfRunSnapshotMachinesItem = [14]string{
+	0:  "name",
+	1:  "role",
+	2:  "size",
+	3:  "cpu",
+	4:  "memory_gb",
+	5:  "disk_gb",
+	6:  "disk_type",
+	7:  "instance_type",
+	8:  "location",
+	9:  "cache_mb",
+	10: "disk_read_iops",
+	11: "disk_write_iops",
+	12: "disk_read_mbps",
+	13: "disk_write_mbps",
 }
 
 // Decode decodes RunSnapshotMachinesItem from json.
@@ -37853,6 +38044,56 @@ func (s *RunSnapshotMachinesItem) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"location\"")
 			}
+		case "cache_mb":
+			if err := func() error {
+				s.CacheMB.Reset()
+				if err := s.CacheMB.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"cache_mb\"")
+			}
+		case "disk_read_iops":
+			if err := func() error {
+				s.DiskReadIops.Reset()
+				if err := s.DiskReadIops.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_read_iops\"")
+			}
+		case "disk_write_iops":
+			if err := func() error {
+				s.DiskWriteIops.Reset()
+				if err := s.DiskWriteIops.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_write_iops\"")
+			}
+		case "disk_read_mbps":
+			if err := func() error {
+				s.DiskReadMbps.Reset()
+				if err := s.DiskReadMbps.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_read_mbps\"")
+			}
+		case "disk_write_mbps":
+			if err := func() error {
+				s.DiskWriteMbps.Reset()
+				if err := s.DiskWriteMbps.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"disk_write_mbps\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -37906,6 +38147,86 @@ func (s *RunSnapshotMachinesItem) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RunSnapshotMachinesItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunSnapshotTuning) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunSnapshotTuning) encodeFields(e *jx.Encoder) {
+	{
+		if s.Mode.Set {
+			e.FieldStart("mode")
+			s.Mode.Encode(e)
+		}
+	}
+	{
+		if s.Durability.Set {
+			e.FieldStart("durability")
+			s.Durability.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfRunSnapshotTuning = [2]string{
+	0: "mode",
+	1: "durability",
+}
+
+// Decode decodes RunSnapshotTuning from json.
+func (s *RunSnapshotTuning) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunSnapshotTuning to nil")
+	}
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "mode":
+			if err := func() error {
+				s.Mode.Reset()
+				if err := s.Mode.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"mode\"")
+			}
+		case "durability":
+			if err := func() error {
+				s.Durability.Reset()
+				if err := s.Durability.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"durability\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunSnapshotTuning")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunSnapshotTuning) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunSnapshotTuning) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -55991,6 +56312,46 @@ func (s Trigger) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *Trigger) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TuningMode as json.
+func (s TuningMode) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes TuningMode from json.
+func (s *TuningMode) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TuningMode to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch TuningMode(v) {
+	case TuningModeAuto:
+		*s = TuningModeAuto
+	case TuningModeStock:
+		*s = TuningModeStock
+	default:
+		*s = TuningMode(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s TuningMode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TuningMode) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

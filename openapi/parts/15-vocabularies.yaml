@@ -17,6 +17,20 @@ components:
         - "noop"
         - "external"
         - "custom"
+    TuningMode:
+      type: string
+      description: >-
+        The database's tuning: auto sizes the engine's settings from the machine, role, topology and workload; stock keeps the engine's defaults.
+      enum:
+        - "auto"
+        - "stock"
+    CommitDurability:
+      type: string
+      description: >-
+        What an acknowledged commit waits for: its log on disk (fsync, or a quorum of replicas that each synced), or nothing (relaxed — a machine crash can lose the last commits).
+      enum:
+        - "fsync_each_commit"
+        - "relaxed"
     TopologyRole:
       type: string
       description: >-

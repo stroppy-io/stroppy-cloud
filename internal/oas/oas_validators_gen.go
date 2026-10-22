@@ -1444,6 +1444,17 @@ func (s *CloneRequest) Validate() error {
 	return nil
 }
 
+func (s CommitDurability) Validate() error {
+	switch s {
+	case "fsync_each_commit":
+		return nil
+	case "relaxed":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s *CompareRequest) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -8670,6 +8681,24 @@ func (s *RunSnapshot) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		if value, ok := s.Tuning.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "tuning",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -8701,6 +8730,54 @@ func (s *RunSnapshotMachinesItem) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "size",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s *RunSnapshotTuning) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if value, ok := s.Mode.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "mode",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Durability.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "durability",
 			Error: err,
 		})
 	}
@@ -13892,6 +13969,17 @@ func (s Trigger) Validate() error {
 	case "api":
 		return nil
 	case "schedule":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s TuningMode) Validate() error {
+	switch s {
+	case "auto":
+		return nil
+	case "stock":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
