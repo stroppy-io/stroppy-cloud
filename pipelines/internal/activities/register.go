@@ -12,6 +12,8 @@ func Register(ctx pipeline.Context) {
 	ctx.RecordActivity(NameWaitHealthy, WaitHealthy)
 	ctx.RecordActivity(NameWaitDatabase, WaitDatabase)
 	ctx.RecordActivity(NameWaitReachable, WaitReachable)
+	ctx.RecordActivity(NameNetProbe, NetProbe)
+	ctx.RecordActivity(NameNetSnapshot, NetSnapshot)
 	ctx.RecordActivity(NameWriteFiles, WriteFiles)
 	ctx.RecordActivity(NameRunSegment, RunSegment)
 	ctx.RecordActivity(NameRunBaseline, RunBaseline)

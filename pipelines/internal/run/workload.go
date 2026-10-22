@@ -41,6 +41,8 @@ type workloadOutcome struct {
 	Files []artifactFile
 	// Runner is the agent the files live on.
 	Runner pipeline.Agent
+	// NetArtifacts are the published network snapshots.
+	NetArtifacts []string
 }
 
 type artifactFile struct {
@@ -55,7 +57,7 @@ type artifactFile struct {
 // (AtMostOnce): an undeterminable outcome fails the run rather than loading
 // data twice. The first failed segment stops the sequence — later segments
 // depend on the earlier ones (schema, data).
-func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addrs Addresses) (workloadOutcome, error) {
+func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addrs Addresses, nc *netCheck) (workloadOutcome, error) {
 	segments, err := spec.DecodeSegments(run.Workload.Segments)
 	if err != nil {
 		return workloadOutcome{}, fmt.Errorf("workload: %w", err)
@@ -64,7 +66,7 @@ func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addr
 	if err != nil {
 		return workloadOutcome{}, fmt.Errorf("workload url: %w", err)
 	}
-	out := workloadOutcome{Runner: runner}
+	out := workloadOutcome{Runner: runner, NetArtifacts: nc.artifacts()}
 
 	if run.ManagedYDB != nil {
 		ready, err := activity.Activity(ctx, runner,
@@ -97,6 +99,10 @@ func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addr
 			activity.WithTimeout(6*time.Minute), activity.WithHeartbeat(time.Minute),
 		)
 		if err != nil {
+			if nc != nil {
+				nc.unreachable(ctx, err)
+				out.NetArtifacts = nc.artifacts()
+			}
 			return out, fmt.Errorf("database connectivity: %w", err)
 		}
 	}

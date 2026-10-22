@@ -34,6 +34,8 @@ const (
 	ActivityWaitHealthy          = activities.NameWaitHealthy
 	ActivityWaitDatabase         = activities.NameWaitDatabase
 	ActivityWaitReachable        = activities.NameWaitReachable
+	ActivityNetProbe             = activities.NameNetProbe
+	ActivityNetSnapshot          = activities.NameNetSnapshot
 	ActivityRunSegment           = activities.NameRunSegment
 	ActivityRunBaseline          = activities.NameRunBaseline
 )
@@ -55,6 +57,12 @@ type (
 	WaitDatabaseRequest         = activities.WaitDatabaseRequest
 	WaitDatabaseResult          = activities.WaitDatabaseResult
 	WaitReachableRequest        = activities.WaitReachableRequest
+	NetProbeRequest             = activities.NetProbeRequest
+	NetProbeResult              = activities.NetProbeResult
+	NetTarget                   = activities.NetTarget
+	NetPairResult               = activities.NetPairResult
+	NetSnapshotRequest          = activities.NetSnapshotRequest
+	NetSnapshotResult           = activities.NetSnapshotResult
 	RunSegmentRequest           = activities.RunSegmentRequest
 	RunSegmentResult            = activities.RunSegmentResult
 	RunBaselineRequest          = activities.RunBaselineRequest
@@ -75,4 +83,9 @@ const (
 	BaselineFinished = events.BaselineFinished
 	StandKept        = events.StandKept
 	ResultPublished  = events.ResultPublished
+	NetworkChecked   = events.NetworkChecked
 )
+
+// NetOutcomes is every outcome of a connectivity-check path (the
+// network.checked payload's pairs[].outcome).
+var NetOutcomes = activities.NetOutcomes

@@ -52,6 +52,11 @@ func AddressesOf(machines []spec.Machine, infos map[string]provision.MachineInfo
 	return a
 }
 
+// PrivateIP is the private address of a machine ("" when unknown).
+func (a Addresses) PrivateIP(machine string) string {
+	return a.byName[machine].PrivateIP
+}
+
 // Expand replaces every placeholder in s. An unknown machine or role is an
 // error — a config pointing at nothing is a run that fails later in a
 // stranger way.

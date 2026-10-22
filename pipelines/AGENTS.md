@@ -55,6 +55,33 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   deploy и запускает cleanup. Входу не нужны install-скрипты для Docker.
   Docker library 0.3.4 отправляет heartbeat сразу и каждые 15 секунд;
   pipeline задаёт минутный heartbeat timeout и 15 минут на попытку установки.
+- Проверка связности (`netcheck.go`) — последний шаг deploy, после healthy
+  всех контейнеров и до workload. Каждая машина через `stroppy.net.probe`
+  параллельно TCP-дозванивается до опубликованных host-портов
+  (`spec.Container.Ports`) всех остальных машин, runner — ещё и до endpoint
+  workload (кроме noop и managed YDB; совпадает с портом базы — тот помечается
+  обязательным). Dial 3 с, неудачный путь повторяется до окна 10 с, activity
+  1 мин, `AtMostOnce`; здоровый прогон тратит один раунд. Исход пути:
+  `ok | refused | timeout | other` (enum `ConnectivityOutcome`).
+- Для машин на обоих концах неудачного пути `stroppy.net.snapshot` снимает
+  на хосте (`machine.Shell`, только чтение, 10 с и 64 KiB на команду):
+  `ip -br addr`, `ip route`, `ip neigh`, `ss -ltnp`, `ss -tn state syn-sent`,
+  `iptables-save`/`nft list ruleset` (если есть), sysctl портов/rp_filter/
+  forward, хвост `dmesg`, `/etc/sysctl.d/90-stroppy-*.conf`. Файл
+  `netdiag/<probe|reach>-<machine>.txt` → артефакт
+  `<run8>-netdiag-<probe|reach>-<machine>` на 30 дней.
+- Политика: неудачный путь до порта контейнера kind `database`/`proxy`/
+  `coordinator` (без kind — serving-контейнер роли) или до endpoint валит
+  deploy ПОСЛЕ снимков: `connectivity: db-3:26257 unreachable from db-1
+  (timeout)`. Порты `exporter`/`addon` только предупреждают: экспортёр на
+  localhost или завершившийся init-сайдкар не повод терять прогон. Отказ
+  самой probe-activity — тоже предупреждение (пути записаны как `other`).
+  Упавшее ожидание `stroppy.database.reachable` в workload записывает путь
+  runner → endpoint, снимает оба конца (`reach`) и повторяет milestone.
+- Milestone `network.checked`: `stage` (deploy|workload), `total`, `failed`,
+  `critical`, `pairs[]` (неудачные первыми, не больше 2000), `snapshots[]`
+  (`machine`, `artifact`). Артефакты снимков входят в `result.artifacts`,
+  в том числе частичного результата провалившегося deploy.
 - Уже скачанный образ с `@sha256:` используется локально без обращения
   в registry; mutable tag всегда обновляется. Сетевые ошибки pull (в том
   числе запоздавший ответ зеркала) повторяются до пяти раз с растущей паузой
@@ -198,7 +225,11 @@ workload; `keep` → stand (SG прогона с подсетями) + TTL и `k
 (ссылка по имени, intra-run только свои блоки, сеть прогон не объявляет),
 `existing` (`networkId`), приватный прогон на маршрутах профиля, отказ без
 них и без выделенных подсетей (ничего не создано). `sim_resume_test.go` —
-resume ничего не создаёт и не выделяет. `internal/providerconfig/*_test.go` —
+resume ничего не создаёт и не выделяет. `sim_netcheck_test.go` — проверка
+связности: все пути ok (milestone без снимков); недоступный порт базы →
+снимки обоих концов → провал до workload с причиной; недоступный экспортёр
+только предупреждает; провал reachability-ожидания снимает `reach`; потеря
+probe-activity не валит прогон. `internal/providerconfig/*_test.go` —
 ensure/delete сети профиля (fake dynamic client) и порядок activities.
 `internal/probe/sim_test.go` — verify/quotas. Правило:
 любой новый шаг workflow — сначала сюда, потом на кластер.
@@ -215,7 +246,7 @@ cd pipelines
 go test ./... -count=1               # 113 тестов, golden: -update
 golangci-lint run --config ../.golangci.yaml ./...
 make -C .. build-pipelines           # bin/stroppy-*
-GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 18
+GRAPHENE_MANIFEST=1 ../bin/stroppy-run | jq '.activities|length'   # 27
 ```
 
 ## stroppy 6 (без фолбеков на v5)

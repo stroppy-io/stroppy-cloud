@@ -20,12 +20,14 @@ func resume(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	type attached struct {
 		runner pipeline.Agent
 		addrs  Addresses
+		agents map[string]pipeline.Agent
 	}
 	stand, err := phase(ctx, PhaseProvisioning, func() (attached, error) {
 		infos := make(map[string]provision.MachineInfo, len(run.Machines))
 		names := make([]string, 0, len(run.Machines))
 		fns := make([]func(pipeline.Context) error, 0, len(run.Machines))
 		var runner pipeline.Agent
+		agents := make(map[string]pipeline.Agent, len(run.Machines))
 		for _, m := range run.Machines {
 			addr, ok := from.Machines[m.Name]
 			if !ok {
@@ -34,6 +36,7 @@ func resume(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 			info := provision.MachineInfo{PrivateIP: addr.PrivateIP, PublicIP: addr.PublicIP}
 			infos[m.Name] = info
 			agent := pipeline.AttachAgent(ctx, spec.AgentName(from.FromRunID, m.Name))
+			agents[m.Name] = agent
 			if m.Role == run.Workload.RunnerRole && runner == nil {
 				runner = agent
 			}
@@ -54,7 +57,7 @@ func resume(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		if err := parallel(ctx, names, fns); err != nil {
 			return attached{}, err
 		}
-		return attached{runner: runner, addrs: AddressesOf(run.Machines, infos)}, nil
+		return attached{runner: runner, addrs: AddressesOf(run.Machines, infos), agents: agents}, nil
 	})
 	if err != nil {
 		return spec.Result{}, err
@@ -63,7 +66,13 @@ func resume(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		return spec.Result{}, err
 	}
 	wl, wlErr := phase(ctx, PhaseWorkload, func() (workloadOutcome, error) {
-		return runWorkload(ctx, run, stand.runner, stand.addrs)
+		// Nothing is deployed, so nothing is probed; a failed reachability
+		// wait still snapshots the stand's machines.
+		order := make([]string, 0, len(run.Machines))
+		for _, m := range run.Machines {
+			order = append(order, m.Name)
+		}
+		return runWorkload(ctx, run, stand.runner, stand.addrs, newNetCheck(run, order, stand.agents, stand.addrs))
 	})
 	return collect(ctx, run, wl, wlErr)
 }

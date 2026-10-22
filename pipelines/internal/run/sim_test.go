@@ -1,6 +1,7 @@
 package run
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"strings"
@@ -91,6 +92,14 @@ type sim struct {
 	// degraded is what result.published reported.
 	degraded        bool
 	teardownStarted bool
+	// probe answers a machine's connectivity probe (nil: every path ok).
+	probe func(machine string, target activities.NetTarget) activities.NetPairResult
+	// probeErr fails the probe activity itself.
+	probeErr error
+	// reachErr fails the runner's reachability wait.
+	reachErr error
+	// network holds the payloads of network.checked.
+	network []map[string]any
 }
 
 func pipelinetestWorkflow(s *sim) func(workflow.Context, spec.Run) (spec.Result, error) {
@@ -132,6 +141,9 @@ func newSim(t *testing.T) *sim {
 		if req.Name == events.PhaseStarted && req.Payload["phase"] == PhaseTeardown {
 			s.teardownStarted = true
 		}
+		if req.Name == events.NetworkChecked {
+			s.network = append(s.network, req.Payload)
+		}
 		if req.Name == events.ResultPublished {
 			s.degraded, _ = req.Payload["degraded"].(bool)
 		}
@@ -166,7 +178,32 @@ func (s *sim) converge(t *testing.T, run spec.Run, ips map[string]string) {
 	require.NoError(t, s.objects.After(5*time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(map[string]any{"id": "enp-sg"})))
 	for _, m := range run.Machines {
 		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameWaitReachable, mock.Anything, mock.Anything).
-			Return(activities.WaitDatabaseResult{Ready: true, Attempts: 1}, nil).Maybe()
+			Return(func(context.Context, activities.WaitReachableRequest) (activities.WaitDatabaseResult, error) {
+				if s.reachErr != nil {
+					return activities.WaitDatabaseResult{Attempts: 150}, s.reachErr
+				}
+				return activities.WaitDatabaseResult{Ready: true, Attempts: 1}, nil
+			}).Maybe()
+		machine := m.Name
+		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameNetProbe, mock.Anything, mock.Anything).
+			Return(func(_ context.Context, req activities.NetProbeRequest) (activities.NetProbeResult, error) {
+				var out activities.NetProbeResult
+				if s.probeErr != nil {
+					return out, s.probeErr
+				}
+				for _, target := range req.Targets {
+					pair := activities.NetPairResult{NetTarget: target, Outcome: activities.NetOK, LatencyMs: 0.4, Attempts: 1}
+					if s.probe != nil {
+						pair = s.probe(machine, target)
+					}
+					out.Pairs = append(out.Pairs, pair)
+				}
+				return out, nil
+			}).Maybe()
+		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameNetSnapshot, mock.Anything, mock.Anything).
+			Return(func(_ context.Context, req activities.NetSnapshotRequest) (activities.NetSnapshotResult, error) {
+				return activities.NetSnapshotResult{Path: "/ws/netdiag/" + req.Label + ".txt", Commands: 10}, nil
+			}).Maybe()
 		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameHostPrep, mock.Anything, mock.MatchedBy(func(req activities.HostPrepRequest) bool {
 			return req.Kind == spec.HostPrepScript && strings.Contains(req.Content, "/dev/disk/by-id/virtio-")
 		})).Return(activities.HostPrepResult{}, nil).Maybe()
@@ -264,7 +301,7 @@ func TestSimulatedRunPostgresYandex(t *testing.T) {
 	// Milestones in order of the phases.
 	require.Equal(t, []string{
 		events.PhaseStarted, events.MachineReady, events.MachineReady, events.PhaseFinished,
-		events.PhaseStarted, events.ContainerReady, events.PhaseFinished,
+		events.PhaseStarted, events.ContainerReady, events.NetworkChecked, events.PhaseFinished,
 		events.PhaseStarted, events.BaselineStarted, events.BaselineFinished, events.SegmentStarted, events.SegmentFinished, events.PhaseFinished,
 		events.PhaseStarted, events.ResultPublished, events.PhaseFinished,
 		events.PhaseStarted,

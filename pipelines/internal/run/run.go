@@ -107,14 +107,18 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 	infra, addrs := prov.infra, prov.addrs
 
 	// --- deploying ---------------------------------------------------------
+	nc := netCheckOf(run, infra, addrs)
 	if _, err := phase(ctx, PhaseDeploying, func() (struct{}, error) {
 		if err := hostPrep(ctx, run, infra); err != nil {
 			return struct{}{}, err
 		}
-		_, err := deployContainers(ctx, run, infra, addrs)
-		return struct{}{}, err
+		if _, err := deployContainers(ctx, run, infra, addrs); err != nil {
+			return struct{}{}, err
+		}
+		return struct{}{}, nc.probe(ctx)
 	}); err != nil {
-		return spec.Result{}, err
+		// The snapshots of a failed connectivity check are the evidence.
+		return spec.Result{Artifacts: nc.artifacts()}, err
 	}
 
 	// --- workload ----------------------------------------------------------
@@ -123,7 +127,7 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		if len(runners) == 0 {
 			return workloadOutcome{}, fmt.Errorf("workload: no machine of runner role %q", run.Workload.RunnerRole)
 		}
-		return runWorkload(ctx, run, runners[0].Agent, addrs)
+		return runWorkload(ctx, run, runners[0].Agent, addrs, nc)
 	})
 	result, err := collect(ctx, run, wl, wlErr)
 	if err != nil {
@@ -160,6 +164,7 @@ func collect(ctx pipeline.Context, run spec.Run, wl workloadOutcome, wlErr error
 		if wl.Runner != nil {
 			res.Artifacts = publishArtifacts(ctx, run, wl)
 		}
+		res.Artifacts = append(res.Artifacts, wl.NetArtifacts...)
 		if missing := missingExpectations(run, res); len(missing) > 0 {
 			ctx.Logger().Warn("result expectations not met", "missing", missing)
 			events.Emit(ctx, events.ResultPublished, events.Payload{"degraded": true, "missing": missing})

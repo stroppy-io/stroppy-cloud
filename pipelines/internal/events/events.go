@@ -33,6 +33,9 @@ const (
 	BaselineFinished = "baseline.finished"
 	StandKept        = "stand.kept"
 	ResultPublished  = "result.published"
+	// NetworkChecked carries the connectivity check: every path, failed
+	// first, and the network snapshots of the machines on failed paths.
+	NetworkChecked = "network.checked"
 	// ActivityName is the wire name of the emit activity (run queue).
 	ActivityName      = "stroppy.events.emit"
 	activityTimeout   = 30 * time.Second
