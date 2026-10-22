@@ -55,7 +55,7 @@ func sampleRun() Run {
 			CredentialsSecret:  "yc-sa-key",
 			ProviderConfigName: "t-acme",
 		},
-		Network: Network{CIDR: "10.130.0.0/24", AllowPublicIPs: true, Ingress: []Ingress{{Port: 22, Proto: "tcp", CIDR: "0.0.0.0/0"}}},
+		Network: Network{CIDR: "10.130.0.0/24", AllowPublicIPs: true, Subnets: []Subnet{{Zone: "ru-central1-d", CIDR: "10.128.0.0/28"}}, Ingress: []Ingress{{Port: 22, Proto: "tcp", CIDR: "0.0.0.0/0"}}},
 		Machines: []Machine{
 			{
 				Name: "db-1", Role: "db", CPU: 8, MemoryGB: 32, Image: "ubuntu-2404-lts", Location: "ru-central1-d", InstanceType: "standard-v3",

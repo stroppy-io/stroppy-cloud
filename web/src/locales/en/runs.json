@@ -676,7 +676,8 @@
     "quota_unknown": "The provider quotas could not be read; the queue retries",
     "provider": "The provider is not ready ({{detail}})",
     "hint": "The run starts by itself once there is room. Runs behind it that fit may start first.",
-    "suspended": "A platform admin suspended the tenant"
+    "suspended": "A platform admin suspended the tenant",
+    "subnets": "No free addresses in the provider network range {{detail}}: waiting for other runs to end"
   },
   "stage": {
     "preparing": "Preparing data",

@@ -89,7 +89,8 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   `duration*1.5 + warmup + 30m` по умолчанию; явный segment.timeout
   задаёт deadline activity после отдельного idle wait warmup.
 - `Keep` → `ToStand(infra.Root, KeepFor)` после результата; иначе cleanup
-  interceptor Graphene сносит всё каскадом от root-сети.
+  interceptor Graphene сносит всё каскадом от корня прогона (YC — его SG,
+  AWS — VPC). Сеть профиля YC корнем прогона не является и с ним не удаляется.
 - Загруженные артефакты перед возвратом результата передаются stand:
   конфиги без TTL (до явного удаления), логи сегментов и baseline — 30 дней.
   Они переживают cleanup run; срок не зависит от Keep инфраструктуры.
@@ -114,11 +115,24 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   адаптера постоянные `ProviderConfig` и Secret профиля. Имя включает хеш
   namespace и UUID профиля; Secret живёт в `stroppy-provider-credentials`.
   Реквизиты разрешаются в activity; в Temporal передаются только ссылки.
-- Обычный run выполняет `stroppy.provider.check-config`, без записи конфигурации.
-  Завершение run не удаляет настройки профиля. Удаление профиля — отдельный
-  lifecycle run: проверка отсутствия managed resources/usages, удаление
-  ProviderConfig с ожиданием финализаторов, затем Secret. После успеха сервер
-  удаляет Graphene-секреты и запись профиля. Чужие ресурсы не перезаписываются.
+- Сеть профиля YC (`providerconfig/network.go`, activity
+  `stroppy.provider.network`, heartbeat): при `network.kind=create` ensure
+  создаёт `vpc.Network` `spec.ProfileNetworkName(<ProviderConfig>)`, а при
+  `public_ips: false` — общий NAT `-nat` и `RouteTable` `-routes`
+  (0.0.0.0/0 → NAT), с метками профиля, и ждёт Ready (отказ облака по
+  квоте/правам — сразу ошибка). Уже существующий свой объект не меняется;
+  объекты, которых настройки больше не просят, удаляются, когда прогонов нет.
+  `existing` — сеть пользователя (`network_id`, `route_table_id`), ничего не
+  создаётся. Свои сетевые объекты профиля не считаются использованием
+  ProviderConfig. Ensure: verify → ProviderConfig → сеть; delete: сеть
+  (`unused`: ни одной подсети/VM прогонов, затем routes → nat → net с
+  ожиданием) → ProviderConfig → Secret.
+- Обычный run выполняет `stroppy.provider.check-config`, без записи конфигурации:
+  ProviderConfig и сеть профиля должны существовать и быть Ready; результат
+  отдаёт id общей таблицы маршрутов (`provision.Shared`). Завершение run не
+  удаляет настройки профиля. Удаление профиля — отдельный lifecycle run (см.
+  выше). После успеха сервер удаляет Graphene-секреты и запись профиля. Чужие
+  ресурсы не перезаписываются.
 - `bootstrap.py` и `bootstrap-token.yaml` относятся к историческим прогонам
   контракта 1.x. Новым tenant не нужны kubeconfig и постоянные K8s-токены.
 
@@ -131,13 +145,23 @@ internal/topo         toposort/GroupBy/Slug — чистые, тестируем
   + `driver` (lowerCamel-ключи `drivers.0` stroppy-config.json) — пайплайн
   только пишет их в конфиг. Никакого env-моста: stroppy 6 типизирован.
 - Имена облачных ресурсов: `stroppy-<tenant>-<run8>-...`; агенты
-  `<run8>-<machine>`.
+  `<run8>-<machine>`. Сеть профиля YC — `<ProviderConfig>-net/-nat/-routes`.
+- Сеть YC: одна на профиль (квота `vpc.networks.count` — дефицитная). Прогон
+  создаёт в ней только свою SG и по подсети на зону (`spec.YandexZones`:
+  машины по порядку, затем зоны dedicated YDB). CIDR подсетей выделяет сервер
+  из `pool_cidr` профиля при допуске и кладёт в `network.subnets`; без блока
+  для зоны provision падает до объявления чего-либо — своего диапазона прогон
+  не придумывает. SG пускает внутренний трафик только из своих подсетей, так
+  что соседние прогоны в одной сети изолированы. Приватным машинам — таблица
+  маршрутов профиля; если её у профиля нет (public-профиль с приватной
+  машиной, `existing` без `route_table_id`), прогон создаёт свой NAT и маршруты.
 - Дерево владения (`pipeline.Parent`) = порядок удаления: Graphene удаляет
   детей раньше родителя, сиблингов — одновременно. Ресурс, который облако
   не удалит, пока жив другой (сеть с подсетями, подсеть с VM, шлюз AWS с
   публичными адресами машин), — предок того. Сейчас цепочки линейные: YC
-  сеть → SG → (шлюз → маршруты) → подсети → VM; AWS VPC → IGW → маршруты →
-  подсеть → SG → VM. Каждый облачный ресурс объявляется с `failedOn[T]()`:
+  SG → (свой шлюз → маршруты) → подсети → VM/диски (managed YDB — под
+  подсетями), сеть профиля вне дерева; AWS VPC → IGW → маршруты → подсеть →
+  SG → VM. Каждый облачный ресурс объявляется с `failedOn[T]()`:
   отказ облака по квоте/правам завершает объявление сразу.
 - Контейнеры Docker и их Graphene-записи именуются `<полный-run-UUID>-<name>`;
   логическое имя остаётся в RunSpec, depends_on, событиях и метке
@@ -168,7 +192,13 @@ postgres/yandex и noop/aws; неизвестный провайдер и отк
 двух машинах, `${ip:<m>}`/`${ips:role}`; baseline-fail и артефакт-fail
 нефатальны; два сегмента, `result_expectations` → degraded; потеря
 activity сегмента (AtMostOnce, без повтора); cancel в provisioning и в
-workload; `keep` → stand + TTL и `keep` игнорируется после провала.
+workload; `keep` → stand (SG прогона с подсетями) + TTL и `keep`
+игнорируется после провала. `sim_network_test.go` — сеть профиля: созданная
+(ссылка по имени, intra-run только свои блоки, сеть прогон не объявляет),
+`existing` (`networkId`), приватный прогон на маршрутах профиля, отказ без
+них и без выделенных подсетей (ничего не создано). `sim_resume_test.go` —
+resume ничего не создаёт и не выделяет. `internal/providerconfig/*_test.go` —
+ensure/delete сети профиля (fake dynamic client) и порядок activities.
 `internal/probe/sim_test.go` — verify/quotas. Правило:
 любой новый шаг workflow — сначала сюда, потом на кластер.
 

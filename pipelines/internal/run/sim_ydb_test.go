@@ -37,6 +37,9 @@ func TestManagedYDBEndpointAndCleanup(t *testing.T) {
 				run.ManagedYDB.NodeCount = 3
 				run.ManagedYDB.StorageGroups = 1
 				run.ManagedYDB.StorageType = "ssd"
+				// The server allocates a block in every zone of the database.
+				run.Network.Subnets = append(run.Network.Subnets,
+					spec.Subnet{Zone: "ru-central1-a", CIDR: "10.130.0.16/28"}, spec.Subnet{Zone: "ru-central1-b", CIDR: "10.130.0.32/28"})
 			}
 			names := provision.NewNames(run.Tenant, run.RunID)
 			s.converge(t, run, map[string]string{"runner-1": "10.130.0.20"})

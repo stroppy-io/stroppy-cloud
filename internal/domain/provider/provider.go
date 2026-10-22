@@ -52,9 +52,12 @@ type Profile struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
-	CreatedBy               *uuid.UUID
-	CreatedAt               time.Time
-	UpdatedAt               time.Time
+	// ConfigRevision is the ConfigRevision the last successful ensure
+	// applied; below the server's, a Yandex profile has no profile network.
+	ConfigRevision int
+	CreatedBy      *uuid.UUID
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 // Quota is one cached cloud limit.
@@ -64,6 +67,18 @@ type Quota struct {
 	Used  float64 `json:"used"`
 	Unit  string  `json:"unit,omitempty"`
 	Zone  string  `json:"zone,omitempty"`
+}
+
+// ConfigRevision is what stroppy-provider-config ensure sets up today:
+// 1 = the ProviderConfig plus, for Yandex, the profile network every run
+// joins. A ready profile below it is configured again before its queued
+// runs start (Service.UpgradeStale).
+const ConfigRevision = 1
+
+// Configured reports a profile whose configuration is what runs expect:
+// a Yandex profile needs its profile network, AWS needs nothing more.
+func (p Profile) Configured() bool {
+	return p.Kind != KindYandex || p.ConfigRevision >= ConfigRevision
 }
 
 // CredentialsSecret is the Graphene secret name of a profile.
@@ -80,7 +95,14 @@ type Repository interface {
 	SetQuotas(ctx context.Context, id uuid.UUID, result QuotasResult) error
 	SoftDelete(ctx context.Context, id uuid.UUID) error
 	BeginOperation(ctx context.Context, id uuid.UUID, status Status, runID string) error
+	// FinishOperation ends an operation; a ready end records ConfigRevision.
 	FinishOperation(ctx context.Context, id uuid.UUID, runID string, status Status, reason string) error
+	// Stale lists ready profiles of a kind configured below revision.
+	Stale(ctx context.Context, kind Kind, revision int) ([]Profile, error)
+	// BeginUpgrade turns a stale ready profile verifying for runID while
+	// only queued runs wait for it; false when it is not stale any more or
+	// a started run or kept stand still uses the old configuration.
+	BeginUpgrade(ctx context.Context, id uuid.UUID, runID string, revision int) (bool, error)
 	Pending(ctx context.Context) ([]Profile, error)
 	BeginTenantDeletion(ctx context.Context, id uuid.UUID) error
 	UpdateConfiguration(ctx context.Context, id uuid.UUID, name *string, settings json.RawMessage, credential string, runID string) error

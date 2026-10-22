@@ -16,17 +16,10 @@ import (
 
 // YandexSettings is the baked provider.yandex.settings@1 value.
 type YandexSettings struct {
-	CloudID    string `json:"cloud_id"`
-	FolderID   string `json:"folder_id"`
-	Zone       string `json:"zone"`
-	PlatformID string `json:"platform_id"`
-	Network    struct {
-		Kind            string `json:"kind"`
-		SubnetCIDR      string `json:"subnet_cidr"`
-		NetworkID       string `json:"network_id"`
-		SubnetID        string `json:"subnet_id"`
-		SecurityGroupID string `json:"security_group_id"`
-	} `json:"network"`
+	CloudID     string `json:"cloud_id"`
+	FolderID    string `json:"folder_id"`
+	Zone        string `json:"zone"`
+	PlatformID  string `json:"platform_id"`
 	PublicIPs   bool   `json:"public_ips"`
 	ImageFamily string `json:"image_family"`
 	Preemptible bool   `json:"preemptible"`
@@ -56,10 +49,12 @@ func (y Yandex) Record(ctx pipeline.Context, k8s *k8slib.Client) {
 	k8slib.Resource(ctx, k8s, "record-vm", &compute.Instance{}, k8slib.WithReady(yandexInstanceReady), failedOn[compute.Instance]())
 }
 
-// Provision declares network → subnet → security group → disks + instances.
+// Provision declares the run's part of the profile network: a security
+// group, an optional own NAT gateway with its route table, the zonal
+// subnets the server allocated, then disks + instances.
 //
 //nolint:funlen // one declaration per resource kind, read top to bottom
-func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle) (Infra, error) {
+func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle, shared Shared) (Infra, error) {
 	st, err := decodeSettings[YandexSettings](run.Provider.Settings)
 	if err != nil {
 		return Infra{}, err
@@ -67,32 +62,33 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 	if st.FolderID == "" {
 		return Infra{}, fmt.Errorf("provision/yandex: folder_id is required")
 	}
+	network, err := spec.YandexNetworkOf(run.Provider.Settings)
+	if err != nil {
+		return Infra{}, fmt.Errorf("provision/yandex: %w", err)
+	}
 	names := NewNames(run.Tenant, run.RunID)
 	pc := run.Provider.ProviderConfigName
-	subnets, err := yandexSubnets(run, st.Zone, names.Subnet())
+	subnets, err := yandexSubnets(run, names.Subnet())
 	if err != nil {
 		return Infra{}, err
 	}
 	public := run.Network.AllowPublicIPs
+	netRef, netID := yandexNetworkRef(network, pc)
 
-	// Network → security group → zonal subnets → VMs/disks. Ownership keeps
-	// every subnet until its VMs are gone and the shared group until all
-	// subnets are gone; moving the root to a stand preserves the whole tree.
-	net := k8slib.Resource(ctx, k8s, names.Network(), &vpc.Network{
-		Spec: vpc.NetworkSpec{
-			ResourceSpec: providerRef(pc),
-			ForProvider:  vpc.NetworkParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Network())},
-		},
-	}, k8slib.WithReady(yandexNetworkReady), failedOn[vpc.Network]())
-
+	// The network belongs to the profile, not the run: the run's tree is
+	// security group → (own gateway → routes) → zonal subnets → VMs/disks.
+	// Ownership keeps every subnet until its VMs are gone and the group
+	// until all subnets are gone; moving the group to a stand preserves the
+	// whole run and deleting it never reaches the network.
 	sg := k8slib.Resource(ctx, k8s, names.SecurityGroup(), &vpc.SecurityGroup{
 		Spec: vpc.SecurityGroupSpec{
 			ResourceSpec: providerRef(pc),
 			ForProvider: vpc.SecurityGroupParameters{
 				FolderID:     ptr(st.FolderID),
 				Name:         ptr(names.SecurityGroup()),
-				NetworkIDRef: &xpv1.Reference{Name: names.Network()},
-				Ingress:      yandexIngress(run),
+				NetworkID:    netID,
+				NetworkIDRef: netRef,
+				Ingress:      yandexIngress(run, subnets),
 				Egress: []vpc.SecurityGroupEgressParameters{{
 					Description:  ptr("all egress"),
 					Protocol:     ptr("ANY"),
@@ -102,7 +98,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				}},
 			},
 		},
-	}, k8slib.WithReady(yandexSGReady), failedOn[vpc.SecurityGroup](), k8slib.WithResourceOption[vpc.SecurityGroup](pipeline.Parent(net)))
+	}, k8slib.WithReady(yandexSGReady), failedOn[vpc.SecurityGroup]())
 
 	byZone := map[string]pipeline.Handle{}
 	subnetReady := map[string]readyFn{}
@@ -110,14 +106,23 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 	var parent pipeline.Handle = sg
 	var routeID *string
 	if spec.NeedsPrivateEgress(run) {
-		gateway := k8slib.Resource(ctx, k8s, names.Gateway(), &vpc.Gateway{Spec: vpc.GatewaySpec{ResourceSpec: providerRef(pc), ForProvider: vpc.GatewayParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Gateway()), SharedEgressGateway: []vpc.SharedEgressGatewayParameters{{}}}}}, k8slib.WithReady(yandexGatewayReady), failedOn[vpc.Gateway](), k8slib.WithResourceOption[vpc.Gateway](pipeline.Parent(sg)))
-		routes := k8slib.Resource(ctx, k8s, names.RouteTable(), &vpc.RouteTable{Spec: vpc.RouteTableSpec{ResourceSpec: providerRef(pc), ForProvider: vpc.RouteTableParameters{FolderID: ptr(st.FolderID), Name: ptr(names.RouteTable()), NetworkIDRef: &xpv1.Reference{Name: names.Network()}, StaticRoute: []vpc.StaticRouteParameters{{DestinationPrefix: ptr("0.0.0.0/0"), GatewayIDRef: &xpv1.Reference{Name: names.Gateway()}}}}}}, k8slib.WithReady(yandexRouteTableReady), failedOn[vpc.RouteTable](), k8slib.WithResourceOption[vpc.RouteTable](pipeline.Parent(gateway)))
-		parent = routes
-		live, err := routes.TryReady(ctx)
-		if err != nil {
-			return Infra{}, err
+		switch {
+		case shared.RouteTableID != "":
+			routeID = ptr(shared.RouteTableID)
+		case network.SharedEgress():
+			return Infra{}, fmt.Errorf("provision/yandex: the profile network reports no route table id; configure the provider again")
+		default:
+			// The profile network has no route out: this run brings its own
+			// NAT gateway and route table, owned by its security group.
+			gateway := k8slib.Resource(ctx, k8s, names.Gateway(), &vpc.Gateway{Spec: vpc.GatewaySpec{ResourceSpec: providerRef(pc), ForProvider: vpc.GatewayParameters{FolderID: ptr(st.FolderID), Name: ptr(names.Gateway()), SharedEgressGateway: []vpc.SharedEgressGatewayParameters{{}}}}}, k8slib.WithReady(yandexGatewayReady), failedOn[vpc.Gateway](), k8slib.WithResourceOption[vpc.Gateway](pipeline.Parent(sg)))
+			routes := k8slib.Resource(ctx, k8s, names.RouteTable(), &vpc.RouteTable{Spec: vpc.RouteTableSpec{ResourceSpec: providerRef(pc), ForProvider: vpc.RouteTableParameters{FolderID: ptr(st.FolderID), Name: ptr(names.RouteTable()), NetworkID: netID, NetworkIDRef: netRef, StaticRoute: []vpc.StaticRouteParameters{{DestinationPrefix: ptr("0.0.0.0/0"), GatewayIDRef: &xpv1.Reference{Name: names.Gateway()}}}}}}, k8slib.WithReady(yandexRouteTableReady), failedOn[vpc.RouteTable](), k8slib.WithResourceOption[vpc.RouteTable](pipeline.Parent(gateway)))
+			parent = routes
+			live, err := routes.TryReady(ctx)
+			if err != nil {
+				return Infra{}, err
+			}
+			routeID = live.Status.AtProvider.ID
 		}
-		routeID = live.Status.AtProvider.ID
 	}
 	for _, placement := range subnets {
 		sub := k8slib.Resource(ctx, k8s, placement.Name, &vpc.Subnet{
@@ -126,7 +131,8 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 				ForProvider: vpc.SubnetParameters{
 					FolderID:     ptr(st.FolderID),
 					Name:         ptr(placement.Name),
-					NetworkIDRef: &xpv1.Reference{Name: names.Network()},
+					NetworkID:    netID,
+					NetworkIDRef: netRef,
 					Zone:         ptr(placement.Zone),
 					V4CidrBlocks: strPtrs(placement.CIDR),
 					RouteTableID: routeID,
@@ -142,7 +148,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 		byZone[placement.Zone] = sub
 	}
 
-	infra := Infra{Root: net, Machines: map[string]*Machine{}}
+	infra := Infra{Root: sg, Machines: map[string]*Machine{}}
 	for _, m := range run.Machines {
 		zone := m.Location
 		if zone == "" {
@@ -249,7 +255,7 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			k8slib.WithResourceOption[compute.Instance](pipeline.Parent(sub), pipeline.Children(children...)),
 		)
 		mach := &Machine{Spec: m, Agent: agent, VM: vm}
-		deps := []readyFn{readyOf(net), readyOf(sg)}
+		deps := []readyFn{readyOf(sg)}
 		if ready, ok := subnetReady[zone]; ok {
 			deps = append(deps, ready)
 		}
@@ -281,24 +287,39 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			if group != nil && group.Status.AtProvider.ID != nil {
 				groupID = *group.Status.AtProvider.ID
 			}
-			return yandexManagedEndpoint(ctx, k8s, run, st, names, subnets, groupID, parent)
+			return yandexManagedEndpoint(ctx, k8s, run, st, names, subnets, groupID, parent, netRef, netID)
 		}
 	}
 	return infra, nil
+}
+
+// yandexNetworkRef points a run object at the profile network: the
+// Crossplane object of a created one by name, the user's network by id.
+func yandexNetworkRef(network spec.YandexNetwork, providerConfig string) (ref *xpv1.Reference, id *string) {
+	if network.Created() {
+		return &xpv1.Reference{Name: spec.ProfileNetworkName(providerConfig)}, nil
+	}
+	return nil, ptr(network.NetworkID)
 }
 
 // yandexBootDiskGB is the boot disk of every VM; data lives on secondary
 // disks or in the container volumes.
 const yandexBootDiskGB = 40
 
-// yandexIngress opens the run network to itself plus the spec's ingress.
-func yandexIngress(run spec.Run) []vpc.SecurityGroupIngressParameters {
+// yandexIngress opens the run's own subnets to each other plus the spec's
+// ingress. Other runs share the network but not these blocks, so they
+// stay out.
+func yandexIngress(run spec.Run, subnets []yandexSubnet) []vpc.SecurityGroupIngressParameters {
+	blocks := make([]string, 0, len(subnets))
+	for _, sub := range subnets {
+		blocks = append(blocks, sub.CIDR)
+	}
 	rules := []vpc.SecurityGroupIngressParameters{{
 		Description:  ptr("intra-run"),
 		Protocol:     ptr("ANY"),
 		FromPort:     ptr(0.0),
 		ToPort:       ptr(65535.0),
-		V4CidrBlocks: strPtrs(intraCIDR(run)),
+		V4CidrBlocks: strPtrs(blocks...),
 	}}
 	// Dedicated YDB exposes gRPC through a managed network load balancer.
 	// Its health checks originate outside the run subnet; allow only the

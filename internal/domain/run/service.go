@@ -639,16 +639,23 @@ func (d *demand) add(m pipelinespec.Machine, kind pipelinespec.ProviderKind) {
 func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
 	name := strings.ToLower(q.Name)
 	switch {
+	// A Yandex run joins its profile's network (stroppy-provider-config
+	// made it, with the shared NAT when machines are private): it declares
+	// one security group and one subnet per zone, and its own NAT gateway
+	// and route table only when the profile network has no route out. An
+	// AWS run declares its own VPC, group and internet gateway
+	// (pipelines/internal/provision).
 	case name == "vpc.gateways.count" || name == "vpc.routetables.count":
-		if pipelinespec.NeedsPrivateEgress(res) {
+		if pipelinespec.NeedsPrivateEgress(res) && !sharedEgress(res) {
 			return 1, true
 		}
 		return 0, true
-	// Every run declares its own network and security group: one VPC,
-	// one group and (AWS) one internet gateway per run, one subnet per
-	// zone it places machines in (pipelines/internal/provision).
-	case name == "vpc.networks.count" || name == "vpc.vpcs" ||
-		name == "vpc.securitygroups.count" || name == "vpc.security_groups" ||
+	case name == "vpc.networks.count":
+		if res.Provider.Kind == pipelinespec.ProviderYandex {
+			return 0, true
+		}
+		return 1, true
+	case name == "vpc.vpcs" || name == "vpc.securitygroups.count" || name == "vpc.security_groups" ||
 		name == "vpc.internet_gateways":
 		return 1, true
 	case name == "vpc.subnets.count":
@@ -679,9 +686,24 @@ func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
 	return 0, false
 }
 
+// sharedEgress reports a Yandex run whose profile network has its own
+// route out for private machines.
+func sharedEgress(res pipelinespec.Run) bool {
+	if res.Provider.Kind != pipelinespec.ProviderYandex {
+		return false
+	}
+	network, err := pipelinespec.YandexNetworkOf(res.Provider.Settings)
+	return err == nil && network.SharedEgress()
+}
+
 // subnetCount is the zones the run places machines (and a dedicated
 // managed YDB) in: one subnet each.
 func subnetCount(res pipelinespec.Run) int {
+	if res.Provider.Kind == pipelinespec.ProviderYandex {
+		if zones, err := pipelinespec.YandexZones(res); err == nil {
+			return len(zones)
+		}
+	}
 	var settings struct {
 		Zone string `json:"zone"`
 	}

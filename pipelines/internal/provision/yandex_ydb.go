@@ -14,7 +14,7 @@ import (
 
 // Managed databases belong to the run tree, below their zonal subnets.
 // Cleanup therefore removes the database before any subnet or security group.
-func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec.Run, settings YandexSettings, names Names, subnets []yandexSubnet, groupID string, parent pipeline.Handle) (string, error) {
+func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec.Run, settings YandexSettings, names Names, subnets []yandexSubnet, groupID string, parent pipeline.Handle, netRef *xpv1.Reference, netID *string) (string, error) {
 	m := run.ManagedYDB
 	name := names.Prefix() + "-ydb"
 	switch m.Type {
@@ -46,7 +46,7 @@ func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec
 			ResourceSpec: providerRef(run.Provider.ProviderConfigName),
 			ForProvider: ydb.DatabaseDedicatedParameters{
 				FolderID: ptr(settings.FolderID), Name: ptr(name), LocationID: ptr(m.LocationID), Labels: labels(run, nil), DeletionProtection: ptr(false),
-				NetworkIDRef: &xpv1.Reference{Name: names.Network()}, SubnetIdsRefs: refs, SecurityGroupIds: strPtrs(groupID),
+				NetworkIDRef: netRef, NetworkID: netID, SubnetIdsRefs: refs, SecurityGroupIds: strPtrs(groupID),
 				AssignPublicIps: ptr(m.AssignPublicIPs), ResourcePresetID: ptr(m.ResourcePresetID),
 				ScalePolicy:   []ydb.ScalePolicyParameters{{FixedScale: []ydb.FixedScaleParameters{{Size: ptr(float64(m.NodeCount))}}}},
 				StorageConfig: []ydb.StorageConfigParameters{{GroupCount: ptr(float64(m.StorageGroups)), StorageTypeID: ptr(m.StorageType)}},

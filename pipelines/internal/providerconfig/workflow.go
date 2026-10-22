@@ -17,12 +17,14 @@ const (
 	PipelineID        = "stroppy-provider-config"
 	ConfigureActivity = "stroppy.provider.configure"
 	VerifyActivity    = "stroppy.provider.config-verify"
+	NetworkActivity   = "stroppy.provider.network"
 )
 
 func Run(ctx pipeline.Context, p spec.ProviderConfig) (spec.ProviderVerifyResult, error) {
 	if ctx.Recording() {
 		ctx.RecordActivity(ConfigureActivity, Configure)
 		ctx.RecordActivity(VerifyActivity, verify)
+		ctx.RecordActivity(NetworkActivity, ConfigureNetwork)
 		return spec.ProviderVerifyResult{}, nil
 	}
 	normalized, err := spec.NormalizeProviderConfig(p)
@@ -40,11 +42,24 @@ func Run(ctx pipeline.Context, p spec.ProviderConfig) (spec.ProviderVerifyResult
 			return out, nil
 		}
 	}
+	// The profile network waits on the cloud: its own activity, with a
+	// heartbeat, longer than the configuration writes.
+	nctx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{TaskQueue: wire.RunQueue(ctx.RunId()), StartToCloseTimeout: 20 * time.Minute, HeartbeatTimeout: time.Minute, RetryPolicy: &temporal.RetryPolicy{MaximumAttempts: 3, InitialInterval: 5 * time.Second}})
 	var configured spec.ProviderVerifyResult
-	err = workflow.ExecuteActivity(actx, ConfigureActivity, p).Get(ctx, &configured)
 	if p.Action == "delete" {
-		out = configured
+		// Network first: it references the ProviderConfig and its
+		// credentials until the cloud has deleted it.
+		if err := workflow.ExecuteActivity(nctx, NetworkActivity, p).Get(ctx, &configured); err != nil {
+			return configured, err
+		}
+		err = workflow.ExecuteActivity(actx, ConfigureActivity, p).Get(ctx, &configured)
+		return configured, err
 	}
+	if err := workflow.ExecuteActivity(actx, ConfigureActivity, p).Get(ctx, &configured); err != nil {
+		return out, err
+	}
+	// The network needs the ProviderConfig written just above.
+	err = workflow.ExecuteActivity(nctx, NetworkActivity, p).Get(ctx, &configured)
 	return out, err
 }
 

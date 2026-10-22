@@ -16,6 +16,10 @@ import (
 // doc: https://yandex.cloud/en/docs/resource-manager/operations/folder/get-id
 const ycIDPattern = `^[a-z0-9]{20}$`
 
+// cidrPoolPattern is an IPv4 range of /8 to /24: wide enough for at least
+// one /24 run block, narrow enough to stay inside one RFC 1918 range.
+const cidrPoolPattern = `^(\d{1,3}\.){3}\d{1,3}/([89]|1\d|2[0-4])$`
+
 // YandexSettings is provider.yandex.settings@1 — everything about a Yandex
 // Cloud target that is safe to store and show. Credentials live in
 // provider.yandex.credentials@1.
@@ -61,28 +65,42 @@ func YandexSettings() *schemapb.Schema {
 				Opt(schemapb.StrV("highfreq-v4a"), "AMD Zen 4 compute-optimized (highfreq-v4a)").
 				Default(schemapb.StrV("standard-v3")),
 
+			// One network per profile: stroppy-provider-config creates it with
+			// the profile (create) or the user names one (existing); every run
+			// cuts its zonal subnets out of pool_cidr. Subnets take /28 to /16
+			// of an RFC 1918 range; the pool is the range the server allocates
+			// run blocks (/28../24) from.
+			// doc: https://yandex.cloud/en/docs/vpc/concepts/network#subnet
 			schemapb.OneOf("network", "kind").Title("Network").Group("Network").
-				Desc("Create a throwaway network for every run, or place runs into an existing one.").
+				Desc("Create one network for the profile, or place runs into an existing one. Every run gets its own subnets and security group in it.").
 				Variant("create",
+					schemapb.Str("pool_cidr").Title("Address pool").
+						Desc("IPv4 range the run subnets are allocated from, one block per zone sized to its machines.").
+						Pattern(cidrPoolPattern).Default("10.128.0.0/16"),
+					// Retired: a run no longer owns a whole network, so one fixed
+					// range would collide between runs. The field stays declared
+					// (and never active) so stored profiles still load under Strict.
 					schemapb.Str("subnet_cidr").Title("Subnet CIDR").
-						Desc("IPv4 range of the subnet created for the run.").
-						Pattern(`^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$`).Default("10.130.0.0/24"),
+						Desc("Retired: run subnets come from pool_cidr; a stored value is ignored.").
+						Deprecated().When("false"),
 				).
 				Variant("existing",
 					schemapb.Str("network_id").Title("Network id").
-						Desc("Existing VPC network the machines join.").
+						Desc("Existing VPC network the run subnets are created in.").
 						Pattern(ycIDPattern).Required(),
-					schemapb.Str("subnet_id").Title("Subnet id").
-						Desc("Existing subnet in the chosen zone.").
-						Pattern(ycIDPattern).Required(),
-					schemapb.Str("security_group_id").Title("Security group id").
-						Desc("Existing security group applied to every machine.").
+					schemapb.Str("pool_cidr").Title("Address pool").
+						Desc("IPv4 range of the network kept free for runs; run subnets are allocated from it and must not overlap other subnets of the network.").
+						Pattern(cidrPoolPattern).Required(),
+					// doc: https://yandex.cloud/en/docs/vpc/concepts/routing
+					schemapb.Str("route_table_id").Title("Route table id").
+						Desc("Route table with a route out (e.g. 0.0.0.0/0 through a NAT gateway) for machines without public addresses. When empty, such a run creates its own NAT gateway.").
 						Pattern(ycIDPattern),
 				).
 				Required(),
 
+			// doc: https://yandex.cloud/en/docs/vpc/concepts/gateways
 			schemapb.Bool("public_ips").Title("Public IPs").Group("Network").
-				Desc("Assign a one-to-one NAT public address to every machine.").Default(true),
+				Desc("Assign a one-to-one NAT public address to every machine. Without them a created network gets one shared NAT gateway for the profile.").Default(true),
 
 			// doc: https://yandex.cloud/en/docs/compute/operations/images-with-pre-installed-software/get-list
 			// (families live in the standard-images folder; centos-stream-9 is
@@ -103,6 +121,5 @@ func YandexSettings() *schemapb.Schema {
 					"do not use for a measurement that must complete.").
 				Default(false),
 		).
-		Rules(schemapb.Rule(`[this == null ? root : this].all(s, !("network" in s) || s.network.kind == "create")`, "existing networks are not implemented by the pipeline; use a run-owned network").ID("network-create-only")).
 		MustBuild()
 }

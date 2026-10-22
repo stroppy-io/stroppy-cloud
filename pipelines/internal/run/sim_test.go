@@ -47,7 +47,8 @@ func simRun() spec.Run {
 			Kind: spec.ProviderYandex, Settings: json.RawMessage(`{"cloud_id":"b1glku4lgd6gabcdefgh","folder_id":"b1gia87mbaomkfvsleds","zone":"ru-central1-d","network":{"kind":"create"}}`),
 			CredentialsSecret: "yc-sa-key", ProviderConfigName: "t-acme",
 		},
-		Network: spec.Network{CIDR: "10.130.0.0/24"},
+		// The block the server allocated from the profile pool at admission.
+		Network: spec.Network{Subnets: []spec.Subnet{{Zone: "ru-central1-d", CIDR: "10.130.0.0/28"}}},
 		Machines: []spec.Machine{
 			{
 				Name: "db-1", Role: "db", CPU: 4, MemoryGB: 8, Image: "ubuntu-2404-lts", Location: "ru-central1-d", InstanceType: "standard-v3",
@@ -84,6 +85,9 @@ type sim struct {
 	configs []activities.EnsureProviderConfigRequest
 	// configErr makes ensure-config fail (bad credentials).
 	configErr error
+	// sharedRoutes is the route table id of the profile network the
+	// check-config reports (a profile with a shared NAT gateway).
+	sharedRoutes string
 	// degraded is what result.published reported.
 	degraded        bool
 	teardownStarted bool
@@ -114,7 +118,7 @@ func newSim(t *testing.T) *sim {
 		if s.configErr != nil {
 			return activities.EnsureProviderConfigResult{}, s.configErr
 		}
-		return activities.EnsureProviderConfigResult{SecretName: req.Name, Applied: true}, nil
+		return activities.EnsureProviderConfigResult{SecretName: req.Name, Applied: true, RouteTableID: s.sharedRoutes}, nil
 	})
 	w.Handle(events.ActivityName, func(_ workflow.Context, args []any) (any, error) {
 		var req struct {
@@ -149,15 +153,15 @@ func xpReadyStatus(extra map[string]any) map[string]any {
 }
 
 // converge makes every crossplane object of the run Ready in virtual time
-// and connects the agents once their VMs run.
+// and connects the agents once their VMs run. The profile network is not
+// the run's: it exists before the run and the run never declares it.
 func (s *sim) converge(t *testing.T, run spec.Run, ips map[string]string) {
 	t.Helper()
 	names := provision.NewNames(run.Tenant, run.RunID)
-	if spec.NeedsPrivateEgress(run) {
+	if spec.NeedsPrivateEgress(run) && s.sharedRoutes == "" {
 		require.NoError(t, s.objects.After(3*time.Second, ref.OwnerRef(ycGatewayKind+"/"+names.Gateway()), xpReadyStatus(map[string]any{"id": "nat"})))
 		require.NoError(t, s.objects.After(4*time.Second, ref.OwnerRef(ycRouteTableKind+"/"+names.RouteTable()), xpReadyStatus(map[string]any{"id": "routes"})))
 	}
-	require.NoError(t, s.objects.After(2*time.Second, ref.OwnerRef(ycNetworkKind+"/"+names.Network()), xpReadyStatus(map[string]any{"id": "enp-net"})))
 	require.NoError(t, s.objects.After(4*time.Second, ref.OwnerRef(ycSubnetKind+"/"+names.Subnet()), xpReadyStatus(map[string]any{"id": "e9b-subnet"})))
 	require.NoError(t, s.objects.After(5*time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(map[string]any{"id": "enp-sg"})))
 	for _, m := range run.Machines {
@@ -320,13 +324,15 @@ func TestSimulatedRunKeepsStand(t *testing.T) {
 	s.w.Env.AssertExpectations(t)
 
 	names := provision.NewNames(run.Tenant, run.RunID)
-	network := ref.OwnerRef(ycNetworkKind + "/" + names.Network())
+	group := ref.OwnerRef(ycSGKind + "/" + names.SecurityGroup())
 	vm := ref.OwnerRef(ycInstanceKind + "/" + names.Machine("runner-1"))
-	kept, _ := s.w.Resource(network)
-	t.Logf("network owner after ToStand: %q phase=%s keepUntil=%s", kept.Owner, kept.Phase, kept.KeepUntil)
-	require.True(t, strings.HasPrefix(string(kept.Owner), "stand/"), "network handed to a stand: %+v", kept)
+	kept, _ := s.w.Resource(group)
+	t.Logf("security group owner after ToStand: %q phase=%s keepUntil=%s", kept.Owner, kept.Phase, kept.KeepUntil)
+	require.True(t, strings.HasPrefix(string(kept.Owner), "stand/"), "the run root handed to a stand: %+v", kept)
 	live, _ := s.w.Resource(vm)
-	require.Equal(t, "ready", live.Phase, "the VM survives under the kept network")
+	require.Equal(t, "ready", live.Phase, "the VM survives under the kept security group")
+	subnet, _ := s.w.Resource(ref.OwnerRef(ycSubnetKind + "/" + names.Subnet()))
+	require.Equal(t, "ready", subnet.Phase, "the run subnet stays with the stand")
 	require.Contains(t, s.events, events.StandKept)
 	s.w.Advance(2 * time.Hour)
 	gone, _ := s.w.Resource(vm)

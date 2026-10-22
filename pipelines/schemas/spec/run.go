@@ -56,8 +56,19 @@ func Run() *schemapb.Schema {
 
 			schemapb.Object("network",
 				schemapb.Str("cidr").Title("CIDR").
-					Desc("IPv4 range of the run network.").
+					Desc("IPv4 range of the run network (aws: the run VPC). Yandex runs use subnets instead.").
 					Pattern(`^(\d{1,3}\.){3}\d{1,3}/\d{1,2}$`).Default("10.130.0.0/24"),
+				// Yandex runs join the profile network; the server cuts one
+				// block per zone out of the profile's pool at admission.
+				// doc: https://yandex.cloud/en/docs/vpc/concepts/network#subnet
+				schemapb.List("subnets",
+					schemapb.Object("",
+						schemapb.Str("zone").Title("Zone").Desc("Availability zone of the subnet.").MaxLen(64).Required(),
+						schemapb.Str("cidr").Title("CIDR").Desc("IPv4 block of the subnet, /28 to /24.").
+							Pattern(`^(\d{1,3}\.){3}\d{1,3}/(2[4-8])$`).Required(),
+					).Strict(),
+				).Title("Subnets").Desc("Zonal subnets the server allocated for the run from the profile's address pool, filled by the server (yandex).").
+					MaxItems(8),
 				schemapb.Bool("allow_public_ips").Title("Public IPs").
 					Desc("Machines get a public address (needed when the agent has no private route out).").
 					Default(true),

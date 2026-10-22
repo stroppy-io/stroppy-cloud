@@ -81,6 +81,11 @@ func (a *Application) startWorkers() {
 			if err := a.services.Providers.RecoverPending(ctx); err != nil {
 				a.log.Ctx().Warn(ctx, "provider recovery failed", xlog.ErrorCause(err))
 			}
+			// Yandex profiles from before the profile network get one; their
+			// queued runs wait for it (run queue: provider not configured).
+			if err := a.services.Providers.UpgradeStale(ctx); err != nil {
+				a.log.Ctx().Warn(ctx, "provider upgrade failed", xlog.ErrorCause(err))
+			}
 		}
 		recoverProviders(ctx)
 		every(ctx, 15*time.Second, recoverProviders)

@@ -293,6 +293,31 @@ SELECT id, (snapshot->'provider_profile'->>'id')::uuid AS profile_id, run_spec F
 WHERE tenant_id = @tenant_id AND deleted_at IS NULL AND admitted_at IS NOT NULL
   AND status IN ('pending', 'running') AND phase IN ('queued', 'provisioning');
 
+-- name: ProfileNetworkRuns :many
+-- Admitted runs of a provider profile whose subnets may still exist in its
+-- network: unfinished, kept as a stand, or finished (or kept until) after
+-- @since — Graphene's cleanup deletes a subnet only after the run ends.
+-- Also the latest admitted run with subnets: its last block is where the
+-- next allocation starts. Deleted runs count too: their cloud objects do.
+SELECT r.run_spec, r.admitted_at,
+       (r.status IN ('pending', 'running', 'cancelling') OR r.stand_kept OR r.finished_at IS NULL
+        OR r.finished_at > @since::timestamptz OR COALESCE(r.keep_until > @since::timestamptz, false))::bool AS holds
+FROM runs r
+WHERE r.tenant_id = @tenant_id AND r.snapshot->'provider_profile'->>'id' = @profile_id::text AND r.admitted_at IS NOT NULL
+  AND (r.status IN ('pending', 'running', 'cancelling') OR r.stand_kept OR r.finished_at IS NULL
+       OR r.finished_at > @since::timestamptz OR r.keep_until > @since::timestamptz
+       OR r.id = (SELECT l.id FROM runs l
+                  WHERE l.tenant_id = @tenant_id AND l.snapshot->'provider_profile'->>'id' = @profile_id::text
+                    AND l.admitted_at IS NOT NULL AND jsonb_array_length(COALESCE(l.run_spec->'network'->'subnets', '[]'::jsonb)) > 0
+                  ORDER BY l.admitted_at DESC, l.id DESC LIMIT 1))
+ORDER BY r.admitted_at, r.id;
+
+-- name: SetQueuedRunSpec :execrows
+-- The queue writes the subnets it allocated into the spec of a run it
+-- admits, before the run is handed to Graphene.
+UPDATE runs SET run_spec = @run_spec, updated_at = now()
+WHERE id = @id AND status = 'pending' AND deleted_at IS NULL;
+
 -- name: LiveCellCounts :many
 -- Admitted, unfinished cells per suite run of a tenant.
 SELECT suite_run_id::uuid AS suite_run_id, count(*)::int AS n FROM runs

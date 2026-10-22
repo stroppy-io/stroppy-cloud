@@ -45,8 +45,11 @@ TPC-DS `query_stream` означает baked queries, явный `0` — generat
 
 - Один runner на RunSpec. Параллельные независимые run выражаются через suite;
   распределённый запуск одного Stroppy на нескольких runner пока отсутствует.
-- Pipeline создаёт собственную сеть. Режим `network.kind=existing` отвергается:
-  adoption существующей сети и её отдельный lifecycle не реализованы.
+- Yandex: сеть принадлежит профилю (создана `stroppy-provider-config` или
+  указана пользователем, `network.kind=existing`); прогон создаёт только SG и
+  подсети с блоками из `network.subnets`, которые выделил сервер. Без свободного
+  блока в `pool_cidr` прогон ждёт в очереди (`subnets`). AWS по-прежнему создаёт
+  собственный VPC; `existing` для AWS отвергается.
 - Docker использует host network; `ports.host` должен равняться `ports.container`.
 - `flows` описывает топологию, не ACL. SG разрешает внутренний трафик, дополнительные
   открытия задаёт `network.ingress`. Рёбра контейнеров используют первый target роли.

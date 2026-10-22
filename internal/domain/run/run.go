@@ -278,10 +278,13 @@ const (
 	WaitProvider WaitReason = "provider"
 	// WaitSuspended: a platform admin suspended the tenant.
 	WaitSuspended WaitReason = "suspended"
+	// WaitSubnets: the provider profile's address pool has no free block
+	// for the run's subnets; Detail is the pool.
+	WaitSubnets WaitReason = "subnets"
 )
 
 // WaitReasons lists every reason (the contract's enum mirrors it).
-var WaitReasons = []WaitReason{WaitPipelines, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider, WaitSuspended}
+var WaitReasons = []WaitReason{WaitPipelines, WaitSuiteSlot, WaitQuota, WaitQuotaUnknown, WaitProvider, WaitSuspended, WaitSubnets}
 
 // Queue is the place of a queued run and what holds it.
 type Queue struct {
@@ -298,7 +301,8 @@ type Queue struct {
 	Need  float64 `json:"need,omitempty"`
 	Free  float64 `json:"free,omitempty"`
 	Unit  string  `json:"unit,omitempty"`
-	// Detail is the state behind pipelines / provider / quota_unknown.
+	// Detail is the state behind pipelines / provider / quota_unknown, the
+	// pool of subnets.
 	Detail string `json:"detail,omitempty"`
 }
 
@@ -306,6 +310,16 @@ type Queue struct {
 type Starting struct {
 	ProfileID uuid.UUID
 	Spec      json.RawMessage
+}
+
+// NetworkRun is an admitted run of a provider profile as the subnet
+// allocator sees it.
+type NetworkRun struct {
+	Spec json.RawMessage
+	// Holds is set while the run's subnets may exist: unfinished, kept, or
+	// finished within the cleanup window. A run that does not hold is
+	// listed only as the latest allocation (the cursor).
+	Holds bool
 }
 
 // PipelineReadiness says whether a namespace carries this server's pipelines.
@@ -454,6 +468,13 @@ type Repository interface {
 	Starting(ctx context.Context, tenantID uuid.UUID) ([]Starting, error)
 	// LiveCells counts admitted unfinished cells per suite run of a tenant.
 	LiveCells(ctx context.Context, tenantID uuid.UUID) (map[uuid.UUID]int, error)
+	// NetworkRuns lists, in admission order, the profile's admitted runs
+	// whose subnets may still exist (finished after since, kept, live) and
+	// the latest admitted run with subnets.
+	NetworkRuns(ctx context.Context, tenantID, profileID uuid.UUID, since time.Time) ([]NetworkRun, error)
+	// SetQueuedSpec stores the spec of a run the queue admits (its
+	// allocated subnets) before the run is handed to Graphene.
+	SetQueuedSpec(ctx context.Context, id uuid.UUID, spec json.RawMessage) error
 
 	InsertEvent(ctx context.Context, e Event) (bool, error)
 	EventsAfter(ctx context.Context, runID uuid.UUID, after int64, limit int) ([]Event, error)

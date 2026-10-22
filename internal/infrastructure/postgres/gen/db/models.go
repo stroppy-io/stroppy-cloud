@@ -112,6 +112,7 @@ type ProviderProfiles struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
+	ConfigRevision          int32
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time

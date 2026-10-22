@@ -19,7 +19,8 @@ export function queueText(q: RunQueue): string {
       })
     }
     case 'provider':
-      return i18n.t('runs.queue.provider', { detail: q.detail ?? '' })
+    case 'subnets':
+      return i18n.t(`runs.queue.${q.waiting_for}`, { detail: q.detail ?? '' })
     default:
       return i18n.t(`runs.queue.${q.waiting_for}`)
   }

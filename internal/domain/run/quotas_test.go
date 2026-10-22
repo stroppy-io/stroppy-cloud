@@ -105,3 +105,50 @@ func TestHeldRunsTakeTheirShareFirst(t *testing.T) {
 		t.Fatalf("a started run not yet in the cloud's usage must hold its 880 GiB: %+v never=%v", sf, never)
 	}
 }
+
+func TestNetworkQuotaNeeds(t *testing.T) {
+	yandex := func(settings string, public bool, zones ...string) pipelinespec.Run {
+		r := pipelinespec.Run{
+			Provider: pipelinespec.Provider{Kind: pipelinespec.ProviderYandex, Settings: []byte(settings)},
+			Network:  pipelinespec.Network{AllowPublicIPs: public},
+		}
+		for _, z := range zones {
+			r.Machines = append(r.Machines, pipelinespec.Machine{Location: z})
+		}
+		return r
+	}
+	public := yandex(`{"zone":"ru-central1-d"}`, true, "ru-central1-a", "ru-central1-b", "ru-central1-a")
+	sharedNAT := yandex(`{"zone":"ru-central1-d","public_ips":false,"network":{"kind":"create"}}`, false, "ru-central1-d")
+	ownNAT := yandex(`{"zone":"ru-central1-d"}`, false, "ru-central1-d")
+	aws := pipelinespec.Run{Provider: pipelinespec.Provider{Kind: pipelinespec.ProviderAWS}, Network: pipelinespec.Network{AllowPublicIPs: true}, Machines: []pipelinespec.Machine{{}}}
+	for _, tc := range []struct {
+		name  string
+		run   pipelinespec.Run
+		quota string
+		need  float64
+	}{
+		// The profile network is shared: a run takes no network.
+		{"yandex network", public, "vpc.networks.count", 0},
+		{"yandex group", public, "vpc.securityGroups.count", 1},
+		{"yandex subnet per zone", public, "vpc.subnets.count", 2},
+		{"public needs no gateway", public, "vpc.gateways.count", 0},
+		{"private on the shared NAT", sharedNAT, "vpc.gateways.count", 0},
+		{"private on the shared routes", sharedNAT, "vpc.routeTables.count", 0},
+		{"private without a profile NAT brings its own", ownNAT, "vpc.gateways.count", 1},
+		{"aws vpc", aws, "vpc.vpcs", 1},
+		{"aws group", aws, "vpc.security_groups", 1},
+		{"aws gateway", aws, "vpc.internet_gateways", 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			total, _ := runDemand(tc.run)
+			need, ok := total.need(provider.Quota{Name: tc.quota}, tc.run)
+			if !ok || need != tc.need {
+				t.Fatalf("need %v (known %v), want %v", need, ok, tc.need)
+			}
+		})
+	}
+	// Ten networks used out of ten no longer hold a Yandex run.
+	if sf, _ := quotaShortfall([]provider.Quota{{Name: "vpc.networks.count", Limit: 10, Used: 10}}, nil, public); sf != nil {
+		t.Fatalf("a full network quota held a run on the profile network: %+v", sf)
+	}
+}

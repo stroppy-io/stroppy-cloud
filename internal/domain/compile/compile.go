@@ -259,10 +259,11 @@ func (c *compilation) network() {
 	if !ok {
 		network = map[string]any{}
 	}
-	for _, key := range []string{"subnet_cidr", "cidr"} {
-		if cidr, ok := network[key].(string); ok && cidr != "" {
-			n.CIDR = cidr
-		}
+	// The AWS run VPC. A Yandex run joins the profile network; the queue
+	// allocates its subnets at admission (network.subnets), and the retired
+	// subnet_cidr of older profiles means nothing any more.
+	if cidr, ok := network["cidr"].(string); ok && cidr != "" {
+		n.CIDR = cidr
 	}
 	if v, ok := settings["public_ips"].(bool); ok {
 		n.AllowPublicIPs = v

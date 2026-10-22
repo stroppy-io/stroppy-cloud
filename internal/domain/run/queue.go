@@ -3,6 +3,7 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -15,7 +16,9 @@ import (
 // The queue: a launch stores the run queued (pending, never handed to
 // Graphene) and the queue starts it once the tenant has room for it — its
 // pipelines pushed at this server's revision, a free max_concurrent_runs
-// slot, a free cell slot of its suite, and provider quota for its machines.
+// slot, a free cell slot of its suite, provider quota for its machines and,
+// on Yandex, free blocks of the profile's address pool for its subnets (the
+// queue allocates them at admission and stores them in the run's spec).
 // A run that does not fit waits; the ones behind it that fit go first.
 // Nothing waits forever by mistake: a run that can never fit (more than a
 // quota's whole limit) is refused at launch.
@@ -123,9 +126,16 @@ func (s *Service) admitTenant(ctx context.Context, tenantID uuid.UUID, queued []
 				if err != nil {
 					return err
 				}
-				if ok {
-					admitted = append(admitted, r)
+				if !ok {
+					continue
 				}
+				if d.specs[i] != nil {
+					if err := s.repo.SetQueuedSpec(ctx, r.ID, d.specs[i]); err != nil {
+						return err
+					}
+					r.RunSpec = d.specs[i]
+				}
+				admitted = append(admitted, r)
 				continue
 			}
 			if d.waits[i] != r.Queue {
@@ -172,6 +182,8 @@ func (s *Service) readQuotas(ctx context.Context, tenantID, profileID uuid.UUID)
 type decision struct {
 	admit []bool
 	waits []Queue
+	// specs are the rewritten specs of admitted runs (their subnets).
+	specs []json.RawMessage
 }
 
 // decide walks the queue in order: each run either takes its room (suite
@@ -179,7 +191,7 @@ type decision struct {
 //
 //nolint:funlen,gocognit // one ordered checklist
 func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, quotas map[uuid.UUID]quotaRead) (decision, error) {
-	d := decision{admit: make([]bool, len(queued)), waits: make([]Queue, len(queued))}
+	d := decision{admit: make([]bool, len(queued)), waits: make([]Queue, len(queued)), specs: make([]json.RawMessage, len(queued))}
 	// Another pass may have admitted everything between the read and the lock.
 	if len(queued) == 0 {
 		return d, nil
@@ -218,6 +230,7 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 		}
 	}
 	concurrency := map[uuid.UUID]int{}
+	pools := map[uuid.UUID]*subnetPool{}
 	for i, r := range queued {
 		wait := Queue{Position: i + 1}
 		if r.SuiteRunID != nil && s.suites != nil {
@@ -251,12 +264,42 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 				wait.WaitingFor, wait.Detail = WaitProvider, string(qr.profile.Status)
 				d.waits[i] = wait
 				continue
+			case !qr.profile.Configured():
+				// A profile from before the profile network: UpgradeStale
+				// gives it one; no run starts on a network of its own.
+				wait.WaitingFor, wait.Detail = WaitProvider, string(provider.StatusVerifying)
+				d.waits[i] = wait
+				continue
 			}
 			if sf, _ := quotaShortfall(qr.quotas, held[profileID], spec); sf != nil {
 				wait.WaitingFor, wait.Quota, wait.Zone = WaitQuota, sf.quota.Name, sf.quota.Zone
 				wait.Need, wait.Free, wait.Unit = sf.need, sf.free, sf.quota.Unit
 				d.waits[i] = wait
 				continue
+			}
+			if spec.Provider.Kind == pipelinespec.ProviderYandex {
+				pool, ok := pools[profileID]
+				if !ok {
+					runs, err := s.repo.NetworkRuns(ctx, tenantID, profileID, time.Now().Add(-subnetCleanup))
+					if err != nil {
+						return d, err
+					}
+					pool = newSubnetPool(runs)
+					pools[profileID] = pool
+				}
+				rewritten, waitPool, err := allocateRun(pool, spec, r.RunSpec)
+				if err != nil {
+					return d, err
+				}
+				if waitPool != "" {
+					wait.WaitingFor, wait.Detail = WaitSubnets, waitPool
+					d.waits[i] = wait
+					continue
+				}
+				d.specs[i] = rewritten
+				if rewritten != nil {
+					_ = json.Unmarshal(rewritten, &spec) //nolint:errcheck // just marshaled
+				}
 			}
 			held[profileID] = append(held[profileID], spec)
 		}
@@ -266,6 +309,51 @@ func (s *Service) decide(ctx context.Context, tenantID uuid.UUID, queued []Run, 
 		}
 	}
 	return d, nil
+}
+
+// allocateRun gives a Yandex run its subnets from the pool and returns the
+// spec carrying them; waitPool names the pool when it has no room. A spec
+// the zones cannot be read from passes unchanged: the pipeline refuses it
+// with the reason instead of the run waiting forever.
+func allocateRun(pool *subnetPool, spec pipelinespec.Run, raw json.RawMessage) (rewritten json.RawMessage, waitPool string, err error) {
+	network, err := pipelinespec.YandexNetworkOf(spec.Provider.Settings)
+	if err != nil {
+		return nil, "", nil //nolint:nilerr // the pipeline reports it
+	}
+	zones, err := pipelinespec.YandexZones(spec)
+	if err != nil {
+		return nil, "", nil //nolint:nilerr // the pipeline reports it
+	}
+	subnets, err := pool.allocate(network.Pool(), zones)
+	switch {
+	case errors.Is(err, errPoolFull):
+		return nil, network.Pool(), nil
+	case err != nil:
+		return nil, "", nil //nolint:nilerr // the pipeline reports it
+	}
+	// Only network.subnets changes: the stored spec is otherwise kept
+	// byte for byte (it was baked at launch).
+	var doc map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &doc); err != nil {
+		return nil, "", err
+	}
+	var net map[string]json.RawMessage
+	if len(doc["network"]) > 0 {
+		if err := json.Unmarshal(doc["network"], &net); err != nil {
+			return nil, "", err
+		}
+	}
+	if net == nil {
+		net = map[string]json.RawMessage{}
+	}
+	if net["subnets"], err = json.Marshal(subnets); err != nil {
+		return nil, "", err
+	}
+	if doc["network"], err = json.Marshal(net); err != nil {
+		return nil, "", err
+	}
+	rewritten, err = json.Marshal(doc)
+	return rewritten, "", err
 }
 
 func (s *Service) warn(msg string, err error) {

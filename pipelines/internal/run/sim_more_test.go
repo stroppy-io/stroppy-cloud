@@ -130,7 +130,7 @@ func TestSimulatedRunProviderConfigFailure(t *testing.T) {
 	s.w.Env.ExecuteWorkflow(wf, run)
 	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "yc-sa-key")
 	names := provision.NewNames(run.Tenant, run.RunID)
-	_, declared := s.w.Resource(ref.OwnerRef(ycNetworkKind + "/" + names.Network()))
+	_, declared := s.w.Resource(ref.OwnerRef(ycSGKind + "/" + names.SecurityGroup()))
 	require.False(t, declared, "no cloud object before the provider config exists")
 	require.Contains(t, s.events, events.PhaseFailed)
 	require.Equal(t, "failure", s.w.Outcome(runOwner()))
@@ -151,9 +151,14 @@ func TestSimulatedRunVMCreationFailsCleansTree(t *testing.T) {
 	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "quota exceeded")
 	require.Contains(t, s.events, events.PhaseFailed)
 	require.NotContains(t, s.events, events.SegmentStarted)
-	// The network and the other VM were created and are gone again.
-	net, _ := s.w.Resource(ref.OwnerRef(ycNetworkKind + "/" + names.Network()))
-	require.Equal(t, "deleted", net.Phase)
+	// The run's group, subnet and the other VM were created and are gone
+	// again; the profile network was never the run's.
+	group, _ := s.w.Resource(ref.OwnerRef(ycSGKind + "/" + names.SecurityGroup()))
+	require.Equal(t, "deleted", group.Phase)
+	subnet, _ := s.w.Resource(ref.OwnerRef(ycSubnetKind + "/" + names.Subnet()))
+	require.Equal(t, "deleted", subnet.Phase)
+	_, declared := s.w.Resource(ref.OwnerRef(ycNetworkKind + "/" + spec.ProfileNetworkName(run.Provider.ProviderConfigName)))
+	require.False(t, declared, "the run never declares the profile network")
 	other, _ := s.w.Resource(ref.OwnerRef(ycInstanceKind + "/" + names.Machine("runner-1")))
 	require.Equal(t, "deleted", other.Phase)
 	require.Equal(t, "failure", s.w.Outcome(runOwner()))
@@ -168,7 +173,6 @@ func TestSimulatedRunAgentNeverConnects(t *testing.T) {
 	// The VM runs, cloud-init never brings the agent up.
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycGatewayKind+"/"+names.Gateway()), xpReadyStatus(map[string]any{"id": "nat"})))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycRouteTableKind+"/"+names.RouteTable()), xpReadyStatus(map[string]any{"id": "routes"})))
-	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycNetworkKind+"/"+names.Network()), xpReadyStatus(nil)))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycSubnetKind+"/"+names.Subnet()), xpReadyStatus(nil)))
 	require.NoError(t, s.objects.After(time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(nil)))
 	require.NoError(t, s.objects.After(10*time.Second, ref.OwnerRef(ycInstanceKind+"/"+names.Machine("runner-1")), xpReadyStatus(map[string]any{
@@ -384,8 +388,8 @@ func TestSimulatedRunKeepIgnoredAfterFailure(t *testing.T) {
 	// inspect and burns quota; keeping infra on failure would be an
 	// explicit ToStand on the error path.
 	names := provision.NewNames(run.Tenant, run.RunID)
-	net, _ := s.w.Resource(ref.OwnerRef(ycNetworkKind + "/" + names.Network()))
-	require.Equal(t, "deleted", net.Phase)
+	group, _ := s.w.Resource(ref.OwnerRef(ycSGKind + "/" + names.SecurityGroup()))
+	require.Equal(t, "deleted", group.Phase)
 	require.NotContains(t, s.events, events.StandKept)
 	s.w.AssertNoLeaks(t)
 }

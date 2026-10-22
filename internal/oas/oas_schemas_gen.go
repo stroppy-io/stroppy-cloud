@@ -25215,7 +25215,7 @@ type RunQueue struct {
 	// What is free of the quota.
 	Free OptFloat64 `json:"free"`
 	Unit OptString  `json:"unit"`
-	// State behind pipelines, provider and quota_unknown.
+	// State behind pipelines, provider and quota_unknown; the address pool behind subnets.
 	Detail OptString `json:"detail"`
 }
 
@@ -26504,7 +26504,8 @@ func (s *RunTriggerRef) SetParentRunID(val OptUUID) {
 // Pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot —
 // the suite runs as many cells as its concurrency; quota — a provider quota has no room;
 // quota_unknown — the quotas could not be read; provider — the provider profile is not ready;
-// suspended — a platform admin suspended the tenant.
+// suspended — a platform admin suspended the tenant; subnets — the provider profile's address
+// pool has no free block for the run's subnets (detail is the pool).
 // Ref: #/components/schemas/RunWaitReason
 type RunWaitReason string
 
@@ -26515,6 +26516,7 @@ const (
 	RunWaitReasonQuotaUnknown RunWaitReason = "quota_unknown"
 	RunWaitReasonProvider     RunWaitReason = "provider"
 	RunWaitReasonSuspended    RunWaitReason = "suspended"
+	RunWaitReasonSubnets      RunWaitReason = "subnets"
 )
 
 // AllValues returns all RunWaitReason values.
@@ -26526,6 +26528,7 @@ func (RunWaitReason) AllValues() []RunWaitReason {
 		RunWaitReasonQuotaUnknown,
 		RunWaitReasonProvider,
 		RunWaitReasonSuspended,
+		RunWaitReasonSubnets,
 	}
 }
 
@@ -26543,6 +26546,8 @@ func (s RunWaitReason) MarshalText() ([]byte, error) {
 	case RunWaitReasonProvider:
 		return []byte(s), nil
 	case RunWaitReasonSuspended:
+		return []byte(s), nil
+	case RunWaitReasonSubnets:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -26569,6 +26574,9 @@ func (s *RunWaitReason) UnmarshalText(data []byte) error {
 		return nil
 	case RunWaitReasonSuspended:
 		*s = RunWaitReasonSuspended
+		return nil
+	case RunWaitReasonSubnets:
+		*s = RunWaitReasonSubnets
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

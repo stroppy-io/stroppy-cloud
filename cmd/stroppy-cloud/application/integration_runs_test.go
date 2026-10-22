@@ -297,13 +297,16 @@ func TestE2ERuns(t *testing.T) {
 				t.Fatalf("no %s in events %+v", k, events)
 			}
 		}
-		// The run's tree is its history: what it kept (the network with
-		// everything under it, and the artifacts) stands beside what it
-		// tore down.
+		// The run's tree is its history: what it kept (its security group
+		// with the subnets and machines under it, and the artifacts) stands
+		// beside what it tore down. The network is the profile's, not the run's.
 		tree := runTree(t, e, base, tok, id)
-		network := treeChild(tree, ".Network")
-		if network == nil || len(network.Children) == 0 || network.Phase != "ready" {
-			t.Fatalf("kept network %+v in %+v", network, tree)
+		group := treeChild(tree, ".SecurityGroup")
+		if group == nil || len(group.Children) == 0 || group.Phase != "ready" {
+			t.Fatalf("kept security group %+v in %+v", group, tree)
+		}
+		if treeChild(tree, ".Network") != nil {
+			t.Fatalf("the run declared a network %+v", tree)
 		}
 		if treeChild(tree, "artifact") == nil {
 			t.Fatalf("kept artifacts %+v", tree)
@@ -422,7 +425,7 @@ func TestE2ERuns(t *testing.T) {
 		e.want(e.req(http.MethodPost, base+"/runs/"+id+":keep-extend", map[string]any{"duration": "2h"}, tok), http.StatusOK, &got)
 		// Past the pipeline's own hour the extension still holds the stand.
 		e.graphene.advance(90 * time.Minute)
-		if n := treeChild(runTree(t, e, base, tok, id), ".Network"); n == nil || n.Phase != "ready" {
+		if n := treeChild(runTree(t, e, base, tok, id), ".SecurityGroup"); n == nil || n.Phase != "ready" {
 			t.Fatalf("extended stand gone: %+v", n)
 		}
 		e.want(e.req(http.MethodPost, base+"/runs/"+id+":keep-release", nil, tok), http.StatusOK, &got)

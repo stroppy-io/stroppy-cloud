@@ -56,7 +56,7 @@ func (a AWS) Record(ctx pipeline.Context, k8s *k8slib.Client) {
 // sg → rules, instances.
 //
 //nolint:funlen // one declaration per resource kind, read top to bottom
-func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle) (Infra, error) {
+func (a AWS) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle, _ Shared) (Infra, error) {
 	st, err := decodeSettings[AWSSettings](run.Provider.Settings)
 	if err != nil {
 		return Infra{}, err

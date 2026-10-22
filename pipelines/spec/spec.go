@@ -89,9 +89,21 @@ type Provider struct {
 
 // Network is the network every machine of the run joins.
 type Network struct {
-	CIDR           string    `json:"cidr,omitempty"`
-	AllowPublicIPs bool      `json:"allow_public_ips"`
-	Ingress        []Ingress `json:"ingress,omitempty"`
+	// CIDR is the run VPC of an AWS run. Yandex runs ignore it and use
+	// Subnets.
+	CIDR           string `json:"cidr,omitempty"`
+	AllowPublicIPs bool   `json:"allow_public_ips"`
+	// Subnets are the run's zonal blocks inside the profile network of a
+	// Yandex run, allocated by the server from the profile's address pool
+	// when the queue admits the run (see YandexZones for the zone set).
+	Subnets []Subnet  `json:"subnets,omitempty"`
+	Ingress []Ingress `json:"ingress,omitempty"`
+}
+
+// Subnet is one zonal block of a run.
+type Subnet struct {
+	Zone string `json:"zone"`
+	CIDR string `json:"cidr"`
 }
 
 // Ingress is one security-group opening beyond intra-network traffic.

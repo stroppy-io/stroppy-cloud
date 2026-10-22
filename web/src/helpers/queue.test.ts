@@ -13,6 +13,7 @@ const reasons: Reason[] = [
   'quota_unknown',
   'provider',
   'suspended',
+  'subnets',
 ]
 
 describe('queueText', () => {

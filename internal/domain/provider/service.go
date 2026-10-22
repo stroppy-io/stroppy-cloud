@@ -354,6 +354,32 @@ func (s *Service) RecoverPending(ctx context.Context) error {
 	return nil
 }
 
+// UpgradeStale configures again every ready Yandex profile from before
+// the profile network (ConfigRevision), so its runs get a network to join.
+// The profile is verifying meanwhile and its queued runs wait; one with a
+// started run or a kept stand waits until those are gone (they still use
+// their own networks). Runs in the cloud are untouched.
+func (s *Service) UpgradeStale(ctx context.Context) error {
+	profiles, err := s.repo.Stale(ctx, KindYandex, ConfigRevision)
+	if err != nil {
+		return err
+	}
+	for _, p := range profiles {
+		ns, err := s.access.NamespaceOf(ctx, p.TenantID)
+		if err != nil {
+			continue
+		}
+		runID := uuid.NewString()
+		ok, err := s.repo.BeginUpgrade(ctx, p.ID, runID, ConfigRevision)
+		if err != nil || !ok {
+			continue
+		}
+		p.Status, p.VerifyRunID = StatusVerifying, runID
+		s.startVerify(ns, p)
+	}
+	return nil
+}
+
 // Quotas returns the cached quotas (any member); stale is the caller's to judge.
 func (s *Service) Quotas(ctx context.Context, actor auth.Actor, tenantID, id uuid.UUID) (Profile, error) {
 	return s.Get(ctx, actor, tenantID, id)

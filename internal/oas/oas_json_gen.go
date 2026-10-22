@@ -39121,6 +39121,8 @@ func (s *RunWaitReason) Decode(d *jx.Decoder) error {
 		*s = RunWaitReasonProvider
 	case RunWaitReasonSuspended:
 		*s = RunWaitReasonSuspended
+	case RunWaitReasonSubnets:
+		*s = RunWaitReasonSubnets
 	default:
 		*s = RunWaitReason(v)
 	}

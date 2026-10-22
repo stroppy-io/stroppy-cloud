@@ -418,6 +418,29 @@ func (r *RunRepo) Starting(ctx context.Context, tenantID uuid.UUID) ([]run.Start
 	return out, nil
 }
 
+func (r *RunRepo) NetworkRuns(ctx context.Context, tenantID, profileID uuid.UUID, since time.Time) ([]run.NetworkRun, error) {
+	rows, err := r.q.ProfileNetworkRuns(ctx, db.ProfileNetworkRunsParams{TenantID: tenantID, ProfileID: profileID.String(), Since: &since})
+	if err != nil {
+		return nil, infraf("run: network runs: %v", err)
+	}
+	out := make([]run.NetworkRun, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, run.NetworkRun{Spec: row.RunSpec, Holds: row.Holds != nil && *row.Holds})
+	}
+	return out, nil
+}
+
+func (r *RunRepo) SetQueuedSpec(ctx context.Context, id uuid.UUID, spec json.RawMessage) error {
+	n, err := r.q.SetQueuedRunSpec(ctx, db.SetQueuedRunSpecParams{RunSpec: spec, ID: id})
+	if err != nil {
+		return infraf("run: queued spec: %v", err)
+	}
+	if n == 0 {
+		return infraf("run: queued spec: run %s is not queued", id)
+	}
+	return nil
+}
+
 func (r *RunRepo) LiveCells(ctx context.Context, tenantID uuid.UUID) (map[uuid.UUID]int, error) {
 	rows, err := r.q.LiveCellCounts(ctx, tenantID)
 	if err != nil {

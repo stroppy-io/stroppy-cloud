@@ -79,11 +79,12 @@ func Run(ctx pipeline.Context, run spec.Run) (spec.Result, error) {
 		if err := resolveImages(ctx, &run); err != nil {
 			return provisioned{}, err
 		}
-		if err := ensureProviderConfig(ctx, run); err != nil {
+		shared, err := ensureProviderConfig(ctx, run)
+		if err != nil {
 			return provisioned{}, err
 		}
 		agents := declareAgents(ctx, run)
-		infra, err := provider.Provision(ctx, k8s, run, agents)
+		infra, err := provider.Provision(ctx, k8s, run, agents, shared)
 		if err != nil {
 			return provisioned{}, err
 		}
@@ -219,9 +220,10 @@ func validate(run spec.Run) error {
 	return nil
 }
 
-// ensureProviderConfig applies the tenant's crossplane ProviderConfig on
-// the run worker (cluster side) before any managed resource is declared.
-func ensureProviderConfig(ctx pipeline.Context, run spec.Run) error {
+// ensureProviderConfig checks the profile's crossplane ProviderConfig and
+// network on the run worker (cluster side) before any managed resource is
+// declared, and returns what the run needs of the profile network.
+func ensureProviderConfig(ctx pipeline.Context, run spec.Run) (provision.Shared, error) {
 	actx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		TaskQueue:           wire.RunQueue(ctx.RunId()),
 		StartToCloseTimeout: ensureConfigTimeout,
@@ -231,10 +233,11 @@ func ensureProviderConfig(ctx pipeline.Context, run spec.Run) error {
 		Provider: run.Provider.Kind, Name: run.Provider.ProviderConfigName,
 		CredentialsSecret: run.Provider.CredentialsSecret, Settings: run.Provider.Settings,
 	}
-	if err := workflow.ExecuteActivity(actx, activities.NameEnsureProviderConfig, req).Get(ctx, nil); err != nil {
-		return fmt.Errorf("provider config: %w", err)
+	var res activities.EnsureProviderConfigResult
+	if err := workflow.ExecuteActivity(actx, activities.NameEnsureProviderConfig, req).Get(ctx, &res); err != nil {
+		return provision.Shared{}, fmt.Errorf("provider config: %w", err)
 	}
-	return nil
+	return provision.Shared{RouteTableID: res.RouteTableID}, nil
 }
 
 // declareAgents declares one agent record per machine, labeled by role

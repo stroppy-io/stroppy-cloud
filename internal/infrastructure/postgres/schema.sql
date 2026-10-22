@@ -137,6 +137,10 @@ CREATE TABLE provider_profiles (
     quotas_observed_at timestamptz,
     quotas_unavailable_reason text NOT NULL DEFAULT '',
     quotas_scope text NOT NULL DEFAULT '',
+    -- config_revision: the provider-config revision the last successful
+    -- ensure applied (1 = the profile network of a Yandex profile); the
+    -- server re-ensures ready profiles below its own revision.
+    config_revision integer NOT NULL DEFAULT 0,
     created_by         uuid        REFERENCES profiles (id) ON DELETE SET NULL,
     created_at         timestamptz NOT NULL DEFAULT now(),
     updated_at         timestamptz NOT NULL DEFAULT now(),

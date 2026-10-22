@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -15,6 +16,11 @@ type queueRepo struct {
 	Repository
 	cells    map[uuid.UUID]int
 	starting []Starting
+	network  []NetworkRun
+}
+
+func (r queueRepo) NetworkRuns(context.Context, uuid.UUID, uuid.UUID, time.Time) ([]NetworkRun, error) {
+	return r.network, nil
 }
 
 func (r queueRepo) LiveCells(context.Context, uuid.UUID) (map[uuid.UUID]int, error) {
@@ -47,6 +53,68 @@ type queueSuites map[uuid.UUID]int
 
 func (s queueSuites) SuiteConcurrency(_ context.Context, id uuid.UUID) (int, error) {
 	return s[id], nil
+}
+
+func mustJSON(v any) json.RawMessage {
+	raw, err := json.Marshal(v)
+	if err != nil {
+		panic(err)
+	}
+	return raw
+}
+
+// poolSpec is a one-machine Yandex run on a profile with its own pool.
+func poolSpec(pool string) json.RawMessage {
+	return mustJSON(pipelinespec.Run{
+		Provider: pipelinespec.Provider{Kind: pipelinespec.ProviderYandex, Settings: json.RawMessage(`{"zone":"ru-central1-d","network":{"kind":"existing","network_id":"enp2v5nl4h1mabcdefgh","pool_cidr":"` + pool + `"}}`)},
+		Network:  pipelinespec.Network{AllowPublicIPs: true},
+		Machines: []pipelinespec.Machine{{Name: "runner-1"}},
+	})
+}
+
+func TestQueueAllocatesSubnets(t *testing.T) {
+	profile := uuid.New()
+	queued := func(raw json.RawMessage) Run {
+		r := Run{ID: uuid.New(), Status: StatusPending, RunSpec: raw}
+		r.Snapshot.ProviderProfile.ID = profile
+		return r
+	}
+	resume := mustJSON(pipelinespec.Run{
+		Provider: pipelinespec.Provider{Kind: pipelinespec.ProviderYandex, Settings: json.RawMessage(`{"zone":"ru-central1-d"}`)},
+		Machines: []pipelinespec.Machine{{Name: "runner-1"}},
+		Resume:   &pipelinespec.Resume{FromRunID: uuid.NewString()},
+	})
+	// An earlier run still holds the first block; the cursor is after it.
+	held := mustJSON(pipelinespec.Run{Network: pipelinespec.Network{Subnets: []pipelinespec.Subnet{{Zone: "ru-central1-d", CIDR: "10.9.0.0/28"}}}})
+	svc := &Service{access: queueAccess{}, repo: queueRepo{network: []NetworkRun{{Holds: true, Spec: held}}}}
+	runs := []Run{queued(poolSpec("10.9.0.0/24")), queued(resume), queued(poolSpec("10.9.0.0/24"))}
+	quotas := map[uuid.UUID]quotaRead{profile: {profile: provider.Profile{Kind: provider.KindYandex, Status: provider.StatusReady, ConfigRevision: provider.ConfigRevision}}}
+	d, err := svc.decide(t.Context(), uuid.New(), runs, quotas)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range runs {
+		if !d.admit[i] {
+			t.Fatalf("run %d waits: %+v", i, d.waits[i])
+		}
+	}
+	if d.specs[1] != nil {
+		t.Fatal("a resumed run keeps the stand's subnets and allocates nothing")
+	}
+	var got []string
+	for _, i := range []int{0, 2} {
+		var spec pipelinespec.Run
+		if err := json.Unmarshal(d.specs[i], &spec); err != nil {
+			t.Fatal(err)
+		}
+		if len(spec.Network.Subnets) != 1 || spec.Network.Subnets[0].Zone != "ru-central1-d" || len(spec.Machines) != 1 {
+			t.Fatalf("run %d spec: %+v", i, spec)
+		}
+		got = append(got, spec.Network.Subnets[0].CIDR)
+	}
+	if got[0] != "10.9.0.16/28" || got[1] != "10.9.0.32/28" {
+		t.Fatalf("allocated %v, want the blocks after the held one in turn", got)
+	}
 }
 
 func TestQueueDecides(t *testing.T) {
@@ -86,15 +154,34 @@ func TestQueueDecides(t *testing.T) {
 			waitingOn: []WaitReason{WaitQuota, ""},
 		},
 		{
-			name: "each run takes a network: the second waits when one is left",
+			name: "runs share the profile network: no network quota, a subnet each",
 			svc:  &Service{access: queueAccess{}, repo: queueRepo{}},
-			runs: []Run{queued(spec(40), nil), queued(spec(40), nil)},
+			runs: []Run{queued(spec(40), nil), queued(spec(40), nil), queued(spec(40), nil)},
 			quotas: map[uuid.UUID]quotaRead{profile: {profile: provider.Profile{Status: provider.StatusReady}, quotas: []provider.Quota{
-				{Name: "vpc.networks.count", Limit: 6, Used: 5, Unit: "count"},
-				{Name: "vpc.subnets.count", Limit: 32, Used: 5, Unit: "count"},
+				{Name: "vpc.networks.count", Limit: 10, Used: 10, Unit: "networks"},
+				{Name: "vpc.subnets.count", Limit: 32, Used: 30, Unit: "subnets"},
+				{Name: "vpc.securityGroups.count", Limit: 32, Used: 5, Unit: "security-groups"},
 			}}},
-			admit:     []bool{true, false},
-			waitingOn: []WaitReason{"", WaitQuota},
+			admit:     []bool{true, true, false},
+			waitingOn: []WaitReason{"", "", WaitQuota},
+		},
+		{
+			name:      "a Yandex profile without its network holds its runs",
+			svc:       &Service{access: queueAccess{}, repo: queueRepo{}},
+			runs:      []Run{queued(spec(40), nil)},
+			quotas:    map[uuid.UUID]quotaRead{profile: {profile: provider.Profile{Kind: provider.KindYandex, Status: provider.StatusReady}}},
+			admit:     []bool{false},
+			waitingOn: []WaitReason{WaitProvider},
+		},
+		{
+			name: "a full address pool holds the run",
+			svc: &Service{access: queueAccess{}, repo: queueRepo{network: []NetworkRun{{Holds: true, Spec: mustJSON(pipelinespec.Run{Network: pipelinespec.Network{Subnets: []pipelinespec.Subnet{
+				{Zone: "ru-central1-d", CIDR: "10.0.0.0/25"}, {Zone: "ru-central1-a", CIDR: "10.0.0.128/25"},
+			}}})}}}},
+			runs:      []Run{queued(poolSpec("10.0.0.0/24"), nil)},
+			quotas:    ssd(0),
+			admit:     []bool{false},
+			waitingOn: []WaitReason{WaitSubnets},
 		},
 		{
 			name:      "an empty queue under the lock decides nothing",

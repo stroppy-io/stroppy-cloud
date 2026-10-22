@@ -134,7 +134,9 @@ func upsert(ctx context.Context, cli adapter, u *unstructured.Unstructured, labe
 }
 
 func ensure(ctx context.Context, cli adapter, p spec.ProviderConfig, name string, labels map[string]string, raw string) error {
-	if err := unused(ctx, cli, p.Provider, name); err != nil {
+	// The profile's own network objects reference the ProviderConfig for
+	// the profile's whole life; they are not a run using it.
+	if err := unused(ctx, cli, p.Provider, name, ownNetwork(p.Provider, name)); err != nil {
 		return err
 	}
 	data, pc, err := providerObjects(request{Provider: p.Provider, Name: name, Settings: p.Settings}, raw)
@@ -195,7 +197,8 @@ func Check(ctx context.Context, p spec.ProviderConfig) (spec.ProviderVerifyResul
 }
 
 func remove(ctx context.Context, cli adapter, kind spec.ProviderKind, name string, labels map[string]string) error {
-	if err := unused(ctx, cli, kind, name); err != nil {
+	// removeNetwork ran first: by now even the profile network is gone.
+	if err := unused(ctx, cli, kind, name, nil); err != nil {
 		return err
 	}
 	// Wait for ProviderConfig finalizers BEFORE deleting its credentials.
@@ -253,7 +256,8 @@ func deleteOwned(ctx context.Context, cli adapter, u *unstructured.Unstructured,
 
 // Scan actual managed objects as well as usages: cached server state and usage
 // counts may lag, and a deleting object still requires provider credentials.
-func unused(ctx context.Context, cli adapter, kind spec.ProviderKind, name string) error {
+// skip names objects ("Kind/name") that do not count as a use.
+func unused(ctx context.Context, cli adapter, kind spec.ProviderKind, name string, skip map[string]bool) error {
 	kinds := managedKinds(kind)
 	for _, k := range kinds {
 		c, err := cli.ObjectClient(ctx, object(k.version, k.kind, "", ""))
@@ -275,7 +279,7 @@ func unused(ctx context.Context, cli adapter, kind spec.ProviderKind, name strin
 					return fmt.Errorf("invalid provider usage: %w", err)
 				}
 			}
-			if ref == name {
+			if ref == name && !skip[k.kind+"/"+u.GetName()] {
 				return fmt.Errorf("provider configuration is still in use by %s/%s", k.kind, u.GetName())
 			}
 		}

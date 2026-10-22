@@ -150,7 +150,7 @@
       "title": "Platform"
     },
     {
-      "description": "Create a throwaway network for every run, or place runs into an existing one.",
+      "description": "Create one network for the profile, or place runs into an existing one. Every run gets its own subnets and security group in it.",
       "group": "Network",
       "name": "network",
       "oneOf": {
@@ -159,20 +159,28 @@
           "create": {
             "fields": [
               {
-                "description": "IPv4 range of the subnet created for the run.",
-                "name": "subnet_cidr",
+                "description": "IPv4 range the run subnets are allocated from, one block per zone sized to its machines.",
+                "name": "pool_cidr",
                 "string": {
-                  "default": "10.130.0.0/24",
-                  "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/\\d{1,2}$"
+                  "default": "10.128.0.0/16",
+                  "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/([89]|1\\d|2[0-4])$"
                 },
-                "title": "Subnet CIDR"
+                "title": "Address pool"
+              },
+              {
+                "deprecated": true,
+                "description": "Retired: run subnets come from pool_cidr; a stored value is ignored.",
+                "name": "subnet_cidr",
+                "string": {},
+                "title": "Subnet CIDR",
+                "when": "false"
               }
             ]
           },
           "existing": {
             "fields": [
               {
-                "description": "Existing VPC network the machines join.",
+                "description": "Existing VPC network the run subnets are created in.",
                 "name": "network_id",
                 "required": true,
                 "string": {
@@ -181,21 +189,21 @@
                 "title": "Network id"
               },
               {
-                "description": "Existing subnet in the chosen zone.",
-                "name": "subnet_id",
+                "description": "IPv4 range of the network kept free for runs; run subnets are allocated from it and must not overlap other subnets of the network.",
+                "name": "pool_cidr",
                 "required": true,
                 "string": {
-                  "pattern": "^[a-z0-9]{20}$"
+                  "pattern": "^(\\d{1,3}\\.){3}\\d{1,3}/([89]|1\\d|2[0-4])$"
                 },
-                "title": "Subnet id"
+                "title": "Address pool"
               },
               {
-                "description": "Existing security group applied to every machine.",
-                "name": "security_group_id",
+                "description": "Route table with a route out (e.g. 0.0.0.0/0 through a NAT gateway) for machines without public addresses. When empty, such a run creates its own NAT gateway.",
+                "name": "route_table_id",
                 "string": {
                   "pattern": "^[a-z0-9]{20}$"
                 },
-                "title": "Security group id"
+                "title": "Route table id"
               }
             ]
           }
@@ -208,7 +216,7 @@
       "bool": {
         "default": true
       },
-      "description": "Assign a one-to-one NAT public address to every machine.",
+      "description": "Assign a one-to-one NAT public address to every machine. Without them a created network gets one shared NAT gateway for the profile.",
       "group": "Network",
       "name": "public_ips",
       "title": "Public IPs"
@@ -271,12 +279,5 @@
     "namespace": "provider",
     "version": "v1.0.0"
   },
-  "rules": [
-    {
-      "expr": "[this == null ? root : this].all(s, !(\"network\" in s) || s.network.kind == \"create\")",
-      "id": "network-create-only",
-      "message": "existing networks are not implemented by the pipeline; use a run-owned network"
-    }
-  ],
   "strict": true
 }

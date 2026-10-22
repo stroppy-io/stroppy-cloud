@@ -145,7 +145,7 @@ func profileOf(row db.ProviderProfileByIDRow) provider.Profile {
 		ID: row.ID, TenantID: row.TenantID, Name: row.Name, Kind: provider.Kind(row.Kind), Settings: row.Settings,
 		Status: provider.Status(row.Status), StatusReason: row.StatusReason, VerifiedAt: row.VerifiedAt,
 		QuotasUnavailableReason: row.QuotasUnavailableReason, QuotasScope: row.QuotasScope,
-		VerifyRunID: row.VerifyRunID, QuotasObservedAt: row.QuotasObservedAt, CreatedBy: row.CreatedBy,
+		VerifyRunID: row.VerifyRunID, QuotasObservedAt: row.QuotasObservedAt, CreatedBy: row.CreatedBy, ConfigRevision: int(row.ConfigRevision),
 		CreatedAt: row.CreatedAt, UpdatedAt: row.UpdatedAt, SecretNames: []string{},
 	}
 	_ = json.Unmarshal(row.SecretNames, &p.SecretNames) //nolint:errcheck // stored by us
@@ -185,11 +185,47 @@ func (r *ProviderRepo) BeginOperation(ctx context.Context, id uuid.UUID, status 
 
 func (r *ProviderRepo) FinishOperation(ctx context.Context, id uuid.UUID, runID string, status provider.Status, reason string) error {
 	st := string(status)
-	_, err := r.q.FinishProviderOperation(ctx, db.FinishProviderOperationParams{ID: id, RunID: runID, Status: st, Reason: reason})
+	_, err := r.q.FinishProviderOperation(ctx, db.FinishProviderOperationParams{ID: id, RunID: runID, Status: st, Reason: reason, Revision: int32(provider.ConfigRevision)})
 	if err != nil {
 		return infraf("provider: finish operation: %v", err)
 	}
 	return nil
+}
+
+func (r *ProviderRepo) Stale(ctx context.Context, kind provider.Kind, revision int) ([]provider.Profile, error) {
+	rows, err := r.q.StaleProviderConfigs(ctx, db.StaleProviderConfigsParams{Kind: string(kind), Revision: int32(revision)}) //nolint:gosec // a small constant
+	if err != nil {
+		return nil, infraf("provider: stale: %v", err)
+	}
+	out := make([]provider.Profile, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, profileOf(db.ProviderProfileByIDRow(row)))
+	}
+	return out, nil
+}
+
+func (r *ProviderRepo) BeginUpgrade(ctx context.Context, id uuid.UUID, runID string, revision int) (bool, error) {
+	var ok bool
+	err := r.tx.Do(ctx, func(ctx context.Context) error {
+		p, err := r.ByID(ctx, id)
+		if err != nil {
+			return err
+		}
+		// The same lock order as a launch: tenant, then profile.
+		if _, err := r.q.LockTenantLifecycle(ctx, p.TenantID); err != nil {
+			return err
+		}
+		if _, err := r.q.LockProviderLifecycle(ctx, id); err != nil {
+			return err
+		}
+		n, err := r.q.BeginProviderUpgrade(ctx, db.BeginProviderUpgradeParams{ID: id, RunID: runID, Revision: int32(revision)}) //nolint:gosec // a small constant
+		if err != nil {
+			return infraf("provider: begin upgrade: %v", err)
+		}
+		ok = n > 0
+		return nil
+	})
+	return ok, err
 }
 
 func (r *ProviderRepo) Pending(ctx context.Context) ([]provider.Profile, error) {

@@ -46,7 +46,7 @@ export const runStageKindValues = ["preparing", "load"] as const satisfies reado
 
 export const runStatusValues = ["pending", "running", "cancelling", "completed", "failed", "cancelled"] as const satisfies readonly Schemas['RunStatus'][]
 
-export const runWaitReasonValues = ["pipelines", "suite_slot", "quota", "quota_unknown", "provider", "suspended"] as const satisfies readonly Schemas['RunWaitReason'][]
+export const runWaitReasonValues = ["pipelines", "suite_slot", "quota", "quota_unknown", "provider", "suspended", "subnets"] as const satisfies readonly Schemas['RunWaitReason'][]
 
 export const shareScopeValues = ["overview", "metrics", "configs"] as const satisfies readonly Schemas['ShareScope'][]
 

@@ -138,7 +138,7 @@
     "crossplane": {
       "title": "Run resources",
       "body": "The run's network and machines.",
-      "more": "The part of the pipeline that declares the network, subnet, security group and VMs as resources of the run. Graphene owns them and removes them in order: machines first, then the network.",
+      "more": "The part of the pipeline that declares the run's security group, subnets and VMs as resources of the run. Graphene owns them and removes them in order: machines first, then the subnets and the group. The network itself belongs to the provider profile and stays.",
       "tech": "network · VM · SG",
       "facts": [
         {
@@ -242,7 +242,7 @@
     "network": {
       "title": "Network",
       "body": "VPC, subnet, security group.",
-      "more": "The first resource of a run in your cloud. Machines are created inside this network and removed with it.",
+      "more": "In Yandex Cloud the network is created once with the provider profile (or you name your own), and every run gets its own subnets and security group in it. The server hands each run free address blocks, so runs side by side do not see each other.",
       "tech": "VPC · subnet · SG"
     },
     "proxy": {

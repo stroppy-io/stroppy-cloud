@@ -3559,14 +3559,14 @@ export interface components {
             /** @description What is free of the quota */
             free?: number;
             unit?: string;
-            /** @description State behind pipelines, provider and quota_unknown. */
+            /** @description State behind pipelines, provider and quota_unknown; the address pool behind subnets. */
             detail?: string;
         };
         /**
-         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform admin suspended the tenant.
+         * @description pipelines — the tenant's pipelines are not pushed at this server's revision yet; suite_slot — the suite runs as many cells as its concurrency; quota — a provider quota has no room; quota_unknown — the quotas could not be read; provider — the provider profile is not ready; suspended — a platform admin suspended the tenant; subnets — the provider profile's address pool has no free block for the run's subnets (detail is the pool).
          * @enum {string}
          */
-        RunWaitReason: "pipelines" | "suite_slot" | "quota" | "quota_unknown" | "provider" | "suspended";
+        RunWaitReason: "pipelines" | "suite_slot" | "quota" | "quota_unknown" | "provider" | "suspended" | "subnets";
         /** @description Definition frozen at launch. */
         RunSnapshot: {
             /** @description Frozen final deployment overrides used for replay. */

@@ -1,7 +1,9 @@
 // Package provision turns the machine part of a RunSpec into cloud
 // resources through Crossplane — one Provider per cloud, all producing the
-// same Infra: a root network handle (the thing ToStand moves), one
-// crossplane VM per machine, and the agent record each VM carries.
+// same Infra: a root handle (the thing ToStand moves: the run's security
+// group on Yandex, where the network belongs to the provider profile; the
+// run VPC on AWS), one crossplane VM per machine, and the agent record each
+// VM carries.
 //
 // Every resource is a k8slib.Resource: an entity in the run's ownership
 // tree with apply + converge, drift heal and delete. Cross-resource wiring
@@ -95,8 +97,9 @@ func upstream(ctx pipeline.Context, deps ...readyFn) error {
 // Infra is the provisioned network and its machines.
 type Infra struct {
 	managedEndpoint func(pipeline.Context) (string, error)
-	// Root is the resource ToStand moves: the network; everything else is
-	// its descendant.
+	// Root is the resource ToStand moves; everything the run created is its
+	// descendant (Yandex: the security group, the profile network is not
+	// the run's; AWS: the VPC).
 	Root pipeline.Handle
 	// Machines by spec name, in spec order (Order).
 	Machines map[string]*Machine
@@ -133,15 +136,24 @@ type Provider interface {
 	Kind() spec.ProviderKind
 	// Scheme teaches a k8s client the provider's CRD types.
 	Scheme() k8slib.ClientOption
-	// Provision declares the network and every machine. agents are the
+	// Provision declares the run network and every machine. agents are the
 	// pre-declared agent records (one per machine name) whose CloudInit
-	// goes into the VM user-data. Nothing blocks here: declarations return
-	// handles; Infra machines wait through Ready.
-	Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle) (Infra, error)
+	// goes into the VM user-data; shared is what the provider-config check
+	// observed of the profile's own objects. Nothing blocks here:
+	// declarations return handles; Infra machines wait through Ready.
+	Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run, agents map[string]pipeline.AgentHandle, shared Shared) (Infra, error)
 	// Record declares one object of every kind the provider uses, so the
 	// recording pass registers their entity workflows even when the
 	// zero-value spec has no machines.
 	Record(ctx pipeline.Context, k8s *k8slib.Client)
+}
+
+// Shared is the provider profile's own network objects a run joins, as the
+// provider-config check observed them.
+type Shared struct {
+	// RouteTableID is the profile network's route out for machines without
+	// a public address (Yandex), empty when it has none.
+	RouteTableID string
 }
 
 // Registry maps kinds to providers.
@@ -183,7 +195,7 @@ func NewNames(tenant, runID string) Names {
 // Prefix is the common prefix.
 func (n Names) Prefix() string { return n.prefix }
 
-// Network names the run network.
+// Network names the run network (aws; a Yandex run joins the profile's).
 func (n Names) Network() string { return n.prefix + "-net" }
 
 // Subnet names the run subnet.
@@ -192,10 +204,11 @@ func (n Names) Subnet() string { return n.prefix + "-subnet" }
 // SecurityGroup names the run security group.
 func (n Names) SecurityGroup() string { return n.prefix + "-sg" }
 
-// Gateway names the internet gateway (aws).
+// Gateway names the internet gateway (aws) or the run's own NAT gateway
+// (yandex, on a profile network without a route out).
 func (n Names) Gateway() string { return n.prefix + "-igw" }
 
-// RouteTable names the route table (aws).
+// RouteTable names the run's route table.
 func (n Names) RouteTable() string { return n.prefix + "-rt" }
 
 // Machine names one VM.
@@ -284,9 +297,10 @@ func labels(run spec.Run, extra map[string]string) map[string]*string {
 	return out
 }
 
-// intraCIDR is the run network itself: every machine may talk to every
+// intraCIDR is the AWS run VPC itself: every machine may talk to every
 // other on every port (the benchmark topology decides the real flows; a
-// security group per flow is a later refinement).
+// security group per flow is a later refinement). Yandex runs open their
+// allocated subnets instead (yandexIngress).
 func intraCIDR(run spec.Run) string {
 	if run.Network.CIDR != "" {
 		return run.Network.CIDR

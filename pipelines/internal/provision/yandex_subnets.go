@@ -1,9 +1,7 @@
 package provision
 
 import (
-	"encoding/binary"
 	"fmt"
-	"math/bits"
 	"net/netip"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
@@ -11,62 +9,46 @@ import (
 
 type yandexSubnet struct{ Zone, Name, CIDR string }
 
-// Split the run's IPv4 range into disjoint zonal subnets. A single-zone
-// run keeps its original CIDR and resource name. Spec order is deterministic
+// yandexSubnets pairs the run's zones (spec.YandexZones, the set the server
+// allocated for) with the blocks the server put into network.subnets. A
+// single-zone run keeps the plain subnet name. Spec order is deterministic
 // during workflow replay; map iteration never determines resource names.
-func yandexSubnets(run spec.Run, fallback, name string) ([]yandexSubnet, error) {
-	var zones []string
-	seen := map[string]bool{}
-	for _, m := range run.Machines {
-		zone := m.Location
-		if zone == "" {
-			zone = fallback
+// The run never invents a range: the profile network is shared, so a block
+// the server did not allocate could collide with another run.
+func yandexSubnets(run spec.Run, name string) ([]yandexSubnet, error) {
+	zones, err := spec.YandexZones(run)
+	if err != nil {
+		return nil, fmt.Errorf("provision/yandex: %w", err)
+	}
+	blocks := make(map[string]string, len(run.Network.Subnets))
+	for _, sub := range run.Network.Subnets {
+		prefix, err := netip.ParsePrefix(sub.CIDR)
+		if err != nil || !prefix.Addr().Is4() || prefix.Masked() != prefix {
+			return nil, fmt.Errorf("provision/yandex: invalid IPv4 subnet %q of zone %s", sub.CIDR, sub.Zone)
 		}
-		if zone == "" {
-			return nil, fmt.Errorf("provision/yandex: machine %s has no zone", m.Name)
+		if prefix.Bits() < spec.YandexSubnetMinBits || prefix.Bits() > spec.YandexSubnetMaxBits {
+			return nil, fmt.Errorf("provision/yandex: subnet %s of zone %s is outside /%d../%d", sub.CIDR, sub.Zone, spec.YandexSubnetMinBits, spec.YandexSubnetMaxBits)
 		}
-		if !seen[zone] {
-			zones = append(zones, zone)
-			seen[zone] = true
-		}
+		blocks[sub.Zone] = prefix.String()
 	}
-	if run.ManagedYDB != nil && run.ManagedYDB.Type == "dedicated" {
-		for _, zone := range run.ManagedYDB.Zones {
-			if !seen[zone] {
-				zones = append(zones, zone)
-				seen[zone] = true
-			}
-		}
-	}
-	if len(zones) == 0 {
-		zones = append(zones, fallback)
-	}
-	prefix, err := netip.ParsePrefix(intraCIDR(run))
-	if err != nil || !prefix.Addr().Is4() {
-		return nil, fmt.Errorf("provision/yandex: invalid IPv4 network %q", intraCIDR(run))
-	}
-	additionalZones := len(zones) - 1
-	if additionalZones < 0 {
-		return nil, fmt.Errorf("provision/yandex: no availability zones")
-	}
-	width := prefix.Bits() + bits.Len(uint(additionalZones))
-	if width > 28 {
-		return nil, fmt.Errorf("provision/yandex: network %s is too small for %d zonal subnets (minimum /28 each)", prefix, len(zones))
-	}
-	addr := prefix.Masked().Addr().As4()
-	base := uint64(binary.BigEndian.Uint32(addr[:]))
 	out := make([]yandexSubnet, 0, len(zones))
-	for i, zone := range zones {
+	for _, zone := range zones {
+		cidr, ok := blocks[zone.Zone]
+		if !ok {
+			return nil, fmt.Errorf("provision/yandex: no subnet allocated for zone %s; the server allocates network.subnets when it admits the run", zone.Zone)
+		}
 		subnetName := name
 		if len(zones) > 1 {
-			subnetName += "-" + zone
+			subnetName += "-" + zone.Zone
 		}
-		address := base + uint64(i)*(uint64(1)<<uint(32-width))
-		if address > 0xffffffff {
-			return nil, fmt.Errorf("subnet address exceeds IPv4 range")
+		out = append(out, yandexSubnet{Zone: zone.Zone, Name: subnetName, CIDR: cidr})
+	}
+	for i, sub := range out {
+		for _, other := range out[i+1:] {
+			if netip.MustParsePrefix(sub.CIDR).Overlaps(netip.MustParsePrefix(other.CIDR)) {
+				return nil, fmt.Errorf("provision/yandex: subnets %s and %s overlap", sub.CIDR, other.CIDR)
+			}
 		}
-		binary.BigEndian.PutUint32(addr[:], uint32(address))
-		out = append(out, yandexSubnet{Zone: zone, Name: subnetName, CIDR: netip.PrefixFrom(netip.AddrFrom4(addr), width).String()})
 	}
 	return out, nil
 }

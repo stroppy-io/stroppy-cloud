@@ -9118,6 +9118,8 @@ func (s RunWaitReason) Validate() error {
 		return nil
 	case "suspended":
 		return nil
+	case "subnets":
+		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
 	}

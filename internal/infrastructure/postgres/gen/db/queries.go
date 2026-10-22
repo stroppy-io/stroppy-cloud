@@ -1331,7 +1331,7 @@ func (q *Queries) InsertProviderProfile(ctx context.Context, arg InsertProviderP
 }
 
 const providerProfileByIDSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
-       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
+       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, config_revision, created_by, created_at, updated_at
 FROM provider_profiles
 WHERE id = $1 AND deleted_at IS NULL;`
 
@@ -1350,6 +1350,7 @@ type ProviderProfileByIDRow struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
+	ConfigRevision          int32
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
@@ -1358,12 +1359,12 @@ type ProviderProfileByIDRow struct {
 func (q *Queries) ProviderProfileByID(ctx context.Context, id uuid.UUID) (ProviderProfileByIDRow, error) {
 	row := q.db.QueryRow(ctx, providerProfileByIDSQL, id)
 	var i ProviderProfileByIDRow
-	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt)
+	err := row.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.ConfigRevision, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt)
 	return i, err
 }
 
 const providerProfilesOfTenantSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
-       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
+       quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, config_revision, created_by, created_at, updated_at
 FROM provider_profiles
 WHERE tenant_id = $1 AND deleted_at IS NULL
 ORDER BY created_at;`
@@ -1383,6 +1384,7 @@ type ProviderProfilesOfTenantRow struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
+	ConfigRevision          int32
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
@@ -1397,7 +1399,7 @@ func (q *Queries) ProviderProfilesOfTenant(ctx context.Context, tenantID uuid.UU
 	var items []ProviderProfilesOfTenantRow
 	for rows.Next() {
 		var i ProviderProfilesOfTenantRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.ConfigRevision, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1410,7 +1412,7 @@ func (q *Queries) ProviderProfilesOfTenant(ctx context.Context, tenantID uuid.UU
 
 const readyProviderProfilesSQL = `-- Every ready profile of every live tenant — the periodic quota refresh.
 SELECT p.id, p.tenant_id, p.name, p.kind, p.settings, p.secret_names, p.status, p.status_reason, p.verified_at, p.verify_run_id,
-       p.quotas, p.quotas_observed_at, p.quotas_unavailable_reason, p.quotas_scope, p.created_by, p.created_at, p.updated_at
+       p.quotas, p.quotas_observed_at, p.quotas_unavailable_reason, p.quotas_scope, p.config_revision, p.created_by, p.created_at, p.updated_at
 FROM provider_profiles p
 JOIN tenants t ON t.id = p.tenant_id AND t.deleted_at IS NULL
 WHERE p.status = 'ready' AND p.deleted_at IS NULL
@@ -1431,6 +1433,7 @@ type ReadyProviderProfilesRow struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
+	ConfigRevision          int32
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
@@ -1445,7 +1448,7 @@ func (q *Queries) ReadyProviderProfiles(ctx context.Context) ([]ReadyProviderPro
 	var items []ReadyProviderProfilesRow
 	for rows.Next() {
 		var i ReadyProviderProfilesRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.ConfigRevision, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -1537,23 +1540,107 @@ func (q *Queries) BeginProviderOperation(ctx context.Context, arg BeginProviderO
 }
 
 const finishProviderOperationSQL = `UPDATE provider_profiles SET status = $1, status_reason = $2,
- verified_at = CASE WHEN $1::text = 'ready' THEN now() ELSE verified_at END, updated_at=now()
-WHERE id=$3 AND verify_run_id=$4 AND deleted_at IS NULL;`
+ verified_at = CASE WHEN $1::text = 'ready' THEN now() ELSE verified_at END,
+ config_revision = CASE WHEN $1::text = 'ready' THEN $3::int ELSE config_revision END,
+ updated_at=now()
+WHERE id=$4 AND verify_run_id=$5 AND deleted_at IS NULL;`
 
 type FinishProviderOperationParams struct {
-	Status string
-	Reason string
-	ID     uuid.UUID
-	RunID  string
+	Status   string
+	Reason   string
+	Revision int32
+	ID       uuid.UUID
+	RunID    string
 }
 
 func (q *Queries) FinishProviderOperation(ctx context.Context, arg FinishProviderOperationParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, finishProviderOperationSQL, arg.Status, arg.Reason, arg.ID, arg.RunID)
+	tag, err := q.db.Exec(ctx, finishProviderOperationSQL, arg.Status, arg.Reason, arg.Revision, arg.ID, arg.RunID)
+	return tag.RowsAffected(), err
+}
+
+const staleProviderConfigsSQL = `-- Ready profiles of a kind whose configuration is older than the server's
+-- revision (a Yandex profile from before the profile network).
+SELECT p.id, p.tenant_id, p.name, p.kind, p.settings, p.secret_names, p.status, p.status_reason, p.verified_at, p.verify_run_id,
+       p.quotas, p.quotas_observed_at, p.quotas_unavailable_reason, p.quotas_scope, p.config_revision, p.created_by, p.created_at, p.updated_at
+FROM provider_profiles p
+JOIN tenants t ON t.id = p.tenant_id AND t.deleted_at IS NULL AND NOT t.retiring
+WHERE p.status = 'ready' AND p.deleted_at IS NULL AND p.kind = $1 AND p.config_revision < $2::int
+ORDER BY p.created_at;`
+
+type StaleProviderConfigsParams struct {
+	Kind     string
+	Revision int32
+}
+
+type StaleProviderConfigsRow struct {
+	ID                      uuid.UUID
+	TenantID                uuid.UUID
+	Name                    string
+	Kind                    string
+	Settings                json.RawMessage
+	SecretNames             json.RawMessage
+	Status                  string
+	StatusReason            string
+	VerifiedAt              *time.Time
+	VerifyRunID             string
+	Quotas                  json.RawMessage
+	QuotasObservedAt        *time.Time
+	QuotasUnavailableReason string
+	QuotasScope             string
+	ConfigRevision          int32
+	CreatedBy               *uuid.UUID
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+}
+
+func (q *Queries) StaleProviderConfigs(ctx context.Context, arg StaleProviderConfigsParams) ([]StaleProviderConfigsRow, error) {
+	rows, err := q.db.Query(ctx, staleProviderConfigsSQL, arg.Kind, arg.Revision)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []StaleProviderConfigsRow
+	for rows.Next() {
+		var i StaleProviderConfigsRow
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.ConfigRevision, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const beginProviderUpgradeSQL = `-- A ready profile re-applies its configuration while queued runs wait for
+-- it (they are not started on an old configuration); runs already handed
+-- to Graphene or kept as stands still use the old one, so they must be gone,
+-- and an hour given to Graphene's cleanup of the ones that finished (ensure
+-- refuses while any run object still uses the ProviderConfig).
+UPDATE provider_profiles p
+SET status = 'verifying', status_reason = '', verify_run_id = $1, updated_at = now()
+WHERE p.id = $2 AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < $3::int
+ AND NOT EXISTS (
+  SELECT 1 FROM runs r WHERE r.tenant_id = p.tenant_id
+   AND r.snapshot->'provider_profile'->>'id' = p.id::text
+   AND ((r.admitted_at IS NOT NULL AND r.status IN ('pending','running','cancelling')) OR r.stand_kept
+        OR r.finished_at > now() - interval '1 hour')
+ );`
+
+type BeginProviderUpgradeParams struct {
+	RunID    string
+	ID       uuid.UUID
+	Revision int32
+}
+
+func (q *Queries) BeginProviderUpgrade(ctx context.Context, arg BeginProviderUpgradeParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, beginProviderUpgradeSQL, arg.RunID, arg.ID, arg.Revision)
 	return tag.RowsAffected(), err
 }
 
 const pendingProviderOperationsSQL = `SELECT id, tenant_id, name, kind, settings, secret_names, status, status_reason, verified_at, verify_run_id,
- quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, created_by, created_at, updated_at
+ quotas, quotas_observed_at, quotas_unavailable_reason, quotas_scope, config_revision, created_by, created_at, updated_at
 FROM provider_profiles WHERE deleted_at IS NULL AND status='verifying' AND verify_run_id<>'';`
 
 type PendingProviderOperationsRow struct {
@@ -1571,6 +1658,7 @@ type PendingProviderOperationsRow struct {
 	QuotasObservedAt        *time.Time
 	QuotasUnavailableReason string
 	QuotasScope             string
+	ConfigRevision          int32
 	CreatedBy               *uuid.UUID
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
@@ -1585,7 +1673,7 @@ func (q *Queries) PendingProviderOperations(ctx context.Context) ([]PendingProvi
 	var items []PendingProviderOperationsRow
 	for rows.Next() {
 		var i PendingProviderOperationsRow
-		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
+		if err := rows.Scan(&i.ID, &i.TenantID, &i.Name, &i.Kind, &i.Settings, &i.SecretNames, &i.Status, &i.StatusReason, &i.VerifiedAt, &i.VerifyRunID, &i.Quotas, &i.QuotasObservedAt, &i.QuotasUnavailableReason, &i.QuotasScope, &i.ConfigRevision, &i.CreatedBy, &i.CreatedAt, &i.UpdatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -2516,6 +2604,71 @@ func (q *Queries) StartingRuns(ctx context.Context, tenantID uuid.UUID) ([]Start
 		return nil, err
 	}
 	return items, nil
+}
+
+const profileNetworkRunsSQL = `-- Admitted runs of a provider profile whose subnets may still exist in its
+-- network: unfinished, kept as a stand, or finished (or kept until) after
+-- @since — Graphene's cleanup deletes a subnet only after the run ends.
+-- Also the latest admitted run with subnets: its last block is where the
+-- next allocation starts. Deleted runs count too: their cloud objects do.
+SELECT r.run_spec, r.admitted_at,
+       (r.status IN ('pending', 'running', 'cancelling') OR r.stand_kept OR r.finished_at IS NULL
+        OR r.finished_at > $1::timestamptz OR COALESCE(r.keep_until > $1::timestamptz, false))::bool AS holds
+FROM runs r
+WHERE r.tenant_id = $2 AND r.snapshot->'provider_profile'->>'id' = $3::text AND r.admitted_at IS NOT NULL
+  AND (r.status IN ('pending', 'running', 'cancelling') OR r.stand_kept OR r.finished_at IS NULL
+       OR r.finished_at > $1::timestamptz OR r.keep_until > $1::timestamptz
+       OR r.id = (SELECT l.id FROM runs l
+                  WHERE l.tenant_id = $2 AND l.snapshot->'provider_profile'->>'id' = $3::text
+                    AND l.admitted_at IS NOT NULL AND jsonb_array_length(COALESCE(l.run_spec->'network'->'subnets', '[]'::jsonb)) > 0
+                  ORDER BY l.admitted_at DESC, l.id DESC LIMIT 1))
+ORDER BY r.admitted_at, r.id;`
+
+type ProfileNetworkRunsParams struct {
+	Since     *time.Time
+	TenantID  uuid.UUID
+	ProfileID string
+}
+
+type ProfileNetworkRunsRow struct {
+	RunSpec    json.RawMessage
+	AdmittedAt *time.Time
+	Holds      *bool
+}
+
+func (q *Queries) ProfileNetworkRuns(ctx context.Context, arg ProfileNetworkRunsParams) ([]ProfileNetworkRunsRow, error) {
+	rows, err := q.db.Query(ctx, profileNetworkRunsSQL, arg.Since, arg.TenantID, arg.ProfileID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ProfileNetworkRunsRow
+	for rows.Next() {
+		var i ProfileNetworkRunsRow
+		if err := rows.Scan(&i.RunSpec, &i.AdmittedAt, &i.Holds); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const setQueuedRunSpecSQL = `-- The queue writes the subnets it allocated into the spec of a run it
+-- admits, before the run is handed to Graphene.
+UPDATE runs SET run_spec = $1, updated_at = now()
+WHERE id = $2 AND status = 'pending' AND deleted_at IS NULL;`
+
+type SetQueuedRunSpecParams struct {
+	RunSpec json.RawMessage
+	ID      uuid.UUID
+}
+
+func (q *Queries) SetQueuedRunSpec(ctx context.Context, arg SetQueuedRunSpecParams) (int64, error) {
+	tag, err := q.db.Exec(ctx, setQueuedRunSpecSQL, arg.RunSpec, arg.ID)
+	return tag.RowsAffected(), err
 }
 
 const liveCellCountsSQL = `-- Admitted, unfinished cells per suite run of a tenant.
