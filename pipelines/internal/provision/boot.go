@@ -22,11 +22,13 @@ fi
 `
 
 // bootScript is a machine's user-data: the quiet-down prefix, then the
-// agent's own install script run with its own interpreter.
+// agent's own install script run with its own interpreter. The script is
+// written under /root: /run is mounted noexec on Ubuntu 24.04, and a
+// script there does not start (no agent ever connects).
 func bootScript(agentScript string) string {
 	if agentScript == "" {
 		return ""
 	}
-	return fmt.Sprintf("#!/bin/sh\n%secho %s | base64 -d > /run/stroppy-agent-install\nchmod 0700 /run/stroppy-agent-install\nexec /run/stroppy-agent-install\n",
+	return fmt.Sprintf("#!/bin/sh\n%secho %s | base64 -d > /root/stroppy-agent-install\nchmod 0700 /root/stroppy-agent-install\nexec /root/stroppy-agent-install\n",
 		bootPrefix, base64.StdEncoding.EncodeToString([]byte(agentScript)))
 }
