@@ -58,7 +58,7 @@ func MariaDB() *schemapb.Schema {
 			// The upstream default (128 MB) reads every benchmark table from
 			// disk; MySQL recommends up to ~80% of RAM on a dedicated server.
 			schemapb.Choice("buffer_pool").Title("Buffer pool").Group("Memory").
-				Desc("auto = 70% of the database machine's RAM (and a disk-class innodb_io_capacity); fixed = buffer_pool_mb; stock = the server's own defaults (128 MB). An innodb_buffer_pool_size set in the config wins over every mode.").
+				Desc("Buffer pool size under tuning auto: auto = 70% of the database machine's RAM; fixed = buffer_pool_mb; stock = the server's 128 MB and the whole tuning as with tuning stock (the field predates tuning). An innodb_buffer_pool_size set in the config wins over every mode.").
 				Opt(schemapb.StrV("auto"), "70% of RAM").
 				Opt(schemapb.StrV("fixed"), "Fixed size").
 				Opt(schemapb.StrV("stock"), "Server default").

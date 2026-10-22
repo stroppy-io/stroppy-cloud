@@ -120,7 +120,7 @@ func mariadbCnf(major string) *schemapb.Schema {
 			Default(schemapb.StrV("FULL")),
 		// doc: replication-and-binary-log-system-variables#sync_binlog (MariaDB default 0)
 		schemapb.Int64("sync_binlog").Title("Sync binlog").Group("Binlog").
-			Desc("fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS).").
+			Desc("fsync the binary log every N commit groups; MariaDB's default is 0 (leave it to the OS). The auto tuning sets 1, the durability MySQL has by default.").
 			Gte(0).Lte(4294967295).Default(0),
 		// doc: replication-and-binary-log-system-variables#binlog_expire_logs_seconds (10.6.1+)
 		schemapb.Int64("binlog_expire_logs_seconds").Title("Binlog retention").Group("Binlog").
@@ -207,8 +207,15 @@ func mariadbCnf(major string) *schemapb.Schema {
 			Desc("Threads applying write-sets from other nodes.").Gte(1).Lte(512).Default(1),
 		// doc: galera-cluster-system-variables#wsrep_sync_wait
 		schemapb.Int64("wsrep_sync_wait").Title("Sync wait bitmask").Group("Galera").
-			Desc("Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT.").
+			Desc("Bitmask of statement classes that wait for the node to catch up first; 0 = never wait, 1 = SELECT. Global value: every session inherits it, health-check and monitor connections included, which MariaDB says must run with 0.").
 			Gte(0).Lte(15).Default(0),
+		// doc: https://mariadb.com/docs/galera-cluster/reference/wsrep-variable-details/wsrep_provider_options
+		// Provider options are not server variables: the cnf takes them only
+		// as this one semicolon-separated string (a separate gcs.fc_limit line
+		// is an unknown variable).
+		schemapb.Str("wsrep_provider_options").Title("Provider options").Group("Galera").
+			Desc("Galera provider options in one string, e.g. `gcache.size=2G; gcs.fc_limit=128`; empty = the provider's defaults (gcache 128M, fc_limit 16).").
+			Pattern(`^[^"\n]*$`).MaxLen(4096).Nullable(),
 
 		// ---- Connections ---------------------------------------------------------
 		// doc: server-system-variables#bind_address
@@ -220,6 +227,10 @@ func mariadbCnf(major string) *schemapb.Schema {
 		// doc: server-system-variables#max_connections
 		schemapb.Int64("max_connections").Title("Max connections").Group("Connections").
 			Desc("Maximum simultaneous client connections.").Gte(1).Lte(100000).Default(151),
+		// doc: server-system-variables#skip_name_resolve
+		myOnOff("skip_name_resolve").Title("Skip name resolve").Group("Connections").
+			Desc("Do not reverse-resolve client addresses; accounts must then be granted by IP, % or localhost.").
+			Default(myOff()),
 		// doc: server-system-variables#max_connect_errors
 		schemapb.Int64("max_connect_errors").Title("Max connect errors").Group("Connections").
 			Desc("Failed handshakes from one host before it is blocked.").
@@ -490,6 +501,7 @@ func mariadbGaleraLines() string {
 		myEmit("wsrep_sst_auth", "wsrep_sst_auth"),
 		myEmit("wsrep_slave_threads", "wsrep_slave_threads"),
 		myEmit("wsrep_sync_wait", "wsrep_sync_wait"),
+		`(("wsrep_provider_options" in root) ? "wsrep_provider_options = \"" + string(root.wsrep_provider_options) + "\"\n" : "")`,
 	)
 
 	return `((("wsrep_on" in root) && root.wsrep_on == "ON") ? (` + body + `) : "wsrep_on = OFF\n")`
@@ -555,6 +567,7 @@ read_only = {{{values.read_only}}}
 bind_address = {{{values.bind_address}}}
 port = {{{values.port}}}
 max_connections = {{{values.max_connections}}}
+skip_name_resolve = {{{values.skip_name_resolve}}}
 max_connect_errors = {{{values.max_connect_errors}}}
 thread_cache_size = {{{values.thread_cache_size}}}
 wait_timeout = {{{values.wait_timeout}}}

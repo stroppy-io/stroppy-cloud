@@ -75,8 +75,9 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 				overlay["group_replication_single_primary_mode"], overlay["group_replication_enforce_update_everywhere_checks"] = "OFF", "ON"
 			}
 		}
-		c.innodbMemory(role, c.schemaFor(role, prefix), m, maria, overlay)
-		conf, err := c.render(role, c.schemaFor(role, prefix), "conf", overlay)
+		schemaID := c.schemaFor(role, prefix)
+		c.tuneInnoDB(innodbServer{role: role, schemaID: schemaID, machine: m}, overlay)
+		conf, err := c.render(role, schemaID, "conf", overlay)
 		if err != nil {
 			return err
 		}
@@ -124,6 +125,7 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 			ct.DependsOn = []string{previous}
 		}
 		ct.Healthcheck = healthcheck("CMD-SHELL", clusterSQLCheck(maria, "127.0.0.1", i+1, false))
+		c.mariadbIOUring(&ct)
 		c.add(ct)
 		previous = ct.Name
 		cmd := mysqldExporterCmd(fmt.Sprintf("127.0.0.1:%d", mysqlPort), exporterUser, !maria)

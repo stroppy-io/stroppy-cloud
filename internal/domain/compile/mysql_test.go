@@ -168,7 +168,8 @@ func TestCompileInnoDBBufferPool(t *testing.T) {
 	t.Run("auto takes 70% of the machine", func(t *testing.T) {
 		conf, gb := compileConf(t, catalog.MariaDB, map[string]any{"version": "11.4"}, nil)
 		want := fmt.Sprintf("innodb_buffer_pool_size = %dM", int(float64(gb*1024)*0.7))
-		if !strings.Contains(conf, want) || !strings.Contains(conf, "innodb_io_capacity = 10000") {
+		// 200 GB network-ssd: 7000 write IOPS, 105 MB/s.
+		if !strings.Contains(conf, want) || !strings.Contains(conf, "innodb_io_capacity = 2600\n") {
 			t.Errorf("want %q and a disk-class io capacity in\n%s", want, conf)
 		}
 	})

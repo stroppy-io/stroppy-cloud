@@ -39,6 +39,7 @@ func TestMaxscale24(t *testing.T) {
 			{Value: map[string]any{"slave_selection_criteria": "LEAST_CURRENT_OPERATIONS"}, Code: "CHOICE_NOT_ALLOWED", Path: "slave_selection_criteria"},
 			{Value: map[string]any{"transaction_replay": "true", "master_failure_mode": "fail_instantly"}, Code: "RULE_VIOLATED", Path: "replay-failure-mode"},
 			{Value: map[string]any{"monitor_module": "galeramon", "auto_failover": "true"}, Code: "RULE_VIOLATED", Path: "galera-no-failover"},
+			{Value: map[string]any{"monitor_module": "galeramon", "causal_reads": "global"}, Code: "RULE_VIOLATED", Path: "galera-causal-reads"},
 			{Value: map[string]any{"threads": "many"}, Code: "PATTERN_MISMATCH", Path: "threads"},
 			// One backend_timeout field sets all three monitor timeouts.
 			{Value: map[string]any{"backend_connect_timeout": int64(3000)}, Code: "UNKNOWN_FIELD", Path: "backend_connect_timeout"},

@@ -75,6 +75,21 @@ func (c *compilation) maxscale(galera bool) error {
 		// The workload logs in as root, which MaxScale refuses by default.
 		"enable_root_user": "true",
 	}
+	if galera {
+		// local/global/universal causal reads wait with MASTER_GTID_WAIT,
+		// which Galera lacks. Reads are kept consistent by routing every
+		// statement to the monitor's master node instead, as ProxySQL does
+		// in front of Galera; an explicit value keeps the user's choice.
+		// doc: https://mariadb.com/docs/maxscale/reference/maxscale-routers/maxscale-readwritesplit#causal_reads
+		// doc: https://mariadb.com/docs/maxscale/reference/maxscale-routers/maxscale-readwritesplit#max_slave_connections
+		explicit := c.explicitConfig(role, schemaID)
+		if !explicit["causal_reads"] {
+			overlay["causal_reads"] = "none"
+		}
+		if !explicit["max_slave_connections"] {
+			overlay["max_slave_connections"] = 0
+		}
+	}
 	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {
 		return err

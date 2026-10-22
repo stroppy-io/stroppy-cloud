@@ -76,6 +76,17 @@ func TestCompileMariaDBMaxScale(t *testing.T) {
 					t.Errorf("maxscale.cnf lacks %q:\n%s", want, proxy)
 				}
 			}
+			// Galera has no MASTER_GTID_WAIT: no causal reads, every
+			// statement on the master node instead.
+			reads := []string{"causal_reads=global\n", "max_slave_connections=255\n"}
+			if tc.module == "module=galeramon" {
+				reads = []string{"causal_reads=none\n", "max_slave_connections=0\n"}
+			}
+			for _, want := range reads {
+				if !strings.Contains(proxy, want) {
+					t.Errorf("maxscale.cnf lacks %q:\n%s", want, proxy)
+				}
+			}
 			if n := strings.Count(proxy, "type=server"); n != tc.servers {
 				t.Errorf("%d backends, want %d", n, tc.servers)
 			}

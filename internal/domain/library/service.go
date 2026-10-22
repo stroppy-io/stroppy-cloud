@@ -140,13 +140,18 @@ func (s *Service) DeriveDatabase(ctx context.Context, spec DatabaseSpec) (Databa
 			if params["replication"] == "group" && strings.HasPrefix(schemaID, "cfg.my.cnf@") {
 				seed["group_replication_consistency"] = "BEFORE"
 			}
-			if params["replication"] == "galera" && strings.HasPrefix(schemaID, "cfg.mariadb.cnf@") {
-				seed["wsrep_sync_wait"] = 1
-			}
+			// Galera keeps wsrep_sync_wait at its default 0: a global value is
+			// inherited by the ProxySQL/MaxScale monitors, whose checks then
+			// stall behind TOI DDL until the node is shunned and the workload's
+			// connections drop. Reads stay consistent because ProxySQL sends
+			// everything to the single writer instead (no read/write split);
+			// reading from the other nodes is an explicit experiment.
+			// doc: https://mariadb.com/docs/galera-cluster/reference/galera-cluster-system-variables#wsrep_sync_wait
 			if params["replication"] == "galera" && strings.HasPrefix(schemaID, "cfg.proxysql.cnf@") {
-				// Galera has no read-only members: populate the reader pool
-				// from backup writers, while retaining explicit user overrides.
-				seed["writer_is_also_reader"] = 2
+				seed["read_write_split"] = "false"
+				// If the split is turned back on, the writer keeps reading so
+				// an all-shunned reader pool never leaves SELECTs without a server.
+				seed["writer_is_also_reader"] = 1
 			}
 			if rc, ok := spec.Configs[role.Role]; ok {
 				if v, ok := rc[schemaID]; ok && len(v) > 0 {

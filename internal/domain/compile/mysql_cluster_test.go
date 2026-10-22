@@ -88,7 +88,7 @@ func TestCompileMySQLClusters(t *testing.T) {
 								if members == 1 && !strings.Contains(conf, "GRANT SLAVE MONITOR, REPLICATION MASTER ADMIN ON *.* TO 'exporter'@'%';") {
 									t.Error("MariaDB exporter cannot collect replica status")
 								}
-								for _, line := range []string{"wsrep_cluster_name = " + strings.ReplaceAll(runID.String(), "-", ""), "wsrep_sst_method = mariabackup", "wsrep_sync_wait = 1", "wsrep_sst_auth = root:", "--wsrep-on=OFF --wsrep-provider=none"} {
+								for _, line := range []string{"wsrep_cluster_name = " + strings.ReplaceAll(runID.String(), "-", ""), "wsrep_sst_method = mariabackup", "wsrep_sync_wait = 0", "wsrep_sst_auth = root:", "wsrep_provider_options = \"gcache.size=2G; gcs.fc_limit=128;", "--wsrep-on=OFF --wsrep-provider=none"} {
 									if !strings.Contains(conf, line) {
 										t.Errorf("%s missing %s", ct.Name, line)
 									}
@@ -106,8 +106,13 @@ func TestCompileMySQLClusters(t *testing.T) {
 							block := "mysql_group_replication_hostgroups"
 							if kind == catalog.MariaDB {
 								block = "mysql_galera_hostgroups"
-								if !strings.Contains(conf, "writer_is_also_reader=2") {
-									t.Error("Galera reader pool must include backup writers")
+								// Variant A: no read/write split, every statement goes
+								// to the single writer, so nothing reads behind TOI.
+								if !strings.Contains(conf, "writer_is_also_reader=1") || strings.Contains(conf, "mysql_query_rules") {
+									t.Error("Galera must route every statement to the writer")
+								}
+								if !strings.Contains(conf, `server_version="`+version.Version+`.0-MariaDB"`) {
+									t.Error("ProxySQL must announce the MariaDB backend version")
 								}
 							} else if !strings.Contains(conf, "writer_is_also_reader=1") {
 								t.Error("Group Replication reader pool must keep the writer: lagging replicas get shunned")

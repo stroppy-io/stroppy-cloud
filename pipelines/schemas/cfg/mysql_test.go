@@ -1,8 +1,9 @@
 package cfg
 
 import (
-	schemapb "github.com/gopherex/schemapb/go/schemapb"
 	"testing"
+
+	schemapb "github.com/gopherex/schemapb/go/schemapb"
 
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas/internal/schematest"
 )
@@ -103,6 +104,53 @@ func TestMyCnfSemisyncTimeoutRender(t *testing.T) {
 		schematest.Run(t, schema, schematest.Cases{
 			Valid:  []map[string]any{{"rpl_semi_sync_source_enabled": "ON", "rpl_semi_sync_source_timeout": int64(1733)}},
 			Render: "conf", Contains: []string{"loose-rpl_semi_sync_source_timeout = 1733"},
+		})
+	}
+}
+
+// Defaults are the upstream ones of each major; counts the server picks
+// itself (pool instances, page cleaners, purge threads) stay out of the file.
+func TestMyCnfVersionDefaults(t *testing.T) {
+	out80 := renderDefaults(t, MyCnf80())
+	wantLines(t, out80,
+		"innodb_log_buffer_size = 16M",
+		"innodb_adaptive_hash_index = ON",
+		"innodb_change_buffering = all",
+		"innodb_use_fdatasync = OFF",
+		"innodb_flush_neighbors = 0",
+		"skip_name_resolve = OFF",
+		// WRITESET outside the group replication block too.
+		"binlog_transaction_dependency_tracking = WRITESET",
+	)
+	out84 := renderDefaults(t, MyCnf84())
+	wantLines(t, out84,
+		"innodb_log_buffer_size = 64M",
+		"innodb_adaptive_hash_index = OFF",
+		"innodb_change_buffering = none",
+		"innodb_use_fdatasync = ON",
+	)
+	dontWantLines(t, out84, "binlog_transaction_dependency_tracking", "group_replication_exit_state_action")
+	for _, out := range []string{out80, out84} {
+		dontWantLines(t, out, "innodb_buffer_pool_instances", "innodb_page_cleaners", "innodb_purge_threads")
+	}
+}
+
+func TestMyCnfTunedRender(t *testing.T) {
+	for _, schema := range []*schemapb.Schema{MyCnf80(), MyCnf84()} {
+		value := myFull()
+		value["innodb_page_cleaners"] = int64(8)
+		value["innodb_purge_threads"] = int64(4)
+		value["group_replication_exit_state_action"] = "READ_ONLY"
+		value["rpl_semi_sync_source_wait_point"] = "AFTER_SYNC"
+		schematest.Run(t, schema, schematest.Cases{
+			Valid: []map[string]any{value}, Render: "conf",
+			Contains: []string{
+				"innodb_buffer_pool_instances = 8\n",
+				"innodb_page_cleaners = 8\n",
+				"innodb_purge_threads = 4\n",
+				"loose-group_replication_exit_state_action = READ_ONLY\n",
+				"loose-rpl_semi_sync_source_wait_point = AFTER_SYNC\n",
+			},
 		})
 	}
 }

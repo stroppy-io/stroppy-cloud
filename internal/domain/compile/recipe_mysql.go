@@ -56,21 +56,27 @@ func mysqlRecipe(c *compilation) error {
 			if role == topology.RoleDBReplica {
 				overlay["read_only"] = "ON"
 			}
-			if !maria {
+			source, replica := "rpl_semi_sync_source_enabled", "rpl_semi_sync_replica_enabled"
+			if maria {
+				// MariaDB has semisync built in (10.3.3+) under the
+				// master/slave names; nothing else turns it on.
+				// doc: https://mariadb.com/docs/server/ha-and-performance/standard-replication/semisynchronous-replication
+				source, replica = "rpl_semi_sync_master_enabled", "rpl_semi_sync_slave_enabled"
+			} else {
 				overlay["gtid_mode"] = "ON"
 				overlay["enforce_gtid_consistency"] = "ON"
-				if mode == "semi_sync" {
-					overlay["rpl_semi_sync_source_enabled"] = "OFF"
-					overlay["rpl_semi_sync_replica_enabled"] = "OFF"
-					if role == topology.RoleDB {
-						overlay["rpl_semi_sync_source_enabled"] = "ON"
-					} else {
-						overlay["rpl_semi_sync_replica_enabled"] = "ON"
-					}
+			}
+			if mode == "semi_sync" {
+				overlay[source], overlay[replica] = "OFF", "OFF"
+				if role == topology.RoleDB {
+					overlay[source] = "ON"
+				} else {
+					overlay[replica] = "ON"
 				}
 			}
-			c.innodbMemory(role, c.schemaFor(role, confPrefix), m, maria, overlay)
-			conf, err := c.render(role, c.schemaFor(role, confPrefix), "conf", overlay)
+			schemaID := c.schemaFor(role, confPrefix)
+			c.tuneInnoDB(innodbServer{role: role, schemaID: schemaID, machine: m}, overlay)
+			conf, err := c.render(role, schemaID, "conf", overlay)
 			if err != nil {
 				return err
 			}
@@ -104,12 +110,22 @@ func mysqlRecipe(c *compilation) error {
 				}
 				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: init})
 			} else {
-				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: mysqlReplicaSQL(maria, ip(primary))})
+				replicaSQL := mysqlReplicaSQL(maria, ip(primary))
+				if !maria && c.innodbAuto() && !c.explicitConfig(role, schemaID)["super_read_only"] {
+					// super_read_only in my.cnf would also bind the image's
+					// temporary init server and fail its CREATE USER; a
+					// persisted value applies from the real server's start.
+					// doc: https://dev.mysql.com/doc/refman/8.4/en/persisted-system-variables.html
+					replicaSQL += "SET PERSIST super_read_only = ON;\n"
+					c.recordTuned(role, schemaID, "super_read_only", "ON")
+				}
+				ct.Files = append(ct.Files, spec.File{Path: mysqlInitPath, Content: replicaSQL})
 				ct.DependsOn = []string{primary + "-" + c.engineOf(topology.RoleDB)}
 				if !maria {
 					ct.Healthcheck = healthcheck("CMD-SHELL", mysqlReplicaHealth(mode == "semi_sync"))
 				}
 			}
+			c.mariadbIOUring(&ct)
 			c.add(ct)
 		}
 	}
@@ -204,6 +220,11 @@ func (c *compilation) proxysql() error {
 	}
 	maria := c.in.Database.Kind == catalog.MariaDB
 	mode := strParam(c.params(), "replication", "async")
+	auto := c.innodbAuto()
+	confPrefix := "cfg.my.cnf@"
+	if maria {
+		confPrefix = "cfg.mariadb.cnf@"
+	}
 	members := append(c.machinesOf(topology.RoleDB), c.machinesOf(topology.RoleDBReplica)...)
 	servers := []any{}
 	dependencies := []string{}
@@ -216,6 +237,13 @@ func (c *compilation) proxysql() error {
 			server := map[string]any{"address": ip(m), "port": mysqlPort, "hostgroup": hostgroup}
 			if !maria {
 				server["use_ssl"] = 1
+			}
+			if auto {
+				// The pool may open what the backend accepts, less room for
+				// the exporter, the monitor and an operator.
+				if limit := int(numberOf(c.configValue(dbRole, c.schemaFor(dbRole, confPrefix), "max_connections"))); limit > 100 {
+					server["max_connections"] = limit - 50
+				}
 			}
 			servers = append(servers, server)
 			dependencies = append(dependencies, m+"-"+c.engineOf(dbRole))
@@ -231,6 +259,23 @@ func (c *compilation) proxysql() error {
 	}
 	if mode == "galera" {
 		overlay["topology"] = "galera"
+	}
+	if maria && !c.explicitConfig(role, schemaID)["server_version"] {
+		// The handshake version drivers see; the image tag floats within
+		// the series, so the patch level is not known here.
+		// doc: https://proxysql.com/documentation/global-variables/mysql-variables/#mysql-server_version
+		overlay["server_version"] = c.in.Database.Version + ".0-MariaDB"
+	}
+	if auto {
+		t := c.tune(role, schemaID, overlay)
+		// One worker per proxy core (ProxySQL's guidance; fixed at start).
+		// doc: https://proxysql.com/documentation/global-variables/mysql-variables/#mysql-threads
+		if machines := c.machinesOf(role); len(machines) > 0 {
+			if cpu := c.hostOf(machines[0]).CPU; cpu > 0 {
+				t.set("threads", clamp(cpu, 1, 16))
+			}
+		}
+		t.set("max_connections", max(2048, 2*c.peakVUs()))
 	}
 	cnf, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {

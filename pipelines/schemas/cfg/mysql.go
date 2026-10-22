@@ -59,10 +59,15 @@ func MyCnf84() *schemapb.Schema { return myCnf("8.4") }
 func myCnf(major string) *schemapb.Schema {
 	is80 := major == "8.0"
 
-	// 8.4 raised the InnoDB I/O defaults; see mysql-nutshell.html.
+	// 8.4 raised the InnoDB I/O defaults and changed several others; see
+	// mysql-nutshell.html ("Changes to InnoDB system variable defaults").
 	ioCap, ioCapMax := int64(200), int64(2000)
+	logBuffer := int64(16)
+	ahi, changeBuffering, fdatasync := myOn(), schemapb.StrV("all"), myOff()
 	if !is80 {
 		ioCap, ioCapMax = 10000, 20000
+		logBuffer = 64
+		ahi, changeBuffering, fdatasync = myOff(), schemapb.StrV("none"), myOn()
 	}
 
 	fields := []schemapb.FieldDef{
@@ -72,9 +77,45 @@ func myCnf(major string) *schemapb.Schema {
 			Desc("InnoDB buffer pool; the single most important memory setting. Upstream default 128M.").
 			Unit("MB").Gte(5).Lte(4194304).Default(128),
 		// doc: .../innodb-parameters.html#sysvar_innodb_buffer_pool_instances
+		// Empty = the server's own choice; a fixed schema default would
+		// override it (and the auto tuning).
 		schemapb.Int64("innodb_buffer_pool_instances").Title("Buffer pool instances").Group("InnoDB").
-			Desc("Number of buffer pool regions; only meaningful when the pool is larger than 1G.").
-			Gte(1).Lte(64).Default(1),
+			Desc("Number of buffer pool regions; only meaningful when the pool is larger than 1G. Empty = the server picks (8.0: 8 above a 1G pool; 8.4: min(chunks/2, CPUs/4)).").
+			Gte(1).Lte(64).Nullable(),
+		// doc: .../innodb-parameters.html#sysvar_innodb_log_buffer_size (16M in 8.0, 64M in 8.4)
+		schemapb.Int64("innodb_log_buffer_size").Title("Log buffer size").Group("InnoDB").
+			Desc("In-memory redo buffer; a large one lets big transactions commit without writing redo early. Upstream default " + fmt.Sprint(logBuffer) + "M for " + major + ".").
+			Unit("MB").Gte(1).Lte(4096).Default(logBuffer),
+		// doc: .../innodb-parameters.html#sysvar_innodb_page_cleaners
+		schemapb.Int64("innodb_page_cleaners").Title("Page cleaner threads").Group("InnoDB").
+			Desc("Threads flushing dirty pages; capped at innodb_buffer_pool_instances. Empty = the server default (8.0: 4, 8.4: one per instance).").
+			Gte(1).Lte(64).Nullable(),
+		// doc: .../innodb-parameters.html#sysvar_innodb_purge_threads
+		schemapb.Int64("innodb_purge_threads").Title("Purge threads").Group("InnoDB").
+			Desc("Background threads purging undo; a lagging purge grows the history list. Empty = the server default (8.0: 4, 8.4: 1 up to 16 CPUs, else 4).").
+			Gte(1).Lte(32).Nullable(),
+		// doc: .../innodb-parameters.html#sysvar_innodb_adaptive_hash_index (OFF by default since 8.4)
+		myOnOff("innodb_adaptive_hash_index").Title("Adaptive hash index").Group("InnoDB").
+			Desc("Hash index built over hot B-tree pages; a contention point under concurrent writes. Upstream default ON in 8.0, OFF in 8.4.").
+			Default(ahi),
+		// doc: .../innodb-parameters.html#sysvar_innodb_change_buffering (default none since 8.4, still supported)
+		schemapb.Choice("innodb_change_buffering").Title("Change buffering").Group("InnoDB").
+			Desc("Which secondary-index changes are buffered instead of applied to the page. Upstream default all in 8.0, none in 8.4.").
+			Opt(schemapb.StrV("none"), "none").
+			Opt(schemapb.StrV("inserts"), "inserts").
+			Opt(schemapb.StrV("deletes"), "deletes").
+			Opt(schemapb.StrV("changes"), "changes").
+			Opt(schemapb.StrV("purges"), "purges").
+			Opt(schemapb.StrV("all"), "all").
+			Default(changeBuffering),
+		// doc: .../innodb-parameters.html#sysvar_innodb_use_fdatasync (8.0.26+; ON by default since 8.4)
+		myOnOff("innodb_use_fdatasync").Title("Use fdatasync").Group("InnoDB").
+			Desc("Flush with fdatasync(), which skips metadata that does not need to reach the disk. Upstream default OFF in 8.0, ON in 8.4.").
+			Default(fdatasync),
+		// doc: .../innodb-parameters.html#sysvar_innodb_flush_neighbors
+		schemapb.Int64("innodb_flush_neighbors").Title("Flush neighbors").Group("InnoDB").
+			Desc("0 = flush only the page itself (right for SSD), 1 = contiguous dirty neighbors, 2 = the whole extent.").
+			In(0, 1, 2).Default(0),
 		// doc: .../innodb-parameters.html#sysvar_innodb_redo_log_capacity (8.0.30+; supersedes innodb_log_file_size)
 		schemapb.Int64("innodb_redo_log_capacity").Title("Redo log capacity").Group("InnoDB").
 			Desc("Total redo log size. Replaces the deprecated innodb_log_file_size/innodb_log_files_in_group.").
@@ -180,6 +221,12 @@ func myCnf(major string) *schemapb.Schema {
 			Desc("How long the source waits for a replica ack before falling back to async.").
 			Unit("ms").Gte(0).Lte(4294967295).Default(10000),
 		// doc: https://dev.mysql.com/doc/refman/8.0/en/replication-options-replica.html#sysvar_rpl_semi_sync_replica_enabled
+		// doc: .../replication-options-source.html#sysvar_rpl_semi_sync_source_wait_point
+		schemapb.Choice("rpl_semi_sync_source_wait_point").Title("Semisync wait point").Group("Replication").
+			Desc("AFTER_SYNC (lossless, the default) waits for the replica ack before the storage commit, AFTER_COMMIT after it.").
+			Opt(schemapb.StrV("AFTER_SYNC"), "AFTER_SYNC").
+			Opt(schemapb.StrV("AFTER_COMMIT"), "AFTER_COMMIT").
+			Default(schemapb.StrV("AFTER_SYNC")),
 		myOnOff("rpl_semi_sync_replica_enabled").Title("Semisync replica").Group("Replication").
 			Desc("Semisynchronous replica side; loads semisync_replica.so via plugin_load_add.").Default(myOff()),
 		// doc: .../replication-options-replica.html#sysvar_replica_parallel_workers
@@ -222,6 +269,12 @@ func myCnf(major string) *schemapb.Schema {
 			Opt(schemapb.StrV("EVENTUAL"), "Eventual").Opt(schemapb.StrV("BEFORE_ON_PRIMARY_FAILOVER"), "Before primary failover").
 			Opt(schemapb.StrV("BEFORE"), "Before transaction").Opt(schemapb.StrV("AFTER"), "After transaction").
 			Opt(schemapb.StrV("BEFORE_AND_AFTER"), "Before and after").Nullable(),
+		// doc: .../group-replication-system-variables.html#sysvar_group_replication_exit_state_action
+		// (default READ_ONLY in 8.0, OFFLINE_MODE in 8.4)
+		schemapb.Choice("group_replication_exit_state_action").Title("Exit state action").Group("Group replication").
+			Desc("What a member does when it leaves the group involuntarily. Empty = the server default (8.0: READ_ONLY, 8.4: OFFLINE_MODE).").
+			Opt(schemapb.StrV("READ_ONLY"), "Read only").Opt(schemapb.StrV("OFFLINE_MODE"), "Offline mode").
+			Opt(schemapb.StrV("ABORT_SERVER"), "Abort server").Nullable(),
 
 		// ---- Connections ---------------------------------------------------
 		// doc: https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_bind_address
@@ -234,6 +287,10 @@ func myCnf(major string) *schemapb.Schema {
 		// doc: .../server-system-variables.html#sysvar_max_connections
 		schemapb.Int64("max_connections").Title("Max connections").Group("Connections").
 			Desc("Maximum simultaneous client connections.").Gte(1).Lte(100000).Default(151),
+		// doc: .../server-system-variables.html#sysvar_skip_name_resolve
+		myOnOff("skip_name_resolve").Title("Skip name resolve").Group("Connections").
+			Desc("Do not reverse-resolve client addresses; accounts must then be granted by IP, % or localhost.").
+			Default(myOff()),
 		// doc: .../server-system-variables.html#sysvar_max_connect_errors
 		schemapb.Int64("max_connect_errors").Title("Max connect errors").Group("Connections").
 			Desc("Interrupted handshakes from one host before it is blocked.").
@@ -410,20 +467,16 @@ func myCnf(major string) *schemapb.Schema {
 		myEmit("loose-group_replication_local_address", "group_replication_local_address"),
 		myEmit("loose-group_replication_group_seeds", "group_replication_group_seeds"),
 		myEmit("loose-group_replication_consistency", "group_replication_consistency"),
+		myEmit("loose-group_replication_exit_state_action", "group_replication_exit_state_action"),
 	)
-	if is80 {
-		grLines = myJoin(grLines,
-			myEmit("transaction_write_set_extraction", "transaction_write_set_extraction"),
-			myEmit("binlog_transaction_dependency_tracking", "binlog_transaction_dependency_tracking"),
-		)
-	}
 
 	semisync := myJoin(
 		// mysqld --initialize ignores plugin_load_add; loose options allow the
 		// initial datadir creation. The recipe checks the plugin after startup.
 		`((("rpl_semi_sync_source_enabled" in root) && root.rpl_semi_sync_source_enabled == "ON") ?
 			"plugin_load_add = semisync_source.so\nloose-rpl_semi_sync_source_enabled = ON\n" +`+
-			myEmit("loose-rpl_semi_sync_source_timeout", "rpl_semi_sync_source_timeout")+` : "")`,
+			myEmit("loose-rpl_semi_sync_source_timeout", "rpl_semi_sync_source_timeout")+` +`+
+			myEmit("loose-rpl_semi_sync_source_wait_point", "rpl_semi_sync_source_wait_point")+` : "")`,
 		`((("rpl_semi_sync_replica_enabled" in root) && root.rpl_semi_sync_replica_enabled == "ON") ?
 			"plugin_load_add = semisync_replica.so\nloose-rpl_semi_sync_replica_enabled = ON\n" : "")`,
 	)
@@ -436,6 +489,13 @@ func myCnf(major string) *schemapb.Schema {
 			myEmit("report_host", "report_host"),
 		)).Result(schemapb.ResultString).Group("Rendered").
 			Title("Cluster lines").Desc("Rendered topology lines (server_id, report_host)."),
+
+		schemapb.Computed("innodb_choice_lines", myJoin(
+			myEmit("innodb_buffer_pool_instances", "innodb_buffer_pool_instances"),
+			myEmit("innodb_page_cleaners", "innodb_page_cleaners"),
+			myEmit("innodb_purge_threads", "innodb_purge_threads"),
+		)).Result(schemapb.ResultString).Group("Rendered").
+			Title("InnoDB server-choice lines").Desc("InnoDB counts rendered only when set; empty leaves them to the server."),
 
 		schemapb.Computed("semisync_lines", semisync).
 			Result(schemapb.ResultString).Group("Rendered").
@@ -498,8 +558,8 @@ func myTemplate(major string, is80 bool) string {
 
 	b.WriteString(`# InnoDB
 innodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M
-innodb_buffer_pool_instances = {{{values.innodb_buffer_pool_instances}}}
-innodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M
+{{{values.innodb_choice_lines}}}innodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M
+innodb_log_buffer_size = {{{values.innodb_log_buffer_size}}}M
 innodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}
 innodb_flush_method = {{{values.innodb_flush_method}}}
 innodb_io_capacity = {{{values.innodb_io_capacity}}}
@@ -511,6 +571,10 @@ innodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}
 innodb_doublewrite = {{{values.innodb_doublewrite}}}
 innodb_file_per_table = {{{values.innodb_file_per_table}}}
 innodb_dedicated_server = {{{values.innodb_dedicated_server}}}
+innodb_adaptive_hash_index = {{{values.innodb_adaptive_hash_index}}}
+innodb_change_buffering = {{{values.innodb_change_buffering}}}
+innodb_use_fdatasync = {{{values.innodb_use_fdatasync}}}
+innodb_flush_neighbors = {{{values.innodb_flush_neighbors}}}
 
 # Binary log and GTID
 log_bin = {{{values.log_bin}}}
@@ -521,7 +585,18 @@ binlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}
 gtid_mode = {{{values.gtid_mode}}}
 enforce_gtid_consistency = {{{values.enforce_gtid_consistency}}}
 log_replica_updates = {{{values.log_replica_updates}}}
-{{{values.cluster_lines}}}
+{{{values.cluster_lines}}}`)
+
+	if is80 {
+		// Removed in 8.4, where WRITESET is always used. On 8.0 the server
+		// default COMMIT_ORDER barely parallelizes a replica's applier, so
+		// the schema's WRITESET is rendered for every topology, not only
+		// inside the group replication block.
+		b.WriteString("transaction_write_set_extraction = {{{values.transaction_write_set_extraction}}}\n" +
+			"binlog_transaction_dependency_tracking = {{{values.binlog_transaction_dependency_tracking}}}\n")
+	}
+
+	b.WriteString(`
 # Replication
 replica_parallel_workers = {{{values.replica_parallel_workers}}}
 replica_preserve_commit_order = {{{values.replica_preserve_commit_order}}}
@@ -539,6 +614,7 @@ super_read_only = {{{values.super_read_only}}}
 bind_address = {{{values.bind_address}}}
 port = {{{values.port}}}
 max_connections = {{{values.max_connections}}}
+skip_name_resolve = {{{values.skip_name_resolve}}}
 max_connect_errors = {{{values.max_connect_errors}}}
 thread_cache_size = {{{values.thread_cache_size}}}
 wait_timeout = {{{values.wait_timeout}}}

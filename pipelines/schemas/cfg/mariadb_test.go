@@ -125,3 +125,18 @@ func TestMariadbCnf1108(t *testing.T) {
 	dontWantLines(t, out, "innodb_snapshot_isolation", "max_tmp_total_space_usage",
 		"log_slow_always_query_time", "slave_abort_blocking_timeout")
 }
+
+// Galera provider options are one quoted string in the wsrep block.
+func TestMariadbProviderOptionsRender(t *testing.T) {
+	value := mariadbFull()
+	value["wsrep_provider_options"] = "gcache.size=2G; gcs.fc_limit=128"
+	value["skip_name_resolve"] = "ON"
+	schematest.Run(t, MariadbCnf1104(), schematest.Cases{
+		Valid: []map[string]any{value}, Render: "conf",
+		Contains: []string{"wsrep_provider_options = \"gcache.size=2G; gcs.fc_limit=128\"\n", "skip_name_resolve = ON\n"},
+		Invalid: []schematest.Invalid{
+			{Value: map[string]any{"wsrep_provider_options": `gcache.size="2G"`}, Code: "PATTERN_MISMATCH", Path: "wsrep_provider_options"},
+		},
+	})
+	dontWantLines(t, renderDefaults(t, MariadbCnf1104()), "wsrep_provider_options")
+}

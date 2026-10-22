@@ -15,15 +15,162 @@
       "unit": "MB"
     },
     {
-      "description": "Number of buffer pool regions; only meaningful when the pool is larger than 1G.",
+      "description": "Number of buffer pool regions; only meaningful when the pool is larger than 1G. Empty = the server picks (8.0: 8 above a 1G pool; 8.4: min(chunks/2, CPUs/4)).",
       "group": "InnoDB",
       "int64": {
-        "default": "1",
         "gte": "1",
         "lte": "64"
       },
       "name": "innodb_buffer_pool_instances",
+      "nullable": true,
       "title": "Buffer pool instances"
+    },
+    {
+      "description": "In-memory redo buffer; a large one lets big transactions commit without writing redo early. Upstream default 16M for 8.0.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "16",
+        "gte": "1",
+        "lte": "4096"
+      },
+      "name": "innodb_log_buffer_size",
+      "title": "Log buffer size",
+      "unit": "MB"
+    },
+    {
+      "description": "Threads flushing dirty pages; capped at innodb_buffer_pool_instances. Empty = the server default (8.0: 4, 8.4: one per instance).",
+      "group": "InnoDB",
+      "int64": {
+        "gte": "1",
+        "lte": "64"
+      },
+      "name": "innodb_page_cleaners",
+      "nullable": true,
+      "title": "Page cleaner threads"
+    },
+    {
+      "description": "Background threads purging undo; a lagging purge grows the history list. Empty = the server default (8.0: 4, 8.4: 1 up to 16 CPUs, else 4).",
+      "group": "InnoDB",
+      "int64": {
+        "gte": "1",
+        "lte": "32"
+      },
+      "name": "innodb_purge_threads",
+      "nullable": true,
+      "title": "Purge threads"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "ON"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Hash index built over hot B-tree pages; a contention point under concurrent writes. Upstream default ON in 8.0, OFF in 8.4.",
+      "group": "InnoDB",
+      "name": "innodb_adaptive_hash_index",
+      "title": "Adaptive hash index"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "all"
+        },
+        "options": [
+          {
+            "label": "none",
+            "value": {
+              "stringValue": "none"
+            }
+          },
+          {
+            "label": "inserts",
+            "value": {
+              "stringValue": "inserts"
+            }
+          },
+          {
+            "label": "deletes",
+            "value": {
+              "stringValue": "deletes"
+            }
+          },
+          {
+            "label": "changes",
+            "value": {
+              "stringValue": "changes"
+            }
+          },
+          {
+            "label": "purges",
+            "value": {
+              "stringValue": "purges"
+            }
+          },
+          {
+            "label": "all",
+            "value": {
+              "stringValue": "all"
+            }
+          }
+        ]
+      },
+      "description": "Which secondary-index changes are buffered instead of applied to the page. Upstream default all in 8.0, none in 8.4.",
+      "group": "InnoDB",
+      "name": "innodb_change_buffering",
+      "title": "Change buffering"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Flush with fdatasync(), which skips metadata that does not need to reach the disk. Upstream default OFF in 8.0, ON in 8.4.",
+      "group": "InnoDB",
+      "name": "innodb_use_fdatasync",
+      "title": "Use fdatasync"
+    },
+    {
+      "description": "0 = flush only the page itself (right for SSD), 1 = contiguous dirty neighbors, 2 = the whole extent.",
+      "group": "InnoDB",
+      "int64": {
+        "default": "0",
+        "in": [
+          "0",
+          "1",
+          "2"
+        ]
+      },
+      "name": "innodb_flush_neighbors",
+      "title": "Flush neighbors"
     },
     {
       "description": "Total redo log size. Replaces the deprecated innodb_log_file_size/innodb_log_files_in_group.",
@@ -461,6 +608,31 @@
     {
       "choice": {
         "default": {
+          "stringValue": "AFTER_SYNC"
+        },
+        "options": [
+          {
+            "label": "AFTER_SYNC",
+            "value": {
+              "stringValue": "AFTER_SYNC"
+            }
+          },
+          {
+            "label": "AFTER_COMMIT",
+            "value": {
+              "stringValue": "AFTER_COMMIT"
+            }
+          }
+        ]
+      },
+      "description": "AFTER_SYNC (lossless, the default) waits for the replica ack before the storage commit, AFTER_COMMIT after it.",
+      "group": "Replication",
+      "name": "rpl_semi_sync_source_wait_point",
+      "title": "Semisync wait point"
+    },
+    {
+      "choice": {
+        "default": {
           "stringValue": "OFF"
         },
         "options": [
@@ -730,6 +902,35 @@
       "title": "Transaction consistency"
     },
     {
+      "choice": {
+        "options": [
+          {
+            "label": "Read only",
+            "value": {
+              "stringValue": "READ_ONLY"
+            }
+          },
+          {
+            "label": "Offline mode",
+            "value": {
+              "stringValue": "OFFLINE_MODE"
+            }
+          },
+          {
+            "label": "Abort server",
+            "value": {
+              "stringValue": "ABORT_SERVER"
+            }
+          }
+        ]
+      },
+      "description": "What a member does when it leaves the group involuntarily. Empty = the server default (8.0: READ_ONLY, 8.4: OFFLINE_MODE).",
+      "group": "Group replication",
+      "name": "group_replication_exit_state_action",
+      "nullable": true,
+      "title": "Exit state action"
+    },
+    {
       "description": "Addresses mysqld listens on; * or 0.0.0.0 for all IPv4.",
       "group": "Connections",
       "name": "bind_address",
@@ -761,6 +962,31 @@
       },
       "name": "max_connections",
       "title": "Max connections"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "OFF"
+        },
+        "options": [
+          {
+            "label": "on",
+            "value": {
+              "stringValue": "ON"
+            }
+          },
+          {
+            "label": "off",
+            "value": {
+              "stringValue": "OFF"
+            }
+          }
+        ]
+      },
+      "description": "Do not reverse-resolve client addresses; accounts must then be granted by IP, % or localhost.",
+      "group": "Connections",
+      "name": "skip_name_resolve",
+      "title": "Skip name resolve"
     },
     {
       "description": "Interrupted handshakes from one host before it is blocked.",
@@ -1313,7 +1539,17 @@
     },
     {
       "computed": {
-        "expr": "(((\"rpl_semi_sync_source_enabled\" in root) \u0026\u0026 root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nloose-rpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"loose-rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) \u0026\u0026 root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nloose-rpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
+        "expr": "((\"innodb_buffer_pool_instances\" in root) ? \"innodb_buffer_pool_instances\" + \" = \" + string(root[\"innodb_buffer_pool_instances\"]) + \"\\n\" : \"\") +\n((\"innodb_page_cleaners\" in root) ? \"innodb_page_cleaners\" + \" = \" + string(root[\"innodb_page_cleaners\"]) + \"\\n\" : \"\") +\n((\"innodb_purge_threads\" in root) ? \"innodb_purge_threads\" + \" = \" + string(root[\"innodb_purge_threads\"]) + \"\\n\" : \"\")",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "description": "InnoDB counts rendered only when set; empty leaves them to the server.",
+      "group": "Rendered",
+      "name": "innodb_choice_lines",
+      "title": "InnoDB server-choice lines"
+    },
+    {
+      "computed": {
+        "expr": "(((\"rpl_semi_sync_source_enabled\" in root) \u0026\u0026 root.rpl_semi_sync_source_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_source.so\\nloose-rpl_semi_sync_source_enabled = ON\\n\" +((\"rpl_semi_sync_source_timeout\" in root) ? \"loose-rpl_semi_sync_source_timeout\" + \" = \" + string(root[\"rpl_semi_sync_source_timeout\"]) + \"\\n\" : \"\") +((\"rpl_semi_sync_source_wait_point\" in root) ? \"loose-rpl_semi_sync_source_wait_point\" + \" = \" + string(root[\"rpl_semi_sync_source_wait_point\"]) + \"\\n\" : \"\") : \"\") +\n(((\"rpl_semi_sync_replica_enabled\" in root) \u0026\u0026 root.rpl_semi_sync_replica_enabled == \"ON\") ?\n\t\t\t\"plugin_load_add = semisync_replica.so\\nloose-rpl_semi_sync_replica_enabled = ON\\n\" : \"\")",
         "result": "RESULT_TYPE_STRING"
       },
       "description": "plugin_load_add and rpl_semi_sync_* lines, emitted only when semisync is on.",
@@ -1323,7 +1559,7 @@
     },
     {
       "computed": {
-        "expr": "(((\"group_replication\" in root) \u0026\u0026 root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"loose-group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"loose-group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"loose-group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"loose-group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"loose-group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"loose-group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"loose-group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"group_replication_consistency\" in root) ? \"loose-group_replication_consistency\" + \" = \" + string(root[\"group_replication_consistency\"]) + \"\\n\" : \"\") +\n((\"transaction_write_set_extraction\" in root) ? \"transaction_write_set_extraction\" + \" = \" + string(root[\"transaction_write_set_extraction\"]) + \"\\n\" : \"\") +\n((\"binlog_transaction_dependency_tracking\" in root) ? \"binlog_transaction_dependency_tracking\" + \" = \" + string(root[\"binlog_transaction_dependency_tracking\"]) + \"\\n\" : \"\")) : \"\")",
+        "expr": "(((\"group_replication\" in root) \u0026\u0026 root.group_replication) ? (\"plugin_load_add = group_replication.so\\n\" +\n((\"group_replication_group_name\" in root) ? \"loose-group_replication_group_name\" + \" = \" + string(root[\"group_replication_group_name\"]) + \"\\n\" : \"\") +\n((\"group_replication_start_on_boot\" in root) ? \"loose-group_replication_start_on_boot\" + \" = \" + string(root[\"group_replication_start_on_boot\"]) + \"\\n\" : \"\") +\n((\"group_replication_bootstrap_group\" in root) ? \"loose-group_replication_bootstrap_group\" + \" = \" + string(root[\"group_replication_bootstrap_group\"]) + \"\\n\" : \"\") +\n((\"group_replication_single_primary_mode\" in root) ? \"loose-group_replication_single_primary_mode\" + \" = \" + string(root[\"group_replication_single_primary_mode\"]) + \"\\n\" : \"\") +\n((\"group_replication_enforce_update_everywhere_checks\" in root) ? \"loose-group_replication_enforce_update_everywhere_checks\" + \" = \" + string(root[\"group_replication_enforce_update_everywhere_checks\"]) + \"\\n\" : \"\") +\n((\"group_replication_local_address\" in root) ? \"loose-group_replication_local_address\" + \" = \" + string(root[\"group_replication_local_address\"]) + \"\\n\" : \"\") +\n((\"group_replication_group_seeds\" in root) ? \"loose-group_replication_group_seeds\" + \" = \" + string(root[\"group_replication_group_seeds\"]) + \"\\n\" : \"\") +\n((\"group_replication_consistency\" in root) ? \"loose-group_replication_consistency\" + \" = \" + string(root[\"group_replication_consistency\"]) + \"\\n\" : \"\") +\n((\"group_replication_exit_state_action\" in root) ? \"loose-group_replication_exit_state_action\" + \" = \" + string(root[\"group_replication_exit_state_action\"]) + \"\\n\" : \"\")) : \"\")",
         "result": "RESULT_TYPE_STRING"
       },
       "description": "The whole group_replication_* block, emitted only when group replication is on.",
@@ -1401,6 +1637,6 @@
   ],
   "strict": true,
   "templates": {
-    "conf": "# MySQL 8.0 — generated by stroppy, do not edit by hand\n[mysqld]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\ninnodb_buffer_pool_instances = {{{values.innodb_buffer_pool_instances}}}\ninnodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_flush_method = {{{values.innodb_flush_method}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_thread_concurrency = {{{values.innodb_thread_concurrency}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_dedicated_server = {{{values.innodb_dedicated_server}}}\n\n# Binary log and GTID\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\ngtid_mode = {{{values.gtid_mode}}}\nenforce_gtid_consistency = {{{values.enforce_gtid_consistency}}}\nlog_replica_updates = {{{values.log_replica_updates}}}\n{{{values.cluster_lines}}}\n# Replication\nreplica_parallel_workers = {{{values.replica_parallel_workers}}}\nreplica_preserve_commit_order = {{{values.replica_preserve_commit_order}}}\nreplica_parallel_type = {{{values.replica_parallel_type}}}\nread_only = {{{values.read_only}}}\nsuper_read_only = {{{values.super_read_only}}}\n{{{values.semisync_lines}}}\n{{{values.group_replication_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\ndefault_authentication_plugin = {{{values.default_authentication_plugin}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\nperformance_schema_max_digest_length = {{{values.performance_schema_max_digest_length}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nslow_query_log = {{{values.slow_query_log}}}\nlong_query_time = {{{values.long_query_time}}}\nlog_slow_extra = {{{values.log_slow_extra}}}\nlog_error_verbosity = {{{values.log_error_verbosity}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
+    "conf": "# MySQL 8.0 — generated by stroppy, do not edit by hand\n[mysqld]\n\n# InnoDB\ninnodb_buffer_pool_size = {{{values.innodb_buffer_pool_size}}}M\n{{{values.innodb_choice_lines}}}innodb_redo_log_capacity = {{{values.innodb_redo_log_capacity}}}M\ninnodb_log_buffer_size = {{{values.innodb_log_buffer_size}}}M\ninnodb_flush_log_at_trx_commit = {{{values.innodb_flush_log_at_trx_commit}}}\ninnodb_flush_method = {{{values.innodb_flush_method}}}\ninnodb_io_capacity = {{{values.innodb_io_capacity}}}\ninnodb_io_capacity_max = {{{values.innodb_io_capacity_max}}}\ninnodb_read_io_threads = {{{values.innodb_read_io_threads}}}\ninnodb_write_io_threads = {{{values.innodb_write_io_threads}}}\ninnodb_thread_concurrency = {{{values.innodb_thread_concurrency}}}\ninnodb_lock_wait_timeout = {{{values.innodb_lock_wait_timeout}}}\ninnodb_doublewrite = {{{values.innodb_doublewrite}}}\ninnodb_file_per_table = {{{values.innodb_file_per_table}}}\ninnodb_dedicated_server = {{{values.innodb_dedicated_server}}}\ninnodb_adaptive_hash_index = {{{values.innodb_adaptive_hash_index}}}\ninnodb_change_buffering = {{{values.innodb_change_buffering}}}\ninnodb_use_fdatasync = {{{values.innodb_use_fdatasync}}}\ninnodb_flush_neighbors = {{{values.innodb_flush_neighbors}}}\n\n# Binary log and GTID\nlog_bin = {{{values.log_bin}}}\nbinlog_format = {{{values.binlog_format}}}\nbinlog_row_image = {{{values.binlog_row_image}}}\nsync_binlog = {{{values.sync_binlog}}}\nbinlog_expire_logs_seconds = {{{values.binlog_expire_logs_seconds}}}\ngtid_mode = {{{values.gtid_mode}}}\nenforce_gtid_consistency = {{{values.enforce_gtid_consistency}}}\nlog_replica_updates = {{{values.log_replica_updates}}}\n{{{values.cluster_lines}}}transaction_write_set_extraction = {{{values.transaction_write_set_extraction}}}\nbinlog_transaction_dependency_tracking = {{{values.binlog_transaction_dependency_tracking}}}\n\n# Replication\nreplica_parallel_workers = {{{values.replica_parallel_workers}}}\nreplica_preserve_commit_order = {{{values.replica_preserve_commit_order}}}\nreplica_parallel_type = {{{values.replica_parallel_type}}}\nread_only = {{{values.read_only}}}\nsuper_read_only = {{{values.super_read_only}}}\n{{{values.semisync_lines}}}\n{{{values.group_replication_lines}}}\n# Connections\nbind_address = {{{values.bind_address}}}\nport = {{{values.port}}}\nmax_connections = {{{values.max_connections}}}\nskip_name_resolve = {{{values.skip_name_resolve}}}\nmax_connect_errors = {{{values.max_connect_errors}}}\nthread_cache_size = {{{values.thread_cache_size}}}\nwait_timeout = {{{values.wait_timeout}}}\ninteractive_timeout = {{{values.interactive_timeout}}}\nmax_allowed_packet = {{{values.max_allowed_packet}}}M\n\n# Tables and caches\ntable_open_cache = {{{values.table_open_cache}}}\ntable_definition_cache = {{{values.table_definition_cache}}}\ntmp_table_size = {{{values.tmp_table_size}}}M\nmax_heap_table_size = {{{values.max_heap_table_size}}}M\nopen_files_limit = {{{values.open_files_limit}}}\n\n# SQL\nsql_mode = {{{values.sql_mode}}}\ncharacter_set_server = {{{values.character_set_server}}}\ncollation_server = {{{values.collation_server}}}\ndefault_time_zone = {{{values.default_time_zone}}}\nlower_case_table_names = {{{values.lower_case_table_names}}}\ntransaction_isolation = {{{values.transaction_isolation}}}\ndefault_authentication_plugin = {{{values.default_authentication_plugin}}}\n\n# Performance schema\nperformance_schema = {{{values.performance_schema}}}\nperformance_schema_max_digest_length = {{{values.performance_schema_max_digest_length}}}\n\n# Logging\ngeneral_log = {{{values.general_log}}}\nslow_query_log = {{{values.slow_query_log}}}\nlong_query_time = {{{values.long_query_time}}}\nlog_slow_extra = {{{values.log_slow_extra}}}\nlog_error_verbosity = {{{values.log_error_verbosity}}}\n\n# Custom\n{{{values.custom_rendered}}}\n"
   }
 }

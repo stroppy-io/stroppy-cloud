@@ -68,7 +68,7 @@ func Proxysql2() *schemapb.Schema {
 				MinLen(1).MaxLen(255).Default("0.0.0.0:6033"),
 			// doc: .../mysql-variables/#mysql-threads
 			schemapb.Int64("threads").Title("Worker threads").Group("MySQL").
-				Desc("Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count.").
+				Desc("Worker threads handling client traffic; not changeable at runtime. Size it to the CPU count (the auto tuning does, up to 16).").
 				Gte(1).Lte(1024).Default(4),
 			// doc: .../mysql-variables/#mysql-max_connections
 			schemapb.Int64("max_connections").Title("Max frontend connections").Group("MySQL").
