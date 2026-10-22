@@ -291,7 +291,7 @@ func (h *Handler) runOf(r run.Run, favorite *bool) *oas.Run {
 		out.IsFavorite = oas.NewOptBool(*favorite)
 	}
 	if r.DurationSeconds != nil {
-		out.Duration = oas.NewOptNilString((time.Duration(*r.DurationSeconds * float64(time.Second))).Round(time.Second).String())
+		out.Duration = oas.NewOptNilString(time.Duration(*r.DurationSeconds * float64(time.Second)).Round(time.Second).String())
 	} else {
 		out.Duration = oas.OptNilString{Null: true, Set: true}
 	}

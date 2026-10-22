@@ -183,7 +183,14 @@ func (c *compilation) servers(role string, port int) []haproxyServer {
 
 // pgbouncer puts a pooler next to a role, forwarding to host:port.
 func (c *compilation) pgbouncer(role, host string, port int) error {
-	schemaID := c.schemaFor(role, "cfg.pgbouncer.ini@")
+	// The pooler's config lives on the proxy role in the form; a pooler
+	// next to the primary (no proxy machine) takes it from there.
+	confRole := role
+	schemaID := c.schemaFor(confRole, "cfg.pgbouncer.ini@")
+	if schemaID == "" {
+		confRole = topology.RoleProxy
+		schemaID = c.schemaFor(confRole, "cfg.pgbouncer.ini@")
+	}
 	if schemaID == "" {
 		return errs.Newf(errs.CodeInvalid, "%s: role %s has no pgbouncer schema", c.in.Database.Kind, role)
 	}
@@ -192,8 +199,8 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 		"listen_addr": "*", "listen_port": pgbPort, "auth_type": "scram-sha-256", "auth_file": "/etc/pgbouncer/userlist.txt",
 		"ignore_startup_parameters": "extra_float_digits",
 	}
-	c.tunePgBouncer(role, schemaID, overlay)
-	ini, err := c.render(role, schemaID, "conf", overlay)
+	c.tunePgBouncer(confRole, schemaID, overlay)
+	ini, err := c.render(confRole, schemaID, "conf", overlay)
 	if err != nil {
 		return err
 	}

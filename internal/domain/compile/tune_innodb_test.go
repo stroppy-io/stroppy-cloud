@@ -20,16 +20,6 @@ func innodbSchema(kind catalog.DatabaseKind, version string) string {
 	return "cfg.my.cnf@" + strings.TrimSuffix(version, ".0")
 }
 
-// effectiveOf is one role's effective config as a map.
-func effectiveOf(t *testing.T, eff map[string]map[string]json.RawMessage, role, schemaID string) map[string]any {
-	t.Helper()
-	out := map[string]any{}
-	if err := json.Unmarshal(eff[role][schemaID], &out); err != nil {
-		t.Fatalf("%s %s: %v", role, schemaID, err)
-	}
-	return out
-}
-
 // The auto profile on the S/M/L machines (4/16/100 network-ssd, 8/32/200
 // network-ssd, 16/64/400 io-m3) of every MySQL and MariaDB version: the
 // rendered my.cnf and the run's effective configs carry the same numbers.

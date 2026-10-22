@@ -73,16 +73,6 @@ func mustContain(t *testing.T, what, text string, lines ...string) {
 	}
 }
 
-// effectiveOf is one role/schema of the run's effective configs.
-func effectiveOf(t *testing.T, eff map[string]map[string]json.RawMessage, role, schemaID string) map[string]any {
-	t.Helper()
-	out := map[string]any{}
-	if err := json.Unmarshal(eff[role][schemaID], &out); err != nil {
-		t.Fatalf("%s %s: %v", role, schemaID, err)
-	}
-	return out
-}
-
 // hugePagesOf is vm.nr_hugepages of a machine's sysctl drop-in.
 func hugePagesOf(out compile.Output, machine string) string {
 	for _, h := range out.Spec.HostPrep {

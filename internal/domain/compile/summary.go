@@ -47,7 +47,7 @@ func engineConfig(byID map[string]json.RawMessage, prefix, key string) (any, boo
 
 // cacheMB is the engine's cache of a role's machine in MB.
 func (c *compilation) cacheMB(byID map[string]json.RawMessage, memoryMB int) int {
-	switch c.in.Database.Kind {
+	switch c.in.Database.Kind { //nolint:exhaustive // YDB splits its cache by percent of a hard limit; the rest have none
 	case catalog.Postgres:
 		v, _ := engineConfig(byID, "cfg.postgresql.conf@", "shared_buffers")
 		return int(numberOf(v))
@@ -73,7 +73,7 @@ func (c *compilation) cacheMB(byID map[string]json.RawMessage, memoryMB int) int
 	}
 }
 
-var sizeRe = regexp.MustCompile(`^([0-9]+(?:\.[0-9]+)?)\s*(%|[KMGT]i?B?|)$`)
+var sizeRe = regexp.MustCompile(`^(\d+(?:\.\d+)?)\s*(%|[KMGT]i?B?|)$`)
 
 // sizeMB reads an engine's size string: a share of RAM ("35%", ".25") or
 // an amount ("8GiB", "2048M", "20G"); 0 when unreadable.
@@ -124,7 +124,7 @@ func (c *compilation) durability(effective map[string]map[string]json.RawMessage
 		}
 		return run.DurabilityRelaxed, true
 	}
-	switch c.in.Database.Kind {
+	switch c.in.Database.Kind { //nolint:exhaustive // noop, external, managed and custom have no answer here
 	case catalog.Postgres, catalog.OrioleDB:
 		prefix := "cfg.postgresql.conf@"
 		if c.in.Database.Kind == catalog.OrioleDB {

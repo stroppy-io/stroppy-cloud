@@ -378,7 +378,7 @@ func (h *Handler) suiteRunOf(r suite.SuiteRun) *oas.SuiteRun {
 		out.Author.ID = r.AuthorID.String()
 	}
 	if r.DurationSeconds != nil {
-		out.Duration = oas.NewOptNilString((time.Duration(*r.DurationSeconds * float64(time.Second))).Round(time.Second).String())
+		out.Duration = oas.NewOptNilString(time.Duration(*r.DurationSeconds * float64(time.Second)).Round(time.Second).String())
 	} else {
 		out.Duration = oas.OptNilString{Null: true, Set: true}
 	}

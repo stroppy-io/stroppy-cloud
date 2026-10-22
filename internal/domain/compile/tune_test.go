@@ -90,6 +90,16 @@ func compileTuned(t *testing.T, tc tuneCase) (compile.Output, map[string]map[str
 	return out, compile.EffectiveWithTuned(derived.EffectiveConfigs, out.Tuned)
 }
 
+// effectiveOf is one role/schema of the run's effective configs.
+func effectiveOf(t *testing.T, eff map[string]map[string]json.RawMessage, role, schemaID string) map[string]any {
+	t.Helper()
+	out := map[string]any{}
+	if err := json.Unmarshal(eff[role][schemaID], &out); err != nil {
+		t.Fatalf("%s %s: %v", role, schemaID, err)
+	}
+	return out
+}
+
 // fileOf is the content of a file of the first container named with suffix.
 func fileOf(out compile.Output, containerSuffix, path string) string {
 	for _, c := range out.Spec.Containers {
@@ -195,5 +205,15 @@ func TestAutoTuningIsDeterministic(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// A pooler next to the primary (no proxy machine) takes the proxy role's
+// pgbouncer config.
+func TestPgBouncerWithoutProxy(t *testing.T) {
+	out, _ := compileTuned(t, tuneCase{kind: catalog.Postgres, version: "17", params: map[string]any{"pgbouncer": true}})
+	ini := fileOf(out, "-pgbouncer", "/etc/pgbouncer/pgbouncer.ini")
+	if !strings.Contains(ini, "max_client_conn = 1000") {
+		t.Fatalf("pgbouncer.ini:\n%s", ini)
 	}
 }
