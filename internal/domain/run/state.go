@@ -19,7 +19,9 @@ type State struct {
 	Containers map[string]ContainerState `json:"containers,omitempty"`
 	Segments   []SegmentState            `json:"segments,omitempty"`
 	Baseline   *BaselineState            `json:"baseline,omitempty"`
-	Pending    *PendingActivity          `json:"pending,omitempty"`
+	// Connectivity is the latest connectivity check of the machines.
+	Connectivity *ConnectivityState `json:"connectivity,omitempty"`
+	Pending      *PendingActivity   `json:"pending,omitempty"`
 	// Stand is where the run handed its infrastructure over (keep).
 	Stand      *StandState `json:"stand,omitempty"`
 	ObservedAt time.Time   `json:"observed_at"`

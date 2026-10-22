@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"sync"
@@ -861,6 +862,49 @@ func overviewOf(r run.Run, live bool) *oas.RunOverview {
 			pa.LastFailure = oas.NewOptString(st.Pending.LastFailure)
 		}
 		out.PendingActivity = oas.NewOptRunOverviewPendingActivity(pa)
+	}
+	if st.Connectivity != nil {
+		out.Connectivity = oas.NewOptRunConnectivity(connectivityOf(*st.Connectivity))
+	}
+	return out
+}
+
+// connectivityOf is the connectivity check: failed paths first, critical
+// ones before them, snapshots by artifact id.
+func connectivityOf(c run.ConnectivityState) oas.RunConnectivity {
+	out := oas.RunConnectivity{Total: c.Total, Failed: c.Failed, Critical: c.Critical, Pairs: make([]oas.ConnectivityPair, 0, len(c.Pairs)), Snapshots: make([]oas.RunConnectivitySnapshotsItem, 0, len(c.Snapshots))}
+	if !c.CheckedAt.IsZero() {
+		out.CheckedAt = oas.NewOptDateTime(c.CheckedAt)
+	}
+	pairs := slices.Clone(c.Pairs)
+	rank := func(p run.ConnectivityPair) int {
+		switch {
+		case !p.OK() && p.Critical:
+			return 0
+		case !p.OK():
+			return 1
+		}
+		return 2
+	}
+	slices.SortStableFunc(pairs, func(a, b run.ConnectivityPair) int { return rank(a) - rank(b) })
+	for _, p := range pairs {
+		item := oas.ConnectivityPair{From: p.From, To: p.To, Port: p.Port, Critical: p.Critical, Outcome: oas.ConnectivityOutcome(p.Outcome), LatencyMs: oas.NewOptFloat64(p.LatencyMs)}
+		if p.Address != "" {
+			item.Address = oas.NewOptString(p.Address)
+		}
+		if p.Container != "" {
+			item.Container = oas.NewOptString(p.Container)
+		}
+		if p.Attempts > 0 {
+			item.Attempts = oas.NewOptInt(p.Attempts)
+		}
+		if p.Error != "" {
+			item.Error = oas.NewOptString(p.Error)
+		}
+		out.Pairs = append(out.Pairs, item)
+	}
+	for _, s := range c.Snapshots {
+		out.Snapshots = append(out.Snapshots, oas.RunConnectivitySnapshotsItem{Machine: s.Machine, ArtifactID: run.Artifact{Ref: s.Artifact}.ID()})
 	}
 	return out
 }

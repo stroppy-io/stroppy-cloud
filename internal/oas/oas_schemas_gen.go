@@ -4079,6 +4079,183 @@ func (s *ComparisonSpecDiff) init() ComparisonSpecDiff {
 	return m
 }
 
+// How a TCP dial of the run's connectivity check ended: ok — connected; refused — the machine
+// answered that nothing listens on the port; timeout — no answer within the dial timeout (a
+// dropped SYN: firewall, security group, routing); other — any other failure (no route, the check
+// could not run on the machine).
+// Ref: #/components/schemas/ConnectivityOutcome
+type ConnectivityOutcome string
+
+const (
+	ConnectivityOutcomeOk      ConnectivityOutcome = "ok"
+	ConnectivityOutcomeRefused ConnectivityOutcome = "refused"
+	ConnectivityOutcomeTimeout ConnectivityOutcome = "timeout"
+	ConnectivityOutcomeOther   ConnectivityOutcome = "other"
+)
+
+// AllValues returns all ConnectivityOutcome values.
+func (ConnectivityOutcome) AllValues() []ConnectivityOutcome {
+	return []ConnectivityOutcome{
+		ConnectivityOutcomeOk,
+		ConnectivityOutcomeRefused,
+		ConnectivityOutcomeTimeout,
+		ConnectivityOutcomeOther,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ConnectivityOutcome) MarshalText() ([]byte, error) {
+	switch s {
+	case ConnectivityOutcomeOk:
+		return []byte(s), nil
+	case ConnectivityOutcomeRefused:
+		return []byte(s), nil
+	case ConnectivityOutcomeTimeout:
+		return []byte(s), nil
+	case ConnectivityOutcomeOther:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ConnectivityOutcome) UnmarshalText(data []byte) error {
+	switch ConnectivityOutcome(data) {
+	case ConnectivityOutcomeOk:
+		*s = ConnectivityOutcomeOk
+		return nil
+	case ConnectivityOutcomeRefused:
+		*s = ConnectivityOutcomeRefused
+		return nil
+	case ConnectivityOutcomeTimeout:
+		*s = ConnectivityOutcomeTimeout
+		return nil
+	case ConnectivityOutcomeOther:
+		*s = ConnectivityOutcomeOther
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/ConnectivityPair
+type ConnectivityPair struct {
+	// Machine that dialed.
+	From string `json:"from"`
+	// Machine dialed (or the endpoint's host).
+	To      string    `json:"to"`
+	Port    int       `json:"port"`
+	Address OptString `json:"address"`
+	// Container that publishes the port.
+	Container OptString           `json:"container"`
+	Critical  bool                `json:"critical"`
+	Outcome   ConnectivityOutcome `json:"outcome"`
+	LatencyMs OptFloat64          `json:"latency_ms"`
+	Attempts  OptInt              `json:"attempts"`
+	Error     OptString           `json:"error"`
+}
+
+// GetFrom returns the value of From.
+func (s *ConnectivityPair) GetFrom() string {
+	return s.From
+}
+
+// GetTo returns the value of To.
+func (s *ConnectivityPair) GetTo() string {
+	return s.To
+}
+
+// GetPort returns the value of Port.
+func (s *ConnectivityPair) GetPort() int {
+	return s.Port
+}
+
+// GetAddress returns the value of Address.
+func (s *ConnectivityPair) GetAddress() OptString {
+	return s.Address
+}
+
+// GetContainer returns the value of Container.
+func (s *ConnectivityPair) GetContainer() OptString {
+	return s.Container
+}
+
+// GetCritical returns the value of Critical.
+func (s *ConnectivityPair) GetCritical() bool {
+	return s.Critical
+}
+
+// GetOutcome returns the value of Outcome.
+func (s *ConnectivityPair) GetOutcome() ConnectivityOutcome {
+	return s.Outcome
+}
+
+// GetLatencyMs returns the value of LatencyMs.
+func (s *ConnectivityPair) GetLatencyMs() OptFloat64 {
+	return s.LatencyMs
+}
+
+// GetAttempts returns the value of Attempts.
+func (s *ConnectivityPair) GetAttempts() OptInt {
+	return s.Attempts
+}
+
+// GetError returns the value of Error.
+func (s *ConnectivityPair) GetError() OptString {
+	return s.Error
+}
+
+// SetFrom sets the value of From.
+func (s *ConnectivityPair) SetFrom(val string) {
+	s.From = val
+}
+
+// SetTo sets the value of To.
+func (s *ConnectivityPair) SetTo(val string) {
+	s.To = val
+}
+
+// SetPort sets the value of Port.
+func (s *ConnectivityPair) SetPort(val int) {
+	s.Port = val
+}
+
+// SetAddress sets the value of Address.
+func (s *ConnectivityPair) SetAddress(val OptString) {
+	s.Address = val
+}
+
+// SetContainer sets the value of Container.
+func (s *ConnectivityPair) SetContainer(val OptString) {
+	s.Container = val
+}
+
+// SetCritical sets the value of Critical.
+func (s *ConnectivityPair) SetCritical(val bool) {
+	s.Critical = val
+}
+
+// SetOutcome sets the value of Outcome.
+func (s *ConnectivityPair) SetOutcome(val ConnectivityOutcome) {
+	s.Outcome = val
+}
+
+// SetLatencyMs sets the value of LatencyMs.
+func (s *ConnectivityPair) SetLatencyMs(val OptFloat64) {
+	s.LatencyMs = val
+}
+
+// SetAttempts sets the value of Attempts.
+func (s *ConnectivityPair) SetAttempts(val OptInt) {
+	s.Attempts = val
+}
+
+// SetError sets the value of Error.
+func (s *ConnectivityPair) SetError(val OptString) {
+	s.Error = val
+}
+
 type CreateInviteReq struct {
 	Email   string     `json:"email"`
 	Role    TenantRole `json:"role"`
@@ -15578,6 +15755,52 @@ func (o OptRunBaselineResult) Or(d RunBaselineResult) RunBaselineResult {
 	return d
 }
 
+// NewOptRunConnectivity returns new OptRunConnectivity with value set to v.
+func NewOptRunConnectivity(v RunConnectivity) OptRunConnectivity {
+	return OptRunConnectivity{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptRunConnectivity is optional RunConnectivity.
+type OptRunConnectivity struct {
+	Value RunConnectivity
+	Set   bool
+}
+
+// IsSet returns true if OptRunConnectivity was set.
+func (o OptRunConnectivity) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptRunConnectivity) Reset() {
+	var v RunConnectivity
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptRunConnectivity) SetTo(v RunConnectivity) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptRunConnectivity) Get() (v RunConnectivity, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptRunConnectivity) Or(d RunConnectivity) RunConnectivity {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptRunEventLogRef returns new OptRunEventLogRef with value set to v.
 func NewOptRunEventLogRef(v RunEventLogRef) OptRunEventLogRef {
 	return OptRunEventLogRef{
@@ -23021,6 +23244,112 @@ func (s *RunBaselineResultVerdictsItem) SetDetail(val OptString) {
 	s.Detail = val
 }
 
+// The connectivity check after deploy: every machine dialed every other machine's published ports,
+// the runner the workload's endpoint. A failed critical path (a database, proxy or coordinator port,
+// or the endpoint) failed the run before the workload; other failed paths only warn. The machines on
+// both ends of a failed path left a network snapshot. Absent when the run has not been checked
+// (single machine, before deploy).
+// Ref: #/components/schemas/RunConnectivity
+type RunConnectivity struct {
+	CheckedAt OptDateTime `json:"checked_at"`
+	// Paths dialed.
+	Total int `json:"total"`
+	// Paths not ok.
+	Failed int `json:"failed"`
+	// Failed paths the cluster or the workload needs.
+	Critical int `json:"critical"`
+	// Failed paths first.
+	Pairs     []ConnectivityPair             `json:"pairs"`
+	Snapshots []RunConnectivitySnapshotsItem `json:"snapshots"`
+}
+
+// GetCheckedAt returns the value of CheckedAt.
+func (s *RunConnectivity) GetCheckedAt() OptDateTime {
+	return s.CheckedAt
+}
+
+// GetTotal returns the value of Total.
+func (s *RunConnectivity) GetTotal() int {
+	return s.Total
+}
+
+// GetFailed returns the value of Failed.
+func (s *RunConnectivity) GetFailed() int {
+	return s.Failed
+}
+
+// GetCritical returns the value of Critical.
+func (s *RunConnectivity) GetCritical() int {
+	return s.Critical
+}
+
+// GetPairs returns the value of Pairs.
+func (s *RunConnectivity) GetPairs() []ConnectivityPair {
+	return s.Pairs
+}
+
+// GetSnapshots returns the value of Snapshots.
+func (s *RunConnectivity) GetSnapshots() []RunConnectivitySnapshotsItem {
+	return s.Snapshots
+}
+
+// SetCheckedAt sets the value of CheckedAt.
+func (s *RunConnectivity) SetCheckedAt(val OptDateTime) {
+	s.CheckedAt = val
+}
+
+// SetTotal sets the value of Total.
+func (s *RunConnectivity) SetTotal(val int) {
+	s.Total = val
+}
+
+// SetFailed sets the value of Failed.
+func (s *RunConnectivity) SetFailed(val int) {
+	s.Failed = val
+}
+
+// SetCritical sets the value of Critical.
+func (s *RunConnectivity) SetCritical(val int) {
+	s.Critical = val
+}
+
+// SetPairs sets the value of Pairs.
+func (s *RunConnectivity) SetPairs(val []ConnectivityPair) {
+	s.Pairs = val
+}
+
+// SetSnapshots sets the value of Snapshots.
+func (s *RunConnectivity) SetSnapshots(val []RunConnectivitySnapshotsItem) {
+	s.Snapshots = val
+}
+
+type RunConnectivitySnapshotsItem struct {
+	Machine string `json:"machine"`
+	// Text artifact (downloadRunArtifact): addresses, routes, neighbors, listeners, half-open connects,
+	// firewall rules, sysctl, dmesg tail.
+	ArtifactID string `json:"artifact_id"`
+}
+
+// GetMachine returns the value of Machine.
+func (s *RunConnectivitySnapshotsItem) GetMachine() string {
+	return s.Machine
+}
+
+// GetArtifactID returns the value of ArtifactID.
+func (s *RunConnectivitySnapshotsItem) GetArtifactID() string {
+	return s.ArtifactID
+}
+
+// SetMachine sets the value of Machine.
+func (s *RunConnectivitySnapshotsItem) SetMachine(val string) {
+	s.Machine = val
+}
+
+// SetArtifactID sets the value of ArtifactID.
+func (s *RunConnectivitySnapshotsItem) SetArtifactID(val string) {
+	s.ArtifactID = val
+}
+
 // Ref: #/components/schemas/RunEvent
 type RunEvent struct {
 	ID    string       `json:"id"`
@@ -23163,6 +23492,7 @@ const (
 	RunEventKindBaselineFinished RunEventKind = "baseline.finished"
 	RunEventKindStandKept        RunEventKind = "stand.kept"
 	RunEventKindResultPublished  RunEventKind = "result.published"
+	RunEventKindNetworkChecked   RunEventKind = "network.checked"
 )
 
 // AllValues returns all RunEventKind values.
@@ -23188,6 +23518,7 @@ func (RunEventKind) AllValues() []RunEventKind {
 		RunEventKindBaselineFinished,
 		RunEventKindStandKept,
 		RunEventKindResultPublished,
+		RunEventKindNetworkChecked,
 	}
 }
 
@@ -23233,6 +23564,8 @@ func (s RunEventKind) MarshalText() ([]byte, error) {
 	case RunEventKindStandKept:
 		return []byte(s), nil
 	case RunEventKindResultPublished:
+		return []byte(s), nil
+	case RunEventKindNetworkChecked:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -23301,6 +23634,9 @@ func (s *RunEventKind) UnmarshalText(data []byte) error {
 		return nil
 	case RunEventKindResultPublished:
 		*s = RunEventKindResultPublished
+		return nil
+	case RunEventKindNetworkChecked:
+		*s = RunEventKindNetworkChecked
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)
@@ -24059,6 +24395,7 @@ type RunOverview struct {
 	Flows      []RunOverviewFlowsItem      `json:"flows"`
 	// Segment windows for the metrics/Grafana window selector.
 	WorkloadSegments []RunOverviewWorkloadSegmentsItem `json:"workload_segments"`
+	Connectivity     OptRunConnectivity                `json:"connectivity"`
 	// What the run is waiting on right now (from Graphene RunStatus).
 	PendingActivity OptRunOverviewPendingActivity `json:"pending_activity"`
 }
@@ -24121,6 +24458,11 @@ func (s *RunOverview) GetFlows() []RunOverviewFlowsItem {
 // GetWorkloadSegments returns the value of WorkloadSegments.
 func (s *RunOverview) GetWorkloadSegments() []RunOverviewWorkloadSegmentsItem {
 	return s.WorkloadSegments
+}
+
+// GetConnectivity returns the value of Connectivity.
+func (s *RunOverview) GetConnectivity() OptRunConnectivity {
+	return s.Connectivity
 }
 
 // GetPendingActivity returns the value of PendingActivity.
@@ -24186,6 +24528,11 @@ func (s *RunOverview) SetFlows(val []RunOverviewFlowsItem) {
 // SetWorkloadSegments sets the value of WorkloadSegments.
 func (s *RunOverview) SetWorkloadSegments(val []RunOverviewWorkloadSegmentsItem) {
 	s.WorkloadSegments = val
+}
+
+// SetConnectivity sets the value of Connectivity.
+func (s *RunOverview) SetConnectivity(val OptRunConnectivity) {
+	s.Connectivity = val
 }
 
 // SetPendingActivity sets the value of PendingActivity.

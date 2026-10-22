@@ -552,7 +552,14 @@ func simAgents(w *pipelinetest.World, rr *simRecorder, sc simScenario) {
 	pipelinetest.Handle1(w, workflows.ActivityWaitReachable, func(ctx workflow.Context, _ workflows.WaitReachableRequest) (workflows.WaitDatabaseResult, error) {
 		return workflows.WaitDatabaseResult{Ready: true, Attempts: 1}, workflow.Sleep(ctx, 2*time.Second)
 	})
-	pipelinetest.Handle1(w, workflows.ActivityWaitDatabase, func(ctx workflow.Context, req workflows.WaitDatabaseRequest) (workflows.WaitDatabaseResult, error) {
+	pipelinetest.Handle1(w, workflows.ActivityNetProbe, func(ctx workflow.Context, req workflows.NetProbeRequest) (workflows.NetProbeResult, error) {
+		out := workflows.NetProbeResult{}
+		for _, target := range req.Targets {
+			out.Pairs = append(out.Pairs, workflows.NetPairResult{NetTarget: target, Outcome: "ok", LatencyMs: 0.4, Attempts: 1})
+		}
+		return out, workflow.Sleep(ctx, time.Second)
+	})
+	pipelinetest.Handle1(w, workflows.ActivityWaitDatabase,func(ctx workflow.Context, req workflows.WaitDatabaseRequest) (workflows.WaitDatabaseResult, error) {
 		if err := workflow.Sleep(ctx, 20*time.Second); err != nil {
 			return workflows.WaitDatabaseResult{}, err
 		}

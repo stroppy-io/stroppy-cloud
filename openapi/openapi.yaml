@@ -5335,6 +5335,7 @@ components:
       - baseline.finished
       - stand.kept
       - result.published
+      - network.checked
     AuditAction:
       type: string
       description: What an audit entry records.
@@ -5516,6 +5517,17 @@ components:
       - warn
       - error
       - fatal
+    ConnectivityOutcome:
+      type: string
+      description: 'How a TCP dial of the run''s connectivity check ended: ok — connected; refused — the
+        machine answered that nothing listens on the port; timeout — no answer within the dial timeout
+        (a dropped SYN: firewall, security group, routing); other — any other failure (no route, the check
+        could not run on the machine).'
+      enum:
+      - ok
+      - refused
+      - timeout
+      - other
     RunStageKind:
       type: string
       description: 'What a running workload segment does: `preparing` — stroppy prepares the data (schema,
@@ -8367,6 +8379,8 @@ components:
                 - string
                 - 'null'
                 format: date-time
+        connectivity:
+          $ref: '#/components/schemas/RunConnectivity'
         pending_activity:
           type: object
           description: What the run is waiting on right now (from Graphene RunStatus).
@@ -8380,6 +8394,83 @@ components:
               format: date-time
             last_failure:
               type: string
+    RunConnectivity:
+      type: object
+      description: 'The connectivity check after deploy: every machine dialed every other machine''s published
+        ports, the runner the workload''s endpoint. A failed critical path (a database, proxy or coordinator
+        port, or the endpoint) failed the run before the workload; other failed paths only warn. The machines
+        on both ends of a failed path left a network snapshot. Absent when the run has not been checked
+        (single machine, before deploy).'
+      required:
+      - total
+      - failed
+      - critical
+      - pairs
+      - snapshots
+      properties:
+        checked_at:
+          type: string
+          format: date-time
+        total:
+          type: integer
+          description: Paths dialed.
+        failed:
+          type: integer
+          description: Paths not ok.
+        critical:
+          type: integer
+          description: Failed paths the cluster or the workload needs.
+        pairs:
+          type: array
+          description: Failed paths first.
+          items:
+            $ref: '#/components/schemas/ConnectivityPair'
+        snapshots:
+          type: array
+          items:
+            type: object
+            required:
+            - machine
+            - artifact_id
+            properties:
+              machine:
+                type: string
+              artifact_id:
+                type: string
+                description: 'Text artifact (downloadRunArtifact): addresses, routes, neighbors, listeners,
+                  half-open connects, firewall rules, sysctl, dmesg tail.'
+    ConnectivityPair:
+      type: object
+      required:
+      - from
+      - to
+      - port
+      - critical
+      - outcome
+      properties:
+        from:
+          type: string
+          description: Machine that dialed.
+        to:
+          type: string
+          description: Machine dialed (or the endpoint's host).
+        port:
+          type: integer
+        address:
+          type: string
+        container:
+          type: string
+          description: Container that publishes the port.
+        critical:
+          type: boolean
+        outcome:
+          $ref: '#/components/schemas/ConnectivityOutcome'
+        latency_ms:
+          type: number
+        attempts:
+          type: integer
+        error:
+          type: string
     ResourceTree:
       type: object
       description: 'A record of the run with what it owns and what it talks to — the run''s topology,

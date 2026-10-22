@@ -136,6 +136,14 @@ UI показывает ошибку рядом с соответствующи�
 segments, статусы и времена, exit_code, error, errors, compliance, artifacts,
 baseline с verdicts/report/error и исходный summary.
 
+После deploy пайплайн проверяет TCP-связность машин прогона (milestone
+`network.checked`). Overview прогона отдаёт её как `connectivity`: число путей,
+неудачные и обязательные, пары с исходом `ConnectivityOutcome`, снимки сети
+машин на неудачных путях (`artifact_id` для API артефактов). Снимки входят в
+`artifacts` результата, в том числе частичного результата провалившегося
+deploy. Неудачный обязательный путь (порт базы, прокси, координатора или
+endpoint workload) завершает прогон до workload.
+
 Версия Stroppy по умолчанию в каталоге — 6.1.0 (`v6.1.0.63`, JSON-отчёты);
 6.0.0 остаётся доступной, закреплённые образы сохранённых тестов не меняются. Исправления из PR Stroppy #173 нужны отдельно
 для service-account key auth и полного generated TPC-DS.

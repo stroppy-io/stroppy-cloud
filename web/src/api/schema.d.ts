@@ -2592,7 +2592,7 @@ export interface components {
          * @description A run timeline event: Graphene's run lifecycle (run-*), a failed step (activity-*), or a pipeline milestone.
          * @enum {string}
          */
-        RunEventKind: "run-started" | "run-completed" | "run-failed" | "run-timed-out" | "run-terminated" | "run-cancelled" | "activity-failed" | "activity-timed-out" | "phase.started" | "phase.finished" | "phase.failed" | "machine.ready" | "container.ready" | "segment.started" | "segment.finished" | "segment.failed" | "baseline.started" | "baseline.finished" | "stand.kept" | "result.published";
+        RunEventKind: "run-started" | "run-completed" | "run-failed" | "run-timed-out" | "run-terminated" | "run-cancelled" | "activity-failed" | "activity-timed-out" | "phase.started" | "phase.finished" | "phase.failed" | "machine.ready" | "container.ready" | "segment.started" | "segment.finished" | "segment.failed" | "baseline.started" | "baseline.finished" | "stand.kept" | "result.published" | "network.checked";
         /**
          * @description What an audit entry records.
          * @enum {string}
@@ -2628,6 +2628,11 @@ export interface components {
          * @enum {string}
          */
         LogLevel: "trace" | "debug" | "info" | "warn" | "error" | "fatal";
+        /**
+         * @description How a TCP dial of the run's connectivity check ended: ok — connected; refused — the machine answered that nothing listens on the port; timeout — no answer within the dial timeout (a dropped SYN: firewall, security group, routing); other — any other failure (no route, the check could not run on the machine).
+         * @enum {string}
+         */
+        ConnectivityOutcome: "ok" | "refused" | "timeout" | "other";
         /**
          * @description What a running workload segment does: `preparing` — stroppy prepares the data (schema, load, indexes, checks), which has no planned length; `load` — the planned load runs.
          * @enum {string}
@@ -3775,6 +3780,7 @@ export interface components {
                 /** Format: date-time */
                 finished_at?: string | null;
             }[];
+            connectivity?: components["schemas"]["RunConnectivity"];
             /** @description What the run is waiting on right now (from Graphene RunStatus). */
             pending_activity?: {
                 activity?: string;
@@ -3783,6 +3789,39 @@ export interface components {
                 since?: string;
                 last_failure?: string;
             };
+        };
+        /** @description The connectivity check after deploy: every machine dialed every other machine's published ports, the runner the workload's endpoint. A failed critical path (a database, proxy or coordinator port, or the endpoint) failed the run before the workload; other failed paths only warn. The machines on both ends of a failed path left a network snapshot. Absent when the run has not been checked (single machine, before deploy). */
+        RunConnectivity: {
+            /** Format: date-time */
+            checked_at?: string;
+            /** @description Paths dialed. */
+            total: number;
+            /** @description Paths not ok. */
+            failed: number;
+            /** @description Failed paths the cluster or the workload needs. */
+            critical: number;
+            /** @description Failed paths first. */
+            pairs: components["schemas"]["ConnectivityPair"][];
+            snapshots: {
+                machine: string;
+                /** @description Text artifact (downloadRunArtifact): addresses, routes, neighbors, listeners, half-open connects, firewall rules, sysctl, dmesg tail. */
+                artifact_id: string;
+            }[];
+        };
+        ConnectivityPair: {
+            /** @description Machine that dialed. */
+            from: string;
+            /** @description Machine dialed (or the endpoint's host). */
+            to: string;
+            port: number;
+            address?: string;
+            /** @description Container that publishes the port. */
+            container?: string;
+            critical: boolean;
+            outcome: components["schemas"]["ConnectivityOutcome"];
+            latency_ms?: number;
+            attempts?: number;
+            error?: string;
         };
         /** @description A record of the run with what it owns and what it talks to — the run's topology, drawn from one call: nodes are the records (machines, containers, agents, artifacts), edges are their declared flows. A finished run keeps its records here, with phase `deleted`. */
         ResourceTree: {

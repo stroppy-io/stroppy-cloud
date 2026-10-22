@@ -1774,6 +1774,62 @@ func (s ComparisonSpecDiff) Validate() error {
 	return nil
 }
 
+func (s ConnectivityOutcome) Validate() error {
+	switch s {
+	case "ok":
+		return nil
+	case "refused":
+		return nil
+	case "timeout":
+		return nil
+	case "other":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s *ConnectivityPair) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Outcome.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "outcome",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.LatencyMs.Get(); ok {
+			if err := func() error {
+				if err := (validate.Float{}).Validate(float64(value)); err != nil {
+					return errors.Wrap(err, "float")
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "latency_ms",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *CreateInviteReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -7229,6 +7285,57 @@ func (s *Run) Validate() error {
 	return nil
 }
 
+func (s *RunConnectivity) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if s.Pairs == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range s.Pairs {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "pairs",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if s.Snapshots == nil {
+			return errors.New("nil is invalid value")
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "snapshots",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
 func (s *RunEvent) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
@@ -7293,6 +7400,8 @@ func (s RunEventKind) Validate() error {
 	case "stand.kept":
 		return nil
 	case "result.published":
+		return nil
+	case "network.checked":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)
@@ -8016,6 +8125,24 @@ func (s *RunOverview) Validate() error {
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
 			Name:  "machines",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if value, ok := s.Connectivity.Get(); ok {
+			if err := func() error {
+				if err := value.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return err
+			}
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "connectivity",
 			Error: err,
 		})
 	}

@@ -884,8 +884,17 @@ func artifactRefs(r Run) []string {
 	var res struct {
 		Artifacts []string `json:"artifacts"`
 	}
-	if len(r.Result) == 0 || json.Unmarshal(r.Result, &res) != nil {
-		return nil
+	if len(r.Result) > 0 {
+		_ = json.Unmarshal(r.Result, &res) //nolint:errcheck // a result without artifacts has none
+	}
+	// A run that failed its connectivity check may have no result; its
+	// network snapshots are its own all the same.
+	if c := r.State.Connectivity; c != nil {
+		for _, s := range c.Snapshots {
+			if s.Artifact != "" && !slices.Contains(res.Artifacts, s.Artifact) {
+				res.Artifacts = append(res.Artifacts, s.Artifact)
+			}
+		}
 	}
 	return res.Artifacts
 }

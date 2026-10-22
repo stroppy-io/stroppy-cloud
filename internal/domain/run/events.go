@@ -13,7 +13,7 @@ var EventKinds = []string{
 	"machine.ready", "container.ready",
 	"segment.started", "segment.finished", "segment.failed",
 	"baseline.started", "baseline.finished",
-	"stand.kept", "result.published",
+	"stand.kept", "result.published", "network.checked",
 }
 
 // EventKind is the timeline's name of an event kind; false for a kind the

@@ -8094,6 +8094,298 @@ func (s *ComparisonSpecDiff) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes ConnectivityOutcome as json.
+func (s ConnectivityOutcome) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes ConnectivityOutcome from json.
+func (s *ConnectivityOutcome) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ConnectivityOutcome to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch ConnectivityOutcome(v) {
+	case ConnectivityOutcomeOk:
+		*s = ConnectivityOutcomeOk
+	case ConnectivityOutcomeRefused:
+		*s = ConnectivityOutcomeRefused
+	case ConnectivityOutcomeTimeout:
+		*s = ConnectivityOutcomeTimeout
+	case ConnectivityOutcomeOther:
+		*s = ConnectivityOutcomeOther
+	default:
+		*s = ConnectivityOutcome(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s ConnectivityOutcome) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ConnectivityOutcome) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *ConnectivityPair) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *ConnectivityPair) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("from")
+		e.Str(s.From)
+	}
+	{
+		e.FieldStart("to")
+		e.Str(s.To)
+	}
+	{
+		e.FieldStart("port")
+		e.Int(s.Port)
+	}
+	{
+		if s.Address.Set {
+			e.FieldStart("address")
+			s.Address.Encode(e)
+		}
+	}
+	{
+		if s.Container.Set {
+			e.FieldStart("container")
+			s.Container.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("critical")
+		e.Bool(s.Critical)
+	}
+	{
+		e.FieldStart("outcome")
+		s.Outcome.Encode(e)
+	}
+	{
+		if s.LatencyMs.Set {
+			e.FieldStart("latency_ms")
+			s.LatencyMs.Encode(e)
+		}
+	}
+	{
+		if s.Attempts.Set {
+			e.FieldStart("attempts")
+			s.Attempts.Encode(e)
+		}
+	}
+	{
+		if s.Error.Set {
+			e.FieldStart("error")
+			s.Error.Encode(e)
+		}
+	}
+}
+
+var jsonFieldsNameOfConnectivityPair = [10]string{
+	0: "from",
+	1: "to",
+	2: "port",
+	3: "address",
+	4: "container",
+	5: "critical",
+	6: "outcome",
+	7: "latency_ms",
+	8: "attempts",
+	9: "error",
+}
+
+// Decode decodes ConnectivityPair from json.
+func (s *ConnectivityPair) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode ConnectivityPair to nil")
+	}
+	var requiredBitSet [2]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "from":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.From = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"from\"")
+			}
+		case "to":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.To = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"to\"")
+			}
+		case "port":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Int()
+				s.Port = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"port\"")
+			}
+		case "address":
+			if err := func() error {
+				s.Address.Reset()
+				if err := s.Address.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"address\"")
+			}
+		case "container":
+			if err := func() error {
+				s.Container.Reset()
+				if err := s.Container.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"container\"")
+			}
+		case "critical":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Bool()
+				s.Critical = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"critical\"")
+			}
+		case "outcome":
+			requiredBitSet[0] |= 1 << 6
+			if err := func() error {
+				if err := s.Outcome.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"outcome\"")
+			}
+		case "latency_ms":
+			if err := func() error {
+				s.LatencyMs.Reset()
+				if err := s.LatencyMs.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"latency_ms\"")
+			}
+		case "attempts":
+			if err := func() error {
+				s.Attempts.Reset()
+				if err := s.Attempts.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"attempts\"")
+			}
+		case "error":
+			if err := func() error {
+				s.Error.Reset()
+				if err := s.Error.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"error\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode ConnectivityPair")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [2]uint8{
+		0b01100111,
+		0b00000000,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfConnectivityPair) {
+					name = jsonFieldsNameOfConnectivityPair[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *ConnectivityPair) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *ConnectivityPair) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *CreateInviteReq) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -22186,6 +22478,39 @@ func (s *OptRunBaselineResult) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes RunConnectivity as json.
+func (o OptRunConnectivity) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	o.Value.Encode(e)
+}
+
+// Decode decodes RunConnectivity from json.
+func (o *OptRunConnectivity) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptRunConnectivity to nil")
+	}
+	o.Set = true
+	if err := o.Value.Decode(d); err != nil {
+		return err
+	}
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptRunConnectivity) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptRunConnectivity) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes RunEventLogRef as json.
 func (o OptRunEventLogRef) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -31556,6 +31881,320 @@ func (s *RunBaselineResultVerdictsItem) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *RunConnectivity) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunConnectivity) encodeFields(e *jx.Encoder) {
+	{
+		if s.CheckedAt.Set {
+			e.FieldStart("checked_at")
+			s.CheckedAt.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
+		e.FieldStart("total")
+		e.Int(s.Total)
+	}
+	{
+		e.FieldStart("failed")
+		e.Int(s.Failed)
+	}
+	{
+		e.FieldStart("critical")
+		e.Int(s.Critical)
+	}
+	{
+		e.FieldStart("pairs")
+		e.ArrStart()
+		for _, elem := range s.Pairs {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+	{
+		e.FieldStart("snapshots")
+		e.ArrStart()
+		for _, elem := range s.Snapshots {
+			elem.Encode(e)
+		}
+		e.ArrEnd()
+	}
+}
+
+var jsonFieldsNameOfRunConnectivity = [6]string{
+	0: "checked_at",
+	1: "total",
+	2: "failed",
+	3: "critical",
+	4: "pairs",
+	5: "snapshots",
+}
+
+// Decode decodes RunConnectivity from json.
+func (s *RunConnectivity) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunConnectivity to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "checked_at":
+			if err := func() error {
+				s.CheckedAt.Reset()
+				if err := s.CheckedAt.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"checked_at\"")
+			}
+		case "total":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int()
+				s.Total = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"total\"")
+			}
+		case "failed":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Int()
+				s.Failed = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"failed\"")
+			}
+		case "critical":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Int()
+				s.Critical = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"critical\"")
+			}
+		case "pairs":
+			requiredBitSet[0] |= 1 << 4
+			if err := func() error {
+				s.Pairs = make([]ConnectivityPair, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem ConnectivityPair
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Pairs = append(s.Pairs, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"pairs\"")
+			}
+		case "snapshots":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				s.Snapshots = make([]RunConnectivitySnapshotsItem, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem RunConnectivitySnapshotsItem
+					if err := elem.Decode(d); err != nil {
+						return err
+					}
+					s.Snapshots = append(s.Snapshots, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"snapshots\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunConnectivity")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00111110,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunConnectivity) {
+					name = jsonFieldsNameOfRunConnectivity[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunConnectivity) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunConnectivity) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *RunConnectivitySnapshotsItem) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *RunConnectivitySnapshotsItem) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("machine")
+		e.Str(s.Machine)
+	}
+	{
+		e.FieldStart("artifact_id")
+		e.Str(s.ArtifactID)
+	}
+}
+
+var jsonFieldsNameOfRunConnectivitySnapshotsItem = [2]string{
+	0: "machine",
+	1: "artifact_id",
+}
+
+// Decode decodes RunConnectivitySnapshotsItem from json.
+func (s *RunConnectivitySnapshotsItem) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode RunConnectivitySnapshotsItem to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "machine":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.Machine = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"machine\"")
+			}
+		case "artifact_id":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.ArtifactID = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"artifact_id\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode RunConnectivitySnapshotsItem")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfRunConnectivitySnapshotsItem) {
+					name = jsonFieldsNameOfRunConnectivitySnapshotsItem[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *RunConnectivitySnapshotsItem) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *RunConnectivitySnapshotsItem) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *RunEvent) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -31859,6 +32498,8 @@ func (s *RunEventKind) Decode(d *jx.Decoder) error {
 		*s = RunEventKindStandKept
 	case RunEventKindResultPublished:
 		*s = RunEventKindResultPublished
+	case RunEventKindNetworkChecked:
+		*s = RunEventKindNetworkChecked
 	default:
 		*s = RunEventKind(v)
 	}
@@ -34247,6 +34888,12 @@ func (s *RunOverview) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.Connectivity.Set {
+			e.FieldStart("connectivity")
+			s.Connectivity.Encode(e)
+		}
+	}
+	{
 		if s.PendingActivity.Set {
 			e.FieldStart("pending_activity")
 			s.PendingActivity.Encode(e)
@@ -34254,7 +34901,7 @@ func (s *RunOverview) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfRunOverview = [13]string{
+var jsonFieldsNameOfRunOverview = [14]string{
 	0:  "run_id",
 	1:  "status",
 	2:  "phase",
@@ -34267,7 +34914,8 @@ var jsonFieldsNameOfRunOverview = [13]string{
 	9:  "machines",
 	10: "flows",
 	11: "workload_segments",
-	12: "pending_activity",
+	12: "connectivity",
+	13: "pending_activity",
 }
 
 // Decode decodes RunOverview from json.
@@ -34449,6 +35097,16 @@ func (s *RunOverview) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"workload_segments\"")
+			}
+		case "connectivity":
+			if err := func() error {
+				s.Connectivity.Reset()
+				if err := s.Connectivity.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"connectivity\"")
 			}
 		case "pending_activity":
 			if err := func() error {

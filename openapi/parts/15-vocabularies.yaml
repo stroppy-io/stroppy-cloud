@@ -71,6 +71,7 @@ components:
         - "baseline.finished"
         - "stand.kept"
         - "result.published"
+        - "network.checked"
     AuditAction:
       type: string
       description: >-
@@ -258,6 +259,19 @@ components:
         - "warn"
         - "error"
         - "fatal"
+    ConnectivityOutcome:
+      type: string
+      description: >-
+        How a TCP dial of the run's connectivity check ended: ok — connected;
+        refused — the machine answered that nothing listens on the port;
+        timeout — no answer within the dial timeout (a dropped SYN: firewall,
+        security group, routing); other — any other failure (no route, the
+        check could not run on the machine).
+      enum:
+        - "ok"
+        - "refused"
+        - "timeout"
+        - "other"
     RunStageKind:
       type: string
       description: >-

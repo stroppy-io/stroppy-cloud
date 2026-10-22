@@ -182,6 +182,18 @@ func (st *State) applyMilestone(e RawEvent, m Milestone) Outcome {
 	case "result.published":
 		ev.Title = "Result published"
 		return Outcome{Timeline: ev, ResultReady: true}
+	case "network.checked":
+		ev.Title = "Connectivity checked"
+		ev.Payload = failedOnly(p)
+		c, err := connectivityOf(p, e.At)
+		if err != nil {
+			return Outcome{Timeline: ev}
+		}
+		st.Connectivity = &c
+		if c.Failed > 0 {
+			ev.Error = c.reason()
+		}
+		return Outcome{Timeline: ev}
 	}
 	ev.Title = m.Name
 	return Outcome{Timeline: ev}

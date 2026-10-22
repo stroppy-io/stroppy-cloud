@@ -51,6 +51,7 @@ func TestVocabulariesMatchTheContract(t *testing.T) {
 		{"RunEventKind", run.EventKinds, values(oas.RunEventKind("").AllValues())},
 		{"RunWaitReason", waits, values(oas.RunWaitReason("").AllValues())},
 		{"RunStageKind", run.StageKinds, values(oas.RunStageKind("").AllValues())},
+		{"ConnectivityOutcome", run.ConnectivityOutcomes, values(oas.ConnectivityOutcome("").AllValues())},
 		{"AuditAction", audit.Actions, values(oas.AuditAction("").AllValues())},
 		{"AuditTargetKind", audit.TargetKinds, values(oas.AuditTargetKind("").AllValues())},
 		{"MetricKey", metricKeys, values(oas.MetricKey("").AllValues())},
