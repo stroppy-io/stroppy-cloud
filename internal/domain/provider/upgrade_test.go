@@ -148,3 +148,20 @@ func TestFailedUpgradeKeepsTheProfileReady(t *testing.T) {
 		t.Fatalf("profile ended %q with reasons %v", repo.finished[id], repo.reasons)
 	}
 }
+
+// After a restart the pending operation resumes as an upgrade: its failure
+// keeps the profile ready.
+func TestRecoveredUpgradeKeepsTheProfileReady(t *testing.T) {
+	id := uuid.New()
+	repo := &upgradeRepo{busy: map[uuid.UUID]bool{}, finished: map[uuid.UUID]Status{}}
+	pipes := &upgradePipelines{fail: "Quota limit vpc.networks.count exceeded"}
+	svc := NewService(repo, nil, pipes, nil, upgradeAccess{}, func(ctx context.Context, _ string) context.Context { return ctx }, nil, func(fn func(context.Context)) { fn(context.Background()) })
+	svc.startVerify("t-acme", Profile{ID: id, Kind: KindYandex, Status: StatusVerifying, StatusReason: UpgradeReason, VerifyRunID: "r"})
+	if repo.finished[id] != StatusReady {
+		t.Fatalf("recovered upgrade ended %q", repo.finished[id])
+	}
+	svc.startVerify("t-acme", Profile{ID: id, Kind: KindYandex, Status: StatusVerifying, VerifyRunID: "v"})
+	if repo.finished[id] != StatusFailed {
+		t.Fatalf("a verification ended %q", repo.finished[id])
+	}
+}

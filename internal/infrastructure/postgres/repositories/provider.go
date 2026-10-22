@@ -225,7 +225,7 @@ func (r *ProviderRepo) BeginUpgrade(ctx context.Context, id uuid.UUID, runID str
 		if _, err := r.q.LockProviderLifecycle(ctx, id); err != nil {
 			return err
 		}
-		n, err := r.q.BeginProviderUpgrade(ctx, db.BeginProviderUpgradeParams{ID: id, RunID: runID, Revision: int32(revision)}) //nolint:gosec // a small constant
+		n, err := r.q.BeginProviderUpgrade(ctx, db.BeginProviderUpgradeParams{ID: id, RunID: runID, Reason: provider.UpgradeReason, Revision: int32(revision)}) //nolint:gosec // a small constant
 		if err != nil {
 			return infraf("provider: begin upgrade: %v", err)
 		}

@@ -88,7 +88,7 @@ WHERE id = @id AND verify_run_id = @run_id AND deleted_at IS NULL;
 -- to Graphene and kept stands finish in their own networks: the unchanged
 -- ProviderConfig is left alone and only the profile network is added.
 UPDATE provider_profiles p
-SET status = 'verifying', status_reason = '', verify_run_id = @run_id, updated_at = now()
+SET status = 'verifying', status_reason = @reason, verify_run_id = @run_id, updated_at = now()
 WHERE p.id = @id AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < @revision::int;
 
 -- name: PendingProviderOperations :many

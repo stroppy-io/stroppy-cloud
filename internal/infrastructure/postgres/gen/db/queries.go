@@ -1636,17 +1636,18 @@ const beginProviderUpgradeSQL = `-- A ready profile re-applies its configuration
 -- to Graphene and kept stands finish in their own networks: the unchanged
 -- ProviderConfig is left alone and only the profile network is added.
 UPDATE provider_profiles p
-SET status = 'verifying', status_reason = '', verify_run_id = $1, updated_at = now()
-WHERE p.id = $2 AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < $3::int;`
+SET status = 'verifying', status_reason = $1, verify_run_id = $2, updated_at = now()
+WHERE p.id = $3 AND p.deleted_at IS NULL AND p.status = 'ready' AND p.config_revision < $4::int;`
 
 type BeginProviderUpgradeParams struct {
+	Reason   string
 	RunID    string
 	ID       uuid.UUID
 	Revision int32
 }
 
 func (q *Queries) BeginProviderUpgrade(ctx context.Context, arg BeginProviderUpgradeParams) (int64, error) {
-	tag, err := q.db.Exec(ctx, beginProviderUpgradeSQL, arg.RunID, arg.ID, arg.Revision)
+	tag, err := q.db.Exec(ctx, beginProviderUpgradeSQL, arg.Reason, arg.RunID, arg.ID, arg.Revision)
 	return tag.RowsAffected(), err
 }
 

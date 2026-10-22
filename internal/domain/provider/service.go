@@ -322,7 +322,13 @@ func configureParams(p Profile, action string) ConfigureParams {
 	return ConfigureParams{Action: action, Provider: p.Kind, ProfileID: p.ID.String(), Settings: p.Settings, CredentialsSecret: ActiveCredentials(p)}
 }
 
-func (s *Service) startVerify(ns string, p Profile) { s.configure(ns, p, false) }
+// UpgradeReason marks a profile verifying for the server's own network
+// upgrade (BeginUpgrade), so a restart resumes it as an upgrade.
+const UpgradeReason = "network upgrade"
+
+func (s *Service) startVerify(ns string, p Profile) {
+	s.configure(ns, p, p.StatusReason == UpgradeReason)
+}
 
 // configure runs ensure for the profile's operation. A failed upgrade (the
 // server's own, e.g. the cloud's network quota is still held by old runs)
@@ -339,12 +345,17 @@ func (s *Service) configure(ns string, p Profile, upgrade bool) {
 	s.background(func(ctx context.Context) {
 		defer func() { s.mu.Lock(); delete(s.inflight, p.ID); s.mu.Unlock() }()
 		out, err := s.pipelines.Configure(s.scope(ctx, ns), p.VerifyRunID, configureParams(p, "ensure"))
+		if err != nil && upgrade && ctx.Err() == nil {
+			// A failed upgrade run: back to ready on the old configuration.
+			_ = s.repo.RetryUpgrade(ctx, p.ID, p.VerifyRunID, UpgradeReason+": "+err.Error()) //nolint:errcheck // retried by the next sweep
+			return
+		}
 		if err != nil {
 			return
 		} // transport/shutdown: reattach the same durable run later
 		if !out.OK {
 			if upgrade {
-				_ = s.repo.RetryUpgrade(ctx, p.ID, p.VerifyRunID, "network upgrade: "+out.Error) //nolint:errcheck // retried by the next sweep
+				_ = s.repo.RetryUpgrade(ctx, p.ID, p.VerifyRunID, UpgradeReason+": "+out.Error) //nolint:errcheck // retried by the next sweep
 				return
 			}
 			_ = s.repo.FinishOperation(ctx, p.ID, p.VerifyRunID, StatusFailed, out.Error) //nolint:errcheck // operation remains recoverable; original failure is returned or retried
@@ -397,7 +408,7 @@ func (s *Service) UpgradeStale(ctx context.Context) error {
 		if err != nil || !ok {
 			continue
 		}
-		p.Status, p.VerifyRunID = StatusVerifying, runID
+		p.Status, p.VerifyRunID, p.StatusReason = StatusVerifying, runID, UpgradeReason
 		s.configure(ns, p, true)
 	}
 	return nil
