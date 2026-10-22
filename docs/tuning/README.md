@@ -1,20 +1,21 @@
-# Тюнинг баз данных: план
+# Тюнинг баз данных
 
-Сводка по семи отчётам в этом каталоге (`postgres.md`, `orioledb.md`,
-`mysql.md`, `mariadb.md`, `cockroach.md`, `ydb.md`, `picodata.md`). В отчётах
-есть ссылки на документацию, метки уверенности и пути в коде; здесь собраны
-выводы, план работ и решения, которые нужно утвердить.
+Как платформа настраивает развёрнутые движки. Исследование по каждому движку с
+источниками и метками уверенности — в отчётах этого каталога (`postgres.md`,
+`orioledb.md`, `mysql.md`, `mariadb.md`, `cockroach.md`, `ydb.md`,
+`picodata.md`); пути и номера строк в отчётах указывают на код до тюнинга.
+Код профиля: `internal/domain/compile/tune*.go`, `host.go`, `summary.go`.
 
 Эталонная машина матрицы: 8 vCPU / 32 ГБ / 200 ГБ `network-ssd`, TPC-C
 100 складов, 128 VU, 10 минут, `pacing=false`, `warmup=0s`, `retry_attempts=3`.
 
 ---
 
-## 0. Почему матрица сейчас нечестная
+## 0. Почему матрица до тюнинга была нечестной
 
 Причина не одна. Цифры сдвигают пять вещей, и тюнинг только одна из них.
 
-| Фактор | Что сейчас | Кого задевает |
+| Фактор | Что было | Кого задевает |
 |---|---|---|
 | **Тюнинг** | автоподбор есть только у MySQL/MariaDB, и он ставит лишь buffer pool (70% RAM) и io_capacity для MariaDB. У остальных стоковые дефолты: PG `shared_buffers=128MB`, `max_wal_size=1GB`; OrioleDB `main_buffers=64MB`; YDB `cpu_count: 4`; Cockroach статические проценты; Picodata memtx 2 ГБ (в матрице 20 ГБ вписали руками) | PG, OrioleDB, YDB, Cockroach |
 | **Надёжность** | у MariaDB `sync_binlog=0`, у Picodata `wal_mode=write` (без fsync), у PG/MySQL fsync на каждый коммит. MariaDB `semi_sync` на деле async. MySQL semi-sync молча уходит в async через 10 с | MariaDB, Picodata получают фору |
@@ -32,72 +33,64 @@ sysctl применяются только для YDB/Picodata, диск мон�
 
 ### 1.1 Параметр `tuning: auto | stock`
 
-У каждого kind'а в `dbparams` одно поле `tuning` (Group «Tuning»):
+У каждого развёртываемого kind'а в `dbparams` поле `tuning` (Group «Tuning»):
 
 - `auto` (по умолчанию): компилятор считает параметры из машины роли (vCPU,
   RAM, тип и размер диска), роли (primary/replica/member/compute/storage),
-  топологии и нагрузки (сумма VU по сегментам);
-- `stock`: только дефолты схемы, как сейчас.
+  топологии и нагрузки (пиковое число VU сегмента, `peakVUs`);
+- `stock`: дефолты схемы (движка), без хостовой подготовки.
 
-Правила для всех движков:
+Правила:
 
-1. Ключ, который пользователь явно задал в конфиге роли (`explicitConfig`),
-   побеждает всегда, по каждому ключу.
-2. Результат пишется в `effective_configs`: UI и отчёт показывают итоговые
-   числа, а не формулы.
-3. Формулы живут в `internal/domain/compile/tune_<kind>.go`, по файлу на
-   семейство. Общие входы в `compile/machine.go`: `cpuOf`, `memoryOf`,
-   `diskOf` → лимиты диска.
-4. У MySQL/MariaDB `buffer_pool: auto|fixed|stock` вливается в `tuning`:
-   `fixed` = явный `innodb_buffer_pool_size` в конфиге.
+1. Ключ, который пользователь явно задал в конфиге роли, побеждает всегда,
+   по каждому ключу (`tuner.set` в `compile/tune.go`).
+2. Значения auto попадают в `effective_configs` снапшота прогона
+   (`Output.Tuned` → `EffectiveWithTuned`).
+3. Формулы — `internal/domain/compile/tune_<семейство>.go`; входы —
+   `hostOf(machine)` (CPU, RAM, диск и его лимиты) и `peakVUs()`.
+4. У MySQL/MariaDB `buffer_pool: auto|fixed` работает внутри auto;
+   `buffer_pool: stock` значит `tuning: stock`.
 
 ### 1.2 Лимиты дисков в каталоге
 
-В `internal/domain/catalog` у `DiskType` появляются лимиты производителя:
-IOPS и МБ/с на блок, размер блока, потолок диска, потолок ВМ на vCPU. Функция
-`DiskLimits(type, GB, vCPU) → {readIOPS, writeIOPS, MBps}` берёт min(диск, ВМ).
-Через неё считаются `innodb_io_capacity`, `effective_io_concurrency`, Cockroach
-`provisioned_bandwidth`, оценки в UI. Значения Yandex Cloud:
+`catalog.DiskType.Perf` — модель производителя: блок, IOPS и МБ/с на блок,
+потолок диска, потолок ВМ на vCPU. `Provider.DiskLimitsOf(type, GB, vCPU)`
+берёт min(диск, ВМ) по числу блоков (вверх). Через неё считаются
+`innodb_io_capacity`, I/O concurrency PG и лимиты в отчёте. Yandex Cloud:
 
-| Тип | Блок | На блок | Потолок диска |
+| Тип | Блок | На блок (чтение / запись) | Потолок диска (чтение / запись) |
 |---|---|---|---|
-| `network-ssd` | 32 ГБ | 1000 IOPS, 15 МБ/с | 40000 wIOPS / 20000 rIOPS, 450 МБ/с |
-| `network-ssd-nonreplicated` | 93 ГБ | 5600 wIOPS / 28000 rIOPS, 82/110 МБ/с | 75000 IOPS, 1 ГБ/с |
-| `network-ssd-io-m3` | 93 ГБ | как nonreplicated, wIOPS до 40000 | — |
+| `network-hdd` | 256 ГБ | 300 / 300 IOPS, 30 / 30 МБ/с | 2000 / 11000 IOPS, 240 МБ/с |
+| `network-ssd` | 32 ГБ | 1000 / 1000 IOPS, 15 / 15 МБ/с | 20000 / 40000 IOPS, 450 МБ/с |
+| `network-ssd-nonreplicated` | 93 ГБ | 28000 / 5600 IOPS, 110 / 82 МБ/с | 75000 / 75000 IOPS, 1 ГБ/с |
+| `network-ssd-io-m3` | 93 ГБ | 28000 / 5600 IOPS, 110 / 82 МБ/с | 75000 / 40000 IOPS, 1 ГБ/с |
 
-ВМ: `network-ssd` не больше 3500 IOPS и 45 МБ/с на vCPU,
-nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
+ВМ: hdd и `network-ssd` — 3500 IOPS и 45 МБ/с на vCPU, nonreplicated/io-m3 —
+10000 IOPS и 100 МБ/с на vCPU. AWS gp3 — плоские 3000 IOPS / 125 МБ/с.
 
-### 1.3 Хост и контейнер для всех БД
+### 1.3 Хост и контейнер
 
-- `spec.Container`: новые поля `ShmSizeMB`, `SecurityOpt`; `Ulimits` уже
-  есть, но рецепты его не заполняют. Проброс в `pipelines/internal/run/deploy.go`.
-- Для всех db-ролей: `nofile=1048576`; Postgres/OrioleDB — shm `min(RAM/4, 8 ГБ)`;
-  MariaDB — `memlock=-1` плюс seccomp для io_uring (иначе InnoDB молча
-  выключает native AIO).
-- `HostPrepSysctl` для всех db-ролей из `cfg.host.sysctl`: swappiness 1,
-  `fs.aio-max-nr` 1048576, somaxconn, THP `never`. Исключение: у YDB THP
-  `madvise` и `overcommit_memory=1` (их требование для TCMalloc). У PG ещё
-  `vm.nr_hugepages` под `shared_buffers`.
-- Диск данных: xfs + `noatime,nodiratime` (`pipelines/spec/diskprep.go`,
-  `mount-data.sh`) — то, что схема `cfg.host.disks` уже обещает.
+Под `auto` после рецепта (`compile/host.go`):
 
-Всё под `pipelines/` — отдельный Go-модуль, ему нужен новый образ пайплайна.
+- каждый контейнер БД получает `nofile=1048576`;
+- каждая машина с контейнером БД — drop-in `cfg.host.sysctl@1` (swappiness 1,
+  `fs.aio-max-nr`, somaxconn, keepalive…) и скрипт THP. Рецепт уточняет через
+  `tuneHost`: YDB — THP `madvise` и `vm.overcommit_memory=1` (TCMalloc), PG —
+  `vm.nr_hugepages` под shared memory.
 
-### 1.4 Отчёт прогона показывает тюнинг
+Контейнер умеет `shm_size_mb` и `security_opt`: PG/OrioleDB — shm
+`min(RAM/4, 8 ГБ)`; MariaDB — `memlock=-1` и `seccomp=unconfined` (без них
+io_uring не поднимается и InnoDB молча уходит с native AIO; узкий профиль не
+влезает в 256 символов опции). Диск данных монтируется ext4
+`defaults,noatime,nodiratime`.
 
-В сводке прогона появляется блок «Настройки»: режим тюнинга, кэш движка
-(размер и доля RAM), надёжность коммита (fsync на коммит / без fsync /
-реплика sync/async), фактическая изоляция, лимиты диска. Плюс флаги
-недостоверности, которые собираются после замера:
+### 1.4 Отчёт прогона
 
-- MySQL `Rpl_semi_sync_source_status=OFF` → «semi-sync ушёл в async»;
-- реальный уровень изоляции у Cockroach (`SHOW transaction_isolation`);
-- чекпоинты PG по размеру ≫ по таймеру (`pg_stat_checkpointer.num_requested`);
-- Galera `wsrep_flow_control_paused`.
-
-Значения надёжности и флагов — enum'ы контракта (правило «Словари»), тексты
-в локалях. Это меняет контракт, поэтому релиз минорный: 0.4.0.
+Снапшот (`run.Snapshot.Tuning`, `compile/summary.go`): режим тюнинга и
+надёжность коммита — `fsync_each_commit` или `relaxed` (контракт:
+`TuningMode`, `CommitDurability`). У каждой машины — кэш движка (МБ) и
+лимиты диска данных. UI показывает это блоком «Настройки базы» в сайдбаре
+прогона; `relaxed` подсвечен.
 
 ---
 
@@ -110,20 +103,20 @@ nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
 
 | Параметр | auto | Сейчас |
 |---|---|---|
-| `shared_buffers` | 25–40% RAM (см. решение Р3) | 128MB |
+| `shared_buffers` | 25% RAM (A/B против 40% — на перезапуске матрицы) | 128MB |
 | `effective_cache_size` | 75% RAM = 24 ГБ | 4 ГБ |
 | `work_mem` / `maintenance_work_mem` / `autovacuum_work_mem` | 16 МБ / min(2 ГБ, RAM/16) / 1 ГБ | 4 МБ / 64 МБ / — |
 | `huge_pages` | `try` + хостовые `vm.nr_hugepages` | молча выключено |
 | `max_wal_size` / `min_wal_size` | от диска, clamp(4% диска, 2, 32 ГБ) → 8 ГБ / 2 ГБ | 1 ГБ |
 | `checkpoint_timeout` / `completion_target` | 15 мин / 0.9 | 5 мин |
-| `wal_compression` | `lz4` (если образ собран с lz4) | off |
+| `wal_compression` | `lz4` (официальные образы и PGDG собраны с lz4) | off |
 | `random_page_cost` | 1.1 | 4 |
-| `effective_io_concurrency` / `maintenance_io_concurrency` | 200 (PG18: 64) | 1 |
+| `effective_io_concurrency` / `maintenance_io_concurrency` | 200 на SSD (PG18: 64 — предел `io_max_concurrency`) | 1 |
 | `jit` | off | on |
 | `max_parallel_workers_per_gather` | 0 для OLTP | 2 |
-| `max_worker_processes` / `max_parallel_workers` | vCPU | 8 |
+| `max_worker_processes` / `max_parallel_workers` | max(8, vCPU) | 8 |
 | autovacuum | naptime 10s, scale_factor 0.05, analyze 0.02, workers 5, cost_limit 2000 | дефолты |
-| `max_connections` | ceil((VU+20)/50)·50 → 200 | 100 (< 128 VU) |
+| `max_connections` | max(100, ceil((VU+20)/50)·50) → 150 | 100 (< 128 VU) |
 
 Баги, которые чиним вместе с профилем:
 
@@ -137,8 +130,8 @@ nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
 - **PgBouncer**: `max_client_conn=100` < 128 VU. Ставим max(1000, 4·VU),
   `default_pool_size = clamp(4·vCPU, 20, 100)`, `min_pool_size` равным ему,
   `max_prepared_statements=200` явно.
-- `wal_archive` в схеме обещан, но не реализован. Либо реализовать, либо
-  убрать из формы (решение Р11).
+- `wal_archive` не реализован и убран из формы (поле оставлено скрытым,
+  чтобы старые сохранённые параметры читались).
 
 ### 2.2 OrioleDB (beta, pg16/17/18)
 
@@ -163,8 +156,7 @@ nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
   управлять `main_buffers`. Переименовываем в `main_buffers_mb`, оценку
   памяти в `planPostgres` считаем от него.
 - Описание `max_io_concurrency` в схеме неверное: 0 значит «выключено».
-- В каталоге только `beta17`; на Docker Hub уже есть `beta18` и `beta19`.
-  Добавляем (решение Р9).
+- В каталоге `beta17`, `beta18`, `beta19`; по умолчанию `beta19-pg17`.
 
 Общий код PG и OrioleDB: `compile/tune_postgres.go`; Oriole добавляет
 только свои ключи сверху.
@@ -177,7 +169,7 @@ nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
 | `innodb_buffer_pool_instances` | clamp(ceil(vCPU/2), 2, 16), не меньше 1 ГБ на instance → 4 | 1 (схема перебивает сервер) |
 | `innodb_redo_log_capacity` | clamp(pool/4, 2 ГБ, 32 ГБ) и ≤10% диска ≈ 5.6 ГБ | **100 МБ** — главный тормоз |
 | `innodb_log_buffer_size` | 64 МБ | 16 МБ на 8.0 |
-| `innodb_io_capacity` / `_max` | от диска: 2600 / 4500 | 200/2000 (8.0), 10000/20000 (8.4) |
+| `innodb_io_capacity` / `_max` | от диска: 2600 / 4700 | 200/2000 (8.0), 10000/20000 (8.4) |
 | `innodb_page_cleaners` / `purge_threads` | = instances / 4 | разные дефолты 8.0 и 8.4 |
 | AHI / change buffering / `use_fdatasync` / `flush_neighbors` | OFF / none / ON / 0 на обеих версиях | расходятся 8.0 и 8.4 |
 | `binlog_transaction_dependency_tracking` | WRITESET и на 8.0 (вне GR тоже) | только в GR-блоке |
@@ -190,8 +182,9 @@ nonreplicated/io-m3 — 10000 IOPS и 100 МБ/с на vCPU.
 `innodb_dedicated_server` не используем: у 8.0 и 8.4 разные алгоритмы, и
 итоговые числа не видны в `effective_configs`.
 
-Semi-sync: `wait_point=AFTER_SYNC`, `super_read_only` на репликах; по
-`Rpl_semi_sync_source_status` прогон получает флаг (решение Р12).
+Semi-sync: `wait_point=AFTER_SYNC`, на репликах `SET PERSIST super_read_only = ON`
+из init SQL (в my.cnf он сломал бы первый старт образа). Флаг прогона по
+`Rpl_semi_sync_source_status` (ушёл в async) — ещё не сделан.
 
 ### 2.4 MariaDB (10.11 / 11.4 / 11.8; single, async, semi-sync, Galera, ProxySQL, MaxScale)
 
@@ -204,7 +197,7 @@ Semi-sync: `wait_point=AFTER_SYNC`, `super_read_only` на репликах; п�
 | `sync_binlog` | **1** | **0** (дефолт upstream) |
 | `max_connections` | от VU, ~300 | 151 |
 | `skip_name_resolve` | ON | — |
-| `innodb_snapshot_isolation` | OFF на всех версиях (на 11.8 по умолчанию ON, меняет конфликты) — решение Р13 | расходится |
+| `innodb_snapshot_isolation` | дефолт версии (на 11.8 ON): это поведение версии, его и меряем | расходится |
 | Galera `wsrep_slave_threads` | vCPU = 8 | 1 |
 | Galera `wsrep_provider_options` | `gcache.size=2G; gcs.fc_limit=128; gcs.fc_factor=0.8; gcs.fc_single_primary=yes; evs.suspect_timeout=PT10S; evs.inactive_timeout=PT30S; evs.install_timeout=PT15S` | не задаётся |
 | Galera `wsrep_sync_wait` | **0 глобально** | 1 глобально |
@@ -227,13 +220,13 @@ Semi-sync: `wait_point=AFTER_SYNC`, `super_read_only` на репликах; п�
 |---|---|---|
 | `--cache` | 35% (RAM ≥ 32 ГБ), иначе 30% | 25% |
 | `--max-sql-memory` | 20% (формула доки: 2·sql + cache ≤ 80%) | 25% |
-| `--store size` + `--max-disk-temp-storage` | 80% + min(32 GiB, 15% диска) | **90% + 32 GiB не влезает в 200 ГБ** |
+| `--store size` + `--max-disk-temp-storage` | 80% + min(32 GiB, 15% диска) | 90% + 32 GiB не влезает в 200 ГБ (stock так и остался) |
 | кластерные настройки (из официального TPC-C гайда) | `kv.snapshot_rebalance.max_rate=128MiB`, `kv.range_merge.queue_enabled=false`, `diagnostics.reporting.enabled=false`, `gc.ttlseconds=600` на default range; `rocksdb.min_wal_sync_interval=500us` только как A/B | пусто |
-| изоляция | `sql.txn.repeatable_read_isolation.enabled=true`, чтобы RR от stroppy был настоящим RR (решение Р5) | false → SERIALIZABLE |
+| изоляция | `sql.txn.repeatable_read_isolation.enabled=true` с 24.3 (на 24.1 настройка только для разработчиков и под лицензией — не ставим) | false → SERIALIZABLE |
 | HAProxy | `httpchk GET /health?ready=1` на 8080 | голый TCP |
-| healthcheck контейнера | `/health?ready=1` | `/health` |
-| после загрузки | ждать `ranges_underreplicated=0` (three) | не ждёт |
-| `insecure` | брать из параметра | захардкожен `true` |
+| healthcheck контейнера | single: `/health?ready=1`; кластер: `/health` (узел готов только после `cockroach init`), sidecar ждёт `?ready=1` на каждом узле | `/health` |
+| репликация | sidecar ждёт нуля under-replicated диапазонов до нагрузки; ожидания между загрузкой и замером нет (загрузка внутри сегмента stroppy) | не ждёт |
+| `insecure` | только `true`: сертификаты не выдаются, правило схемы отказывает в `false` | захардкожен `true` |
 
 Схема флагов: `--wal-failover`, `--locality-advertise-addr`,
 `--max-disk-temp-storage` есть уже в 24.1. Разделение «только с @25» неверно.
@@ -245,18 +238,18 @@ YDB отстаёт больше всех, и причин несколько с�
 | Параметр | auto | Сейчас |
 |---|---|---|
 | `actor_system_config.cpu_count` | storage: vCPU−1 (≤8) / vCPU−2; compute: vCPU−1 при ≥8, при 4 — 4 | **4 на всех узлах** (хуже, чем не задавать) |
-| размер compute по умолчанию | 8 vCPU / 32 ГБ (сейчас 4/8) | ядра распределены наоборот: storage 8, compute 4 |
-| pdisk | файл `max(80, 0.8·(disk−10)/pdisks)` ГБ (реализует мёртвый `auto_size_pdisks`) | 40 ГБ, ниже минимума доки (80) |
-| `storage_groups` | single: 4–8 (A/B 1/4/8); mirror-3-dc: от числа compute-ядер | 1 |
+| минимум compute | 8 vCPU / 32 ГБ под auto (stock: 4/8) | ядра распределены наоборот: storage 8, compute 4 |
+| pdisk | `auto_size_pdisks`: файл `max(80, 0.8·(disk−10)/pdisks)` ГБ, иначе 80 ГБ (и в stock) | 40 ГБ, ниже минимума доки (80) |
+| `storage_groups` | пусто = auto: single 4; mirror-3-dc clamp(2·узлов·vCPU/4, 6, 24) в пределах 8 VDisk на pdisk | 1 |
 | `memory_controller_config.hard_limit_bytes` | RAM − 2 ГБ | не задан |
 | shared cache (compute) | min 25% / max 60%, target 60% | 20/50/50 |
 | `resource_broker` `queue_build_index` | cpu max(1, vCPU/4) на время загрузки | 10 потоков |
 | хост | THP `madvise`, overcommit 1, aio-max-nr, `nofile`/`memlock` в контейнере | THP `never` (против рекомендации) |
-| сеть контейнера | `network_mode: host` (сейчас docker-proxy на interconnect) | проброс портов |
+| сеть контейнера | уже host network у всех контейнеров (`deploy.go`) | — |
 
-Мёртвые параметры (`disk_type`, `failure_domain`, `grpcs`, `auto_size_pdisks`)
-либо подключаем, либо убираем из формы. Вариант по умолчанию — подключить
-`disk_type` и `auto_size_pdisks`, а `grpcs` убрать до появления сертификатов.
+`disk_type` задаёт тип drive, пул и `database create <kind>:N`;
+`auto_size_pdisks` работает. `grpcs` и `failure_domain` скрыты и не читаются
+(сертификатов нет; fail domain всегда один storage-узел).
 
 Со стороны нагрузки (решения Р6, Р8):
 
@@ -279,83 +272,55 @@ Managed YDB (dedicated `PermissionDenied`, serverless `Unavailable`) — отд�
 
 | Параметр | auto | Сейчас |
 |---|---|---|
-| `memtx.memory` | (RAM − max(2 ГБ, 8%) − 0.5 ГБ) / 1.15 / инстансов ≈ 25 ГБ | 2 ГБ (в матрице 20 вручную) |
+| `memtx.memory` | ((RAM − max(2 ГБ, 8%)) / инстансов − system_memory − 0.25 ГБ) / 1.15 ≈ 25 ГБ | 2 ГБ (в матрице 20 вручную) |
 | `wal_mode` тира (26.2) | `fsync` при strict-надёжности | `write`, из параметров недоступен |
-| `sql_runtime_concurrency_max` | max(50, ceil(1.5·VU / pg-эндпоинтов)) → 192 на single | **50 < 128 VU** |
+| `sql_runtime_concurrency_max` | max(50, ceil(1.5·VU / pg-эндпоинтов)) → 192 на single (на 25.3 настройки нет) | **50 < 128 VU** |
 | `sql_storage_cache_count_max` / `size_max` | 200 / 32 МБ (A/B) | 50 / 5 МБ |
 | `default_bucket_count` | пробрасывать в YAML | мёртвый параметр |
-| `sql_motion_row_max` | 50000 при W ≥ 100 (страховка) | 5000 |
+| `sql_motion_row_max` | 50000 под auto | 5000 |
 
-Структурное ограничение: memtx однопоточный, один инстанс на 8 vCPU
-загружает 1–2 ядра. Нужен параметр `instances_per_machine` (порты, каталоги,
-имена контейнеров, failure_domain по ВМ) — решение Р7. Плюс в отчёте пишем,
-что 25.3/26.1 работают без fsync и иначе настроить нельзя.
+memtx однопоточный: один инстанс на 8 vCPU загружает 1–2 ядра. Параметр
+`instances_per_machine` (1..8, по умолчанию 1) ставит N инстансов на ВМ: слот k
+слушает 3301/4327/8081 + k, каталог `/data/picodata/<k>`, `failure_domain` по
+ВМ, HAProxy проверяет каждый инстанс на его порту. 25.3/26.1 пишут WAL без
+fsync — отчёт показывает это как «не ждёт диска». `ALTER SYSTEM` в init
+проверяется: отказ настройки роняет init-контейнер.
 
 `three` с RF3 — это один шард из трёх реплик, а не масштабирование. Для
 сравнения масштабирования нужен вариант RF1 × 3.
 
 ---
 
-## 3. Мелкие баги, которые всплыли в матрице
+## 3. Связанные исправления
 
-1. pico262: `bufio.Scanner: token too long` — сканер в `streamAndWait`
-   (`pipelines/internal/activities/stroppy.go`) с буфером 1 МБ. Поднимаем
-   до 16 МБ, длинную строку режем, а не роняем шаг.
-2. noop TPC-C падает на `validate_population` — у noop валидацию выключаем.
-3. pgnoop: расхождение bulk insert — разбираемся в stroppy (pg_noop).
-4. Cockroach `_bucket`-гистограммы: проверить на новом образе пайплайна.
+- Строка лога stroppy длиннее 1 МБ обрезается с пометкой, а не роняет сегмент
+  (`pipelines/internal/activities/stroppy.go`).
+- У noop-драйвера сегменты пропускают `validate_population` и
+  `validate_answers`, если шаги не перечислены явно.
+- RunSpec детерминирован: один вход компилируется в одну спеку
+  (`TestAutoTuningIsDeterministic`).
+- PgBouncer рядом с primary (без proxy-машины) берёт конфиг роли proxy.
 
----
-
-## 4. Порядок работ
-
-| Этап | Что | Где |
-|---|---|---|
-| Э1 | Общая основа: `tuning`, `machine.go` (cpu/mem/disk), лимиты дисков в каталоге, `explicitConfig` на каждый ключ, `Container.ShmSizeMB/SecurityOpt/Ulimits`, `HostPrepSysctl` для db-ролей, xfs `noatime` | `compile/`, `catalog/`, `pipelines/spec`, `pipelines/internal/run` |
-| Э2 | PG + OrioleDB: `tune_postgres.go`, Patroni DCS, sync-реплики без Patroni, PgBouncer, Oriole `main_buffers`, образы beta18/19 | `compile/recipe_postgres.go`, `recipe_patroni.go`, `dbparams/{postgres,orioledb}.go`, `cfg/*` |
-| Э3 | MySQL + MariaDB: `tune_innodb.go` (общая часть и ветки), redo, instances, io_capacity от диска, `sync_binlog=1`, semi-sync MariaDB, Galera provider options, `wsrep_sync_wait=0`, ProxySQL/MaxScale | `compile/innodb.go` → `tune_innodb.go`, `recipe_mysql*.go`, `library/service.go`, `cfg/{mysql,mariadb,proxysql,maxscale}.go` |
-| Э4 | Cockroach: память, store/temp, кластерные настройки, RR, HAProxy httpchk, ready-healthcheck, ожидание репликации, `insecure` | `cfg/cockroach_flags.go`, `recipe_distributed.go` |
-| Э5 | YDB: `cpu_count`, pdisk от диска, `storage_groups`, память, хост, host network, размеры compute; мёртвые параметры | `recipe_distributed.go`, `dbparams/ydb.go`, `cfg/ydb_config_yaml.go`, `dbkind/ydb.go` |
-| Э6 | Picodata: memtx auto, `wal_mode`, `bucket_count`, SQL-лимиты через `ALTER SYSTEM`, `instances_per_machine` | `recipe_distributed.go`, `dbparams/picodata.go`, `dbkind/picodata.go` |
-| Э7 | Отчёт: блок «Настройки» + флаги недостоверности; enum'ы контракта и локали; контракт 0.4.0 | `openapi/parts`, `internal/api`, `web/` |
-| Э8 | Мелкие баги из §3 | `pipelines/internal/activities`, workload |
-| Э9 | Тесты: таблица «машина → значения» по каждому движку (4/16, 8/32, 16/64), explicitConfig побеждает, `stock` = дефолты, golden-файлы схем; `make test lint`, `make schemas-export`, `make contract-check` | — |
-| Э10 | Релиз v0.4.0 (сервер + образ пайплайна), затем перезапуск всей матрицы на локальном стенде | — |
-
-Отдельно, после первого перезапуска: правки схемы stroppy (YDB, split/scatter
-у Cockroach) — в репо stroppy, со своим релизом. Так эффект платформы и
-эффект схемы видны по отдельности.
-
-### Как проверяем на перезапуске
-
-По каждому прогону, не на глаз:
+## 4. Как проверяется на прогоне
 
 - значения из `effective_configs` = то, что реально стоит в БД (`SHOW ALL`,
   `SHOW GLOBAL VARIABLES`, `SHOW CLUSTER SETTINGS`, `/actors` YDB,
   `ALTER SYSTEM` Picodata);
-- флаги недостоверности пустые;
 - PG: `num_requested` у чекпоинтов ≈ 0; MySQL: checkpoint age < 75% redo;
   YDB: загрузка пулов (System/User/IC) и число партиций индексов; Picodata:
-  загрузка ядер (`top -H`);
-- сравнение «до / после» по каждой строке матрицы.
+  загрузка ядер (`top -H`); Cockroach: `SHOW transaction_isolation`;
+  MariaDB: native AIO/io_uring поднялся (лог сервера).
 
----
+## 5. Открыто
 
-## 5. Решения, которые нужно утвердить
-
-| № | Вопрос | Рекомендация |
-|---|---|---|
-| Р1 | Один параметр `tuning: auto\|stock` у всех kind'ов, `auto` по умолчанию; `buffer_pool` MySQL/MariaDB вливается в него | да |
-| Р2 | Надёжность: `auto` = fsync на каждый коммит везде (MariaDB `sync_binlog=1`, Picodata 26.2 `wal_mode=fsync`). Ослабить можно только явной правкой конфига, отчёт это помечает. Picodata 25.3/26.1 помечается «без fsync, не настраивается» | да |
-| Р3 | PG `shared_buffers`: 25% RAM (старт по доке) или 40% (весь датасет TPC-C 100 складов помещается в кэш) | 25% в `auto`; на перезапуске A/B 25 против 40, по результату поправить формулу |
-| Р4 | Диск матрицы: оставить 200 ГБ `network-ssd` (~105 МБ/с) или взять 512 ГБ `network-ssd` (240 МБ/с, рекомендация Cockroach) / 186 ГБ `nonreplicated` | 512 ГБ `network-ssd`: дороже, но иначе после тюнинга все упрутся в диск и сравнение снова покажет диск |
-| Р5 | Изоляция: включить RR у Cockroach, чтобы он работал на том же уровне, что pg/mysql; фактический уровень каждого движка писать в отчёт | да |
-| Р6 | Нагрузка перезапуска: `warmup` 3 мин, `retry_attempts` 10, `max_conns` от движка (YDB 10/ядро compute, Cockroach ~4×vCPU кластера), остальное как было (128 VU, без пауз) | да |
-| Р7 | Picodata: параметр `instances_per_machine` (по умолчанию 1); в матрицу добавить вариант с 4 инстансами на ВМ | да |
-| Р8 | Правки схемы stroppy (YDB индексы/history/item, Cockroach split/scatter) — отдельным шагом после первого перезапуска | да |
-| Р9 | OrioleDB: добавить beta18/beta19, матрицу гонять на beta19 (beta17 оставить в каталоге) | да |
-| Р10 | YDB: compute по умолчанию 8 vCPU / 32 ГБ (сейчас 4/8) | да |
-| Р11 | PG `wal_archive`: убрать из формы до реализации | убрать |
-| Р12 | MySQL semi-sync: таймаут оставить 10 с, но помечать прогон, если источник ушёл в async | да |
-| Р13 | MariaDB 11.8 `innodb_snapshot_isolation`: выключить в `auto` (паритет с 11.4) или оставить ON как свойство версии | оставить ON и показывать в отчёте: это поведение версии, его и надо мерить |
-| Р14 | Galera: на время подготовки данных всё шлём на writer (вариант A), чтения на другие узлы — отдельный эксперимент | да |
+- Флаги недостоверности по факту прогона (semi-sync ушёл в async, фактическая
+  изоляция Cockroach, чекпоинты PG по размеру) — нужен сбор статусов после
+  замера.
+- Ожидание репликации Cockroach между загрузкой и замером: загрузка идёт
+  внутри сегмента stroppy, отдельного шага нет.
+- Схема stroppy: YDB (индексы одной партицией, монотонный `history`, `item`),
+  Cockroach split/scatter — в репо stroppy, после перезапуска матрицы.
+- PG `shared_buffers` 25% против 40% — A/B на перезапуске.
+- Managed YDB (dedicated `PermissionDenied`, serverless `Unavailable`) — см.
+  `ydb.md` §6.
+- pgnoop: расхождение bulk insert — сторона stroppy (`pg_noop`).
