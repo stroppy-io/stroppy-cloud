@@ -39,8 +39,8 @@ export interface CfgHostSysctl1 {
   net_ipv4_tcp_keepalive_intvl?: number | string;
   /** net.ipv4.tcp_keepalive_probes. Unacknowledged keepalive probes before the connection is dropped (kernel default 9). */
   net_ipv4_tcp_keepalive_probes?: number | string;
-  /** net.ipv4.ip_local_port_range. Ephemeral port range for outgoing connections, "<first> <last>" (kernel default "32768 60999"). */
-  net_ipv4_ip_local_port_range?: string;
+  /** net.ipv4.ip_local_port_range. Ephemeral port range for outgoing connections, "<first> <last>"; empty keeps the kernel's "32768 60999". A range reaching below the databases' service ports lets outgoing connections take them. */
+  net_ipv4_ip_local_port_range?: string | null;
   /** Transparent hugepages. /sys/kernel/mm/transparent_hugepage/enabled. Databases with their own buffer pools want never or madvise. */
   transparent_hugepage?: "never" | "madvise" | "always";
   /** Extra sysctl keys. Any further sysctl key → value, appended verbatim after the known keys. */

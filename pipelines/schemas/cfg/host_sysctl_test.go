@@ -47,7 +47,7 @@ func TestHostSysctl(t *testing.T) {
 		Contains: []string{
 			"vm.swappiness = ",
 			"kernel.sem = ",
-			"net.ipv4.ip_local_port_range = ",
+			"net.core.somaxconn = ",
 			"fs.aio-max-nr = ",
 		},
 	})

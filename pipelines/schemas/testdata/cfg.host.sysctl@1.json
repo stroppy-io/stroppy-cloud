@@ -232,11 +232,11 @@
       "title": "net.ipv4.tcp_keepalive_probes"
     },
     {
-      "description": "Ephemeral port range for outgoing connections, \"\u003cfirst\u003e \u003clast\u003e\" (kernel default \"32768 60999\").",
+      "description": "Ephemeral port range for outgoing connections, \"\u003cfirst\u003e \u003clast\u003e\"; empty keeps the kernel's \"32768 60999\". A range reaching below the databases' service ports lets outgoing connections take them.",
       "group": "Network",
       "name": "net_ipv4_ip_local_port_range",
+      "nullable": true,
       "string": {
-        "default": "1024 65000",
         "pattern": "^[0-9]{1,5} [0-9]{1,5}$"
       },
       "title": "net.ipv4.ip_local_port_range"
@@ -319,6 +319,6 @@
   ],
   "strict": true,
   "templates": {
-    "conf": "# managed by stroppy-cloud — cfg.host.sysctl@1\nvm.swappiness = {{{values.vm_swappiness}}}\nvm.overcommit_memory = {{{values.vm_overcommit_memory}}}\nvm.overcommit_ratio = {{{values.vm_overcommit_ratio}}}\nvm.dirty_ratio = {{{values.vm_dirty_ratio}}}\nvm.dirty_background_ratio = {{{values.vm_dirty_background_ratio}}}\nvm.max_map_count = {{{values.vm_max_map_count}}}\nvm.nr_hugepages = {{{values.vm_nr_hugepages}}}\n{{#values.kernel_shmmax}}kernel.shmmax = {{{values.kernel_shmmax}}}\n{{/values.kernel_shmmax}}{{#values.kernel_shmall}}kernel.shmall = {{{values.kernel_shmall}}}\n{{/values.kernel_shmall}}kernel.sem = {{{values.kernel_sem}}}\nfs.file-max = {{{values.fs_file_max}}}\nfs.aio-max-nr = {{{values.fs_aio_max_nr}}}\nnet.core.somaxconn = {{{values.net_core_somaxconn}}}\nnet.core.rmem_max = {{{values.net_core_rmem_max}}}\nnet.core.wmem_max = {{{values.net_core_wmem_max}}}\nnet.ipv4.tcp_keepalive_time = {{{values.net_ipv4_tcp_keepalive_time}}}\nnet.ipv4.tcp_keepalive_intvl = {{{values.net_ipv4_tcp_keepalive_intvl}}}\nnet.ipv4.tcp_keepalive_probes = {{{values.net_ipv4_tcp_keepalive_probes}}}\nnet.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}\n{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}\n# not a sysctl — written to sysfs by the host-prep step:\n# echo {{{values.transparent_hugepage}}} \u003e /sys/kernel/mm/transparent_hugepage/enabled\n"
+    "conf": "# managed by stroppy-cloud — cfg.host.sysctl@1\nvm.swappiness = {{{values.vm_swappiness}}}\nvm.overcommit_memory = {{{values.vm_overcommit_memory}}}\nvm.overcommit_ratio = {{{values.vm_overcommit_ratio}}}\nvm.dirty_ratio = {{{values.vm_dirty_ratio}}}\nvm.dirty_background_ratio = {{{values.vm_dirty_background_ratio}}}\nvm.max_map_count = {{{values.vm_max_map_count}}}\nvm.nr_hugepages = {{{values.vm_nr_hugepages}}}\n{{#values.kernel_shmmax}}kernel.shmmax = {{{values.kernel_shmmax}}}\n{{/values.kernel_shmmax}}{{#values.kernel_shmall}}kernel.shmall = {{{values.kernel_shmall}}}\n{{/values.kernel_shmall}}kernel.sem = {{{values.kernel_sem}}}\nfs.file-max = {{{values.fs_file_max}}}\nfs.aio-max-nr = {{{values.fs_aio_max_nr}}}\nnet.core.somaxconn = {{{values.net_core_somaxconn}}}\nnet.core.rmem_max = {{{values.net_core_rmem_max}}}\nnet.core.wmem_max = {{{values.net_core_wmem_max}}}\nnet.ipv4.tcp_keepalive_time = {{{values.net_ipv4_tcp_keepalive_time}}}\nnet.ipv4.tcp_keepalive_intvl = {{{values.net_ipv4_tcp_keepalive_intvl}}}\nnet.ipv4.tcp_keepalive_probes = {{{values.net_ipv4_tcp_keepalive_probes}}}\n{{#values.net_ipv4_ip_local_port_range}}net.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}\n{{/values.net_ipv4_ip_local_port_range}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}\n# not a sysctl — written to sysfs by the host-prep step:\n# echo {{{values.transparent_hugepage}}} \u003e /sys/kernel/mm/transparent_hugepage/enabled\n"
   }
 }

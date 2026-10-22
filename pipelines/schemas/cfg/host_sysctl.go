@@ -102,8 +102,8 @@ func HostSysctl() *schemapb.Schema {
 				Gte(1).Lte(30).Default(5),
 			// doc: networking/ip-sysctl.html ip_local_port_range
 			schemapb.Str("net_ipv4_ip_local_port_range").Title("net.ipv4.ip_local_port_range").Group("Network").
-				Desc(`Ephemeral port range for outgoing connections, "<first> <last>" (kernel default "32768 60999").`).
-				Pattern(`^[0-9]{1,5} [0-9]{1,5}$`).Default("1024 65000"),
+				Desc(`Ephemeral port range for outgoing connections, "<first> <last>"; empty keeps the kernel's "32768 60999". A range reaching below the databases' service ports lets outgoing connections take them.`).
+				Pattern(`^[0-9]{1,5} [0-9]{1,5}$`).Nullable(),
 			// doc: admin-guide/mm/transhuge.html — sysfs, not sysctl.
 			schemapb.Choice("transparent_hugepage").Title("Transparent hugepages").Group("Hugepages").
 				Desc("/sys/kernel/mm/transparent_hugepage/enabled. Databases with their own buffer pools want never or madvise.").
@@ -150,8 +150,8 @@ net.core.wmem_max = {{{values.net_core_wmem_max}}}
 net.ipv4.tcp_keepalive_time = {{{values.net_ipv4_tcp_keepalive_time}}}
 net.ipv4.tcp_keepalive_intvl = {{{values.net_ipv4_tcp_keepalive_intvl}}}
 net.ipv4.tcp_keepalive_probes = {{{values.net_ipv4_tcp_keepalive_probes}}}
-net.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}
-{{#values.custom_lines}}{{{values.custom_lines}}}
+{{#values.net_ipv4_ip_local_port_range}}net.ipv4.ip_local_port_range = {{{values.net_ipv4_ip_local_port_range}}}
+{{/values.net_ipv4_ip_local_port_range}}{{#values.custom_lines}}{{{values.custom_lines}}}
 {{/values.custom_lines}}
 # not a sysctl — written to sysfs by the host-prep step:
 # echo {{{values.transparent_hugepage}}} > /sys/kernel/mm/transparent_hugepage/enabled

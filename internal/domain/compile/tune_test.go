@@ -217,3 +217,14 @@ func TestPgBouncerWithoutProxy(t *testing.T) {
 		t.Fatalf("pgbouncer.ini:\n%s", ini)
 	}
 }
+
+// The ephemeral port range stays the kernel's unless set: a range reaching
+// below the databases' service ports lets outgoing connections take them.
+func TestHostSysctlKeepsTheKernelPortRange(t *testing.T) {
+	out, _ := compileTuned(t, tuneCase{kind: catalog.Postgres, version: "17"})
+	for _, h := range out.Spec.HostPrep {
+		if h.Kind == spec.HostPrepSysctl && strings.Contains(h.Content, "ip_local_port_range") {
+			t.Fatalf("the drop-in sets the port range:\n%s", h.Content)
+		}
+	}
+}
