@@ -160,9 +160,21 @@ func ydbConfig(major uint64) *schemapb.Schema {
 			Opt(schemapb.StrV("COMPUTE"), "COMPUTE").
 			Opt(schemapb.StrV("HYBRID"), "HYBRID").
 			Default(schemapb.StrV("HYBRID")),
+		// doc: https://ydb.tech/docs/en/reference/configuration/actor_system_config
+		// Unset, ydbd takes the CPUs of its affinity mask; the stock
+		// value is 4, auto tuning sizes it per node from the machine
+		// (storage: vCPU-1, from 9 vCPU vCPU-2; database: vCPU-1 from 8).
 		schemapb.Int64("cpu_count").Title("CPU count").Group("Actor system").
-			Desc("actor_system_config.cpu_count — cores the actor system may use; the server fills it from the machine size.").
+			Desc("actor_system_config.cpu_count — cores the actor system splits into its pools; the rest stays for pdisk threads, gRPC and the OS. Auto tuning sizes it from the machine.").
 			Gte(1).Lte(1024).Default(4),
+
+		// --- resource_broker_config -------------------------------------------
+		// doc: https://ydb.tech/docs/en/reference/configuration/resource_broker_config
+		// The static config's queues merge into the defaults by name
+		// (NResourceBroker::MergeConfigUpdates), so one queue's cpu is enough.
+		schemapb.Int64("resource_broker_build_index_cpu").Title("Index build CPU").Group("Resource broker").
+			Desc("resource_broker_config queue_build_index limit.cpu — concurrent online index-build tasks (upstream 10). Unset keeps the upstream queue.").
+			Gte(1).Lte(1024).Nullable(),
 
 		// --- grpc / interconnect / monitoring ---------------------------------
 		// TODO verify: grpc_config / interconnect_config / monitoring_config
@@ -325,6 +337,14 @@ func ydbConfig(major uint64) *schemapb.Schema {
 			`!("custom" in root) || size(root.custom) == 0 ? "" :
 			 root.custom.map(k, k + ": " + string(root.custom[k])).join("\n")`).
 			Result(schemapb.ResultString).Group("Custom").Title("Rendered extra sections"),
+		schemapb.Computed("resource_broker_block",
+			`!("resource_broker_build_index_cpu" in root) || root.resource_broker_build_index_cpu == null ? "" :
+			 "resource_broker_config:\n" +
+			 "  queues:\n" +
+			 "  - name: queue_build_index\n" +
+			 "    limit:\n" +
+			 "      cpu: " + string(root.resource_broker_build_index_cpu)`).
+			Result(schemapb.ResultString).Group("Resource broker").Title("Rendered resource_broker_config"),
 		schemapb.Computed("grpc_tls_block",
 			`!root.grpcs ? "" :
 			 "  ssl_port: " + string(root.grpc_ssl_port) + "\n" +
@@ -397,7 +417,8 @@ log_config:
   sys_log: {{{values.log_syslog}}}
   format: {{{values.log_format}}}
 {{#values.memory_controller_block}}{{{values.memory_controller_block}}}
-{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}
+{{/values.memory_controller_block}}{{#values.resource_broker_block}}{{{values.resource_broker_block}}}
+{{/values.resource_broker_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}
 {{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}
 {{/values.custom_lines}}`).
 		MustBuild()

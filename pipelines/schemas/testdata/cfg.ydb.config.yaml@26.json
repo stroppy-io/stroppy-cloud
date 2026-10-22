@@ -404,7 +404,7 @@
       "title": "Node type"
     },
     {
-      "description": "actor_system_config.cpu_count — cores the actor system may use; the server fills it from the machine size.",
+      "description": "actor_system_config.cpu_count — cores the actor system splits into its pools; the rest stays for pdisk threads, gRPC and the OS. Auto tuning sizes it from the machine.",
       "group": "Actor system",
       "int64": {
         "default": "4",
@@ -413,6 +413,17 @@
       },
       "name": "cpu_count",
       "title": "CPU count"
+    },
+    {
+      "description": "resource_broker_config queue_build_index limit.cpu — concurrent online index-build tasks (upstream 10). Unset keeps the upstream queue.",
+      "group": "Resource broker",
+      "int64": {
+        "gte": "1",
+        "lte": "1024"
+      },
+      "name": "resource_broker_build_index_cpu",
+      "nullable": true,
+      "title": "Index build CPU"
     },
     {
       "description": "grpc_config.port — the plaintext client endpoint (grpc://).",
@@ -759,6 +770,15 @@
     },
     {
       "computed": {
+        "expr": "!(\"resource_broker_build_index_cpu\" in root) || root.resource_broker_build_index_cpu == null ? \"\" :\n\t\t\t \"resource_broker_config:\\n\" +\n\t\t\t \"  queues:\\n\" +\n\t\t\t \"  - name: queue_build_index\\n\" +\n\t\t\t \"    limit:\\n\" +\n\t\t\t \"      cpu: \" + string(root.resource_broker_build_index_cpu)",
+        "result": "RESULT_TYPE_STRING"
+      },
+      "group": "Resource broker",
+      "name": "resource_broker_block",
+      "title": "Rendered resource_broker_config"
+    },
+    {
+      "computed": {
         "expr": "!root.grpcs ? \"\" :\n\t\t\t \"  ssl_port: \" + string(root.grpc_ssl_port) + \"\\n\" +\n\t\t\t \"  ca: \" + root.grpc_ca + \"\\n\" +\n\t\t\t \"  cert: \" + root.grpc_cert + \"\\n\" +\n\t\t\t \"  key: \" + root.grpc_key",
         "result": "RESULT_TYPE_STRING"
       },
@@ -796,6 +816,6 @@
   ],
   "strict": true,
   "templates": {
-    "conf": "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
+    "conf": "# managed by stroppy-cloud — cfg.ydb.config.yaml@26\nstatic_erasure: {{{values.static_erasure}}}\nhost_configs:\n- host_config_id: {{{values.host_config_id}}}\n  drive:\n{{{values.drive_block}}}\nhosts:\n{{{values.host_block}}}\ndomains_config:\n  domain:\n  - name: {{{values.domain}}}\n    storage_pool_types:\n{{{values.storage_pool_block}}}\n  state_storage:\n{{{values.state_storage_block}}}\n  security_config:\n    enforce_user_token_requirement: {{{values.enforce_user_token_requirement}}}\nblob_storage_config:\n  service_set: {{{values.blob_storage_service_set}}}\nchannel_profile_config:\n  profile:\n  - profile_id: 0\n    channel:\n{{{values.channel_profile_block}}}\nactor_system_config:\n  use_auto_config: {{{values.use_auto_config}}}\n  node_type: {{{values.node_type}}}\n  cpu_count: {{{values.cpu_count}}}\ngrpc_config:\n  port: {{{values.grpc_port}}}\n{{#values.grpc_tls_block}}{{{values.grpc_tls_block}}}\n{{/values.grpc_tls_block}}interconnect_config:\n  start_tcp: true\nmonitoring_config:\n  monitoring_port: {{{values.monitoring_port}}}\ntable_service_config:\n  enable_query_service_spilling: {{{values.enable_query_service_spilling}}}\n  spilling_service_config:\n    local_file_config:\n      enable: true\n      root: {{{values.spilling_root}}}\n      max_total_size: {{{values.spilling_max_total_size}}}\nlog_config:\n  default_level: {{{values.log_default_level}}}\n  sys_log: {{{values.log_syslog}}}\n  format: {{{values.log_format}}}\n{{#values.memory_controller_block}}{{{values.memory_controller_block}}}\n{{/values.memory_controller_block}}{{#values.resource_broker_block}}{{{values.resource_broker_block}}}\n{{/values.resource_broker_block}}{{#values.feature_flag_block}}{{{values.feature_flag_block}}}\n{{/values.feature_flag_block}}{{#values.custom_lines}}{{{values.custom_lines}}}\n{{/values.custom_lines}}"
   }
 }

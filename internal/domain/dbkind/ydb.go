@@ -11,6 +11,18 @@ import (
 // the params name another.
 const YDBDatabasePath = "/Root/testdb"
 
+// The data disk of a storage node: every pdisk at least YDBPdiskMinGB
+// (below it a node cannot use the device) plus filesystem headroom.
+//
+// doc: https://ydb.tech/docs/en/devops/concepts/system-requirements
+const (
+	YDBPdiskMinGB     = 80
+	ydbDiskHeadroomGB = 20
+)
+
+// YDBDiskMinGB is the data disk a storage node with pdisks pdisks needs.
+func YDBDiskMinGB(pdisks int) int { return YDBPdiskMinGB*pdisks + ydbDiskHeadroomGB }
+
 func ydb() Kind {
 	return Kind{
 		Database: catalog.Database{
@@ -28,7 +40,7 @@ func ydb() Kind {
 			},
 			Topologies: []catalog.Topology{
 				{ID: "single", Title: "Single node", Params: map[string]any{"version": "26.2"}},
-				{ID: "mirror-3-dc", Title: "mirror-3-dc", Description: "Nine storage nodes, three pdisks each, three database nodes.", Params: map[string]any{"version": "26.2", "fault_tolerance": "mirror-3-dc", "failure_domain": "disk", "storage_nodes": 9, "database_nodes": 3, "pdisks_per_node": 3}},
+				{ID: "mirror-3-dc", Title: "mirror-3-dc", Description: "Nine storage nodes, three pdisks each, three database nodes.", Params: map[string]any{"version": "26.2", "fault_tolerance": "mirror-3-dc", "storage_nodes": 9, "database_nodes": 3, "pdisks_per_node": 3}},
 			},
 			// The stand serves plain gRPC only (no TLS certificates are issued):
 			// a grpcs client would hang in its handshake until the segment times out.
@@ -71,8 +83,17 @@ func planYDB(p *topology.Plan, params map[string]any) {
 	p.Flows = append(p.Flows, topology.Flow{From: topology.RoleDBCompute, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001}, topology.Flow{From: topology.RoleDB, To: topology.RoleDB, Protocol: "ydb-ic", Port: 19001})
 	p.Client = topology.Endpoint{Role: topology.RoleDBCompute, Protocol: "ydb_grpc", Port: 2136}
 	// The compiler's own floor: every pdisk file plus filesystem headroom.
-	p.Requirements[topology.RoleDB] = topology.Because(4, 8, float64(40*pdisks+20), topology.ReasonPDisks, "pdisks", strconv.Itoa(pdisks))
-	p.Requirements[topology.RoleDBCompute] = topology.Because(4, 8, 20, topology.ReasonBaseline, "engine", "ydb")
+	p.Requirements[topology.RoleDB] = topology.Because(4, 8, float64(YDBDiskMinGB(pdisks)), topology.ReasonPDisks, "pdisks", strconv.Itoa(pdisks))
+	// A database node runs every query, transaction and gRPC call. Under
+	// auto it is sized 8 vCPU / 32 GB: at 4 vCPU the actor system gets one
+	// user-pool thread, and the docs' slot is 10 cores / 50 GB. Stock keeps
+	// the old 4 / 8 floor.
+	// doc: https://ydb.tech/docs/en/concepts/glossary — "slot"
+	if topology.StrOf(params, "tuning", "auto") == "stock" {
+		p.Requirements[topology.RoleDBCompute] = topology.Because(4, 8, 20, topology.ReasonBaseline, "engine", "ydb")
+	} else {
+		p.Requirements[topology.RoleDBCompute] = topology.Because(8, 32, 20, topology.ReasonBaseline, "engine", "ydb")
+	}
 	if ft := topology.StrOf(params, "fault_tolerance", "none"); ft != "none" {
 		p.Mode = ft
 	}

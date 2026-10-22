@@ -178,7 +178,8 @@ func (c *compilation) machines() error {
 			disk = rs.DiskGB
 		}
 		if c.in.Database.Kind == catalog.YDB && node.Role == topology.RoleDB {
-			minimum := intParam(c.params(), "pdisks_per_node", 1)*ydbPdiskGB + 20
+			// Every pdisk at the 80 GB minimum plus filesystem headroom.
+			minimum := ydbDiskMinGB(intParam(c.params(), "pdisks_per_node", 1))
 			if disk < minimum {
 				if rs.DiskGB > 0 {
 					return errs.Newf(errs.CodeInvalid, "sizes.%s.disk_gb: need at least %d GB for YDB pdisks and filesystem headroom", node.Role, minimum).Because("ydb_disk_too_small", "role", node.Role, "min", strconv.Itoa(minimum))

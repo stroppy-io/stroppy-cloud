@@ -93,3 +93,28 @@ func TestRunnerRequirement(t *testing.T) {
 		t.Fatal("family")
 	}
 }
+
+// Auto sizes a YDB database node 8 vCPU / 32 GB (stock keeps 4 / 8), and a
+// storage node's disk holds every pdisk at YDB's 80 GB minimum.
+func TestPlanYDBRequirements(t *testing.T) {
+	for _, tc := range []struct {
+		params      map[string]any
+		cpu         int
+		mem, diskGB float64
+	}{
+		{map[string]any{"version": "26.2"}, 8, 32, 100},
+		{map[string]any{"version": "26.2", "tuning": "stock", "pdisks_per_node": 3}, 4, 8, 260},
+	} {
+		p, err := dbkind.Plan(catalog.YDB, bake(t, catalog.YDB, tc.params))
+		if err != nil {
+			t.Fatal(err)
+		}
+		compute, storage := p.Requirements[topology.RoleDBCompute], p.Requirements[topology.RoleDB]
+		if compute.CPU != tc.cpu || compute.MemoryGB != tc.mem {
+			t.Errorf("%v: database node %+v", tc.params, compute)
+		}
+		if storage.DiskGB != tc.diskGB {
+			t.Errorf("%v: storage disk %v GB, want %v", tc.params, storage.DiskGB, tc.diskGB)
+		}
+	}
+}

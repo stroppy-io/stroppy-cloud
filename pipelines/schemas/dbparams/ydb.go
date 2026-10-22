@@ -42,13 +42,16 @@ func Ydb() *schemapb.Schema {
 				Opt(schemapb.StrV("mirror-3-dc"), "mirror-3-dc (>= 9 nodes, 3 DCs)").
 				Default(schemapb.StrV("none")).Required(),
 
-			// doc: https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/mirror-3dc-9-nodes.yaml
-			schemapb.Choice("failure_domain").Title("Fail domain level").Group("Storage").
-				Desc("config.fail_domain_type: which level of host.location the storage layer treats as one failure unit. Upstream uses disk for single-host block-4-2 and rack for mirror-3-dc.").
-				Opt(schemapb.StrV("disk"), "disk (all pdisks of a host are independent)").
-				Opt(schemapb.StrV("body"), "body (one host = one domain)").
-				Opt(schemapb.StrV("rack"), "rack (one rack = one domain)").
-				Default(schemapb.StrV("disk")).Required(),
+			// Kept so params saved before it was dropped still bake; hidden
+			// and ignored. The stand puts one fail domain on every storage
+			// node (rack = node, static group one VDisk per node), and the
+			// config's mirror-3-dc / block-4-2 rules already want 9 / 8 hosts,
+			// so a disk-level domain never reached the cluster. Disk-level
+			// domains need their own pool geometry and a live check.
+			// doc: https://ydb.tech/docs/en/concepts/topology
+			schemapb.Str("failure_domain").Title("Fail domain level").Group("Storage").
+				Desc("Removed: every storage node is one fail domain. Ignored when present.").
+				MaxLen(16).When("false").Deprecated(),
 
 			// doc: https://ydb.tech/docs/en/devops/concepts/system-requirements
 			schemapb.Int64("storage_nodes").Title("Storage nodes").Group("Topology").
@@ -60,31 +63,39 @@ func Ydb() *schemapb.Schema {
 				Desc("Nodes running the query/tablet layer of the database; these are what the workload connects to.").
 				Gte(1).Lte(64).Default(1),
 
-			// The stand puts pdisks in files under
-			// /var/lib/stroppy-cloud/ydb-pdisk-N.data, so the count is a knob
-			// rather than a property of the machine.
+			// The stand puts pdisks in files under /data/ydb/pdisk-N.data on
+			// the data disk, so the count is a knob rather than a property of
+			// the machine. Files on one disk share its IOPS: more pdisks give
+			// the storage groups more slots, not more I/O.
 			// doc: https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/block-4-2.yaml
 			schemapb.Int64("pdisks_per_node").Title("PDisks per storage node").Group("Storage").
-				Desc("Drive entries per host_config; with failure_domain=disk each pdisk is its own fail domain, which is how a small stand reaches 8 or 9 of them.").
+				Desc("Drive entries per host_config, each a file of at least 80 GB on the node's data disk (the disk needs 80 GB per pdisk + 20 GB).").
 				Gte(1).Lte(8).Default(1),
 
-			// The example configs spell the drive kinds SSD, NVME and HDD;
-			// the older ROT spelling is gone.
+			// The form spells the media SSD, NVME and HDD; the recipe writes
+			// the config's SSD / NVME / ROT (host_configs drive.type, pool
+			// pdisk filter, static group pdisk_category).
+			// doc: https://ydb.tech/docs/en/reference/configuration/host_configs
 			// doc: https://github.com/ydb-platform/ydb/blob/main/ydb/deploy/yaml_config_examples/block-4-2.yaml
 			schemapb.Choice("disk_type").Title("PDisk device type").Group("Storage").
-				Desc("config.default_disk_type and the drive type of every host_config entry; storage pools are built per device type.").
+				Desc("Drive type of every host_config entry, the storage pool's pdisk filter and pool kind (ssd / nvme / rot) the database is created in.").
 				Opt(schemapb.StrV("SSD"), "SSD").
 				Opt(schemapb.StrV("NVME"), "NVMe").
 				Opt(schemapb.StrV("HDD"), "HDD (rotational)").
 				Default(schemapb.StrV("SSD")).Required(),
 
+			// No default: unset is sized by the tuning (auto: 4 for erasure
+			// none, 2 per 4 database-node cores clamped to 6..24 for
+			// mirror-3-dc, within 8 VDisks per pdisk; stock: 1).
 			// doc: https://ydb.tech/docs/en/concepts/topology
 			schemapb.Int64("storage_groups").Title("Storage groups").Group("Storage").
-				Desc("Blob storage groups created in the database's storage pool; more groups spread tablets wider.").
-				Gte(1).Lte(1024).Default(1),
+				Desc("Blob storage groups created in the database's storage pool; more groups spread tablets and their logs wider. Empty = sized by the tuning (auto: 4, mirror-3-dc from the database-node cores; stock: 1).").
+				Gte(1).Lte(1024).Nullable(),
 
+			// 80 GB is the smallest device YDB uses.
+			// doc: https://ydb.tech/docs/en/devops/concepts/system-requirements
 			schemapb.Bool("auto_size_pdisks").Title("Auto-size pdisks").Group("Storage").
-				Desc("Let the recipe size the pdisk files from the machine's free disk instead of a fixed size.").
+				Desc("Size each pdisk file from the data disk: 80% of (disk - 10 GB) split over the node's pdisks, at least 80 GB. Off = 80 GB each.").
 				Default(true),
 
 			// /Root is the cluster root; a database is a directory under it.
@@ -94,25 +105,28 @@ func Ydb() *schemapb.Schema {
 				Pattern(`^/Root/[A-Za-z0-9_][A-Za-z0-9_\-]*(/[A-Za-z0-9_][A-Za-z0-9_\-]*)*$`).
 				MaxLen(255).Default("/Root/stroppy"),
 
+			// Kept so params saved before it was dropped still bake; hidden
+			// and ignored. The stand issues no certificates and serves plain
+			// grpc:// only; the field returns with certificate issuing.
 			// doc: https://ydb.tech/docs/en/concepts/connect
 			schemapb.Bool("grpcs").Title("TLS (grpcs)").Group("Database").
-				Desc("Serve the gRPC endpoint over TLS (grpcs://) with a self-signed cluster certificate instead of plain grpc://.").
-				Default(false),
+				Desc("Removed until the stand issues certificates: the endpoint is plain grpc://. Ignored when present.").
+				When("false").Deprecated(),
 
 			// doc: https://www.haproxy.org/download/2.9/doc/configuration.txt
 			schemapb.Int64("haproxy").Title("HAProxy nodes").Group("Routing").
 				Desc("HAProxy instances spreading gRPC clients over the database nodes.").
 				Gte(0).Lte(2).Default(0),
 
-			schemapb.Computed("fail_domains", `int(root.storage_nodes) * (root.failure_domain == "disk" ? int(root.pdisks_per_node) : 1)`).
+			schemapb.Computed("fail_domains", `int(root.storage_nodes)`).
 				Result(schemapb.ResultInt64).Title("Fail domains").Group("Storage").
-				Desc("How many independent failure units the storage layer actually gets — what the erasure mode is checked against."),
+				Desc("How many independent failure units the storage layer gets: one per storage node — what the erasure mode is checked against."),
 		).
 		Rules(
-			schemapb.Rule(`root.fault_tolerance != "block-4-2" || int(root.storage_nodes) * (root.failure_domain == "disk" ? int(root.pdisks_per_node) : 1) >= 8`,
-				"block-4-2 needs at least 8 fail domains (storage_nodes x pdisks_per_node when failure_domain=disk)").ID("block42-min-domains"),
-			schemapb.Rule(`root.fault_tolerance != "mirror-3-dc" || int(root.storage_nodes) * (root.failure_domain == "disk" ? int(root.pdisks_per_node) : 1) >= 9`,
-				"mirror-3-dc needs at least 9 fail domains across 3 realms").ID("mirror3dc-min-domains"),
+			schemapb.Rule(`root.fault_tolerance != "block-4-2" || int(root.storage_nodes) >= 8`,
+				"block-4-2 needs at least 8 fail domains (one per storage node)").ID("block42-min-domains"),
+			schemapb.Rule(`root.fault_tolerance != "mirror-3-dc" || int(root.storage_nodes) >= 9`,
+				"mirror-3-dc needs at least 9 fail domains (storage nodes) across 3 realms").ID("mirror3dc-min-domains"),
 			schemapb.Rule(`root.fault_tolerance != "mirror-3-dc" || int(root.storage_nodes) % 3 == 0`,
 				"mirror-3-dc spreads hosts over exactly 3 datacenters, so storage_nodes must be a multiple of 3").ID("mirror3dc-three-realms"),
 			schemapb.Rule(`root.fault_tolerance != "none" || int(root.storage_nodes) >= 1`,

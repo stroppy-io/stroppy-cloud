@@ -126,7 +126,7 @@ func TestYdb26(t *testing.T) {
 	schematest.Run(t, Ydb26(), c)
 
 	out := renderDefaults(t, Ydb26())
-	dontWantLines(t, out, "metadata:", "kind: MainConfig")
+	dontWantLines(t, out, "metadata:", "kind: MainConfig", "resource_broker_config:")
 }
 
 func TestYdbDriveMediaRendering(t *testing.T) {
