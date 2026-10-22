@@ -95,6 +95,8 @@ func TestSimulatedMachineSettingsReachCrossplane(t *testing.T) {
 	require.NoError(t, json.Unmarshal(vm.Spec, &raw))
 	params := findObject(raw, "forProvider")
 	require.NotNil(t, params, "serialized Crossplane spec missing")
+	// Runs share the profile network, where a hostname must be unique.
+	require.Equal(t, names.Machine("runner-1"), params["hostname"])
 	require.Equal(t, float64(50), params["resources"].([]any)[0].(map[string]any)["coreFraction"])
 	boot := params["bootDisk"].([]any)[0].(map[string]any)["initializeParams"].([]any)[0].(map[string]any)
 	require.Equal(t, float64(80), boot["size"])

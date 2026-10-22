@@ -216,9 +216,11 @@ func (y Yandex) Provision(ctx pipeline.Context, k8s *k8slib.Client, run spec.Run
 			Spec: compute.InstanceSpec{
 				ResourceSpec: providerRef(pc),
 				ForProvider: compute.InstanceParameters{
-					FolderID:   ptr(st.FolderID),
-					Name:       ptr(vmName),
-					Hostname:   ptr(m.Name),
+					FolderID: ptr(st.FolderID),
+					Name:     ptr(vmName),
+					// Unique in the cloud: runs share the profile network,
+					// and a hostname must be unique inside a network.
+					Hostname:   ptr(vmName),
 					Zone:       ptr(zone),
 					PlatformID: ptr(m.InstanceType),
 					Resources: []compute.ResourcesParameters{{
