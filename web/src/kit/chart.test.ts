@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
-import { align, formatElapsed, hatchDefs, hatchPath } from './chart'
+import { align, barRange, formatElapsed, hatchDefs, hatchPath } from './chart'
 import { tokensCSS } from './css'
 import { tokens } from './tokens'
 
@@ -36,6 +36,21 @@ describe('kit chart', () => {
     expect(formatElapsed(75)).toBe('1:15')
     expect(formatElapsed(3725)).toBe('1:02:05')
     expect(formatElapsed(-30)).toBe('−0:30')
+  })
+})
+
+describe('kit bars', () => {
+  it('measure every bar from zero', () => {
+    // issue #6: 528 and 1427 tx/s must not start from an automatic ~450.
+    const [lo, hi] = barRange(528.67, 1426.86)
+    expect(lo).toBe(0)
+    expect(hi).toBeGreaterThanOrEqual(1426.86)
+    const [nlo, nhi] = barRange(-20, 50)
+    expect(nlo).toBeLessThanOrEqual(-20)
+    expect(nhi).toBeGreaterThanOrEqual(50)
+    expect(barRange(-5, -1)[1]).toBe(0)
+    expect(barRange(null, null)).toEqual([0, 1])
+    expect(barRange(0, 0)).toEqual([0, 1])
   })
 })
 

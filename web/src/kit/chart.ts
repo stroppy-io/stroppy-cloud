@@ -370,7 +370,20 @@ function hatchPattern(
   return ctx.createPattern(tile, 'repeat') ?? color
 }
 
-/** Grouped bars: each category a group, each series one bar in it, side by side. */
+/**
+ * The y range of bars: always through zero, so a bar's length is its value
+ * (a range cut above zero turns a 2.7× difference into a sliver against a
+ * full column). Negative values hang below zero. No data at all reads 0..1.
+ */
+export function barRange(min: number | null, max: number | null): [number, number] {
+  const lo = Math.min(0, min ?? 0)
+  const hi = Math.max(0, max ?? 0)
+  if (lo === hi) return [0, 1]
+  const [a, b] = uPlot.rangeNum(lo, hi, 0.1, true)
+  return [lo < 0 ? (a ?? lo) : 0, hi > 0 ? (b ?? hi) : 0]
+}
+
+/** Grouped bars: each category a group, each series one bar in it, side by side, from zero. */
 function groupedBars(k: number, n: number): uPlot.Series.PathBuilder {
   return (u, seriesIdx, idx0, idx1) => {
     const path = new Path2D()
@@ -379,7 +392,7 @@ function groupedBars(k: number, n: number): uPlot.Series.PathBuilder {
     const step = Math.abs(u.valToPos(1, 'x', true) - u.valToPos(0, 'x', true))
     const group = step * BAR_GROUP
     const width = group / n
-    const base = u.valToPos(Math.max(0, u.scales.y.min ?? 0), 'y', true)
+    const base = u.valToPos(0, 'y', true)
     for (let i = idx0; i <= idx1; i++) {
       const v = ys[i]
       if (v == null) continue
@@ -477,7 +490,10 @@ function build(
         drag: { x: false, y: false },
       },
       scales: bars
-        ? { x: { time: false, range: () => [-0.5, Math.max(categories.length, 1) - 0.5] } }
+        ? {
+            x: { time: false, range: () => [-0.5, Math.max(categories.length, 1) - 0.5] },
+            y: { range: (_u, min, max) => barRange(min, max) },
+          }
         : { x: { time: !elapsed } },
       axes: [
         xAxis,
