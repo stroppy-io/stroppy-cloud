@@ -39,6 +39,15 @@ type Service struct {
 	background func(func(ctx context.Context))
 	mu         sync.Mutex
 	inflight   map[uuid.UUID]bool
+	// ready reports a namespace whose pipelines are this server's revision
+	// (nil = always); an upgrade must not run an older provider-config.
+	ready func(ctx context.Context, namespace string) bool
+}
+
+// WithPipelineReadiness makes UpgradeStale wait until a tenant's pipelines
+// are pushed at this server's revision.
+func (s *Service) WithPipelineReadiness(ready func(ctx context.Context, namespace string) bool) {
+	s.ready = ready
 }
 
 // NewService builds the service. background runs detached work with a
@@ -366,6 +375,11 @@ func (s *Service) UpgradeStale(ctx context.Context) error {
 	for _, p := range profiles {
 		ns, err := s.access.NamespaceOf(ctx, p.TenantID)
 		if err != nil {
+			continue
+		}
+		// Right after a deploy the namespace still runs the previous
+		// provider-config, which knows no profile network.
+		if s.ready != nil && !s.ready(ctx, ns) {
 			continue
 		}
 		runID := uuid.NewString()

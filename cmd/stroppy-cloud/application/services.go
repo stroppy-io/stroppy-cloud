@@ -124,7 +124,12 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	pusher := pipelines.New(runner, repositories.NewPipelineRepo(db), tenantNamespaces{tenantRepo}, log)
 	tenants.WithPipelines(pusher)
 	pusher.OnSynced(func(string) { runs.Nudge() })
-	runs.WithQueue(pipelineReadiness{p: pusher, enabled: cfg.Infra.Pipelines.Dir != ""}, suiteConcurrency{suiteRepo}, log)
+	readiness := pipelineReadiness{p: pusher, enabled: cfg.Infra.Pipelines.Dir != ""}
+	runs.WithQueue(readiness, suiteConcurrency{suiteRepo}, log)
+	providers.WithPipelineReadiness(func(ctx context.Context, ns string) bool {
+		ready, _ := readiness.PipelinesReady(ctx, ns)
+		return ready
+	})
 	projector.OnFinish(runs.Nudge)
 	adminSvc.WithPipelines(pusherStates{pusher})
 	observeSvc := observe.NewService(runs, graphene.NewLogs(infra.Graphene), graphene.NewMetrics(infra.Graphene), cat)

@@ -92,6 +92,33 @@ func TestUpgradeStaleConfiguresOldYandexProfiles(t *testing.T) {
 		t.Fatalf("idle profile ended %q", repo.finished[idle])
 	}
 	if _, touched := repo.finished[busy]; touched {
-		t.Fatal("a profile with a started run or a kept stand was configured")
+		t.Fatal("a profile the repository did not hand over was configured")
+	}
+}
+
+// Right after a deploy the namespace runs the previous provider-config:
+// the upgrade waits until this server's pipelines are pushed.
+func TestUpgradeStaleWaitsForPipelines(t *testing.T) {
+	repo := &upgradeRepo{
+		stale:    []Profile{{ID: uuid.New(), Kind: KindYandex, Status: StatusReady}},
+		busy:     map[uuid.UUID]bool{},
+		finished: map[uuid.UUID]Status{},
+	}
+	pipes := &upgradePipelines{}
+	svc := NewService(repo, nil, pipes, nil, upgradeAccess{}, func(ctx context.Context, _ string) context.Context { return ctx }, nil, func(fn func(context.Context)) { fn(context.Background()) })
+	ready := false
+	svc.WithPipelineReadiness(func(context.Context, string) bool { return ready })
+	if err := svc.UpgradeStale(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if len(repo.begun) != 0 || len(pipes.actions) != 0 {
+		t.Fatalf("upgraded before the pipelines: %v %v", repo.begun, pipes.actions)
+	}
+	ready = true
+	if err := svc.UpgradeStale(t.Context()); err != nil {
+		t.Fatal(err)
+	}
+	if len(repo.begun) != 1 {
+		t.Fatalf("upgraded %v after the pipelines", repo.begun)
 	}
 }
