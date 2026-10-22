@@ -63,3 +63,18 @@ func TestDatabaseProbeUsesSameImageAndReadOnlyQuery(t *testing.T) {
 		t.Fatalf("unsafe or measured probe: %+v", got)
 	}
 }
+
+func TestEndpointAddress(t *testing.T) {
+	for in, want := range map[string]string{
+		"postgres://stroppy:pw@10.0.0.5:5432?sslmode=disable": "10.0.0.5:5432",
+		"stroppy:pw@tcp(10.0.0.6:3306)/stroppy":               "10.0.0.6:3306",
+		"grpc://10.0.0.7:2136/Root/stroppy":                   "10.0.0.7:2136",
+		"postgresql://stroppy@10.0.0.8:4327/stroppy":          "10.0.0.8:4327",
+		"noop://": "",
+		"":        "",
+	} {
+		if got := endpointAddress(in); got != want {
+			t.Errorf("endpointAddress(%q) = %q, want %q", in, got, want)
+		}
+	}
+}

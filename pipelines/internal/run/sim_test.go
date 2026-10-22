@@ -161,6 +161,8 @@ func (s *sim) converge(t *testing.T, run spec.Run, ips map[string]string) {
 	require.NoError(t, s.objects.After(4*time.Second, ref.OwnerRef(ycSubnetKind+"/"+names.Subnet()), xpReadyStatus(map[string]any{"id": "e9b-subnet"})))
 	require.NoError(t, s.objects.After(5*time.Second, ref.OwnerRef(ycSGKind+"/"+names.SecurityGroup()), xpReadyStatus(map[string]any{"id": "enp-sg"})))
 	for _, m := range run.Machines {
+		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameWaitReachable, mock.Anything, mock.Anything).
+			Return(activities.WaitDatabaseResult{Ready: true, Attempts: 1}, nil).Maybe()
 		s.w.OnAgentActivity(s.agent(run, m.Name), activities.NameHostPrep, mock.Anything, mock.MatchedBy(func(req activities.HostPrepRequest) bool {
 			return req.Kind == spec.HostPrepScript && strings.Contains(req.Content, "/dev/disk/by-id/virtio-")
 		})).Return(activities.HostPrepResult{}, nil).Maybe()

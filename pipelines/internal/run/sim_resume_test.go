@@ -36,6 +36,8 @@ func TestSimulatedRunResumesOnKeptStand(t *testing.T) {
 		s.w.SeedAgent(id.AgentId(spec.AgentName(from, m.Name)), map[string]string{"machine": m.Name}, pipeline.AgentState{AgentConnected: true})
 	}
 	runner := id.AgentId(spec.AgentName(from, "runner-1"))
+	s.w.OnAgentActivity(runner, activities.NameWaitReachable, mock.Anything, mock.Anything).
+		Return(activities.WaitDatabaseResult{Ready: true, Attempts: 1}, nil).Once()
 	var segmentReq activities.RunSegmentRequest
 	s.w.OnAgentActivity(runner, activities.NameRunSegment, mock.Anything, mock.MatchedBy(func(req activities.RunSegmentRequest) bool {
 		segmentReq = req

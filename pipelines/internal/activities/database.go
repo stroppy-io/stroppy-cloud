@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/graphene-ci/pipeline/pkg/obs"
@@ -14,6 +15,56 @@ import (
 )
 
 const NameWaitDatabase = "stroppy.database.ready"
+
+// NameWaitReachable is the wire name of WaitReachable.
+const NameWaitReachable = "stroppy.database.reachable"
+
+// WaitReachableRequest is the database endpoint the workload connects to.
+type WaitReachableRequest struct {
+	Endpoint string `json:"endpoint"`
+}
+
+// WaitReachable waits from the runner until the deployed database accepts
+// TCP connections. A container healthcheck runs on the database's own
+// machine; the path from the runner (security group rules of a fresh
+// network) can open later, and Stroppy gives its first connection only a
+// few seconds. An endpoint without host:port (an unknown DSN form) is
+// reported reachable.
+func WaitReachable(ctx context.Context, req WaitReachableRequest) (WaitDatabaseResult, error) {
+	ctx = bindHeartbeatContext(ctx)
+	address := endpointAddress(req.Endpoint)
+	if address == "" {
+		return WaitDatabaseResult{Ready: true}, nil
+	}
+	waitCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+	result, err := waitDatabaseEndpoint(waitCtx, address, func(attempt int) {
+		temporalactivity.RecordHeartbeat(ctx, attempt)
+	})
+	if err != nil {
+		return result, fmt.Errorf("database endpoint %s is unreachable from runner after %d attempts: %w", address, result.Attempts, err)
+	}
+	result.Ready = true
+	obs.Info(ctx, "database endpoint reachable", obs.Str("endpoint", address), obs.Int("attempts", result.Attempts))
+	return result, nil
+}
+
+// endpointAddress is the host:port of a driver URL: a URL with a host
+// (postgres://, grpc://) or a Go MySQL DSN (user:pass@tcp(host:port)/db).
+func endpointAddress(endpoint string) string {
+	if i := strings.Index(endpoint, "@tcp("); i >= 0 {
+		rest := endpoint[i+len("@tcp("):]
+		if j := strings.IndexByte(rest, ')'); j > 0 {
+			return rest[:j]
+		}
+		return ""
+	}
+	u, err := url.Parse(endpoint)
+	if err != nil || u.Port() == "" {
+		return ""
+	}
+	return u.Host
+}
 
 type WaitDatabaseRequest struct {
 	Endpoint       string        `json:"endpoint"`

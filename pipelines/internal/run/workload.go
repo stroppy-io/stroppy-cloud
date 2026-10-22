@@ -88,6 +88,16 @@ func runWorkload(ctx pipeline.Context, run spec.Run, runner pipeline.Agent, addr
 		}
 	}
 
+	if run.ManagedYDB == nil && run.Workload.DriverType != "noop" {
+		_, err := activity.Activity(ctx, runner,
+			activity.Fn(activities.NameWaitReachable, activities.WaitReachable, activities.WaitReachableRequest{Endpoint: url}),
+			activity.WithTimeout(6*time.Minute), activity.WithHeartbeat(time.Minute),
+		)
+		if err != nil {
+			return out, fmt.Errorf("database connectivity: %w", err)
+		}
+	}
+
 	if b := run.Workload.Baseline; b != nil && b.Enabled {
 		out.Baseline = runBaseline(ctx, run, runner, &out)
 	}
