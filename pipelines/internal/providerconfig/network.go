@@ -186,6 +186,12 @@ func ensureNetwork(ctx context.Context, cli adapter, p spec.ProviderConfig, name
 		if wanted[o.kind+"/"+o.name] {
 			continue
 		}
+		// Most profiles never had the object: nothing to wait for.
+		if exists, err := present(ctx, cli, sharedObject(o.kind, o.name)); err != nil {
+			return err
+		} else if !exists {
+			continue
+		}
 		if err := unused(ctx, cli, p.Provider, name, ownNetwork(p.Provider, name)); err != nil {
 			return err
 		}
@@ -361,3 +367,16 @@ func sharedNetwork(ctx context.Context, cli adapter, p spec.ProviderConfig, name
 }
 
 func ptr[T any](v T) *T { return &v }
+
+// present reports whether the object exists.
+func present(ctx context.Context, cli adapter, u *unstructured.Unstructured) (bool, error) {
+	c, err := cli.ObjectClient(ctx, u)
+	if err != nil {
+		return false, err
+	}
+	_, err = c.Get(ctx, u.GetName(), metav1.GetOptions{})
+	if apierrors.IsNotFound(err) {
+		return false, nil
+	}
+	return err == nil, err
+}

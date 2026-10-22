@@ -160,3 +160,25 @@ func TestAWSHasNoProfileNetwork(t *testing.T) {
 	require.Empty(t, objects)
 	require.NoError(t, removeNetwork(context.Background(), cli, p.Provider, name, labels))
 }
+
+// A public profile upgraded while old runs still use its config: it never
+// had a NAT pair, so there is nothing to wait for.
+func TestPublicProfileNetworkNextToLiveRuns(t *testing.T) {
+	p, name, labels, cli := fixture(t)
+	p.Settings = json.RawMessage(publicSettings)
+	converging(cli, "")
+	ctx := context.Background()
+	require.NoError(t, ensure(ctx, cli, p, name, labels, testCredentials))
+	vm := sharedObject("Instance", "stroppy-acme-8f1c3f2a-db-1")
+	vm.Object["spec"] = map[string]any{"providerConfigRef": map[string]any{"name": name}}
+	c, err := cli.ObjectClient(ctx, vm)
+	require.NoError(t, err)
+	_, err = c.Create(ctx, vm, metav1.CreateOptions{})
+	require.NoError(t, err)
+
+	require.NoError(t, ensureNetwork(ctx, cli, p, name, labels))
+	_, ok := get(t, cli, "Network", spec.ProfileNetworkName(name))
+	require.True(t, ok)
+	_, ok = get(t, cli, "Gateway", spec.ProfileGatewayName(name))
+	require.False(t, ok)
+}
