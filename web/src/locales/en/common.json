@@ -544,7 +544,7 @@
   "topologyRole": {
     "db": "Database",
     "db-replica": "Replica",
-    "db-compute": "Compute node",
+    "db-compute": "Query node",
     "etcd": "etcd",
     "coordinator": "Coordinator",
     "proxy": "Proxy",
@@ -552,6 +552,14 @@
     "patroni": "Patroni",
     "patroni-replica": "Patroni (replica)",
     "pgbouncer": "PgBouncer"
+  },
+  "topologyPart": {
+    "single": "Single server",
+    "cluster": "Cluster",
+    "primary": "Primary",
+    "replica": "Replica",
+    "storage": "Storage",
+    "compute": "Query"
   },
   "quota": {
     "compute_instances_count": "Machines",

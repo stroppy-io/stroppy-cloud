@@ -550,7 +550,7 @@
   "topologyRole": {
     "db": "База данных",
     "db-replica": "Реплика",
-    "db-compute": "Вычислительный узел",
+    "db-compute": "Узел запросов",
     "etcd": "etcd",
     "coordinator": "Координатор",
     "proxy": "Прокси",
@@ -558,6 +558,14 @@
     "patroni": "Patroni",
     "patroni-replica": "Patroni на реплике",
     "pgbouncer": "PgBouncer"
+  },
+  "topologyPart": {
+    "single": "Один сервер",
+    "cluster": "Кластер",
+    "primary": "Основной",
+    "replica": "Реплика",
+    "storage": "Хранение",
+    "compute": "Запросы"
   },
   "quota": {
     "compute_instances_count": "Машины",
