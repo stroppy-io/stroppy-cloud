@@ -39,6 +39,7 @@ func cockroachFull() map[string]any {
 		"insecure":        true,
 		"max_offset":      500 * time.Millisecond,
 		"cluster_name":    "stroppy",
+		"gc_ttl_seconds":  int64(600),
 		"cluster_settings": map[string]any{
 			"kv.snapshot_rebalance.max_rate":      "256MiB",
 			"kv.range_split.load_qps_threshold":   "5000",
@@ -57,6 +58,9 @@ func cockroachCases(full map[string]any) schematest.Cases {
 			{Value: map[string]any{"max_offset": 30 * time.Second}, Code: "LTE_VIOLATED", Path: "max_offset"},
 			{Value: map[string]any{"cluster_settings": map[string]any{"NotASetting": "1"}}, Code: "RULE_VIOLATED", Path: "cluster_settings"},
 			{Value: map[string]any{"junk": 1}, Code: "UNKNOWN_FIELD", Path: "junk"},
+			// no certificates are provisioned, so secure mode is refused
+			{Value: map[string]any{"insecure": false}, Code: "RULE_VIOLATED", Path: "insecure-only"},
+			{Value: map[string]any{"gc_ttl_seconds": int64(10)}, Code: "GTE_VIOLATED", Path: "gc_ttl_seconds"},
 		},
 		Render: "conf",
 		Contains: []string{
@@ -78,17 +82,24 @@ func runCockroach(t *testing.T, s *schemapb.Schema, full map[string]any) string 
 	schematest.Run(t, s, schematest.Cases{
 		Valid:    []map[string]any{full},
 		Render:   "settings",
-		Contains: []string{"SET CLUSTER SETTING ", ";"},
+		Contains: []string{"SET CLUSTER SETTING ", ";", "ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = 600;"},
 	})
 
 	return renderDefaults(t, s)
 }
 
 func TestCockroach24(t *testing.T) {
-	out := runCockroach(t, Cockroach24(), cockroachFull())
+	full := cockroachFull()
+	full["wal_failover"] = "among-stores"
+	full["max_disk_temp_storage"] = "30GiB"
+	full["locality_advertise_addr"] = "region=ru-central1@10.0.0.11:26257"
 
-	// The 25.x flags are not part of the 24.x surface.
-	dontWantLines(t, out, "--wal-failover", "--max-disk-temp-storage", "--locality-advertise-addr")
+	out := runCockroach(t, Cockroach24(), full)
+
+	// --wal-failover, --max-disk-temp-storage and --locality-advertise-addr
+	// are on the v24.1 page already.
+	wantContains(t, out, "--max-disk-temp-storage=32GiB")
+	dontWantLines(t, out, "--wal-failover", "--locality-advertise-addr")
 }
 
 func TestCockroach25(t *testing.T) {

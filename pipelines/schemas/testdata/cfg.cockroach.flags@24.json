@@ -139,7 +139,7 @@
       "bool": {
         "default": true
       },
-      "description": "--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live.",
+      "description": "--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live. Must stay on: the stand provisions no node or CA certificates.",
       "group": "Security",
       "name": "insecure",
       "title": "Insecure"
@@ -209,6 +209,68 @@
       "title": "Cluster settings"
     },
     {
+      "description": "ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds : how long overwritten MVCC values are kept. Empty keeps the upstream zone (4 hours).",
+      "group": "Cluster settings",
+      "int64": {
+        "gte": "60",
+        "lte": "604800"
+      },
+      "name": "gc_ttl_seconds",
+      "nullable": true,
+      "title": "GC TTL of the default range",
+      "unit": "s"
+    },
+    {
+      "choice": {
+        "default": {
+          "stringValue": "disabled"
+        },
+        "options": [
+          {
+            "label": "disabled",
+            "value": {
+              "stringValue": "disabled"
+            }
+          },
+          {
+            "label": "among-stores",
+            "value": {
+              "stringValue": "among-stores"
+            }
+          }
+        ]
+      },
+      "description": "--wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node.",
+      "group": "Store",
+      "name": "wal_failover",
+      "title": "WAL failover"
+    },
+    {
+      "description": "--locality-advertise-addr : \"key=value@address\" pairs letting nodes in the same locality use a private address. Filled by the server from topology.",
+      "examples": [
+        {
+          "stringValue": "region=ru-central1@10.0.0.11:26257"
+        }
+      ],
+      "group": "Cluster",
+      "name": "locality_advertise_addr",
+      "nullable": true,
+      "string": {
+        "maxLen": "512"
+      },
+      "title": "Locality advertise address"
+    },
+    {
+      "description": "--max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is not counted towards the store, so --store size plus this must fit on the disk.",
+      "group": "Store",
+      "name": "max_disk_temp_storage",
+      "string": {
+        "default": "32GiB",
+        "pattern": "^([0-9]{1,3}%|[0-9]+(\\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$"
+      },
+      "title": "Max disk temp storage"
+    },
+    {
       "computed": {
         "expr": "!(\"join\" in root) || size(root.join) == 0 ? \"\" : \" --join=\" + root.join.join(\",\")",
         "result": "RESULT_TYPE_STRING"
@@ -273,23 +335,23 @@
     },
     {
       "computed": {
-        "expr": "(\"cluster_settings\" in root)\n\t\t\t\t\t? root.cluster_settings.map(k, \"SET CLUSTER SETTING \" + k + \" = \" + string(root.cluster_settings[k]) + \";\").join(\"\\n\")\n\t\t\t\t\t: \"\"",
+        "expr": "((\"cluster_settings\" in root)\n\t\t\t\t\t? root.cluster_settings.map(k, \"SET CLUSTER SETTING \" + k + \" = \" + string(root.cluster_settings[k]) + \";\").join(\"\\n\")\n\t\t\t\t\t: \"\") +\n\t\t\t ((\"gc_ttl_seconds\" in root) ? \"\\nALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = \" + string(root.gc_ttl_seconds) + \";\" : \"\")",
         "result": "RESULT_TYPE_STRING"
       },
-      "description": "Derived: the SET CLUSTER SETTING block.",
+      "description": "Derived: the SET CLUSTER SETTING block and the default zone.",
       "group": "Cluster settings",
       "name": "settings_sql",
       "title": "Rendered SQL"
     },
     {
       "computed": {
-        "expr": "\"\"",
+        "expr": "(root.wal_failover == \"disabled\" ? \"\" : \" --wal-failover=\" + root.wal_failover) +\n\t\t\t \" --max-disk-temp-storage=\" + root.max_disk_temp_storage +\n\t\t\t ((\"locality_advertise_addr\" in root) ? \" --locality-advertise-addr=\" + root.locality_advertise_addr : \"\")",
         "result": "RESULT_TYPE_STRING"
       },
-      "description": "Empty on 24.x: those flags are modeled from @25 on.",
+      "description": "Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr.",
       "group": "Store",
       "name": "modern_flags",
-      "title": "Rendered 25.x/26.x flags"
+      "title": "Rendered store and locality flags"
     }
   ],
   "id": {
@@ -299,9 +361,9 @@
   },
   "rules": [
     {
-      "expr": "root.insecure || root.certs_dir != \"\"",
-      "id": "secure-needs-certs",
-      "message": "secure mode needs a certificates directory"
+      "expr": "root.insecure",
+      "id": "insecure-only",
+      "message": "secure mode is not available: the stand provisions no node or CA certificates"
     }
   ],
   "strict": true,

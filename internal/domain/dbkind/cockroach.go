@@ -47,6 +47,11 @@ func planCockroach(p *topology.Plan, params map[string]any) {
 	if haproxy > 0 {
 		p.Add(topology.RoleProxy, "haproxy", haproxy)
 		p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDB, Protocol: "cockroach", Port: 26257})
+		if topology.StrOf(params, "tuning", "auto") != "stock" {
+			// The auto tuning checks each node's readiness over HTTP
+			// (GET /health?ready=1), as cockroach gen haproxy does.
+			p.Flows = append(p.Flows, topology.Flow{From: topology.RoleProxy, To: topology.RoleDB, Protocol: "cockroach-http", Port: 8080})
+		}
 		p.Client = topology.Endpoint{Role: topology.RoleProxy, Protocol: "cockroach", Port: 26257}
 		p.Requirements[topology.RoleProxy] = topology.Because(2, 2, 10, topology.ReasonProxy, "engine", "haproxy")
 	}

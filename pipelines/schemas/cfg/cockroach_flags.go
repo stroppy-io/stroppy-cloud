@@ -11,17 +11,18 @@ import (
 
 // Cockroach24 is cfg.cockroach.flags@24 (the v24.1 / v24.3 LTS lines).
 //
-// doc: https://www.cockroachlabs.com/docs/v24.3/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/v24.1/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/v24.3/cockroach-start
 func Cockroach24() *schemapb.Schema { return cockroachFlags(24) }
 
 // Cockroach25 is cfg.cockroach.flags@25 (the v25.2 / v25.4 LTS lines).
 //
-// doc: https://www.cockroachlabs.com/docs/v25.4/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/v25.4/cockroach-start
 func Cockroach25() *schemapb.Schema { return cockroachFlags(25) }
 
 // Cockroach26 is cfg.cockroach.flags@26 (the v26.2 / v26.3 lines).
 //
-// doc: https://www.cockroachlabs.com/docs/v26.3/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/v26.3/cockroach-start
 func Cockroach26() *schemapb.Schema { return cockroachFlags(26) }
 
 // cockroachFlags builds cfg.cockroach.flags@<major>. CockroachDB has no
@@ -32,18 +33,16 @@ func Cockroach26() *schemapb.Schema { return cockroachFlags(26) }
 //	"conf"     the flags line appended to `cockroach start`
 //	"settings" the SET CLUSTER SETTING block run against the first node
 //
-// doc: https://www.cockroachlabs.com/docs/v26.3/cockroach-start
-// doc: https://www.cockroachlabs.com/docs/v26.3/cluster-settings
+// doc: https://docs.cockroachlabs.com/docs/v26.3/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/v26.3/cluster-settings
 //
-// Checked across v24.3, v25.4 and v26.3: not one of the flags below was
-// removed, renamed or deprecated — the three majors share the whole surface.
-// What did change, and how it is handled here:
-//
-//   - --cache upstream default went 128MiB (24.x) -> 256MiB (25.4+). The
-//     schema pins 25% on every major, so the change is documentation only.
-//   - 25.x/26.x additions worth having on a benchmark node are modeled only
-//     from @25 on: --wal-failover, --locality-advertise-addr and
-//     --max-disk-temp-storage.
+// Checked across v24.1, v24.3, v25.4 and v26.3: not one of the flags below
+// was removed, renamed or deprecated — the majors share the whole surface.
+// --wal-failover (preview in 24.1), --locality-advertise-addr and
+// --max-disk-temp-storage (default 32GiB) are already on the v24.1 page.
+// What did change: the --cache upstream default went 128MiB (24.x) ->
+// 256MiB (25.4+); the schema pins 25% on every major, so the change is
+// documentation only.
 //
 // The deprecated networking flags (--host, --port, --advertise-host,
 // --http-host, --http-port) are deliberately absent on every major; only the
@@ -104,7 +103,7 @@ func cockroachFlags(major uint64) *schemapb.Schema {
 
 		// --- security -------------------------------------------------
 		schemapb.Bool("insecure").Title("Insecure").Group("Security").
-			Desc("--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live.").
+			Desc("--insecure : no TLS, no authentication. Acceptable only inside the run's private network, which is where these stands live. Must stay on: the stand provisions no node or CA certificates.").
 			Default(true),
 		schemapb.Str("certs_dir").Title("Certificates directory").Group("Security").
 			Desc("--certs-dir : node and CA certificates; read only in secure mode.").
@@ -135,26 +134,26 @@ func cockroachFlags(major uint64) *schemapb.Schema {
 			Rules(schemapb.Rule(
 				`this.all(k, k.matches("^[a-z][a-z0-9_]*([.][a-z0-9_]+)+$"))`,
 				"cluster setting names look like kv.snapshot_rebalance.max_rate").ID("setting-name-shape")),
-	}
+		// doc: https://docs.cockroachlabs.com/docs/stable/configure-replication-zones — gc.ttlseconds
+		schemapb.Int64("gc_ttl_seconds").Title("GC TTL of the default range").Group("Cluster settings").
+			Desc("ALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds : how long overwritten MVCC values are kept. Empty keeps the upstream zone (4 hours).").
+			Unit("s").Gte(60).Lte(7 * 24 * 3600).Nullable(),
 
-	if major >= 25 {
-		fields = append(fields,
-			// doc: v25.4/v26.3 cockroach-start — --wal-failover
-			schemapb.Choice("wal_failover").Title("WAL failover").Group("Store").
-				Desc("--wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node.").
-				Opt(schemapb.StrV("disabled"), "disabled").
-				Opt(schemapb.StrV("among-stores"), "among-stores").
-				Default(schemapb.StrV("disabled")),
-			// doc: v25.4/v26.3 cockroach-start — --locality-advertise-addr
-			schemapb.Str("locality_advertise_addr").Title("Locality advertise address").Group("Cluster").
-				Desc(`--locality-advertise-addr : "key=value@address" pairs letting nodes in the same locality use a private address. Filled by the server from topology.`).
-				MaxLen(512).Nullable().
-				Examples(schemapb.StrV("region=ru-central1@10.0.0.11:26257")),
-			// doc: v25.4/v26.3 cockroach-start — --max-disk-temp-storage, default 32GiB
-			schemapb.Str("max_disk_temp_storage").Title("Max disk temp storage").Group("Store").
-				Desc("--max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is taken out of the store, so it must fit inside --store size.").
-				Pattern(`^([0-9]{1,3}%|[0-9]+(\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$`).Default("32GiB"),
-		)
+		// doc: v24.1..v26.3 cockroach-start — --wal-failover
+		schemapb.Choice("wal_failover").Title("WAL failover").Group("Store").
+			Desc("--wal-failover : when a store's disk stalls, keep writing its WAL to another store instead of blocking. Needs at least two stores; disabled on a single-store node.").
+			Opt(schemapb.StrV("disabled"), "disabled").
+			Opt(schemapb.StrV("among-stores"), "among-stores").
+			Default(schemapb.StrV("disabled")),
+		// doc: v24.1..v26.3 cockroach-start — --locality-advertise-addr
+		schemapb.Str("locality_advertise_addr").Title("Locality advertise address").Group("Cluster").
+			Desc(`--locality-advertise-addr : "key=value@address" pairs letting nodes in the same locality use a private address. Filled by the server from topology.`).
+			MaxLen(512).Nullable().
+			Examples(schemapb.StrV("region=ru-central1@10.0.0.11:26257")),
+		// doc: v24.1..v26.3 cockroach-start — --max-disk-temp-storage, default 32GiB
+		schemapb.Str("max_disk_temp_storage").Title("Max disk temp storage").Group("Store").
+			Desc("--max-disk-temp-storage : disk budget queries may spill to. Upstream default 32GiB; it is not counted towards the store, so --store size plus this must fit on the disk.").
+			Pattern(`^([0-9]{1,3}%|[0-9]+(\.[0-9]+)?(B|KB|MB|GB|TB|KiB|MiB|GiB|TiB)?)$`).Default("32GiB"),
 	}
 
 	// Lists and maps are invisible to a one-level Mustache context, so
@@ -183,39 +182,32 @@ func cockroachFlags(major uint64) *schemapb.Schema {
 			`root.log == "" ? "" : " --log=" + root.log`).
 			Result(schemapb.ResultString).Group("Logging").Title("Rendered --log"),
 		schemapb.Computed("settings_sql",
-			`("cluster_settings" in root)
+			`(("cluster_settings" in root)
 					? root.cluster_settings.map(k, "SET CLUSTER SETTING " + k + " = " + string(root.cluster_settings[k]) + ";").join("\n")
-					: ""`).
+					: "") +
+			 (("gc_ttl_seconds" in root) ? "\nALTER RANGE default CONFIGURE ZONE USING gc.ttlseconds = " + string(root.gc_ttl_seconds) + ";" : "")`).
 			Result(schemapb.ResultString).Group("Cluster settings").
-			Title("Rendered SQL").Desc("Derived: the SET CLUSTER SETTING block."),
+			Title("Rendered SQL").Desc("Derived: the SET CLUSTER SETTING block and the default zone."),
+		schemapb.Computed("modern_flags",
+			`(root.wal_failover == "disabled" ? "" : " --wal-failover=" + root.wal_failover) +
+			 " --max-disk-temp-storage=" + root.max_disk_temp_storage +
+			 (("locality_advertise_addr" in root) ? " --locality-advertise-addr=" + root.locality_advertise_addr : "")`).
+			Result(schemapb.ResultString).Group("Store").
+			Title("Rendered store and locality flags").
+			Desc("Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr."),
 	)
-
-	if major >= 25 {
-		fields = append(fields,
-			schemapb.Computed("modern_flags",
-				`(root.wal_failover == "disabled" ? "" : " --wal-failover=" + root.wal_failover) +
-				 " --max-disk-temp-storage=" + root.max_disk_temp_storage +
-				 (("locality_advertise_addr" in root) ? " --locality-advertise-addr=" + root.locality_advertise_addr : "")`).
-				Result(schemapb.ResultString).Group("Store").
-				Title("Rendered 25.x/26.x flags").
-				Desc("Derived: --wal-failover, --max-disk-temp-storage and --locality-advertise-addr."),
-		)
-	} else {
-		fields = append(fields,
-			schemapb.Computed("modern_flags", `""`).
-				Result(schemapb.ResultString).Group("Store").
-				Title("Rendered 25.x/26.x flags").
-				Desc("Empty on 24.x: those flags are modeled from @25 on."),
-		)
-	}
 
 	return schemapb.NewSchema(ids.Cfg("cockroach.flags", major)).
 		Descr(fmt.Sprintf("CockroachDB %d.x node start flags and cluster settings.", major)).
 		Strict().Coerce().
 		Fields(fields...).
 		Rules(
-			schemapb.Rule("root.insecure || root.certs_dir != \"\"",
-				"secure mode needs a certificates directory").ID("secure-needs-certs"),
+			// Secure mode needs node, client and CA certificates in certs_dir
+			// on every node and the runner; the stand creates none, so a
+			// secure node could not start or be reached.
+			// doc: https://docs.cockroachlabs.com/docs/stable/cockroach-cert
+			schemapb.Rule("root.insecure",
+				"secure mode is not available: the stand provisions no node or CA certificates").ID("insecure-only"),
 		).
 		Template("conf", `--listen-addr={{{values.listen_addr}}}{{{values.advertise_flag}}}{{{values.sql_addr_flag}}} --http-addr={{{values.http_addr}}}{{{values.store_flag}}} --cache={{{values.cache}}} --max-sql-memory={{{values.max_sql_memory}}} --max-tsdb-memory={{{values.max_tsdb_memory}}} --max-offset={{{values.max_offset}}} --cluster-name={{{values.cluster_name}}}{{{values.locality_flag}}}{{{values.join_flag}}}{{{values.security_flag}}}{{{values.modern_flags}}}{{{values.log_flag}}}
 `).

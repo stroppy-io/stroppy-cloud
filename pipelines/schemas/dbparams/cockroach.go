@@ -11,7 +11,7 @@ import (
 // real topology knobs are how many nodes there are and how they are told about
 // their physical placement.
 //
-// doc: https://www.cockroachlabs.com/docs/stable/cockroach-start
+// doc: https://docs.cockroachlabs.com/docs/stable/cockroach-start
 func Cockroach() *schemapb.Schema {
 	return schemapb.NewSchema(ids.DB("cockroach", 1)).
 		Descr("CockroachDB topology and options: version, node count, locality, TLS mode.").
@@ -22,7 +22,7 @@ func Cockroach() *schemapb.Schema {
 			// 24.2 (Innovation) died 2025-02-12, so both are gone; 24.1, 24.3,
 			// 25.2 and 25.4 are the live LTS lines, 26.2 and 26.3 the current
 			// Regular/Innovation ones.
-			// doc: https://www.cockroachlabs.com/docs/releases/release-support-policy
+			// doc: https://docs.cockroachlabs.com/docs/releases/release-support-policy
 			// doc: https://hub.docker.com/r/cockroachdb/cockroach/tags
 			schemapb.Choice("version").Title("CockroachDB version").Group("Engine").
 				Desc("Server series; the binary is pulled per release train (LTS lines get a year of maintenance plus a year of assistance).").
@@ -37,14 +37,14 @@ func Cockroach() *schemapb.Schema {
 			// Raft needs a majority, so anything above one node must be odd:
 			// an even cluster tolerates no more failures than the odd one
 			// below it and costs a machine.
-			// doc: https://www.cockroachlabs.com/docs/stable/cockroach-start
+			// doc: https://docs.cockroachlabs.com/docs/stable/cockroach-start
 			schemapb.Int64("nodes").Title("Nodes").Group("Topology").
 				Desc("Homogeneous cluster size; 1 for a single-node stand, otherwise an odd number >= 3 so Raft can hold a majority.").
 				Gte(1).Lte(15).Default(3),
 
 			// --locality is an ordered key=value list, most inclusive first,
 			// and the key set must match across the whole cluster.
-			// doc: https://www.cockroachlabs.com/docs/stable/cockroach-start
+			// doc: https://docs.cockroachlabs.com/docs/stable/cockroach-start
 			schemapb.List("locality",
 				schemapb.Str("").
 					Desc("One node's --locality value: comma-separated key=value pairs, most inclusive first.").
@@ -54,9 +54,12 @@ func Cockroach() *schemapb.Schema {
 				Desc("--locality for each node, in node order; leave empty for a flat cluster. When set it must have exactly one entry per node and every entry must use the same keys in the same order.").
 				MaxItems(15),
 
-			// doc: https://www.cockroachlabs.com/docs/stable/secure-a-cluster
+			// Secure mode needs node, client and CA certificates on every node
+			// and the runner (cockroach cert); the stand creates none, so the
+			// field stays only for the databases saved with it and must be on.
+			// doc: https://docs.cockroachlabs.com/docs/stable/secure-a-cluster
 			schemapb.Bool("insecure").Title("Insecure mode").Group("Security").
-				Desc("Start with --insecure: no TLS and no authentication. Default on — a throwaway benchmark stand should measure the engine, not the handshake.").
+				Desc("Start with --insecure: no TLS and no authentication. Always on: the stand provisions no certificates, so a secure cluster could not start.").
 				Default(true),
 
 			// doc: https://www.haproxy.org/download/2.9/doc/configuration.txt
@@ -64,7 +67,7 @@ func Cockroach() *schemapb.Schema {
 				Desc("HAProxy instances spreading SQL clients over the nodes (cockroach gen haproxy produces an equivalent config).").
 				Gte(0).Lte(2).Default(0),
 
-			// doc: https://www.cockroachlabs.com/docs/stable/cockroach-sql
+			// doc: https://docs.cockroachlabs.com/docs/stable/cockroach-sql
 			schemapb.Str("init_sql").Title("Init SQL").Group("Initialization").
 				Desc("SQL executed against the cluster once it is initialized, before the workload.").
 				MaxLen(65536),
@@ -74,6 +77,8 @@ func Cockroach() *schemapb.Schema {
 				"a cluster is either a single node or an odd number of at least 3 (Raft majority)").ID("odd-nodes"),
 			schemapb.Rule(`!("locality" in root) || size(root.locality) == 0 || size(root.locality) == int(root.nodes)`,
 				"locality must be empty or carry exactly one entry per node").ID("locality-per-node"),
+			schemapb.Rule(`root.insecure`,
+				"secure mode is not available: the stand provisions no node or CA certificates").ID("insecure-only"),
 			schemapb.Rule(`int(root.haproxy) == 0 || int(root.nodes) >= 3`,
 				"HAProxy in front of a single node only adds a hop").ID("haproxy-pointless").Warn(),
 		).
