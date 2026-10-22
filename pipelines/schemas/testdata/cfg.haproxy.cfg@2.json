@@ -447,6 +447,17 @@
                                   "title": "Port"
                                 },
                                 {
+                                  "description": "This server's health-check port when it differs from the listener's (instances sharing a machine on their own ports).",
+                                  "group": "Listeners",
+                                  "int64": {
+                                    "gte": "1",
+                                    "lte": "65535"
+                                  },
+                                  "name": "check_port",
+                                  "nullable": true,
+                                  "title": "Check port"
+                                },
+                                {
                                   "description": "server weight for the balancing algorithm.",
                                   "group": "Listeners",
                                   "int64": {
@@ -503,7 +514,7 @@
     },
     {
       "computed": {
-        "expr": "(\"listeners\" in root) ? root.listeners.map(l,\n\t\t\t\t\t\"listen \" + l.name + \"\\n\" +\n\t\t\t\t\t\"    bind *:\" + string(l.bind_port) + \"\\n\" +\n\t\t\t\t\t\"    mode \" + l.mode + \"\\n\" +\n\t\t\t\t\t\"    balance \" + l.balance + \"\\n\" +\n\t\t\t\t\t(l.check.kind == \"httpchk\"\n\t\t\t\t\t\t? \"    option httpchk\\n\" +\n\t\t\t\t\t\t  \"    http-check send meth \" + l.check.method + \" uri \" + l.check.uri + \"\\n\" +\n\t\t\t\t\t\t  \"    http-check expect status \" + string(l.check.expect_status) + \"\\n\"\n\t\t\t\t\t\t: \"    option tcp-check\\n\") +\n\t\t\t\t\t\"    default-server inter \" + string(l.check.inter) +\n\t\t\t\t\t\t\"s fall \" + string(l.check.fall) +\n\t\t\t\t\t\t\" rise \" + string(l.check.rise) +\n\t\t\t\t\t\t\" on-marked-down shutdown-sessions\\n\" +\n\t\t\t\t\tl.servers.map(s,\n\t\t\t\t\t\t\"    server \" + s.name + \" \" + s.address + \":\" + string(s.port) +\n\t\t\t\t\t\t\" check port \" + string(l.check.port) +\n\t\t\t\t\t\t\" weight \" + string(s.weight) +\n\t\t\t\t\t\t(s.maxconn \u003e 0 ? \" maxconn \" + string(s.maxconn) : \"\") +\n\t\t\t\t\t\t(s.backup ? \" backup\" : \"\")\n\t\t\t\t\t).join(\"\\n\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
+        "expr": "(\"listeners\" in root) ? root.listeners.map(l,\n\t\t\t\t\t\"listen \" + l.name + \"\\n\" +\n\t\t\t\t\t\"    bind *:\" + string(l.bind_port) + \"\\n\" +\n\t\t\t\t\t\"    mode \" + l.mode + \"\\n\" +\n\t\t\t\t\t\"    balance \" + l.balance + \"\\n\" +\n\t\t\t\t\t(l.check.kind == \"httpchk\"\n\t\t\t\t\t\t? \"    option httpchk\\n\" +\n\t\t\t\t\t\t  \"    http-check send meth \" + l.check.method + \" uri \" + l.check.uri + \"\\n\" +\n\t\t\t\t\t\t  \"    http-check expect status \" + string(l.check.expect_status) + \"\\n\"\n\t\t\t\t\t\t: \"    option tcp-check\\n\") +\n\t\t\t\t\t\"    default-server inter \" + string(l.check.inter) +\n\t\t\t\t\t\t\"s fall \" + string(l.check.fall) +\n\t\t\t\t\t\t\" rise \" + string(l.check.rise) +\n\t\t\t\t\t\t\" on-marked-down shutdown-sessions\\n\" +\n\t\t\t\t\tl.servers.map(s,\n\t\t\t\t\t\t\"    server \" + s.name + \" \" + s.address + \":\" + string(s.port) +\n\t\t\t\t\t\t\" check port \" + string((\"check_port\" in s \u0026\u0026 s.check_port != null) ? s.check_port : l.check.port) +\n\t\t\t\t\t\t\" weight \" + string(s.weight) +\n\t\t\t\t\t\t(s.maxconn \u003e 0 ? \" maxconn \" + string(s.maxconn) : \"\") +\n\t\t\t\t\t\t(s.backup ? \" backup\" : \"\")\n\t\t\t\t\t).join(\"\\n\")\n\t\t\t\t).join(\"\\n\\n\") : \"\"",
         "result": "RESULT_TYPE_STRING"
       },
       "description": "Derived: every listen block with its servers.",

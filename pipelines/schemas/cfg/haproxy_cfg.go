@@ -146,6 +146,9 @@ func Haproxy2() *schemapb.Schema {
 								MinLen(1).MaxLen(256).Required(),
 							schemapb.Int64("port").Title("Port").Group("Listeners").
 								Desc("Backend database port.").Gte(1).Lte(65535).Required(),
+							schemapb.Int64("check_port").Title("Check port").Group("Listeners").
+								Desc("This server's health-check port when it differs from the listener's (instances sharing a machine on their own ports).").
+								Gte(1).Lte(65535).Nullable(),
 							schemapb.Int64("weight").Title("Weight").Group("Listeners").
 								Desc("server weight for the balancing algorithm.").Gte(0).Lte(256).Default(100),
 							schemapb.Bool("backup").Title("Backup").Group("Listeners").
@@ -180,7 +183,7 @@ func Haproxy2() *schemapb.Schema {
 						" on-marked-down shutdown-sessions\n" +
 					l.servers.map(s,
 						"    server " + s.name + " " + s.address + ":" + string(s.port) +
-						" check port " + string(l.check.port) +
+						" check port " + string(("check_port" in s && s.check_port != null) ? s.check_port : l.check.port) +
 						" weight " + string(s.weight) +
 						(s.maxconn > 0 ? " maxconn " + string(s.maxconn) : "") +
 						(s.backup ? " backup" : "")

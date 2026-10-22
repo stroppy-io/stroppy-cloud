@@ -75,7 +75,7 @@ type haproxyListener struct {
 	Name     string
 	BindPort int
 	Servers  []haproxyServer
-	Check    map[string]any // overrides of the check object; nil = tcp check on the server port
+	Check    map[string]any // overrides of the check object; nil = tcp check on each server's port
 }
 
 type haproxyServer struct {
@@ -92,8 +92,13 @@ func (c *compilation) haproxy(listeners []haproxyListener) error {
 	list := make([]any, 0, len(listeners))
 	for _, l := range listeners {
 		servers := make([]any, 0, len(l.Servers))
+		_, checkPort := l.Check["port"]
 		for _, s := range l.Servers {
-			servers = append(servers, map[string]any{"name": s.Name, "address": s.Address, "port": s.Port})
+			server := map[string]any{"name": s.Name, "address": s.Address, "port": s.Port}
+			if !checkPort && s.Port != l.Servers[0].Port {
+				server["check_port"] = s.Port // without a check port of its own, a server is checked where it listens
+			}
+			servers = append(servers, server)
 		}
 		check := map[string]any{"kind": "tcp", "method": "GET", "uri": "/primary", "expect_status": 200, "port": l.Servers[0].Port, "inter": 3, "fall": 3, "rise": 2}
 		for k, v := range l.Check {

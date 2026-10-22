@@ -199,22 +199,10 @@ func picodataRecipe(c *compilation) error {
 	if err := c.haproxy([]haproxyListener{{Name: "sql", BindPort: proxyRW, Servers: servers}}); err != nil {
 		return err
 	}
-	// The proxy waits for every instance, whatever their names. cfg.haproxy
-	// checks one port per listener (the first server's); an instance on
-	// another slot is checked on its own port instead.
+	// The proxy waits for every instance, whatever their names.
 	for i := range c.out.Spec.Containers {
-		ct := &c.out.Spec.Containers[i]
-		if ct.Kind != spec.ContainerKindProxy {
-			continue
-		}
-		ct.DependsOn = containers
-		for f := range ct.Files {
-			for _, s := range servers[1:] {
-				if s.Port != servers[0].Port {
-					line := fmt.Sprintf("server %s %s:%d check port ", s.Name, s.Address, s.Port)
-					ct.Files[f].Content = strings.Replace(ct.Files[f].Content, fmt.Sprintf("%s%d ", line, servers[0].Port), fmt.Sprintf("%s%d ", line, s.Port), 1)
-				}
-			}
+		if ct := &c.out.Spec.Containers[i]; ct.Kind == spec.ContainerKindProxy {
+			ct.DependsOn = containers
 		}
 	}
 	return nil
