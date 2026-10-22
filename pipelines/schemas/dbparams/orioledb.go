@@ -18,9 +18,11 @@ func Orioledb() *schemapb.Schema {
 		Strict().Coerce().
 		Fields(
 			tuning(),
-			// Tag list verified against the registry on 2026-09-08: the
-			// repository publishes latest-pgNN (tracking main), beta17-pgNN
-			// (the beta17 release) and pgNN-nightly for majors 16, 17, 18.
+			// Tag list verified against the registry on 2026-10-22: the
+			// repository publishes latest-pgNN (tracking main), betaNN-pgNN
+			// releases (beta17, beta18, beta19) and pgNN-nightly for majors
+			// 16, 17, 18. beta18 bumped the WAL format: primary and replicas
+			// of one stand always run the same tag.
 			// The project calls itself public beta — not production software,
 			// which is fine for a benchmark stand.
 			// doc: https://hub.docker.com/r/orioledb/orioledb/tags
@@ -29,10 +31,16 @@ func Orioledb() *schemapb.Schema {
 				Opt(schemapb.StrV("latest-pg18"), "latest-pg18 (main, PG 18)").
 				Opt(schemapb.StrV("latest-pg17"), "latest-pg17 (main, PG 17)").
 				Opt(schemapb.StrV("latest-pg16"), "latest-pg16 (main, PG 16)").
+				Opt(schemapb.StrV("beta19-pg18"), "beta19-pg18 (release, PG 18)").
+				Opt(schemapb.StrV("beta19-pg17"), "beta19-pg17 (release, PG 17)").
+				Opt(schemapb.StrV("beta19-pg16"), "beta19-pg16 (release, PG 16)").
+				Opt(schemapb.StrV("beta18-pg18"), "beta18-pg18 (release, PG 18)").
+				Opt(schemapb.StrV("beta18-pg17"), "beta18-pg17 (release, PG 17)").
+				Opt(schemapb.StrV("beta18-pg16"), "beta18-pg16 (release, PG 16)").
 				Opt(schemapb.StrV("beta17-pg18"), "beta17-pg18 (release, PG 18)").
 				Opt(schemapb.StrV("beta17-pg17"), "beta17-pg17 (release, PG 17)").
 				Opt(schemapb.StrV("beta17-pg16"), "beta17-pg16 (release, PG 16)").
-				Default(schemapb.StrV("beta17-pg17")).Required(),
+				Default(schemapb.StrV("beta19-pg17")).Required(),
 
 			// doc: https://hub.docker.com/r/orioledb/orioledb/tags
 			schemapb.Bool("ubuntu_base").Title("Ubuntu base image").Group("Engine").
@@ -51,13 +59,19 @@ func Orioledb() *schemapb.Schema {
 				Desc("HAProxy instances in front of the master (and read-only backends for the replicas).").
 				Gte(0).Lte(2).Default(0),
 
-			// OrioleDB keeps its own in-memory page pool sized by
-			// shared_buffers, so this knob dominates its behavior.
-			// doc: https://www.orioledb.com/docs
-			// doc: https://www.postgresql.org/docs/current/runtime-config-resource.html#GUC-SHARED-BUFFERS
+			// OrioleDB tables are cached in orioledb.main_buffers, not in
+			// shared_buffers (which only holds heap pages: the catalog).
+			// doc: https://www.orioledb.com/docs/usage/configuration — orioledb.main_buffers
+			schemapb.Int64("main_buffers_mb").Title("Main buffers").Group("Memory").
+				Desc("orioledb.main_buffers of every database server, the page cache of OrioleDB tables. Unset = auto tuning sizes it from the machine (30% of RAM); stock tuning keeps the 64MB upstream default. A main_buffers set in the config wins.").
+				Unit("MB").Gte(64).Lte(4194304).Nullable(),
+
+			// Retired: it never reached the config, and shared_buffers is not
+			// OrioleDB's page pool. Declared (never active) so stored
+			// definitions that carry it still load under Strict.
 			schemapb.Int64("shared_buffers_mb").Title("Shared buffers").Group("Memory").
-				Desc("shared_buffers for the container; OrioleDB uses it as its primary page pool, so it should dominate the machine's RAM.").
-				Unit("MB").Gte(128).Lte(1048576).Default(1024),
+				Desc("Retired: replaced by main_buffers_mb; a stored value is ignored.").
+				Unit("MB").Deprecated().When("false"),
 
 			// doc: https://www.postgresql.org/docs/current/app-initdb.html
 			schemapb.Str("initdb_locale").Title("initdb locale").Group("Initialization").
@@ -77,7 +91,7 @@ func Orioledb() *schemapb.Schema {
 		Rules(
 			schemapb.Rule(`int(root.haproxy) == 0 || int(root.replicas) >= 1`,
 				"HAProxy in front of a single node only adds a hop").ID("haproxy-pointless").Warn(),
-			schemapb.Rule(`int(root.shared_buffers_mb) >= 512 || int(root.replicas) == 0`,
+			schemapb.Rule(`!("main_buffers_mb" in root) || int(root.main_buffers_mb) >= 512 || int(root.replicas) == 0`,
 				"a replica set with a tiny page pool measures the disk, not the engine").ID("buffers-vs-replicas").Warn(),
 		).
 		MustBuild()

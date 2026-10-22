@@ -10,6 +10,8 @@ func TestPostgres(t *testing.T) {
 	schematest.Run(t, Postgres(), schematest.Cases{
 		Valid: []map[string]any{
 			{"version": "17"},
+			// a definition stored before wal_archive was retired still loads
+			{"version": "17", "wal_archive": true},
 			{
 				"version":       "18",
 				"replicas":      int64(3),
@@ -18,7 +20,6 @@ func TestPostgres(t *testing.T) {
 				"etcd_nodes":    int64(3),
 				"haproxy":       int64(2),
 				"pgbouncer":     true,
-				"wal_archive":   true,
 				"extensions":    []any{"pg_stat_statements", "pg_buffercache", "vector"},
 				"locale":        "en_US.UTF-8",
 				"init_sql":      "ALTER SYSTEM SET synchronous_commit = 'remote_apply';",

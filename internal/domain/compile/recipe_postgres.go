@@ -50,10 +50,19 @@ func postgresFamily(c *compilation, oriole bool) error {
 	}
 	primary := c.first(topology.RoleDB)
 	initSQL := pgInitSQL(strParam(p, "init_sql", ""), boolParam(p, "default_table_access_method"))
+	syncStandbys := c.pgSyncStandbys(intParam(p, "sync_replicas", 0))
 
 	for _, role := range []string{topology.RoleDB, topology.RoleDBReplica} {
 		for _, m := range c.machinesOf(role) {
-			conf, err := c.render(role, c.schemaFor(role, confSchema), "conf", map[string]any{"listen_addresses": "*", "port": pgPort})
+			schemaID := c.schemaFor(role, confSchema)
+			overlay := map[string]any{"listen_addresses": "*", "port": pgPort}
+			// Without Patroni nothing else makes the replicas synchronous:
+			// the primary waits for a quorum of their application names.
+			if role == topology.RoleDB && syncStandbys != "" && !c.explicitConfig(role, schemaID)["synchronous_standby_names"] {
+				overlay["synchronous_standby_names"] = syncStandbys
+			}
+			c.tunePostgres(role, m, schemaID, oriole, overlay)
+			conf, err := c.render(role, schemaID, "conf", overlay)
 			if err != nil {
 				return err
 			}
@@ -76,13 +85,14 @@ func postgresFamily(c *compilation, oriole bool) error {
 				Ports:       []spec.Port{{Container: pgPort, Host: pgPort}},
 				Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("pg_isready -h 127.0.0.1 -p %d -U %s", pgPort, pgUser)),
 				Restart:     "always",
+				ShmSizeMB:   c.pgShmMB(m),
 			}
 			args := "postgres -c config_file=" + pgConfPath + " -c hba_file=" + pgHBAPath
 			if role == topology.RoleDB {
 				ct.Files = append(ct.Files, spec.File{Path: pgInitPath, Content: initSQL})
 				ct.Cmd = strings.Fields(args)
 			} else {
-				ct.Cmd = []string{"bash", "-c", pgReplicaBootstrap(ip(primary), args)}
+				ct.Cmd = []string{"bash", "-c", pgReplicaBootstrap(ip(primary), m, args)}
 				ct.DependsOn = []string{primary + "-" + c.engineOf(topology.RoleDB)}
 			}
 			c.add(ct)
@@ -147,15 +157,19 @@ func pgInitSQL(extra string, orioleDefault bool) string {
 }
 
 // pgReplicaBootstrap clones the primary once, then runs the normal image
-// entrypoint; -R writes primary_conninfo and standby.signal.
-func pgReplicaBootstrap(primaryHost, args string) string {
+// entrypoint; -R writes primary_conninfo and standby.signal. The
+// connection string carries the replica's application_name, which -R
+// keeps in primary_conninfo: synchronous_standby_names matches on it.
+//
+// doc: https://www.postgresql.org/docs/18/app-pgbasebackup.html — -R, -d
+func pgReplicaBootstrap(primaryHost, name, args string) string {
 	return fmt.Sprintf(`set -e
 if [ ! -s "$PGDATA/PG_VERSION" ]; then
   mkdir -p "$PGDATA" && chmod 700 "$PGDATA"
-  n=0; until PGPASSWORD='%s' pg_basebackup -h %s -p %d -U %s -D "$PGDATA" -R -X stream -P; do
+  n=0; until PGPASSWORD='%s' pg_basebackup -d 'application_name=%s' -h %s -p %d -U %s -D "$PGDATA" -R -X stream -P; do
     n=$((n+1)); [ $n -ge 60 ] && exit 1; sleep 3; rm -rf "$PGDATA"/*; done
 fi
-exec docker-entrypoint.sh %s`, replPassword, primaryHost, pgPort, replUser, args)
+exec docker-entrypoint.sh %s`, replPassword, name, primaryHost, pgPort, replUser, args)
 }
 
 // servers lists the machines of a role as haproxy backends.
@@ -173,13 +187,20 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 	if schemaID == "" {
 		return errs.Newf(errs.CodeInvalid, "%s: role %s has no pgbouncer schema", c.in.Database.Kind, role)
 	}
-	ini, err := c.render(role, schemaID, "conf", map[string]any{
+	overlay := map[string]any{
 		"db_name": pgDatabase, "db_dbname": pgDatabase, "db_host": host, "db_port": port,
 		"listen_addr": "*", "listen_port": pgbPort, "auth_type": "scram-sha-256", "auth_file": "/etc/pgbouncer/userlist.txt",
 		"ignore_startup_parameters": "extra_float_digits",
-	})
+	}
+	c.tunePgBouncer(role, schemaID, overlay)
+	ini, err := c.render(role, schemaID, "conf", overlay)
 	if err != nil {
 		return err
+	}
+	// One descriptor per client and per server connection.
+	var ulimits map[string]int64
+	if c.tuning() == tuningAuto {
+		ulimits = map[string]int64{"nofile": dbNofile}
 	}
 	for _, m := range c.machinesOf(role) {
 		deps := []string{}
@@ -199,6 +220,7 @@ func (c *compilation) pgbouncer(role, host string, port int) error {
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("pg_isready -h 127.0.0.1 -p %d", pgbPort)),
 			Restart:     "always",
 			DependsOn:   deps,
+			Ulimits:     ulimits,
 		})
 		c.add(spec.Container{
 			Name: m + "-pgbouncer-exporter", Role: role, Machine: m, Image: imagePgBouncerExport,

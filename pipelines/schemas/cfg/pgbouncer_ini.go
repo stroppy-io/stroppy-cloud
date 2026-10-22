@@ -117,6 +117,10 @@ func PgbouncerIni1() *schemapb.Schema {
 				// doc: config.html — max_db_connections, default 0 (unlimited)
 				Desc("Cap on server connections per database across all pools; 0 is unlimited.").
 				Gte(0).Lte(100000).Default(0),
+			schemapb.Int64("max_prepared_statements").Title("Max prepared statements").Group("Pooling").
+				// doc: config.html — max_prepared_statements, added in 1.21 (default 0), default 200 since 1.24
+				Desc("Protocol-level prepared statements PgBouncer tracks per server connection in transaction and statement pooling; 0 turns the support off. Unset keeps the build's default: 200 on 1.24, 0 on 1.23.").
+				Gte(0).Lte(100000).Nullable(),
 			schemapb.Int64("max_user_connections").Title("Max user connections").Group("Pooling").
 				// doc: config.html — max_user_connections, default 0 (unlimited)
 				Desc("Cap on server connections per user across all pools; 0 is unlimited.").
@@ -197,7 +201,8 @@ reserve_pool_size = {{{values.reserve_pool_size}}}
 reserve_pool_timeout = {{{values.reserve_pool_timeout}}}
 max_db_connections = {{{values.max_db_connections}}}
 max_user_connections = {{{values.max_user_connections}}}
-server_idle_timeout = {{{values.server_idle_timeout}}}
+{{#values.max_prepared_statements}}max_prepared_statements = {{{.}}}
+{{/values.max_prepared_statements}}server_idle_timeout = {{{values.server_idle_timeout}}}
 server_lifetime = {{{values.server_lifetime}}}
 server_reset_query = {{{values.server_reset_query}}}
 query_wait_timeout = {{{values.query_wait_timeout}}}

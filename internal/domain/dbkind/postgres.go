@@ -49,8 +49,14 @@ func orioledb() Kind {
 		Database: catalog.Database{
 			Kind: catalog.OrioleDB, Title: "OrioleDB", Description: "PostgreSQL with the OrioleDB storage engine, deployed from the upstream image.",
 			Versions: []catalog.Version{
+				{Version: "beta19-pg18", Image: "orioledb/orioledb:beta19-pg18"},
+				{Version: "beta19-pg17", Image: "orioledb/orioledb:beta19-pg17", Default: true},
+				{Version: "beta19-pg16", Image: "orioledb/orioledb:beta19-pg16"},
+				{Version: "beta18-pg18", Image: "orioledb/orioledb:beta18-pg18"},
+				{Version: "beta18-pg17", Image: "orioledb/orioledb:beta18-pg17"},
+				{Version: "beta18-pg16", Image: "orioledb/orioledb:beta18-pg16"},
 				{Version: "beta17-pg18", Image: "orioledb/orioledb:beta17-pg18"},
-				{Version: "beta17-pg17", Image: "orioledb/orioledb:beta17-pg17", Default: true},
+				{Version: "beta17-pg17", Image: "orioledb/orioledb:beta17-pg17"},
 				{Version: "beta17-pg16", Image: "orioledb/orioledb:beta17-pg16"},
 			},
 			Roles: []catalog.Role{
@@ -60,8 +66,8 @@ func orioledb() Kind {
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},
 			},
 			Topologies: []catalog.Topology{
-				{ID: "single", Title: "Single node", Params: map[string]any{"image_tag": "beta17-pg17"}},
-				{ID: "primary-replica", Title: "Primary + replica", Params: map[string]any{"image_tag": "beta17-pg17", "replicas": 1, "haproxy": 1}},
+				{ID: "single", Title: "Single node", Params: map[string]any{"image_tag": "beta19-pg17"}},
+				{ID: "primary-replica", Title: "Primary + replica", Params: map[string]any{"image_tag": "beta19-pg17", "replicas": 1, "haproxy": 1}},
 			},
 			ParamsSchema: "db.orioledb.params@1", Protocols: []catalog.Protocol{catalog.ProtoPg}, Deployable: true,
 		},
@@ -120,13 +126,13 @@ func planPostgres(p *topology.Plan, kind catalog.DatabaseKind, params map[string
 	p.Client = client
 
 	dbReq := topology.Because(2, 4, 20, topology.ReasonBaseline, "engine", engine)
-	if topology.BoolOf(params, "wal_archive") {
-		dbReq = topology.Because(2, 4, 40, topology.ReasonWALArchive, "engine", engine)
-	}
-	if kind == catalog.OrioleDB {
-		sb := float64(topology.IntOf(params, "shared_buffers_mb", 1024)) / 1024
-		if sb*2 > dbReq.MemoryGB {
-			dbReq = topology.Because(dbReq.CPU, math.Ceil(sb*2), dbReq.DiskGB, topology.ReasonSharedBuffers, "shared_buffers_gb", strconv.FormatFloat(sb, 'f', -1, 64))
+	// A fixed OrioleDB page cache needs the machine to hold it twice over:
+	// undo, heap buffers, backends and the OS take the other half (auto
+	// tuning gives main_buffers 30% of RAM, so it never asks for more).
+	if mb := topology.IntOf(params, "main_buffers_mb", 0); kind == catalog.OrioleDB && mb > 0 {
+		gb := float64(mb) / 1024
+		if gb*2 > dbReq.MemoryGB {
+			dbReq = topology.Because(dbReq.CPU, math.Ceil(gb*2), dbReq.DiskGB, topology.ReasonSharedBuffers, "shared_buffers_gb", strconv.FormatFloat(gb, 'f', -1, 64))
 		}
 	}
 	p.Requirements[topology.RoleDB] = dbReq

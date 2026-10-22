@@ -114,8 +114,8 @@ func orioledbExtra(add func(schemapb.FieldDef), l *pgLines) {
 	line("checkpoint_completion_ratio", "")
 
 	add(schemapb.Int64("orioledb_max_io_concurrency").Title("orioledb.max_io_concurrency").Group("OrioleDB").
-		// doc: configuration — orioledb.max_io_concurrency, default 0 (derived)
-		Desc("Cap on concurrent OrioleDB I/O operations; 0 lets OrioleDB derive it from main_buffers.").
+		// doc: configuration — orioledb.max_io_concurrency, default 0 (off); src/orioledb.c min 0
+		Desc("Cap on concurrent OrioleDB I/O operations, worth raising only when the kernel, not the disk, is the bottleneck under concurrent I/O; 0 (the upstream default) turns the limit off.").
 		Gte(0).Lte(4096).Default(0))
 	line("max_io_concurrency", "")
 

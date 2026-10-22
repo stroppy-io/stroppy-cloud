@@ -137,6 +137,12 @@ func pgConfParts(major uint64, extra pgConfExtra) (fields []schemapb.FieldDef, t
 		Gte(1).Lte(2097151).Default(64))
 	l.num("maintenance_work_mem", "MB")
 
+	add(schemapb.Int64("autovacuum_work_mem").Title("Autovacuum work mem").Group("Memory").Unit("MB").
+		// doc: runtime-config-resource.html#GUC-AUTOVACUUM-WORK-MEM — default -1 (use maintenance_work_mem)
+		Desc("Memory per autovacuum worker. Unset keeps the upstream -1: every worker takes maintenance_work_mem, so a large maintenance_work_mem multiplies by autovacuum_max_workers. Up to PostgreSQL 16 vacuum uses at most 1GB of it.").
+		Gte(1).Lte(2097151).Nullable())
+	l.f("{{#values.autovacuum_work_mem}}autovacuum_work_mem = {{{.}}}MB\n{{/values.autovacuum_work_mem}}")
+
 	add(schemapb.Int64("effective_cache_size").Title("Effective cache size").Group("Memory").Unit("MB").
 		// doc: runtime-config-query.html#GUC-EFFECTIVE-CACHE-SIZE — default 4GB
 		Desc("Planner-only estimate of the OS + PostgreSQL cache available to one query. Allocates nothing.").
@@ -284,6 +290,16 @@ func pgConfParts(major uint64, extra pgConfExtra) (fields []schemapb.FieldDef, t
 	add(schemapb.Int64("effective_io_concurrency").Title("Effective I/O concurrency").Group("Planner").
 		Desc(eioDoc).Gte(0).Lte(1000).Default(eioDefault))
 	l.num("effective_io_concurrency", "")
+
+	mioDoc := "Like effective_io_concurrency, for maintenance work (VACUUM, CREATE INDEX). Unset keeps the upstream default 10."
+	if major >= 18 {
+		mioDoc = "Like effective_io_concurrency, for maintenance work (VACUUM, CREATE INDEX). Unset keeps the upstream default, raised to 16 in PostgreSQL 18."
+	}
+
+	add(schemapb.Int64("maintenance_io_concurrency").Title("Maintenance I/O concurrency").Group("Planner").
+		// doc: runtime-config-resource.html#GUC-MAINTENANCE-IO-CONCURRENCY — default 10 (15-17), 16 (18), range 0..1000
+		Desc(mioDoc).Gte(0).Lte(1000).Nullable())
+	l.f("{{#values.maintenance_io_concurrency}}maintenance_io_concurrency = {{{.}}}\n{{/values.maintenance_io_concurrency}}")
 
 	add(onOff("jit", "on").Title("JIT").Group("Planner").
 		// doc: runtime-config-query.html#GUC-JIT — default on
@@ -522,6 +538,12 @@ func pgConfParts(major uint64, extra pgConfExtra) (fields []schemapb.FieldDef, t
 		Desc("Average number of object locks allocated per transaction slot.").
 		Gte(10).Lte(1048576).Default(64))
 	l.num("max_locks_per_transaction", "")
+
+	add(schemapb.Int64("max_prepared_transactions").Title("Max prepared transactions").Group("Locks").
+		// doc: runtime-config-resource.html#GUC-MAX-PREPARED-TRANSACTIONS — default 0 (disabled)
+		Desc("Transactions that may sit in the prepared (two-phase) state at once. Unset keeps the upstream 0, which disables PREPARE TRANSACTION; a standby needs at least the primary's value.").
+		Gte(0).Lte(262143).Nullable())
+	l.f("{{#values.max_prepared_transactions}}max_prepared_transactions = {{{.}}}\n{{/values.max_prepared_transactions}}")
 
 	add(schemapb.Int64("deadlock_timeout").Title("Deadlock timeout").Group("Locks").Unit("ms").
 		// doc: runtime-config-locks.html#GUC-DEADLOCK-TIMEOUT — default 1s

@@ -89,8 +89,8 @@ func TestCompileOrioleDBCatalog(t *testing.T) {
 								t.Errorf("missing %s", line)
 							}
 						}
-						if strings.Contains(f.Content, "orioledb.undo_buffers =") {
-							t.Error("automatic undo size overridden")
+						if !strings.Contains(f.Content, "orioledb.undo_buffers =") {
+							t.Error("auto tuning left the undo ring at the engine default")
 						}
 					}
 					if !found {

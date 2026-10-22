@@ -37,7 +37,7 @@ func Postgres() *schemapb.Schema {
 
 			// doc: https://www.postgresql.org/docs/current/runtime-config-replication.html#GUC-SYNCHRONOUS-STANDBY-NAMES
 			schemapb.Int64("sync_replicas").Title("Synchronous replicas").Group("Topology").
-				Desc("How many of the replicas commit synchronously (synchronous_standby_names); must not exceed replicas.").
+				Desc("How many replicas a commit waits for: Patroni's synchronous_node_count, or without Patroni synchronous_standby_names = ANY n over the replicas' application names. Must not exceed replicas.").
 				Gte(0).Lte(8).Default(0),
 
 			// doc: https://patroni.readthedocs.io/en/latest/README.html
@@ -65,10 +65,13 @@ func Postgres() *schemapb.Schema {
 				Desc("Collocate a PgBouncer pooler with every database node.").
 				Default(false),
 
+			// Retired: no recipe ever turned archive_mode on, so the form no
+			// longer offers it. The field stays declared (and never active)
+			// so stored definitions that carry it still load under Strict.
 			// doc: https://www.postgresql.org/docs/current/continuous-archiving.html
 			schemapb.Bool("wal_archive").Title("WAL archiving").Group("Storage").
-				Desc("Turn on archive_mode and archive WAL segments to local storage on the primary.").
-				Default(false),
+				Desc("Retired: WAL archiving is not implemented; a stored value is ignored.").
+				Deprecated().When("false"),
 
 			// Only extensions that are either bundled contrib or a single PGDG
 			// apt package postgresql-<major>-<name>; anything needing a foreign

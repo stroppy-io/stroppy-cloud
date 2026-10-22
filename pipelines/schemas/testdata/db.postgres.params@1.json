@@ -77,7 +77,7 @@
       "title": "Streaming replicas"
     },
     {
-      "description": "How many of the replicas commit synchronously (synchronous_standby_names); must not exceed replicas.",
+      "description": "How many replicas a commit waits for: Patroni's synchronous_node_count, or without Patroni synchronous_standby_names = ANY n over the replicas' application names. Must not exceed replicas.",
       "group": "Topology",
       "int64": {
         "default": "0",
@@ -160,13 +160,13 @@
       "title": "PgBouncer"
     },
     {
-      "bool": {
-        "default": false
-      },
-      "description": "Turn on archive_mode and archive WAL segments to local storage on the primary.",
+      "bool": {},
+      "deprecated": true,
+      "description": "Retired: WAL archiving is not implemented; a stored value is ignored.",
       "group": "Storage",
       "name": "wal_archive",
-      "title": "WAL archiving"
+      "title": "WAL archiving",
+      "when": "false"
     },
     {
       "description": "CREATE EXTENSION on the benchmark database after initdb; preload-only ones are added to shared_preload_libraries too.",

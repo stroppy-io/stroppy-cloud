@@ -85,7 +85,10 @@ func (c *compilation) patroniEtcd() (names []string, hosts []any, err error) {
 
 func (c *compilation) patroniNode(role, m string, hosts []any, deps []string) error {
 	c.out.Spec.Scrapes = append(c.out.Spec.Scrapes, spec.Scrape{Role: role, Job: m + "-" + c.engineOf(role), URL: "http://127.0.0.1:8008/metrics"})
-	conf, err := c.render(role, c.schemaFor(role, "cfg.postgresql.conf@"), "conf", map[string]any{"listen_addresses": "*", "port": pgPort})
+	confID := c.schemaFor(role, "cfg.postgresql.conf@")
+	overlay := map[string]any{"listen_addresses": "*", "port": pgPort}
+	c.tunePostgres(role, m, confID, false, overlay)
+	conf, err := c.render(role, confID, "conf", overlay)
 	if err != nil {
 		return err
 	}
@@ -110,6 +113,7 @@ func (c *compilation) patroniNode(role, m string, hosts []any, deps []string) er
 		Ports:       []spec.Port{{Container: pgPort, Host: pgPort}, {Container: patroniPort, Host: patroniPort}},
 		Healthcheck: healthcheck("CMD-SHELL", "curl --fail --silent http://127.0.0.1:8008/health >/dev/null && psql -h 127.0.0.1 -U "+pgUser+" -d "+pgDatabase+" -Atqc 'SELECT 1'"),
 		Restart:     "always", DependsOn: deps,
+		ShmSizeMB: c.pgShmMB(m),
 	})
 	return nil
 }
@@ -128,6 +132,21 @@ func (c *compilation) patroniConfig(role, m string, hosts []any) (string, error)
 	}
 	if sync > 0 {
 		overlay["synchronous_mode"], overlay["synchronous_mode_strict"], overlay["synchronous_node_count"] = "on", "true", sync
+	}
+	// Counters a standby must match go through the DCS; the db role's own
+	// postgresql_parameters keys win.
+	if dcs := c.patroniDCSParameters(); len(dcs) > 0 {
+		params := map[string]any{}
+		if own, ok := c.effective(topology.RoleDB, "cfg.patroni.yml@4")["postgresql_parameters"].(map[string]any); ok {
+			params = own
+		}
+		for k, v := range dcs {
+			if _, ok := params[k]; !ok {
+				params[k] = v
+			}
+		}
+		overlay["postgresql_parameters"] = params
+		c.recordTuned(topology.RoleDB, "cfg.patroni.yml@4", "postgresql_parameters", params)
 	}
 	rendered, err := c.render(role, "cfg.patroni.yml@4", "conf", overlay)
 	if err != nil {
