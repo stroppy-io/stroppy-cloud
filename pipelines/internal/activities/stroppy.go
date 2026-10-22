@@ -415,12 +415,17 @@ func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, n
 		_, cerr := stdcopy.StdCopy(outTee, pw, logs)
 		_ = pw.CloseWithError(cerr)
 	}()
-	sc := bufio.NewScanner(pr)
-	sc.Buffer(make([]byte, 0, 64*1024), 1<<20)
+	br := bufio.NewReaderSize(pr, 64*1024)
 	lines := 0
-	var writeErr error
-	for sc.Scan() {
-		line := sc.Text()
+	var writeErr, readErr error
+	for {
+		line, ok, rerr := readLogLine(br, maxLogLine)
+		if rerr != nil {
+			readErr = rerr
+		}
+		if !ok {
+			break
+		}
 		if _, werr := f.WriteString(line + "\n"); werr != nil {
 			writeErr = fmt.Errorf("write stroppy log: %w", werr)
 			break
@@ -435,7 +440,7 @@ func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, n
 			recordHeartbeat(ctx, fmt.Sprintf("%s: %d lines", name, lines))
 		}
 	}
-	streamErr := errors.Join(writeErr, sc.Err())
+	streamErr := errors.Join(writeErr, readErr)
 	if streamErr != nil {
 		_ = pr.CloseWithError(streamErr)
 		_ = logs.Close()
@@ -456,6 +461,47 @@ func streamAndWait(ctx context.Context, cli *dockerclient.Client, id, logPath, n
 	case <-ctx.Done():
 		return -1, logBuf.Bytes(), stdoutBuf.Bytes(), ctx.Err()
 	}
+}
+
+// maxLogLine is the longest stroppy log line kept whole; a longer one (a
+// driver dumping a huge statement or result) is cut with a marker instead
+// of failing the segment.
+const maxLogLine = 1 << 20
+
+// readLogLine reads one line without its newline, cut to limit bytes; ok
+// is false once the stream ends with nothing left. A read error other
+// than EOF comes back with the last (partial) line.
+func readLogLine(br *bufio.Reader, limit int) (line string, ok bool, err error) {
+	var b []byte
+	dropped := 0
+	for {
+		chunk, rerr := br.ReadSlice('\n')
+		if room := limit - len(b); room > 0 {
+			keep := chunk
+			if len(keep) > room {
+				dropped += len(keep) - room
+				keep = keep[:room]
+			}
+			b = append(b, keep...)
+		} else {
+			dropped += len(chunk)
+		}
+		if errors.Is(rerr, bufio.ErrBufferFull) {
+			continue
+		}
+		if rerr != nil && !errors.Is(rerr, io.EOF) {
+			err = rerr
+		}
+		if rerr != nil && len(b) == 0 && dropped == 0 {
+			return "", false, err
+		}
+		break
+	}
+	b = bytes.TrimRight(b, "\r\n")
+	if dropped > 0 {
+		return fmt.Sprintf("%s… [%d bytes cut]", b, dropped), true, err
+	}
+	return string(b), true, err
 }
 
 // limitedWriter keeps the first limit bytes and silently drops the rest.

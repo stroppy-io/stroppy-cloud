@@ -15,12 +15,13 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 )
 
-func TestStreamAndWaitRejectsTruncatedLog(t *testing.T) {
+func TestStreamAndWaitCutsOversizedLines(t *testing.T) {
 	for _, tc := range []struct {
 		name, output string
-		failed       bool
+		cut          bool // the line is longer than the log keeps
 	}{
 		{"complete", "=== bench summary ===\n  iterations_total  42\n", false},
+		// A 2 MB line (a driver dumping a statement) is cut, not fatal.
 		{"oversized-line", "=== bench summary ===\n  iterations_total  42\n" + strings.Repeat("x", 2<<20), true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -47,9 +48,11 @@ func TestStreamAndWaitRejectsTruncatedLog(t *testing.T) {
 			defer cancel()
 			path := filepath.Join(t.TempDir(), "stroppy.log")
 			code, log, stdout, err := streamAndWait(ctx, cli, "test", path, "measure")
-			if tc.failed {
-				if err == nil || !strings.Contains(err.Error(), "token too long") {
-					t.Fatalf("code=%d error=%v", code, err)
+			if tc.cut {
+				want := "=== bench summary ===\n  iterations_total  42\n" + strings.Repeat("x", 1<<20) + "… [1048576 bytes cut]\n"
+				raw, rerr := os.ReadFile(path)
+				if err != nil || code != 0 || string(log) != want || string(raw) != want || string(stdout) != tc.output {
+					t.Fatalf("code=%d log=%d bytes file=%d bytes error=%v/%v", code, len(log), len(raw), err, rerr)
 				}
 				return
 			}

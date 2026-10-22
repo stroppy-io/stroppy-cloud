@@ -328,6 +328,15 @@ func (c *compilation) workload() error {
 			baked.Segments[i] = segment
 		}
 	}
+	if c.in.Workload.Protocol == catalog.ProtoNoop {
+		for i, raw := range baked.Segments {
+			segment, err := noopSteps(raw)
+			if err != nil {
+				return errs.Wrap(errs.CodeInvalid, "noop workload segment", err)
+			}
+			baked.Segments[i] = segment
+		}
+	}
 	url, driverType := c.clientURL(baked.Connection)
 	url, err := connectionURL(url, c.in.Workload.Protocol, baked.Connection)
 	if err != nil {
