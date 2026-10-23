@@ -3,6 +3,7 @@ package spec
 import (
 	"encoding/json"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -11,26 +12,46 @@ import (
 	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas"
 )
 
+// Building the product schemas compiles all their CEL rules; the tests share
+// one set and compile each schema's engine once.
+var (
+	productSchemas = sync.OnceValue(schemas.ByID)
+	enginesMu      sync.Mutex
+	engines        = map[string]*schemapb.Engine{}
+)
+
+func engineOf(t *testing.T, id string) *schemapb.Engine {
+	t.Helper()
+	enginesMu.Lock()
+	defer enginesMu.Unlock()
+	if eng, ok := engines[id]; ok {
+		return eng
+	}
+	s, ok := productSchemas()[id]
+	if !ok {
+		t.Fatalf("schema %s not registered", id)
+	}
+	eng, err := schemapb.Compile(s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	engines[id] = eng
+	return eng
+}
+
 // bake marshals v to JSON, decodes it into the generic form and bakes it
 // through the named product schema — the round trip a server → pipeline
 // hand-off makes. Any drift between the Go types and the schema shows up
 // here as a validation error.
 func bake(t *testing.T, id string, v any) {
 	t.Helper()
-	s, ok := schemas.ByID()[id]
-	if !ok {
-		t.Fatalf("schema %s not registered", id)
-	}
+	eng := engineOf(t, id)
 	raw, err := json.Marshal(v)
 	if err != nil {
 		t.Fatal(err)
 	}
 	var generic map[string]any
 	if err := json.Unmarshal(raw, &generic); err != nil {
-		t.Fatal(err)
-	}
-	eng, err := schemapb.Compile(s)
-	if err != nil {
 		t.Fatal(err)
 	}
 	_, res, err := eng.Bake(generic)

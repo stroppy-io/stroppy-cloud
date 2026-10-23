@@ -12,11 +12,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"go.temporal.io/sdk/activity"
-	"go.temporal.io/sdk/converter"
 	"go.temporal.io/sdk/temporal"
-	"go.temporal.io/sdk/testsuite"
-	"go.temporal.io/sdk/worker"
 )
 
 func TestReadPullProgress(t *testing.T) {
@@ -40,6 +36,9 @@ func TestReadPullProgress(t *testing.T) {
 }
 
 func TestPullImageCacheAndRegistryRetry(t *testing.T) {
+	backoff := pullBackoff
+	t.Cleanup(func() { pullBackoff = backoff })
+	pullBackoff = time.Millisecond
 	for _, tc := range []struct {
 		name, image, firstError string
 		cached                  bool
@@ -132,15 +131,13 @@ func TestPullImageHeartbeatsWhileDockerIsSilent(t *testing.T) {
 	t.Setenv("DOCKER_API_VERSION", "1.47")
 	t.Setenv("DOCKER_TLS_VERIFY", "")
 	t.Setenv("DOCKER_CERT_PATH", "")
-	var suite testsuite.WorkflowTestSuite
-	env := suite.NewTestActivityEnvironment()
-	ctx, cancel := context.WithTimeout(t.Context(), 75*time.Second)
-	defer cancel()
-	env.SetWorkerOptions(worker.Options{BackgroundActivityContext: ctx})
-	env.RegisterActivity(PullImage)
-	// The test environment batches heartbeat delivery every 30 seconds;
-	// its worker throttle options are ignored. Two silent waits take ~60s.
-	env.SetOnActivityHeartbeatListener(func(_ *activity.Info, _ converter.EncodedValues) {
+	// Watch the beats directly: Temporal's test environment delivers them
+	// in 30-second batches, which would make this a minute-long test.
+	every, on, beat := heartbeatEvery, heartbeatsOn, heartbeat
+	t.Cleanup(func() { heartbeatEvery, heartbeatsOn, heartbeat = every, on, beat })
+	heartbeatEvery = 10 * time.Millisecond
+	heartbeatsOn = func(context.Context) bool { return true }
+	heartbeat = func(context.Context, ...any) {
 		n := beats.Add(1)
 		if n >= 2 {
 			initialOnce.Do(func() { close(initialWait) })
@@ -148,11 +145,11 @@ func TestPullImageHeartbeatsWhileDockerIsSilent(t *testing.T) {
 		if n >= 3 {
 			streamOnce.Do(func() { close(streamWait) })
 		}
-	})
-	result, err := env.ExecuteActivity(PullImage, PullImageRequest{Image: "test.invalid/silent:1"})
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
+	defer cancel()
+	pulled, err := PullImage(ctx, PullImageRequest{Image: "test.invalid/silent:1"})
 	require.NoError(t, err)
-	var pulled PullImageResult
-	require.NoError(t, result.Get(&pulled))
 	require.Equal(t, "test.invalid/silent:1", pulled.Image)
 	require.GreaterOrEqual(t, beats.Load(), int32(3))
 }

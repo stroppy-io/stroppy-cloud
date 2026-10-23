@@ -8,8 +8,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	schemapb "github.com/gopherex/schemapb/go/schemapb"
-
-	"github.com/stroppy-io/stroppy-cloud/pipelines/schemas"
 )
 
 // Check BOTH sets, recursively. A new executable struct field without a schema
@@ -31,7 +29,7 @@ func TestPipelineFieldContract(t *testing.T) {
 		{"workload.segment@1", Segment{}},
 	} {
 		t.Run(tc.id, func(t *testing.T) {
-			s := schemas.ByID()[tc.id]
+			s := productSchemas()[tc.id]
 			checkFields(t, tc.id, s, reflect.TypeOf(tc.value), s.GetDefs())
 		})
 	}

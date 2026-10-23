@@ -94,7 +94,7 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 			return PullImageResult{}, permanent(fmt.Errorf("pull %s: %w", req.Image, pullErr))
 		}
 		obs.Warn(ctx, "transient registry error; retrying image pull", obs.Str("image", req.Image))
-		timer := time.NewTimer(time.Duration(attempt) * 5 * time.Second)
+		timer := time.NewTimer(time.Duration(attempt) * pullBackoff)
 		select {
 		case <-ctx.Done():
 			timer.Stop()
@@ -108,6 +108,9 @@ func PullImage(ctx context.Context, req PullImageRequest) (PullImageResult, erro
 // pullAttempts bounds the retries of one image pull: a registry mirror
 // under the load of a whole matrix answers late, not never.
 const pullAttempts = 5
+
+// pullBackoff grows linearly per failed attempt (5s, 10s, ...); tests shorten it.
+var pullBackoff = 5 * time.Second
 
 func transientRegistryError(err error) bool {
 	message := strings.ToLower(err.Error())
@@ -127,15 +130,24 @@ func pullHeartbeat(ctx context.Context) func() {
 	return operationHeartbeat(ctx, "pulling image")
 }
 
+// How a long operation reports that it is alive: a heartbeat at the start,
+// then one every heartbeatEvery until it stops. Tests replace them to watch
+// the beats without Temporal's 30-second delivery batching.
+var (
+	heartbeatEvery = 15 * time.Second
+	heartbeatsOn   = activity.IsActivity
+	heartbeat      = recordHeartbeat
+)
+
 func operationHeartbeat(ctx context.Context, message string) func() {
-	if !activity.IsActivity(ctx) {
+	if !heartbeatsOn(ctx) {
 		return func() {}
 	}
-	recordHeartbeat(ctx, message)
+	heartbeat(ctx, message)
 	stop, done := make(chan struct{}), make(chan struct{})
 	go func() {
 		defer close(done)
-		ticker := time.NewTicker(15 * time.Second)
+		ticker := time.NewTicker(heartbeatEvery)
 		defer ticker.Stop()
 		for {
 			select {
@@ -144,7 +156,7 @@ func operationHeartbeat(ctx context.Context, message string) func() {
 			case <-stop:
 				return
 			case <-ticker.C:
-				recordHeartbeat(ctx, message)
+				heartbeat(ctx, message)
 			}
 		}
 	}()
