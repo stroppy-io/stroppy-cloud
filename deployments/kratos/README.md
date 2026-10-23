@@ -12,6 +12,8 @@ Self-hosted [Ory Kratos](https://www.ory.sh/docs/kratos): вход, регист
 | `kratos.yml` | конфиг dev-compose (прод переопределяет env/секреты) |
 | `identity.schema.json` | traits: `email` (идентификатор логина) + `name`, оба обязательны |
 | `claims.jsonnet` | claims JWT шаблона `stroppy`: iss/aud, email, email_verified, name, aal |
+| `github.jsonnet` | вход через GitHub: claims провайдера → traits, подтверждённая GitHub почта сразу подтверждена |
+| `courier.templates` в `kratos.yml` | письма Kratos: шаблоны лежат в бинаре сервера (`internal/infrastructure/kratos/courier`), Kratos берёт их по HTTP с внутреннего порта сервера (`:18348`, наружу не публикуется) |
 | `jwks/kratos-jwks.json` | приватный ES256-ключ подписи токенов (dev, в репо) |
 | `jwks/kratos-public-jwks.json` | публичная половина — её читает сервер для локальной проверки |
 

@@ -32,6 +32,12 @@ services:
       - kratos migrate sql -e -y && exec kratos serve --watch-courier -c /etc/config/kratos/kratos.yml
     environment:
       DSN: postgres://stroppy:${STROPPY_INFRA_POSTGRES_PASSWORD:-stroppy}@postgres:5432/kratos?sslmode=disable&max_conns=20
+      # Sign-in with GitHub through a dev OAuth App (callback
+      # http://localhost:18347/v1/self-service/methods/oidc/callback/github);
+      # off unless .env.compose sets STROPPY_DEV_GITHUB_OIDC=true.
+      SELFSERVICE_METHODS_OIDC_ENABLED: ${STROPPY_DEV_GITHUB_OIDC:-false}
+      SELFSERVICE_METHODS_OIDC_CONFIG_PROVIDERS: >-
+        [{"id":"github","provider":"github","client_id":"${STROPPY_DEV_GITHUB_CLIENT_ID:-}","client_secret":"${STROPPY_DEV_GITHUB_CLIENT_SECRET:-}","scope":["user:email"],"mapper_url":"file:///etc/config/kratos/github.jsonnet"}]
     volumes:
       - ./deployments/kratos:/etc/config/kratos:ro
     depends_on:

@@ -1908,6 +1908,11 @@
   resolved "https://registry.yarnpkg.com/@tanstack/virtual-file-routes/-/virtual-file-routes-1.162.0.tgz#d2dfa1c98aab0236d2cef25b3938b59a247a8acd"
   integrity sha512-uhOeFyxLcU41HzvrxsGpiWdcMbScY1EDgbZ5K7DVRMYInbLYWAC0EA/kx9wXAoSM8q82bUG2hRl8+EAjE6XAbA==
 
+"@thesvg/react@3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@thesvg/react/-/react-3.4.1.tgz#7122bfb34f7ada5b03bbe5c4dbca3366e1c6d340"
+  integrity sha512-LEMkBJDp5o3eWXvKRn+MerGWby2J3HtPgpax8SNEyjDnfiLN+dapt8AqqZr1B+YsvnECB9Ct1cdzr6cBNE60rQ==
+
 "@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"

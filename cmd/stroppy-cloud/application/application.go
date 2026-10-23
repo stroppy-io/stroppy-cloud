@@ -19,6 +19,7 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/api"
 	"github.com/stroppy-io/stroppy-cloud/internal/build"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/kratos/courier"
 	"github.com/stroppy-io/stroppy-cloud/internal/oas"
 	transport "github.com/stroppy-io/stroppy-cloud/internal/transport/http"
 	"github.com/stroppy-io/stroppy-cloud/internal/transport/ws"
@@ -113,8 +114,14 @@ func (a *Application) Run(ctx context.Context) (runErr error) {
 	if err != nil {
 		return err
 	}
-	if err := a.serve(ctx, handler); err != nil {
+	if err := a.serve(ctx, "http", a.cfg.HTTP.Addr, handler); err != nil {
 		return err
+	}
+	// Empty = no internal listener (tests, a stand without Kratos mail).
+	if a.cfg.HTTP.InternalAddr != "" {
+		if err := a.serve(ctx, "internal http", a.cfg.HTTP.InternalAddr, courier.Handler()); err != nil {
+			return err
+		}
 	}
 	a.startWorkers()
 	a.ready.Set(true)
@@ -249,14 +256,14 @@ func (a *Application) publicConfig() http.Handler {
 	})
 }
 
-// serve starts the listener under the shutdown manager. Liveness drops
+// serve starts a listener under the shutdown manager. Liveness drops
 // first so the balancer learns about the stop before the socket closes.
-func (a *Application) serve(ctx context.Context, handler http.Handler) error {
-	srv := transport.Server(a.cfg.HTTP.Addr, handler)
+func (a *Application) serve(ctx context.Context, name, addr string, handler http.Handler) error {
+	srv := transport.Server(addr, handler)
 	var lc net.ListenConfig
-	listener, err := lc.Listen(ctx, "tcp", a.cfg.HTTP.Addr)
+	listener, err := lc.Listen(ctx, "tcp", addr)
 	if err != nil {
-		return fmt.Errorf("listen %s: %w", a.cfg.HTTP.Addr, err)
+		return fmt.Errorf("listen %s: %w", addr, err)
 	}
 	a.shutdown.Go(func(ctx context.Context) {
 		go func() {
@@ -264,12 +271,12 @@ func (a *Application) serve(ctx context.Context, handler http.Handler) error {
 			shutCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), drainTimeout)
 			defer cancel()
 			if err := srv.Shutdown(shutCtx); err != nil {
-				a.log.Error("http: server shutdown", xlog.ErrorCause(err))
+				a.log.Error(name+": server shutdown", xlog.ErrorCause(err))
 			}
 		}()
-		a.log.Info("http listening", xlog.String("addr", a.cfg.HTTP.Addr))
+		a.log.Info(name+" listening", xlog.String("addr", addr))
 		if err := srv.Serve(listener); err != nil && !stderrors.Is(err, http.ErrServerClosed) {
-			a.fail("http server", err)
+			a.fail(name+" server", err)
 		}
 	})
 	return nil

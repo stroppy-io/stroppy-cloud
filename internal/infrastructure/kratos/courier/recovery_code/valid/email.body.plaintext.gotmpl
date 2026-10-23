@@ -1,0 +1,11 @@
+{{ with .Identity }}{{ with index . "traits" }}{{ with index . "name" }}Hi {{ . }},{{ end }}{{ end }}{{ end }}
+
+Enter this code on the password reset screen. It signs you in, then you
+set a new password:
+
+    {{ .RecoveryCode }}
+
+The code works for {{ .ExpiresInMinutes }} minutes. If you did not ask to
+reset the password, ignore this mail: your password stays as it is.
+
+Stroppy Cloud - https://stroppy.io

@@ -51,6 +51,14 @@ selfservice:
     # One-time codes for verification and recovery mails.
     code:
       enabled: true
+    # Sign-in with GitHub (github.jsonnet maps the claims). Off on a stand
+    # without its own OAuth App: compose turns it on and fills the provider
+    # (client id and secret) from STROPPY_DEV_GITHUB_* in .env.compose. With a
+    # provider on, the SPA signs people up through it only.
+    oidc:
+      enabled: false
+      config:
+        providers: []
   flows:
     # Every flow has its screen in the SPA: links in mails and Kratos
     # redirects land there with ?flow=<id>, the page continues the flow.
@@ -71,6 +79,10 @@ selfservice:
             # (the SPA continues to /verify via continue_with).
             - hook: session
             - hook: show_verification_ui
+        # GitHub confirmed the address already: signed in, nothing to verify.
+        oidc:
+          hooks:
+            - hook: session
     verification:
       enabled: true
       use: code
@@ -99,8 +111,42 @@ session:
           ttl: 10m
 
 courier:
+  # Our own mails, served by the server's internal listener from the
+  # templates in its binary (internal/infrastructure/kratos/courier): the code
+  # to confirm the address, the code to reset the password, and the "no such
+  # account" variants of both. The version segment only busts the Kratos
+  # template cache; production puts the image tag there.
+  templates:
+    verification_code:
+      valid:
+        email:
+          subject: http://server:18348/internal/kratos/mail/dev/verification_code/valid/email.subject.gotmpl
+          body:
+            html: http://server:18348/internal/kratos/mail/dev/verification_code/valid/email.body.gotmpl
+            plaintext: http://server:18348/internal/kratos/mail/dev/verification_code/valid/email.body.plaintext.gotmpl
+      invalid:
+        email:
+          subject: http://server:18348/internal/kratos/mail/dev/verification_code/invalid/email.subject.gotmpl
+          body:
+            html: http://server:18348/internal/kratos/mail/dev/verification_code/invalid/email.body.gotmpl
+            plaintext: http://server:18348/internal/kratos/mail/dev/verification_code/invalid/email.body.plaintext.gotmpl
+    recovery_code:
+      valid:
+        email:
+          subject: http://server:18348/internal/kratos/mail/dev/recovery_code/valid/email.subject.gotmpl
+          body:
+            html: http://server:18348/internal/kratos/mail/dev/recovery_code/valid/email.body.gotmpl
+            plaintext: http://server:18348/internal/kratos/mail/dev/recovery_code/valid/email.body.plaintext.gotmpl
+      invalid:
+        email:
+          subject: http://server:18348/internal/kratos/mail/dev/recovery_code/invalid/email.subject.gotmpl
+          body:
+            html: http://server:18348/internal/kratos/mail/dev/recovery_code/invalid/email.body.gotmpl
+            plaintext: http://server:18348/internal/kratos/mail/dev/recovery_code/invalid/email.body.plaintext.gotmpl
   smtp:
     connection_uri: smtp://mailpit:1025/?disable_starttls=true
+    from_address: no-reply@stroppy.io
+    from_name: Stroppy Cloud
 
 secrets:
   default:

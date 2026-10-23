@@ -113,6 +113,8 @@ function forgetToken(): void {
 export type FlowKind = 'login' | 'registration' | 'verification' | 'recovery' | 'settings'
 
 interface FlowNode {
+  /** The method the node belongs to: `default`, `password`, `oidc`, `code` … */
+  group?: string
   attributes?: { name?: string; value?: unknown }
 }
 
@@ -257,11 +259,33 @@ export function flowIdOf(url: string | undefined): string | undefined {
   }
 }
 
-/** Signs in with the e-mail and password (cookie session + a fresh JWT). */
-export async function login(identifier: string, password: string): Promise<void> {
-  const flow = await getFlow('login')
+/**
+ * Signs in with the e-mail and password (cookie session + a fresh JWT). With
+ * `flowId` it continues that login flow — the one Kratos opened to link a
+ * GitHub sign-in to the account that already has the address.
+ */
+export async function login(identifier: string, password: string, flowId?: string): Promise<void> {
+  const flow = await getFlow('login', flowId)
   await submitFlow(flow, { method: 'password', identifier, password })
   await getAccessToken(true)
+}
+
+/** The sign-in providers a flow offers (`github` …), in Kratos order. */
+export function oidcProviders(flow: Flow): string[] {
+  return flow.ui.nodes
+    .filter((n) => n.group === 'oidc' && n.attributes?.name === 'provider')
+    .map((n) => String(n.attributes?.value ?? ''))
+    .filter(Boolean)
+}
+
+/**
+ * Leaves for the provider: Kratos answers the submit with the provider's
+ * authorization URL, the browser goes there and comes back through Kratos
+ * with a session (to `/`), or to the flow's page with its messages.
+ */
+export async function startOidc(flow: Flow, provider: string): Promise<void> {
+  const out = await submitFlow(flow, { method: 'oidc', provider })
+  if (out.redirect) window.location.assign(out.redirect)
 }
 
 /**

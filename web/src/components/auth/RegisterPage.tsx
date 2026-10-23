@@ -1,5 +1,6 @@
 import { AuthCard } from '@components/auth/AuthCard'
 import { applyKratosErrors } from '@components/auth/kratos-errors'
+import { FlowNotes, OidcButtons, useAuthFlow } from '@components/auth/OidcButtons'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { Alert, Button, Field, Input, Stack, Text } from '@grafana/ui'
 import { firstError, REWARD_EARLY } from '@helpers/form'
@@ -11,14 +12,19 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
-/** Kratos registration: an account + a session; the e-mail waits for confirmation. */
-export function RegisterPage({ next }: { next?: string }) {
+/**
+ * Kratos registration: a provider (GitHub) when Kratos offers one, or an
+ * e-mail and password. A password account gets a session at once and
+ * confirms the e-mail next.
+ */
+export function RegisterPage({ next, flow: flowId }: { next?: string; flow?: string }) {
   const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
   // The registration flow's state for this browser: closed platforms show a
   // notice; a signed-in visitor is taken to the app instead.
   const [closed, setClosed] = useState(false)
+  const flow = useAuthFlow('registration', flowId)
   useEffect(() => {
     void registrationStatus().then((s) => {
       if (s === 'signedin') {
@@ -71,86 +77,90 @@ export function RegisterPage({ next }: { next?: string }) {
           {t('auth.register.closedBody')}
         </Alert>
       ) : (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            void form.handleSubmit()
-          }}
-        >
-          <Stack direction="column" gap={1}>
-            <form.Field name="email">
-              {(field) => (
-                <Field
-                  label={t('auth.register.email')}
-                  invalid={!!firstError(field.state.meta)}
-                  error={firstError(field.state.meta)}
-                  htmlFor={field.name}
-                  required
-                >
-                  <Input
-                    id={field.name}
-                    autoFocus
-                    type="email"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  />
-                </Field>
-              )}
-            </form.Field>
-            <form.Field name="name">
-              {(field) => (
-                <Field
-                  label={t('auth.register.name')}
-                  invalid={!!firstError(field.state.meta)}
-                  error={firstError(field.state.meta)}
-                  htmlFor={field.name}
-                  required
-                >
-                  <Input
-                    id={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  />
-                </Field>
-              )}
-            </form.Field>
-            <form.Field name="password">
-              {(field) => (
-                <Field
-                  label={t('auth.register.password')}
-                  description={t('auth.register.passwordHint')}
-                  invalid={!!firstError(field.state.meta)}
-                  error={firstError(field.state.meta)}
-                  htmlFor={field.name}
-                  required
-                >
-                  <Input
-                    id={field.name}
-                    type="password"
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.currentTarget.value)}
-                  />
-                </Field>
-              )}
-            </form.Field>
-            <form.Subscribe selector={(s) => [s.isSubmitting, s.errorMap.onServer] as const}>
-              {([isSubmitting, serverError]) => (
-                <Stack direction="column" gap={1}>
-                  <ServerErrorAlert error={serverError} />
-                  <Button size="lg" type="submit" disabled={isSubmitting}>
-                    {t('auth.register.submit')}
-                  </Button>
-                  <Text variant="bodySmall" color="secondary">
-                    {t('auth.register.nextStep')}
-                  </Text>
-                </Stack>
-              )}
-            </form.Subscribe>
-          </Stack>
-        </form>
+        <>
+          <FlowNotes flow={flow} />
+          <OidcButtons flow={flow} divider />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              void form.handleSubmit()
+            }}
+          >
+            <Stack direction="column" gap={1}>
+              <form.Field name="email">
+                {(field) => (
+                  <Field
+                    label={t('auth.register.email')}
+                    invalid={!!firstError(field.state.meta)}
+                    error={firstError(field.state.meta)}
+                    htmlFor={field.name}
+                    required
+                  >
+                    <Input
+                      id={field.name}
+                      autoFocus
+                      type="email"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="name">
+                {(field) => (
+                  <Field
+                    label={t('auth.register.name')}
+                    invalid={!!firstError(field.state.meta)}
+                    error={firstError(field.state.meta)}
+                    htmlFor={field.name}
+                    required
+                  >
+                    <Input
+                      id={field.name}
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Field name="password">
+                {(field) => (
+                  <Field
+                    label={t('auth.register.password')}
+                    description={t('auth.register.passwordHint')}
+                    invalid={!!firstError(field.state.meta)}
+                    error={firstError(field.state.meta)}
+                    htmlFor={field.name}
+                    required
+                  >
+                    <Input
+                      id={field.name}
+                      type="password"
+                      value={field.state.value}
+                      onBlur={field.handleBlur}
+                      onChange={(e) => field.handleChange(e.currentTarget.value)}
+                    />
+                  </Field>
+                )}
+              </form.Field>
+              <form.Subscribe selector={(s) => [s.isSubmitting, s.errorMap.onServer] as const}>
+                {([isSubmitting, serverError]) => (
+                  <Stack direction="column" gap={1}>
+                    <ServerErrorAlert error={serverError} />
+                    <Button size="lg" type="submit" disabled={isSubmitting}>
+                      {t('auth.register.submit')}
+                    </Button>
+                    <Text variant="bodySmall" color="secondary">
+                      {t('auth.register.nextStep')}
+                    </Text>
+                  </Stack>
+                )}
+              </form.Subscribe>
+            </Stack>
+          </form>
+        </>
       )}
       <Text variant="bodySmall" color="secondary">
         {t('auth.register.hasAccount')}{' '}

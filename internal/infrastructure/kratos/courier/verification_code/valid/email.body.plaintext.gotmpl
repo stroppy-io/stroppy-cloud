@@ -1,0 +1,13 @@
+{{ with .Identity }}{{ with index . "traits" }}{{ with index . "name" }}Hi {{ . }},{{ end }}{{ end }}{{ end }}
+
+Enter this code on the confirmation screen to finish signing up:
+
+    {{ .VerificationCode }}
+
+Or open this link:
+{{ .VerificationURL }}
+
+The code works for {{ .ExpiresInMinutes }} minutes. If you did not sign up
+for Stroppy Cloud, ignore this mail: nothing happens without the code.
+
+Stroppy Cloud - https://stroppy.io

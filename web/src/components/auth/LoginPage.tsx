@@ -1,6 +1,7 @@
 import { toast } from '@app/Toaster'
 import { AuthCard } from '@components/auth/AuthCard'
 import { applyKratosErrors } from '@components/auth/kratos-errors'
+import { FlowNotes, OidcButtons, useAuthFlow } from '@components/auth/OidcButtons'
 import { ServerErrorAlert } from '@components/ServerErrorAlert'
 import { Alert, Button, Field, Input, Stack, Text } from '@grafana/ui'
 import { firstError, REWARD_EARLY } from '@helpers/form'
@@ -12,11 +13,24 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 
-/** Kratos login (e-mail + password) or, in dev mode, a static token. */
-export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: string }) {
+/**
+ * Kratos login (a provider such as GitHub, or e-mail + password) or, in dev
+ * mode, a static token. `flow` is the login flow Kratos sent the browser back
+ * to: a provider failure, or a GitHub sign-in to link to this account.
+ */
+export function LoginPage({
+  mode,
+  next,
+  flow: flowId,
+}: {
+  mode: 'kratos' | 'dev'
+  next?: string
+  flow?: string
+}) {
   const { t } = useTranslation()
   const qc = useQueryClient()
   const navigate = useNavigate()
+  const flow = useAuthFlow('login', mode === 'kratos' ? flowId : undefined)
 
   const done = () => {
     qc.clear() // the cache belongs to the previous session
@@ -37,7 +51,7 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
     ...REWARD_EARLY,
     onSubmit: async ({ value, formApi }) => {
       try {
-        await login(value.email.trim(), value.password)
+        await login(value.email.trim(), value.password, flowId)
         done()
       } catch (e) {
         // Kratos flow failures (bad credentials, throttling) are plain text.
@@ -52,6 +66,8 @@ export function LoginPage({ mode, next }: { mode: 'kratos' | 'dev'; next?: strin
 
   return (
     <AuthCard title={t('auth.login.title')} subtitle={t('auth.login.subtitle')}>
+      <FlowNotes flow={flow} />
+      <OidcButtons flow={flow} divider />
       <form
         onSubmit={(e) => {
           e.preventDefault()

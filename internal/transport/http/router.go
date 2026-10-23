@@ -97,6 +97,9 @@ func New(d Deps) (http.Handler, error) {
 			return r.Method + " " + r.URL.Path
 		})))
 
+	// /internal/* belongs to the internal listener; the public one never
+	// answers it, not even with the SPA.
+	r.Handle("/internal/*", http.NotFoundHandler())
 	r.NotFound(spa(d.SPA))
 	return r, nil
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"testing/fstest"
 )
 
 // The product site reads the public API from a browser, nothing else; the
@@ -60,5 +61,18 @@ func TestPublicCORS(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// The Kratos mail templates live on the internal listener only.
+func TestPublicListenerHidesInternal(t *testing.T) {
+	router, err := New(Deps{API: http.NotFoundHandler(), SPA: fstest.MapFS{"index.html": {Data: []byte("<html>")}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rec := httptest.NewRecorder()
+	router.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/internal/kratos/mail/v1/recovery_code/valid/email.body.gotmpl", nil))
+	if rec.Code != http.StatusNotFound {
+		t.Fatalf("got %d, want 404", rec.Code)
 	}
 }
