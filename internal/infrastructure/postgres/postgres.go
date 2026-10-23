@@ -34,24 +34,24 @@ var migrationsFS embed.FS
 
 // Config is the `infra.postgres` section.
 type Config struct {
-	Host     string `default:"localhost" mapstructure:"host"     validate:"required"`
-	Port     int    `default:"5432"      mapstructure:"port"     validate:"required,min=1,max=65535"`
-	User     string `default:"stroppy"   mapstructure:"user"     validate:"required"`
-	Password string `default:"stroppy"   mapstructure:"password"`
-	Database string `default:"stroppy"   mapstructure:"database" validate:"required"`
+	Host     string `json:"host" schemapb:"default=localhost;min_len=1"`
+	Port     int    `json:"port" schemapb:"default=5432;gte=1;lte=65535"`
+	User     string `json:"user" schemapb:"default=stroppy;min_len=1"`
+	Password string `json:"password" schemapb:"default=stroppy;secret=true"`
+	Database string `json:"database" schemapb:"default=stroppy;min_len=1"`
 	//nolint:lll // struct tags
-	SSLMode string `default:"disable" mapstructure:"sslmode" validate:"required,oneof=disable allow prefer require verify-ca verify-full"`
+	SSLMode string `json:"sslmode" schemapb:"default=disable;in=[\"disable\",\"allow\",\"prefer\",\"require\",\"verify-ca\",\"verify-full\"]"`
 	// QueryLogLevel bounds the per-query pgx log: "warn" keeps it quiet
 	// (errors only), "info"/"trace" log every statement, "none" silences.
 	//nolint:lll // struct tags
-	QueryLogLevel string `default:"warn" mapstructure:"query_log_level" validate:"required,oneof=trace debug info warn error none"`
+	QueryLogLevel string `json:"query_log_level" schemapb:"default=warn;in=[\"trace\",\"debug\",\"info\",\"warn\",\"error\",\"none\"]"`
 	// Pool bounds; zero keeps the pgx default. Set explicitly in production:
 	// the default MaxConns depends on the node's CPU count.
-	PoolMaxConns          int32         `default:"0"  mapstructure:"pool_max_conns"           validate:"min=0"`
-	PoolMinConns          int32         `default:"0"  mapstructure:"pool_min_conns"           validate:"min=0"`
-	PoolMaxConnLifetime   time.Duration `default:"0s" mapstructure:"pool_max_conn_lifetime"`
-	PoolMaxConnIdleTime   time.Duration `default:"0s" mapstructure:"pool_max_conn_idle_time"`
-	PoolHealthCheckPeriod time.Duration `default:"0s" mapstructure:"pool_health_check_period"`
+	PoolMaxConns          int32         `json:"pool_max_conns" schemapb:"default=0;gte=0"`
+	PoolMinConns          int32         `json:"pool_min_conns" schemapb:"default=0;gte=0"`
+	PoolMaxConnLifetime   time.Duration `json:"pool_max_conn_lifetime" schemapb:"default=0s"`
+	PoolMaxConnIdleTime   time.Duration `json:"pool_max_conn_idle_time" schemapb:"default=0s"`
+	PoolHealthCheckPeriod time.Duration `json:"pool_health_check_period" schemapb:"default=0s"`
 }
 
 // DSN renders a libpq URL.

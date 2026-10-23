@@ -34,14 +34,14 @@ with email_verified=true — invites and the admin bootstrap match by e-mail.
 
 // AuthConfig is the `auth` section.
 type AuthConfig struct {
-	kratos.Config `mapstructure:",squash"`
+	kratos.Config
 	// KratosPublicURL is the origin the browser reaches Kratos at — same
 	// origin through the server's /v1 proxy in the normal setup; served to
 	// the SPA through the public config.
-	KratosPublicURL string `default:"http://localhost:18347/v1" mapstructure:"kratos_public_url" validate:"omitempty,url"`
+	KratosPublicURL string `json:"kratos_public_url" schemapb:"default=http://localhost:18347/v1" validate:"url"`
 	// KratosUpstream is where the server proxies /v1/* to (the Kratos
 	// public listener); empty disables the proxy.
-	KratosUpstream string `default:"http://localhost:4433" mapstructure:"kratos_upstream" validate:"omitempty,url"`
+	KratosUpstream string `json:"kratos_upstream" schemapb:"default=http://localhost:4433" validate:"url"`
 }
 
 // DevConfig is the `dev` section: a local installation without Kratos.
@@ -49,7 +49,7 @@ type DevConfig struct {
 	// Users are static bearer tokens, `token=email[=Display name]`. Any
 	// entry turns dev mode on: Kratos is not asked, a token is a user.
 	// NEVER for a shared installation — the tokens are the passwords.
-	Users []string `mapstructure:"users"`
+	Users []string `json:"users,omitempty"`
 }
 
 // Enabled reports dev mode.

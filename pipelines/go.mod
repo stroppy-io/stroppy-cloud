@@ -15,7 +15,7 @@ require (
 	github.com/docker/docker v28.5.2+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/google/uuid v1.6.0
-	github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3
+	github.com/gopherex/schemapb/go v1.9.9
 	github.com/graphene-ci/library/docker v0.3.6
 	github.com/graphene-ci/library/k8s v0.4.2
 	github.com/graphene-ci/pipeline v0.2.14

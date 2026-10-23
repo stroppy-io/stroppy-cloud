@@ -20,15 +20,15 @@ import (
 
 // Config is the `mail` section. Empty host = disabled.
 type Config struct {
-	Host     string `mapstructure:"host"`
-	Port     int    `default:"587"  mapstructure:"port"     validate:"min=0,max=65535"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	// From is the sender address, e.g. "Stroppy Cloud <noreply@stroppy.io>".
-	From string `default:"Stroppy Cloud <noreply@stroppy.io>" mapstructure:"from"`
+	Host     string `json:"host,omitempty"`
+	Port     int    `json:"port" schemapb:"default=587;gte=0;lte=65535"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty" schemapb:"secret=true"`
+	// From is the sender address, e.g. "Stroppy Cloud <no-reply@stroppy.io>".
+	From string `json:"from" schemapb:"default=Stroppy Cloud <no-reply@stroppy.io>"`
 	// TLS: "starttls" (default), "tls" (implicit), "none".
-	TLS     string        `default:"starttls" mapstructure:"tls" validate:"oneof=starttls tls none"`
-	Timeout time.Duration `default:"10s" mapstructure:"timeout"`
+	TLS     string        `json:"tls" schemapb:"default=starttls;in=[\"starttls\",\"tls\",\"none\"]"`
+	Timeout time.Duration `json:"timeout" schemapb:"default=10s"`
 }
 
 // Enabled reports a configured relay.

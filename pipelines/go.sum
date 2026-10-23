@@ -211,8 +211,8 @@ github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 h1:BHT72Gu3keYf3ZEu2J
 github.com/google/pprof v0.0.0-20250403155104-27863c87afa6/go.mod h1:boTsfXsheKC2y+lKOCMpSfarhxDeIzfZG1jqGcPl3cA=
 github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
 github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
-github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3 h1:Zc4Gk38BYziZTC1p2afYZqwcG468zrlfDI8QFoMOhoU=
-github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3/go.mod h1:g9W8TC7ZZyPXKp+eQuPv612T2d0ZGs/Y+AIR2RA8KYw=
+github.com/gopherex/schemapb/go v1.9.9 h1:W4G6P8j+3zk1KOr8aVZapI+eCZvePTnR+jCligmgwJg=
+github.com/gopherex/schemapb/go v1.9.9/go.mod h1:BwQdhiN79lmQ/jEPuoLW7HC7dltWVWb3wAR9/WAzMo8=
 github.com/graphene-ci/library/docker v0.3.6 h1:JsB8pKjazvEAGFEgoni90dLoTGPKwtkSi65HnGLl/0w=
 github.com/graphene-ci/library/docker v0.3.6/go.mod h1:B2oAsfrSyv+cJndOiPZNy48TnqSAlHhuYvF/ezGBh8k=
 github.com/graphene-ci/library/k8s v0.4.2 h1:+vbnrSisI5dwKsZubiU2UjSxgjZa1gi7dwB9fg5r3UY=

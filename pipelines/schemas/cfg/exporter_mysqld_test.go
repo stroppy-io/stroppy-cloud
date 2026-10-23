@@ -27,7 +27,7 @@ func TestExporterMysqld(t *testing.T) {
 		Invalid: []schematest.Invalid{
 			{Value: map[string]any{"listen_port": int64(0)}, Code: "GTE_VIOLATED", Path: "listen_port"},
 			{Value: map[string]any{"log_level": "trace"}, Code: "CHOICE_NOT_ALLOWED", Path: "log_level"},
-			{Value: map[string]any{"collect.global_status": "ON"}, Code: "UNKNOWN_FIELD", Path: "collect.global_status"},
+			{Value: map[string]any{"collect.global_status": "ON"}, Code: "UNKNOWN_FIELD", Path: `["collect.global_status"]`},
 			{Value: map[string]any{"global_status": "yes"}, Code: "CHOICE_NOT_ALLOWED", Path: "global_status"},
 		},
 		Render: "conf",

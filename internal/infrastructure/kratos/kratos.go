@@ -34,12 +34,12 @@ type Config struct {
 	// JWKSFile is the public key set shared with Kratos (compose mounts
 	// deployments/kratos/jwks). Rotation: put the new kid in first; the
 	// file is re-read when its mtime moves.
-	JWKSFile string `mapstructure:"jwks_file"`
+	JWKSFile string `json:"jwks_file,omitempty"`
 	// JWKSURL serves the same key set over HTTPS (alternative to the file).
-	JWKSURL string `mapstructure:"jwks_url" validate:"omitempty,url"`
+	JWKSURL string `json:"jwks_url,omitempty" validate:"url"`
 	// Issuer and Audience are fixed by claims.jsonnet; defaults match it.
-	Issuer   string `default:"stroppy-cloud" mapstructure:"issuer"   validate:"required"`
-	Audience string `default:"stroppy-cloud" mapstructure:"audience" validate:"required"`
+	Issuer   string `json:"issuer" schemapb:"default=stroppy-cloud;min_len=1"`
+	Audience string `json:"audience" schemapb:"default=stroppy-cloud;min_len=1"`
 }
 
 // complete reports whether verification can be built.

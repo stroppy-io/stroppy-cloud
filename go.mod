@@ -10,17 +10,19 @@ require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
 	github.com/google/uuid v1.6.0
-	github.com/gopherex/pgtx v1.1.0
-	github.com/gopherex/pgtx/contrib/otel v1.1.0
-	github.com/gopherex/schemapb/go v0.0.0-20260923103231-06c47e842fa3
-	github.com/gopherex/sqld v1.1.5
-	github.com/gopherex/xconf v1.1.2
-	github.com/gopherex/xlog v1.0.2
-	github.com/gopherex/xlog/contrib/libs/otel v1.0.2
-	github.com/gopherex/xlog/contrib/libs/pgx v1.0.2
-	github.com/gopherex/xprobe v1.0.0
-	github.com/gopherex/xshutdown v1.0.0
-	github.com/gopherex/xtrace/contrib/sdk v1.0.2
+	github.com/gopherex/pgtx v1.1.2
+	github.com/gopherex/pgtx/contrib/otel v1.1.2
+	github.com/gopherex/schemapb/go v1.9.9
+	github.com/gopherex/sqld v1.1.10
+	github.com/gopherex/xconf v1.4.1
+	github.com/gopherex/xconf/contrib/sources/dotenv v1.4.1
+	github.com/gopherex/xconf/contrib/sources/env v1.4.1
+	github.com/gopherex/xlog v1.2.1
+	github.com/gopherex/xlog/contrib/libs/otel v1.2.1
+	github.com/gopherex/xlog/contrib/libs/pgx v1.2.1
+	github.com/gopherex/xprobe v1.2.0
+	github.com/gopherex/xshutdown v1.1.0
+	github.com/gopherex/xtrace/contrib/sdk v1.1.3
 	github.com/graphene-ci/graphene v0.2.30
 	github.com/graphene-ci/library/docker v0.3.6
 	github.com/graphene-ci/library/k8s v0.4.2
@@ -50,6 +52,8 @@ require (
 	github.com/antchfx/xpath v1.3.6 // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.1 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
+	github.com/avito-tech/go-transaction-manager/drivers/pgxv5/v2 v2.0.5 // indirect
+	github.com/avito-tech/go-transaction-manager/trm/v2 v2.0.5 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.46.0 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.33.3 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.20.3 // indirect
@@ -120,6 +124,7 @@ require (
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-containerregistry v0.21.9 // indirect
+	github.com/gopherex/xconf/contrib/sources/file v1.4.1 // indirect
 	github.com/graphene-ci/temporal-entity v0.0.0-20260825234335-880e05240305 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.3.3 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -137,6 +142,7 @@ require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1 // indirect
 	github.com/iancoleman/strcase v0.3.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.19.2 // indirect
@@ -236,8 +242,6 @@ require (
 )
 
 require (
-	github.com/BurntSushi/toml v1.6.0 // indirect
-	github.com/avito-tech/go-transaction-manager v1.5.1 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect

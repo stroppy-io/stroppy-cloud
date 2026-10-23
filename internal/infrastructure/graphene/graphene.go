@@ -10,15 +10,15 @@ import "time"
 // namespace travels per request.
 type Config struct {
 	// Address is the Graphene door, host:port.
-	Address string `mapstructure:"address" validate:"required,hostname_port"`
+	Address string `json:"address" schemapb:"min_len=1"`
 	// Token is the service-account token (secret; env only).
-	Token string `mapstructure:"token" validate:"required"`
+	Token string `json:"token" schemapb:"min_len=1;secret=true"`
 	// Insecure switches to plain HTTP (dev installations only).
-	Insecure bool `default:"false" mapstructure:"insecure"`
+	Insecure bool `json:"insecure" schemapb:"default=false"`
 	// CallTimeout bounds one request-response call (retries included) when
 	// the caller set no earlier deadline; streams are not bounded. A user
 	// waits for these calls, so a hung Graphene fails them fast.
-	CallTimeout time.Duration `default:"10s" mapstructure:"call_timeout"`
+	CallTimeout time.Duration `json:"call_timeout" schemapb:"default=10s"`
 }
 
 // NamespaceHeader carries the tenant namespace on every call.
