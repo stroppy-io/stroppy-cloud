@@ -1,9 +1,9 @@
-import { LandingPage } from '@components/landing/LandingPage'
-import { createFileRoute } from '@tanstack/react-router'
+import { SITE_URL } from '@lib/site'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
-// The public front page, for guests and the signed in alike (the app's logo
-// leads here; `/` sends guests here too).
+// The console's old front page: the landing lives on stroppy.io now.
 export const Route = createFileRoute('/land')({
-  staticData: { bare: true },
-  component: LandingPage,
+  beforeLoad: () => {
+    throw redirect({ href: SITE_URL })
+  },
 })

@@ -9,40 +9,43 @@ import { tokenClaims } from '@lib/auth'
 import { getPublicConfig } from '@lib/config'
 import { useNavigate } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { brand } from '@/styles/brand'
+import { brandOf } from '@/styles/brand'
 
-const getStyles = (theme: GrafanaTheme2) => ({
-  title: css({
-    margin: 0,
-    fontSize: 'clamp(30px, 3.2vw, 44px)',
-    lineHeight: 1.1,
-    fontWeight: 700,
-    letterSpacing: '-0.025em',
-    color: brand.text,
-  }),
-  subtitle: css({
-    margin: theme.spacing(1.5, 0, 0),
-    color: brand.muted,
-    maxWidth: 640,
-    lineHeight: 1.55,
-  }),
-  // The one thing to do next, set apart from the explanation below it.
-  next: css({
-    marginTop: theme.spacing(4),
-    padding: theme.spacing(3),
-    borderRadius: 10,
-    border: `1px solid ${brand.line}`,
-    background: brand.panel,
-  }),
-  how: css({ marginTop: theme.spacing(6) }),
-  howTitle: css({
-    margin: theme.spacing(0, 0, 2),
-    fontSize: theme.typography.h4.fontSize,
-    fontWeight: theme.typography.fontWeightMedium,
-    color: brand.text,
-  }),
-  skip: css({ marginTop: theme.spacing(3) }),
-})
+const getStyles = (theme: GrafanaTheme2) => {
+  const brand = brandOf(theme)
+  return {
+    title: css({
+      margin: 0,
+      fontSize: 'clamp(30px, 3.2vw, 44px)',
+      lineHeight: 1.1,
+      fontWeight: 700,
+      letterSpacing: '-0.025em',
+      color: brand.text,
+    }),
+    subtitle: css({
+      margin: theme.spacing(1.5, 0, 0),
+      color: brand.muted,
+      maxWidth: 640,
+      lineHeight: 1.55,
+    }),
+    // The one thing to do next, set apart from the explanation below it.
+    next: css({
+      marginTop: theme.spacing(4),
+      padding: theme.spacing(3),
+      borderRadius: 10,
+      border: `1px solid ${brand.line}`,
+      background: brand.panel,
+    }),
+    how: css({ marginTop: theme.spacing(6) }),
+    howTitle: css({
+      margin: theme.spacing(0, 0, 2),
+      fontSize: theme.typography.h4.fontSize,
+      fontWeight: theme.typography.fontWeightMedium,
+      color: brand.text,
+    }),
+    skip: css({ marginTop: theme.spacing(3) }),
+  }
+}
 
 /**
  * The first screen after the first sign-in. Three cases: an unconfirmed

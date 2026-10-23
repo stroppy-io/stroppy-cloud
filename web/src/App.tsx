@@ -48,12 +48,38 @@ const bodyReset = css({
   '[data-role="menuitem"][data-disabled] > div > span': { color: 'inherit' },
 })
 
+// The chosen theme is shared with stroppy.io: a cookie on the parent domain
+// that both read (`stroppy-theme=dark|light`). Elsewhere (a local stand) the
+// cookie stays on this host. localStorage keeps a choice made before the
+// cookie existed. Nothing chosen → the system's scheme.
+const THEME_COOKIE = 'stroppy-theme'
 const THEME_KEY = 'stroppy.theme'
+const SHARED_DOMAIN = 'stroppy.io'
+
+function asMode(v: string | null | undefined): ThemeMode | undefined {
+  return v === 'dark' || v === 'light' ? v : undefined
+}
+
+function readThemeCookie(): ThemeMode | undefined {
+  const m = document.cookie.match(new RegExp(`(?:^|; )${THEME_COOKIE}=([^;]*)`))
+  return asMode(m?.[1])
+}
+
+function writeThemeCookie(m: ThemeMode) {
+  const host = window.location.hostname
+  const shared = host === SHARED_DOMAIN || host.endsWith(`.${SHARED_DOMAIN}`)
+  const domain = shared ? `; domain=.${SHARED_DOMAIN}` : ''
+  const secure = window.location.protocol === 'https:' ? '; secure' : ''
+  // biome-ignore lint/suspicious/noDocumentCookie: the Cookie Store API is not in every browser yet
+  document.cookie = `${THEME_COOKIE}=${m}; path=/; max-age=31536000; samesite=lax${domain}${secure}`
+}
 
 function initialMode(): ThemeMode {
+  const cookie = readThemeCookie()
+  if (cookie) return cookie
   try {
-    const v = localStorage.getItem(THEME_KEY)
-    if (v === 'dark' || v === 'light') return v
+    const stored = asMode(localStorage.getItem(THEME_KEY))
+    if (stored) return stored
   } catch {
     // ignore
   }
@@ -64,6 +90,7 @@ export function App() {
   const [mode, setModeState] = useState<ThemeMode>(initialMode)
   const setMode = (m: ThemeMode) => {
     setModeState(m)
+    writeThemeCookie(m)
     try {
       localStorage.setItem(THEME_KEY, m)
     } catch {

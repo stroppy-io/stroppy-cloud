@@ -5,11 +5,11 @@ import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Badge, Tooltip, useStyles2 } from '@grafana/ui'
 import { useTenant } from '@hooks/useTenant'
+import { SITE_URL } from '@lib/site'
 import { useHotkey, useHotkeySequence } from '@tanstack/react-hotkeys'
 import { Outlet, useNavigate } from '@tanstack/react-router'
 import { type ReactNode, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AppLink } from './AppLink'
 import { Breadcrumbs } from './Breadcrumbs'
 import { useBreadcrumbs, useIsBare } from './crumbs'
 import { GlobalSearch, type GlobalSearchHandle } from './GlobalSearch'
@@ -128,7 +128,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
     <div className={styles.root}>
       <header className={styles.top}>
         <div className={styles.topInner}>
-          <AppLink to="/land" className={styles.brand}>
+          <a href={SITE_URL} className={styles.brand}>
             <Logo size={30} className={styles.logo} />
             {t('common.appName')}
             {apiMode === 'mock' && (
@@ -138,7 +138,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
                 </span>
               </Tooltip>
             )}
-          </AppLink>
+          </a>
           <div className={styles.center} data-tour="search">
             {tenant && <GlobalSearch ref={searchRef} />}
           </div>

@@ -2,6 +2,7 @@ import { isApiError } from '@api/errors'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
 import { Button, Icon, Text, useStyles2 } from '@grafana/ui'
+import { SITE_URL } from '@lib/site'
 import { useTranslation } from 'react-i18next'
 
 const getStyles = (theme: GrafanaTheme2) => ({
@@ -42,7 +43,7 @@ export function ShareGone({ error }: { error: unknown }) {
               ? error.message
               : t('common.errors.generic')}
       </Text>
-      <Button variant="secondary" onClick={() => window.location.assign('/land')}>
+      <Button variant="secondary" onClick={() => window.location.assign(SITE_URL)}>
         {t('public.gone.home')}
       </Button>
     </div>

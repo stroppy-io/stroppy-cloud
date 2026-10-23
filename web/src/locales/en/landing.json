@@ -1,10 +1,7 @@
 {
   "nav": {
-    "label": "Sections",
-    "rating": "Leaderboard",
-    "docs": "Docs",
     "signIn": "Sign in",
-    "start": "Get started",
+    "start": "Create account",
     "steps": {
       "label": "Page sections",
       "start": "Start",
@@ -17,7 +14,7 @@
     },
     "console": "Open console",
     "account": "Account",
-    "how": "Architecture"
+    "site": "Back to site"
   },
   "hero": {
     "title": "Find out how much load your database can take",

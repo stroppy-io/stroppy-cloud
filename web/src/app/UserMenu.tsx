@@ -8,6 +8,7 @@ import { useMe } from '@hooks/useMe'
 import { logout } from '@lib/auth'
 import { getPublicConfig } from '@lib/config'
 import { type Lang, setLang } from '@lib/i18n'
+import { SITE_URL } from '@lib/site'
 import { useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -37,7 +38,8 @@ export function UserMenu({ onShortcuts }: { onShortcuts: () => void }) {
   const signOut = async () => {
     await logout()
     qc.clear()
-    void navigate({ to: '/login' })
+    // Out of the console is back to the site.
+    window.location.assign(SITE_URL)
   }
   return (
     <>

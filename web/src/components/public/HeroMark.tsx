@@ -1,11 +1,11 @@
 import { MARK_ORANGE } from '@components/Logo'
 import { css, cx, keyframes } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
-import { useStyles2 } from '@grafana/ui'
+import { useStyles2, useTheme2 } from '@grafana/ui'
 import { type MotionValue, motion, useTransform } from 'motion/react'
 import type { ReactNode } from 'react'
 import { BAND, BODY, RAYS } from '@/kit/logo'
-import { brand } from '@/styles/brand'
+import { brandOf } from '@/styles/brand'
 
 // The logo, large and muted, behind the headline.
 //
@@ -181,6 +181,7 @@ export function HeroMark({
   tone?: HeroMarkTone
 }) {
   const styles = useStyles2(getStyles)
+  const brand = brandOf(useTheme2())
   const accent = MARK_ORANGE
   const top = useTransform(open, (v) => uy(LIFT.top * v))
   const middle = useTransform(open, (v) => uy(LIFT.middle * v))
