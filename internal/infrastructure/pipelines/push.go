@@ -214,6 +214,9 @@ type ExecRunner struct {
 	Dir     string
 	Cfg     *graphene.Config
 	Timeout time.Duration
+	// BaseImage is the image a pipeline binary is laid over; empty =
+	// selfbuild's default.
+	BaseImage string
 }
 
 // Push implements Runner.
@@ -234,7 +237,7 @@ func (r ExecRunner) Push(ctx context.Context, pipeline, namespace string) error 
 	}
 	image, _, err := selfbuild.PushBinary(cctx, bin, selfbuild.Options{
 		Registry: r.Cfg.Address, Namespace: namespace, PipelineId: pipeline,
-		Token: r.Cfg.Token, Insecure: r.Cfg.Insecure,
+		Token: r.Cfg.Token, Insecure: r.Cfg.Insecure, BaseImage: r.BaseImage,
 	})
 	if err != nil {
 		return fmt.Errorf("%s image: %w", pipeline, err)

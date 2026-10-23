@@ -34,6 +34,7 @@ func TestConfigDefaults(t *testing.T) {
 	require.Equal(t, "http://localhost:4433", cfg.Auth.KratosUpstream)
 	require.Equal(t, "starttls", cfg.Mail.TLS)
 	require.Equal(t, 10*time.Minute, cfg.Infra.Pipelines.Interval)
+	require.Equal(t, "docker.stroppy.io/stroppy-io/distroless-static:nonroot", cfg.Infra.Pipelines.BaseImage)
 	require.True(t, cfg.Migrate)
 	require.True(t, cfg.Trace.Enabled)
 	require.False(t, cfg.Dev.Enabled())

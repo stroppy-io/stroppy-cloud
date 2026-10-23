@@ -116,6 +116,15 @@ Why: YC machines could not reach Quay's CDN (`cdn01.quay.io … i/o timeout`),
 and the agent retried `stroppy.image.pull` for node-exporter forever — the
 deploy phase never finished.
 
+The server also builds each pipeline image itself, over a base image it
+pulls from the cluster: `STROPPY_INFRA_PIPELINES_BASE_IMAGE`, by default
+`docker.stroppy.io/stroppy-io/distroless-static:nonroot` — a copy of
+`gcr.io/distroless/static:nonroot` in the hosted `stroppy-io` repository,
+pulled anonymously. Graphene's own default reaches gcr.io directly, which a
+YC cluster cannot count on (`dial tcp …:443: i/o timeout`, every pipeline
+push fails and runs wait in the queue). Refresh the copy with
+`crane copy gcr.io/distroless/static:nonroot docker.stroppy.io/stroppy-io/distroless-static:nonroot`.
+
 Status: interim. Graphene has no pull-through for public images; until it
 does, the Nexus mirror is the only route. Revisit when Graphene can proxy
 public registries itself (then the setting is dropped or pointed there).

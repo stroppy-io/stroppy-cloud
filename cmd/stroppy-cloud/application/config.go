@@ -102,6 +102,10 @@ type PipelinesConfig struct {
 	Dir string `json:"dir" schemapb:"default=/opt/stroppy/pipelines"`
 	// Interval re-checks every namespace (failures, restarts).
 	Interval time.Duration `json:"interval" schemapb:"default=10m"`
+	// BaseImage is what a pipeline image is built on: our registry's copy
+	// of gcr.io/distroless/static:nonroot, since the cluster cannot count on
+	// reaching gcr.io. Empty = Graphene's default, straight from gcr.io.
+	BaseImage string `json:"base_image" schemapb:"default=docker.stroppy.io/stroppy-io/distroless-static:nonroot"`
 	// PushTimeout bounds one `push` subprocess.
 	PushTimeout time.Duration `json:"push_timeout" schemapb:"default=10m"`
 	// Runner replaces the subprocess runner (tests); never configured.

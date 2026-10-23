@@ -117,7 +117,10 @@ func buildServices(ctx context.Context, cfg *Config, infra *Infra, manager *xshu
 	ratings := rating.NewService(runRepo, tenants, cat, shares)
 	tenantRepo := repositories.NewTenantRepo(db)
 	adminSvc := admin.NewService(repositories.NewAdminRepo(db), tenantRepo, repositories.NewProfileRepo(db), runRepo, runs, namespaces{infra.Graphene}, probeComponents{infra}, auditSvc, cfg.AdminEmails, infra.Graphene, graphene.WithNamespace)
-	var runner pipelines.Runner = pipelines.ExecRunner{Dir: cfg.Infra.Pipelines.Dir, Cfg: &cfg.Infra.Graphene, Timeout: cfg.Infra.Pipelines.PushTimeout}
+	var runner pipelines.Runner = pipelines.ExecRunner{
+		Dir: cfg.Infra.Pipelines.Dir, Cfg: &cfg.Infra.Graphene, Timeout: cfg.Infra.Pipelines.PushTimeout,
+		BaseImage: cfg.Infra.Pipelines.BaseImage,
+	}
 	if cfg.Infra.Pipelines.Runner != nil {
 		runner = cfg.Infra.Pipelines.Runner
 	}
