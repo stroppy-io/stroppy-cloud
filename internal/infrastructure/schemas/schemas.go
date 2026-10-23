@@ -29,10 +29,14 @@ type Registry struct {
 	engines map[string]*schemapb.Engine
 }
 
-// New indexes every product schema.
-func New() *Registry {
+// New returns the registry of every product schema. Building the schemas
+// compiles all their CEL rules, so it happens once per process: the
+// registry is read-only apart from its own locked engine cache.
+func New() *Registry { return shared() }
+
+var shared = sync.OnceValue(func() *Registry {
 	return &Registry{byID: schemas.ByID(), engines: map[string]*schemapb.Engine{}}
-}
+})
 
 // IDs lists the registered ids.
 func (r *Registry) IDs() []string {
