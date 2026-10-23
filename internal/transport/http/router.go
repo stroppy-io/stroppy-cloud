@@ -83,6 +83,8 @@ func New(d Deps) (http.Handler, error) {
 			return nil, fmt.Errorf("kratos proxy: %w", err)
 		}
 		r.Handle(kratosPrefix+"/*", proxy)
+		// "Signed in?" for the product site; beside ogen, before /api/*.
+		r.Handle(sessionPath, signedIn(d.KratosUpstream, &http.Client{}))
 	}
 
 	// The socket lives beside the API (the upgrade bypasses ogen; the log
@@ -174,6 +176,8 @@ func cors(origins []string) func(http.Handler) http.Handler {
 // rating and shared reports, GET and HEAD only, without credentials (a
 // cookie or token never travels cross-site). Nothing else of the API answers
 // these origins; an origin cors() already allows keeps its own headers.
+// The one exception is sessionPath: GET with credentials, so the site's
+// request carries the visitor's Kratos cookie and learns only yes or no.
 func publicCORS(origins []string) func(http.Handler) http.Handler {
 	allowed := map[string]bool{}
 	for _, o := range origins {
@@ -188,17 +192,27 @@ func publicCORS(origins []string) func(http.Handler) http.Handler {
 				return
 			}
 			h.Add("Vary", "Origin")
+			session := r.URL.Path == sessionPath
 			switch r.Method {
 			case http.MethodGet, http.MethodHead:
 				h.Set("Access-Control-Allow-Origin", origin)
+				if session && r.Method == http.MethodGet {
+					h.Set("Access-Control-Allow-Credentials", "true")
+				}
 				next.ServeHTTP(w, r)
 			case http.MethodOptions:
-				if m := r.Header.Get("Access-Control-Request-Method"); m != http.MethodGet && m != http.MethodHead {
+				m := r.Header.Get("Access-Control-Request-Method")
+				if m != http.MethodGet && (session || m != http.MethodHead) {
 					w.WriteHeader(http.StatusNoContent) // no CORS headers: the browser refuses
 					return
 				}
 				h.Set("Access-Control-Allow-Origin", origin)
-				h.Set("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS")
+				methods := "GET,HEAD,OPTIONS"
+				if session {
+					h.Set("Access-Control-Allow-Credentials", "true")
+					methods = "GET,OPTIONS"
+				}
+				h.Set("Access-Control-Allow-Methods", methods)
 				h.Set("Access-Control-Allow-Headers", "Content-Type")
 				h.Set("Access-Control-Max-Age", "600")
 				w.WriteHeader(http.StatusNoContent)
