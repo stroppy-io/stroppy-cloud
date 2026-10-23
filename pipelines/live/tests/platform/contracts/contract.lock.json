@@ -1,9 +1,9 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "hash": "sha256 (JSON canonicalized)",
   "files": {
-    "openapi/openapi.yaml": "9d4948bdfa736fcb2df819d0d0a2641fe4c745893a2ad47f76a89eb1d8ddf6d5",
-    "pipelines/go.mod": "f4af94a9e793b9af2eca2e7e8d7b014ca18451df7957618a9163120608d1872d",
+    "openapi/openapi.yaml": "4629e314bcf6b5066419df102e135cdab1ba8f2adf1d448d566f05bbcf33f72e",
+    "pipelines/go.mod": "d491cea3e7d1d4bb77b34be1fc33719f43a79b96d0da7fd0dd392f6833c28f13",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
     "pipelines/schemas/testdata/cfg.cockroach.flags@24.json": "ec2ddec106a25d078149532a363fe1b09ceec6912dd906bff3768dfe2b77cef9",
@@ -74,7 +74,7 @@
     "pipelines/schemas/testdata/test.sizes@1.json": "581c6705c369321666b3d85b4b36b6effa113e50be1bff5513f47f13ff323a02",
     "pipelines/schemas/testdata/workload.segment@1.json": "25a098ec1e242e65a0fe5be3744e1d3aa199d2877f7721d7735e66d920a14594",
     "pipelines/schemas/testdata/workload.stroppy@1.json": "ba063f4840b864220ff56a789aee32e93a00ed8a44bc03e99da5c77f308f8cfa",
-    "pipelines/spec/contract_version.go": "8c96078fa5fc881ca1d65dadbe441da931adbbbf780c69f3d5d6a2914feeaa8d",
+    "pipelines/spec/contract_version.go": "4f215bc297df146445cc1c0f30178d91a799b20f714e6289b2d1e6002400d1cc",
     "pipelines/spec/provider_config.go": "83b2c0b23696c1ea2e87c919450b14ea28b78e35bfb01c390e7e60c66f205258",
     "pipelines/spec/result.go": "3cd6bb6d78d66751a0efc56f0d29e70bb2d3f1e2474e3973d8cc173397d82433",
     "pipelines/spec/segment.go": "82df89e57423385e131be861190341f6ee4968ff7599362902c4849679101ff0",
