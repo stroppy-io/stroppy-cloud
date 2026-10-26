@@ -5,9 +5,15 @@
     {
       "choice": {
         "default": {
-          "stringValue": "0.1.2"
+          "stringValue": "0.2.0"
         },
         "options": [
+          {
+            "label": "0.2.0",
+            "value": {
+              "stringValue": "0.2.0"
+            }
+          },
           {
             "label": "0.1.2",
             "value": {

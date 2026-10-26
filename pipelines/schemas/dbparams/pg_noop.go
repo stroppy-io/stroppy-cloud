@@ -20,8 +20,9 @@ func PgNoop() *schemapb.Schema {
 		Fields(
 			schemapb.Choice("version").Title("pg-noop version").Group("Engine").
 				Desc("Build of the pg-noop server; the binary is served through the stroppy gateway.").
+				Opt(schemapb.StrV("0.2.0"), "0.2.0").
 				Opt(schemapb.StrV("0.1.2"), "0.1.2").
-				Default(schemapb.StrV("0.1.2")).Required(),
+				Default(schemapb.StrV("0.2.0")).Required(),
 
 			schemapb.Int64("workers").Title("Workers").Group("Server").
 				Desc("Connection-handling workers; 0 = one per CPU of the machine.").

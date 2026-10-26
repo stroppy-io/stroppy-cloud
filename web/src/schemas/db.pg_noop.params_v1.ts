@@ -4,7 +4,7 @@
 /** root */
 export interface DbPgNoopParams1 {
   /** pg-noop version. Build of the pg-noop server; the binary is served through the stroppy gateway. */
-  version: "0.1.2";
+  version: "0.2.0" | "0.1.2";
   /** Workers. Connection-handling workers; 0 = one per CPU of the machine. */
   workers?: number | string;
   /** Injected latency. Artificial delay added before each response, to model a storage engine that is not free. [ms] */

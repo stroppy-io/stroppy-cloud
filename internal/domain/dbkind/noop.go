@@ -9,12 +9,15 @@ func pgNoop() Kind {
 	return Kind{
 		Database: catalog.Database{
 			Kind: catalog.PgNoop, Title: "pg-noop", Description: "PostgreSQL-protocol server that acknowledges everything: the driver-side ceiling.",
-			Versions: []catalog.Version{{Version: "0.1.2", Image: "docker.stroppy.io/stroppy-io/pg-noop@sha256:c35aea48379fcefadb8f06cab4e6023257f28c23f3f27855680f97e468df4f3d", Default: true}},
+			Versions: []catalog.Version{
+				{Version: "0.2.0", Image: "docker.stroppy.io/stroppy-io/pg-noop@sha256:ac8e348c2f95d9d11aef56cb010717474b92a1fefe4010c5e3e78f23ab5a6598", Default: true},
+				{Version: "0.1.2", Image: "docker.stroppy.io/stroppy-io/pg-noop@sha256:c35aea48379fcefadb8f06cab4e6023257f28c23f3f27855680f97e468df4f3d"},
+			},
 			Roles: []catalog.Role{
 				{Role: "db", Title: "pg-noop", Engine: "pg_noop"},
 				{Role: "runner", Title: "Stroppy runner", Engine: "stroppy"},
 			},
-			Topologies:   []catalog.Topology{{ID: "single", Title: "Single node", Params: map[string]any{"version": "0.1.2"}}},
+			Topologies:   []catalog.Topology{{ID: "single", Title: "Single node", Params: map[string]any{"version": "0.2.0"}}},
 			ParamsSchema: "db.pg_noop.params@1", Protocols: []catalog.Protocol{catalog.ProtoPg}, Deployable: true,
 		},
 		plan: func(p *topology.Plan, params map[string]any) {

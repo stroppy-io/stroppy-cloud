@@ -281,6 +281,11 @@ func pgNoopRecipe(c *compilation) error {
 		if workers := intParam(p, "workers", 0); workers > 0 {
 			env["PGNOOP_WORKERS"] = fmt.Sprint(workers)
 		}
+		// pg-noop 0.2 serves with io_uring and falls back to epoll when
+		// Docker's default seccomp profile denies io_uring_setup; the ceiling
+		// it measures is the io_uring one.
+		// doc: https://github.com/stroppy-io/pg-noop/releases/tag/v0.2.0
+		// doc: https://docs.docker.com/engine/security/seccomp/
 		c.add(spec.Container{
 			Name: m + "-pg-noop", Role: topology.RoleDB, Machine: m, Image: image,
 			Kind:        spec.ContainerKindDatabase,
@@ -288,6 +293,8 @@ func pgNoopRecipe(c *compilation) error {
 			Ports:       []spec.Port{{Container: port, Host: port}},
 			Healthcheck: healthcheck("CMD-SHELL", fmt.Sprintf("nc -z 127.0.0.1 %d", port)),
 			Restart:     "always",
+			Ulimits:     map[string]int64{"memlock": -1},
+			SecurityOpt: []string{"seccomp=unconfined"},
 		})
 	}
 	return nil

@@ -78,6 +78,13 @@ func TestCompileCatalogTopologies(t *testing.T) {
 						t.Fatalf("Picodata pgx mode missing: %v", out.Spec.Workload.Driver)
 					}
 				}
+				if kind == catalog.PgNoop {
+					for _, ct := range out.Spec.Containers {
+						if ct.Kind == spec.ContainerKindDatabase && (len(ct.SecurityOpt) != 1 || ct.SecurityOpt[0] != "seccomp=unconfined") {
+							t.Fatalf("pg-noop cannot set up io_uring: %s %v", ct.Name, ct.SecurityOpt)
+						}
+					}
+				}
 				raw, err := json.Marshal(out.Spec)
 				if err != nil {
 					t.Fatal(err)
