@@ -59,6 +59,7 @@ type netPair struct {
 	Address   string  `json:"address,omitempty"`
 	Container string  `json:"container,omitempty"`
 	Critical  bool    `json:"critical"`
+	Endpoint  bool    `json:"endpoint,omitempty"`
 	Outcome   string  `json:"outcome"`
 	LatencyMs float64 `json:"latency_ms"`
 	Attempts  int     `json:"attempts,omitempty"`
@@ -195,7 +196,7 @@ func (nc *netCheck) endpoint() (activities.NetTarget, bool) {
 	if to == nc.runner {
 		return activities.NetTarget{}, false
 	}
-	return activities.NetTarget{Machine: to, Address: address, Port: port, Critical: true}, true
+	return activities.NetTarget{Machine: to, Address: address, Port: port, Critical: true, Endpoint: true}, true
 }
 
 func (nc *netCheck) withEndpoint(targets []activities.NetTarget) []activities.NetTarget {
@@ -205,7 +206,7 @@ func (nc *netCheck) withEndpoint(targets []activities.NetTarget) []activities.Ne
 	}
 	for i := range targets {
 		if targets[i].Address == ep.Address {
-			targets[i].Critical = true
+			targets[i].Critical, targets[i].Endpoint = true, true
 			return targets
 		}
 	}
@@ -258,7 +259,7 @@ func (nc *netCheck) probe(ctx pipeline.Context) error {
 			for _, p := range res.Pairs {
 				results[i] = append(results[i], netPair{
 					From: src.machine, To: p.Machine, Port: p.Port, Address: p.Address, Container: p.Container,
-					Critical: p.Critical, Outcome: string(p.Outcome), LatencyMs: p.LatencyMs, Attempts: p.Attempts, Error: p.Error,
+					Critical: p.Critical, Endpoint: p.Endpoint, Outcome: string(p.Outcome), LatencyMs: p.LatencyMs, Attempts: p.Attempts, Error: p.Error,
 				})
 			}
 			return nil
@@ -281,7 +282,7 @@ func (nc *netCheck) unreachable(ctx pipeline.Context, waitErr error) {
 		return
 	}
 	pair := netPair{
-		From: nc.runner, To: ep.Machine, Port: ep.Port, Address: ep.Address, Critical: true,
+		From: nc.runner, To: ep.Machine, Port: ep.Port, Address: ep.Address, Critical: true, Endpoint: true,
 		Outcome: string(activities.ClassifyDialText(waitErr.Error())), Error: waitErr.Error(),
 	}
 	if pair.ok() {
@@ -389,9 +390,15 @@ func (nc *netCheck) emit(ctx pipeline.Context, stage string) {
 }
 
 // verdict fails the run on a failed critical path, naming the first few.
+// A refused connection proves the path open: the port is closed, which is
+// normal for one a service opens on demand (Galera's IST and SST). Only the
+// workload's endpoint must also be listening.
 func (nc *netCheck) verdict() error {
 	var bad []string
 	for _, p := range nc.pairs {
+		if p.Outcome == string(activities.NetRefused) && !p.Endpoint {
+			continue
+		}
 		if !p.ok() && p.Critical {
 			bad = append(bad, p.String())
 		}

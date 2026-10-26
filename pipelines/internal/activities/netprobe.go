@@ -55,6 +55,9 @@ type NetTarget struct {
 	Container string `json:"container,omitempty"`
 	// Critical marks a target the workload or the database cluster needs.
 	Critical bool `json:"critical,omitempty"`
+	// Endpoint marks the workload's own endpoint: it must answer, not just
+	// be reachable.
+	Endpoint bool `json:"endpoint,omitempty"`
 }
 
 // NetProbeRequest is what one machine dials.

@@ -72,7 +72,7 @@ func TestSimulatedNetCheckAllReachable(t *testing.T) {
 	execute(run)
 	require.NoError(t, s.w.Env.GetWorkflowError())
 	require.Equal(t, []activities.NetTarget{
-		{Machine: "db-1", Address: "10.130.0.10:5432", Port: 5432, Container: "postgres", Critical: true},
+		{Machine: "db-1", Address: "10.130.0.10:5432", Port: 5432, Container: "postgres", Critical: true, Endpoint: true},
 		{Machine: "db-1", Address: "10.130.0.10:9187", Port: 9187, Container: "postgres-exporter"},
 	}, probed, "the endpoint is the database port, not a second target")
 	require.Len(t, s.network, 1)
@@ -121,6 +121,31 @@ func TestSimulatedNetCheckCriticalPathFailsBeforeWorkload(t *testing.T) {
 	require.True(t, errors.As(err, &appErr) && appErr.HasDetails(), "the partial result rides in the failure")
 	require.Equal(t, "failure", s.w.Outcome(runOwner()))
 	s.w.AssertNoLeaks(t)
+}
+
+// A closed port answers "refused": the path is open. A cluster port opened
+// on demand (Galera's IST/SST) does not fail the run; the workload's own
+// endpoint must listen.
+func TestSimulatedNetCheckRefusedClusterPortPasses(t *testing.T) {
+	s, run, execute := netSim(t)
+	refuse := func(port int) func(string, activities.NetTarget) activities.NetPairResult {
+		return func(_ string, target activities.NetTarget) activities.NetPairResult {
+			if target.Port == port {
+				return activities.NetPairResult{NetTarget: target, Outcome: activities.NetRefused, Attempts: 4, Error: "connect: connection refused"}
+			}
+			return activities.NetPairResult{NetTarget: target, Outcome: activities.NetOK, Attempts: 1}
+		}
+	}
+	run.Containers[0].Ports = append(run.Containers[0].Ports, spec.Port{Container: 4444, Host: 4444})
+	s.probe = refuse(4444)
+	execute(run)
+	require.NoError(t, s.w.Env.GetWorkflowError())
+	require.EqualValues(t, 1, s.network[0]["failed"])
+
+	s, run, execute = netSim(t)
+	s.probe = refuse(5432)
+	execute(run)
+	require.ErrorContains(t, s.w.Env.GetWorkflowError(), "connectivity: db-1:5432 unreachable from runner-1 (refused)")
 }
 
 func TestSimulatedNetCheckExporterOnlyWarns(t *testing.T) {
