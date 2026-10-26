@@ -138,6 +138,9 @@ func TestNetworkQuotaNeeds(t *testing.T) {
 		{"aws vpc", aws, "vpc.vpcs", 1},
 		{"aws group", aws, "vpc.security_groups", 1},
 		{"aws gateway", aws, "vpc.internet_gateways", 1},
+		// A public machine takes a dynamic external address; a private one none.
+		{"public addresses", public, "vpc.externalAddresses.count", 3},
+		{"private machines take no address", sharedNAT, "vpc.externalAddresses.count", 0},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			total, _ := runDemand(tc.run)
@@ -146,6 +149,11 @@ func TestNetworkQuotaNeeds(t *testing.T) {
 				t.Fatalf("need %v (known %v), want %v", need, ok, tc.need)
 			}
 		})
+	}
+	// The cloud's dynamic addresses all taken: a public run waits instead of
+	// failing to create its machines.
+	if sf, _ := quotaShortfall([]provider.Quota{{Name: "vpc.externalAddresses.count", Limit: 64, Used: 64, Unit: "addresses"}}, nil, public); sf == nil {
+		t.Fatal("a public run passed a full external address quota")
 	}
 	// Ten networks used out of ten no longer hold a Yandex run.
 	if sf, _ := quotaShortfall([]provider.Quota{{Name: "vpc.networks.count", Limit: 10, Used: 10}}, nil, public); sf != nil {

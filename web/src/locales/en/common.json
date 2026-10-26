@@ -574,7 +574,7 @@
     "vpc_networks_count": "Networks",
     "vpc_subnets_count": "Subnets",
     "vpc_securityGroups_count": "Security groups",
-    "vpc_externalStaticAddresses_count": "Public addresses",
+    "vpc_externalStaticAddresses_count": "Static public addresses",
     "ec2_standard_vcpus": "On-demand vCPUs",
     "ec2_spot_standard_vcpus": "Spot vCPUs",
     "ebs_gp3_storage": "gp3 storage",
@@ -583,7 +583,8 @@
     "vpc_vpcs": "VPCs",
     "vpc_security_groups": "Security groups",
     "vpc_internet_gateways": "Internet gateways",
-    "ec2_elastic_ips": "Elastic IPs"
+    "ec2_elastic_ips": "Elastic IPs",
+    "vpc_externalAddresses_count": "Public addresses"
   },
   "quotaUnit": {
     "instances": "instances",

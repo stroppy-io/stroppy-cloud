@@ -21470,6 +21470,7 @@ const (
 	QuotaNameVpcSubnetsCount                   QuotaName = "vpc.subnets.count"
 	QuotaNameVpcSecurityGroupsCount            QuotaName = "vpc.securityGroups.count"
 	QuotaNameVpcExternalStaticAddressesCount   QuotaName = "vpc.externalStaticAddresses.count"
+	QuotaNameVpcExternalAddressesCount         QuotaName = "vpc.externalAddresses.count"
 	QuotaNameEc2StandardVcpus                  QuotaName = "ec2.standard.vcpus"
 	QuotaNameEc2SpotStandardVcpus              QuotaName = "ec2.spot.standard.vcpus"
 	QuotaNameEbsGp3Storage                     QuotaName = "ebs.gp3.storage"
@@ -21497,6 +21498,7 @@ func (QuotaName) AllValues() []QuotaName {
 		QuotaNameVpcSubnetsCount,
 		QuotaNameVpcSecurityGroupsCount,
 		QuotaNameVpcExternalStaticAddressesCount,
+		QuotaNameVpcExternalAddressesCount,
 		QuotaNameEc2StandardVcpus,
 		QuotaNameEc2SpotStandardVcpus,
 		QuotaNameEbsGp3Storage,
@@ -21537,6 +21539,8 @@ func (s QuotaName) MarshalText() ([]byte, error) {
 	case QuotaNameVpcSecurityGroupsCount:
 		return []byte(s), nil
 	case QuotaNameVpcExternalStaticAddressesCount:
+		return []byte(s), nil
+	case QuotaNameVpcExternalAddressesCount:
 		return []byte(s), nil
 	case QuotaNameEc2StandardVcpus:
 		return []byte(s), nil
@@ -21602,6 +21606,9 @@ func (s *QuotaName) UnmarshalText(data []byte) error {
 		return nil
 	case QuotaNameVpcExternalStaticAddressesCount:
 		*s = QuotaNameVpcExternalStaticAddressesCount
+		return nil
+	case QuotaNameVpcExternalAddressesCount:
+		*s = QuotaNameVpcExternalAddressesCount
 		return nil
 	case QuotaNameEc2StandardVcpus:
 		*s = QuotaNameEc2StandardVcpus

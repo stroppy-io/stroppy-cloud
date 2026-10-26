@@ -351,6 +351,23 @@ func checkMemory(c Container, m Machine, p string, add func(string, string, stri
 	}
 }
 
+// PublicAddresses is how many machines of the run get a public address
+// (the profile's default or the machine's own choice): one dynamic external
+// address each.
+func PublicAddresses(r Run) int {
+	n := 0
+	for _, m := range r.Machines {
+		public := r.Network.AllowPublicIPs
+		if m.PublicIP != nil {
+			public = *m.PublicIP
+		}
+		if public {
+			n++
+		}
+	}
+	return n
+}
+
 // NeedsPrivateEgress reports whether at least one VM needs a shared NAT gateway.
 func NeedsPrivateEgress(r Run) bool {
 	for _, m := range r.Machines {

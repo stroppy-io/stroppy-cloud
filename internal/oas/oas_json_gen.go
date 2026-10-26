@@ -28363,6 +28363,8 @@ func (s *QuotaName) Decode(d *jx.Decoder) error {
 		*s = QuotaNameVpcSecurityGroupsCount
 	case QuotaNameVpcExternalStaticAddressesCount:
 		*s = QuotaNameVpcExternalStaticAddressesCount
+	case QuotaNameVpcExternalAddressesCount:
+		*s = QuotaNameVpcExternalAddressesCount
 	case QuotaNameEc2StandardVcpus:
 		*s = QuotaNameEc2StandardVcpus
 	case QuotaNameEc2SpotStandardVcpus:

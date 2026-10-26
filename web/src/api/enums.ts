@@ -34,7 +34,7 @@ export const protocolValues = ["pg", "mysql", "picodata", "ydb_grpc", "ydb_grpcs
 
 export const providerKindValues = ["yandex", "aws"] as const satisfies readonly Schemas['ProviderKind'][]
 
-export const quotaNameValues = ["compute.instances.count", "compute.instanceCores.count", "compute.instanceMemory.size", "compute.ssdDisks.size", "compute.hddDisks.size", "compute.ssdNonReplicatedDisks.size", "compute.ssdIOM3Disks.size", "compute.instanceHighFreqCores.count", "compute.disks.count", "vpc.networks.count", "vpc.subnets.count", "vpc.securityGroups.count", "vpc.externalStaticAddresses.count", "ec2.standard.vcpus", "ec2.spot.standard.vcpus", "ebs.gp3.storage", "ebs.gp2.storage", "ebs.io2.storage", "vpc.vpcs", "vpc.security_groups", "vpc.internet_gateways", "ec2.elastic_ips"] as const satisfies readonly Schemas['QuotaName'][]
+export const quotaNameValues = ["compute.instances.count", "compute.instanceCores.count", "compute.instanceMemory.size", "compute.ssdDisks.size", "compute.hddDisks.size", "compute.ssdNonReplicatedDisks.size", "compute.ssdIOM3Disks.size", "compute.instanceHighFreqCores.count", "compute.disks.count", "vpc.networks.count", "vpc.subnets.count", "vpc.securityGroups.count", "vpc.externalStaticAddresses.count", "vpc.externalAddresses.count", "ec2.standard.vcpus", "ec2.spot.standard.vcpus", "ebs.gp3.storage", "ebs.gp2.storage", "ebs.io2.storage", "vpc.vpcs", "vpc.security_groups", "vpc.internet_gateways", "ec2.elastic_ips"] as const satisfies readonly Schemas['QuotaName'][]
 
 export const quotaUnitValues = ["instances", "cores", "bytes", "disks", "networks", "subnets", "security-groups", "addresses", "vcpus", "tib", "vpcs", "groups", "gateways"] as const satisfies readonly Schemas['QuotaUnit'][]
 

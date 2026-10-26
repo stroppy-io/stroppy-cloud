@@ -664,6 +664,9 @@ func (d demand) need(q provider.Quota, res pipelinespec.Run) (float64, bool) {
 		return float64(d.disks), true
 	case name == "compute.instances.count":
 		return float64(d.machines), true
+	// Every machine with a public address takes a dynamic external one.
+	case name == "vpc.externaladdresses.count":
+		return float64(pipelinespec.PublicAddresses(res)), true
 	case name == "compute.hdddisks.size":
 		return quotaStorageUnit(d.storage["network-hdd"], q.Unit), true
 	case name == "compute.ssddisks.size":

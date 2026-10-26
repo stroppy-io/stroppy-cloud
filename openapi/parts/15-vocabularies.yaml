@@ -221,6 +221,7 @@ components:
         - "vpc.subnets.count"
         - "vpc.securityGroups.count"
         - "vpc.externalStaticAddresses.count"
+        - "vpc.externalAddresses.count"
         - "ec2.standard.vcpus"
         - "ec2.spot.standard.vcpus"
         - "ebs.gp3.storage"

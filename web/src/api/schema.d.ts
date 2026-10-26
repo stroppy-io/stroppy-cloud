@@ -2617,7 +2617,7 @@ export interface components {
          * @description A provider quota the quotas pipeline reports (Yandex Cloud Quota Manager ids, AWS Service Quotas names).
          * @enum {string}
          */
-        QuotaName: "compute.instances.count" | "compute.instanceCores.count" | "compute.instanceMemory.size" | "compute.ssdDisks.size" | "compute.hddDisks.size" | "compute.ssdNonReplicatedDisks.size" | "compute.ssdIOM3Disks.size" | "compute.instanceHighFreqCores.count" | "compute.disks.count" | "vpc.networks.count" | "vpc.subnets.count" | "vpc.securityGroups.count" | "vpc.externalStaticAddresses.count" | "ec2.standard.vcpus" | "ec2.spot.standard.vcpus" | "ebs.gp3.storage" | "ebs.gp2.storage" | "ebs.io2.storage" | "vpc.vpcs" | "vpc.security_groups" | "vpc.internet_gateways" | "ec2.elastic_ips";
+        QuotaName: "compute.instances.count" | "compute.instanceCores.count" | "compute.instanceMemory.size" | "compute.ssdDisks.size" | "compute.hddDisks.size" | "compute.ssdNonReplicatedDisks.size" | "compute.ssdIOM3Disks.size" | "compute.instanceHighFreqCores.count" | "compute.disks.count" | "vpc.networks.count" | "vpc.subnets.count" | "vpc.securityGroups.count" | "vpc.externalStaticAddresses.count" | "vpc.externalAddresses.count" | "ec2.standard.vcpus" | "ec2.spot.standard.vcpus" | "ebs.gp3.storage" | "ebs.gp2.storage" | "ebs.io2.storage" | "vpc.vpcs" | "vpc.security_groups" | "vpc.internet_gateways" | "ec2.elastic_ips";
         /**
          * @description The unit of a provider quota.
          * @enum {string}

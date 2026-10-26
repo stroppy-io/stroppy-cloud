@@ -580,7 +580,7 @@
     "vpc_networks_count": "Сети",
     "vpc_subnets_count": "Подсети",
     "vpc_securityGroups_count": "Группы безопасности",
-    "vpc_externalStaticAddresses_count": "Публичные адреса",
+    "vpc_externalStaticAddresses_count": "Статические публичные адреса",
     "ec2_standard_vcpus": "vCPU по требованию",
     "ec2_spot_standard_vcpus": "vCPU spot",
     "ebs_gp3_storage": "Диски gp3",
@@ -589,7 +589,8 @@
     "vpc_vpcs": "VPC",
     "vpc_security_groups": "Группы безопасности",
     "vpc_internet_gateways": "Интернет-шлюзы",
-    "ec2_elastic_ips": "Elastic IP"
+    "ec2_elastic_ips": "Elastic IP",
+    "vpc_externalAddresses_count": "Публичные адреса"
   },
   "quotaUnit": {
     "instances": "шт.",

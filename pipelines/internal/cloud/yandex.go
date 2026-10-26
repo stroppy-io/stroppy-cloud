@@ -74,6 +74,7 @@ var yandexQuotaIDs = []struct{ id, unit string }{
 	{"vpc.subnets.count", "subnets"},
 	{"vpc.securityGroups.count", "security-groups"},
 	{"vpc.externalStaticAddresses.count", "addresses"},
+	{"vpc.externalAddresses.count", "addresses"},
 }
 
 func (Yandex) sdk(ctx context.Context, credentials string) (*ycsdk.SDK, error) {

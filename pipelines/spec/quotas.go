@@ -26,6 +26,7 @@ var QuotaKinds = []QuotaKind{
 	{"vpc.subnets.count", "subnets"},
 	{"vpc.securityGroups.count", "security-groups"},
 	{"vpc.externalStaticAddresses.count", "addresses"},
+	{"vpc.externalAddresses.count", "addresses"},
 	{"ec2.standard.vcpus", "vcpus"},
 	{"ec2.spot.standard.vcpus", "vcpus"},
 	{"ebs.gp3.storage", "tib"},

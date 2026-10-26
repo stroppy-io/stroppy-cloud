@@ -6521,6 +6521,8 @@ func (s QuotaName) Validate() error {
 		return nil
 	case "vpc.externalStaticAddresses.count":
 		return nil
+	case "vpc.externalAddresses.count":
+		return nil
 	case "ec2.standard.vcpus":
 		return nil
 	case "ec2.spot.standard.vcpus":
