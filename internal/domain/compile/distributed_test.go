@@ -159,7 +159,7 @@ func TestDistributedCatalogRuntimeContracts(t *testing.T) {
 								}
 							}
 						}
-						if counts["ru-central1-a"] != 3 || counts["ru-central1-b"] != 3 || counts["ru-central1-d"] != 3 {
+						if counts["ru-central1-d"] != 3 || counts["ru-central1-e"] != 3 || counts["ru-central1-a"] != 3 {
 							t.Fatalf("physical placement: %v", counts)
 						}
 					}

@@ -42,10 +42,19 @@ func yandexManagedEndpoint(ctx pipeline.Context, client *k8slib.Client, run spec
 		for _, sub := range subnets {
 			refs = append(refs, xpv1.Reference{Name: sub.Name})
 		}
+		// Only the region block makes a database regional (one node per
+		// zone); without it YC creates a single-zone database, which takes
+		// one subnet and refuses more with "Too many subnets". location_id
+		// alone does not change the type.
+		// doc: terraform-provider-yandex ydb_structures.go expandYDBLocationSpec
+		var location []ydb.LocationParameters
+		if len(subnets) > 1 {
+			location = []ydb.LocationParameters{{Region: []ydb.RegionParameters{{ID: ptr(m.LocationID)}}}}
+		}
 		handle := k8slib.Resource(ctx, client, name, &ydb.DatabaseDedicated{Spec: ydb.DatabaseDedicatedSpec{
 			ResourceSpec: providerRef(run.Provider.ProviderConfigName),
 			ForProvider: ydb.DatabaseDedicatedParameters{
-				FolderID: ptr(settings.FolderID), Name: ptr(name), LocationID: ptr(m.LocationID), Labels: labels(run, nil), DeletionProtection: ptr(false),
+				FolderID: ptr(settings.FolderID), Name: ptr(name), LocationID: ptr(m.LocationID), Location: location, Labels: labels(run, nil), DeletionProtection: ptr(false),
 				NetworkIDRef: netRef, NetworkID: netID, SubnetIdsRefs: refs, SecurityGroupIds: strPtrs(groupID),
 				AssignPublicIps: ptr(m.AssignPublicIPs), ResourcePresetID: ptr(m.ResourcePresetID),
 				ScalePolicy:   []ydb.ScalePolicyParameters{{FixedScale: []ydb.FixedScaleParameters{{Size: ptr(float64(m.NodeCount))}}}},

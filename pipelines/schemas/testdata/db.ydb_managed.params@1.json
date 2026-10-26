@@ -99,6 +99,32 @@
     {
       "choice": {
         "default": {
+          "stringValue": "two-zones"
+        },
+        "options": [
+          {
+            "label": "Two zones",
+            "value": {
+              "stringValue": "two-zones"
+            }
+          },
+          {
+            "label": "Three zones",
+            "value": {
+              "stringValue": "three-zones"
+            }
+          }
+        ]
+      },
+      "description": "two-zones = subnets in the provider profile's zone and one more; three-zones = three zones of the location (needs a Crossplane provider that sends YC's current request form).",
+      "group": "Dedicated",
+      "name": "placement",
+      "title": "Placement",
+      "when": "root.type == \"dedicated\""
+    },
+    {
+      "choice": {
+        "default": {
           "stringValue": "fixed"
         },
         "options": [

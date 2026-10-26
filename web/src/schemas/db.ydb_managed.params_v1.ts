@@ -19,6 +19,8 @@ export interface DbYdbManagedParams1 {
   location_id?: string;
   /** Resource preset. VM configuration of one database node: vCPUs and RAM. */
   resource_preset_id?: string;
+  /** Placement. two-zones = subnets in the provider profile's zone and one more; three-zones = three zones of the location (needs a Crossplane provider that sends YC's current request form). */
+  placement?: "two-zones" | "three-zones";
   /** Scale policy. fixed = a constant number of nodes; auto = YC scales between min and max on CPU utilization (a preview feature, needs the enable_autoscaling label). */
   scale_policy?: "fixed" | "auto";
   /** Nodes. scale_policy.fixed_scale.size — database slots; production guidance is at least three. */

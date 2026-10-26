@@ -15,11 +15,13 @@ func providers() []Provider {
 		{
 			Kind: Yandex, Title: "Yandex Cloud",
 			SettingsSchema: "provider.yandex.settings@1", CredentialsSchema: "provider.yandex.credentials@1",
+			// In order of preference: multi-zone placement without explicit
+			// zones takes the profile's zone and the next ones from here.
 			Locations: []Named{
-				{ID: "ru-central1-a", Title: "ru-central1-a"},
-				{ID: "ru-central1-b", Title: "ru-central1-b"},
 				{ID: "ru-central1-d", Title: "ru-central1-d (recommended)"},
 				{ID: "ru-central1-e", Title: "ru-central1-e"},
+				{ID: "ru-central1-a", Title: "ru-central1-a"},
+				{ID: "ru-central1-b", Title: "ru-central1-b"},
 			},
 			Platforms: []Named{
 				{ID: "standard-v3", Title: "Intel Ice Lake (standard-v3)"},

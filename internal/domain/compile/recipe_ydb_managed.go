@@ -33,11 +33,15 @@ func managedYDBRecipe(c *compilation) error {
 		if err := json.Unmarshal(c.in.ProviderSettings, &settings); err != nil {
 			return err
 		}
-		var err error
-		m.Zones, err = c.threeYandexZones(settings)
+		zones, err := c.threeYandexZones(settings)
 		if err != nil {
 			return err
 		}
+		// The profile's zone comes first; two-zones keeps it and the next.
+		if strParam(p, "placement", "two-zones") != "three-zones" {
+			zones = zones[:2]
+		}
+		m.Zones = zones
 	case "serverless":
 		m.ThrottlingRCULimit = intParam(p, "throttling_rcu_limit", 0)
 		m.ProvisionedRCULimit = intParam(p, "provisioned_rcu_limit", 0)

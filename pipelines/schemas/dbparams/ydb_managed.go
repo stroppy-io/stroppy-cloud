@@ -47,6 +47,17 @@ func YdbManaged() *schemapb.Schema {
 				Default(schemapb.StrV("medium")).Open().
 				When(`root.type == "dedicated"`),
 
+			// How many zones the database's subnets cover. YC wants at least two
+			// ("At least 2 subnets in different allocation zones") and refuses
+			// three in the regional form the installed Crossplane provider
+			// sends ("Too many subnets"), so two is the default.
+			schemapb.Choice("placement").Title("Placement").Group("Dedicated").
+				Desc("two-zones = subnets in the provider profile's zone and one more; three-zones = three zones of the location (needs a Crossplane provider that sends YC's current request form).").
+				Opt(schemapb.StrV("two-zones"), "Two zones").
+				Opt(schemapb.StrV("three-zones"), "Three zones").
+				Default(schemapb.StrV("two-zones")).
+				When(`root.type == "dedicated"`),
+
 			// doc: https://registry.terraform.io/providers/yandex-cloud/yandex/latest/docs/resources/ydb_database_dedicated
 			schemapb.Choice("scale_policy").Title("Scale policy").Group("Dedicated").
 				Desc("fixed = a constant number of nodes; auto = YC scales between min and max on CPU utilization (a preview feature, needs the enable_autoscaling label).").
