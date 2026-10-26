@@ -2833,7 +2833,7 @@
               "title": "Database type"
             },
             {
-              "description": "Dedicated database subnet zones.",
+              "description": "Dedicated database subnet zones: two or three.",
               "group": "Managed YDB",
               "list": {
                 "items": [
@@ -2844,7 +2844,7 @@
                   }
                 ],
                 "maxItems": "3",
-                "minItems": "3",
+                "minItems": "2",
                 "unique": true
               },
               "name": "zones",
@@ -3910,6 +3910,12 @@
                     }
                   },
                   {
+                    "label": "crdb",
+                    "value": {
+                      "stringValue": "crdb"
+                    }
+                  },
+                  {
                     "label": "mysql",
                     "value": {
                       "stringValue": "mysql"
@@ -3935,7 +3941,7 @@
                   }
                 ]
               },
-              "description": "stroppy driverType of drivers.0.",
+              "description": "stroppy driverType of the config's driver; crdb (Stroppy 6.2+) is CockroachDB over the postgres driver, with its own SQL and serializable default.",
               "name": "driver_type",
               "required": true,
               "title": "Driver type"
@@ -4148,9 +4154,9 @@
   },
   "rules": [
     {
-      "expr": "[this == null ? root : this].all(r, r.workload.driver_type in [\"postgres\", \"mysql\", \"noop\"] || r.workload.segments.all(s, !(s.workload.script in [\"tpcc/procs\", \"tpcb/procs\"])))",
+      "expr": "[this == null ? root : this].all(r, r.workload.driver_type in [\"postgres\", \"crdb\", \"mysql\", \"noop\"] || r.workload.segments.all(s, !(s.workload.script in [\"tpcc/procs\", \"tpcb/procs\"])))",
       "id": "stored-procedure-driver",
-      "message": "stored-procedure workloads require PostgreSQL, MySQL or noop driver"
+      "message": "stored-procedure workloads require PostgreSQL, CockroachDB, MySQL or noop driver"
     },
     {
       "expr": "[this == null ? root : this].all(r, r.workload.driver_type != \"ydb\" || r.workload.segments.all(s, s.workload.script != \"tpcds\" || ((! (\"query_stream\" in s.workload) || s.workload.query_stream == null) \u0026\u0026 (!(\"streams\" in s.workload) || s.workload.streams == 1))))",

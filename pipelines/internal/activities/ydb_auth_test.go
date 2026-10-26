@@ -98,7 +98,7 @@ func TestYDBRuntimeCredentialDoesNotEnterArtifact(t *testing.T) {
 		Drivers map[string]struct{ AuthToken string }
 	}
 	require.NoError(t, json.Unmarshal(raw, &decoded))
-	require.Equal(t, "test-token", decoded.Drivers["0"].AuthToken)
+	require.Equal(t, "test-token", decoded.Drivers["default"].AuthToken) // no image: a current Stroppy
 	cleanup()
 	_, err = os.Stat(runtimeFile)
 	require.True(t, os.IsNotExist(err))
@@ -107,4 +107,17 @@ func TestYDBRuntimeCredentialDoesNotEnterArtifact(t *testing.T) {
 	files, err := filepath.Glob(filepath.Join(dir, ".stroppy-iam-*"))
 	require.NoError(t, err)
 	require.Empty(t, files)
+}
+
+// Stroppy 6.2 names the driver "default"; the credential lands on it as well.
+func TestYDBRuntimeCredentialOnNamedDriver(t *testing.T) {
+	dir := t.TempDir()
+	config := filepath.Join(dir, "stroppy-config.json")
+	require.NoError(t, os.WriteFile(config, []byte(`{"drivers":{"default":{"driverType":"ydb","authToken":"old"}}}`), 0600))
+	args, cleanup, err := runtimeCredentialConfig(config, "authToken", "fresh", []string{"run", "-f", "/workspace/stroppy-config.json"})
+	require.NoError(t, err)
+	defer cleanup()
+	raw, err := os.ReadFile(filepath.Join(dir, filepath.Base(args[2])))
+	require.NoError(t, err)
+	require.JSONEq(t, `{"drivers":{"default":{"driverType":"ydb","authToken":"fresh"}}}`, string(raw))
 }

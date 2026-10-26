@@ -446,7 +446,7 @@ export interface SpecRun1Network {
 export interface SpecRun1ManagedYdb {
   /** Database type. Owned YC database type. */
   type: "dedicated" | "serverless";
-  /** Physical zones. Dedicated database subnet zones. */
+  /** Physical zones. Dedicated database subnet zones: two or three. */
   zones?: Array<string>;
   /** Location. YC region or location identifier. */
   location_id: string;
@@ -650,8 +650,8 @@ export interface SpecRun1Workload {
   runner_role: string;
   /** Stroppy image. Resolved stroppy image from the catalog for the chosen version (6.0.0+). */
   stroppy_image: string;
-  /** Driver type. stroppy driverType of drivers.0. */
-  driver_type: "postgres" | "mysql" | "picodata" | "ydb" | "noop";
+  /** Driver type. stroppy driverType of the config's driver; crdb (Stroppy 6.2+) is CockroachDB over the postgres driver, with its own SQL and serializable default. */
+  driver_type: "postgres" | "crdb" | "mysql" | "picodata" | "ydb" | "noop";
   /** Connection URL. drivers.0.url; may carry ${ip:...} placeholders the pipeline expands after provisioning. */
   url: string;
   /** Driver options. Remaining drivers.0 keys of stroppy-config.json (bulkSize, pool, insertProgress, caCertFile, authToken…), already in stroppy's lowerCamel form. */

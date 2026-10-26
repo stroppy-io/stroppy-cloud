@@ -324,7 +324,11 @@ func (c *compilation) workload() error {
 	if err := json.Unmarshal(c.in.WorkloadBaked, &baked); err != nil {
 		return errs.Wrap(errs.CodeInvalid, "workload value", err)
 	}
-	if c.in.Workload.Protocol == catalog.ProtoCockroach {
+	// Stroppy 6.2 picks CockroachDB's own SQL from the crdb driver type
+	// (--sql-file became a path on disk); older releases select the
+	// embedded dialect by its file name.
+	crdbDriver := c.in.Workload.Protocol == catalog.ProtoCockroach && stroppyAtLeast(ver.Version, 6, 2)
+	if c.in.Workload.Protocol == catalog.ProtoCockroach && !crdbDriver {
 		for i, raw := range baked.Segments {
 			segment, err := cockroachSQL(raw, c.in.Database.Version)
 			if err != nil {
@@ -333,7 +337,16 @@ func (c *compilation) workload() error {
 			baked.Segments[i] = segment
 		}
 	}
-	if c.in.Workload.Protocol == catalog.ProtoNoop {
+	if c.in.Database.Kind == catalog.YDBManaged && strParam(c.params(), "type", "") == "serverless" {
+		for i, raw := range baked.Segments {
+			segment, err := rowStore(raw)
+			if err != nil {
+				return errs.Wrap(errs.CodeInvalid, "serverless YDB workload segment", err)
+			}
+			baked.Segments[i] = segment
+		}
+	}
+	if c.in.Workload.Protocol == catalog.ProtoNoop || c.in.Database.Kind == catalog.PgNoop {
 		for i, raw := range baked.Segments {
 			segment, err := noopSteps(raw)
 			if err != nil {
@@ -346,6 +359,9 @@ func (c *compilation) workload() error {
 	url, err := connectionURL(url, c.in.Workload.Protocol, baked.Connection)
 	if err != nil {
 		return err
+	}
+	if crdbDriver {
+		driverType = "crdb"
 	}
 	driver := map[string]any{}
 	if c.in.Workload.Protocol == catalog.ProtoPicodata {

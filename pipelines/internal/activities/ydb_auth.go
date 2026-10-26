@@ -104,7 +104,14 @@ func runtimeCredentialConfig(configPath, field, value string, args []string) (up
 	if !ok {
 		return nil, nil, fmt.Errorf("runtime YDB config has no driver")
 	}
-	driver, ok := drivers["0"].(map[string]any)
+	// One driver per config; its key depends on the Stroppy version.
+	if len(drivers) != 1 {
+		return nil, nil, fmt.Errorf("runtime YDB config has %d drivers, want one", len(drivers))
+	}
+	var driver map[string]any
+	for _, d := range drivers {
+		driver, ok = d.(map[string]any)
+	}
 	if !ok {
 		return nil, nil, fmt.Errorf("runtime YDB driver is not an object")
 	}

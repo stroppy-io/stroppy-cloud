@@ -7,11 +7,11 @@ import (
 )
 
 // noopValidations are the steps that read back what the load wrote; the
-// noop driver stores nothing, so they can only fail.
+// noop driver and the pg-noop server store nothing, so they can only fail.
 var noopValidations = []string{"validate_population", "validate_answers"}
 
-// noopSteps skips the validation steps of a segment on the noop driver,
-// unless the segment lists its steps itself.
+// noopSteps skips the validation steps of a segment on the noop driver or
+// against pg-noop, unless the segment lists its steps itself.
 func noopSteps(raw json.RawMessage) (json.RawMessage, error) {
 	var segment map[string]any
 	if err := json.Unmarshal(raw, &segment); err != nil {

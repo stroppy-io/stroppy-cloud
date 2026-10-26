@@ -27,7 +27,7 @@ func TestReportOutcomeNeverFallsBackToText(t *testing.T) {
 		{name: "success", status: spec.SegmentCompleted},
 		{name: "missing", missing: true, status: spec.SegmentFailed, reason: "stroppy wrote no report (exit status 0): loading\nlast words"},
 		{name: "truncated", replace: string(base), with: `{"schema":`, status: spec.SegmentFailed, reason: "decode Stroppy report"},
-		{name: "future-schema", replace: `"schema": 1`, with: `"schema": 2`, status: spec.SegmentFailed, reason: "unsupported Stroppy report"},
+		{name: "future-schema", replace: `"schema": 1`, with: `"schema": 5`, status: spec.SegmentFailed, reason: "unsupported Stroppy report"},
 		{name: "failed-zero-exit", replace: `"status": "completed"`, with: `"status": "failed"`, status: spec.SegmentFailed, reason: "report status: failed"},
 		{name: "completed-with-errors", replace: `"status": "completed"`, with: `"status": "completed_with_errors"`, status: spec.SegmentCompleted},
 		{name: "canceled", replace: `"status": "completed"`, with: `"status": "canceled"`, code: 143, status: spec.SegmentCancelled, reason: "canceled"},

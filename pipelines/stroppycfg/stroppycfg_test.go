@@ -48,7 +48,7 @@ func TestConfig(t *testing.T) {
 	if cfg["version"] != "1" || cfg["script"] != "tpcc/tx" {
 		t.Errorf("envelope = %v", cfg)
 	}
-	drv := cfg["drivers"].(map[string]any)["0"].(map[string]any)
+	drv := cfg["drivers"].(map[string]any)["0"].(map[string]any) // workload() pins stroppy 6.0
 	if drv["url"] != "postgres://stroppy:x@10.0.0.5:5432/bench?sslmode=disable" || drv["driverType"] != "postgres" {
 		t.Errorf("driver = %v", drv)
 	}
@@ -272,5 +272,22 @@ func TestConfigSeparatesSegmentsWithoutMutatingLabels(t *testing.T) {
 	}
 	if labels["stroppy.segment"] != "spoofed" {
 		t.Fatal("mutated caller labels")
+	}
+}
+
+func TestDriverKey(t *testing.T) {
+	for image, want := range map[string]string{
+		"ghcr.io/stroppy-io/stroppy:v6.0.0.62":                 "0",
+		"ghcr.io/stroppy-io/stroppy:v6.1.0.63":                 "0",
+		"docker.stroppy.io/stroppy-io/stroppy:v6.1.0.63":       "0",
+		"ghcr.io/stroppy-io/stroppy:v6.2.1.67":                 "default",
+		"ghcr.io/stroppy-io/stroppy:v7.0.0":                    "default",
+		"ghcr.io/stroppy-io/stroppy:latest":                    "default",
+		"localhost:5000/stroppy:dev":                           "default",
+		"ghcr.io/stroppy-io/stroppy:v6.1.0.63@sha256:0123abcd": "0",
+	} {
+		if got := DriverKey(image); got != want {
+			t.Errorf("DriverKey(%q) = %q, want %q", image, got, want)
+		}
 	}
 }

@@ -4017,6 +4017,12 @@
                     }
                   },
                   {
+                    "label": "crdb",
+                    "value": {
+                      "stringValue": "crdb"
+                    }
+                  },
+                  {
                     "label": "mysql",
                     "value": {
                       "stringValue": "mysql"
@@ -4042,7 +4048,7 @@
                   }
                 ]
               },
-              "description": "stroppy driverType of drivers.0.",
+              "description": "stroppy driverType of the config's driver; crdb (Stroppy 6.2+) is CockroachDB over the postgres driver, with its own SQL and serializable default.",
               "name": "driver_type",
               "title": "Driver type"
             },

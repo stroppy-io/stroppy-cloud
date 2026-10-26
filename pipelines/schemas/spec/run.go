@@ -90,7 +90,7 @@ func Run() *schemapb.Schema {
 
 			schemapb.Object("managed_ydb",
 				schemapb.Choice("type").Title("Database type").Group("Managed YDB").Desc("Owned YC database type.").Opt(schemapb.StrV("dedicated"), "Dedicated").Opt(schemapb.StrV("serverless"), "Serverless").Required(),
-				schemapb.List("zones", schemapb.Str("").Pattern(`^ru-central1-[abde]$`)).Title("Physical zones").Group("Managed YDB").Desc("Dedicated database subnet zones.").MinItems(3).MaxItems(3).Unique(),
+				schemapb.List("zones", schemapb.Str("").Pattern(`^ru-central1-[abde]$`)).Title("Physical zones").Group("Managed YDB").Desc("Dedicated database subnet zones: two or three.").MinItems(2).MaxItems(3).Unique(),
 				schemapb.Str("location_id").Title("Location").Group("Managed YDB").Desc("YC region or location identifier.").Pattern(`^[a-z0-9-]{1,32}$`).Required(),
 				schemapb.Str("resource_preset_id").Title("Compute preset").Group("Managed YDB").Desc("Dedicated node resource preset.").Pattern(`^[a-z0-9-]{1,64}$`),
 				schemapb.Int64("node_count").Title("Nodes").Group("Managed YDB").Desc("Dedicated fixed-scale node count.").Gte(1).Lte(64),
@@ -312,8 +312,9 @@ func Run() *schemapb.Schema {
 					MinLen(1).MaxLen(512).Required(),
 				// doc: stroppy `help drivers` — driverType.
 				schemapb.Choice("driver_type").Title("Driver type").
-					Desc("stroppy driverType of drivers.0.").
+					Desc("stroppy driverType of the config's driver; crdb (Stroppy 6.2+) is CockroachDB over the postgres driver, with its own SQL and serializable default.").
 					Opt(schemapb.StrV("postgres"), "postgres").
+					Opt(schemapb.StrV("crdb"), "crdb").
 					Opt(schemapb.StrV("mysql"), "mysql").
 					Opt(schemapb.StrV("picodata"), "picodata").
 					Opt(schemapb.StrV("ydb"), "ydb").
@@ -373,7 +374,7 @@ func Run() *schemapb.Schema {
 				Desc("Run the workload again on a kept stand: no machines are created and nothing is deployed.").Strict(),
 		).
 		Rules(
-			runRule(`root.workload.driver_type in ["postgres", "mysql", "noop"] || root.workload.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, MySQL or noop driver").ID("stored-procedure-driver"),
+			runRule(`root.workload.driver_type in ["postgres", "crdb", "mysql", "noop"] || root.workload.segments.all(s, !(s.workload.script in ["tpcc/procs", "tpcb/procs"]))`, "stored-procedure workloads require PostgreSQL, CockroachDB, MySQL or noop driver").ID("stored-procedure-driver"),
 			runRule(`root.workload.driver_type != "ydb" || root.workload.segments.all(s, s.workload.script != "tpcds" || ((! ("query_stream" in s.workload) || s.workload.query_stream == null) && (!("streams" in s.workload) || s.workload.streams == 1)))`, "YDB TPC-DS supports the baked query set only").ID("tpcds-ydb-baked"),
 			runRule(`root.workload.driver_type != "picodata" || root.workload.segments.all(s, s.workload.script != "tpcds" || ("no_steps" in s && "workload" in s.no_steps) || ("steps" in s && size(s.steps) > 0 && !("workload" in s.steps)))`, "Picodata TPC-DS supports loading only; exclude the workload step").ID("tpcds-picodata-load-only"),
 			runRule(`!("driver" in root.workload) || !("caCertFile" in root.workload.driver) || !("ca_cert" in root.workload)`, "choose a CA file or inline CA certificate").ID("ca-source"),

@@ -56,9 +56,20 @@ func stroppy() StroppyCatalog {
 			sc.Params = append(sc.Params, schemaParam(f, "run"))
 		}
 	}
+	// 6.2 rejects the crdb driver for tpcb/procs (stroppy-io/stroppy#229).
+	scripts62 := make([]StroppyScript, len(scripts))
+	copy(scripts62, scripts)
+	for i := range scripts62 {
+		if scripts62[i].ID == "tpcb/procs" {
+			scripts62[i].Protocols = []Protocol{ProtoPg, ProtoMySQL, ProtoNoop}
+		}
+	}
 	return StroppyCatalog{Source: "static", Versions: []StroppyVersion{
 		{Version: "6.0.0", Image: "ghcr.io/stroppy-io/stroppy:v6.0.0.62", Baseline: true, Protocols: all, Scripts: scripts},
-		{Version: "6.1.0", Image: "ghcr.io/stroppy-io/stroppy:v6.1.0.63", Default: true, Baseline: true, Protocols: all, Scripts: scripts},
+		{Version: "6.1.0", Image: "ghcr.io/stroppy-io/stroppy:v6.1.0.63", Baseline: true, Protocols: all, Scripts: scripts},
+		// 6.2 names drivers ("default", see stroppycfg.DriverKey) and writes
+		// report envelope schema 4; workload parameters are a superset of 6.1.
+		{Version: "6.2.1", Image: "ghcr.io/stroppy-io/stroppy:v6.2.1.67", Default: true, Baseline: true, Protocols: all, Scripts: scripts62},
 	}}
 }
 

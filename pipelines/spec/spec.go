@@ -263,7 +263,7 @@ type Flow struct {
 type Workload struct {
 	RunnerRole   string `json:"runner_role"`
 	StroppyImage string `json:"stroppy_image"`
-	// DriverType is stroppy's driverType (postgres, mysql, picodata, ydb, noop).
+	// DriverType is stroppy's driverType (postgres, crdb, mysql, picodata, ydb, noop).
 	DriverType string `json:"driver_type"`
 	// URL is drivers.0.url; may carry ${ip:...} placeholders.
 	URL string `json:"url"`

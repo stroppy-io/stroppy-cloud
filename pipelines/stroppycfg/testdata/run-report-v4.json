@@ -1,0 +1,3943 @@
+{
+ "schema": 4,
+ "kind": "run",
+ "id": "r1",
+ "run_id": "r1",
+ "stroppy_version": "v6.2.1",
+ "started_at": "2026-10-26T11:34:40.899369882Z",
+ "finished_at": "2026-10-26T11:35:05.203135093Z",
+ "status": "completed_with_errors",
+ "workload": "tpcc/tx",
+ "driver": "postgres",
+ "drivers": [
+  {
+   "name": "default",
+   "type": "postgres"
+  }
+ ],
+ "metadata": {
+  "stroppy.segment": "load"
+ },
+ "host": {
+  "os": "redacted",
+  "arch": "redacted",
+  "go_version": "redacted",
+  "cpus": "redacted",
+  "gomaxprocs": "redacted"
+ },
+ "scenario": {
+  "executor": "constant-vus",
+  "vus": 4,
+  "duration_seconds": 20,
+  "iterations_requested": null
+ },
+ "parameters": {
+  "run": {
+   "drain-timeout": {
+    "value": "30s",
+    "source": "default"
+   },
+   "duration": {
+    "value": "20s",
+    "source": "config"
+   },
+   "executor": {
+    "value": "constant-vus",
+    "source": "config"
+   },
+   "iterations": {
+    "value": 1,
+    "source": "default"
+   },
+   "query-timeout": {
+    "value": "5s",
+    "source": "config"
+   },
+   "vus": {
+    "value": 4,
+    "source": "config"
+   }
+  },
+  "workload": {
+   "load-items": {
+    "value": true,
+    "source": "default"
+   },
+   "load-workers": {
+    "value": 4,
+    "source": "config"
+   },
+   "pacing": {
+    "value": false,
+    "source": "default"
+   },
+   "pg-unlogged": {
+    "value": false,
+    "source": "default"
+   },
+   "retry-attempts": {
+    "value": 3,
+    "source": "default"
+   },
+   "scale-factor": {
+    "value": 2,
+    "source": "config"
+   },
+   "spread-warehouses": {
+    "value": false,
+    "source": "default"
+   },
+   "sql-file": {
+    "value": "",
+    "source": "default"
+   },
+   "tx-isolation": {
+    "value": "",
+    "source": "default"
+   },
+   "warehouse-start": {
+    "value": 1,
+    "source": "default"
+   },
+   "warmup": {
+    "value": "0s",
+    "source": "default"
+   }
+  }
+ },
+ "step_selection": {
+  "only": [],
+  "exclude": []
+ },
+ "steps": [
+  {
+   "name": "drop_schema",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 0.004295276
+  },
+  {
+   "name": "create_schema",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 0.133996147
+  },
+  {
+   "name": "load_data",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 2.031048383
+  },
+  {
+   "name": "create_indexes",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 0.190474061
+  },
+  {
+   "name": "create_foreign_keys",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 0.221310855
+  },
+  {
+   "name": "analyze",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 1.513762483
+  },
+  {
+   "name": "validate_population",
+   "status": "completed",
+   "executions": 1,
+   "duration_seconds": 0.151335289
+  },
+  {
+   "name": "workload",
+   "status": "completed_with_errors",
+   "executions": 1,
+   "duration_seconds": 20.056201638
+  }
+ ],
+ "measurements": {
+  "workload": 20.05616452
+ },
+ "executions": {
+  "workload": {
+   "executor": "constant-vus",
+   "workers": 4,
+   "duration_seconds": 20,
+   "drain_timeout_seconds": 30,
+   "measurement_seconds": 20.05616452,
+   "drain_seconds": 0.056164519999999385
+  }
+ },
+ "measurement_seconds": 20.05616452,
+ "metrics": {
+  "failed_iterations_total": {
+   "type": "counter",
+   "total": 46,
+   "series": [
+    {
+     "total": 0
+    },
+    {
+     "attributes": {
+      "error_class": "serialization",
+      "operation": "workload"
+     },
+     "total": 46
+    }
+   ]
+  },
+  "failed_queries_total": {
+   "type": "counter",
+   "total": 0,
+   "series": [
+    {
+     "total": 0
+    }
+   ]
+  },
+  "insert_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 8,
+   "sum": 2030.142395,
+   "average": 253.767799375,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    0,
+    2,
+    1,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 250,
+    "p90": 1000,
+    "p95": 1000,
+    "p99": 1000
+   },
+   "series": [
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "warehouse"
+     },
+     "count": 1,
+     "sum": 28.306497,
+     "average": 28.306497,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "new_order"
+     },
+     "count": 1,
+     "sum": 34.932073,
+     "average": 34.932073,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "item"
+     },
+     "count": 1,
+     "sum": 201.038361,
+     "average": 201.038361,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "district"
+     },
+     "count": 1,
+     "sum": 15.858785000000001,
+     "average": 15.858785000000001,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "customer"
+     },
+     "count": 1,
+     "sum": 335.053716,
+     "average": 335.053716,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "stock"
+     },
+     "count": 1,
+     "sum": 576.351149,
+     "average": 576.351149,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "order_line"
+     },
+     "count": 1,
+     "sum": 714.796735,
+     "average": 714.796735,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "orders"
+     },
+     "count": 1,
+     "sum": 123.80507899999999,
+     "average": 123.80507899999999,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "insert_operations_total": {
+   "type": "counter",
+   "total": 8,
+   "series": [
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "customer"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "new_order"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "order_line"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "item"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "orders"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "warehouse"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "stock"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "district"
+     },
+     "total": 1
+    }
+   ]
+  },
+  "insert_progress_rows_per_second": {
+   "type": "gauge",
+   "total": 2863868.5927736587,
+   "series": [
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "new_order"
+     },
+     "total": 515107.32518673927
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "item"
+     },
+     "total": 497383.6649326397
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "orders"
+     },
+     "total": 484585.4968729698
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "district"
+     },
+     "total": 1260.1008105850485
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "customer"
+     },
+     "total": 179069.4842275076
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "order_line"
+     },
+     "total": 839387.0651275864
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "stock"
+     },
+     "total": 347004.856211511
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "warehouse"
+     },
+     "total": 70.59940411984941
+    }
+   ]
+  },
+  "insert_progress_rows_total": {
+   "type": "counter",
+   "total": 1038022,
+   "series": [
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "customer"
+     },
+     "total": 60000
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "item"
+     },
+     "total": 100000
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "warehouse"
+     },
+     "total": 2
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "stock"
+     },
+     "total": 200000
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "new_order"
+     },
+     "total": 18000
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "order_line"
+     },
+     "total": 600000
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "district"
+     },
+     "total": 20
+    },
+    {
+     "attributes": {
+      "event": "completed",
+      "method": "native",
+      "row_kind": "confirmed",
+      "step": "load_data",
+      "table_name": "orders"
+     },
+     "total": 60000
+    }
+   ]
+  },
+  "insert_rows_total": {
+   "type": "counter",
+   "total": 1038022,
+   "series": [
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "warehouse"
+     },
+     "total": 2
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "order_line"
+     },
+     "total": 600000
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "item"
+     },
+     "total": 100000
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "district"
+     },
+     "total": 20
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "orders"
+     },
+     "total": 60000
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "customer"
+     },
+     "total": 60000
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "stock"
+     },
+     "total": 200000
+    },
+    {
+     "attributes": {
+      "step": "load_data",
+      "table_name": "new_order"
+     },
+     "total": 18000
+    }
+   ]
+  },
+  "iteration_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 2833,
+   "sum": 80130.89312799994,
+   "average": 28.284819318037393,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    47,
+    171,
+    13,
+    8,
+    878,
+    1463,
+    250,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 50,
+    "p90": 50,
+    "p95": 100,
+    "p99": 100
+   },
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "count": 2833,
+     "sum": 80130.89312799994,
+     "average": 28.284819318037393,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      47,
+      171,
+      13,
+      8,
+      878,
+      1463,
+      250,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "iterations_per_second": {
+   "type": "gauge",
+   "unit": "{iteration}/s",
+   "total": 141.2533287296748,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 141.2533287296748
+    }
+   ]
+  },
+  "iterations_total": {
+   "type": "counter",
+   "total": 2833,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 2833
+    }
+   ]
+  },
+  "measurement_seconds": {
+   "type": "gauge",
+   "unit": "s",
+   "total": 20.05616452,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 20.05616452
+    }
+   ]
+  },
+  "queries_per_second": {
+   "type": "gauge",
+   "unit": "{query}/s",
+   "total": 2545.0030562473667,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 2545.0030562473667
+    }
+   ]
+  },
+  "retry_attempts_total": {
+   "type": "counter",
+   "total": 482,
+   "series": [
+    {
+     "total": 482
+    }
+   ]
+  },
+  "run_query_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 51085,
+   "sum": 10903.885724000003,
+   "average": 0.21344593763335623,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    168,
+    2151,
+    45262,
+    2967,
+    319,
+    182,
+    7,
+    3,
+    20,
+    1,
+    3,
+    1,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 0.25,
+    "p90": 0.25,
+    "p95": 0.5,
+    "p99": 1
+   },
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "count": 51043,
+     "sum": 8694.789983000006,
+     "average": 0.17034245602727124,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      168,
+      2151,
+      45258,
+      2962,
+      319,
+      180,
+      5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "drop_schema"
+     },
+     "count": 2,
+     "sum": 0.567559,
+     "average": 0.2837795,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "validate_population"
+     },
+     "count": 21,
+     "sum": 150.187299,
+     "average": 7.151776142857143,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      4,
+      0,
+      2,
+      2,
+      3,
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "create_indexes"
+     },
+     "count": 2,
+     "sum": 190.34792,
+     "average": 95.17396,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "analyze"
+     },
+     "count": 1,
+     "sum": 1513.66356,
+     "average": 1513.66356,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "create_foreign_keys"
+     },
+     "count": 7,
+     "sum": 220.91969199999997,
+     "average": 31.559955999999996,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      1,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "create_schema"
+     },
+     "count": 9,
+     "sum": 133.40971100000002,
+     "average": 14.823301222222224,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      9,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "run_query_errors_total": {
+   "type": "counter",
+   "total": 528,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 528
+    }
+   ]
+  },
+  "run_query_operations_total": {
+   "type": "counter",
+   "total": 51613,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 51571
+    },
+    {
+     "attributes": {
+      "step": "analyze"
+     },
+     "total": 1
+    },
+    {
+     "attributes": {
+      "step": "validate_population"
+     },
+     "total": 21
+    },
+    {
+     "attributes": {
+      "step": "create_schema"
+     },
+     "total": 9
+    },
+    {
+     "attributes": {
+      "step": "drop_schema"
+     },
+     "total": 2
+    },
+    {
+     "attributes": {
+      "step": "create_indexes"
+     },
+     "total": 2
+    },
+    {
+     "attributes": {
+      "step": "create_foreign_keys"
+     },
+     "total": 7
+    }
+   ]
+  },
+  "successful_transactions_total": {
+   "type": "counter",
+   "total": 2787,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 2787
+    }
+   ]
+  },
+  "terminal_errors_total": {
+   "type": "counter",
+   "total": 46,
+   "series": [
+    {
+     "attributes": {
+      "error_class": "serialization",
+      "operation": "workload"
+     },
+     "total": 46
+    },
+    {
+     "total": 0
+    }
+   ]
+  },
+  "tpcc_delivery_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 105,
+   "sum": 3198,
+   "average": 30.457142857142856,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    22,
+    82,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 50,
+    "p90": 50,
+    "p95": 50,
+    "p99": 50
+   },
+   "series": [
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 105,
+     "sum": 3198,
+     "average": 30.457142857142856,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      22,
+      82,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tpcc_delivery_total": {
+   "type": "counter",
+   "total": 105,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 105
+    }
+   ]
+  },
+  "tpcc_new_order_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 1295,
+   "sum": 35517,
+   "average": 27.426254826254826,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    11,
+    0,
+    0,
+    4,
+    470,
+    753,
+    57,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 50,
+    "p90": 50,
+    "p95": 50,
+    "p99": 100
+   },
+   "series": [
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 1295,
+     "sum": 35517,
+     "average": 27.426254826254826,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      11,
+      0,
+      0,
+      4,
+      470,
+      753,
+      57,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tpcc_new_order_total": {
+   "type": "counter",
+   "total": 1295,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 1295
+    }
+   ]
+  },
+  "tpcc_order_status_byname": {
+   "type": "counter",
+   "total": 63,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 63
+    }
+   ]
+  },
+  "tpcc_order_status_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 115,
+   "sum": 72,
+   "average": 0.6260869565217392,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    48,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    64,
+    2,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 1,
+    "p90": 1,
+    "p95": 1,
+    "p99": 2.5
+   },
+   "series": [
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 115,
+     "sum": 72,
+     "average": 0.6260869565217392,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      48,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      64,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tpcc_order_status_total": {
+   "type": "counter",
+   "total": 115,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 115
+    }
+   ]
+  },
+  "tpcc_payment_bc": {
+   "type": "counter",
+   "total": 113,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 113
+    }
+   ]
+  },
+  "tpcc_payment_byname": {
+   "type": "counter",
+   "total": 734,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 734
+    }
+   ]
+  },
+  "tpcc_payment_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 1212,
+   "sum": 39736,
+   "average": 32.78547854785479,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    9,
+    399,
+    624,
+    177,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 50,
+    "p90": 100,
+    "p95": 100,
+    "p99": 100
+   },
+   "series": [
+    {
+     "attributes": {
+      "outcome": "error",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 46,
+     "sum": 3416,
+     "average": 74.26086956521739,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      42,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 1162,
+     "sum": 36096,
+     "average": 31.06368330464716,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      9,
+      399,
+      619,
+      133,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "drain",
+      "step": "workload"
+     },
+     "count": 4,
+     "sum": 224,
+     "average": 56,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tpcc_payment_remote": {
+   "type": "counter",
+   "total": 196,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 196
+    }
+   ]
+  },
+  "tpcc_payment_total": {
+   "type": "counter",
+   "total": 1212,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 1212
+    }
+   ]
+  },
+  "tpcc_remote_line_remote": {
+   "type": "counter",
+   "total": 139,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 139
+    }
+   ]
+  },
+  "tpcc_remote_line_total": {
+   "type": "counter",
+   "total": 13007,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 13007
+    }
+   ]
+  },
+  "tpcc_retry_attempts": {
+   "type": "counter",
+   "total": 482,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 482
+    }
+   ]
+  },
+  "tpcc_rollback_decided": {
+   "type": "counter",
+   "total": 12,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 12
+    }
+   ]
+  },
+  "tpcc_rollback_done": {
+   "type": "counter",
+   "total": 12,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 12
+    }
+   ]
+  },
+  "tpcc_stock_level_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 106,
+   "sum": 163,
+   "average": 1.5377358490566038,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    58,
+    43,
+    4,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 1,
+    "p90": 2.5,
+    "p95": 2.5,
+    "p99": 5
+   },
+   "series": [
+    {
+     "attributes": {
+      "outcome": "success",
+      "phase": "measurement",
+      "step": "workload"
+     },
+     "count": 106,
+     "sum": 163,
+     "average": 1.5377358490566038,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      58,
+      43,
+      4,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tpcc_stock_level_total": {
+   "type": "counter",
+   "total": 106,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 106
+    }
+   ]
+  },
+  "tps": {
+   "type": "gauge",
+   "unit": "{transaction}/s",
+   "total": 138.95976956216154,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload"
+     },
+     "total": 138.95976956216154
+    }
+   ]
+  },
+  "transactions_total": {
+   "type": "counter",
+   "total": 3315,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "stock_level"
+     },
+     "total": 106
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "order_status"
+     },
+     "total": 115
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "total": 105
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "total": 109
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "total": 428
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "total": 1166
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "total": 1283
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "total": 3
+    }
+   ]
+  },
+  "tx_commits_total": {
+   "type": "counter",
+   "total": 2775,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "total": 1283
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "order_status"
+     },
+     "total": 115
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "stock_level"
+     },
+     "total": 106
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "total": 105
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "total": 1166
+    }
+   ]
+  },
+  "tx_errors_total": {
+   "type": "counter",
+   "total": 540,
+   "series": [
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "total": 428
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "total": 109
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "total": 3
+    }
+   ]
+  },
+  "tx_queries_per_tx": {
+   "type": "histogram",
+   "count": 3315,
+   "sum": 51570,
+   "average": 15.55656108597285,
+   "bounds": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    50,
+    100,
+    250,
+    500,
+    1000
+   ],
+   "bucket_counts": [
+    0,
+    404,
+    27,
+    774,
+    722,
+    236,
+    1047,
+    105,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 10,
+    "p90": 50,
+    "p95": 50,
+    "p99": 100
+   },
+   "series": [
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "count": 1166,
+     "sum": 6540,
+     "average": 5.608919382504288,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      456,
+      710,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "count": 1283,
+     "sum": 36121,
+     "average": 28.153546375681994,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      236,
+      1047,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "count": 109,
+     "sum": 375,
+     "average": 3.4403669724770642,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      97,
+      12,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "count": 105,
+     "sum": 7350,
+     "average": 70,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      105,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "stock_level"
+     },
+     "count": 106,
+     "sum": 318,
+     "average": 3,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      106,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "count": 3,
+     "sum": 6,
+     "average": 2,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "count": 428,
+     "sum": 452,
+     "average": 1.0560747663551402,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      404,
+      24,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "order_status"
+     },
+     "count": 115,
+     "sum": 408,
+     "average": 3.5478260869565217,
+     "bounds": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      50,
+      100,
+      250,
+      500,
+      1000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      115,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  "tx_total_duration": {
+   "type": "histogram",
+   "unit": "ms",
+   "count": 3315,
+   "sum": 79602.79014399998,
+   "average": 24.012908037405726,
+   "bounds": [
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    25,
+    50,
+    100,
+    250,
+    500,
+    1000,
+    2500,
+    5000,
+    10000,
+    20000,
+    30000,
+    60000
+   ],
+   "bucket_counts": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    90,
+    132,
+    11,
+    38,
+    1224,
+    1804,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "percentiles": {
+    "p50": 50,
+    "p90": 50,
+    "p95": 50,
+    "p99": 50
+   },
+   "series": [
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "count": 1283,
+     "sum": 33691.62733,
+     "average": 26.26003689010133,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      497,
+      779,
+      7,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "stock_level"
+     },
+     "count": 106,
+     "sum": 201.962891,
+     "average": 1.9053102924528302,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      96,
+      10,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "count": 1166,
+     "sum": 29700.458461999988,
+     "average": 25.472091305317313,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      14,
+      476,
+      671,
+      5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "count": 105,
+     "sum": 3188.722503,
+     "average": 30.368785742857142,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      23,
+      82,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "commit",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "order_status"
+     },
+     "count": 115,
+     "sum": 105.792154,
+     "average": 0.9199317739130435,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      90,
+      23,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "payment"
+     },
+     "count": 428,
+     "sum": 10413.529658000001,
+     "average": 24.330676771028042,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17,
+      182,
+      226,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "delivery"
+     },
+     "count": 3,
+     "sum": 42.313021,
+     "average": 14.104340333333333,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "attributes": {
+      "step": "workload",
+      "tx_action": "rollback",
+      "tx_isolation": "repeatable_read",
+      "tx_name": "new_order"
+     },
+     "count": 109,
+     "sum": 2258.384125,
+     "average": 20.71912041284404,
+     "bounds": [
+      0.005,
+      0.01,
+      0.025,
+      0.05,
+      0.1,
+      0.25,
+      0.5,
+      1,
+      2.5,
+      5,
+      10,
+      25,
+      50,
+      100,
+      250,
+      500,
+      1000,
+      2500,
+      5000,
+      10000,
+      20000,
+      30000,
+      60000
+     ],
+     "bucket_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      12,
+      0,
+      6,
+      44,
+      46,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ },
+ "errors": {
+  "terminal_errors": 46,
+  "failed_iterations": 46,
+  "failed_queries": 0,
+  "retry_attempts": 482,
+  "groups": [
+   {
+    "operation": "workload",
+    "class": "serialization",
+    "count": 46
+   }
+  ]
+ },
+ "workload_reports": [
+  {
+   "kind": "tpcc.compliance",
+   "schema": 1,
+   "status": "ok",
+   "data": {
+    "workload": "tpcc/tx",
+    "paced": false,
+    "compliance_applicable": false,
+    "elapsed_seconds": 20,
+    "drain_seconds": 0.056164519999999385,
+    "tpm_c": 3885,
+    "mix_compliant": null,
+    "response_compliant": null,
+    "mix_tolerance_pct": 1,
+    "transactions": [
+     {
+      "name": "new_order",
+      "count": 1295,
+      "successful": 1295,
+      "failed": 0,
+      "canceled": 0,
+      "drained": 0,
+      "mix_percent": 45.77589254153411,
+      "throughput_per_sec": 64.75,
+      "p50_ms": 50,
+      "p90_ms": 50,
+      "p95_ms": 50,
+      "p99_ms": 100,
+      "ceiling_ms": null,
+      "mix_min_percent": null,
+      "mix_pass": null,
+      "response_pass": null
+     },
+     {
+      "name": "payment",
+      "count": 1208,
+      "successful": 1162,
+      "failed": 46,
+      "canceled": 0,
+      "drained": 4,
+      "mix_percent": 42.70060091905267,
+      "throughput_per_sec": 58.1,
+      "p50_ms": 50,
+      "p90_ms": 100,
+      "p95_ms": 100,
+      "p99_ms": 100,
+      "ceiling_ms": null,
+      "mix_min_percent": null,
+      "mix_pass": null,
+      "response_pass": null
+     },
+     {
+      "name": "order_status",
+      "count": 115,
+      "successful": 115,
+      "failed": 0,
+      "canceled": 0,
+      "drained": 0,
+      "mix_percent": 4.0650406504065035,
+      "throughput_per_sec": 5.75,
+      "p50_ms": 1,
+      "p90_ms": 1,
+      "p95_ms": 1,
+      "p99_ms": 2.5,
+      "ceiling_ms": null,
+      "mix_min_percent": null,
+      "mix_pass": null,
+      "response_pass": null
+     },
+     {
+      "name": "delivery",
+      "count": 105,
+      "successful": 105,
+      "failed": 0,
+      "canceled": 0,
+      "drained": 0,
+      "mix_percent": 3.711558854718982,
+      "throughput_per_sec": 5.25,
+      "p50_ms": 50,
+      "p90_ms": 50,
+      "p95_ms": 50,
+      "p99_ms": 50,
+      "ceiling_ms": null,
+      "mix_min_percent": null,
+      "mix_pass": null,
+      "response_pass": null
+     },
+     {
+      "name": "stock_level",
+      "count": 106,
+      "successful": 106,
+      "failed": 0,
+      "canceled": 0,
+      "drained": 0,
+      "mix_percent": 3.7469070342877346,
+      "throughput_per_sec": 5.3,
+      "p50_ms": 1,
+      "p90_ms": 2.5,
+      "p95_ms": 2.5,
+      "p99_ms": 5,
+      "ceiling_ms": null,
+      "mix_min_percent": null,
+      "mix_pass": null,
+      "response_pass": null
+     }
+    ],
+    "statistical": {
+     "total_measurements": 2829,
+     "new_orders": 1295,
+     "sufficient": false,
+     "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+    },
+    "steadiness": {
+     "status": "not_assessed",
+     "cv": 0,
+     "mean_new_orders_per_sec": 0,
+     "sigma_new_orders_per_sec": 0,
+     "buckets": 0,
+     "truncated": false,
+     "reason": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+    },
+    "note": "unpaced stress run: \u00a75.2.5 compliance (mix, response-time ceilings, statistical validity) is not applicable"
+   }
+  }
+ ]
+}

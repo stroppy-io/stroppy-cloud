@@ -58,6 +58,22 @@ type Input struct {
 	Labels map[string]string
 }
 
+// DriverKey names the one driver of a config. Stroppy 6.2 replaced numeric
+// driver keys with named declarations ("default"); 6.0 and 6.1 accept only
+// numeric ones. The version comes from the image tag (vMAJOR.MINOR.PATCH[.N],
+// mirrored or not); a tag that names no version is a newer or dev build.
+func DriverKey(image string) string {
+	if at := strings.Index(image, "@"); at >= 0 {
+		image = image[:at]
+	}
+	tag := image[strings.LastIndex(image, ":")+1:]
+	var major, minor int
+	if n, err := fmt.Sscanf(strings.TrimPrefix(tag, "v"), "%d.%d", &major, &minor); err == nil && n == 2 && (major < 6 || major == 6 && minor < 2) {
+		return "0"
+	}
+	return "default"
+}
+
 // Config renders stroppy-config.json of a segment.
 //
 // doc: stroppy `help config-file` — script, sql, global, drivers, run,
@@ -100,7 +116,7 @@ func Config(in Input) (map[string]any, error) {
 		"version": "1",
 		"script":  seg.Workload.Script,
 		"global":  global,
-		"drivers": map[string]any{"0": driver},
+		"drivers": map[string]any{DriverKey(in.Workload.StroppyImage): driver},
 		"run":     run,
 	}
 	if len(params) > 0 {

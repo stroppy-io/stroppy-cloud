@@ -10,7 +10,9 @@ import (
 
 // RunReport decodes only the fields used by pipeline policy. The original JSON
 // is retained separately, including unknown fields and exact integer literals.
-// Contract: Stroppy v6.1.0 pkg/report and docs/run-reports.md, envelope schema 1.
+// Contract: Stroppy pkg/report and docs/run-reports.md, envelope schemas 1
+// (v6.1) to 4 (v6.2): schemas 2–4 only add fields (named drivers,
+// executions, measurements, capture); the ones read here are unchanged.
 type RunReport struct {
 	Schema             int                     `json:"schema"`
 	Kind               string                  `json:"kind"`
@@ -50,7 +52,7 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 	if err := json.Unmarshal(raw, &doc); err != nil {
 		return doc, summary, fmt.Errorf("decode Stroppy report: %w", err)
 	}
-	if doc.Schema != 1 || doc.Kind != "run" {
+	if doc.Schema < 1 || doc.Schema > 4 || doc.Kind != "run" {
 		return doc, summary, fmt.Errorf("unsupported Stroppy report kind %q schema %d", doc.Kind, doc.Schema)
 	}
 	if doc.ID == "" || doc.Workload == "" || doc.Metrics == nil || doc.Errors == nil || doc.MeasurementSeconds == nil {
