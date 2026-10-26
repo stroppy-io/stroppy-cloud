@@ -85,6 +85,11 @@ func mysqlClusterRecipe(c *compilation, maria bool) error {
 			// Topology-owned settings, common to both supported MySQL series.
 			// doc: dev.mysql.com/doc/refman/8.4/en/group-replication-system-variables.html
 			conf += "\nloose-group_replication_communication_stack = XCOM\nloose-group_replication_ssl_mode = REQUIRED\nloose-group_replication_recovery_use_ssl = ON\nloose-group_replication_ip_allowlist = " + strings.Join(peers, ",") + "\n"
+			// Group replication refuses writes to a table without a primary
+			// key; workloads such as TPC-DS define none. MySQL then adds an
+			// invisible one (8.0.30+) instead of failing the load.
+			// doc: dev.mysql.com/doc/refman/8.4/en/create-table-gipks.html
+			conf += "sql_generate_invisible_primary_key = ON\n"
 		}
 		ct := spec.Container{
 			Name: m + "-" + c.engineOf(role), Role: role, Machine: m, Image: image,
