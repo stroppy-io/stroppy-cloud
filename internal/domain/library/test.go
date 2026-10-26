@@ -211,6 +211,17 @@ func (s *Service) Validate(ctx context.Context, tenantID uuid.UUID, spec TestSpe
 		}
 	}
 
+	// engine version × script
+	if dbSpec != nil && wlSpec != nil && res.WorkloadDerived != nil {
+		var params map[string]any
+		_ = json.Unmarshal(dbSpec.Params, &params) //nolint:errcheck // baked by DeriveDatabase
+		for i, seg := range res.WorkloadDerived.Segments {
+			if why := dbkind.UnsupportedScript(dbSpec.Kind, dbSpec.Version, params, seg.Script, wlSpec.StroppyVersion); why != "" {
+				issue(fmt.Sprintf("workload.segments[%d].workload.script", i), "script_unsupported", "ERROR", why, nil)
+			}
+		}
+	}
+
 	// provider profile
 	var sizes map[string]map[string]catalog.SizeSpec
 	if spec.ProviderProfileID != nil {

@@ -71,6 +71,18 @@ func ydbManaged() Kind {
 			p.Client = topology.Endpoint{Role: "", Protocol: "ydb_grpcs", Port: 2135}
 			p.Mode = topology.StrOf(params, "type", topology.ModeDedicated)
 		},
+		// Serverless times out compiling TPC-C's index build, the TPC-DS
+		// schema drop and the simple bulk INSERT, even at 200 rows
+		// (stroppy-io/stroppy#231); dedicated runs them.
+		unsupportedFor: func(params map[string]any) map[string]unsupportedScript {
+			if topology.StrOf(params, "type", "") != "serverless" {
+				return nil
+			}
+			ddl := unsupportedScript{why: "TPC-C cannot build its indexes on serverless YDB: the server times out compiling them"}
+			drop := unsupportedScript{why: "TPC-DS cannot drop its schema on serverless YDB: the server times out compiling the statement"}
+			insert := unsupportedScript{why: "the simple workload cannot load on serverless YDB: the server times out compiling its bulk INSERT"}
+			return map[string]unsupportedScript{"tpcc/tx": ddl, "tpcc/procs": ddl, "tpcds": drop, "simple": insert}
+		},
 	}
 }
 

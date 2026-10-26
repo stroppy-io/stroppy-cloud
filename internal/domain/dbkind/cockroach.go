@@ -33,6 +33,11 @@ func cockroach() Kind {
 		},
 		plan:  planCockroach,
 		login: func(map[string]any) topology.Login { return CockroachLogin },
+		// Stroppy 6.2 picks crdb.sql for the crdb driver; 24.1 needs the
+		// procedures of crdb24.sql, unreachable there (stroppy-io/stroppy#230).
+		unsupported: map[string]map[string]unsupportedScript{
+			"24.1": {"tpcc/procs": {why: "TPC-C with stored procedures on CockroachDB 24.1 needs Stroppy 6.1 (6.2 cannot reach its 24.1 procedures)", sinceStroppy: "6.2"}},
+		},
 	}
 }
 

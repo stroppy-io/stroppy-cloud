@@ -23,6 +23,18 @@ type Kind struct {
 	login func(params map[string]any) topology.Login
 	// protocols a workload may speak (nil: Database.Protocols).
 	protocols func(params map[string]any) []catalog.Protocol
+	// unsupported: version → script → why that version cannot run it.
+	unsupported map[string]map[string]unsupportedScript
+	// unsupportedFor is the same by the database's parameters (a variant of
+	// the kind rather than a version), nil when none.
+	unsupportedFor func(params map[string]any) map[string]unsupportedScript
+}
+
+// unsupportedScript is a script an engine version cannot run, from a
+// Stroppy release on ("" = any).
+type unsupportedScript struct {
+	why          string
+	sinceStroppy string
 }
 
 // kinds in catalog order.
@@ -74,6 +86,37 @@ func Plan(kind catalog.DatabaseKind, params map[string]any) (topology.Plan, erro
 
 // Protocols are the protocols a workload may speak to a database of this
 // kind with these params.
+// UnsupportedScript says why a version of a kind cannot run a script with a
+// Stroppy release ("" when it can): a limit of that engine version, not of
+// the protocol.
+func UnsupportedScript(kind catalog.DatabaseKind, version string, params map[string]any, script, stroppy string) string {
+	k, ok := Lookup(kind)
+	if !ok {
+		return ""
+	}
+	u, ok := k.unsupported[version][script]
+	if !ok && k.unsupportedFor != nil {
+		u, ok = k.unsupportedFor(params)[script]
+	}
+	if !ok || (u.sinceStroppy != "" && !atLeast(stroppy, u.sinceStroppy)) {
+		return ""
+	}
+	return u.why
+}
+
+// atLeast compares major.minor of two Stroppy versions; an unparseable one
+// (a dev build) counts as current.
+func atLeast(version, floor string) bool {
+	var ma, mi, fa, fi int
+	if n, err := fmt.Sscanf(version, "%d.%d", &ma, &mi); err != nil || n != 2 {
+		return true
+	}
+	if n, err := fmt.Sscanf(floor, "%d.%d", &fa, &fi); err != nil || n != 2 {
+		return true
+	}
+	return ma > fa || ma == fa && mi >= fi
+}
+
 func Protocols(kind catalog.DatabaseKind, params map[string]any) []catalog.Protocol {
 	k, ok := Lookup(kind)
 	if !ok {

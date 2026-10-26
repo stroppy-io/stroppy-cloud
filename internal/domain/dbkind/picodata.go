@@ -42,6 +42,11 @@ func picodata() Kind {
 			}
 			return []catalog.Protocol{catalog.ProtoPicodata}
 		},
+		// 25.3 cannot bind a date string to a timestamptz parameter, and the
+		// TPC-H load passes its dates that way (26.1 and later accept it).
+		unsupported: map[string]map[string]unsupportedScript{
+			"25.3": {"tpch/tx": {why: "Picodata 25.3 cannot load TPC-H: it does not accept a date for a timestamptz parameter"}},
+		},
 	}
 }
 

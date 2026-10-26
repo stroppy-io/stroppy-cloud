@@ -118,3 +118,29 @@ func TestPlanYDBRequirements(t *testing.T) {
 		}
 	}
 }
+
+func TestUnsupportedScript(t *testing.T) {
+	if why := dbkind.UnsupportedScript(catalog.Picodata, "25.3", nil, "tpch/tx", "6.2.1"); why == "" {
+		t.Fatal("Picodata 25.3 TPC-H is not refused")
+	}
+	if why := dbkind.UnsupportedScript(catalog.Cockroach, "24.1", nil, "tpcc/procs", "6.2.1"); why == "" {
+		t.Fatal("CockroachDB 24.1 TPC-C procedures are not refused on Stroppy 6.2")
+	}
+	if why := dbkind.UnsupportedScript(catalog.Cockroach, "24.1", nil, "tpcc/procs", "6.1.0"); why != "" {
+		t.Fatalf("Stroppy 6.1 refused: %s", why)
+	}
+	if why := dbkind.UnsupportedScript(catalog.YDBManaged, "managed", map[string]any{"type": "serverless"}, "tpcc/tx", "6.2.1"); why == "" {
+		t.Fatal("serverless YDB TPC-C is not refused")
+	}
+	if why := dbkind.UnsupportedScript(catalog.YDBManaged, "managed", map[string]any{"type": "dedicated"}, "tpcc/tx", "6.2.1"); why != "" {
+		t.Fatalf("dedicated YDB TPC-C refused: %s", why)
+	}
+	if why := dbkind.UnsupportedScript(catalog.PgNoop, "0.1.2", nil, "simple", "6.2.1"); why == "" {
+		t.Fatal("pg-noop simple is not refused")
+	}
+	for _, c := range [][3]string{{"picodata", "26.1", "tpch/tx"}, {"picodata", "25.3", "tpcc/tx"}, {"postgres", "17", "tpch/tx"}} {
+		if why := dbkind.UnsupportedScript(catalog.DatabaseKind(c[0]), c[1], nil, c[2], "6.2.1"); why != "" {
+			t.Fatalf("%v refused: %s", c, why)
+		}
+	}
+}

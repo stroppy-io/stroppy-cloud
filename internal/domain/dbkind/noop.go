@@ -26,6 +26,16 @@ func pgNoop() Kind {
 			// pg-noop accepts any login and needs no password.
 			return topology.Login{User: PostgresLogin.User, Database: PostgresLogin.Database}
 		},
+		// pg-noop 0.1.2 answers a binary int8 with one byte and mismatches the
+		// bulk INSERT parameters (stroppy-io/pg-noop#8): TPC-C reads ids back,
+		// simple bulk-inserts.
+		unsupported: map[string]map[string]unsupportedScript{
+			"0.1.2": {
+				"tpcc/tx":    {why: "pg-noop 0.1.2 cannot answer TPC-C: its binary int8 values are malformed"},
+				"tpcc/procs": {why: "pg-noop 0.1.2 cannot answer TPC-C: its binary int8 values are malformed"},
+				"simple":     {why: "pg-noop 0.1.2 rejects the simple workload's bulk INSERT parameters"},
+			},
+		},
 	}
 }
 
