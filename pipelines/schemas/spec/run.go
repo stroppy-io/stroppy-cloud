@@ -211,8 +211,8 @@ func Run() *schemapb.Schema {
 						Desc("HTTP port for the scrape path; when omitted, uses the first container port for compatibility.").
 						Gte(1).Lte(65535),
 					schemapb.List("depends_on", schemapb.Str("").Pattern(namePattern)).
-						Title("Depends on").Desc("Container names started before this one.").
-						MaxItems(16).Unique(),
+						Title("Depends on").Desc("Container names started before this one; a proxy or init sidecar waits for every instance of its cluster, so the bound is the container bound.").
+						MaxItems(256).Unique(),
 					schemapb.Object("healthcheck",
 						schemapb.List("cmd", schemapb.Str("").MaxLen(1024)).
 							Title("Command").MinItems(1).MaxItems(16).Required(),

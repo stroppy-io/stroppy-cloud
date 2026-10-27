@@ -592,7 +592,7 @@ export interface SpecRun1Item2 {
   scrape?: string;
   /** Metrics port. HTTP port for the scrape path; when omitted, uses the first container port for compatibility. */
   scrape_port?: number | string;
-  /** Depends on. Container names started before this one. */
+  /** Depends on. Container names started before this one; a proxy or init sidecar waits for every instance of its cluster, so the bound is the container bound. */
   depends_on?: Array<string>;
   /** Health check. */
   healthcheck?: SpecRun1Item2Healthcheck;

@@ -3497,7 +3497,7 @@
                     "title": "Metrics port"
                   },
                   {
-                    "description": "Container names started before this one.",
+                    "description": "Container names started before this one; a proxy or init sidecar waits for every instance of its cluster, so the bound is the container bound.",
                     "list": {
                       "items": [
                         {
@@ -3506,7 +3506,7 @@
                           }
                         }
                       ],
-                      "maxItems": "16",
+                      "maxItems": "256",
                       "unique": true
                     },
                     "name": "depends_on",

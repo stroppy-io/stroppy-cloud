@@ -1,6 +1,7 @@
 package compile_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -8,6 +9,8 @@ import (
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/catalog"
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/compile"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/errs"
+	"github.com/stroppy-io/stroppy-cloud/internal/infrastructure/schemas"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
@@ -42,6 +45,26 @@ func TestPicodataInstancePerCore(t *testing.T) {
 	out, _ = compileTuned(t, picoCase("26.2", stock))
 	if n := len(picoContainers(out)); n != 1 {
 		t.Errorf("stock: %d instances, want 1", n)
+	}
+
+	// A 32-vCPU machine: 32 instances, and the init sidecar and HAProxy
+	// that wait for all of them still fit spec.run@1.
+	xl := picoCase("26.2", map[string]any{"instances_per_machine": 0, "haproxy": 1, "pgproto": true, "tiers": picoTiers(1, 1, nil)})
+	xl.size = "XL"
+	out, _ = compileTuned(t, xl)
+	if n := len(picoContainers(out)); n != 32 {
+		t.Fatalf("%d picodata instances on 32 vCPU, want 32", n)
+	}
+	out.Spec.Provider.ProviderConfigName = "t-acme"
+	raw, err := json.Marshal(out.Spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := schemas.New().Bake(context.Background(), "spec.run@1", raw); err != nil {
+		if e, ok := errs.AsValidation(err); ok {
+			t.Fatalf("spec.run@1: %s", validationText(e))
+		}
+		t.Fatal(err)
 	}
 }
 
