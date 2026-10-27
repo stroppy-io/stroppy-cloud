@@ -28,6 +28,10 @@ export const dashboardQueries = {
 
 // ---------------------------------------------------------------------------------------------
 
+// The rating's list filters are `style: form, explode: false` in the contract
+// (`kind=postgres,mysql`); the server rejects the repeated-key form.
+const commaArrays = { array: { style: 'form', explode: false } } as const
+
 export const ratingQueries = {
   tenant: (slug: string, q: RatingQuery = {}) =>
     infiniteQueryOptions({
@@ -36,6 +40,7 @@ export const ratingQueries = {
         unwrap(
           api.GET('/api/v1/t/{slug}/rating', {
             params: { path: { slug }, query: { ...q, cursor: pageParam ?? undefined } },
+            querySerializer: commaArrays,
           })
         ),
       initialPageParam: null as string | null,
@@ -48,6 +53,7 @@ export const ratingQueries = {
         unwrap(
           api.GET('/api/v1/public/rating', {
             params: { query: { ...q, cursor: pageParam ?? undefined } },
+            querySerializer: commaArrays,
           })
         ),
       initialPageParam: null as string | null,

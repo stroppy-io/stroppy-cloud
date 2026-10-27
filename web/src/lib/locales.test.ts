@@ -42,7 +42,6 @@ const LATIN_BY_DESIGN = new Set([
   'public.export.pdf',
   'public.results.segment.tps',
   'public.suite.tps',
-  'results.rating.filters.stroppy',
   'results.rating.columns.stroppy',
   'runs.columns.tps',
   'runs.progress',

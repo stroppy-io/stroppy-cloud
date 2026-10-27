@@ -1,10 +1,17 @@
 import { meQueries } from '@api/queries/me'
 import { ratingQueries } from '@api/queries/results'
 import { type RatingPalette, RatingRows } from '@components/public/RatingRows'
-import { RatingBoard, type RatingFilters, toRatingQuery } from '@components/results/RatingBoard'
+import {
+  boardHardware,
+  hardwareParam,
+  RatingBoard,
+  type RatingFilters,
+  ratingCensusQuery,
+} from '@components/results/RatingBoard'
 import { css, cx } from '@emotion/css'
 import { type GrafanaTheme2, ThemeContext } from '@grafana/data'
 import { Icon, useStyles2, useTheme2 } from '@grafana/ui'
+import { hardwareLabel } from '@helpers/rating'
 import { type EmbedTheme, useEmbedBridge, useEmbedNavigationGuard } from '@hooks/useEmbedBridge'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -37,8 +44,8 @@ export const embedSearchSchema = z.object({
   kind: list,
   version: list,
   provider: list,
-  stroppy: list,
-  hardware: list,
+  /** One hardware class key or `all`; unset = the class with the most rated rows. */
+  hardware: hardwareParam,
 })
 export type EmbedSearch = z.infer<typeof embedSearchSchema>
 
@@ -92,15 +99,21 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
     [theme]
   )
   const scenario = asList(search.scenario)?.[0]
-  const rating = useInfiniteQuery(
-    ratingQueries.global({
+  // One hardware class, as on the board: the default is the one with the most rated rows.
+  const census = useInfiniteQuery(ratingQueries.global(ratingCensusQuery(search)))
+  const hw = boardHardware(search.hardware, census.data?.pages[0]?.data)
+  const hardwareResolved = !hw.isDefault || !census.isPending
+  const rating = useInfiniteQuery({
+    ...ratingQueries.global({
       metric: search.metric,
       scenario: scenario ? [scenario] : undefined,
+      hardware: hw.key ? [hw.key] : undefined,
       period: search.period,
       limit: search.limit,
-    })
-  )
-  const settled = !rating.isPending
+    }),
+    enabled: hardwareResolved,
+  })
+  const settled = hardwareResolved && !rating.isPending
   useEffect(() => {
     if (settled) onReady()
   }, [settled, onReady])
@@ -108,17 +121,20 @@ function Rows({ search, onReady }: { search: EmbedSearch; onReady: () => void })
   const origin = window.location.origin
   const full = new URL('/leaderboard', origin)
   if (scenario) full.searchParams.set('scenario', JSON.stringify([scenario]))
+  if (search.hardware) full.searchParams.set('hardware', search.hardware)
+  const hardwareClass = page?.hardware.find((h) => h.key === hw.key)
   return (
     <>
       <div className={styles.head}>
         {page?.metric.title ?? t('landing.rating.metric')}
         {page?.metric.unit && <span className={styles.unit}>{page.metric.unit}</span>}
+        {hardwareClass && <span className={styles.unit}>· {hardwareLabel(t, hardwareClass)}</span>}
       </div>
       <RatingRows
         rows={page?.data.slice(0, search.limit) ?? []}
         unit={page?.metric.unit}
         palette={palette}
-        loading={rating.isPending}
+        loading={!settled}
         error={rating.isError}
         shareHref={(token) => `${origin}/s/${token}`}
       />
@@ -147,16 +163,9 @@ function Board({
     kind: search.kind,
     version: search.version,
     provider: search.provider,
-    stroppy: search.stroppy,
     scenario: asList(search.scenario),
     hardware: search.hardware,
   }
-  // The same query as the board's (shared cache): ready once it settled.
-  const rating = useInfiniteQuery(ratingQueries.global(toRatingQuery(filters)))
-  const settled = !rating.isPending
-  useEffect(() => {
-    if (settled) onReady()
-  }, [settled, onReady])
   const full = new URL('/leaderboard', window.location.origin)
   for (const [k, v] of Object.entries(filters))
     if (v !== undefined && !(k === 'metric' && v === 'tps') && !(k === 'period' && v === 'all'))
@@ -169,6 +178,7 @@ function Board({
         search={filters}
         onSearchChange={onSearchChange}
         embedded
+        onReady={onReady}
       />
       <a className={styles.foot} href={full.toString()} target="_blank" rel="noreferrer">
         {t('landing.rating.embedFooter')}

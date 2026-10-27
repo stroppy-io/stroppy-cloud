@@ -10,11 +10,13 @@
       "metric": "Метрика",
       "kind": "База",
       "version": "Версия",
-      "provider": "Провайдер",
-      "stroppy": "Stroppy",
+      "provider": "Облако",
       "period": "Период",
       "scenario": "Сценарий",
-      "hardware": "Железо"
+      "hardware": "Железо",
+      "all": "Все",
+      "allHardware": "Всё железо",
+      "reset": "Сбросить фильтры"
     },
     "period": {
       "7d": "7д",

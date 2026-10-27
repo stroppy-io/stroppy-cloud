@@ -10,11 +10,13 @@
       "metric": "Metric",
       "kind": "Database",
       "version": "Version",
-      "provider": "Provider",
-      "stroppy": "Stroppy",
+      "provider": "Cloud",
       "period": "Period",
       "scenario": "Scenario",
-      "hardware": "Hardware"
+      "hardware": "Hardware",
+      "all": "All",
+      "allHardware": "All hardware",
+      "reset": "Reset filters"
     },
     "period": {
       "7d": "7d",

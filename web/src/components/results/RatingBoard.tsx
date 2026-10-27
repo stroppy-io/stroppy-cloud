@@ -8,53 +8,102 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import {
   Button,
   Combobox,
-  MultiCombobox,
+  InlineField,
   RadioButtonGroup,
   Stack,
   Text,
   useStyles2,
 } from '@grafana/ui'
 import { metricTitle } from '@helpers/metrics'
-import { hardwareLabel, hardwareTotal, scenarioLabel } from '@helpers/rating'
+import {
+  defaultHardware,
+  hardwareCounts,
+  hardwareLabel,
+  hardwareTotal,
+  scenarioLabel,
+} from '@helpers/rating'
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { type ReactNode, useMemo } from 'react'
+import { type ReactNode, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
+import { RatingFilter } from './RatingFilter'
 import { RatingTable } from './RatingTable'
 
 // The rating itself, shared by the tenant rating (both tabs) and the public
 // /leaderboard: filters over the top, then one table per workload scenario.
 // A tps figure means something only next to runs of the same scenario, so
-// scenarios never share a table, and each row says what hardware it ran on.
+// scenarios never share a table; numbers from different stands do not rank
+// either, so the board shows one hardware class unless the viewer asks for all.
+
+/**
+ * One hardware class: its key, or `all` for every class at once. Unset means
+ * the default class (the one with the most rated rows). Older links carry a
+ * JSON array; its first class is taken.
+ */
+export const hardwareParam = z
+  .union([z.string(), z.array(z.string()).transform((a) => a[0])])
+  .optional()
+  .catch(undefined)
+export const ALL_HARDWARE = 'all'
 
 export const ratingFiltersSchema = z.object({
   metric: z.string().default('tps').catch('tps'),
   kind: z.array(z.string()).optional().catch(undefined),
   version: z.array(z.string()).optional().catch(undefined),
   provider: z.array(z.string()).optional().catch(undefined),
-  stroppy: z.array(z.string()).optional().catch(undefined),
   scenario: z.array(z.string()).optional().catch(undefined),
-  hardware: z.array(z.string()).optional().catch(undefined),
+  hardware: hardwareParam,
   period: z.enum(['7d', '30d', '90d', '1y', 'all']).default('all').catch('all'),
 })
 export type RatingFilters = z.infer<typeof ratingFiltersSchema>
 export const RATING_FILTER_DEFAULTS = { metric: 'tps', period: 'all' } as const
 
-export function toRatingQuery(s: RatingFilters): RatingQuery {
+/**
+ * The rows the default hardware class is counted on: everything rated for
+ * this metric and period (the API's largest page), whatever else is picked,
+ * so the default does not jump while the viewer narrows the board.
+ */
+export function ratingCensusQuery(s: Pick<RatingFilters, 'metric' | 'period'>): RatingQuery {
+  return { metric: s.metric, period: s.period, limit: 200 }
+}
+
+/**
+ * The class the board shows: the one in the URL, `all`, or the default
+ * counted on the census rows. `key` goes to the query (undefined = every
+ * class); `value` is what the hardware control shows.
+ */
+export function boardHardware(
+  param: string | undefined,
+  census: readonly RatingEntry[] | undefined
+): { key: string | undefined; value: string; isDefault: boolean } {
+  if (param === ALL_HARDWARE) return { key: undefined, value: ALL_HARDWARE, isDefault: false }
+  if (param) return { key: param, value: param, isDefault: false }
+  const key = census ? defaultHardware(census) : undefined
+  return { key, value: key ?? ALL_HARDWARE, isDefault: true }
+}
+
+export function toRatingQuery(s: RatingFilters, hardware: string | undefined): RatingQuery {
   return {
     metric: s.metric,
     kind: s.kind as RatingQuery['kind'],
     version: s.version,
     provider: s.provider as RatingQuery['provider'],
-    stroppy_version: s.stroppy,
     scenario: s.scenario,
-    hardware: s.hardware,
+    hardware: hardware ? [hardware] : undefined,
     period: s.period,
     limit: 50,
   }
 }
 
 const getStyles = (theme: GrafanaTheme2) => ({
+  filters: css({
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+  }),
+  // The row's gap spaces the fields; InlineField's own margin would double it.
+  field: css({ margin: 0 }),
   sections: css({ display: 'flex', flexDirection: 'column', gap: theme.spacing(3) }),
   sectionHead: css({
     display: 'flex',
@@ -74,6 +123,11 @@ const PERIODS = ['7d', '30d', '90d', '1y', 'all'] as const
  * `catalog` what the viewer may read to fill the filters: the signed-in
  * catalog (every rating metric) or the public one (databases only — the metric
  * stays the one the rating reports).
+ *
+ * Filters, in this order: hardware (one class, by default the one with the
+ * most rated rows — numbers from different stands do not rank), database,
+ * scenario, cloud, database version; then metric and period. Each control
+ * shows its value, "All" included.
  */
 export function RatingBoard({
   scope,
@@ -82,6 +136,7 @@ export function RatingBoard({
   search,
   onSearchChange,
   embedded,
+  onReady,
 }: {
   scope: 'tenant' | 'global'
   slug?: string
@@ -93,14 +148,34 @@ export function RatingBoard({
    * frame grows instead of scrolling) and rows open the app in a new tab.
    */
   embedded?: boolean
+  /** Called once the rows (or an error) are there to draw. */
+  onReady?: () => void
 }) {
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
-  const query = useMemo(() => toRatingQuery(search), [search])
+  const options = (q: RatingQuery) =>
+    scope === 'global' ? ratingQueries.global(q) : ratingQueries.tenant(slug, q)
+
+  // Everything rated for this metric and period: the default hardware class
+  // is counted on it, and the cloud and version choices come from it.
+  const census = useInfiniteQuery(
+    options(ratingCensusQuery({ metric: search.metric, period: search.period }))
+  )
+  const censusRows = census.data?.pages[0]?.data
+  const hw = boardHardware(search.hardware, censusRows)
+  // The default class is known once the census is in (or failed: then all classes).
+  const hardwareResolved = !hw.isDefault || !census.isPending
+  const query = useMemo(() => toRatingQuery(search, hw.key), [search, hw.key])
   const list = useInfiniteQuery({
-    ...(scope === 'global' ? ratingQueries.global(query) : ratingQueries.tenant(slug, query)),
+    ...options(query),
+    enabled: hardwareResolved,
     placeholderData: keepPreviousData,
   })
+  const settled = hardwareResolved && !list.isPending
+  useEffect(() => {
+    if (settled) onReady?.()
+  }, [settled, onReady])
+
   const signedIn = catalog === 'signed-in'
   const metrics = useQuery({ ...catalogQueries.metrics(), enabled: signedIn })
   const databases = useQuery({ ...catalogQueries.databases(), enabled: signedIn })
@@ -108,10 +183,12 @@ export function RatingBoard({
 
   const entries = useMemo(() => list.data?.pages.flatMap((p) => p.data) ?? [], [list.data])
   const metricDef = list.data?.pages[0]?.metric
-  const scenarios = list.data?.pages[0]?.scenarios ?? []
-  const hardware = list.data?.pages[0]?.hardware ?? []
+  const facets = list.data?.pages[0] ?? census.data?.pages[0]
+  const scenarios = facets?.scenarios ?? []
+  const hardware = facets?.hardware ?? []
+  const counts = useMemo(() => hardwareCounts(censusRows ?? []), [censusRows])
   const distinct = (pick: (e: RatingEntry) => string | undefined) =>
-    [...new Set(entries.map(pick).filter((v): v is string => !!v))].sort()
+    [...new Set((censusRows ?? entries).map(pick).filter((v): v is string => !!v))].sort()
   const kindOptions = signedIn
     ? (databases.data?.data ?? []).map((d) => ({ label: d.title ?? d.kind, value: d.kind }))
     : (publicCatalog.data?.databases ?? []).map((d) => ({
@@ -120,7 +197,19 @@ export function RatingBoard({
       }))
   const versionOptions = distinct((e) => e.db_version).map((v) => ({ label: v, value: v }))
   const providerOptions = distinct((e) => e.provider_kind).map((v) => ({ label: v, value: v }))
-  const stroppyOptions = distinct((e) => e.stroppy_version).map((v) => ({ label: v, value: v }))
+  const all = t('results.rating.filters.all')
+  const hardwareOptions = [...hardware]
+    .sort((a, b) => (counts.get(b.key) ?? 0) - (counts.get(a.key) ?? 0))
+    .map((h) => ({
+      label: hardwareLabel(t, h),
+      value: h.key,
+      description: [
+        counts.has(h.key) && t('results.rating.entries', { count: counts.get(h.key) }),
+        hardwareTotal(t, h),
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    }))
 
   // Places count within a scenario: the server ranks the whole page.
   const byScenario = useMemo(() => {
@@ -132,135 +221,94 @@ export function RatingBoard({
     }
     return [...m.entries()].sort(([a], [b]) => a.localeCompare(b))
   }, [entries])
-  const hardwareName = (key: string) =>
-    hardwareLabel(
-      t,
-      hardware.find((h) => h.key === key)
-    )
 
-  const pills = [
-    ...(search.kind ?? []).map((v) => ({
-      key: `kind:${v}`,
-      label: `${t('results.rating.filters.kind')}: ${v}`,
-      onRemove: () => onSearchChange({ kind: search.kind?.filter((x) => x !== v) }),
-    })),
-    ...(search.version ?? []).map((v) => ({
-      key: `ver:${v}`,
-      label: `${t('results.rating.filters.version')}: ${v}`,
-      onRemove: () => onSearchChange({ version: search.version?.filter((x) => x !== v) }),
-    })),
-    ...(search.provider ?? []).map((v) => ({
-      key: `prov:${v}`,
-      label: `${t('results.rating.filters.provider')}: ${v}`,
-      onRemove: () => onSearchChange({ provider: search.provider?.filter((x) => x !== v) }),
-    })),
-    ...(search.stroppy ?? []).map((v) => ({
-      key: `st:${v}`,
-      label: `${t('results.rating.filters.stroppy')}: ${v}`,
-      onRemove: () => onSearchChange({ stroppy: search.stroppy?.filter((x) => x !== v) }),
-    })),
-    ...(search.scenario ?? []).map((v) => ({
-      key: `sc:${v}`,
-      label: `${t('results.rating.filters.scenario')}: ${scenarioLabel(v)}`,
-      onRemove: () => onSearchChange({ scenario: search.scenario?.filter((x) => x !== v) }),
-    })),
-    ...(search.hardware ?? []).map((v) => ({
-      key: `hw:${v}`,
-      label: `${t('results.rating.filters.hardware')}: ${hardwareName(v)}`,
-      onRemove: () => onSearchChange({ hardware: search.hardware?.filter((x) => x !== v) }),
-    })),
-  ]
-  const clearAll = () =>
+  const narrowed =
+    search.hardware !== undefined ||
+    !!search.kind?.length ||
+    !!search.version?.length ||
+    !!search.provider?.length ||
+    !!search.scenario?.length
+  const reset = () =>
     onSearchChange({
+      hardware: undefined,
       kind: undefined,
       version: undefined,
       provider: undefined,
-      stroppy: undefined,
       scenario: undefined,
-      hardware: undefined,
     })
 
   return (
     <>
       <DataTableToolbar
-        pills={pills}
-        onClearAll={pills.length ? clearAll : undefined}
         left={
-          <Stack gap={1} wrap="wrap">
-            {signedIn && (
-              <Combobox
-                placeholder={t('results.rating.filters.metric')}
-                width={22}
-                options={(metrics.data?.data ?? [])
-                  .filter((m) => m.rating_eligible !== false)
-                  .map((m) => ({
-                    label: metricTitle(m.key, m.title),
-                    value: m.key,
-                    description: m.unit,
-                  }))}
-                value={search.metric}
-                onChange={(o) => onSearchChange({ metric: o.value })}
-              />
-            )}
-            <MultiCombobox
-              placeholder={t('results.rating.filters.scenario')}
-              width={18}
-              options={scenarios.map((s) => ({ label: scenarioLabel(s), value: s }))}
-              value={search.scenario ?? []}
-              onChange={(o) =>
-                onSearchChange({ scenario: o.length ? o.map((x) => x.value) : undefined })
-              }
+          <div className={styles.filters}>
+            <RatingFilter
+              id="rating-hardware"
+              label={t('results.rating.filters.hardware')}
+              allLabel={t('results.rating.filters.allHardware')}
+              maxWidth={44}
+              loading={hw.isDefault && census.isPending}
+              options={hardwareOptions}
+              values={hw.value === ALL_HARDWARE ? undefined : [hw.value]}
+              onChange={(v) => onSearchChange({ hardware: v?.[0] ?? ALL_HARDWARE })}
             />
-            <MultiCombobox
-              placeholder={t('results.rating.filters.kind')}
-              width={18}
+            <RatingFilter
+              id="rating-kind"
+              label={t('results.rating.filters.kind')}
+              allLabel={all}
               options={kindOptions}
-              value={search.kind ?? []}
-              onChange={(o) =>
-                onSearchChange({ kind: o.length ? o.map((x) => x.value) : undefined })
-              }
+              values={search.kind}
+              onChange={(kind) => onSearchChange({ kind })}
             />
-            <MultiCombobox
-              placeholder={t('results.rating.filters.version')}
-              width={16}
-              options={versionOptions}
-              value={search.version ?? []}
-              onChange={(o) =>
-                onSearchChange({ version: o.length ? o.map((x) => x.value) : undefined })
-              }
+            <RatingFilter
+              id="rating-scenario"
+              label={t('results.rating.filters.scenario')}
+              allLabel={all}
+              options={scenarios.map((s) => ({ label: scenarioLabel(s), value: s }))}
+              values={search.scenario}
+              onChange={(scenario) => onSearchChange({ scenario })}
             />
-            <MultiCombobox
-              placeholder={t('results.rating.filters.provider')}
-              width={16}
+            <RatingFilter
+              id="rating-provider"
+              label={t('results.rating.filters.provider')}
+              allLabel={all}
               options={providerOptions}
-              value={search.provider ?? []}
-              onChange={(o) =>
-                onSearchChange({ provider: o.length ? o.map((x) => x.value) : undefined })
-              }
+              values={search.provider}
+              onChange={(provider) => onSearchChange({ provider })}
             />
-            <MultiCombobox
-              placeholder={t('results.rating.filters.stroppy')}
-              width={16}
-              options={stroppyOptions}
-              value={search.stroppy ?? []}
-              onChange={(o) =>
-                onSearchChange({ stroppy: o.length ? o.map((x) => x.value) : undefined })
-              }
+            <RatingFilter
+              id="rating-version"
+              label={t('results.rating.filters.version')}
+              allLabel={all}
+              options={versionOptions}
+              values={search.version}
+              onChange={(version) => onSearchChange({ version })}
             />
-            <MultiCombobox
-              placeholder={t('results.rating.filters.hardware')}
-              width={26}
-              options={hardware.map((h) => ({
-                label: hardwareLabel(t, h),
-                value: h.key,
-                description: hardwareTotal(t, h),
-              }))}
-              value={search.hardware ?? []}
-              onChange={(o) =>
-                onSearchChange({ hardware: o.length ? o.map((x) => x.value) : undefined })
-              }
-            />
-          </Stack>
+            {signedIn && (
+              <InlineField label={t('results.rating.filters.metric')} className={styles.field}>
+                <Combobox
+                  id="rating-metric"
+                  width="auto"
+                  minWidth={16}
+                  maxWidth={32}
+                  options={(metrics.data?.data ?? [])
+                    .filter((m) => m.rating_eligible !== false)
+                    .map((m) => ({
+                      label: metricTitle(m.key, m.title),
+                      value: m.key,
+                      description: m.unit,
+                    }))}
+                  value={search.metric}
+                  onChange={(o) => onSearchChange({ metric: o.value })}
+                />
+              </InlineField>
+            )}
+            {narrowed && (
+              <Button size="sm" variant="secondary" fill="text" onClick={reset}>
+                {t('results.rating.filters.reset')}
+              </Button>
+            )}
+          </div>
         }
         right={
           <RadioButtonGroup
@@ -272,16 +320,16 @@ export function RatingBoard({
         }
       />
       <Body embedded={embedded}>
-        {list.isError || list.isPending || entries.length === 0 ? (
+        {list.isError || !settled || entries.length === 0 ? (
           <RatingTable
             rows={[]}
             scope={scope}
             slug={slug}
-            loading={list.isPending}
+            loading={!settled}
             error={list.isError ? list.error : undefined}
             onRetry={() => void list.refetch()}
-            filtered={pills.length > 0}
-            onClearFilters={clearAll}
+            filtered={narrowed}
+            onClearFilters={reset}
             empty={{ message: t('results.rating.empty.title') }}
             newTab={embedded}
             publicPage={catalog === 'public'}

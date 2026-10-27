@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { RatingBoard, ratingFiltersSchema } from './RatingBoard'
 
-export { toRatingQuery } from './RatingBoard'
+export { boardHardware, ratingCensusQuery, toRatingQuery } from './RatingBoard'
 
 export const ratingSearchSchema = ratingFiltersSchema.extend({
   tab: z.enum(['tenant', 'global']).default('tenant').catch('tenant'),

@@ -44,3 +44,49 @@ export function hardwareTotal(t: TFunction, hw: HardwareClass | undefined): stri
   }
   return t('common.hardware.total', { count: machines, cpu, memory })
 }
+
+/** Total vCPU and memory of a class key ("2x32c128g+1x4c8g"), to say which stand is larger. */
+function hardwareSize(key: string): [cpu: number, memory: number] {
+  let cpu = 0
+  let memory = 0
+  for (const group of key.split('+')) {
+    const m = /^(\d+)x(\d+)c(\d+)g$/.exec(group)
+    if (!m) continue
+    cpu += Number(m[1]) * Number(m[2])
+    memory += Number(m[1]) * Number(m[3])
+  }
+  return [cpu, memory]
+}
+
+/** Rated rows per hardware class key. */
+export function hardwareCounts(rows: readonly { hardware: HardwareClass }[]): Map<string, number> {
+  const counts = new Map<string, number>()
+  for (const r of rows) counts.set(r.hardware.key, (counts.get(r.hardware.key) ?? 0) + 1)
+  return counts
+}
+
+/**
+ * The class a rating shows when the viewer picked none: the one with the most
+ * rated rows (the largest set of comparable numbers); on a tie the larger
+ * stand, then the key. Undefined when there are no rows.
+ */
+export function defaultHardware(rows: readonly { hardware: HardwareClass }[]): string | undefined {
+  let best: string | undefined
+  let bestCount = 0
+  for (const [key, count] of hardwareCounts(rows)) {
+    if (best === undefined || count > bestCount) {
+      best = key
+      bestCount = count
+      continue
+    }
+    if (count < bestCount) continue
+    const [cpu, memory] = hardwareSize(key)
+    const [bestCpu, bestMemory] = hardwareSize(best)
+    if (
+      cpu > bestCpu ||
+      (cpu === bestCpu && (memory > bestMemory || (memory === bestMemory && key < best)))
+    )
+      best = key
+  }
+  return best
+}
