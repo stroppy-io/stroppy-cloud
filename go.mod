@@ -24,7 +24,7 @@ require (
 	github.com/gopherex/xshutdown v1.1.0
 	github.com/gopherex/xtrace/contrib/sdk v1.1.3
 	github.com/graphene-ci/graphene v0.2.30
-	github.com/graphene-ci/library/docker v0.3.6
+	github.com/graphene-ci/library/docker v0.3.7
 	github.com/graphene-ci/library/k8s v0.4.2
 	github.com/graphene-ci/pipeline v0.2.14
 	github.com/jackc/pgx/v5 v5.11.0

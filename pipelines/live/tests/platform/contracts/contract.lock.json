@@ -3,7 +3,7 @@
   "hash": "sha256 (JSON canonicalized)",
   "files": {
     "openapi/openapi.yaml": "f9af8a74fa9c4493d23f3f56403453c19db6c9c525d1553557afed7e519e4b2d",
-    "pipelines/go.mod": "d491cea3e7d1d4bb77b34be1fc33719f43a79b96d0da7fd0dd392f6833c28f13",
+    "pipelines/go.mod": "18794109cb59c369c0a7dbb1f9e26070b911669685dcc0ce636e51d90c7b0a44",
     "pipelines/live/tests/platform/contracts/result-complete.json": "ca16c78f42fc9bc82668ea5018697e20730f4fc64ae2499d3b019d830603665a",
     "pipelines/live/tests/platform/contracts/test-patch.json": "89fd06898e933f3d542628e9923fbad950bafd4fb1bb893655a67167801415e0",
     "pipelines/schemas/testdata/cfg.cockroach.flags@24.json": "ec2ddec106a25d078149532a363fe1b09ceec6912dd906bff3768dfe2b77cef9",

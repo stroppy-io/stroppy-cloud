@@ -16,7 +16,7 @@ require (
 	github.com/docker/go-units v0.5.0
 	github.com/google/uuid v1.6.0
 	github.com/gopherex/schemapb/go v1.9.9
-	github.com/graphene-ci/library/docker v0.3.6
+	github.com/graphene-ci/library/docker v0.3.7
 	github.com/graphene-ci/library/k8s v0.4.2
 	github.com/graphene-ci/pipeline v0.2.14
 	github.com/stretchr/testify v1.12.1
