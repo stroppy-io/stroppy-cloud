@@ -265,15 +265,16 @@ func TestGaleraAuto(t *testing.T) {
 	}
 }
 
-// More VUs raise the connection limits of the server and the proxy.
-func TestInnoDBConnectionsFollowVUs(t *testing.T) {
-	out, _ := compileTuned(t, tuneCase{kind: catalog.MySQL, version: "8.4", protocol: catalog.ProtoMySQL, vus: 1000,
+// The server and the proxy take the client's pool: 1000 VUs on 32-vCPU
+// members share 8 × 32 = 256 connections, under MySQL's floor of 500.
+func TestInnoDBConnectionsFollowThePool(t *testing.T) {
+	out, _ := compileTuned(t, tuneCase{kind: catalog.MySQL, version: "8.4", protocol: catalog.ProtoMySQL, vus: 1000, size: "XL",
 		params: map[string]any{"replicas": 2, "replication": "group", "proxysql": 1}})
-	if conf := fileOf(out, "db-1-mysql", mysqlConf); !strings.Contains(conf, "\nmax_connections = 1600\n") {
+	if conf := fileOf(out, "db-1-mysql", mysqlConf); !strings.Contains(conf, "\nmax_connections = 500\n") {
 		t.Errorf("1000 VUs: %s", conf)
 	}
 	proxy := fileOf(out, "-proxysql", "/etc/proxysql.cnf")
-	for _, want := range []string{"max_connections=2048\n", "max_connections=1550,"} {
+	for _, want := range []string{"max_connections=2048\n", "max_connections=450,"} {
 		if !strings.Contains(proxy, want) {
 			t.Errorf("proxysql.cnf lacks %q:\n%s", want, proxy)
 		}

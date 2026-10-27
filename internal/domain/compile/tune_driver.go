@@ -8,15 +8,16 @@ import (
 	"strings"
 
 	"github.com/stroppy-io/stroppy-cloud/internal/domain/run"
+	"github.com/stroppy-io/stroppy-cloud/internal/domain/topology"
 	"github.com/stroppy-io/stroppy-cloud/pipelines/spec"
 )
 
-// tuneDriver sizes the client's connection pool under auto tuning: every
-// virtual user and every load worker holds a connection of its own. Left
-// unset, pgx caps the pool at max(4, runner CPUs) and database/sql keeps
-// two idle connections, so 256 virtual users queue on 16 connections of
-// the runner and the run measures the client instead of the database. A
-// pool key the workload sets itself wins.
+// tuneDriver sizes the client's connection pool under auto tuning (see
+// poolSize). Left unset, pgx caps the pool at max(4, runner CPUs) and
+// database/sql keeps two idle connections, so the pool follows the runner
+// machine instead of the database: 256 virtual users queued on 16
+// connections of a 16-vCPU runner in front of a 32-vCPU database. A pool
+// key the workload sets itself wins.
 //
 // doc: https://pkg.go.dev/github.com/jackc/pgx/v5/pgxpool#ParseConfig (pool_max_conns default)
 // doc: https://pkg.go.dev/database/sql#DB.SetMaxIdleConns (two idle connections by default)
@@ -24,7 +25,7 @@ func (c *compilation) tuneDriver(driver map[string]any, driverType, dsn string) 
 	if c.tuning() != tuningAuto {
 		return dsn
 	}
-	conns := c.peakConnections()
+	conns := c.poolSize()
 	switch driverType {
 	case "crdb":
 		// Stroppy 6.2.1 drops the pool and postgres blocks for the crdb
@@ -40,6 +41,36 @@ func (c *compilation) tuneDriver(driver map[string]any, driverType, dsn string) 
 		c.clientAuto = append(c.clientAuto, setPool(driver, "sql", map[string]int{"maxOpenConns": conns, "maxIdleConns": conns})...)
 	}
 	return dsn
+}
+
+// connectionsPerCPU is how many connections a database vCPU serves before
+// more only queue inside it. CockroachDB sizes 4 active connections per
+// vCPU and PostgreSQL's wiki starts at 2 per core, but a TPC-C transaction
+// here is ~18 statements with a network round trip each, so a connection
+// idles between them: PostgreSQL 17 on 8 vCPU did 1049 tps with 32
+// connections and 1280 tps with 64 (64 VUs, stroppy 6.2.1, stand runs of
+// 2026-10-27). Eight per vCPU keeps the cores busy and still stops 10k
+// virtual users from becoming 10k backends.
+//
+// doc: https://docs.cockroachlabs.com/docs/stable/connection-pooling
+// doc: https://wiki.postgresql.org/wiki/Number_Of_Database_Connections
+const connectionsPerCPU = 8
+
+// poolSize is the client's connections: one per virtual user or load
+// worker, up to connectionsPerCPU per vCPU of the database machines. More
+// virtual users than that wait for a connection on the client, as an
+// application behind a pool does; the report shows that wait. Without
+// database machines (managed, external) the virtual users decide alone.
+func (c *compilation) poolSize() int {
+	want := c.peakConnections()
+	cpus := 0
+	for _, m := range c.machinesOf(topology.RoleDB) {
+		cpus += c.hostOf(m).CPU
+	}
+	if cpus == 0 {
+		return want
+	}
+	return min(want, connectionsPerCPU*cpus)
 }
 
 // peakConnections is the most connections one segment holds at once: its
