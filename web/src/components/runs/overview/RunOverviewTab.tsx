@@ -4,6 +4,9 @@ import { AppLink } from '@app/AppLink'
 import { ErrorState } from '@app/ErrorState'
 import { SectionTitle } from '@app/PageHeader'
 import { RelativeTime } from '@components/RelativeTime'
+import { ErrorsPanel, LatencyPanel } from '@components/report/RunResultPanels'
+import { RunSetup } from '@components/report/RunSetup'
+import { headlineLatency, type ResultSegment } from '@components/report/segment-metrics'
 import { TopologyMini } from '@components/runs/topology/TopologyView'
 import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
@@ -11,6 +14,7 @@ import type { GrafanaTheme2 } from '@grafana/data'
 import { Alert, Badge, LoadingPlaceholder, Stack, Text, useStyles2 } from '@grafana/ui'
 import { formatMetric } from '@helpers/format'
 import { isTerminal } from '@helpers/run-status'
+import { topologyText } from '@helpers/topology'
 import { useRun } from '@hooks/useRun'
 import { useTenant } from '@hooks/useTenant'
 import { useTopic } from '@hooks/useTopic'
@@ -95,9 +99,12 @@ function ResultStats({ run }: { run: Run }) {
     qps !== undefined
       ? { label: 'QPS', value: formatMetric(qps, 'count') }
       : { label: 'TPS', value: formatMetric(tps, 'tps') }
-  const p99 = m?.latency_p99_ms?.value ?? h?.latency_p99_ms
-  const p95 = m?.latency_p95_ms?.value
-  const p50 = m?.latency_p50_ms?.value
+  // The client iteration of the last measuring segment, from its histogram
+  // buckets when the report carries them; the headline otherwise.
+  const lat = headlineLatency(run.result?.segments as ResultSegment[] | undefined)
+  const p99 = lat?.p99 ?? m?.latency_p99_ms?.value ?? h?.latency_p99_ms
+  const p95 = lat?.p95 ?? m?.latency_p95_ms?.value ?? h?.latency_p95_ms
+  const p50 = lat?.p50 ?? m?.latency_p50_ms?.value ?? h?.latency_p50_ms
   const errors = m?.errors?.value ?? h?.errors
   if (qps === undefined && tps === undefined && p99 === undefined) return null
   const cells: { label: string; value: string }[] = [
@@ -203,6 +210,20 @@ export function RunOverviewTab({ id }: { id: string }) {
           </Alert>
         )}
         <ResultStats run={run} />
+        <section className={styles.panel}>
+          <LatencyPanel segments={run.result?.segments as ResultSegment[] | undefined} />
+          <ErrorsPanel segments={run.result?.segments as ResultSegment[] | undefined} />
+          <RunSetup
+            kind={run.snapshot.database.kind}
+            version={run.snapshot.database.version}
+            params={run.snapshot.database.params as Record<string, unknown> | undefined}
+            topology={topologyText(run.summary?.topology)}
+            provider={run.snapshot.provider_profile.name}
+            machines={run.snapshot.machines}
+            tuning={run.snapshot.tuning}
+            segments={run.snapshot.workload.segments}
+          />
+        </section>
         {o.connectivity && <ConnectivityPanel runId={run.id} check={o.connectivity} />}
         <section className={styles.panel}>
           <Stack direction="column" gap={2}>

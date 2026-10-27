@@ -1,4 +1,11 @@
 import type { Comparison } from '@api/types'
+import {
+  ReportSection,
+  SimpleTable,
+  SubTitle,
+  useReportStyles,
+  valueToText,
+} from '@components/report/ReportPrimitives'
 import { StatusBadge } from '@components/StatusBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -7,13 +14,6 @@ import { dbLabel, formatDuration, formatMetric } from '@helpers/format'
 import { formatDate } from '@helpers/time'
 import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
-import {
-  ReportSection,
-  SimpleTable,
-  SubTitle,
-  useReportStyles,
-  valueToText,
-} from './ReportPrimitives'
 
 const getStyles = (theme: GrafanaTheme2) => ({
   col: css({ minWidth: 160 }),

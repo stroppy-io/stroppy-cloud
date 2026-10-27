@@ -1,4 +1,5 @@
 import type { SharedRun } from '@api/types'
+import { headlineLatency, type ResultSegment } from '@components/report/segment-metrics'
 import { StatusBadge } from '@components/StatusBadge'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -119,6 +120,7 @@ export function ReportSummary({ run, title }: { run: SharedRun; title?: string }
   const { t } = useTranslation()
   const styles = useStyles2(getStyles)
   const h = run.result?.summary
+  const lat = headlineLatency(run.result?.segments as ResultSegment[] | undefined)
   const lead = useLead(run)
   const name = title ?? run.name
   return (
@@ -170,10 +172,10 @@ export function ReportSummary({ run, title }: { run: SharedRun; title?: string }
           </div>
           <div className={styles.metric}>
             <div className={styles.mLabel}>{t('public.summary.p99')}</div>
-            <div className={styles.mValue}>{formatMetric(h.latency_p99_ms, 'ms')}</div>
+            <div className={styles.mValue}>{formatMetric(lat?.p99 ?? h.latency_p99_ms, 'ms')}</div>
             <div className={styles.mSub}>
-              p50 {formatMetric(h.latency_p50_ms, 'ms')} · p95{' '}
-              {formatMetric(h.latency_p95_ms, 'ms')}
+              p50 {formatMetric(lat?.p50 ?? h.latency_p50_ms, 'ms')} · p95{' '}
+              {formatMetric(lat?.p95 ?? h.latency_p95_ms, 'ms')}
             </div>
           </div>
           <div className={styles.metric}>

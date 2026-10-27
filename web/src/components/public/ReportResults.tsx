@@ -6,6 +6,14 @@ import {
   explorerStateOf,
 } from '@components/metrics/explorer-search'
 import { type ExplorerSeriesQuery, MetricExplorer } from '@components/metrics/MetricExplorer'
+import {
+  ReportSection,
+  SimpleTable,
+  SubTitle,
+  useReportStyles,
+} from '@components/report/ReportPrimitives'
+import { ErrorsPanel, LatencyPanel } from '@components/report/RunResultPanels'
+import type { ResultSegment } from '@components/report/segment-metrics'
 import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -17,7 +25,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { MetricsCharts } from './MetricsCharts'
-import { ReportSection, SimpleTable, SubTitle, useReportStyles } from './ReportPrimitives'
 
 const windowRange = (w: { start: string; end: string }): TimeRange => {
   const from = dateTime(w.start)
@@ -111,6 +118,9 @@ export function ReportResults({
           </tbody>
         </SimpleTable>
       )}
+
+      <LatencyPanel segments={segments as ResultSegment[]} />
+      <ErrorsPanel segments={segments as ResultSegment[]} />
 
       {baseline && (
         <>

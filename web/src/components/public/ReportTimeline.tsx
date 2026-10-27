@@ -1,4 +1,5 @@
 import type { RunEvent, SharedRun } from '@api/types'
+import { ReportSection, SubTitle, useReportStyles } from '@components/report/ReportPrimitives'
 import { eventSubject, eventTitle } from '@components/runs/events/eventTitle'
 import { css, cx } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -8,7 +9,6 @@ import { phaseIcon, runStatusMeta } from '@helpers/run-status'
 import { formatTime } from '@helpers/time'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ReportSection, SubTitle, useReportStyles } from './ReportPrimitives'
 
 const getStyles = (theme: GrafanaTheme2) => ({
   bar: css({

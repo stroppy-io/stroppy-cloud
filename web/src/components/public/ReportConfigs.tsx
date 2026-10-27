@@ -1,7 +1,7 @@
 import type { SharedRun } from '@api/types'
+import { Pre, ReportSection, SubTitle, useReportStyles } from '@components/report/ReportPrimitives'
 import { CollapsableSection, Text } from '@grafana/ui'
 import { useTranslation } from 'react-i18next'
-import { Pre, ReportSection, SubTitle, useReportStyles } from './ReportPrimitives'
 
 export function ReportConfigs({
   run,

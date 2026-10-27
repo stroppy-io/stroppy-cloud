@@ -1,4 +1,5 @@
 import type { ShareSnapshot } from '@api/queries/results'
+import { ReportSection, SimpleTable, useReportStyles } from '@components/report/ReportPrimitives'
 import { StatusBadge } from '@components/StatusBadge'
 import { css } from '@emotion/css'
 import type { GrafanaTheme2 } from '@grafana/data'
@@ -6,7 +7,6 @@ import { Text, useStyles2 } from '@grafana/ui'
 import { dbLabel, formatMetric } from '@helpers/format'
 import { topologyText } from '@helpers/topology'
 import { useTranslation } from 'react-i18next'
-import { ReportSection, SimpleTable, useReportStyles } from './ReportPrimitives'
 
 type SuiteSnapshot = NonNullable<ShareSnapshot['suite_run']>
 

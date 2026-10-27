@@ -1,0 +1,72 @@
+{
+  "stand": {
+    "title": "Stand",
+    "lead": "{{db}}, {{topology}}, on {{provider}}.",
+    "image": "Image",
+    "machine": "Machine",
+    "role": "Role",
+    "cpuRam": "vCPU / RAM",
+    "disk": "Data disk",
+    "iops": "Disk IOPS read / write",
+    "mbps": "Disk MB/s read / write",
+    "cache": "Engine cache",
+    "cacheHint": "Memory the database keeps for its own cache: shared buffers, buffer pool, block cache or memtx arena."
+  },
+  "latency": {
+    "title": "Latency",
+    "hint": "Per segment and transaction type. Percentiles are interpolated inside Stroppy's histogram buckets.",
+    "name": "Measured",
+    "count": "Count",
+    "avg": "Average",
+    "names": {
+      "iteration": "Client iteration",
+      "tx_total": "Transaction in the database",
+      "run_query": "One query"
+    },
+    "clientWait": "The client spent about {{ms}} per iteration outside the database, {{share}} of the iteration. Usually the driver has fewer connections than virtual users, or the runner machine is out of CPU."
+  },
+  "errors": {
+    "title": "Errors and retries",
+    "hint": "A retry repeats a transaction after a serialization conflict or a deadlock. A transaction counts as failed only when every retry failed. TPC-C rolls back about 1% of new orders on purpose (spec §2.4.1.4); those are not errors.",
+    "segment": "Segment",
+    "failed": "Failed transactions",
+    "failedQueries": "Failed queries",
+    "retries": "Retries",
+    "rollbacks": "TPC-C rollbacks"
+  },
+  "config": {
+    "title": "Database configuration",
+    "mode": "Tuning:",
+    "durability": "Commit:",
+    "hint": "Faded rows kept the default. Hover a setting for what it does.",
+    "setting": "Setting",
+    "value": "Value",
+    "default": "Default",
+    "deploy": "Deployment",
+    "engine": "{{role}} · {{config}}",
+    "engineNote": "set by auto tuning for these machines and this load; the rest of the file is the engine's default",
+    "engineEmpty": "Engine settings",
+    "stock": "stock tuning: the engine runs on its own defaults",
+    "unknown": "this run is older than the record of what auto tuning set"
+  },
+  "load": {
+    "title": "Load",
+    "segment": "Segment",
+    "script": "Script",
+    "scale": "Scale",
+    "vus": "VUs",
+    "loadWorkers": "Load workers",
+    "retries": "Retries",
+    "pacing": "Pacing",
+    "pacingOn": "TPC-C keying and think times",
+    "pacingOff": "none",
+    "duration": "Duration",
+    "iterations": "{{n}} iterations",
+    "other": "Other parameters",
+    "driver": "Stroppy driver",
+    "setting": "Driver setting",
+    "auto": "auto",
+    "autoHint": "Set by auto tuning",
+    "noPool": "The driver's connection pool was left at its default: max(4, runner vCPUs) connections for pgx, two idle connections for database/sql. With more virtual users than connections, part of every transaction is a wait for a connection on the client."
+  }
+}
