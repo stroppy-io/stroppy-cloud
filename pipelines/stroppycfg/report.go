@@ -43,6 +43,47 @@ type ReportMetric struct {
 	Count       *uint64            `json:"count"`
 	Average     *float64           `json:"average"`
 	Percentiles map[string]float64 `json:"percentiles"`
+	// Bounds are a histogram's bucket upper bounds; BucketCounts has one
+	// more entry, the bucket above the last bound.
+	Bounds       []float64 `json:"bounds"`
+	BucketCounts []uint64  `json:"bucket_counts"`
+}
+
+// percentile is a histogram's quantile q (0..1) interpolated linearly inside
+// the bucket that holds it, as Prometheus histogram_quantile does. Stroppy's
+// own percentiles are the bucket's upper bound, so a run whose iterations
+// all take 100–250 ms reports p50 = p99 = 250. False without buckets.
+//
+// doc: https://prometheus.io/docs/prometheus/latest/querying/functions/#histogram_quantile
+func (m ReportMetric) percentile(q float64) (float64, bool) {
+	if len(m.Bounds) == 0 || len(m.BucketCounts) != len(m.Bounds)+1 {
+		return 0, false
+	}
+	var total uint64
+	for _, n := range m.BucketCounts {
+		total += n
+	}
+	if total == 0 {
+		return 0, false
+	}
+	rank := q * float64(total)
+	var seen uint64
+	for i, n := range m.BucketCounts {
+		if n == 0 || float64(seen+n) < rank {
+			seen += n
+			continue
+		}
+		if i == len(m.Bounds) {
+			// Above the last bound there is no upper edge to interpolate to.
+			return m.Bounds[len(m.Bounds)-1], true
+		}
+		lower := 0.0
+		if i > 0 {
+			lower = m.Bounds[i-1]
+		}
+		return lower + (m.Bounds[i]-lower)*(rank-float64(seen))/float64(n), true
+	}
+	return m.Bounds[len(m.Bounds)-1], true
 }
 
 // ParseReport accepts additive fields but fails closed on incompatible envelopes.
@@ -75,9 +116,16 @@ func ParseReport(raw []byte) (RunReport, Summary, error) {
 			if metric.Average != nil {
 				summary.Metrics[name+"_avg"] = spec.MetricValue{Value: *metric.Average, Unit: unit}
 			}
-			for _, p := range []string{"p50", "p90", "p95", "p99"} {
-				if value, ok := metric.Percentiles[p]; ok {
-					summary.Metrics[name+"_"+p] = spec.MetricValue{Value: value, Unit: unit}
+			for _, p := range []struct {
+				key string
+				q   float64
+			}{{"p50", 0.50}, {"p90", 0.90}, {"p95", 0.95}, {"p99", 0.99}} {
+				value, ok := metric.percentile(p.q)
+				if !ok {
+					value, ok = metric.Percentiles[p.key]
+				}
+				if ok {
+					summary.Metrics[name+"_"+p.key] = spec.MetricValue{Value: value, Unit: unit}
 				}
 			}
 		} else if metric.Total != nil {

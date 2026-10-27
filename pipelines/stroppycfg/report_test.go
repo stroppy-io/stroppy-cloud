@@ -19,7 +19,9 @@ func TestNativeRunReport(t *testing.T) {
 	require.Equal(t, *doc.Metrics["queries_per_second"].Total, summary.Metrics["queries_per_second"].Value)
 	require.Equal(t, "queries/s", summary.Metrics["queries_per_second"].Unit)
 	require.Equal(t, "ms", summary.Metrics["iteration_duration_p99"].Unit)
-	require.Equal(t, doc.Metrics["iteration_duration"].Percentiles["p99"], summary.Metrics["iteration_duration_p99"].Value)
+	// Read from the buckets (three iterations, the slowest in 0.05–0.1 ms),
+	// not from Stroppy's percentiles.
+	require.InDelta(t, 0.0985, summary.Metrics["iteration_duration_p99"].Value, 1e-9)
 	require.NotContains(t, summary.Metrics, "tps")
 	require.Zero(t, summary.Errors.TerminalErrors)
 	for _, patch := range []map[string]any{{"schema": 5}, {"schema": 0}, {"kind": "baseline"}, {"status": "other"}, {"metrics": nil}, {"errors": nil}, {"measurement_seconds": -1}} {
@@ -65,4 +67,25 @@ func TestRunReportSchema4(t *testing.T) {
 	require.Equal(t, "ms", summary.Metrics["iteration_duration_p99"].Unit)
 	require.EqualValues(t, 46, summary.Errors.TerminalErrors)
 	require.NotEmpty(t, summary.Compliance)
+}
+
+func TestPercentileInterpolatesInsideTheBucket(t *testing.T) {
+	// The PostgreSQL 18 nightly: 99.6% of iterations in 100–250 ms, which
+	// Stroppy reports as p50 = p99 = 250.
+	m := ReportMetric{
+		Bounds:       []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 20000, 30000, 60000},
+		BucketCounts: []uint64{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 14, 40, 91, 3253434, 12715, 1066, 36, 0, 0, 0, 0, 0, 0},
+	}
+	p50, _ := m.percentile(0.50)
+	p99, ok := m.percentile(0.99)
+	if !ok || p50 < 170 || p50 > 180 || p99 < 245 || p99 > 250 || p99 <= p50 {
+		t.Fatalf("p50 %v p99 %v", p50, p99)
+	}
+	if _, ok := (ReportMetric{Percentiles: map[string]float64{"p50": 250}}).percentile(0.5); ok {
+		t.Fatal("a histogram without buckets falls back to Stroppy's percentiles")
+	}
+	top := ReportMetric{Bounds: []float64{10, 20}, BucketCounts: []uint64{0, 0, 5}}
+	if v, _ := top.percentile(0.5); v != 20 {
+		t.Fatalf("above the last bound: %v", v)
+	}
 }
