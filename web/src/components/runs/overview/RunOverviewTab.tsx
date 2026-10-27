@@ -214,13 +214,13 @@ export function RunOverviewTab({ id }: { id: string }) {
           <LatencyPanel segments={run.result?.segments as ResultSegment[] | undefined} />
           <ErrorsPanel
             segments={run.result?.segments as ResultSegment[] | undefined}
-            logsLink={(segment) => (
+            logsLink={() => (
               <AppLink
                 to="/t/$slug/runs/$id/logs"
                 params={{ slug, id: run.id }}
-                // Stroppy's JSON lines all reach the log store as info for now,
-                // so the link searches its stream for error lines instead.
-                search={{ stream: ['stroppy'], segment, q: '"level":"error"' }}
+                // Errors of the client and the database alike: database lines
+                // carry no segment, so the level alone narrows them.
+                search={{ level: ['error', 'warn'] }}
               >
                 {t('report.errors.openLogs')}
               </AppLink>
